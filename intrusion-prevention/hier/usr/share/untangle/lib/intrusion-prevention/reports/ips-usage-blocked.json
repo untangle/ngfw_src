@@ -1,0 +1,28 @@
+{
+    "uniqueId": "intrusion-prevention-VWMXccOM",
+    "category": "Intrusion Prevention",
+    "description": "The amount of blocked intrusions over time.",
+    "displayOrder": 102,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "hits",
+    "readOnly": true,
+    "table": "intrusion_prevention_events",
+    "timeDataColumns": [
+        "sum(blocked::int) as blocked"
+    ],
+    "colors": [
+        "#8c0000"
+    ],
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "operator": "=",
+        "value": "true"
+    }],
+    "timeDataInterval": "AUTO",
+    "timeStyle": "BAR_OVERLAPPED",
+    "title": "Intrusion Detection (blocked)",
+    "type": "TIME_GRAPH"
+}

@@ -6,7 +6,6 @@ package com.untangle.app.ftp;
 import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,9 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.app.ftp.FtpCommand;
@@ -40,8 +37,15 @@ class FtpNatHandler extends FtpEventHandler
 
     private static Map<SessionRedirectKey,SessionRedirect> redirectMap = new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
     
+    /**
+     * FtpNatHandler creates a new FtpNatHandler
+     */
     public FtpNatHandler() { }
 
+    /**
+     * handleTCPNewSessionRequest
+     * @param sessionRequest
+     */
     @Override
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
@@ -66,6 +70,11 @@ class FtpNatHandler extends FtpEventHandler
         }
     }
 
+    /**
+     * doCommand handles the FtpCommand
+     * @param session
+     * @param command
+     */
     @Override
     protected void doCommand( AppTCPSession session, FtpCommand command )
     {
@@ -106,6 +115,11 @@ class FtpNatHandler extends FtpEventHandler
         return;
     }
 
+    /**
+     * handle the FtpReply
+     * @param session
+     * @param reply
+     */
     @Override
     protected void doReply( AppTCPSession session, FtpReply reply )
     {
@@ -139,18 +153,30 @@ class FtpNatHandler extends FtpEventHandler
         return;
     }
 
+    /**
+     * doClientDataEnd
+     * @param session
+     */
     @Override
     protected void doClientDataEnd( AppTCPSession session )
     {
         session.shutdownServer();
     }
 
+    /**
+     * doServerDataEnd
+     * @param session
+     */
     @Override
     protected void doServerDataEnd( AppTCPSession session )
     {
         session.shutdownClient();
     }
 
+    /**
+     * handleTCPFinalized
+     * @param session
+     */
     @Override
     public void handleTCPFinalized( AppTCPSession session )
     {
@@ -164,12 +190,21 @@ class FtpNatHandler extends FtpEventHandler
         }
     }
 
+    /**
+     * portCommand handles the PORT command
+     * @param session
+     * @param command
+     */
     private void portCommand( AppTCPSession session, FtpCommand command )
     {
         handlePortCommand( session, command );
     }
 
-    /* Handle a port command, this is the helper for both extended and normal commands */
+    /**
+     * handlePortCommand handles the PORT command
+     * @param session
+     * @param command
+     */
     private void handlePortCommand( AppTCPSession session, FtpCommand command )
     {
         InetSocketAddress addr;
@@ -234,17 +269,32 @@ class FtpNatHandler extends FtpEventHandler
         return;
     }
 
+    /**
+     * eprtCommand handles the EPRT command
+     * @param session
+     * @param command
+     */
     private void eprtCommand( AppTCPSession session, FtpCommand command )
     {
         logger.debug( "Handling extended port command" );
         handlePortCommand( session, command );
     }
     
+    /**
+     * pasvCommand handles the PASV command
+     * @param session
+     * @param command
+     */
     private void pasvCommand( AppTCPSession session, FtpCommand command )
     {
         session.sendObjectToServer( command );
     }
 
+    /**
+     * pasvReply handles the PASV reply
+     * @param session
+     * @param reply
+     */
     private void pasvReply( AppTCPSession session, FtpReply reply )
     {
         InetSocketAddress origAddr;
@@ -300,11 +350,21 @@ class FtpNatHandler extends FtpEventHandler
         return;
     }
 
+    /**
+     * epsvCommand handles EPSV command
+     * @param session
+     * @param command
+     */
     private void epsvCommand( AppTCPSession session, FtpCommand command )
     {
         session.sendObjectToServer( command );
     }
 
+    /**
+     * epsvReply handles EPSV reply
+     * @param session
+     * @param reply
+     */
     private void epsvReply( AppTCPSession session, FtpReply reply )
     {
         SessionState sessionState = getSessionState( session );
@@ -350,6 +410,11 @@ class FtpNatHandler extends FtpEventHandler
         return;
     }
 
+    /**
+     * getSessionState returns the session state for the provided session
+     * @param session - the session
+     * @return SessionState
+     */
     private SessionState getSessionState( AppTCPSession session )
     {
         SessionState sessionState = (SessionState) session.attachment();
@@ -363,12 +428,21 @@ class FtpNatHandler extends FtpEventHandler
         return sessionState;
     }
 
+    /**
+     * insertSessionRedirect inserts the redirect
+     * @param sessionState
+     * @param redirect
+     */
     private void insertSessionRedirect( SessionState sessionState, SessionRedirect redirect )
     {
         redirectMap.put( redirect.key, redirect );
         sessionState.redirects.add( redirect );
     }
     
+    /**
+     * getNextPort provides the port to use (for the redirect)
+     * @return the next port to use
+     */
     private synchronized int getNextPort()
     {
         int ret = portCurrent;
@@ -381,11 +455,18 @@ class FtpNatHandler extends FtpEventHandler
     }
 }
 
+/**
+ * SessionState stores the state associated with this session.
+ * The active redirect(port forwards) for this session are stored.
+ */
 class SessionState
 {
     protected LinkedList<SessionRedirect> redirects = new LinkedList<SessionRedirect>();
 }
 
+/**
+ * The SessionRedirect key for the map
+ */
 class SessionRedirectKey
 {
     final Protocol    protocol;
@@ -393,6 +474,12 @@ class SessionRedirectKey
     final int         serverPort;
     final int         hashCode;
 
+    /**
+     * Create a new SessionRedirectKey
+     * @param protocol
+     * @param serverAddr
+     * @param serverPort
+     */
     SessionRedirectKey( Protocol protocol, InetAddress serverAddr, int serverPort )
     {
         this.protocol   = protocol;
@@ -401,11 +488,20 @@ class SessionRedirectKey
         hashCode = calculateHashCode();
     }
 
+    /**
+     * hashCode
+     * @return hashCode
+     */
     public int hashCode()
     {
         return hashCode;
     }
 
+    /**
+     * equals returns true if the object equals the parameter, false otherwise
+     * @param o - the object to compare
+     * @return equals
+     */
     public boolean equals( Object o )
     {
         if (!( o instanceof SessionRedirectKey )) return false;
@@ -421,11 +517,19 @@ class SessionRedirectKey
         return true;
     }
 
+    /**
+     * toString provides a string human readable summary of the SessionRedirectKey
+     * @return the string
+     */
     public String toString()
     {
         return "SessionRedirectKey| [" + protocol +"] " + "/" + serverAddr + ":" + serverPort;
     }
 
+    /**
+     * provide the hashCode of this key
+     * @return the hashCode
+     */
     private int calculateHashCode()
     {
         int result = 17;
@@ -437,6 +541,11 @@ class SessionRedirectKey
     }
 }
 
+/**
+ * A session redirect is a redirect or "port forward"
+ * Because NAT rewrites address, we must explicitly add port forwards so that PASV/PORT commands work
+ * A SessionRedirect stores an active "port forward" and all the associated information
+ */
 class SessionRedirect
 {
     private static final Logger logger = Logger.getLogger( SessionRedirect.class );
@@ -454,9 +563,16 @@ class SessionRedirect
     private String redirectRuleIp;
     private int redirectRulePort;
     
+    /**
+     * Create a SessionRedirect from the original server addr/port to the new server addr/port
+     * @param origServerAddr
+     * @param origServerPort
+     * @param newServerAddr
+     * @param newServerPort
+     */
     protected SessionRedirect( InetAddress origServerAddr, int origServerPort, InetAddress newServerAddr, int newServerPort )
     {
-        createRedirectRule( origServerAddr, origServerPort, newServerAddr, newServerPort );
+        insertRedirectRule( origServerAddr, origServerPort, newServerAddr, newServerPort );
         this.origServerAddr   = origServerAddr;
         this.origServerPort   = origServerPort;
         this.newServerAddr   = newServerAddr;
@@ -464,11 +580,18 @@ class SessionRedirect
         this.key = new SessionRedirectKey( Protocol.TCP, origServerAddr, origServerPort );
     }
 
+    /**
+     * toString provides a string human readable summary of the SessionRedirect
+     * @return the string
+     */
     public String toString()
     {
         return "SessionRedirect| " + origServerAddr + ":" + origServerAddr + " -> " + newServerAddr + ":" + newServerPort;
     }
 
+    /**
+     * If this redirect is in netfilter, cleanup removes it
+     */
     synchronized void cleanup()
     {
         if ( removed == false ) {
@@ -478,7 +601,14 @@ class SessionRedirect
         removed = true;
     }
     
-    private synchronized void createRedirectRule( InetAddress origServerAddr, int origServerPort, InetAddress newServerAddr, int newServerPort )
+    /**
+     * insertRedirectRule inserts a redirect into netfilter (into the port-forward-rules chain)
+     * @param origServerAddr <doc>
+     * @param origServerPort <doc>
+     * @param newServerAddr <doc>
+     * @param newServerPort <doc>
+     */
+    private synchronized void insertRedirectRule( InetAddress origServerAddr, int origServerPort, InetAddress newServerAddr, int newServerPort )
     {
         if (logger.isDebugEnabled()) {
             logger.debug("newServerAddr:"+newServerAddr);
@@ -509,6 +639,9 @@ class SessionRedirect
         return;
     }
 
+    /**
+     * removeRedirectRule remove this redirect from netfilter
+     */
     private synchronized void removeRedirectRule()
     {
         if (logger.isDebugEnabled()) {

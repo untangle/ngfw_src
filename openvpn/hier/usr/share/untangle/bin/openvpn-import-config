@@ -5,7 +5,6 @@
 # It stores the files in settings, OpenVpnManager will later copy them into place
 #
 
-serverAddress=${1}
 filename="${1}"
 destination=`mktemp || -3`
 
@@ -56,15 +55,6 @@ cp ${TMPDIR}/untangle-vpn/*.conf ${CONF_FILE}
 if [ $? != 0 ] ; then
     echo "Copy failed"
     cleanup
-fi
-
-# copy keys 
-# "untangle-vpn" was the key directory name in 9.4 and prior
-# keep this to maintain backwards compatibility with 9.4 and prior
-if [ -d ${TMPDIR}/untangle-vpn/untangle-vpn ] ; then
-    echo "${TMPDIR}/untangle-vpn/untangle-vpn exists"
-    mkdir -p @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/untangle-vpn/
-    cp -r ${TMPDIR}/untangle-vpn/untangle-vpn/* @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/untangle-vpn/
 fi
 
 if [ -d ${TMPDIR}/untangle-vpn/keys ] ; then

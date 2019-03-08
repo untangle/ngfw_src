@@ -24,9 +24,6 @@ uvm.registerTarget('python-jsonrpc', cf)
 ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/lib/python2.7/") ]
 cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
 uvm.registerTarget('python-jsonrpc2', cf)
-ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/lib/python2.7/") ]
-cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
-uvm.registerTarget('python-jsonrpc3', cf)
 
 jts = []
 
@@ -51,8 +48,6 @@ BuildEnv::SRC.installTarget.install_jars(taglib, "#{uvm_lib.distDirectory}/usr/s
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", ["uvm/servlets/library"], [])
 
 deps=[]
-
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet", ["./uvm/servlets/webui"], deps)
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.admin.servlet", ["./uvm/servlets/admin"], deps)
 
@@ -97,37 +92,41 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 
-# jsFiles = FileList["./uvm/servlets/**/*.js"].exclude(/admin/)
-# if ( jsFiles.length > 0 )
-#   jsFiles.each do |f|
-#     jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)
-#     BuildEnv::SRC.jsLintTarget.register_dependency(jsl)
-#   end
-# end
+## JS
 
-ungAllDirs = [ 'util', 'overrides', 'model', 'store', 'controller',
-               'chart', 'cmp', 'widget', 'view', 'Application.js' ]
+# ung-all
+ungAllDirs = [ 'overrides', 'model', 'store', 'controller',
+               'cmp', 'widget', 'view', 'Application.js' ]
 ungAllDirs.map! { |e| "uvm/servlets/admin/app/#{e}" }
 JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
 
-['about', 'administration', 'events', 'email', 'localdirectory', 'network',
+# ung-setup-all
+ungSetupAllDirs = [ 'view', 'Application.js' ]
+ungSetupAllDirs.map! { |e| "uvm/servlets/setup/app/#{e}" }
+JsBuilder.new(uvm_lib, "ung-setup-all", ungSetupAllDirs, "setup/script")
+
+# sections
+['about', 'administration', 'events', 'email', 'local-directory', 'network',
  'system', 'upgrade'].each do |n|
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
 end
 
-[ 'ad-blocker', 'application-control', 'application-control-lite',
-  'bandwidth-control', 'branding-manager', 'captive-portal',
-  'configuration-backup', 'directory-connector', 'firewall',
-  'intrusion-prevention', 'ipsec-vpn', 'live-support', 'openvpn',
-  'phish-blocker', 'policy-manager', 'reports', 'spam-blocker',
-  'spam-blocker-lite', 'ssl-inspector', 'virus-blocker',
-  'virus-blocker-lite', 'wan-balancer', 'wan-failover', 'web-cache',
-  'web-filter', 'web-monitor' ].each do |n|
-  JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/apps/#{n}", "admin/script/apps")
+# common
+['reports', 'ungrid', 'util'].each do |n|
+  JsBuilder.new(uvm_lib, "#{n}-all", "uvm/js/common/#{n}", "script/common")
 end
 
+# jslinting
 JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
+JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
+JsLintTarget.new(uvm_lib, './uvm/servlets/setup', 'jslint-setupui')
 
+## SCSS
+ScssBuilder.new(uvm_lib, "ung-all", "./uvm/servlets/admin/sass", "admin/styles")
+ScssBuilder.new(uvm, "reports-all", "./uvm/js/common/reports/sass", "script/common")
+ScssBuilder.new(uvm, "setup-all", "./uvm/servlets/setup/sass", "setup/styles")
+
+## i18n
 poFiles = FileList["./i18ntools/po/**/*.po"]
 if ( poFiles.length > 0 )
   poFiles.each do |f|

@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+# This script is called by OpenVPN when the auth-user-pass option is enabled.
+# It takes the username and password passed in the environment and
+# passes them to the public userAuthenticate function in the OpenVPN app.
+
+import os
+import sys
+from uvm import Uvm
+
+# next we get the uvm context
+uvmContext = Uvm().getUvmContext()
+
+# now we get the OpenVPN app instance
+openvpnApp = uvmContext.appManager().app("openvpn")
+
+# if we can't find the app then throw an exception
+if (openvpnApp == None):
+    raise Exception("The uvm app manager could not locate the openvpn app")
+
+username = os.environ.get('username')
+if (username == None):
+    raise Exception("Missing username")
+
+password = os.environ.get('password')
+if (password == None):
+    raise Exception("Missing password")
+    
+result = openvpnApp.userAuthenticate(username,password)
+sys.exit(result)
+

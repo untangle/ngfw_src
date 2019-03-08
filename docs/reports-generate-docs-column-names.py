@@ -7,15 +7,18 @@ import copy
 class I18N:
     def _(self, str):
         if not str[0].isupper():
-            print "Invalid string: " + str
+            print("Invalid string: " + str)
             sys.exit(1)
-        return 'i18n._(\'' + str + '\')'
+        return '\'' + str + '\'.t()'
 
 i18n = I18N()
 
 dict = {
     'event_id' : i18n._('Event ID'),
     'time_stamp' : i18n._('Timestamp'),
+    'tags' : i18n._('Tags'),
+    'entity' : i18n._('Entity'),
+    'old_value' : i18n._('Old Value'),
     'entitled' : i18n._('Entitled'),
     'session_id' : i18n._('Session ID'),
     'client_intf' : i18n._('Client Interface'),
@@ -44,6 +47,7 @@ dict = {
     'c2s_content_length' : i18n._('Client-to-server Content Length'),
     's2c_content_length' : i18n._('Server-to-client Content Length'),
     's2c_content_type' : i18n._('Server-to-client Content Type'),
+    's2c_content_filename' : i18n._('Server-to-client Content Disposition Filename'),
     'rx_bytes' : i18n._('Bytes Received'),
     'tx_bytes' : i18n._('Bytes Sent'),
     'client_name': i18n._('Client Name'),
@@ -217,21 +221,21 @@ for line in iter(p.stdout.readline, ''):
         try:
             description = dict[column]
         except:
-            print "\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
         if description == None:
-            print "\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
         
 
-print "{"
+print("{")
 for key, value in sorted(dict.iteritems()):
     if value == None:
-        print "\nBad Value for key: " + key
+        print("\nBad Value for key: " + key)
         sys.exit(1)
 
-    print key + ": " + value + ","
+    print(key + ": " + value + ",")
 
-print "}"
+print("}")
     

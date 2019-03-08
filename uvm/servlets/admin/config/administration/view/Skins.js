@@ -1,7 +1,8 @@
 Ext.define('Ung.config.administration.view.Skins', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.administration.skins',
+    alias: 'widget.config-administration-skins',
     itemId: 'skins',
+    scrollable: true,
 
     viewModel: true,
     title: 'Skins'.t(),
@@ -21,7 +22,10 @@ Ext.define('Ung.config.administration.view.Skins', {
         valueField: 'name',
         forceSelection: true,
         editable: false,
-        queryMode: 'local'
+        queryMode: 'local',
+        listeners: {
+            change: 'skinChange'
+        }
     }, {
         xtype: 'filefield',
         margin: '10 0 0 0',

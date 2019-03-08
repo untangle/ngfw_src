@@ -1,5 +1,5 @@
 # -*-ruby-*-
 
-deps = [BuildEnv::SRC['ftp']['src']]
+deps = [BuildEnv::SRC['untangle-app-ftp']['src']]
 
-AppBuilder.makeApp(BuildEnv::SRC, 'router', 'router', deps)
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-router', 'router', deps)

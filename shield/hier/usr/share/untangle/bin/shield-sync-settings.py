@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Sync Settings is takes the shield settings JSON file and "syncs" it to the 
 # It reads through the settings and writes the appropriate files:
-# /etc/untangle-netd/iptables-rules.d/600-shield
+# /etc/untangle/iptables-rules.d/600-shield
 #
 # This script should be called after changing the settings file to "sync" the settings to the OS.
 
@@ -16,7 +16,7 @@ import traceback
 import json
 import datetime
 
-from   netd import *
+from sync import *
 
 class ArgumentParser(object):
     def __init__(self):
@@ -55,8 +55,8 @@ class ArgumentParser(object):
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
-        except getopt.GetoptError, exc:
-            print exc
+        except getopt.GetoptError as exc:
+            print(exc)
             printUsage()
             exit(1)
 
@@ -79,7 +79,7 @@ def check_settings( settings ):
 # fix settings if they are weird
 def fixup_settings( ):
     if 'requestPerSecondLimit' not in settings:
-        print "ERROR: no action requestPerSecondLimit in settings"
+        print("ERROR: no action requestPerSecondLimit in settings")
     settings['action'] = 30
 
     return
@@ -92,7 +92,7 @@ def write_iptables_shield_rule( file, shield_rule, verbosity=0 ):
     if 'ruleId' not in shield_rule:
         return
     if 'action' not in shield_rule:
-        print "ERROR: invalid shield rule - no action"
+        print("ERROR: invalid shield rule - no action")
         return
 
     action = shield_rule['action'];
@@ -103,12 +103,12 @@ def write_iptables_shield_rule( file, shield_rule, verbosity=0 ):
         target = " -g shield-process # SCAN"
 
     description = "Route Rule #%i" % int(shield_rule['ruleId'])
+    commands = IptablesUtil.conditions_to_prep_commands( shield_rule['conditions']['list'], description, verbosity );
     iptables_conditions = IptablesUtil.conditions_to_iptables_string( shield_rule['conditions']['list'], description, verbosity );
-
-    iptables_commands = [ "${IPTABLES} -t filter -A shield-rules " + ipt + target for ipt in iptables_conditions ]
+    commands += [ "${IPTABLES} -t filter -A shield-rules " + ipt + target for ipt in iptables_conditions ]
 
     file.write("# %s\n" % description);
-    for cmd in iptables_commands:
+    for cmd in commands:
         file.write(cmd + "\n")
     return
 
@@ -155,7 +155,7 @@ ${IPTABLES} -t filter -F shield-process
 ${IPTABLES} -t filter -N shield-block >/dev/null 2>&1
 ${IPTABLES} -t filter -F shield-block
 
-modprobe -r xt_recent
+# modprobe -r xt_recent
 modprobe xt_recent ip_list_tot=${TABLE_SIZE} ip_pkt_list_tot=${LIST_SIZE}
 
 """)
@@ -195,9 +195,9 @@ ${IPTABLES} -t filter -A shield-block -m comment --comment "Drop the packet" -m 
         for shield_rule in shield_rules:
             try:
                 write_iptables_shield_rule( file, shield_rule, parser.verbosity );
-            except Exception,e:
+            except Exception as e:
                 traceback.print_exc(e)
-    except Exception,e:
+    except Exception as e:
         traceback.print_exc(e)
 
     file.write("""
@@ -221,8 +221,8 @@ try:
     settingsData = settingsFile.read()
     settingsFile.close()
     settings = json.loads(settingsData)
-except IOError,e:
-    print "Unable to read settings file: ",e
+except IOError as e:
+    print("Unable to read settings file: ",e)
     exit(1)
 
 try:
@@ -230,13 +230,13 @@ try:
     networkSettingsData = networkSettingsFile.read()
     networkSettingsFile.close()
     networkSettings = json.loads(networkSettingsData)
-except IOError,e:
-    print "Unable to read network settings file: ",e
+except IOError as e:
+    print("Unable to read network settings file: ",e)
     exit(1)
 
 try:
     check_settings(settings)
-except Exception,e:
+except Exception as e:
     traceback.print_exc(e)
     exit(1)
 
@@ -245,10 +245,10 @@ NetworkUtil.settings = networkSettings
 
 fixup_settings()
 
-if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
+if parser.verbosity > 0: print("Syncing %s to system..." % parser.file)
 
-# Write 330-wan-balancer iptables file
-filename = parser.prefix + "/etc/untangle-netd/iptables-rules.d/600-shield"
+# Write shield iptables file
+filename = parser.prefix + "/etc/untangle/iptables-rules.d/600-shield"
 fileDir = os.path.dirname( filename )
 if not os.path.exists( fileDir ):
     os.makedirs( fileDir )
@@ -261,6 +261,6 @@ file.flush()
 file.close()
 os.system("chmod a+x %s" % filename)
 
-if parser.verbosity > 0: print "Wrote %s" % filename
+if parser.verbosity > 0: print("Wrote %s" % filename)
 
 

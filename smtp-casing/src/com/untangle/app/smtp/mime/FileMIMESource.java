@@ -11,6 +11,9 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * File MIME source.
+ */
 public class FileMIMESource
 {
 
@@ -45,17 +48,22 @@ public class FileMIMESource
         this.openStreams = new HashSet<MIMEParsingInputStream>();
     }
 
-    // -------------------------
-    // See doc on MIMESource
-    // -------------------------
+    /**
+     * Return MIME parsing input stream.
+     * @return MIMEParsingInputStream of import stream.
+     * @throws IOException   On problem.
+     */
     public MIMEParsingInputStream getInputStream() throws IOException
     {
         return getInputStream(0);
     }
 
-    // -------------------------
-    // See doc on MIMESource
-    // -------------------------
+    /**
+     * Return MIME parsing input stream at offset.
+     * @param offset long of offset.
+     * @return MIMEParsingInputStream of import stream.
+     * @throws IOException   On problem.
+     */
     public MIMEParsingInputStream getInputStream(long offset) throws IOException
     {
 
@@ -89,9 +97,9 @@ public class FileMIMESource
         return new ReusableMIMEParsingInputStream(ret);
     }
 
-    // -------------------------
-    // See doc on MIMESource
-    // -------------------------
+    /**
+     * Close the input stream.
+     */
     public void close()
     {
         // Bug 779 - Copy contents of open streams before
@@ -117,28 +125,39 @@ public class FileMIMESource
     /**
      * Get the underlying file. Note that this file <b>may be deleted</b> when this source is closed, so if you want the
      * file to exist for longer you should copy the file.
+     * @return Underlying file of File
      */
     public File getFile()
     {
         return file;
     }
 
-    // -------------------------
-    // See doc on MIMESource
-    // -------------------------
+    /**
+     * Get the underlying file. Note that this file <b>may be deleted</b> when this source is closed, so if you want the
+     * @return Underlying file of File
+     * @throws IOException   On problem.
+     */
     public File toFile() throws IOException
     {
         return getFile();
     }
 
-    // -------------------------
-    // See doc on MIMESource
-    // -------------------------
+    /**
+     * Get the underlying file. Note that this file <b>may be deleted</b> when this source is closed, so if you want the
+     * @param name String of file name.  Unused.
+     * @return Underlying file of File
+     * @throws IOException   On problem.
+     */
     public File toFile(String name) throws IOException
     {
         return getFile();
     }
 
+    /**
+     * Create base stream for file.
+     * @return MIMEParsingInputStream
+     * @throws IOException   On problem.
+     */
     private MIMEParsingInputStream createBaseStream() throws IOException
     {
         MIMEParsingInputStream ret = new MIMEParsingInputStream(new BufferedInputStream(new FileInputStream(file)));
@@ -146,6 +165,10 @@ public class FileMIMESource
         return ret;
     }
 
+    /**
+     * Close and remove stream.
+     * @param stream MIMEParsingInputStream to close.
+     */
     private void destroyStream(MIMEParsingInputStream stream)
     {
         if (stream == null) {
@@ -161,6 +184,10 @@ public class FileMIMESource
         }
     }
 
+    /**
+     * Get MIMEParsingInputStream stream.
+     * @param stream MIMEParsingInputStream.
+     */
     private void returnStream(MIMEParsingInputStream stream)
     {
         if (cachedStream != null) {
@@ -183,6 +210,10 @@ public class FileMIMESource
      */
     private class NOOPInputStream extends InputStream
     {
+        /**
+         * Dummy function.
+         * @return Always return integer value of -1.
+         */
         public int read()
         {
             return -1;
@@ -197,11 +228,20 @@ public class FileMIMESource
         private final MIMEParsingInputStream wrap;
         private boolean closed = false;
 
+        /**
+         * Initialize instance of ReusableMIMEParsingInputStream.
+         * @param  wrap MIMEParsingInputStream to process.
+         * @return      Instance of ReusableMIMEParsingInputStream
+         */
         public ReusableMIMEParsingInputStream(MIMEParsingInputStream wrap) {
             super(new NOOPInputStream());
             this.wrap = wrap;
         }
 
+        /**
+         * Return wrap position.
+         * @return long of position.
+         */
         @Override
         public long position()
         {
@@ -209,6 +249,11 @@ public class FileMIMESource
             return wrap.position();
         }
 
+        /**
+         * Unread wrap.
+         * @param  b           Size to unread.
+         * @throws IOException On problem.
+         */
         @Override
         public void unread(int b) throws IOException
         {
@@ -216,6 +261,11 @@ public class FileMIMESource
             wrap.unread(b);
         }
 
+        /**
+         * Unread wrap.
+         * @param  b           Array of bytes to unread.
+         * @throws IOException On problem.
+         */
         @Override
         public void unread(byte[] b) throws IOException
         {
@@ -223,6 +273,13 @@ public class FileMIMESource
             wrap.unread(b);
         }
 
+        /**
+         * Unread wrap.
+         * @param  b           Array of bytes to unread.
+         * @param off          Offset of integer.
+         * @param len          Length of integer.
+         * @throws IOException On problem.
+         */
         @Override
         public void unread(byte[] b, int off, int len) throws IOException
         {
@@ -230,6 +287,11 @@ public class FileMIMESource
             wrap.unread(b, off, len);
         }
 
+        /**
+         * Read from wrap.
+         * @return Length read.
+         * @throws IOException On problem.
+         */
         @Override
         public int read() throws IOException
         {
@@ -237,6 +299,12 @@ public class FileMIMESource
             return wrap.read();
         }
 
+        /**
+         * Read from wrap.
+         * @param b Array of byte to read into.
+         * @return Value from wrap.
+         * @throws IOException On problem.
+         */
         @Override
         public int read(byte[] b) throws IOException
         {
@@ -244,6 +312,14 @@ public class FileMIMESource
             return wrap.read(b);
         }
 
+        /**
+         * Read from wrap.
+         * @param b Array of byte to read into.
+         * @param off Offset of integer to read.
+         * @param len Length of integer to read.
+         * @return Value from wrap.
+         * @throws IOException On problem.
+         */
         @Override
         public int read(byte[] b, int off, int len) throws IOException
         {
@@ -251,6 +327,13 @@ public class FileMIMESource
             return wrap.read(b, off, len);
         }
 
+        /**
+         * Read line of max length.
+         * @param  maxLen               Maximum length of line to read.
+         * @return                      Line read.
+         * @throws IOException          If there is a problem reading.
+         * @throws LineTooLongException If line exceeds maxclen.
+         */
         @Override
         public Line readLine(int maxLen) throws IOException, LineTooLongException
         {
@@ -258,6 +341,12 @@ public class FileMIMESource
             return wrap.readLine(maxLen);
         }
 
+        /**
+         * Read line of max length.
+         * @return                      Line read.
+         * @throws IOException          If there is a problem reading.
+         * @throws LineTooLongException If line exceeds default length.
+         */
         @Override
         public Line readLine() throws IOException, LineTooLongException
         {
@@ -265,6 +354,11 @@ public class FileMIMESource
             return wrap.readLine();
         }
 
+        /**
+         * Unread line.
+         * @param  line        Line to stuff back into wrap.
+         * @throws IOException If there is a prolem unreading.
+         */
         @Override
         public void unreadLine(Line line) throws IOException
         {
@@ -272,6 +366,13 @@ public class FileMIMESource
             wrap.unreadLine(line);
         }
 
+        /**
+         * Move wrap to boundry.
+         * @param  boundaryStr   Bounty to search.
+         * @param  leaveBoundary If true, leave the boundry, false otherwise.
+         * @return               BoundaryResult.
+         * @throws IOException   If unable to skip.
+         */
         @Override
         public BoundaryResult skipToBoundary(String boundaryStr, final boolean leaveBoundary) throws IOException
         {
@@ -279,6 +380,10 @@ public class FileMIMESource
             return wrap.skipToBoundary(boundaryStr, leaveBoundary);
         }
 
+        /**
+         * Move to next line.
+         * @throws IOException If read error.
+         */
         @Override
         public void advanceToNextLine() throws IOException
         {
@@ -286,6 +391,10 @@ public class FileMIMESource
             wrap.advanceToNextLine();
         }
 
+        /**
+         * Move to EOF.
+         * @throws IOException If read error.
+         */
         @Override
         public void advanceToEOF() throws IOException
         {
@@ -293,6 +402,12 @@ public class FileMIMESource
             wrap.advanceToEOF();
         }
 
+        /**
+         * Move from current position to new position.
+         * @param  n           Amount ot move.
+         * @return             Current position.
+         * @throws IOException If unable to skip.
+         */
         @Override
         public long skip(long n) throws IOException
         {
@@ -300,6 +415,11 @@ public class FileMIMESource
             return wrap.skip(n);
         }
 
+        /**
+         * Determine how much is available in wrao.
+         * @return Remmaining length in wrap.
+         * @throws IOException   If unable to check.
+         */
         @Override
         public int available() throws IOException
         {
@@ -307,6 +427,10 @@ public class FileMIMESource
             return wrap.available();
         }
 
+        /**
+         * Close the wrap.
+         * @throws IOException If unable to close.
+         */
         @Override
         public void close() throws IOException
         {
@@ -317,6 +441,10 @@ public class FileMIMESource
             returnStream(wrap);
         }
 
+        /**
+         * Mark at readLimit.
+         * @param readlimit integer value to mark.
+         */
         @Override
         public void mark(int readlimit)
         {
@@ -324,6 +452,10 @@ public class FileMIMESource
             wrap.mark(readlimit);
         }
 
+        /**
+         * Reset stream.
+         * @throws IOException If unable to reset.
+         */
         @Override
         public void reset() throws IOException
         {
@@ -331,6 +463,10 @@ public class FileMIMESource
             wrap.reset();
         }
 
+        /**
+         * Determine if mark is supported.
+         * @return true if mark is supported, false otherwise.
+         */
         @Override
         public boolean markSupported()
         {
@@ -338,6 +474,10 @@ public class FileMIMESource
             return wrap.markSupported();
         }
 
+        /**
+         * Determine if closed.
+         * @throws IOException If already closed.
+         */
         private void checkClosed() throws IOException
         {
             if (closed) {
@@ -345,6 +485,10 @@ public class FileMIMESource
             }
         }
 
+        /**
+         * Determine if closed with a runtime exception.
+         * @throws RuntimeException If already closed.
+         */
         private void checkClosedRE() throws RuntimeException
         {
             if (closed) {

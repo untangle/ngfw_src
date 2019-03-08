@@ -26,11 +26,24 @@ public enum AddressKind
 
     // constructors -----------------------------------------------------------
 
+    /**
+     * Initialize type of address.
+     * 
+     * @param  key  Key of address type
+     * @param  kind Description of address type.
+     * @return      Instance of AddressKind
+     */
     private AddressKind(char key, String kind) {
         this.key = key;
         this.kind = kind;
     }
 
+    /**
+     * Retreive address kind from key.
+     * 
+     * @param  key Address type to lookup.
+     * @return     Matching AddressKind, null if if not found.
+     */
     public static AddressKind getByKey(char key)
     {
         for (AddressKind ak : AddressKind.class.getEnumConstants()) {
@@ -41,6 +54,12 @@ public enum AddressKind
         return null;
     }
 
+    /**
+     * Retrieve address kind from string.
+     * 
+     * @param  kindStr String of address type.
+     * @return     Matching AddressKind, null if if not found.
+     */
     public static AddressKind getByKind(String kindStr)
     {
         for (AddressKind ak : AddressKind.class.getEnumConstants()) {
@@ -51,11 +70,21 @@ public enum AddressKind
         return UNKNOWN;
     }
 
+    /**
+     * For this instance, return the key.
+     * 
+     * @return Char key of kind.
+     */
     public char getKey()
     {
         return key;
     }
 
+    /**
+     * For this instance, return the name.
+     *
+     * @return String of kind.
+     */
     public String getKind()
     {
         return kind;
@@ -63,6 +92,11 @@ public enum AddressKind
 
     // Object kinds -----------------------------------------------------------
 
+    /**
+     * For this instance, return the name.
+     *
+     * @return String of kind.
+     */
     public String toString()
     {
         return kind;
@@ -70,6 +104,11 @@ public enum AddressKind
 
     // Serialization ----------------------------------------------------------
 
+    /**
+     * For this instance, return the key.
+     * 
+     * @return Char key of kind.
+     */
     Object readResolve()
     {
         return getByKey(key);

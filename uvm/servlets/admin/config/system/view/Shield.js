@@ -1,10 +1,9 @@
 Ext.define('Ung.config.system.view.Shield', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.system.shield',
+    alias: 'widget.config-system-shield',
     itemId: 'shield',
-
-
     viewModel: true,
+    scrollable: true,
 
     title: 'Shield'.t(),
 
@@ -28,17 +27,18 @@ Ext.define('Ung.config.system.view.Shield', {
         border: false,
         title: 'Shield Rules'.t(),
 
+        emptyText: 'No Shield Rules defined'.t(),
+
         disabled: true,
         bind: {
             disabled: '{!shieldSettings.shieldEnabled}',
             store: '{shieldRules}'
         },
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'shieldSettings.rules.list',
-        ruleJavaClass: 'com.untangle.app.shield.ShieldRuleCondition',
 
         emptyRow: {
             ruleId: -1,
@@ -52,55 +52,46 @@ Ext.define('Ung.config.system.view.Shield', {
             }
         },
 
-        conditions: [Condition.dstAddr, Condition.dstPort, Condition.dstIntf, Condition.srcAddr, Condition.srcPort, Condition.srcIntf,
-            Condition.protocol([['TCP','TCP'],['UDP','UDP']])
-        ],
-
         columns: [{
             header: 'Rule Id'.t(),
-            width: 70,
+            width: Renderer.idWidth,
             align: 'right',
             resizable: false,
             dataIndex: 'ruleId',
-            renderer: function(value) {
-                return value < 0 ? 'new'.t() : value;
-            }
+            renderer: Renderer.id
         }, {
             xtype: 'checkcolumn',
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth,
         }, {
             header: 'Description'.t(),
-            width: 200,
+            width: Renderer.messageWidth,
             dataIndex: 'description',
-            renderer: function (value) {
-                return value || '<em>no description<em>';
-            }
-        }, {
-            header: 'Conditions'.t(),
-            flex: 1,
-            dataIndex: 'conditions',
-            renderer: 'conditionsRenderer'
-        }, {
+        },
+        Column.conditions,
+        {
             header: 'Action'.t(),
-            width: 150,
+            width: Renderer.messageWidth,
             dataIndex: 'action',
-            renderer: function (value) {
-                var action;
-                switch (value) {
-                case 'SCAN': action = 'Scan'.t(); break;
-                case 'PASS': action = 'Pass'.t(); break;
-                default: action = 'Unknown Action: ' + value;
-                }
-                return action;
-            }
+            renderer: Ung.config.system.MainController.shieldActionRenderer
         }],
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions, {
+            Field.conditions(
+                'com.untangle.app.shield.ShieldRuleCondition', [
+                "DST_ADDR",
+                "DST_PORT",
+                "DST_INTF",
+                "SRC_ADDR",
+                "SRC_PORT",
+                "SRC_INTF",
+                "PROTOCOL",
+                "CLIENT_TAGGED",
+                "SERVER_TAGGED"
+            ]), {
                 xtype: 'combo',
                 fieldLabel: 'Action',
                 allowBlank: false,

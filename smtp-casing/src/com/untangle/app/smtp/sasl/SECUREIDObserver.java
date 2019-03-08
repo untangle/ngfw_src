@@ -18,10 +18,18 @@ class SECUREIDObserver extends ClearObserver
     private String m_id;
     private boolean m_seenInitialClientMessage = false;
 
+    /**
+     * Setup SECUREIDOBserver
+     */
     SECUREIDObserver() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
     }
 
+    /**
+     * Specifies whether exchange using authentication identifier is supported.
+     * 
+     * @return FeatureStatus of UNKNOWN, YES, or NO.
+     */
     @Override
     public FeatureStatus exchangeAuthIDFound()
     {
@@ -29,24 +37,49 @@ class SECUREIDObserver extends ClearObserver
                 : FeatureStatus.UNKNOWN;
     }
 
+    /**
+     * Get the AuthorizationID, if {@link #exchangeAuthIDFound it has been found}. Note that for some mechanisms, this
+     * can never be found. For other mechanisms which separate the Authorization ID from the Authentication ID,
+     * implementations should always choose the AuthorizationID.
+     * 
+     * @return the Authorization ID, or null if not (yet?) found.
+     */
     @Override
     public String getAuthID()
     {
         return m_id;
     }
 
+    /**
+     * Handle initial client data.
+     * 
+     * @param  buf ByteBuffer of the initial client data.
+     * @return     Always false.
+     */
     @Override
     public boolean initialClientData(ByteBuffer buf)
     {
         return clientMessage(buf);
     }
 
+    /**
+     * Handle additional client data.
+     * 
+     * @param  buf ByteBuffer of the additional client data.
+     * @return     Always false.
+     */
     @Override
     public boolean clientData(ByteBuffer buf)
     {
         return clientMessage(buf);
     }
 
+    /**
+     * Handle server data.
+     * 
+     * @param  buf ByteBuffer of server data.
+     * @return     Always false.
+     */
     private boolean clientMessage(ByteBuffer buf)
     {
 

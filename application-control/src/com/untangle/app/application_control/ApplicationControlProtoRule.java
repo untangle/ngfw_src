@@ -8,8 +8,14 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * Class to represent a protocol rule
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
-public class ApplicationControlProtoRule implements JSONString, Serializable
+public class ApplicationControlProtoRule implements Serializable, JSONString
 {
     private int id;
     private String guid;
@@ -39,120 +45,48 @@ public class ApplicationControlProtoRule implements JSONString, Serializable
         this.risk = risk;
     }
 
-    public int getId()
-    {
-        return (id);
-    }
+    // THIS IS FOR ECLIPSE - @formatter:off
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+    public int getId() { return (id); }
+    public void setId(int id) { this.id = id; }
 
-    public String getGuid()
-    {
-        return (guid);
-    }
+    public String getGuid() { return (guid); }
+    public void setGuid(String guid) { this.guid = guid; }
 
-    public void setGuid(String guid)
-    {
-        this.guid = guid;
-    }
+    public boolean getBlock() { return (block); }
+    public void setBlock(boolean block) { this.block = block; }
 
-    public boolean getBlock()
-    {
-        return (block);
-    }
+    public boolean getTarpit() { return (tarpit); }
+    public void setTarpit(boolean tarpit) { this.tarpit = tarpit; }
 
-    public void setBlock(boolean block)
-    {
-        this.block = block;
-    }
+    public boolean getFlag() { return (flag); }
+    public void setFlag(boolean flag) { this.flag = flag; }
 
-    public boolean getTarpit()
-    {
-        return (tarpit);
-    }
+    public String getName() { return (name); }
+    public void setName(String name) { this.name = name; }
 
-    public void setTarpit(boolean tarpit)
-    {
-        this.tarpit = tarpit;
-    }
+    public String getDescription() { return (description); }
+    public void setDescription(String description) { this.description = description; }
 
-    public boolean getFlag()
-    {
-        return (flag);
-    }
+    public String getCategory() { return (category); }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setFlag(boolean flag)
-    {
-        this.flag = flag;
-    }
+    public int getProductivity() { return (productivity); }
+    public void setProductivity(int productivity) { this.productivity = productivity; }
 
-    public String getName()
-    {
-        return (name);
-    }
+    public int getRisk() { return (risk); }
+    public void setRisk(int risk) { this.risk = risk; }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public String getDescription()
-    {
-        return (description);
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
-
-    public String getCategory()
-    {
-        return (category);
-    }
-
-    public void setCategory(String category)
-    {
-        this.category = category;
-    }
-
-    public int getProductivity()
-    {
-        return (productivity);
-    }
-
-    public void setProductivity(int productivity)
-    {
-        this.productivity = productivity;
-    }
-
-    public int getRisk()
-    {
-        return (risk);
-    }
-
-    public void setRisk(int risk)
-    {
-        this.risk = risk;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:on
 
     public boolean isTheSameAs(ApplicationControlProtoRule other)
     {
-        if (this.guid.compareTo(other.guid) != 0)
-            return (false);
-        if (this.name.compareTo(other.name) != 0)
-            return (false);
-        if (this.description.compareTo(other.description) != 0)
-            return (false);
-        if (this.category.compareTo(other.category) != 0)
-            return (false);
-        if (this.productivity != other.productivity)
-            return (false);
-        if (this.risk != other.risk)
-            return (false);
+        if (this.guid.compareTo(other.guid) != 0) return (false);
+        if (this.name.compareTo(other.name) != 0) return (false);
+        if (this.description.compareTo(other.description) != 0) return (false);
+        if (this.category.compareTo(other.category) != 0) return (false);
+        if (this.productivity != other.productivity) return (false);
+        if (this.risk != other.risk) return (false);
         return (true);
     }
 

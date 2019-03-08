@@ -1,20 +1,19 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,16 +25,15 @@ import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.MetricManager;
 import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.logging.InterfaceStatEvent;
-import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.SessionTuple;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.util.Pulse;
 
+/**
+ * Class to check, track, manage, and control system metrics... or something
+ */
 public class MetricManagerImpl implements MetricManager
 {
     private static final Pattern MEMINFO_PATTERN = Pattern.compile("(\\w+):\\s+(\\d+)\\s+kB");
@@ -45,80 +43,110 @@ public class MetricManagerImpl implements MetricManager
     private static final Pattern NET_DEV_PATTERN = Pattern.compile("^\\s*([a-z0-9\\.]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
     private static final Pattern DISK_STATS_PATTERN = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
 
-    private static final Logger logger = Logger.getLogger( MetricManagerImpl.class );
+    private static final Logger logger = Logger.getLogger(MetricManagerImpl.class);
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
-    private static final long FREQUENCY = 10*1000; /* 10 seconds */
-    
+    private static final long FREQUENCY = (long) 10 * 1000; /* 10 seconds */
+
     private final Pulse updatePulse = new Pulse("system-stat-collector", new SystemStatCollector(), FREQUENCY);
 
-    private final Map<String,Long> rxtxBytesStore = new HashMap<String,Long>();
+    private final Map<String, Long> rxtxBytesStore = new HashMap<String, Long>();
 
     private long lastNetDevUpdate = 0;
 
-    private final Map<String,Long> diskRW0 = new HashMap<String,Long>();
+    private final Map<String, Long> diskRW0 = new HashMap<String, Long>();
 
     private long lastDiskUpdate = 0;
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
 
+    /**
+     * Constructor
+     */
     public MetricManagerImpl()
     {
     }
 
+    /**
+     * Start
+     */
     protected void start()
     {
         updatePulse.start();
     }
 
+    /**
+     * Stop
+     */
     protected void stop()
     {
         updatePulse.stop();
     }
 
+    /**
+     * Get metrics and stats
+     * 
+     * @return Metrics and stats
+     */
     public org.json.JSONObject getMetricsAndStats()
     {
         List<Long> appIds = new LinkedList<Long>();
 
-        for ( App app : UvmContextImpl.getInstance().appManager().appInstances() ) {
-            appIds.add( app.getAppSettings().getId() );
+        for (App app : UvmContextImpl.getInstance().appManager().appInstances()) {
+            appIds.add(app.getAppSettings().getId());
         }
 
         org.json.JSONObject json = new org.json.JSONObject();
         try {
-            json.put("metrics", getMetrics( appIds ));
+            json.put("metrics", getMetrics(appIds));
             json.put("systemStats", this.systemStats);
         } catch (Exception e) {
-            logger.error( "Error generating metrics object", e );
+            logger.error("Error generating metrics object", e);
         }
-            
+
         return json;
     }
 
+    /**
+     * Get stats
+     * 
+     * @return Stats
+     */
     public org.json.JSONObject getStats()
     {
         org.json.JSONObject json = new org.json.JSONObject();
         try {
             json.put("systemStats", this.systemStats);
         } catch (Exception e) {
-            logger.error( "Error generating metrics object", e );
+            logger.error("Error generating metrics object", e);
         }
 
         return json;
     }
 
-    public List<AppMetric> getMetrics( Long appId )
+    /**
+     * Get metrics for an app
+     * 
+     * @param appId
+     *        The app ID
+     * @return The metrics
+     */
+    public List<AppMetric> getMetrics(Long appId)
     {
-        App app = UvmContextFactory.context().appManager().app( appId );
-        if (app != null)
-            return app.getMetrics();
+        App app = UvmContextFactory.context().appManager().app(appId);
+        if (app != null) return app.getMetrics();
         else {
             logger.warn("App not found: " + appId, new Exception());
             return null;
         }
     }
 
+    /**
+     * Get total memory
+     * 
+     * @return Total memory
+     */
     public Long getMemTotal()
     {
         Map<String, Object> m = new HashMap<String, Object>();
@@ -127,51 +155,86 @@ public class MetricManagerImpl implements MetricManager
             readMeminfo(m);
             return Long.parseLong(m.get("MemTotal").toString());
         } catch (Exception e) {
-            logger.warn("Failed to get MemTotal",e);
+            logger.warn("Failed to get MemTotal", e);
             return null;
         }
     }
 
-    // private methods --------------------------------------------------------
+    /**
+     * Get metrics for a list of app ID's
+     * 
+     * @param appIds
+     *        The list of app ID's
+     * @return The metrics
+     */
 
-    private Map<String, List<AppMetric>> getMetrics( List<Long> appIds )
+    private Map<String, List<AppMetric>> getMetrics(List<Long> appIds)
     {
         Map<String, List<AppMetric>> stats = new HashMap<String, List<AppMetric>>(appIds.size());
 
         for (Long appId : appIds) {
-            stats.put( Long.toString(appId), getMetrics( appId ) );
+            stats.put(Long.toString(appId), getMetrics(appId));
         }
 
         return stats;
     }
 
+    /**
+     * Read memory information
+     * 
+     * @param m
+     *        Map
+     * @throws IOException
+     */
     private void readMeminfo(Map<String, Object> m) throws IOException
     {
         readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m, 1024);
 
-        Long memFree = (Long)m.get("MemFree");
+        Long memFree = (Long) m.get("MemFree");
         if (null == memFree) {
             memFree = 0L;
         }
 
-        Long i = (Long)m.get("Cached");
-        if ( i != null ) {
+        Long i = (Long) m.get("Cached");
+        if (i != null) {
             memFree += i;
         }
 
-        i = (Long)m.get("Buffers");
-        if ( i != null ) {
+        i = (Long) m.get("Buffers");
+        if (i != null) {
             memFree += i;
         }
 
         m.put("MemFree", memFree);
     }
 
+    /**
+     * Read VM stat
+     * 
+     * @param m
+     *        Map
+     * @throws IOException
+     */
     private void readVmstat(Map<String, Object> m) throws IOException
     {
         readProcFile("/proc/vmstat", VMSTAT_PATTERN, VMSTAT_KEEPERS, m, 1);
     }
 
+    /**
+     * Reads data from a file in /proc
+     * 
+     * @param filename
+     *        The filename
+     * @param p
+     *        The pattern
+     * @param keepers
+     *        The keepers
+     * @param m
+     *        The map
+     * @param multiple
+     *        Mutiple
+     * @throws IOException
+     */
     private void readProcFile(String filename, Pattern p, Set<String> keepers, Map<String, Object> m, int multiple) throws IOException
     {
         BufferedReader br = null;
@@ -198,6 +261,13 @@ public class MetricManagerImpl implements MetricManager
         }
     }
 
+    /**
+     * Read CPU info
+     * 
+     * @param m
+     *        Map
+     * @throws IOException
+     */
     private void readCpuinfo(Map<String, Object> m) throws IOException
     {
         String cpuModel = null;
@@ -222,6 +292,12 @@ public class MetricManagerImpl implements MetricManager
                         } catch (NumberFormatException exn) {
                             logger.warn("could not parse cpu speed: " + v);
                         }
+                    } else if (n.equals("CPU part")) {
+			if ("0xd03".equals(matcher.group(2))) {
+                            cpuModel = "ARM Cortex A53";
+                        } else if ("0xd08".equals(matcher.group(2))) {
+                            cpuModel = "ARM Graviton";
+                        }
                     }
                 }
             }
@@ -236,11 +312,25 @@ public class MetricManagerImpl implements MetricManager
         m.put("numCpus", numCpus);
     }
 
+    /**
+     * Read architecture information
+     * 
+     * @param m
+     *        Map
+     * @throws IOException
+     */
     private void readArchinfo(Map<String, Object> m) throws IOException
     {
         m.put("architecture", System.getProperty("os.arch", "unknown"));
     }
 
+    /**
+     * Read up time
+     * 
+     * @param m
+     *        Map
+     * @throws IOException
+     */
     private void readUptime(Map<String, Object> m) throws IOException
     {
         BufferedReader br = null;
@@ -263,6 +353,13 @@ public class MetricManagerImpl implements MetricManager
         }
     }
 
+    /**
+     * Read the load average
+     * 
+     * @param m
+     *        Map
+     * @throws IOException
+     */
     private void readLoadAverage(Map<String, Object> m) throws IOException
     {
         BufferedReader br = null;
@@ -288,6 +385,12 @@ public class MetricManagerImpl implements MetricManager
         }
     }
 
+    /**
+     * Get the number of processors
+     * 
+     * @param m
+     *        Map
+     */
     private void getNumProcs(Map<String, Object> m)
     {
         int numProcs = 0;
@@ -296,15 +399,24 @@ public class MetricManagerImpl implements MetricManager
         if (dir.isDirectory()) {
             for (File f : dir.listFiles()) {
                 try {
-                    Integer.parseInt(f.getName());
-                    numProcs++;
-                } catch (NumberFormatException exn) { }
+                    if (Integer.parseInt(f.getName()) > -1) {
+                        numProcs++;
+                    }
+                } catch (NumberFormatException exn) {
+                }
             }
         }
 
         m.put("numProcs", numProcs);
     }
 
+    /**
+     * Get the network device usage
+     * 
+     * @param m
+     *        Map
+     * @throws IOException
+     */
     private synchronized void getNetDevUsage(Map<String, Object> m) throws IOException
     {
         long totalRxBytesOldValue = 0, totalRxBytesNewValue = 0;
@@ -314,12 +426,12 @@ public class MetricManagerImpl implements MetricManager
 
         NetcapManager nm = UvmContextImpl.getInstance().netcapManager();
 
-        m.put( "uvmSessions", nm.getSessionCount() );
-        m.put( "uvmTCPSessions", nm.getSessionCount(SessionTuple.PROTO_TCP) );
-        m.put( "uvmUDPSessions", nm.getSessionCount(SessionTuple.PROTO_UDP) );
-        m.put( "activeHosts", UvmContextFactory.context().hostTable().getCurrentActiveSize() );
-        m.put( "maxActiveHosts", UvmContextFactory.context().hostTable().getMaxActiveSize() );
-        m.put( "knownDevices", UvmContextFactory.context().deviceTable().size() );
+        m.put("uvmSessions", nm.getSessionCount());
+        m.put("uvmTCPSessions", nm.getSessionCount(SessionTuple.PROTO_TCP));
+        m.put("uvmUDPSessions", nm.getSessionCount(SessionTuple.PROTO_UDP));
+        m.put("activeHosts", UvmContextFactory.context().hostTable().getCurrentActiveSize());
+        m.put("maxActiveHosts", UvmContextFactory.context().hostTable().getMaxActiveSize());
+        m.put("knownDevices", UvmContextFactory.context().deviceTable().size());
 
         long currentTime = System.currentTimeMillis();
 
@@ -333,28 +445,27 @@ public class MetricManagerImpl implements MetricManager
                 if (matcher.find()) {
                     String iface = matcher.group(1);
 
-                    InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( iface );
+                    InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev(iface);
                     // Restrict to only the WAN interfaces (bug 5616)
-                    if ( intfSettings == null )
-                        continue;
+                    if (intfSettings == null) continue;
                     int intfId = intfSettings.getInterfaceId();
 
                     // get stored previous values or initialize them to 0
-                    Long rxBytesOld = rxtxBytesStore.get("rx"+intfId);
+                    Long rxBytesOld = rxtxBytesStore.get("rx" + intfId);
                     if (rxBytesOld == null) rxBytesOld = 0L;
-                    Long txBytesOld = rxtxBytesStore.get("tx"+intfId);
+                    Long txBytesOld = rxtxBytesStore.get("tx" + intfId);
                     if (txBytesOld == null) txBytesOld = 0L;
 
                     try {
                         // parse new incoming values w/64-bit correction for 32-bit rollover
                         long rxBytesNew = Long.parseLong(matcher.group(2));
                         long txBytesNew = Long.parseLong(matcher.group(3));
-                        if ( rxBytesNew < rxBytesOld ) {
+                        if (rxBytesNew < rxBytesOld) {
                             // either an overflow has happened or the interfaces have been reset
                             // unfortunately we can't tell which
                             rxBytesOld = 0L;
                         }
-                        if ( txBytesNew < txBytesOld ) {
+                        if (txBytesNew < txBytesOld) {
                             // either an overflow has happened or the interfaces have been reset
                             // unfortunately we can't tell which
                             txBytesOld = 0L;
@@ -363,22 +474,13 @@ public class MetricManagerImpl implements MetricManager
                         // accumulate old values
                         totalRxBytesOldValue += rxBytesOld;
                         totalTxBytesOldValue += txBytesOld;
-                        if (intfSettings.getIsWan()) {
-                            wansRxBytesOldValue += rxBytesOld;
-                            wansTxBytesOldValue += txBytesOld;
-                        }
 
                         // accumulate new values
                         totalRxBytesNewValue += rxBytesNew;
-                        totalTxBytesNewValue += txBytesNew;
-                        if (intfSettings.getIsWan()) {
-                            wansRxBytesNewValue += rxBytesNew;
-                            wansTxBytesNewValue += txBytesNew;
-                        }
 
                         // update stored old values
-                        rxtxBytesStore.put("rx"+intfId, rxBytesNew);
-                        rxtxBytesStore.put("tx"+intfId, txBytesNew);
+                        rxtxBytesStore.put("rx" + intfId, rxBytesNew);
+                        rxtxBytesStore.put("tx" + intfId, txBytesNew);
 
                         // store the new values
                         String key = "interface_" + intfSettings.getInterfaceId() + "_";
@@ -386,10 +488,12 @@ public class MetricManagerImpl implements MetricManager
                         if (Math.abs(dt) < 5.0e-5) {
                             m.put(key + "rxBps", 0.0);
                             m.put(key + "txBps", 0.0);
+                            m.put(key + "rxBytes", 0);
+                            m.put(key + "txBytes", 0);
                         } else {
-                            double rd = (( rxBytesNew - rxBytesOld ) / dt );
-                            double td = (( txBytesNew - txBytesOld ) / dt );
-                            if ( rd > 100000000 ) {
+                            double rd = ((rxBytesNew - rxBytesOld) / dt);
+                            double td = ((txBytesNew - txBytesOld) / dt);
+                            if (rd > 100000000) {
                                 logger.warn("Suspicious rxBytes value: " + rd);
                                 logger.warn("New bytes          value: " + rxBytesNew);
                                 logger.warn("Old bytes          value: " + rxBytesOld);
@@ -398,6 +502,8 @@ public class MetricManagerImpl implements MetricManager
                             }
                             m.put(key + "rxBps", rd);
                             m.put(key + "txBps", td);
+                            m.put(key + "rxBytes", rxBytesNew - rxBytesOld);
+                            m.put(key + "txBytes", txBytesNew - txBytesOld);
                         }
                     } catch (NumberFormatException exn) {
                         logger.warn("could not add interface info for: " + iface, exn);
@@ -410,24 +516,16 @@ public class MetricManagerImpl implements MetricManager
             }
         }
 
-        double dt = (currentTime - lastNetDevUpdate) / 1000.0;
-        if (Math.abs(dt) < 5.0e-5) {
-            m.put("interface_wans_rxBps", 0.0);
-            m.put("interface_wans_txBps", 0.0);
-        } else {
-            m.put("interface_wans_rxBps", (wansRxBytesNewValue - wansRxBytesOldValue) / dt);
-            m.put("interface_wans_txBps", (wansTxBytesNewValue - wansTxBytesOldValue) / dt);
-        }
-        if (Math.abs(dt) < 5.0e-5) {
-            m.put("interface_total_rxBps", 0.0);
-            m.put("interface_total_txBps", 0.0);
-        } else {
-            m.put("interface_total_rxBps", (totalRxBytesNewValue - totalRxBytesOldValue) / dt);
-            m.put("interface_total_txBps", (totalTxBytesNewValue - totalTxBytesOldValue) / dt);
-        }
         lastNetDevUpdate = currentTime;
     }
 
+    /**
+     * Get the disk usage
+     * 
+     * @param m
+     *        Map
+     * @throws IOException
+     */
     private synchronized void getDiskUsage(Map<String, Object> m) throws IOException
     {
         File root = new File("/");
@@ -446,9 +544,9 @@ public class MetricManagerImpl implements MetricManager
             for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
                 Matcher matcher = DISK_STATS_PATTERN.matcher(l);
                 if (matcher.find()) {
-                    Long diskreads0 = diskRW0.get("dr"+i);
+                    Long diskreads0 = diskRW0.get("dr" + i);
                     if (diskreads0 == null) diskreads0 = 0L;
-                    Long diskwrites0 = diskRW0.get("dw"+i);
+                    Long diskwrites0 = diskRW0.get("dw" + i);
                     if (diskwrites0 == null) diskwrites0 = 0L;
 
                     try {
@@ -462,8 +560,8 @@ public class MetricManagerImpl implements MetricManager
                         diskReads1 += diskreads1;
                         diskWrites1 += diskwrites1;
                         // update stored previous values w/new 64 corrected values
-                        diskRW0.put("dr"+i, diskreads1);
-                        diskRW0.put("dw"+i, diskwrites1);
+                        diskRW0.put("dr" + i, diskreads1);
+                        diskRW0.put("dw" + i, diskwrites1);
                     } catch (NumberFormatException exn) {
                         logger.warn("could not get disk data", exn);
                     }
@@ -490,14 +588,22 @@ public class MetricManagerImpl implements MetricManager
     }
 
     /**
-     * This takes the previous number and the current number
-     * If the current number is less than the previous number, then we can assume it has wrapped
-     * This function ORs the higher bit values with the new value so we dont lose the high value bit value
+     * This takes the previous number and the current number If the current
+     * number is less than the previous number, then we can assume it has
+     * wrapped This function ORs the higher bit values with the new value so we
+     * dont lose the high value bit value
+     * 
+     * @param previousCount
+     *        The previous count
+     * @param kernelCount
+     *        The kernel count
+     * @return The new count
      */
     private long incrementCount(long previousCount, long kernelCount)
     {
-        /* If the kernel is counting in 64-bits, just return the
-         * kernel count */
+        /*
+         * If the kernel is counting in 64-bits, just return the kernel count
+         */
         if (kernelCount >= (1L << 32)) return kernelCount;
 
         long previousKernelCount = previousCount & 0xFFFFFFFFL;
@@ -506,11 +612,12 @@ public class MetricManagerImpl implements MetricManager
         return ((previousCount & 0x7FFFFFFF00000000L) + kernelCount);
     }
 
-    // private classes --------------------------------------------------------
-
+    /**
+     * Class for collecting system stats
+     */
     private class SystemStatCollector implements Runnable
     {
-        private int  SYSTEM_STAT_LOG_DELAY = 55; // setting this to 55 means we'll log one every ~60 seconds
+        private int SYSTEM_STAT_LOG_DELAY = 55; // setting this to 55 means we'll log one every ~60 seconds
         private long ONE_BILLION = 1000000000l;
         private long lastLogTimeStamp = 0;
 
@@ -519,6 +626,9 @@ public class MetricManagerImpl implements MetricManager
         private long system0 = 0;
         private long idle0 = 0;
 
+        /**
+         * Thread run function
+         */
         public void run()
         {
             Map<String, Object> m = new HashMap<String, Object>();
@@ -536,7 +646,7 @@ public class MetricManagerImpl implements MetricManager
                 getDiskUsage(m);
 
                 long time = System.nanoTime();
-                if ((time - lastLogTimeStamp)/ONE_BILLION >= SYSTEM_STAT_LOG_DELAY) {
+                if ((time - lastLogTimeStamp) / ONE_BILLION >= SYSTEM_STAT_LOG_DELAY) {
                     SystemStatEvent sse = new SystemStatEvent();
                     sse.setMemTotal(Long.parseLong(m.get("MemTotal").toString()));
                     sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
@@ -557,31 +667,42 @@ public class MetricManagerImpl implements MetricManager
 
                     lastLogTimeStamp = time;
                 }
-                
-                for( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
+
+                for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
                     // do not log stats for disabled interfaces
-                    if ( intfSettings.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
-                        continue;
+                    if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.DISABLED) continue;
                     String key = "interface_" + intfSettings.getInterfaceId() + "_";
                     Object rxBps_o = m.get(key + "rxBps");
                     Object txBps_o = m.get(key + "txBps");
-                    if ( rxBps_o == null || txBps_o == null )
-                        continue;
-                    double rxBps = Double.parseDouble( rxBps_o.toString() );
-                    double txBps = Double.parseDouble( txBps_o.toString() );
+                    Object rxBytes_o = m.get(key + "rxBytes");
+                    Object txBytes_o = m.get(key + "txBytes");
+                    if (rxBps_o == null || txBps_o == null || rxBytes_o == null || txBytes_o == null) continue;
+                    double rxBps = Double.parseDouble(rxBps_o.toString());
+                    double txBps = Double.parseDouble(txBps_o.toString());
+                    long rxBytes = Long.parseLong(rxBytes_o.toString());
+                    long txBytes = Long.parseLong(txBytes_o.toString());
                     InterfaceStatEvent event = new InterfaceStatEvent();
-                    event.setInterfaceId( intfSettings.getInterfaceId() );
-                    event.setRxRate( rxBps );
-                    event.setTxRate( txBps );
+                    event.setInterfaceId(intfSettings.getInterfaceId());
+                    event.setRxRate(rxBps);
+                    event.setTxRate(txBps);
+                    event.setRxBytes(rxBytes);
+                    event.setTxBytes(txBytes);
                     UvmContextFactory.context().logEvent(event);
                 }
             } catch (Exception e) {
-                logger.warn("Exception:",e);
+                logger.warn("Exception:", e);
             }
 
             systemStats = Collections.unmodifiableMap(m);
         }
 
+        /**
+         * Get the CPU usage
+         * 
+         * @param m
+         *        Map
+         * @throws IOException
+         */
         private void getCpuUsage(Map<String, Object> m) throws IOException
         {
             BufferedReader br = null;
@@ -603,11 +724,11 @@ public class MetricManagerImpl implements MetricManager
                             long totalTime = (user1 - user0) + (nice1 - nice0) + (system1 - system0) + (idle1 - idle0);
 
                             if (0 == totalTime) {
-                                m.put("userCpuUtilization", (double)0);
-                                m.put("systemCpuUtilization", (double)0);
+                                m.put("userCpuUtilization", (double) 0);
+                                m.put("systemCpuUtilization", (double) 0);
                             } else {
-                                m.put("userCpuUtilization", ((user1 - user0) + (nice1 - nice0)) / (double)totalTime);
-                                m.put("systemCpuUtilization", (system1 - system0) / (double)totalTime);
+                                m.put("userCpuUtilization", ((user1 - user0) + (nice1 - nice0)) / (double) totalTime);
+                                m.put("systemCpuUtilization", (system1 - system0) / (double) totalTime);
                             }
 
                             user0 = user1;

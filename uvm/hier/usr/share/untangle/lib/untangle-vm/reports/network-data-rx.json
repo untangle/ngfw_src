@@ -1,0 +1,19 @@
+{
+    "uniqueId": "network-oyzBpGMc",
+    "category": "Network",
+    "description": "The total received data usage by interface.",
+    "displayOrder": 12,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "bytes",
+    "pieGroupColumn": "interface_id",
+    "pieSumColumn": "coalesce(sum(rx_bytes),0)",
+    "readOnly": true,
+    "table": "interface_stat_events",
+    "seriesRenderer": "interface",
+    "title": "Data Rx-Usage (by interface)",
+    "pieStyle": "COLUMN",
+    "type": "PIE_GRAPH"
+}

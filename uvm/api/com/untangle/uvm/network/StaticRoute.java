@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm.network;
 
-import java.util.List;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.regex.Pattern;

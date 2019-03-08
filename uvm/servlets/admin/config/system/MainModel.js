@@ -1,11 +1,11 @@
 Ext.define('Ung.config.system.MainModel', {
     extend: 'Ext.app.ViewModel',
 
-    alias: 'viewmodel.config.system',
+    alias: 'viewmodel.config-system',
 
     data: {
         title: 'System'.t(),
-        iconName: 'icon_config_system',
+        iconName: 'system',
 
         time: null,
         languageSettings: null,
@@ -69,12 +69,11 @@ Ext.define('Ung.config.system.MainModel', {
             data: '{timeZonesList}'
         },
         languages: {
-            fields: ['code', 'name', 'statistics', {
-                name: 'cc',
-                calculate: function (r) {
-                    return r.code ? r.code.split('-')[1] : r.code;
-                }
-            }],
+            fields: [
+            'code',
+            'name',
+            'statistics'
+            ],
             data: '{languagesList.list}'
         },
         shieldRules: {

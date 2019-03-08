@@ -4,14 +4,17 @@
 package com.untangle.app.smtp.safelist;
 
 import java.io.Serializable;
-import com.untangle.app.smtp.SmtpMessageEvent;
+
+import org.json.JSONObject;
+import org.json.JSONString;
+
 
 /**
  * Setting for safelist (recipient and sender pair).
  * 
  */
 @SuppressWarnings("serial")
-public class SafelistSettings implements Serializable
+public class SafelistSettings implements Serializable, JSONString
 {
     private String recipient;
     private String sender;
@@ -45,6 +48,18 @@ public class SafelistSettings implements Serializable
             return recipient.hashCode();
         else
             return 0;
+    }
+    
+    /**
+     * Convert settings to JSON string.
+     *
+     * @return
+     *      JSON string.
+     */
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 
 }

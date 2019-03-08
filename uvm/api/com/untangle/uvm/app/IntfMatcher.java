@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.app;
 
 import java.util.LinkedList;
@@ -7,8 +9,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmContext;
 
+// THIS IS FOR ECLIPSE - @formatter:off
 
 /**
  * An matcher for interfaces
@@ -20,6 +22,9 @@ import com.untangle.uvm.UvmContext;
  * "1,2"
  *
  */
+
+//THIS IS FOR ECLIPSE - @formatter:on
+
 public class IntfMatcher
 {
     private static final String MARKER_ANY = "any";
@@ -34,19 +39,23 @@ public class IntfMatcher
     private static final IntfMatcher WAN_MATCHER = new IntfMatcher(MARKER_WAN);
     private static final IntfMatcher NONWAN_MATCHER = new IntfMatcher(MARKER_NON_WAN);
 
-    public enum IntfMatcherType { ANY, NONE, ANY_WAN, ANY_NON_WAN, SINGLE, LIST };
+    public enum IntfMatcherType
+    {
+        ANY, NONE, ANY_WAN, ANY_NON_WAN, SINGLE, LIST
+    };
 
     private final Logger logger = Logger.getLogger(getClass());
-    
+
     private String matcher;
-    
+
     /**
      * The type of this matcher
      */
     private IntfMatcherType type = IntfMatcherType.NONE;
 
     /**
-     * if this intf matcher is a list of intf matchers, this list stores the children
+     * if this intf matcher is a list of intf matchers, this list stores the
+     * children
      */
     private LinkedList<IntfMatcher> children = null;
 
@@ -54,14 +63,22 @@ public class IntfMatcher
      * If this intf matcher is a single this store the single interface ID
      */
     private int singleInt = -1;
-        
-    public IntfMatcher( String matcher )
+
+    /**
+     * Constructor
+     * 
+     * @param matcher
+     *        The init value
+     */
+    public IntfMatcher(String matcher)
     {
         initialize(matcher);
     }
 
     /**
-     * return the type of matcher
+     * Return the type of matcher
+     * 
+     * @return The type
      */
     public IntfMatcherType getType()
     {
@@ -70,55 +87,14 @@ public class IntfMatcher
 
     /**
      * Return true if <param>interfaceId</param> matches this matcher.
-     *
-     * @param intf The interface to test
+     * 
+     * @param interfaceId
+     *        The interface to test
      * @return True if the <param>interfaceId</param> matches.
      */
-    public boolean isMatch( int interfaceId )
+    public boolean isMatch(int interfaceId)
     {
         InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId(interfaceId);
-
-        /**
-         * OpenVPN (250) interface special handling
-         * Create a fake "interface settings" object
-         * because OpenVPN interface doesnt have settings
-         */
-        if ( interfaceId == 0xfa ) {
-            intfSettings = new InterfaceSettings();
-            intfSettings.setInterfaceId( 250 );
-            intfSettings.setIsWan( false );
-        }
-
-        /**
-         * L2TP (251) interface special handling
-         * Create a fake "interface settings" object
-         * because L2TP interface doesnt have settings
-         */
-        if ( interfaceId == 0xfb ) {
-            intfSettings = new InterfaceSettings();
-            intfSettings.setInterfaceId( 251 );
-            intfSettings.setIsWan( false );
-        }
-        /**
-         * Xauth (252) interface special handling
-         * Create a fake "interface settings" object
-         * because Xauth interface doesnt have settings
-         */
-        if ( interfaceId == 0xfc ) {
-            intfSettings = new InterfaceSettings();
-            intfSettings.setInterfaceId( 252 );
-            intfSettings.setIsWan( false );
-        }
-        /**
-         * GRE (253) interface special handling
-         * Create a fake "interface settings" object
-         * because GRE interface doesnt have settings
-         */
-        if ( interfaceId == 0xfd ) {
-            intfSettings = new InterfaceSettings();
-            intfSettings.setInterfaceId( 253 );
-            intfSettings.setIsWan( false );
-        }
 
         if (intfSettings == null) {
             logger.warn("Failed to match interface: Cant find interface " + interfaceId);
@@ -130,13 +106,15 @@ public class IntfMatcher
 
     /**
      * Return true if <param>interfaceId</param> matches this matcher.
-     *
-     * @param intf The interface to test
+     * 
+     * @param intfSettings
+     *        The interface to test
      * @return True if the <param>intf</param> matches.
      */
-    public boolean isMatch( InterfaceSettings intfSettings )
+    public boolean isMatch(InterfaceSettings intfSettings)
     {
-        switch (this.type) {
+        switch (this.type)
+        {
 
         case ANY:
             return true;
@@ -145,20 +123,18 @@ public class IntfMatcher
             return false;
 
         case ANY_WAN:
-            return intfSettings.getIsWan();
+            return (intfSettings.getIsWan());
 
         case ANY_NON_WAN:
-            return !intfSettings.getIsWan();
-            
+            return (!intfSettings.getIsWan());
+
         case SINGLE:
-            if (singleInt == intfSettings.getInterfaceId())
-                return true;
+            if (singleInt == intfSettings.getInterfaceId()) return true;
             return false;
 
         case LIST:
             for (IntfMatcher child : this.children) {
-                if (child.isMatch(intfSettings))
-                    return true;
+                if (child.isMatch(intfSettings)) return true;
             }
             return false;
 
@@ -167,38 +143,66 @@ public class IntfMatcher
             return false;
         }
     }
-    
+
     /**
-     * return string representation
+     * Return string representation
+     * 
+     * @return The string
      */
     public String toString()
     {
         return matcher;
     }
 
+    /**
+     * Get the any matcher
+     * 
+     * @return The any matcher
+     */
     public static IntfMatcher getAnyMatcher()
     {
         return ANY_MATCHER;
     }
-    
+
+    /**
+     * Get the nil matcher
+     * 
+     * @return The nil matcher
+     */
     public static IntfMatcher getNilMatcher()
     {
         return NONE_MATCHER;
     }
 
+    /**
+     * Get the WAN matcher
+     * 
+     * @return The WAN matcher
+     */
     public static IntfMatcher getWanMatcher()
     {
         return WAN_MATCHER;
     }
 
+    /**
+     * Get the non-WAN matcher
+     * 
+     * @return The non-WAN matcher
+     */
     public static IntfMatcher getNonWanMatcher()
     {
         return NONWAN_MATCHER;
     }
 
-    private void initialize( String matcher )
+    /**
+     * Initialize
+     * 
+     * @param matcher
+     *        The init string
+     */
+    private void initialize(String matcher)
     {
-        matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
+        matcher = matcher.toLowerCase().trim().replaceAll("\\s", "");
         this.matcher = matcher;
 
         /**
@@ -210,7 +214,7 @@ public class IntfMatcher
             this.children = new LinkedList<IntfMatcher>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
-            
+
             /* check each one */
             for (String childString : results) {
                 IntfMatcher child = new IntfMatcher(childString);
@@ -253,9 +257,8 @@ public class IntfMatcher
         } catch (NumberFormatException e) {
             logger.warn("Unknown IntfMatcher format: \"" + matcher + "\"", e);
             throw new java.lang.IllegalArgumentException("Unknown IntfMatcher format: \"" + matcher + "\"", e);
-
         }
 
         return;
-    }        
+    }
 }

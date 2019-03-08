@@ -64,6 +64,7 @@ human_names = {
 'elapsed_time': 'Elapsed Time',
 'end_time': 'End Time',
 'entitled': 'Entitled',
+'entity': 'Entity',
 'event_id': 'Event ID',
 'event_info': 'Event Type',
 'filter_prefix': 'Filter Block',
@@ -102,6 +103,7 @@ human_names = {
 'name': 'Interface Name',
 'net_interface': 'Net Interface',
 'net_process': 'Net Process',
+'old_value': 'Old Value',
 'os_name': 'Interface O/S Name',
 'out_bytes': 'Out Bytes',
 'p2c_bytes': 'To-Client Bytes',
@@ -126,6 +128,7 @@ human_names = {
 's2c_bytes': 'From-Server Bytes',
 's2c_content_length': 'Server-to-client Content Length',
 's2c_content_type': 'Server-to-client Content Type',
+'s2c_content_filename': 'Server-to-client Content Disposition Filename',
 's2p_bytes': 'From-Server Bytes',
 's_client_addr': 'Server-side Client Address',
 's_client_port': 'Server-side Client Port',
@@ -161,6 +164,7 @@ human_names = {
 'swap_free': 'Swap Free',
 'swap_total': 'Swap Size',
 'systems': 'System bypasses',
+'tags': 'Tags',
 'term': 'Search Term',
 'time_stamp': 'Timestamp',
 'tunnel_name': 'Tunnel Name',
@@ -210,6 +214,7 @@ generic = {
     'c2s_content_length' : 'The client-to-server content length',
     's2c_content_length' : 'The server-to-client content length',
     's2c_content_type' : 'The server-to-client content type',
+    's2c_content_filename' : 'The server-to-client content disposition filename',
     'rx_bytes' : 'The number of bytes received from the client in this connection',
     'tx_bytes' : 'The number of bytes sent to the client in this connection',
     'virus_blocker_lite_clean' : 'The cleanliness of the file according to Virus Blocker Lite',
@@ -259,6 +264,32 @@ dict['ipsec_tunnel_stats'].update({
     'tunnel_name' : 'The name of the IPsec tunnel',
     'in_bytes' : 'The number of bytes received during this time frame',
     'out_bytes' : 'The number of bytes transmitted during this time frame',
+})
+
+dict['ipsec_vpn_events'] = copy.deepcopy(generic)
+dict['ipsec_vpn_events'].update({
+    'table_description' : 'This table stores IPsec tunnel connection events.',
+    'local_address' : 'The local address of the tunnel',
+    'remote_address' : 'The remote address of the tunnel',
+    'tunnel_description' : 'The description of the tunnel',
+    'type': 'The type of the event (CONNECT,DISCONNECT)',
+})
+
+dict['tunnel_vpn_stats'] = copy.deepcopy(generic)
+dict['tunnel_vpn_stats'].update({
+    'table_description' : 'This table stores Tunnel VPN tunnel statistics.',
+    'tunnel_name' : 'The name of the Tunnel VPN tunnel',
+    'in_bytes' : 'The number of bytes received during this time frame',
+    'out_bytes' : 'The number of bytes transmitted during this time frame',
+})
+
+dict['tunnel_vpn_events'] = copy.deepcopy(generic)
+dict['tunnel_vpn_events'].update({
+    'table_description' : 'This table stores Tunnel VPN connection events.',
+    'server_address' : 'The address of the remote server',
+    'local_address' : 'The local address assigned the client',
+    'tunnel_name' : 'The name the tunnel',
+    'type': 'The type of the event (CONNECT,DISCONNECT)',
 })
 
 dict['smtp_tarpit_events'] = copy.deepcopy(generic)
@@ -442,7 +473,15 @@ dict['intrusion_prevention_events'].update({
 
 dict['alerts'] = copy.deepcopy(generic)
 dict['alerts'].update({
-    'table_description' : 'This table stores Reports Alert events.',
+    'table_description' : 'This table stores Alert events.',
+    'description' : 'The description from the alert rule.',
+    'summary_text' : 'The summary text of the alert',
+    'json' : 'The summary JSON representation of the event causing the alert',
+})
+
+dict['syslog'] = copy.deepcopy(generic)
+dict['syslog'].update({
+    'table_description' : 'This table stores Syslog events.',
     'description' : 'The description from the alert rule.',
     'summary_text' : 'The summary text of the alert',
     'json' : 'The summary JSON representation of the event causing the alert',
@@ -453,6 +492,7 @@ dict['host_table_updates'].update({
     'table_description' : 'This table stores Host Table metadata updates',
     'address' : 'The IP address of the host',
     'key' : 'The key being updated',
+    'old_value' : 'The old value for the key',
     'value' : 'The new value for the key',
 })
 
@@ -461,13 +501,23 @@ dict['device_table_updates'].update({
     'table_description' : 'This table stores Device Table metadata updates',
     'mac_address' : 'The MAC address of the device',
     'key' : 'The key being updated',
+    'old_value' : 'The old value for the key',
+    'value' : 'The new value for the key',
+})
+
+dict['user_table_updates'] = copy.deepcopy(generic)
+dict['user_table_updates'].update({
+    'table_description' : 'This table stores Device Table metadata updates',
+    'username' : 'The username',
+    'key' : 'The key being updated',
+    'old_value' : 'The old value for the key',
     'value' : 'The new value for the key',
 })
 
 dict['quotas'] = copy.deepcopy(generic)
 dict['quotas'].update({
     'table_description' : 'This table stores Quota events',
-    'address' : 'The IP address of the host',
+    'entity' : 'The IP entity given the quota (address/username)',
     'action' : 'The action (1=Quota Given, 2=Quota Exceeded)',
     'size' : 'The size of the quota',
     'reason' : 'The reason for the action',
@@ -508,6 +558,7 @@ dict['sessions'].update({
     'ssl_inspector_ruleid' : 'The matching rule in SSL Inspector rule (if any)',
     'ssl_inspector_status' : 'The status/action of the SSL session (INSPECTED,IGNORED,BLOCKED,UNTRUSTED,ABANDONED)',
     'ssl_inspector_detail' : 'Additional text detail about the SSL connection (SNI, IP Address)',
+    'tags' : 'The tags on this session'
 })
 
 dict['session_minutes'] = copy.deepcopy(dict['sessions'])
@@ -546,7 +597,7 @@ dict['interface_stat_events'].update({
 
 
 
-print "= Database Tables ="
+print("= Database Tables =")
 
 p = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"SELECT table_name FROM information_schema.tables where table_schema = 'reports' and table_name not like '%0%'\""], stdout=subprocess.PIPE)
 for line in iter(p.stdout.readline, ''):
@@ -564,22 +615,22 @@ for line in iter(p.stdout.readline, ''):
         continue
     table_dict = dict.get(table_name)
     if table_dict == None:
-        print "\nMissing documentation for table \"%s\"" % ( table_name  )
+        print("\nMissing documentation for table \"%s\"" % ( table_name  ))
         sys.exit(1)
     if table_dict.get('table_description') == None:
-        print "\nMissing description for table \"%s\"" % ( table_name  )
+        print("\nMissing description for table \"%s\"" % ( table_name  ))
         sys.exit(1)
 
-    print 
-    print "== %s == " % table_name
-    print "<section begin='%s' />" % table_name
-    print 
-    print "{| border=\"1\" cellpadding=\"2\" width=\"90%%\" align=\"center\""
-    print "!Column Name"
-    print "!Human Name"
-    print "!Type"
-    print "!Description"
-    print "|-"
+    print("")
+    print("== %s == " % table_name)
+    print("<section begin='%s' />" % table_name)
+    print("")
+    print("{| border=\"1\" cellpadding=\"2\" width=\"90%%\" align=\"center\"")
+    print("!Column Name")
+    print("!Human Name")
+    print("!Type")
+    print("!Description")
+    print("|-")
 
     p2 = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"\\d+ reports.%s\"" % table_name], stdout=subprocess.PIPE)
     for line2 in iter(p2.stdout.readline, ''):
@@ -590,26 +641,25 @@ for line in iter(p.stdout.readline, ''):
         try:
             human_name = human_names[column]
         except:
-            print "\nMissing human_name for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing human_name for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
         try:
             description = dict[table_name][column]
         except:
-            print "\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
         if description == None:
-            print "\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  )
+            print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
-        print "|%s" % column
-        print "|%s" % human_name
-        print "|%s" % type
-        print "|%s" % description
-        print "|-"
-        
-    print "|}"
-    print "<section end='%s' />" % table_name
-    print 
+        print("|%s" % column)
+        print("|%s" % human_name)
+        print("|%s" % type)
+        print("|%s" % description)
+        print("|-")
 
+    print("|}")
+    print("<section end='%s' />" % table_name)
+    print()

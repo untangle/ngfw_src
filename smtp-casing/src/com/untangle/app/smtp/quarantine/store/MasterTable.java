@@ -34,6 +34,12 @@ final class MasterTable
     private String rootDir;
     private StoreSummary summary;
 
+    /**
+     * Initialzie instance of MasterTable.
+     * @param  dir            String of directory.
+     * @param  initialSummary StoreSummary of initial summary.
+     * @return                Instance of MasterTable.
+     */
     private MasterTable(String dir, StoreSummary initialSummary) {
         rootDir = dir;
         summary = initialSummary;
@@ -42,6 +48,8 @@ final class MasterTable
     /**
      * Open the MasterTable. The InboxDirectoryTree is needed in case the system closed abnormally and the StoreSummary
      * needs to be rebuilt.
+     * @param rootDir String of root directory to open.
+     * @return instance of MasterTable.
      */
     static MasterTable open(String rootDir)
     {
@@ -63,6 +71,12 @@ final class MasterTable
         }
     }
 
+    /**
+     * Rebuild the MasterTable. The InboxDirectoryTree is needed in case the system closed abnormally and the StoreSummary
+     * needs to be rebuilt.
+     * @param rootDir String of root directory to open.
+     * @return instance of MasterTable.
+     */
     static MasterTable rebuild(String rootDir)
     {
         Logger logger = Logger.getLogger(MasterTable.class);
@@ -73,6 +87,11 @@ final class MasterTable
         return new MasterTable(rootDir, storeMeta);
     }
 
+    /**
+     * Determine if inbox exists.
+     * @param  lcAddress String of inbox.
+     * @return           true if eixsts, false if not.
+     */
     boolean inboxExists(String lcAddress)
     {
         return summary.containsInbox(lcAddress);
@@ -80,6 +99,7 @@ final class MasterTable
 
     /**
      * Assumes caller has already found that there is no such inbox, while holding the master lock for this account
+     * @param address Address for inbox.
      */
     synchronized void addInbox(String address)
     {
@@ -91,7 +111,8 @@ final class MasterTable
     }
 
     /**
-     *
+     * Delete inbox.
+     * @param address Atring of inbox address.
      */
     synchronized void removeInbox(String address)
     {
@@ -105,6 +126,9 @@ final class MasterTable
      * Assumes caller has already determined that this inbox exists.
      * 
      * PRE: address lower case
+     * @param address Address of inbox.
+     * @param sz Size to check.
+     * @return true if inbox exists and added, false otherwise.
      */
     synchronized boolean mailAdded(String address, long sz)
     {
@@ -121,6 +145,9 @@ final class MasterTable
      * Assumes caller has already determined that this inbox exists.
      * 
      * PRE: address lower case
+     * @param address Address of inbox.
+     * @param sz Size to check.
+     * @return true if inbox exists and added, false otherwise.
      */
     synchronized boolean mailRemoved(String address, long sz)
     {
@@ -137,6 +164,10 @@ final class MasterTable
      * Assumes caller has already determined that this inbox exists.
      * 
      * PRE: address lower case
+     * @param address Address of inbox.
+     * @param totalSz Size to check.
+     * @param totalMails Total mails.
+     * @return true if inbox exists and added, false otherwise.
      */
     synchronized boolean updateMailbox(String address, long totalSz, int totalMails)
     {
@@ -151,6 +182,7 @@ final class MasterTable
 
     /**
      * Get the sum total of the lengths of all mails across all inboxes.
+     * @return Long of size in bytes.
      */
     long getTotalQuarantineSize()
     {
@@ -159,6 +191,7 @@ final class MasterTable
 
     /**
      * Get the total number of mails in all inboxes
+     * @return Integer of number of messages.
      */
     int getTotalNumMails()
     {
@@ -167,6 +200,7 @@ final class MasterTable
 
     /**
      * Get the total number of inboxes
+     * @return integer of number of inboxes.
      */
     int getTotalInboxes()
     {
@@ -182,6 +216,9 @@ final class MasterTable
         save();
     }
 
+    /**
+     * Save mailbox.
+     */
     private void save()
     {
         if (!QuarantineStorageManager.writeSummary(summary, rootDir)) {
@@ -203,6 +240,7 @@ final class MasterTable
     /**
      * Do not modify any of the returned entries, as it is a shared reference. The returned set itself is guaranteed
      * never to be modified.
+     * @return Set of accounts and their inbox summaries.
      */
     Set<Map.Entry<String, InboxSummary>> entries()
     {
@@ -211,8 +249,9 @@ final class MasterTable
 
     /**
      * Visit all the inboxes
+     * @param dir File of directory.
+     * @param storeMeta storeMeta to visit.
      */
-
     private static void visitInboxes(File dir, StoreSummary storeMeta)
     {
         File[] kids = dir.listFiles();
@@ -227,7 +266,8 @@ final class MasterTable
 
     /**
      * Visit the given directory and read the summary
-     * 
+     * @param f File of directory.
+     * @param storeMeta storeMeta to visit.
      */
     private static void visit(File f, StoreSummary storeMeta)
     {

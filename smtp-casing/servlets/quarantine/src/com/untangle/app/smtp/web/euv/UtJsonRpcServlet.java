@@ -20,6 +20,13 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 {
     private static final String BRIDGE_ATTRIBUTE = "JSONRPCBridge";
 
+    /**
+     * Handle the request.
+     * 
+     * @param  req              HttpServletRequest object containing the action "tkn" parameter.
+     * @param  resp             HttpServletResponse object that will be used in any redirecion.
+     * @throws IOException      General input/ooutput error.
+     */
     public void service(HttpServletRequest req, HttpServletResponse resp)
         throws IOException
     {
@@ -27,6 +34,11 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         super.service(req, resp);
     }
 
+    /**
+     * Initialize the session.
+     * 
+     * @param req HttpServletRequest object to set bridge on and associate quarantine.
+     */
     private void initSessionBridge(HttpServletRequest req)
     {
         HttpSession s = req.getSession();

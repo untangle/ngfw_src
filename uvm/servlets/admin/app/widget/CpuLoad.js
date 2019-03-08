@@ -1,23 +1,12 @@
 Ext.define('Ung.widget.CpuLoad', {
     extend: 'Ext.container.Container',
     alias: 'widget.cpuloadwidget',
-
-    /* requires-start */
-    requires: [
-        'Ung.widget.CpuLoadController'
-    ],
-    /* requires-end */
     controller: 'cpuload',
     viewModel: true,
 
-    hidden: true,
     border: false,
     baseCls: 'widget',
-    cls: 'small adding',
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
+    cls: 'small',
 
     layout: {
         type: 'vbox',
@@ -26,6 +15,7 @@ Ext.define('Ung.widget.CpuLoad', {
 
     items: [{
         xtype: 'component',
+        height: 40,
         cls: 'header',
         html: '<h1>' + 'CPU Load'.t() + '</h1>'
     }, {

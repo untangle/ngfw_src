@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.app.reports.*,com.untangle.uvm.*,com.untangle.uvm.util.*,com.untangle.uvm.reports.*,com.untangle.uvm.app.AppSettings,com.untangle.uvm.app.*,com.untangle.uvm.vnet.*,org.apache.log4j.helpers.AbsoluteTimeDateFormat,java.util.Properties, java.util.Map, java.net.URL, java.io.PrintWriter, javax.naming.*" 
+<%@ page language="java" import="com.untangle.app.reports.*,com.untangle.uvm.*,com.untangle.uvm.util.*,com.untangle.uvm.reports.*,com.untangle.uvm.app.AppSettings,com.untangle.uvm.app.*,com.untangle.uvm.vnet.*,org.apache.log4j.helpers.AbsoluteTimeDateFormat,java.util.Properties, java.util.Map, java.net.URL, java.io.PrintWriter, javax.naming.*"
 %><!DOCTYPE html>
 
 <%
@@ -14,46 +14,63 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title><%=company%> | Reports</title>
-    <style type="text/css">
-        @import "/ext6/classic/theme-<%=extjsTheme%>/resources/theme-<%=extjsTheme%>-all.css?s=<%=buildStamp%>";
-    </style>
 
-    <script type="text/javascript" src="/highcharts/highstock.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/highcharts/highcharts-extra.js?s=<%=buildStamp%>"></script>
+    <!-- JsonRPC -->
+    <script src="/jsonrpc/jsonrpc.js"></script>
 
-    <script type="text/javascript" src="/ext6/ext-all.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/ext6/classic/theme-<%=extjsTheme%>/theme-<%=extjsTheme%>.js?s=<%=buildStamp%>"></script>
+    <!-- Highchart lib, map -->
+    <script src="/highcharts-6.0.2/highstock.js"></script>
+    <script src="/highcharts-6.0.2/highcharts-3d.js"></script>
+    <script src="/highcharts-6.0.2/highcharts-more.js"></script>
+    <script src="/highcharts-6.0.2/exporting.js"></script>
+    <script src="/highcharts-6.0.2/export-data.js"></script>
+    <script src="/highcharts-6.0.2/no-data-to-display.js"></script>
 
-    <script type="text/javascript">
-        var config = {
-            buildStamp: '<%=buildStamp%>'
-        };
-        <%
-            if(request.getParameter("reportChart") != null){
-        %>
-            config.reportChart = '<%=request.getParameter("reportChart")%>';
-            config.reportUniqueId = '<%=request.getParameter("reportUniqueId")%>';
-            config.startDate = '<%=request.getParameter("startDate")%>';
-            config.endDate = '<%=request.getParameter("endDate")%>';
-        <%
-            }
-        %>
-        Ext.onReady(function() {
-            Ung.Main.init(config)
+    <!-- ExtJS lib & theme -->
+    <script src="/ext6.2/ext-all-debug.js"></script>
+    <script src="/ext6.2/classic/theme-<%=extjsTheme%>/theme-<%=extjsTheme%>.js"></script>
+    <link href="/ext6.2/classic/theme-<%=extjsTheme%>/resources/theme-<%=extjsTheme%>-all.css" rel="stylesheet" />
+
+    <!-- FontAwesome -->
+    <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+
+    <%-- Import custom fonts (see sass/_vars.scss) --%>
+    <link href="/ext6.2/fonts/source-sans-pro/css/fonts.css" rel="stylesheet" />
+    <link href="/ext6.2/fonts/roboto-condensed/css/fonts.css" rel="stylesheet" />
+
+    <%-- Import reports css --%>
+    <link href="/script/common/reports-all.css?s=<%=buildStamp%>" rel="stylesheet" />
+
+    <%-- Import bootstrap --%>
+    <script src="/script/common/bootstrap.js?s=<%=buildStamp%>"></script>
+    <script>
+        Ext.onReady(function () {
+            // setups all initializations and load required scrips
+            Bootstrap.load([
+                '/script/common/util-all.js', // include custom grid module
+                '/script/common/reports-all.js', // include reports module
+                '/script/common/ungrid-all.js', // include custom grid module
+                'script/app.js' // include this standalone reports app
+            ], 'REPORTS', function (ex) {
+                if (ex) { console.error(ex); return; };
+                // if everything is initialized just launch the application
+                var chartReport = Ext.Object.fromQueryString(window.location.search.substring(1));
+                if(chartReport.reportChart == 1){
+                    Ext.application({
+                        extend: 'Ung.ChartApplication',
+                        namespace: 'Ung',
+                        servletContext: 'chart'
+                    });
+                }else{
+                    Ext.application({
+                        extend: 'Ung.Application',
+                        namespace: 'Ung',
+                        servletContext: 'reports'
+                    });
+                }
+            });
         });
     </script>
-
-    <!-- global scripts -->
-    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/tableConfig.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/charting.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/window.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/util.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/reports.js?s=<%=buildStamp%>"></script>
-
-    <script type="text/javascript" src="script/main.js?s=<%=buildStamp%>"></script>
-
  </head>
 <body>
 <div id="container" style="display:none;">

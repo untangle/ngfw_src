@@ -5,6 +5,9 @@ package com.untangle.uvm.util;
 
 import java.text.CharacterIterator;
 
+/**
+ * Iterator for AsciiCharBufferCharacterIterator
+ */
 public final class AsciiCharBufferCharacterIterator implements CharacterIterator
 {
     private AsciiCharBuffer buffer;
@@ -13,11 +16,24 @@ public final class AsciiCharBufferCharacterIterator implements CharacterIterator
     // invariant: begin <= pos <= end
     private int pos;
 
+    /**
+     * Initialize instance of AsciiCharBufferCharacterIterator.
+     * @param  buffer AsciiCharBuffer to use.
+     * @return        Instance of AsciiCharBufferCharacterIterator.
+     */
     public AsciiCharBufferCharacterIterator(AsciiCharBuffer buffer)
     {
         this(buffer, 0, buffer.limit(), buffer.position());
     }
 
+    /**
+     * Initialize instance of AsciiCharBufferCharacterIterator.
+     * @param  buffer AsciiCharBuffer to use.
+     * @param  begin  integer of start of range.
+     * @param  end    integer of end of range.
+     * @param  pos    integer of current position.
+     * @return        Instance of AsciiCharBufferCharacterIterator.
+     */
     public AsciiCharBufferCharacterIterator(AsciiCharBuffer buffer, int begin, int end, int pos) {
         if (buffer == null)
             throw new NullPointerException();
@@ -34,12 +50,20 @@ public final class AsciiCharBufferCharacterIterator implements CharacterIterator
         this.pos = pos;
     }
 
+    /**
+     * Move position to first of range, return that character.
+     * @return char at that position.
+     */
     public char first()
     {
         pos = begin;
         return current();
     }
 
+    /**
+     * Move position to end of range, return that character.
+     * @return char at that position.
+     */
     public char last()
     {
         if (end != begin) {
@@ -50,6 +74,11 @@ public final class AsciiCharBufferCharacterIterator implements CharacterIterator
         return current();
     }
 
+    /**
+     * Specify the index position.
+     * @param  p integer of position
+     * @return   char at that position
+     */
     public char setIndex(int p)
     {
         if (p < begin || p > end)
@@ -58,6 +87,10 @@ public final class AsciiCharBufferCharacterIterator implements CharacterIterator
         return current();
     }
 
+    /**
+     * Return char at current position.
+     * @return char at current position.
+     */
     public char current()
     {
         if (pos >= begin && pos < end) {
@@ -68,6 +101,10 @@ public final class AsciiCharBufferCharacterIterator implements CharacterIterator
         }
     }
 
+    /**
+     * Increment position, return char at that positon.
+     * @return return char at new next position.
+     */
     public char next()
     {
         if (pos < end - 1) {
@@ -80,6 +117,10 @@ public final class AsciiCharBufferCharacterIterator implements CharacterIterator
         }
     }
 
+    /**
+     * Increment position, return char at that positon.
+     * @return return char at new previus position.
+     */
     public char previous()
     {
         if (pos > begin) {
@@ -91,21 +132,37 @@ public final class AsciiCharBufferCharacterIterator implements CharacterIterator
         }
     }
 
+    /**
+     * Return beginning index.
+     * @return integer of beginning index.
+     */
     public int getBeginIndex()
     {
         return begin;
     }
 
+    /**
+     * Return ending index.
+     * @return integer of ending index.
+     */
     public int getEndIndex()
     {
         return end;
     }
 
+    /**
+     * Return current position.
+     * @return integer of current position.
+     */
     public int getIndex()
     {
         return pos;
     }
 
+    /**
+     * Copy this ieterator.
+     * @return Copied instance of this instance.
+     */
     public Object clone()
     {
         try {

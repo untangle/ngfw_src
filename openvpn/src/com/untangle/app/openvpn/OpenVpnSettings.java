@@ -1,9 +1,9 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.openvpn;
 
-import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,6 +18,11 @@ import com.untangle.uvm.app.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class OpenVpnSettings implements java.io.Serializable, JSONString
 {
+    public static enum AuthenticationType
+    {
+        NONE, LOCAL_DIRECTORY, RADIUS, ACTIVE_DIRECTORY, ANY_DIRCON
+    };
+
     private static final int DEFAULT_PING_TIME    = 10;
     private static final int DEFAULT_PING_TIMEOUT = 60;
     private static final int DEFAULT_VERBOSITY    = 1;
@@ -33,6 +38,8 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     private boolean serverEnabled = false;
     private boolean natOpenVpnTraffic = true;
+    private boolean authUserPass = false;
+    private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
     
     private LinkedList<OpenVpnConfigItem> clientConfiguration;
     private LinkedList<OpenVpnConfigItem> serverConfiguration;
@@ -72,11 +79,11 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         serverConfiguration.add(new OpenVpnConfigItem("user", "nobody", true));
         serverConfiguration.add(new OpenVpnConfigItem("group", "nogroup", true));
         serverConfiguration.add(new OpenVpnConfigItem("tls-server", true));
-        serverConfiguration.add(new OpenVpnConfigItem("comp-lzo", true));
+        serverConfiguration.add(new OpenVpnConfigItem("compress lz4", true));
         serverConfiguration.add(new OpenVpnConfigItem("status", "openvpn-status.log", true));
-        serverConfiguration.add(new OpenVpnConfigItem("verb ", Integer.toString(DEFAULT_VERBOSITY), true));
+        serverConfiguration.add(new OpenVpnConfigItem("log", "/var/log/openvpn.log", true));
+        serverConfiguration.add(new OpenVpnConfigItem("verb", Integer.toString(DEFAULT_VERBOSITY), true));
         serverConfiguration.add(new OpenVpnConfigItem("dev", "tun0", true));
-        serverConfiguration.add(new OpenVpnConfigItem("max-routes", "500", true));
         serverConfiguration.add(new OpenVpnConfigItem("max-clients", "2048", true));
 
         /* Only talk to clients with a client configuration file */
@@ -104,9 +111,8 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         clientConfiguration.add(new OpenVpnConfigItem("keepalive", Integer.toString(DEFAULT_PING_TIME) + " " + Integer.toString(DEFAULT_PING_TIMEOUT), true));
         clientConfiguration.add(new OpenVpnConfigItem("nobind", true));
         clientConfiguration.add(new OpenVpnConfigItem("mute-replay-warnings", true));
-        clientConfiguration.add(new OpenVpnConfigItem("ns-cert-type", "server", true));
-        clientConfiguration.add(new OpenVpnConfigItem("comp-lzo", true));
-        clientConfiguration.add(new OpenVpnConfigItem("max-routes", "500", true));
+        clientConfiguration.add(new OpenVpnConfigItem("remote-cert-tls", "server", true));
+        clientConfiguration.add(new OpenVpnConfigItem("compress lz4", true));
         clientConfiguration.add(new OpenVpnConfigItem("verb", Integer.toString(DEFAULT_VERBOSITY), true));
         
         /* Do not re-read key after SIGUSR1 */
@@ -133,7 +139,13 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     public boolean getNatOpenVpnTraffic() { return this.natOpenVpnTraffic; }
     public void setNatOpenVpnTraffic( boolean newValue ) { this.natOpenVpnTraffic = newValue; }
-    
+
+    public AuthenticationType getAuthenticationType() { return this.authenticationType; }
+    public void setAuthenticationType( AuthenticationType argValue ) { this.authenticationType = argValue; }
+
+    public boolean getAuthUserPass() { return this.authUserPass; }
+    public void setAuthUserPass( boolean newValue ) { this.authUserPass = newValue; }
+
     public String getProtocol() { return this.protocol; }
     public void setProtocol( String newValue ) { this.protocol = newValue; }
 

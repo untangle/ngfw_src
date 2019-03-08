@@ -191,8 +191,6 @@ int  netcap_queue_init (void)
         /* Initialize the raw socket */
         if (( _queue.raw_sock = socket(PF_INET, SOCK_RAW, IPPROTO_RAW )) < 0 ) return perrlog("socket");
 
-        if ( setsockopt( _queue.raw_sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one) )<0) 
-            return perrlog("setsockopt");
         if ( setsockopt( _queue.raw_sock, IPPROTO_IP, IP_HDRINCL, (char *) &one, sizeof( one )) < 0 )
             return perrlog( "setsockopt" );
 

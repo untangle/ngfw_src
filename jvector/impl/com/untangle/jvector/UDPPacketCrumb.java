@@ -5,10 +5,13 @@ package com.untangle.jvector;
 
 import com.untangle.jnetcap.*;
 
+/**
+ * UDPPacketCrumb is a Crumb thats is read from a UDPSource and sent to a UDPSink
+ */
 public class UDPPacketCrumb extends PacketCrumb
 {
     /**
-     * Create a new UDP Packet Crumb.</p>
+     * Create a new UDP Packet Crumb.
      *
      * @param ttl     - Time To Live for the packet.
      * @param tos     - Type of service for the packet.
@@ -23,7 +26,7 @@ public class UDPPacketCrumb extends PacketCrumb
     }
 
     /**
-     * Create a new UDP Packet Crumb.</p>
+     * Create a new UDP Packet Crumb.
      *
      * @param packet  - Packet to base this crumb on.
      * @param data    - Byte array containing the data.
@@ -36,7 +39,7 @@ public class UDPPacketCrumb extends PacketCrumb
     }
 
     /**
-     * Create a new UDP Packet Crumb.</p>
+     * Create a new UDP Packet Crumb.
      *
      * @param packet  - Packet to base this crumb on.
      * @param data    - Byte array containing the data.
@@ -48,7 +51,7 @@ public class UDPPacketCrumb extends PacketCrumb
     }
 
     /**
-     * Create a new UDP Packet Crumb.</p>
+     * Create a new UDP Packet Crumb.
      *
      * @param packet  - Packet to base this crumb on.
      * @param data    - Byte array containing the data.
@@ -58,13 +61,20 @@ public class UDPPacketCrumb extends PacketCrumb
         super( packet, data );
     }
 
+    /**
+     * type - gets the type of crumb
+     * @return
+     */
     public int type()
     {
         return TYPE_UDP_PACKET;
     }
 
+    /**
+     * raze
+     */
     public void raze()
     {
-        /* XXX What should go in here, C structure is freed automatically */
+        /* Do nothing, C structure is freed automatically */
     }
 }

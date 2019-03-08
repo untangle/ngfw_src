@@ -13,5 +13,7 @@ modprobe tunnel4
 modprobe tunnel6
 modprobe xfrm4_mode_tunnel
 modprobe xfrm6_mode_tunnel
+modprobe xfrm4_mode_transport
+modprobe xfrm6_mode_transport
 modprobe xfrm_ipcomp
 modprobe deflate

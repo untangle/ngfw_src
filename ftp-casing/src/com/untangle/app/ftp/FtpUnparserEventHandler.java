@@ -14,7 +14,6 @@ import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.TCPStreamer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**
@@ -26,11 +25,20 @@ class FtpUnparserEventHandler extends AbstractEventHandler
 
     private final boolean clientSide;
 
+    /**
+     * FtpUnparserEventHandler.
+     * @param clientSide - true if this is the unparser for the client side
+     */
     public FtpUnparserEventHandler( boolean clientSide )
     {
         this.clientSide = clientSide;
     }
 
+    /**
+     * handleTCPClientChunk - throws exception - should not be used
+     * @param session 
+     * @param data
+     */
     @Override
     public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -38,6 +46,11 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received data when expect object");
     }
 
+    /**
+     * handleTCPServerChunk - throws exception - should not be used
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -45,6 +58,11 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received data when expect object");
     }
 
+    /**
+     * handleTCPClientObject - unparses an object to a string
+     * @param session
+     * @param obj
+     */
     @Override
     public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
@@ -57,6 +75,11 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * handleTCPServerObject - unparses an object to a string
+     * @param session
+     * @param obj
+     */
     @Override
     public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
@@ -69,6 +92,11 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPClientDataEnd.
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -78,6 +106,11 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPServerDataEnd.
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -87,6 +120,10 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * handleTCPClientFIN
+     * @param session
+     */
     @Override
     public void handleTCPClientFIN( AppTCPSession session )
     {
@@ -97,6 +134,10 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPServerFIN
+     * @param session
+     */
     @Override
     public void handleTCPServerFIN( AppTCPSession session )
     {
@@ -107,6 +148,12 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * unparse the object to a string and send it
+     * @param session
+     * @param obj
+     * @param s2c
+     */
     private void unparse( AppTCPSession session, Object obj, boolean s2c )
     {
         Token token = (Token) obj;
@@ -132,10 +179,15 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * unparse the object/token and send a string
+     * @param session
+     * @param token
+     */
     public void unparse( AppTCPSession session, Token token )
     {
         InetSocketAddress socketAddress = null;
-        if (token instanceof FtpReply) { // XXX tacky
+        if (token instanceof FtpReply) {
             FtpReply reply = (FtpReply)token;
             if (FtpReply.PASV == reply.getReplyCode()) {
                 socketAddress = reply.getSocketAddress();
@@ -157,7 +209,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
                     socketAddress = new InetSocketAddress( session.getServerAddr(), socketAddress.getPort());
                 } /* otherwise use the data from nat */
             }
-        } else if (token instanceof FtpCommand) { // XXX tacky
+        } else if (token instanceof FtpCommand) {
             FtpCommand cmd = (FtpCommand)token;
             if (FtpFunction.PORT == cmd.getFunction()) {
                 socketAddress = cmd.getSocketAddress();
@@ -186,6 +238,10 @@ class FtpUnparserEventHandler extends AbstractEventHandler
             session.sendDataToServer( token.getBytes() );
     }
 
+    /**
+     * endSession - shuts down both sides
+     * @param session
+     */
     public void endSession( AppTCPSession session )
     {
         FtpEventHandler.removeDataSockets(session.getSessionId());

@@ -1,9 +1,9 @@
 # -*-ruby-*-
 
-directory_connector = BuildEnv::SRC['directory-connector']
+directory_connector = BuildEnv::SRC['untangle-app-directory-connector']
 
 deps = [Jars::Base, Jars::JRadius]
-AppBuilder.makeApp(BuildEnv::SRC, 'directory-connector', 'directory-connector', deps)
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-directory-connector', 'directory-connector', deps)
 
 uvm_lib = BuildEnv::SRC['untangle-libuvm']
 appdeps = [directory_connector['src']]

@@ -1,20 +1,19 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.web_filter;
 
 import java.net.InetAddress;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.PasswordUtil;
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
@@ -38,6 +37,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 {
     private static final String STAT_SCAN = "scan";
     private static final String STAT_BLOCK = "block";
+    private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
     private static int web_filter_deployCount = 0;
 
@@ -53,6 +53,14 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     protected final UnblockedSitesMonitor unblockedSitesMonitor;
 
+    /**
+     * Constructor
+     * 
+     * @param appSettings
+     *        The application settings
+     * @param appProperties
+     *        The application properties
+     */
     public WebFilterBase(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
@@ -60,7 +68,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         this.replacementGenerator = buildReplacementGenerator();
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
-        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+
+        if (getAppName().equals("web-filter")) {
+            this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        }
+
+        this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Pages flagged")));
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 3, isPremium());
@@ -71,6 +84,17 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         this.unblockedSitesMonitor = new UnblockedSitesMonitor(this);
     }
 
+    /**
+     * Unblock a site
+     * 
+     * @param nonce
+     *        The nonce
+     * @param global
+     *        Global flag
+     * @param password
+     *        The password
+     * @return Result
+     */
     public boolean unblockSite(String nonce, boolean global, String password)
     {
         if (!this.verifyPassword(password)) {
@@ -86,6 +110,13 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
     }
 
+    /**
+     * Verify password
+     * 
+     * @param password
+     *        The password
+     * @return True for verify success, otherwise false
+     */
     private boolean verifyPassword(String password)
     {
         WebFilterSettings settings = getSettings();
@@ -125,31 +156,67 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
     }
 
+    /**
+     * Get the unblock mode
+     * 
+     * @return The unblock mode
+     */
     public String getUnblockMode()
     {
         return settings.getUnblockMode();
     }
 
+    /**
+     * Check if HTTPS SNI is enabled
+     * 
+     * @return True if enabled, otherwise false
+     */
     public boolean isHttpsEnabledSni()
     {
         return settings.getEnableHttpsSni();
     }
 
+    /**
+     * Check if HTTPS SNI cert fallback is enabled
+     * 
+     * @return True if enabled, otherwise false
+     */
     public boolean isHttpsEnabledSniCertFallback()
     {
         return settings.getEnableHttpsSniCertFallback();
     }
 
+    /**
+     * Check if HTTP SNI IP fallback is enabled
+     * 
+     * @return True if enabled, otherwise false
+     */
     public boolean isHttpsEnabledSniIpFallback()
     {
         return settings.getEnableHttpsSniIpFallback();
     }
 
+    /**
+     * Get the block details for the argumented nonce
+     * 
+     * @param nonce
+     *        The nonce to search
+     * @return Block details
+     */
     public WebFilterBlockDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
     }
 
+    /**
+     * Unblock a site
+     * 
+     * @param nonce
+     *        The nonce
+     * @param global
+     *        Global flag
+     * @return Result of the operation
+     */
     public boolean unblockSite(String nonce, boolean global)
     {
         WebFilterBlockDetails bd = replacementGenerator.removeNonce(nonce);
@@ -172,7 +239,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             logger.debug("no BlockDetails for nonce");
             return false;
         } else if (global) {
-            String site = bd.getWhitelistHost();
+            String site = bd.getUnblockHost();
             if (null == site) {
                 logger.warn("cannot unblock null host");
                 return false;
@@ -185,7 +252,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                 return true;
             }
         } else {
-            String site = bd.getWhitelistHost();
+            String site = bd.getUnblockHost();
             if (null == site) {
                 logger.warn("cannot unblock null host");
                 return false;
@@ -201,98 +268,223 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
     }
 
+    /**
+     * Flush all unblocked sites
+     */
     public void flushAllUnblockedSites()
     {
         logger.warn("Flushing all Unblocked sites...");
         getDecisionEngine().removeAllUnblockedSites();
     }
 
+    /**
+     * Get the application settings
+     * 
+     * @return The application settings
+     */
     public WebFilterSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Set the application settings
+     * 
+     * @param settings
+     *        The new settings
+     */
     public void setSettings(WebFilterSettings settings)
     {
         _setSettings(settings);
     }
 
+    /**
+     * Get the categories
+     * 
+     * @return The categories
+     */
     public List<GenericRule> getCategories()
     {
         return settings.getCategories();
     }
 
+    /**
+     * Set the categories
+     * 
+     * @param newCategories
+     *        The new list
+     */
     public void setCategories(List<GenericRule> newCategories)
     {
         this.settings.setCategories(newCategories);
         _setSettings(this.settings);
     }
 
+    /**
+     * Get the blocked URL's
+     * 
+     * @return The blocked URL's
+     */
     public List<GenericRule> getBlockedUrls()
     {
         return settings.getBlockedUrls();
     }
 
+    /**
+     * Set the blocked URL's
+     * 
+     * @param blockedUrls
+     *        The new list
+     */
     public void setBlockedUrls(List<GenericRule> blockedUrls)
     {
         this.settings.setBlockedUrls(blockedUrls);
         _setSettings(this.settings);
     }
 
+    /**
+     * Get the passed clients
+     * 
+     * @return The passed clients
+     */
     public List<GenericRule> getPassedClients()
     {
         return settings.getPassedClients();
     }
 
+    /**
+     * Set the passed clients
+     * 
+     * @param passedClients
+     *        The new list
+     */
     public void setPassedClients(List<GenericRule> passedClients)
     {
         this.settings.setPassedClients(passedClients);
         _setSettings(this.settings);
     }
 
+    /**
+     * Get the passed URL's
+     * 
+     * @return The passed URL's
+     */
     public List<GenericRule> getPassedUrls()
     {
         return settings.getPassedUrls();
     }
 
+    /**
+     * Set the passed URL's
+     * 
+     * @param passedUrls
+     *        The new list
+     */
     public void setPassedUrls(List<GenericRule> passedUrls)
     {
         this.settings.setPassedUrls(passedUrls);
         _setSettings(this.settings);
     }
 
+    /**
+     * Get the filter rules
+     * 
+     * @return The filter rules
+     */
     public List<WebFilterRule> getFilterRules()
     {
         return settings.getFilterRules();
     }
 
+    /**
+     * Set the filter rules
+     * 
+     * @param filterRules
+     *        The new list
+     */
     public void setFilterRules(List<WebFilterRule> filterRules)
     {
         this.settings.setFilterRules(filterRules);
         _setSettings(this.settings);
     }
 
+    /**
+     * Get the decision engine
+     * 
+     * @return The decision engine
+     */
     public abstract DecisionEngine getDecisionEngine();
 
+    /**
+     * Get the app title
+     * 
+     * @return The app title
+     */
     public abstract String getAppTitle();
 
+    /**
+     * Get the name
+     * 
+     * @return The name
+     */
     public abstract String getName();
 
+    /**
+     * Get the app name
+     * 
+     * @return The app name
+     */
     public abstract String getAppName();
 
+    /**
+     * Get the premium flag
+     * 
+     * @return The premium flag
+     */
     public abstract boolean isPremium();
 
+    /**
+     * Generate a response
+     * 
+     * @param nonce
+     *        The nonce
+     * @param session
+     *        The session
+     * @param uri
+     *        The URI
+     * @param header
+     *        The header
+     * @return The response token
+     */
     public Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
     {
         return replacementGenerator.generateResponse(nonce, session, uri, header);
     }
 
+    /**
+     * Initialize application settings
+     * 
+     * @param settings
+     *        The settings
+     */
     public abstract void initializeSettings(WebFilterSettings settings);
 
+    /**
+     * Fix settings
+     * 
+     * @param settings
+     *        The settings
+     */
     public void fixupSetSettings(WebFilterSettings settings)
     {
     }
 
+    /**
+     * Initialize common settings
+     * 
+     * @param settings
+     *        The settings
+     */
     public void initializeCommonSettings(WebFilterSettings settings)
     {
         if (logger.isDebugEnabled()) {
@@ -300,32 +492,64 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
     }
 
+    /**
+     * Increment the scan counter
+     */
     public void incrementScanCount()
     {
         this.incrementMetric(STAT_SCAN);
     }
 
+    /**
+     * Increment the block counter
+     */
     public void incrementBlockCount()
     {
-        this.incrementMetric(STAT_BLOCK);
+        if (getAppName().equals("web-filter")) {
+            this.incrementMetric(STAT_BLOCK);
+        }
     }
 
+    /**
+     * Increment the flagged counter
+     */
+    public void incrementFlagCount()
+    {
+        this.incrementMetric(STAT_FLAG);
+    }
+
+    /**
+     * Increment the passed counter
+     */
     public void incrementPassCount()
     {
         this.incrementMetric(STAT_PASS);
     }
 
+    /**
+     * Build a replacement generator
+     * 
+     * @return The replacement generator
+     */
     protected WebFilterBaseReplacementGenerator buildReplacementGenerator()
     {
         return new WebFilterBaseReplacementGenerator(getAppSettings());
     }
 
+    /**
+     * Get the pipline connectors
+     * 
+     * @return The pipeline connectors
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Called after application initialization.
+     */
     @Override
     protected void postInit()
     {
@@ -418,11 +642,17 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             return;
         }
 
-        // existing settings loaded and no conversion was needed 
+        // existing settings loaded and no conversion was needed
         this.settings = readSettings;
         logger.debug("Loaded Settings: " + this.settings.toJSONString());
     }
 
+    /**
+     * Called before the application is started.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
@@ -430,6 +660,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         unblockedSitesMonitor.start();
     }
 
+    /**
+     * Called after the application is started.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
     @Override
     protected void postStart(boolean isPermanentTransition)
     {
@@ -438,6 +674,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         e_deployWebAppIfRequired(logger);
     }
 
+    /**
+     * Called before the application is stopped.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
@@ -446,6 +688,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         e_unDeployWebAppIfRequired(logger);
     }
 
+    /**
+     * Called after the application is stopped.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag.
+     */
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
@@ -453,11 +701,27 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         getDecisionEngine().removeAllUnblockedSites();
     }
 
+    /**
+     * Generate a nonce
+     * 
+     * @param details
+     *        The block details
+     * @return The nonce
+     */
     protected String generateNonce(WebFilterBlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
     }
 
+    /**
+     * Generate a response
+     * 
+     * @param nonce
+     *        The nonce
+     * @param session
+     *        The session
+     * @return The response
+     */
     protected Token[] generateResponse(String nonce, AppTCPSession session)
     {
         return replacementGenerator.generateResponse(nonce, session);
@@ -465,6 +729,9 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Set the current settings to new Settings And save the settings to disk
+     * 
+     * @param newSettings
+     *        The settings
      */
     protected void _setSettings(WebFilterSettings newSettings)
     {
@@ -518,6 +785,24 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      * This is a utility function to reassure that all the current categories
      * are in the settings Returns true if the category was added, false
      * otherwise
+     * 
+     * @param categories
+     *        The categories
+     * @param string
+     *        The string
+     * @param name
+     *        The name
+     * @param category
+     *        The category
+     * @param description
+     *        The description
+     * @param enabled
+     *        The enabled flag
+     * @param blocked
+     *        The blocked flag
+     * @param flagged
+     *        The flagged flag
+     * @return The category
      */
     private boolean addCategory(List<GenericRule> categories, String string, String name, String category, String description, boolean enabled, boolean blocked, boolean flagged)
     {
@@ -548,6 +833,10 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Adds the new v3 categories to the list returns true if any were added
+     * 
+     * @param categories
+     *        The categories to add
+     * @return True if any were added, otherwise false
      */
     protected boolean addCategories(List<GenericRule> categories)
     {
@@ -698,6 +987,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         return added;
     }
 
+    /**
+     * Deploy the web app
+     * 
+     * @param logger
+     *        The logger
+     */
     private static synchronized void e_deployWebAppIfRequired(Logger logger)
     {
         web_filter_deployCount = web_filter_deployCount + 1;
@@ -712,6 +1007,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
     }
 
+    /**
+     * Undeploy the web app
+     * 
+     * @param logger
+     *        The logger
+     */
     private static synchronized void e_unDeployWebAppIfRequired(Logger logger)
     {
         web_filter_deployCount = web_filter_deployCount - 1;

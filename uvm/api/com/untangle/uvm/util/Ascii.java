@@ -3,6 +3,9 @@
  */
 package com.untangle.uvm.util;
 
+/**
+ * ASCII characters and sequences.
+ */
 public class Ascii
 {
     public static final char CR = '\r';

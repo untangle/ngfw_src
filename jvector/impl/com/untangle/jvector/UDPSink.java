@@ -3,13 +3,13 @@
  */
 package com.untangle.jvector;
 
-import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.*;
 
-/* This should really be called a packet sink since it writes both ICMP
- * and UDP packets */
+/**
+ * UDPSink is a sink for UDP packets
+ */
 public class UDPSink extends Sink
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -21,6 +21,11 @@ public class UDPSink extends Sink
     /* Flag for the write function to indicate when ttl or tos is unused */
     protected static final int DISABLED = -1;
 
+    /**
+     * UDPSink
+     * @param traffic
+     * @param listener
+     */
     public UDPSink( UDPAttributes traffic, SinkEndpointListener listener)
     {
         /* Must lock the traffic structure so no one can modify where data is going */
@@ -38,17 +43,27 @@ public class UDPSink extends Sink
 
     /**
      * Set the TTL for DataCrumbs.
+     * @param ttl
      */
     public void ttl( byte ttl )
     {
         traffic.ttl( ttl );
     }
 
+    /**
+     * registerListener
+     * @param listener
+     */
     public void registerListener( SinkEndpointListener listener )
     {
         this.listener = listener;
     }
     
+    /**
+     * send_event
+     * @param o
+     * @return
+     */
     protected int send_event( Crumb o )
     {
         switch ( o.type() ) {
@@ -71,6 +86,11 @@ public class UDPSink extends Sink
         }
     }
 
+    /**
+     * write
+     * @param crumb
+     * @return
+     */
     protected int write( DataCrumb crumb )
     {
         int numWritten;
@@ -109,6 +129,9 @@ public class UDPSink extends Sink
         return Vector.ACTION_DEQUEUE;
     }
     
+    /**
+     * sinkRaze
+     */
     protected void sinkRaze()
     {
         super.sinkRaze();
@@ -118,6 +141,10 @@ public class UDPSink extends Sink
         // traffic.raze();
     }
 
+    /**
+     * shutdown
+     * @return
+     */
     protected int shutdown()
     {
         /* Notify the listeners that sink is shutting down */
@@ -126,10 +153,15 @@ public class UDPSink extends Sink
         return shutdown( pointer );
     }
 
+    /**
+     * create
+     * @param pointer
+     * @return long (ptr)
+     */
     protected native long create( long pointer );
 
     /**
-     * Send out a ICMP or UDP packet.</p>
+     * Send out a ICMP or UDP packet.
      * @param pointer - Pointer to the traffic structure (netcap_pkt_t/UDPAttributes.pointer)
      * @param data    - byte array of the data to send out
      * @param offset  - Offset within the byte array, this allows for multiple writes if one write
@@ -141,6 +173,12 @@ public class UDPSink extends Sink
      * @param src     - Source address, used only for an ICMP message. (unused if zero)
      * @return Number of bytes written
      */
-    protected static native int write( long pointer, byte[] data, int offset, int size, int ttl, int tos, byte[] options, long srcAddress );
+    protected static native int write( long pointer, byte[] data, int offset, int size, int ttl, int tos, byte[] options, long src );
+
+    /**
+     * shutdown
+     * @param pointer
+     * @return
+     */
     protected static native int shutdown( long pointer );
 }

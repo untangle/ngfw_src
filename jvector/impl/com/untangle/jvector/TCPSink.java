@@ -3,28 +3,49 @@
  */
 package com.untangle.jvector;
 
+/**
+ * TCPSink is a Sink for TCP data (backed by a socket)
+ */
 public class TCPSink extends Sink
 {
     static final int WRITE_RETURN_IGNORE = -3;
 
     protected SinkEndpointListener listener = null;
 
+    /**
+     * TCPSink
+     * @param fd
+     */
     public TCPSink( int fd )
     {
         pointer = create( fd );
     }
 
+    /**
+     * TCPSink
+     * @param fd
+     * @param listener
+     */
     public TCPSink( int fd, SinkEndpointListener listener )
     {
         this( fd );
         registerListener( listener );
     }
 
+    /**
+     * registerListener
+     * @param listener
+     */
     public void registerListener( SinkEndpointListener listener )
     {
         this.listener = listener;
     }
     
+    /**
+     * send_event
+     * @param crumb
+     * @return
+     */
     @SuppressWarnings("fallthrough")
     protected int send_event( Crumb crumb )
     {
@@ -58,6 +79,11 @@ public class TCPSink extends Sink
         }
     }
 
+    /**
+     * splice
+     * @param crumb
+     * @return
+     */
     protected int splice( FakeDataCrumb crumb )
     {
         TCPSource src = (TCPSource)crumb.getSource();
@@ -75,6 +101,11 @@ public class TCPSink extends Sink
         return Vector.ACTION_DEQUEUE;
     }
 
+    /**
+     * write
+     * @param crumb
+     * @return
+     */
     protected int write( DataCrumb crumb )
     {
         int numWritten;
@@ -106,6 +137,9 @@ public class TCPSink extends Sink
         return Vector.ACTION_DEQUEUE;
     }
 
+    /**
+     * raze
+     */
     public void raze()
     {
         if ( pointer != 0L ) {
@@ -116,6 +150,9 @@ public class TCPSink extends Sink
         pointer = 0L;
     }
 
+    /**
+     * sinkRaze
+     */
     protected void sinkRaze()
     {
         if ( pointer != 0L ) {
@@ -125,6 +162,10 @@ public class TCPSink extends Sink
         pointer = 0L;
     }
 
+    /**
+     * shutdown
+     * @return
+     */
     protected int shutdown()
     {
         /* Notify the listeners that sink is shutting down */
@@ -133,10 +174,48 @@ public class TCPSink extends Sink
         return shutdown( pointer );
     }
 
+    /**
+     * create
+     * @param fd
+     * @return
+     */
     protected native long create( int fd );
+
+    /**
+     * write
+     * @param snk_ptr
+     * @param data
+     * @param offset
+     * @param size
+     * @return
+     */
     protected static native int write( long snk_ptr, byte[] data, int offset, int size );
+
+    /**
+     * splice
+     * @param snk_ptr
+     * @param src_ptr
+     * @return
+     */
     protected static native int splice( long snk_ptr, long src_ptr );
+
+    /**
+     * close
+     * @param snk_ptr
+     * @return
+     */
     protected static native int close( long snk_ptr );
+
+    /**
+     * reset
+     * @param snk_ptr
+     */
     protected static native void reset( long snk_ptr );
+
+    /**
+     * shutdown
+     * @param snk_ptr
+     * @return
+     */
     protected static native int shutdown( long snk_ptr );
 }

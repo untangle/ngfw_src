@@ -1,17 +1,17 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.directory_connector;
 
-import java.lang.String;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
 
 import javax.naming.ServiceUnavailableException;
 import org.apache.log4j.Logger;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * ActiveDirectoryManagerImpl provides the API implementation of all Active Directory related functionality
@@ -29,43 +29,75 @@ public class ActiveDirectoryManagerImpl
      * The app that owns this manager
      */
     private DirectoryConnectorApp app;
-    
+
     /**
-     * The LDAP adapter
+     * List of LDAP adapters
      */
-    private ActiveDirectoryLdapAdapter adAdapter;
-    
+    private LinkedList<ActiveDirectoryLdapAdapter> adAdapters = new LinkedList<>();
+
+    /**
+     * Initialize AD manager
+     *
+     * @param settings  Active directory settings.
+     * @param app       Directory Connector Application
+     */
     public ActiveDirectoryManagerImpl( ActiveDirectorySettings settings, DirectoryConnectorApp app )
     {
         this.app = app;
-        
+
         setSettings( settings );
     }
 
+    /**
+     * Configure AD settings.
+     *
+     * Includes building the server adapters.
+     *
+     * @param settings  Active Directory settings.
+     */
     public void setSettings( ActiveDirectorySettings settings )
     {
         this.currentSettings = settings;
-        this.adAdapter = new ActiveDirectoryLdapAdapter( settings );
+
+        this.adAdapters.clear();
+        for(ActiveDirectoryServer adsSettings : settings.getServers()){
+            this.adAdapters.add( new ActiveDirectoryLdapAdapter( adsSettings ) );
+        }
     }
 
-    public List<UserEntry> getActiveDirectoryUserEntries()
+    /**
+     * Get user entries from all servers.
+     *
+     * @param domain
+     *  Domain to pull users from.
+     * @return List of users
+     * @throws ServiceUnavailableException
+     *  If unable to contact server
+     */
+    public List<UserEntry> getUserEntries(String domain)
         throws ServiceUnavailableException
     {
-        if (!app.isLicenseValid())
-            return new LinkedList<UserEntry>();
-        if (!currentSettings.getEnabled())
-            return new LinkedList<UserEntry>();
-        
-        ActiveDirectoryLdapAdapter adAdapter = this.adAdapter;
-       
-        List<UserEntry> userList = new LinkedList<UserEntry>();
+        if (!app.isLicenseValid()){
+            return new LinkedList<>();
+        }
 
-        if(adAdapter != null) {
+        List<UserEntry> userList = new LinkedList<>();
+
+        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
+            if(adAdapter == null){
+                continue;
+            }
+            if(!adAdapter.getSettings().getEnabled()){
+                continue;
+            }
+            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
+                continue;
+            }
+
             try {
                 userList.addAll(adAdapter.listAll());
             } catch (ServiceUnavailableException x) {
                 logger.warn("Unable to query Active Directory Users.",x);
-                throw new ServiceUnavailableException(x.getMessage());
             }
         }
 
@@ -74,39 +106,119 @@ public class ActiveDirectoryManagerImpl
         return userList;
     }
 
-    public List<UserEntry> getActiveDirectoryGroupUsers( String groupName ) 
+    /**
+     * Get domains from settings
+     *
+     * @return
+     *  List of string of domain names.
+     */
+    public List<String> getDomains(){
+        LinkedList<String> domains = new LinkedList<>();
+        if (!app.isLicenseValid()){
+            return domains;
+        }
+
+        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
+            if(adAdapter == null){
+                continue;
+            }
+            if(!adAdapter.getSettings().getEnabled()){
+                continue;
+            }
+            domains.push(adAdapter.getSettings().getDomain());
+        }
+        return domains;
+    }
+
+    /**
+     * [getAdapter description]
+     * @param  domain [description]
+     * @return        [description]
+     */
+    public ActiveDirectoryLdapAdapter getAdapter(String domain){
+        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
+            if(adAdapter == null){
+                continue;
+            }
+            if(!adAdapter.getSettings().getEnabled()){
+                continue;
+            }
+            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
+                continue;
+            }
+            return adAdapter;
+        }
+        return null;
+    }
+
+    /**
+     * Get user entries from all servers
+     *
+     * @param domain
+     *  Name of domain to pull.
+     * @param groupName 
+     *  Group to search.
+     * @return
+     *  List of user entries
+     * @throws ServiceUnavailableException
+     *  If unable to contact server.
+     */
+    public List<UserEntry> getGroupUsers( String domain, String groupName )
         throws ServiceUnavailableException
     {
-        ActiveDirectoryLdapAdapter adAdapter = this.adAdapter;
+        if (!app.isLicenseValid()){
+            return new LinkedList<>();
+        }
 
-        if (!app.isLicenseValid())
-            return new LinkedList<UserEntry>();
-        if (!currentSettings.getEnabled())
-            return new LinkedList<UserEntry>();
-        
-        if(adAdapter != null) {
+        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
+            if(adAdapter == null){
+                continue;
+            }
+            if(!adAdapter.getSettings().getEnabled()){
+                continue;
+            }
+            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
+                continue;
+            }
+
             try {
                 return adAdapter.listGroupUsers(groupName);
             }  catch (ServiceUnavailableException x) {
                 logger.warn("Unable to query Active Directory Groups.",x);
-                throw new ServiceUnavailableException(x.getMessage());
             }
         }
 
-        return new LinkedList<UserEntry>();
+        return new LinkedList<>();
     }
-    
-    public List<GroupEntry> getActiveDirectoryGroupEntries( boolean fetchMemberOf )
-    {
-        ActiveDirectoryLdapAdapter adAdapter = this.adAdapter;
-        List<GroupEntry> groupList = new LinkedList<GroupEntry>();
 
-        if (!app.isLicenseValid())
-            return new LinkedList<GroupEntry>();
-        if (!currentSettings.getEnabled())
-            return new LinkedList<GroupEntry>();
-        
-        if(adAdapter != null) {
+    /**
+     * Get group entries from all servers
+     *
+     * @param domain
+     *  Domain name to search.
+     * @param fetchMemberOf
+     *  If true, pull user entires too.
+     * @return List of groups
+     */
+    public List<GroupEntry> getGroupEntries( String domain, boolean fetchMemberOf )
+    {
+        List<GroupEntry> groupList = new LinkedList<>();
+
+        if (!app.isLicenseValid()){
+            return new LinkedList<>();
+        }
+
+        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
+            if(adAdapter == null){
+                continue;
+            }
+            if(!adAdapter.getSettings().getEnabled()){
+                continue;
+            }
+            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
+                continue;
+            }
+
             try {
                 groupList.addAll(adAdapter.listAllGroups(fetchMemberOf));
             } catch (ServiceUnavailableException x) {
@@ -118,54 +230,131 @@ public class ActiveDirectoryManagerImpl
         return groupList;
     }
 
-    public String getActiveDirectoryStatusForSettings( DirectoryConnectorSettings newSettings )
+    public static enum STATUS_RESULTS{
+        PASS,
+        WARN_QUERY_NO_USERS,
+        FAIL_EMPTY_SETTINGS,
+        FAIL_QUERY,
+        FAIL_QUERY_NONE
+    }
+
+    /**
+     * Get AD server status with the specified server settings.
+     *
+     * @param testServerSettings Server settings to test.
+     * @return JSON object indicating status of test.
+     */
+    public JSONObject getStatusForSettings( ActiveDirectoryServer testServerSettings )
     {
-        String status;
+        JSONObject status = new JSONObject();
 
-        if (newSettings == null || newSettings.getActiveDirectorySettings() == null) {
-            return "Invalid settings (null)";
-        }
-
-        ActiveDirectorySettings testSettings = newSettings.getActiveDirectorySettings();
-
+        int userCount = 0;
+        ActiveDirectoryLdapAdapter tempAdAdapter = null;
+        STATUS_RESULTS statusResult = STATUS_RESULTS.PASS;
         try {
+            if (testServerSettings == null ){
+                statusResult = STATUS_RESULTS.FAIL_EMPTY_SETTINGS;
+            }
+            String ouFiltersString = "";
+            for(String ouFilter : testServerSettings.getOUFilters()){
+                ouFiltersString += (ouFiltersString.length() > 0 ? "," : "") + ouFilter;
+            }
             logger.info("Testing Active Directory settings for (" +
-                        "server='" + testSettings.getLDAPHost() + "', " +
-                        "secure='" + testSettings.getLDAPSecure() + "', " +
-                        "port='" + testSettings.getLDAPPort() + "', " + 
-                        "superuser='" + testSettings.getSuperuser() + "', " + 
-                        "domain='" + testSettings.getDomain() + "', " + 
-                        "ou_filter='" + testSettings.getOUFilter() + "')");
+                        "server='" + testServerSettings.getLDAPHost() + "', " +
+                        "secure='" + testServerSettings.getLDAPSecure() + "', " +
+                        "port='" + testServerSettings.getLDAPPort() + "', " +
+                        "superuser='" + testServerSettings.getSuperuser() + "', " +
+                        "domain='" + testServerSettings.getDomain() + "', " +
+                        "ou_filters='" + ouFiltersString + "')");
 
-            ActiveDirectoryLdapAdapter temp_adAdapter = new ActiveDirectoryLdapAdapter(testSettings);
-            List<UserEntry> adRet = temp_adAdapter.listAll();
-            return "Active Directory authentication success!";
+            tempAdAdapter = new ActiveDirectoryLdapAdapter(testServerSettings);
+            userCount = tempAdAdapter.listAll().size();
+            statusResult = userCount == 0 ? STATUS_RESULTS.WARN_QUERY_NO_USERS : STATUS_RESULTS.PASS;
         } catch (Exception e) {
             logger.warn("Active Directory Test Failure", e);
-            String statusStr = "Active Directory authentication failed: <br/><br/>"+ e.getMessage();
-            return statusStr.replaceAll("\\p{Cntrl}", "");  //remove non-printable chars
+            try{
+                statusResult = e.toString().contains("DSID-03100238") ? STATUS_RESULTS.FAIL_QUERY_NONE : STATUS_RESULTS.FAIL_QUERY;
+                status.put("extras", e.toString());
+            }catch(Exception je){
+                logger.warn("Unable to set status:", je);
+            }
+        }finally{
+            try{
+                status.put("status", statusResult);
+                status.put("userCount", userCount);
+                if(tempAdAdapter != null){
+                    status.put("searchBases", tempAdAdapter.getSearchBases());
+                    status.put("groupCount", tempAdAdapter.listAllGroups(false).size());
+                }
+            }catch(Exception je){
+                logger.warn("Unable to set status:", je);
+            }
         }
+        return status;
     }
 
+    /**
+     * Perform authentication against all servers with the specified username and password.
+     *
+     * @param username Username to authenticate.
+     * @param pwd Password for the user.
+     * @return true if authenticated against a server, false if not.
+     */
     public boolean authenticate( String username, String pwd )
     {
-        if(this.adAdapter == null)
-            return false;
-        if (!currentSettings.getEnabled())
-            return false;
-        
-        try {
-            if(adAdapter.authenticate(username, pwd)) {
-                return true;
-            }
-        } catch (ServiceUnavailableException x) {
-            logger.warn("Active Directory authenticate failed: ", x);
-            return false;
+        String authUsername = null;
+        String authDomain = null;
+        if(username.contains("\\")){
+            String[] domainUsername = username.split("\\\\");
+            authDomain = domainUsername[0];
+            authUsername = domainUsername[1];
         }
-            
-        return false;                
+        if(username.contains("@")){
+            String[] domainUsername = username.split("@");
+            authUsername = domainUsername[0];
+            authDomain = domainUsername[1];
+        }
+
+        boolean azure = false;
+        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
+            if(adAdapter == null){
+                continue;
+            }
+            if(!adAdapter.getSettings().getEnabled()){
+                continue;
+            }
+            azure = adAdapter.getSettings().getAzure();
+            if(!azure){
+                /**
+                 * Azure usernames can be in different domains, so don't do specific matching.
+                 */
+                if(authDomain != null ){
+                    if(!adAdapter.getSettings().getDomain().equals(authDomain) &&
+                    !adAdapter.getSettings().getDomain().startsWith(authDomain+".") ){
+                        continue;
+                    }
+                }
+            }
+
+            try {
+                if(adAdapter.authenticate(azure ? username : authUsername, pwd)) {
+                    return true;
+                }
+            } catch (ServiceUnavailableException x) {
+                logger.warn("Active Directory authenticate failed: ", x);
+                return false;
+            }
+        }
+
+        return false;
     }
-  
+
+    /**
+     * Convert list of strings to a single string for the purpose of...what?
+     *
+     * @param input Input list.
+     * @return String of list joined by commas.
+     */
     private String listToString(List<String> input) 
     {
         StringBuffer sb = new StringBuffer();
@@ -179,17 +368,52 @@ public class ActiveDirectoryManagerImpl
         }
         return sb.toString();
     }
-  
-    public Map<String,String> getUserGroupMap() 
+
+    /**
+     * Get user entries in JSON array format, suitable for UI display.
+     *
+     * @param domain
+     *      Domain to query.  If null, all domains.
+     * @return JSONArray of users with each entry containing fields uid, domain.
+     * @throws ServiceUnavailableException
+     *  If server is unreachable
+     */
+    public JSONArray getUsers( String domain)
+        throws ServiceUnavailableException
     {
-        Map<String,String> result = new HashMap<String,String>();
-        try{
-            List<UserEntry> users = getActiveDirectoryUserEntries();
-            for (UserEntry u: users) {
-                result.put(u.getUid(), listToString(app.memberOf(u.getUid())));
+        JSONArray result = new JSONArray();
+        if (!app.isLicenseValid()){
+            return result;
+        }
+
+        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
+            if(adAdapter == null){
+                continue;
             }
-        }catch( ServiceUnavailableException e ){
-            logger.warn(e.getMessage());
+            if(!adAdapter.getSettings().getEnabled()){
+                continue;
+            }
+
+            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
+                continue;
+            }
+
+            try {
+                for(UserEntry user : adAdapter.listAll()){
+                    try{
+                        JSONObject jsonUser = new JSONObject();
+                        jsonUser.put("uid", user.getUid());
+                        jsonUser.put("groups", app.memberOfGroup(user.getUid(), domain));
+                        jsonUser.put("domain", adAdapter.getSettings().getDomain());
+                        result.put(jsonUser);
+                    } catch (Exception x){
+                        logger.warn("Unable to query Active Directory Users.",x);
+                    }
+                }
+
+            } catch (ServiceUnavailableException x) {
+                logger.warn("Unable to query Active Directory Users.",x);
+            }
         }
         return result;
     }

@@ -1,10 +1,14 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.virus_blocker;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Abstract framework for a virus scanner client
+ */
 abstract public class VirusClient implements Runnable
 {
     protected final Logger logger = Logger.getLogger(getClass());
@@ -17,11 +21,23 @@ abstract public class VirusClient implements Runnable
     protected String dbgName; // thread name and socket host
     protected volatile boolean stop = false;
 
+    /**
+     * Constructor
+     * 
+     * @param cContext
+     *        The client context
+     */
     public VirusClient(VirusClientContext cContext)
     {
         this.cContext = cContext;
     }
 
+    /**
+     * Sets the thread
+     * 
+     * @param cThread
+     *        The thread
+     */
     public void setThread(Thread cThread)
     {
         this.cThread = cThread;
@@ -29,6 +45,9 @@ abstract public class VirusClient implements Runnable
         return;
     }
 
+    /**
+     * Starts the scan thread
+     */
     public void startScan()
     {
         //logger.debug("start, thread: " + cThread + ", this: " + this);
@@ -36,7 +55,12 @@ abstract public class VirusClient implements Runnable
         return;
     }
 
-    // timeout > 0
+    /**
+     * Checks the progress. Timeout
+     * 
+     * @param timeout
+     *        Timeout value > 0
+     */
     public void checkProgress(long timeout)
     {
         //logger.debug("check, thread: " + cThread + ", this: " + this);
@@ -52,7 +76,7 @@ abstract public class VirusClient implements Runnable
 
                 // retry when no result yet and time remains before timeout
                 long elapsedTime = System.currentTimeMillis() - startTime;
-                while ( cContext.getResult() == null && elapsedTime < timeout ) {
+                while (cContext.getResult() == null && elapsedTime < timeout) {
                     this.wait(timeout - elapsedTime);
                     elapsedTime = System.currentTimeMillis() - startTime;
                 }
@@ -71,6 +95,9 @@ abstract public class VirusClient implements Runnable
         return;
     }
 
+    /**
+     * Stop the scan thread
+     */
     public void stopScan()
     {
         //logger.debug("stop, thread: " + cThread + ", this: " + this);
@@ -84,13 +111,24 @@ abstract public class VirusClient implements Runnable
         return;
     }
 
+    /**
+     * Create our string representation
+     * 
+     * @return Our string representation
+     */
     public String toString()
     {
         return dbgName;
     }
 
+    /**
+     * The main run function
+     */
     abstract public void run();
 
+    /**
+     * Exit the thread cleanly
+     */
     public void cleanExit()
     {
         synchronized (this) {

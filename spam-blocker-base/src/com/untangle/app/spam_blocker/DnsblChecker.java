@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.spam_blocker;
 
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 /**
@@ -32,6 +32,11 @@ public class DnsblChecker
     private List<SpamDnsbl> spamDnsblList;
     private final SpamBlockerBaseApp spamImpl;
 
+    /**
+     * Constructor
+     * @param spamDnsblList The DNS blacklist
+     * @param spamImpl The spam blocker appliation
+     */
     public DnsblChecker(List<SpamDnsbl> spamDnsblList,SpamBlockerBaseApp spamImpl)
     {
         this.spamDnsblList = spamDnsblList;
@@ -70,6 +75,13 @@ public class DnsblChecker
      * 127.0.0.9 Open proxy servers
      */
 
+    /**
+     * Check a session
+     * 
+     * @param tsr The session request
+     * @param timeoutSec The timeout
+     * @return Boolean
+     */
     public boolean check(TCPNewSessionRequest tsr, long timeoutSec)
     {
         String ipAddr = tsr.getOrigClientAddr().getHostAddress();
@@ -120,6 +132,14 @@ public class DnsblChecker
         return isBlacklisted; // report
     }
 
+    /**
+     * Log a DNS blacklist event
+     * 
+     * @param client The client
+     * @param tsr The session request
+     * @param ipAddr The IP address
+     * @return True if blacklisted, otherwise false
+     */
     private boolean logDnsblEvent(DnsblClient client, TCPNewSessionRequest tsr, String ipAddr)
     {
         boolean isBlacklisted = true;
@@ -172,6 +192,13 @@ public class DnsblChecker
         return invertedIPAddr;
     }
 
+    /**
+     * Create a list of clients
+     * 
+     * @param ipAddr The ip address
+     * @param invertedIPAddr The inverted IP address
+     * @return The client list
+     */
     private List<DnsblClient> createClients(String ipAddr, String invertedIPAddr) 
     {
         LinkedList<DnsblClient> clients = new LinkedList<DnsblClient>();

@@ -16,12 +16,23 @@ public class FtpEpsvReply extends FtpReply
     
     private static final Pattern LINE_SPLITTER = Pattern.compile("\r\n");
 
+    /**
+     * FtpEpsvReply - make a new EPSV reply
+     * use makeEpsvReply to make a new FtpEpsvReply
+     * @param message
+     * @param socketAddress
+     */
     private FtpEpsvReply(String message, InetSocketAddress socketAddress)
     {
         super(FtpReply.EPSV,message);
         this.socketAddress = socketAddress;
     }
     
+    /**
+     * makeEpsvReply - makes an EPSV reply of the provided address
+     * @param socketAddress
+     * @return FtpReply
+     */
     public static FtpReply makeEpsvReply(InetSocketAddress socketAddress)
     {
         String message = "Entering Extended Passive Mode (" + FtpUtil.unparseExtendedPasvReply(socketAddress) + ").";
@@ -43,6 +54,10 @@ public class FtpEpsvReply extends FtpReply
         return new FtpEpsvReply(sb.toString(), socketAddress);
     }
 
+    /**
+     * getSocketAddress for this EpsvReply
+     * @return the socketAddress
+     */
     public InetSocketAddress getSocketAddress()
     {
         return socketAddress;

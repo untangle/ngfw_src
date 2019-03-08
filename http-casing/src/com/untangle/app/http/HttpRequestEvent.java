@@ -3,9 +3,7 @@
  */
 package com.untangle.app.http;
 
-import java.sql.Timestamp;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;
@@ -13,7 +11,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 /**
  * Log event for a request.
- *
+ * This modifies the http_events table with all the information in the request
  */
 @SuppressWarnings("serial")
 public class HttpRequestEvent extends LogEvent
@@ -27,8 +25,18 @@ public class HttpRequestEvent extends LogEvent
     private String referer;
     private long contentLength;
 
+    /**
+     * Create an HttpRequestEvent.
+     */
     public HttpRequestEvent() { }
 
+    /**
+     * Create an HttpRequestEvent.
+     * @param requestLine 
+     * @param host 
+     * @param referer 
+     * @param contentLength 
+     */
     public HttpRequestEvent( RequestLine requestLine, String host, String referer, long contentLength )
     {
         this.host = host;
@@ -44,8 +52,14 @@ public class HttpRequestEvent extends LogEvent
 
     /**
      * The host, as specified by the request header.
+     * @return 
      */
     public String getHost() { return host; }
+
+    /**
+     * setHost.
+     * @param newValue 
+     */
     public void setHost( String newValue )
     {
         this.host = newValue;
@@ -54,46 +68,94 @@ public class HttpRequestEvent extends LogEvent
 
     /**
      * The host, as specified by the request header.
+     * @return 
      */
     public String getDomain() { return domain; }
+
+    /**
+     * setDomain.
+     * @param newValue 
+     */
     public void setDomain( String newValue ) { this.domain = newValue; }
     
     /**
      * Content length, as counted by the parser.
+     * @return 
      */
     public long getContentLength() { return contentLength; }
+
+    /**
+     * setContentLength.
+     * @param newValue 
+     */
     public void setContentLength( long newValue ) { this.contentLength = newValue; }
 
     /**
      * Get the requestId
+     * @return 
      */
     public Long getRequestId() { return this.requestId; }
+
+    /**
+     * setRequestId.
+     * @param newValue 
+     */
     public void setRequestId(  Long newValue  ) { this.requestId = newValue; }
     
     /**
      * Request method.
+     * @return 
      */
     public HttpMethod getMethod() { return method; }
+
+    /**
+     * setMethod.
+     * @param newValue 
+     */
     public void setMethod( HttpMethod newValue ) { this.method = newValue; }
 
     /**
      * Request URI.
+     * @return 
      */
     public URI getRequestUri() { return requestUri; }
+
+    /**
+     * setRequestUri.
+     * @param newValue 
+     */
     public void setRequestUri( URI newValue ) { this.requestUri = newValue; }
 
     /**
      * The referer, as specified in the header.
+     * @return 
      */
     public String getReferer() { return referer; }
+
+    /**
+     * setReferer.
+     * @param newValue 
+     */
     public void setReferer( String newValue ) { this.referer = newValue; }
 
     /**
      * The Session event for this request
+     * @return 
      */
     public SessionEvent getSessionEvent() { return sessionEvent; }
+
+    /**
+     * setSessionEvent.
+     * @param newValue 
+     */
     public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
     
+    /**
+     * Compile SQL statements
+     * @param conn 
+     * @param statementCache
+     * @throws Exception 
+     */
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
@@ -139,11 +201,19 @@ public class HttpRequestEvent extends LogEvent
         return;
     }
 
+    /**
+     * Human readable string
+     * @return string
+     */
     public String toString()
     {
         return "HttpRequestEvent: " + toSummaryString();
     }
 
+    /**
+     * A human readable summary string
+     * @return string
+     */
     @Override
     public String toSummaryString()
     {
@@ -155,9 +225,15 @@ public class HttpRequestEvent extends LogEvent
     }
 
 
-    // translates a host to a "domain"
-    // foo.bar.yahoo.com -> yahoo.com
-    // foor.bar.co.uk -> bar.co.uk
+    /**
+     * Translates a host to a "domain"
+     * Examples:
+     *  foo.bar.yahoo.com -> yahoo.com
+     *  foor.bar.co.uk -> bar.co.uk
+     * This tries to take country domains into account.
+     * @param host
+     * @return domain
+     */
     private String getDomainForHost( String host )
     {
         if ( host == null )

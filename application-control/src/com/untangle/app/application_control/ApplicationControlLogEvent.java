@@ -7,6 +7,13 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
 
+/**
+ * This is the implementation of our log event which logs details for actions
+ * taken for classified traffic.
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class ApplicationControlLogEvent extends LogEvent
 {
@@ -36,10 +43,8 @@ public class ApplicationControlLogEvent extends LogEvent
         this.state = status.state;
         this.ruleid = null;
         this.flagged = rule.getFlag();
-        if (rule.getBlock() || rule.getTarpit())
-            this.blocked = true;
-        else
-            this.blocked = false;
+        if (rule.getBlock() || rule.getTarpit()) this.blocked = true;
+        else this.blocked = false;
 
     }
 
@@ -57,105 +62,39 @@ public class ApplicationControlLogEvent extends LogEvent
         this.blocked = blocked;
     }
 
-    public String getApplication()
-    {
-        return application;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:off
 
-    public void setApplication(String application)
-    {
-        this.application = application;
-    }
+    public String getApplication() { return application; }
+    public void setApplication(String application) { this.application = application; }
 
-    public String getProtochain()
-    {
-        return protochain;
-    }
+    public String getProtochain() { return protochain; }
+    public void setProtochain(String protochain) { this.protochain = protochain; }
 
-    public void setProtochain(String protochain)
-    {
-        this.protochain = protochain;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public String getCategory()
-    {
-        return category;
-    }
+    public String getDetail() { return detail; }
+    public void setDetail(String detail) { this.detail = detail; }
 
-    public void setCategory(String category)
-    {
-        this.category = category;
-    }
+    public Integer getConfidence() { return confidence; }
+    public void setConfidence(Integer confidence) { this.confidence = confidence; }
 
-    public String getDetail()
-    {
-        return detail;
-    }
+    public Integer getState() { return state; }
+    public void setState(Integer state) { this.state = state; }
 
-    public void setDetail(String detail)
-    {
-        this.detail = detail;
-    }
+    public Integer getRuleId() { return ruleid; }
+    public void setRuleId(Integer ruleid) { this.ruleid = ruleid; }
 
-    public Integer getConfidence()
-    {
-        return confidence;
-    }
+    public boolean getFlagged() { return flagged; }
+    public void setFlagged(boolean flagged) { this.flagged = flagged; }
 
-    public void setConfidence(Integer confidence)
-    {
-        this.confidence = confidence;
-    }
+    public boolean getBlocked() { return blocked; }
+    public void setBlocked(boolean blocked) { this.blocked = blocked; }
 
-    public Integer getState()
-    {
-        return state;
-    }
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent(SessionEvent sessionEvent) { this.sessionEvent = sessionEvent; }
 
-    public void setState(Integer state)
-    {
-        this.state = state;
-    }
-
-    public Integer getRuleId()
-    {
-        return ruleid;
-    }
-
-    public void setRuleId(Integer ruleid)
-    {
-        this.ruleid = ruleid;
-    }
-
-    public boolean getFlagged()
-    {
-        return flagged;
-    }
-
-    public void setFlagged(boolean flagged)
-    {
-        this.flagged = flagged;
-    }
-
-    public boolean getBlocked()
-    {
-        return blocked;
-    }
-
-    public void setBlocked(boolean blocked)
-    {
-        this.blocked = blocked;
-    }
-
-    public SessionEvent getSessionEvent()
-    {
-        return sessionEvent;
-    }
-
-    public void setSessionEvent(SessionEvent sessionEvent)
-    {
-        this.sessionEvent = sessionEvent;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:on
 
     @Override
     public void compileStatements(java.sql.Connection conn, java.util.Map<String, java.sql.PreparedStatement> statementCache) throws Exception

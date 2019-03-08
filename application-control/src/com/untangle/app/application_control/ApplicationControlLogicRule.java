@@ -10,7 +10,6 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.AppSession;
 
 /**
  * This in the implementation of a ApplicationControlLogicRule
@@ -28,62 +27,30 @@ public class ApplicationControlLogicRule implements JSONString, Serializable
     private ApplicationControlLogicRuleAction action;
 
     private int id;
-    private boolean live;
+    private boolean enabled;
     private String description;
 
     public ApplicationControlLogicRule()
     {
     }
 
-    public List<ApplicationControlLogicRuleCondition> getConditions()
-    {
-        return this.matchers;
-    }
+    public List<ApplicationControlLogicRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions(List<ApplicationControlLogicRuleCondition> matchers) { this.matchers = matchers; }
 
-    public void setConditions(List<ApplicationControlLogicRuleCondition> matchers)
-    {
-        this.matchers = matchers;
-    }
+    public int getId() { return this.id; }
+    public void setId(int id) { this.id = id; }
 
-    public int getId()
-    {
-        return this.id;
-    }
+    public ApplicationControlLogicRuleAction getAction() { return this.action; }
+    public void setAction(ApplicationControlLogicRuleAction action) { this.action = action; }
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+    public boolean getEnabled() { return this.enabled; }
+    public void setEnabled( boolean newValue ) { this.enabled = newValue; }
 
-    public ApplicationControlLogicRuleAction getAction()
-    {
-        return this.action;
-    }
+    /* deprecated - live renamed to enabled - this remains so json serialization works */
+    public void setLive(boolean live) { this.enabled = live; }
 
-    public void setAction(ApplicationControlLogicRuleAction action)
-    {
-        this.action = action;
-    }
-
-    public boolean isLive()
-    {
-        return live;
-    }
-
-    public void setLive(boolean live)
-    {
-        this.live = live;
-    }
-
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public String toJSONString()
     {
@@ -93,7 +60,7 @@ public class ApplicationControlLogicRule implements JSONString, Serializable
 
     public boolean matches(AppSession sess)
     {
-        if (!isLive())
+        if (!getEnabled())
             return false;
 
         /**

@@ -4,29 +4,26 @@
 package com.untangle.app.ftp;
 
 import java.io.Serializable;
+import org.json.JSONString;
+import org.json.JSONObject;
 
 /**
  * Ftp casing settings.
  */
 @SuppressWarnings("serial")
-public class FtpSettings implements Serializable
+public class FtpSettings implements Serializable, JSONString
 {
     private boolean enabled = true;
 
     public FtpSettings() { }
 
-    /**
-     * Enabled status for casing.
-     *
-     * @return true when casing is enabled, false otherwise.
-     */
-    public boolean isEnabled()
-    {
-        return enabled;
-    }
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
-    public void setEnabled(boolean enabled)
+    public String toJSONString()
     {
-        this.enabled = enabled;
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
+    
 }

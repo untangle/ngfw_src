@@ -4,7 +4,7 @@
 # and the ipsec-xauth-updown script to notify the IPsec app
 # when L2TP and Xauth users connect and disconnect.
 # ARG1 = CONNECT or GOODBYE
-# ARG2 = L2TP or XAUTH
+# ARG2 = L2TP or XAUTH or IKEv2
 # ARG3 = IP address
 # ARG4 = username
 # ARG5 = connect = interface | goodbye = rxcount

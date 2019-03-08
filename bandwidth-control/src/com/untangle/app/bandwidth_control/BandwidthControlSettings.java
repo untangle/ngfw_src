@@ -1,9 +1,15 @@
+/**
+ * $Id: BandwidthControlSettings.java,v 1.00 2018/03/20 20:08:13 dmorris Exp $
+ */
 package com.untangle.app.bandwidth_control;
 
 import java.util.List;
 import org.json.JSONString;
 import org.json.JSONObject;
     
+/**
+ * The Bandwidth Control settings object
+ */
 @SuppressWarnings("serial")
 public class BandwidthControlSettings implements java.io.Serializable, JSONString
 {

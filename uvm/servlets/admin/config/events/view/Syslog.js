@@ -1,10 +1,12 @@
 Ext.define('Ung.config.events.view.Syslog', {
-    extend: 'Ext.panel.Panel',
-    alias: 'widget.config.events.syslog',
-
+    extend: 'Ext.form.Panel',
+    alias: 'widget.config-events-syslog',
+    itemId: 'syslog',
     title: 'Syslog'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
+    withValidation: true,
 
     items:[{
         title: 'Remote Syslog Configuration'.t(),
@@ -13,7 +15,6 @@ Ext.define('Ung.config.events.view.Syslog', {
             html: 'If enabled logged events will be sent in real-time to a remote syslog for custom processing.'.t()
         }, {
             xtype:'checkbox',
-            // margin: '0 10 0 10',
             labelWidth: 160,
             bind: "{settings.syslogEnabled}",
             fieldLabel: 'Enable Remote Syslog'.t(),
@@ -37,7 +38,7 @@ Ext.define('Ung.config.events.view.Syslog', {
                 bind: '{settings.syslogHost}',
                 toValidate: true,
                 allowBlank: false,
-                blankText: 'A Host must be specified.'.t(),
+                blankText: 'Host must be specified.'.t(),
                 validator: Ext.bind( function( value ){
                     if( value == '127.0.0.1' ||
                         value == 'localhost' ){
@@ -57,7 +58,6 @@ Ext.define('Ung.config.events.view.Syslog', {
                 vtype: 'port'
             },{
                 xtype: 'combo',
-                // name: 'syslogProtocol',
                 editable: false,
                 fieldLabel: 'Protocol'.t(),
                 queryMode: 'local',
@@ -68,8 +68,6 @@ Ext.define('Ung.config.events.view.Syslog', {
                 name: 'syslogEventsSummary',
                 xtype: 'component',
                 html: '',
-                // hidden: !this.getEventSettings().syslogEnabled
-
             }]
         }]
     }, {
@@ -87,19 +85,26 @@ Ext.define('Ung.config.events.view.Syslog', {
 
         listProperty: 'settings.syslogRules.list',
         tbar: ['@add'],
-        // !!! add copy action
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
-
-        ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
-        conditions: [
-            Condition.fieldCondition
-        ],
+        copyId: 'ruleId',
+        copyAppendField: 'description',
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.SyslogRule',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: [{
+                    comparator: '=',
+                    field: 'class',
+                    fieldValue: '*SystemStatEvent*',
+                    javaClass: 'com.untangle.uvm.event.EventRuleCondition'
+                }]
+            },
             ruleId: -1,
             enabled: true,
             thresholdEnabled: false,
+            thresholdTimeframeSec: 60,
+            thresholdGroupingField: null,
             syslog: true
         },
 
@@ -107,25 +112,30 @@ Ext.define('Ung.config.events.view.Syslog', {
             Column.ruleId,
             Column.enabled,
             Column.description,
+            Ung.config.events.MainController.conditionsClass,
+            Ung.config.events.MainController.conditions,
         {
-            xtype:'checkcolumn',
-            header: 'Log'.t(),
-            dataIndex: 'log',
-            width:55
-        }, {
             xtype:'checkcolumn',
             header: 'Remote Syslog'.t(),
             dataIndex: 'syslog',
-            width:55
+            width: Renderer.booleanWidth + 30
         }],
 
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions,
         {
+            xtype: 'eventconditionseditor',
+            bind: '{record.conditions}',
+            fields: {
+                type: 'field',
+                comparator: 'comparator',
+                value: 'fieldValue',
+            },
+            allowAllClasses: true
+        },{
             xtype: 'fieldset',
-            title: 'And the following conditions:'.t(),
+            title: 'As well as the following conditions:'.t(),
             items:[{
                 xtype:'checkbox',
                 labelWidth: 160,
@@ -142,8 +152,8 @@ Ext.define('Ung.config.events.view.Syslog', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{record.thresholdEnabled == false}',
-                    disabled: '{record.thresholdEnabled == false}'
+                    hidden: '{!record.thresholdEnabled}',
+                    disabled: '{!record.thresholdEnabled}'
                 },
                 items: [{
                     xtype:'numberfield',
@@ -158,7 +168,11 @@ Ext.define('Ung.config.events.view.Syslog', {
                         xtype: 'numberfield',
                         fieldLabel: 'Over Timeframe'.t(),
                         labelWidth: 160,
-                        bind: '{record.thresholdTimeframeSec}',
+                        disabled: true,
+                        bind: {
+                            value: '{record.thresholdTimeframeSec}',
+                            disabled: '{!record.thresholdEnabled}'
+                        },
                         allowDecimals: false,
                         allowBlank: false,
                         minValue: 60,
@@ -179,11 +193,6 @@ Ext.define('Ung.config.events.view.Syslog', {
             xtype: 'fieldset',
             title: 'Perform the following action(s):'.t(),
             items:[{
-                xtype:'checkbox',
-                fieldLabel: 'Log'.t(),
-                labelWidth: 160,
-                bind: '{record.log}'
-            }, {
                 xtype:'checkbox',
                 fieldLabel: 'Remote Syslog'.t(),
                 labelWidth: 160,

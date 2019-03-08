@@ -40,6 +40,7 @@ public class GlobEmailAddressList
      * 
      * @param address
      *            the address;
+     * @return true if list contains address, false otherwise.
      */
     public boolean contains(String address)
     {

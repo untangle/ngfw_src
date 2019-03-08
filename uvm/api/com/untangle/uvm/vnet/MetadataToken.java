@@ -12,6 +12,10 @@ public class MetadataToken implements Token
 {
     private static final ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
 
+    /**
+     * getBytes - nothing in this token
+     * @return ByteBuffer
+     */
     public final ByteBuffer getBytes()
     {
         return EMPTY_BUFFER;

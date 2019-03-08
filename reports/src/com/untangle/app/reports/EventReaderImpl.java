@@ -5,7 +5,6 @@ package com.untangle.app.reports;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.PreparedStatement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,12 +40,30 @@ public class EventReaderImpl
 
     private Semaphore querySemaphore = new Semaphore(MAX_SIMULTANEOUS_QUERIES);
     
+    /**
+     * Initialize event reader.
+     *
+     * @param app
+     *  Reports application.
+     */
     public EventReaderImpl( ReportsApp app )
     {
         this.app = app;
         this.columnTypeMap.put("inet",String.class);
     }
 
+    /**
+     * Return the event result set.
+     *
+     * @param dbConnection
+     *  Database connection.
+     * @param statement
+     *  SQL statement to query.
+     * @param limit
+     *  Maximum number of results to include.
+     * @return
+     *  ResultSetReader
+     */
     public ResultSetReader getEventsResultSet( final Connection dbConnection, final PreparedStatement statement, final int limit )
     {
         EventReaderImpl.checkConnection( dbConnection );
@@ -98,10 +115,26 @@ public class EventReaderImpl
 
         } catch ( Exception e ) {
             logger.warn("Failed to query database. query: " + statement, e );
-            throw new RuntimeException( "Failed to query database. query: " + statement, e );
+            throw new RuntimeException( "Failed to query database.", e );
         } 
     }
     
+    /**
+     * Return the event result set.
+     *
+     * @param dbConnection
+     *  Database connection.
+     * @param statement
+     *  SQL statement to query.
+     * @param table
+     *  Table to query
+     * @param conditions
+     *  Additional SQL conditions.
+     * @param limit
+     *  Maximum number of results to include.
+     * @return
+     *  ResultSetReader
+     */
     public ResultSetReader getEventsResultSet( final Connection dbConnection, final PreparedStatement statement, final String table, final SqlCondition[] conditions, final int limit )
     {
         if ( dbConnection == null) {
@@ -125,10 +158,24 @@ public class EventReaderImpl
         } catch ( Exception e ) {
             try {dbConnection.close();} catch( Exception exc) {}
             logger.warn("Failed to query database. query: " + statement, e );
-            throw new RuntimeException( "Failed to query database. query: " + statement, e );
+            throw new RuntimeException( "Failed to query database.", e );
         } 
     }
 
+    /**
+     * Return the event result set.
+     *
+     * @param sql
+     *  SQL statement to query.
+     * @param table
+     *  Table to query
+     * @param conditions
+     *  Additional SQL conditions.
+     * @param limit
+     *  Maximum number of results to include.
+     * @return
+     *  ResultSetReader
+     */
     public ResultSetReader getEventsResultSet( final String sql, final String table, final SqlCondition[] conditions, final int limit )
     {
         Connection dbConnection = null;
@@ -153,10 +200,28 @@ public class EventReaderImpl
         } catch ( Exception e ) {
             try {dbConnection.close();} catch( Exception exc) {}
             logger.warn("Failed to query database. query: " + sql, e );
-            throw new RuntimeException( "Failed to query database. query: " + sql, e );
+            throw new RuntimeException( "Failed to query database.", e );
         } 
     }
     
+    /**
+     * Return the event result set.
+     *
+     * @param query
+     *  SQL statement to query.
+     * @param table
+     *  Table to query
+     * @param conditions
+     *  Additional SQL conditions.
+     * @param limit
+     *  Maximum number of results to include.
+     * @param startDate
+     *  Start date for query.
+     * @param endDate
+     *  Send date for query.
+     * @return
+     *  ResultSetReader
+     */
     public ResultSetReader getEventsResultSet( final String query, final String table, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate )
     {
         String queryStr = query;
@@ -199,18 +264,56 @@ public class EventReaderImpl
         return getEventsResultSet( queryStr, table, conditions, limit );
     }
 
+    /**
+     * Get events as an array of JSON objects.
+     *
+     * @param query
+     *  SQL statement to query.
+     * @param table
+     *  Table to query
+     * @param conditions
+     *  Additional SQL conditions.
+     * @param limit
+     *  Maximum number of results to include.
+     * @param startDate
+     *  Start date for query.
+     * @param endDate
+     *  Send date for query.
+     * @return
+     *  ArraList of JSON objects containing results.
+     */
     public ArrayList<JSONObject> getEvents( final String query, final String table, final SqlCondition[] conditions, final int limit, final Date startDate, final Date endDate )
     {
         ResultSetReader resultSetReader = getEventsResultSet( query, table, conditions, limit, startDate, endDate);
         return resultSetReader.getAllEvents();
     }
 
+    /**
+     * Get events as an array of JSON objects.
+     *
+     * @param dbConnection
+     *  Database connection.
+     * @param statement
+     *  SQL statement to query
+     * @param table
+     *  Table to query
+     * @param limit
+     *  Maximum number of results to include.
+     * @return
+     *  ArraList of JSON objects containing results.
+     */
     public ArrayList<JSONObject> getEvents( final Connection dbConnection, final PreparedStatement statement, final String table, final int limit )
     {
         ResultSetReader resultSetReader = getEventsResultSet( dbConnection, statement, table, null, limit );
         return resultSetReader.getAllEvents();
     }
 
+    /**
+     * Check state of database connection.
+     *
+     * @param dbConnection
+     *  Database connection to verify.
+     */
     public static void checkConnection( final Connection dbConnection )
     {
         if ( dbConnection == null ) {

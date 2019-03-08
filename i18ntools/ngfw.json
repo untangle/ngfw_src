@@ -1,0 +1,44 @@
+{
+    "copyright": "Untangle, Inc.",
+    "directories": [
+        "ngfw_pkgs",
+        "ngfw_src",
+		"ngfw_hades-pkgs"
+	],
+    "report_fields": [
+        "description",
+        "title"
+    ],
+	"modules": [
+        "uvm",
+        "smtp-casing",
+        "http-casing",
+        "ftp-casing",
+        "virus-blocker-base",
+        "web-filter-base",
+        "spam-blocker-base",
+        "ad-blocker",
+        "firewall",
+        "intrusion-prevention",
+        "openvpn",
+        "phish-blocker",
+        "application-control-lite",
+        "reports",
+        "spam-blocker-lite",
+        "directory-connector",
+        "bandwidth-control",
+        "configuration-backup",
+        "branding-manager",
+        "spam-blocker",
+        "wan-failover",
+        "ipsec-vpn",
+        "policy-manager",
+        "web-filter",
+        "wan-balancer",
+        "live-support",
+        "web-cache",
+        "application-control",
+        "captive-portal",
+	    "ssl-inspector"
+	]
+}

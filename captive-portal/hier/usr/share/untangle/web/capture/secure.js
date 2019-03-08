@@ -21,13 +21,15 @@ function getServer() {
 }
 
 function imgLoadFailure(isRequired) {
-    var form = document.getElementsByTagName('form');
-    var cont =  form[0];
+    var formlist = document.getElementsByTagName('form');
+    var form =  formlist[0];
 
-    var find = document.getElementsByName('submit');
-    var push = find[0];
+    var pushlist = document.getElementsByName('submit');
+    var push = pushlist[0];
 
     var newParagraph = document.createElement('H4');
+    newParagraph.setAttribute('style', 'color: red');
+
     var text;
     if (isRequired == true) {
         text = document.createTextNode("ERROR: The server root certificate is not installed on your computer or device.  You must install the root certificate to continue.");
@@ -36,8 +38,12 @@ function imgLoadFailure(isRequired) {
     }
 
     if (isRequired == true) {
+        form.setAttribute('disabled', 'true');
+        form.setAttribute('hidden', 'true');
+        form.style.display = 'none';
         push.setAttribute('disabled', 'true');
         push.setAttribute('hidden', 'true');
+        push.style.display = 'none';
     }
 
     newParagraph.appendChild(text);
@@ -49,17 +55,17 @@ function imgLoadFailure(isRequired) {
     newLink.href = '/RootCAInstaller.exe';
     newLink.title ="Download server root CA certificate installer";
     newParagraph.appendChild(newLink);
-    cont.parentElement.appendChild(newParagraph);
-    
+    form.parentElement.appendChild(newParagraph);
+
     newParagraph.appendChild(document.createElement('br'));
-    
+
     var newLink = document.createElement('a');
     var linkText = document.createTextNode("Click this link to download the root certificate (manual install).");
     newLink.appendChild(linkText);
     newLink.href = '/cert';
     newLink.title ="Download server root CA certificate";
     newParagraph.appendChild(newLink);
-    cont.parentElement.appendChild(newParagraph);
+    form.parentElement.appendChild(newParagraph);
 }
 
 function onCheckFailure() {

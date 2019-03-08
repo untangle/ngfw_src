@@ -22,7 +22,7 @@ public class SqlCondition implements Serializable, JSONString
     private String column;
     private String value;
     private String operator;
-    private Boolean autoFormatValue = null;
+    private boolean autoFormatValue = true;
     
     public SqlCondition() {}
     
@@ -70,8 +70,11 @@ public class SqlCondition implements Serializable, JSONString
      * If true, then the "value" will be handled in the Sql Statement with a "?"
      * If false, the value will be hardcoded verbatim inside the sql string.
      * This is necessary because not all values/operators are correctly supported by Statement
+     *
+     * @return 
+     * true if auto-format supported, false otherwise
      */
-    public Boolean getAutoFormatValue()
+    public boolean getAutoFormatValue()
     {
         /**
          * Some operators require special handling
@@ -92,11 +95,11 @@ public class SqlCondition implements Serializable, JSONString
         return this.autoFormatValue;
     }
 
-    public void setAutoFormatValue( Boolean newValue )
+    public void setAutoFormatValue( boolean newValue )
     {
         this.autoFormatValue = newValue;
     }
-    
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
@@ -107,7 +110,7 @@ public class SqlCondition implements Serializable, JSONString
     {
         // these operators are not supported with prepareStatement
         // as such there are hardcoded in the SQL query
-        if ( getAutoFormatValue() != null && !getAutoFormatValue() ) {
+        if ( !getAutoFormatValue() ) {
             return getColumn() + " " + getOperator() + " " + getValue() + " ";
         }
         // otherwise use the PreparedStatement '?'
@@ -131,7 +134,7 @@ public class SqlCondition implements Serializable, JSONString
             for ( SqlCondition condition : conditions ) {
                     
                 // these operators are not supported with Statement
-                if ( condition.getAutoFormatValue() != null && !condition.getAutoFormatValue() ) {
+                if ( !condition.getAutoFormatValue() ) {
                     continue;
                 }
                     
@@ -148,6 +151,11 @@ public class SqlCondition implements Serializable, JSONString
                     continue;
                 }
 
+                // count all "char(x)" as "char"
+                if (columnType.startsWith("char")) {
+                    columnType = "text";
+                }
+
                 switch (columnType) {
                 case "numeric":
                 case "integer":
@@ -159,17 +167,6 @@ public class SqlCondition implements Serializable, JSONString
                 case "smallint":
                 case "mediumint":
                 case "bigint":
-                    if ("null".equalsIgnoreCase(value))
-                        statement.setNull(i, java.sql.Types.INTEGER);
-                    else {
-                        try {
-                            statement.setLong(i, Long.valueOf( value ));
-                        } catch (Exception e) {
-                            throw new RuntimeException( "Invalid number: " + value );
-                        }
-                    }
-                break;
-
                 case "real":
                 case "float":
                 case "float4":
@@ -178,9 +175,15 @@ public class SqlCondition implements Serializable, JSONString
                         statement.setNull(i, java.sql.Types.INTEGER);
                     else {
                         try {
-                            statement.setFloat(i, Float.valueOf( value ));
+                            statement.setLong(i, Long.valueOf( value ));
                         } catch (Exception e) {
-                            throw new RuntimeException( "Invalid number: " + value );
+                            try {
+                                statement.setFloat(i, Float.valueOf( value ));
+                            } catch (Exception exc) {
+                                logger.warn("Failed to parse long",e);
+                                logger.warn("Failed to parse float",exc);
+                                throw new RuntimeException( "Invalid number: " + value );
+                            }
                         }
                     }
                 break;

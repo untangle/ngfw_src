@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: GeographyManager.java 42115 2016-01-15 17:56:36Z mahotz $
  */
 
@@ -6,14 +6,7 @@ package com.untangle.uvm;
 
 public interface GeographyManager
 {
-    class Coordinates
-    {
-        public String country;
-        public double latitude;
-        public double longitude;
-    }
-
-    boolean checkForDatabaseUpdate();
+    boolean checkForDatabaseUpdate(boolean loadFlag);
 
     String getCountryName(String netAddress);
 
@@ -28,4 +21,14 @@ public interface GeographyManager
     String getPostalCode(String netAddress);
 
     Coordinates getCoordinates(String netAddress);
+
+    /**
+     * Stores coordinates
+     */
+    class Coordinates
+    {
+        public String country;
+        public double latitude;
+        public double longitude;
+    }
 }

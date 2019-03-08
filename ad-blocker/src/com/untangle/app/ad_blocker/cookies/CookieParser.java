@@ -8,6 +8,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+/**
+ * This class provides static cookie parsing utility methods
+ */
 public class CookieParser
 {
     private static final int KEY_STATE = 0;
@@ -35,7 +38,7 @@ public class CookieParser
 
         int state = KEY_STATE;
 
-        Map<String, String> hashMap = new HashMap<String, String>();
+        Map<String, String> hashMap = new HashMap<>();
 
         StringBuilder keyBuffer = new StringBuilder();
         StringBuilder valueBuffer = new StringBuilder();

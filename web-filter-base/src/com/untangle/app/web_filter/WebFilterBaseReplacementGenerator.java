@@ -1,6 +1,8 @@
-package com.untangle.app.web_filter;
+/**
+ * $Id$
+ */
 
-import java.net.InetAddress;
+package com.untangle.app.web_filter;
 
 import com.untangle.app.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
@@ -24,11 +26,24 @@ public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebF
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
+    /**
+     * Constructor
+     *  
+     * @param appId
+     *      The application ID
+     */
     public WebFilterBaseReplacementGenerator(AppSettings appId)
     {
         super(appId);
     }
 
+    /**
+     * Get the replacement page
+     * 
+     * @param details
+     *      The block details
+     * @return The replacement
+     */
     @Override
     protected String getReplacement(WebFilterBlockDetails details)
     {
@@ -40,6 +55,17 @@ public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebF
                              uvm.brandingManager().getContactHtml());
     }
 
+    /**
+     * Get the redirect URL
+     * 
+     * @param nonce
+     *      The nonce
+     * @param host
+     *      The host
+     * @param appSettings
+     *      The application settings
+     * @return The redirect URL
+     */
     @Override
     protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
     {

@@ -4,9 +4,7 @@
 package com.untangle.uvm.network;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
-import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -29,14 +27,15 @@ public class NetworkSettings implements Serializable, JSONString
     private Integer version;
 
     private List<InterfaceSettings> interfaces = null;
+    private List<InterfaceSettings> virtualInterfaces = null;
     private List<DeviceSettings> devices = null;
     private List<PortForwardRule> portForwardRules = null;
     private List<NatRule> natRules = null;
     private List<BypassRule> bypassRules = null;
-    private List<FilterRule> inputFilterRules = null;
-    private List<FilterRule> forwardFilterRules = null;
     private List<StaticRoute> staticRoutes = null;
     private List<DhcpStaticEntry> staticDhcpEntries = null;
+    private List<FilterRule> accessRules = null;
+    private List<FilterRule> filterRules = null;
     
     private String hostName;
     private String domainName;
@@ -68,13 +67,15 @@ public class NetworkSettings implements Serializable, JSONString
     private QosSettings qosSettings;
     private UpnpSettings upnpSettings;
     private DnsSettings dnsSettings;
+    private NetflowSettings netflowSettings;
+    private DynamicRoutingSettings dynamicRoutingSettings;
 
     private String dnsmasqOptions;
 
     private String  publicUrlMethod;
     private String  publicUrlAddress;
     private Integer publicUrlPort;
-    
+
     public NetworkSettings() { }
 
     public Integer getVersion() { return this.version; }
@@ -82,6 +83,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public List<InterfaceSettings> getInterfaces() { return this.interfaces; }
     public void setInterfaces( List<InterfaceSettings> newValue ) { this.interfaces = newValue; }
+
+    public List<InterfaceSettings> getVirtualInterfaces() { return this.virtualInterfaces; }
+    public void setVirtualInterfaces( List<InterfaceSettings> newValue ) { this.virtualInterfaces = newValue; }
 
     public List<DeviceSettings> getDevices() { return this.devices; }
     public void setDevices( List<DeviceSettings> newValue ) { this.devices = newValue; }
@@ -95,11 +99,11 @@ public class NetworkSettings implements Serializable, JSONString
     public List<BypassRule> getBypassRules() { return this.bypassRules; }
     public void setBypassRules( List<BypassRule> newValue ) { this.bypassRules = newValue; }
 
-    public List<FilterRule> getInputFilterRules() { return this.inputFilterRules; }
-    public void setInputFilterRules( List<FilterRule> newValue ) { this.inputFilterRules = newValue; }
+    public List<FilterRule> getFilterRules() { return this.filterRules; }
+    public void setFilterRules( List<FilterRule> newValue ) { this.filterRules = newValue; }
 
-    public List<FilterRule> getForwardFilterRules() { return this.forwardFilterRules; }
-    public void setForwardFilterRules( List<FilterRule> newValue ) { this.forwardFilterRules = newValue; }
+    public List<FilterRule> getAccessRules() { return this.accessRules; }
+    public void setAccessRules( List<FilterRule> newValue ) { this.accessRules = newValue; }
     
     public List<StaticRoute> getStaticRoutes() { return this.staticRoutes; }
     public void setStaticRoutes( List<StaticRoute> newValue ) { this.staticRoutes = newValue; }
@@ -179,6 +183,12 @@ public class NetworkSettings implements Serializable, JSONString
     public DnsSettings getDnsSettings() { return this.dnsSettings; }
     public void setDnsSettings( DnsSettings newValue ) { this.dnsSettings = newValue; }
 
+    public NetflowSettings getNetflowSettings() { return this.netflowSettings; }
+    public void setNetflowSettings( NetflowSettings newValue ) { this.netflowSettings = newValue; }
+    
+    public DynamicRoutingSettings getDynamicRoutingSettings() { return this.dynamicRoutingSettings; }
+    public void setDynamicRoutingSettings( DynamicRoutingSettings newValue ) { this.dynamicRoutingSettings = newValue; }
+    
     public String getDnsmasqOptions() { return this.dnsmasqOptions; }
     public void setDnsmasqOptions( String newValue ) { this.dnsmasqOptions = newValue; }
 
@@ -187,7 +197,7 @@ public class NetworkSettings implements Serializable, JSONString
 
     public int getLxcInterfaceId() { return this.lxcInterfaceId; }
     public void setLxcInterfaceId( int newValue ) { this.lxcInterfaceId = newValue; }
-    
+
     /**
      * This determines the method used to calculate the publicy available URL used to reach Untangle resources
      */

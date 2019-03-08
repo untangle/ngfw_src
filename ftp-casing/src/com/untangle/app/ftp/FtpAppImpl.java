@@ -5,13 +5,10 @@ package com.untangle.app.ftp;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -41,16 +38,29 @@ public class FtpAppImpl extends AppBase
 
     private FtpSettings settings;
 
+    /**
+     * Create a new FtpAppImpl 
+     * @param appSettings
+     * @param appProperties
+     */
     public FtpAppImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
     }
 
+    /**
+     * getFtpSettings gets the current FTP settings 
+     * @return FtpSettings
+     */
     public FtpSettings getFtpSettings()
     {
         return settings;
     }
 
+    /**
+     * setFtpSettings sets the current FTP settings
+     * @param newSettings
+     */
     public void setFtpSettings(final FtpSettings newSettings)
     {
         String appID = this.getAppSettings().getId().toString();
@@ -68,6 +78,9 @@ public class FtpAppImpl extends AppBase
         reconfigure();
     }
 
+    /**
+     * Reconfigure the current app with the new/current settings
+     */
     public void reconfigure()
     {
         if ( settings != null ) {
@@ -76,18 +89,27 @@ public class FtpAppImpl extends AppBase
         }
     }
 
-    public void initializeSettings() { }
-
+    /**
+     * getSettings - alias for getFtpSettings
+     * @return FtpSettings
+     */
     public Object getSettings()
     {
         return getFtpSettings();
     }
 
+    /**
+     * setSettings - alias for setFtpSettings
+     * @param settings
+     */
     public void setSettings(Object settings)
     {
         setFtpSettings((FtpSettings)settings);
     }
     
+    /**
+     * postInit hook
+     */
     protected void postInit()
     {
         String appID = this.getAppSettings().getId().toString();
@@ -123,6 +145,10 @@ public class FtpAppImpl extends AppBase
         }
     }
 
+    /**
+     * getConnectors for the FtpAppImpl
+     * @return PipelineConnector[]
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {

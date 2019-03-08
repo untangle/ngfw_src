@@ -7,7 +7,7 @@
   <display-name>OpenVPN</display-name>
 
   <description>
-    OpenVPN client download utility
+    OpenVPN Servlet
   </description>
 
   <!-- Download the windows setup or configuration file -->
@@ -30,6 +30,11 @@
   <servlet-mapping>
     <servlet-name>Downloader</servlet-name>
     <url-pattern>/chrome.onc</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>Downloader</servlet-name>
+    <url-pattern>/inline.ovpn</url-pattern>
   </servlet-mapping>
 
   <!-- Upload server zip config -->

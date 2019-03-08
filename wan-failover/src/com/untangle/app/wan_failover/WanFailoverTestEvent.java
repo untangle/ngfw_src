@@ -1,19 +1,19 @@
 /**
  * $Id$
  */
-package com.untangle.app.wan_failover;
 
-import java.sql.Timestamp;
-import java.util.Date;
+package com.untangle.app.wan_failover;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import java.io.Serializable;
+import org.json.JSONString;
 
 /**
  * Log event for a WAN Failover test.
  */
 @SuppressWarnings("serial")
-public class WanFailoverTestEvent extends LogEvent
+public class WanFailoverTestEvent extends LogEvent implements Serializable, JSONString
 {
     private int interfaceId;
     private String name;
@@ -33,33 +33,18 @@ public class WanFailoverTestEvent extends LogEvent
         this.success = success;
     }
     
-    /**
-     * Interface for this event
-     */
     public int getInterfaceId() { return this.interfaceId; }
     public void setInterfaceId( int interfaceId ) { this.interfaceId = interfaceId; }
 
-    /**
-     * Interface name for this event
-     */
     public String getName() { return this.name; }
     public void setName( String newValue ) { this.name = newValue; }
 
-    /**
-     * Interface for this event
-     */
     public String getOsName() { return this.osName; }
     public void setOsName( String newValue ) { this.osName = newValue; }
 
-    /**
-     * Whether or not the test suceeded
-     */
     public Boolean getSuccess() { return this.success; }
     public void setSuccess( Boolean newValue ) { this.success = newValue; }
     
-    /**
-     * The description of the test failed.
-     */
     public String getDescription() { return this.description; }
     public void setDescription( String newValue ) { this.description = newValue; }
 

@@ -24,7 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 class DigestGenerator
 {
     // Template name stuff
-    private static final String RESOURCE_ROOT = "com.untangle.app/smtp/quarantine/";
+    private static final String RESOURCE_ROOT = "com/untangle/app/smtp/quarantine/";
     private static final String HTML_TEMPLATE_NAME = "DigestSimpleEmail_HTML.vm";
 
     // Variables within the Velocity templates. Note that these must align
@@ -43,6 +43,9 @@ class DigestGenerator
     private VelocityEngine m_velocityEngine;
     private Template m_htmlTemplate;
 
+    /**
+     * Initialize instance of DigestGenerator.
+     */
     DigestGenerator() {
 
         // We have to extract the template files
@@ -127,6 +130,14 @@ class DigestGenerator
         }
     }
 
+    /**
+     * Create message body.
+     * @param  serverHost Servr address.
+     * @param  to         To address.
+     * @param  atm        AuthTokenManager.
+     * @param  i18nUtil   I18nUtil for translation.
+     * @return            Message body.
+     */
     String generateMsgBody(String serverHost, String to, AuthTokenManager atm, I18nUtil i18nUtil)
     {
 
@@ -149,6 +160,13 @@ class DigestGenerator
         }
     }
 
+    /**
+     * Merge template.
+     * @param  context  VelocityContext.
+     * @param  template Template to merge
+     * @param  estSize  Estimated size.
+     * @return          Array of bytes.
+     */
     private byte[] mergeTemplate(VelocityContext context, Template template, int estSize)
     {
         try {

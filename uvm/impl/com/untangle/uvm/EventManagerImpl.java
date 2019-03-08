@@ -1,37 +1,39 @@
 /**
- * $Id: ReportsManagerImpl.java,v 1.00 2015/03/04 13:59:12 dmorris Exp $
+ * $Id: EventManagerImpl.java,v 1.00 2015/03/04 13:59:12 dmorris Exp $
  */
 package com.untangle.uvm;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.event.AlertEvent;
-import com.untangle.uvm.event.SyslogEvent;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.TriggerRule;
 import com.untangle.uvm.event.EventRuleCondition;
-import com.untangle.uvm.event.EventRuleConditionField;
 import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.SyslogManagerImpl;
 
-import com.untangle.uvm.AdminManager;
-import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
 
 import org.json.JSONObject;
 
+/**
+ * Event prcessor
+ */
 public class EventManagerImpl implements EventManager
 {
     private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
@@ -39,6 +41,7 @@ public class EventManagerImpl implements EventManager
     private static EventManagerImpl instance = null;
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "events.js";
+    private final String classesFilename = System.getProperty("uvm.lib.dir") + "/untangle-vm/events/" + "classFields.json";
 
     private EventWriter eventWriter = new EventWriter();
 
@@ -49,6 +52,14 @@ public class EventManagerImpl implements EventManager
      */
     private EventSettings settings;
 
+    /**
+     * Initialize event manager.
+     *
+     * * Load settings.
+     * * Start event writer.
+     * 
+     * @return Instance of event manager.
+     */
     protected EventManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -78,6 +89,10 @@ public class EventManagerImpl implements EventManager
         SyslogManagerImpl.reconfigureCheck(settingsFilename, this.settings);
     }
 
+    /**
+     * Update settings.
+     * @param newSettings EventSettings to replace current settings.
+     */
     public void setSettings( final EventSettings newSettings )
     {
         /**
@@ -95,17 +110,12 @@ public class EventManagerImpl implements EventManager
         for (TriggerRule rule : newSettings.getTriggerRules()) {
             rule.setRuleId(++idx);
 
-            if (rule.getAction() == TriggerRule.TriggerAction.TAG_HOST ||
-                rule.getAction() == TriggerRule.TriggerAction.TAG_USER ||
-                rule.getAction() == TriggerRule.TriggerAction.TAG_DEVICE ) {
-
-                if ( rule.getTagName() == null )
-                    throw new RuntimeException("Missing tag name on trigger rule: " + idx);
-                if ( rule.getTagTarget() == null )
-                    throw new RuntimeException("Missing tag target on trigger rule: " + idx);
-                if ( rule.getTagLifetimeSec() == null )
-                    throw new RuntimeException("Missing tag lifetime on trigger rule: " + idx);
-            }
+            if ( rule.getTagName() == null )
+                throw new RuntimeException("Missing tag name on trigger rule: " + idx);
+            if ( rule.getTagTarget() == null )
+                throw new RuntimeException("Missing tag target on trigger rule: " + idx);
+            if ( rule.getTagLifetimeSec() == null )
+                throw new RuntimeException("Missing tag lifetime on trigger rule: " + idx);
         }
 
         /**
@@ -130,12 +140,37 @@ public class EventManagerImpl implements EventManager
 
     /**
      * Get the network settings
+     * @return EventSettings of current settings.
      */
     public EventSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Retreive class fields for UI.
+     * @return JSONObject of class fields.
+     */
+    public JSONObject getClassFields()
+    {
+        JSONObject classFields = null;
+        File f = new File(classesFilename);
+        if(f.exists()){
+            try{
+                InputStream is = new FileInputStream( classesFilename );
+                String jsonTxt = IOUtils.toString(is);
+                classFields = new JSONObject(jsonTxt);
+            }catch(Exception e){
+                logger.warn( "Unable to load event classes:", e);
+            }
+        }
+        return classFields;
+    }
+
+    /**
+     * Create default settings.
+     * @return EventSettings consisting of default values.
+     */
     private EventSettings defaultSettings()
     {
         EventSettings settings = new EventSettings();
@@ -147,274 +182,298 @@ public class EventManagerImpl implements EventManager
         return settings;
     }
 
+    /**
+     * Return default alert rules.
+     * @return List of AlertRule consisting of default alert rules.
+     */
     private LinkedList<AlertRule> defaultAlertRules()
     {
         LinkedList<AlertRule> rules = new LinkedList<AlertRule>();
 
-        LinkedList<EventRuleCondition> matchers;
-        EventRuleCondition matcher1;
-        EventRuleCondition matcher2;
-        EventRuleCondition matcher3;
+        LinkedList<EventRuleCondition> conditions;
+        EventRuleCondition condition1;
+        EventRuleCondition condition2;
+        EventRuleCondition condition3;
         AlertRule eventRule;
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*WanFailoverEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "action", "=", "DISCONNECTED" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "WAN is offline", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WanFailoverEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "action", "=", "DISCONNECTED" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "WAN is offline", false, 0 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "load1", ">", "20" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Server load is high", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "load1", ">", "20" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Server load is high", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "diskFreePercent", "<", ".2" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Free disk space is low", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "diskFreePercent", "<", ".2" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Free disk space is low", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "memFreePercent", "<", ".05" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Free memory is low", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "memFreePercent", "<", ".05" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Free memory is low", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "swapUsedPercent", ">", ".25" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Swap usage is high", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "swapUsedPercent", ">", ".25" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Swap usage is high", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SessionEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "SServerPort", "=", "22" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many SSH sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "SServerPort", "=", "22" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Suspicious Activity: Client created many SSH sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SessionEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "SServerPort", "=", "3389" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "SServerPort", "=", "3389" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SessionEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "entitled", "=", "false" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "entitled", "=", "false" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "blocked", "=", "False" ) );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "category", "=", "Malware Distribution Point" ) );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit detected", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Malware Distribution Point" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Malware Distribution Point website visit detected", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "blocked", "=", "True" ) );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "category", "=", "Malware Distribution Point" ) );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit blocked", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Malware Distribution Point" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Malware Distribution Point website visit blocked", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "blocked", "=", "False" ) );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "category", "=", "Botnet" ) );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Botnet website visit detected", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Botnet" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Botnet website visit detected", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "blocked", "=", "True" ) );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "category", "=", "Botnet" ) );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Botnet website visit blocked", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Botnet" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Botnet website visit blocked", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "blocked", "=", "False" ) );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "category", "=", "Phishing/Fraud" ) );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit detected", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Phishing/Fraud" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Phishing/Fraud website visit detected", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "blocked", "=", "True" ) );
-        matchers.add( matcher2 );
-        matcher3 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "category", "=", "Phishing/Fraud" ) );
-        matchers.add( matcher3 );
-        eventRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit blocked", false, 10 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        conditions.add( condition2 );
+        condition3 = new EventRuleCondition( "category", "=", "Phishing/Fraud" );
+        conditions.add( condition3 );
+        eventRule = new AlertRule( true, conditions, true, true, "Phishing/Fraud website visit blocked", false, 10 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*DeviceTableEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "key", "=", "add" ) );
-        matchers.add( matcher2 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*DeviceTableEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "key", "=", "add" );
+        conditions.add( condition2 );
         if ( "i386".equals(System.getProperty("os.arch", "unknown")) || "amd64".equals(System.getProperty("os.arch", "unknown"))) {
-            eventRule = new AlertRule( false, matchers, true, true, "New device discovered", false, 0 );
+            eventRule = new AlertRule( false, conditions, true, true, "New device discovered", false, 0 );
         } else {
-            eventRule = new AlertRule( true, matchers, true, true, "New device discovered", false, 0 );
+            eventRule = new AlertRule( true, conditions, true, true, "New device discovered", false, 0 );
         }
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*QuotaEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "action", "=", "2" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Host exceeded quota.", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*QuotaEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "action", "=", "2" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Host exceeded quota.", false, 0 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*PenaltyBoxEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "action", "=", "1" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Host put in penalty box", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "protochain", "=", "*BITTORRE*" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Host is using Bittorrent", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "protochain", "=", "*BITTORRE*" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Host is using Bittorrent", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*HttpResponseEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "contentLength", ">", "1000000000" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Host is doing large download", true, 60 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*HttpResponseEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "contentLength", ">", "1000000000" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Host is doing large download", true, 60 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*CaptivePortalUserEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "event", "=", "FAILED" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "Failed Captive Portal login", false, 0 );
         rules.add( eventRule );
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*CaptureUserEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "event", "=", "FAILED" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "Failed Captive Portal login", false, 0 );
-        rules.add( eventRule );
-
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*VirusHttpEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "clean", "=", "False" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "HTTP virus blocked", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*VirusHttpEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "clean", "=", "False" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( false, conditions, true, true, "HTTP virus blocked", false, 0 );
         rules.add( eventRule );
 
         return rules;
     }
 
+    /**
+     * Return default suslog rules.
+     * @return List of SyslogRule consisting of default syslog rules.
+     */
     private LinkedList<SyslogRule> defaultSyslogRules()
     {
         LinkedList<SyslogRule> rules = new LinkedList<SyslogRule>();
 
-        LinkedList<EventRuleCondition> matchers;
-        EventRuleCondition matcher1;
-        EventRuleCondition matcher2;
-        EventRuleCondition matcher3;
+        LinkedList<EventRuleCondition> conditions;
+        EventRuleCondition condition1;
+        EventRuleCondition condition2;
+        EventRuleCondition condition3;
         SyslogRule eventRule;
 
-        matchers = new LinkedList<EventRuleCondition>();
-        eventRule = new SyslogRule( true, matchers, true, true, "All events", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        eventRule = new SyslogRule( true, conditions, true, true, "All events", false, 0 );
         rules.add( eventRule );
 
         return rules;
     }
 
+    /**
+     * Return default trigger rules.
+     * @return List of TriggerRule consisting of default trigger rules.
+     */
     private LinkedList<TriggerRule> defaultTriggerRules()
     {
         LinkedList<TriggerRule> rules = new LinkedList<TriggerRule>();
 
-        LinkedList<EventRuleCondition> matchers;
-        EventRuleCondition matcher1;
-        EventRuleCondition matcher2;
-        EventRuleCondition matcher3;
+        LinkedList<EventRuleCondition> conditions;
+        EventRuleCondition condition1;
+        EventRuleCondition condition2;
+        EventRuleCondition condition3;
         TriggerRule eventRule;
 
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "category", "=", "Proxy" ) );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( true, matchers, true, "Tag proxy-using hosts", false, 0 );
-        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
-        eventRule.setTagTarget( "localAddr" );
-        eventRule.setTagName( "proxy-use" );
-        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
-        rules.add( eventRule );
-
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "application", "=", "BITTORRE" ) );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( true, matchers, true, "Tag bittorrent-using hosts", false, 0 );
-        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
-        eventRule.setTagTarget( "localAddr" );
-        eventRule.setTagName( "bittorrent-use" );
-        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
-        rules.add( eventRule );
-
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*AlertEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "description", "=", "*Suspicious Activity*" ) );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( true, matchers, true, "Tag suspicious activity", false, 0 );
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*AlertEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "description", "=", "*Suspicious Activity*" );
+        conditions.add( condition2 );
+        eventRule = new TriggerRule( true, conditions, true, "Tag suspicious activity", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "cClientAddr" );
         eventRule.setTagName( "suspicious" );
         eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
         rules.add( eventRule );
+        
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*");
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "category", "=", "Proxy" );
+        conditions.add( condition2 );
+        eventRule = new TriggerRule( false, conditions, true, "Tag proxy-using hosts", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "sessionEvent.localAddr" );
+        eventRule.setTagName( "proxy-use" );
+        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
+        rules.add( eventRule );
 
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "application", "=", "BITTORRE" );
+        conditions.add( condition2 );
+        eventRule = new TriggerRule( false, conditions, true, "Tag bittorrent-using hosts", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "sessionEvent.CClientAddr" );
+        eventRule.setTagName( "bittorrent-usage" );
+        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+        rules.add( eventRule );
+
+        conditions = new LinkedList<EventRuleCondition>();
+        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "category", "=", "BITTORRE" );
+        conditions.add( condition2 );
+        eventRule = new TriggerRule( false, conditions, true, "Tag bittorrent-using hosts", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "sessionEvent.localAddr" );
+        eventRule.setTagName( "bittorrent-usage" );
+        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+        rules.add( eventRule );
+        
         return rules;
     }
 
+    /**
+     * Add event to writer queue.
+     * @param event LogEvent to add to writer queue.
+     */
     public void logEvent( LogEvent event )
     {
         eventWriter.inputQueue.offer(event);
     }
 
+    /**
+     * Process event through alerts, triggers, and syslog.
+     * @param event LogEvent to process.
+     */
     private void runEvent( LogEvent event )
     {
         try {
@@ -436,13 +495,23 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+    /**
+     * Process event through alert rules.
+     * @param event LogEvent to process.
+     */
     private void runAlertRules( LogEvent event )
     {
+        if ( event == null )
+            return;
         if ( event instanceof AlertEvent )
             return;
 
+        List<AlertRule> rules = UvmContextFactory.context().eventManager().getSettings().getAlertRules();
+        if ( rules == null )
+            return;
+
         JSONObject jsonObject = event.toJSONObject();
-        for ( AlertRule rule : UvmContextFactory.context().eventManager().getSettings().getAlertRules() ) {
+        for ( AlertRule rule : rules ) {
             if ( ! rule.getEnabled() )
                 continue;
             if ( ! rule.isMatch( jsonObject ) )
@@ -460,86 +529,142 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+    /**
+     * Process event through trigger rules.
+     * @param event LogEvent to process.
+     */
     private void runTriggerRules( LogEvent event )
     {
+        if ( event == null )
+            return;
         //if ( event instanceof TriggerEvent )
         //    return;
 
+        List<TriggerRule> rules = UvmContextFactory.context().eventManager().getSettings().getTriggerRules();
+        if ( rules == null )
+            return;
+
         JSONObject jsonObject = event.toJSONObject();
-        for ( TriggerRule rule : UvmContextFactory.context().eventManager().getSettings().getTriggerRules() ) {
+
+        for ( TriggerRule rule : rules ) {
             if ( ! rule.getEnabled() )
                 continue;
             if ( ! rule.isMatch( jsonObject ) )
                 continue;
 
-            logger.info( "trigger \"" + rule.getDescription() + "\" matches: " + event );
+            logger.debug( "trigger \"" + rule.getDescription() + "\" matches: " + event );
 
-            String target = findAttribute( jsonObject, rule.getTagTarget(), 3 );
+            String target = findAttribute( jsonObject, rule.getTagTarget() );
             if ( target == null ) {
-                logger.info( "trigger: failed to find target \"" + rule.getTagTarget() + "\"");
+                logger.debug( "trigger: failed to find target \"" + rule.getTagTarget() + "\"");
                 continue;
             }
 
             target = target.replaceAll("/",""); // remove annoying / from InetAddress toString()
 
-            HostTableEntry host = UvmContextFactory.context().hostTable().getHostTableEntry( target );
-            UserTableEntry user = UvmContextFactory.context().userTable().getUserTableEntry( target );
-            DeviceTableEntry device = UvmContextFactory.context().deviceTable().getDevice( target );
+            HostTableEntry host = null;
+            UserTableEntry user = null;
+            DeviceTableEntry device = null;
+            List<Tag> tags;
+
+            host = UvmContextFactory.context().hostTable().getHostTableEntry( target );
+            if ( rule.getAction().toString().contains("USER") ) {
+                user = UvmContextFactory.context().userTable().getUserTableEntry( target );
+                if ( user == null && host != null )
+                    user = UvmContextFactory.context().userTable().getUserTableEntry( host.getUsername() );
+            }
+            if ( rule.getAction().toString().contains("DEVICE") ) {
+                device = UvmContextFactory.context().deviceTable().getDevice( target );
+                if ( device == null && host != null )
+                    device = UvmContextFactory.context().deviceTable().getDevice( host.getMacAddress() );
+            }
+
+            if ( rule.getAction().toString().contains("_HOST") && host == null ) {
+                logger.debug( "trigger: failed to find host \"" + target + "\"");
+                continue;
+            }
+            if ( rule.getAction().toString().contains("_USER") && user == null ) {
+                logger.debug( "trigger: failed to find user \"" + target + "\"");
+                continue;
+            }
+            if ( rule.getAction().toString().contains("_DEVICE") && device == null ) {
+                logger.debug( "trigger: failed to find device \"" + target + "\"");
+                continue;
+            }
 
             switch( rule.getAction() ) {
             case TAG_HOST:
-                if ( host != null ) {
-                    logger.info("Tagging host " + target + " with tag \"" + rule.getTagName() + "\"");
-                    host.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                    break;
+                if ( rule == null ) break;
+                logger.debug("Tagging host " + target + " with tag \"" + rule.getTagName() + "\"");
+                host.addTag( new Tag( rule.getTagName(), System.currentTimeMillis()+(rule.getTagLifetimeSec()*1000) ));
+                break;
+            case UNTAG_HOST:
+                logger.debug("Untagging host " + target + " with tag \"" + rule.getTagName() + "\"");
+                if ( host == null ) break;
+                tags = host.getTags();
+                if ( tags == null ) break;
+                for ( Tag t : tags ) {
+                    if ( rule.nameMatches( t ) ) {
+                        logger.debug("Untagging host " + target + " removing tag \"" + t.getName() + "\"");
+                        host.removeTag( t );
+                    }
                 }
-                logger.info( "trigger: failed to find host \"" + target + "\"");
-                continue;
+                break;
             case TAG_USER:
-                if ( user != null ) {
-                    logger.info("Tagging user " + target + " with tag \"" + rule.getTagName() + "\"" );
-                    user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                    break;
-                } else if ( host != null ) {
-                    String hostUsername = host.getUsername();
-                    user = UvmContextFactory.context().userTable().getUserTableEntry( hostUsername );
-                    if ( user != null ) {
-                        logger.info("Tagging user " + hostUsername + " with tag \"" + rule.getTagName() + "\"" );
-                        user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                        break;
+                logger.debug("Tagging user " + target + " with tag \"" + rule.getTagName() + "\"" );
+                if ( user == null ) break;
+                user.addTag( new Tag( rule.getTagName(), System.currentTimeMillis()+(rule.getTagLifetimeSec()*1000) ) );
+                break;
+            case UNTAG_USER:
+                logger.debug("Untagging user " + target + " with tag \"" + rule.getTagName() + "\"");
+                if ( user == null ) break;
+                tags = user.getTags();
+                if ( tags == null ) break;
+                for ( Tag t : tags ) {
+                    if ( rule.nameMatches( t ) ) {
+                        logger.debug("Untagging user " + target + " removing tag \"" + t.getName() + "\"");
+                        user.removeTag( t );
                     }
                 }
-                logger.info( "trigger: failed to find user \"" + target + "\"");
-                continue;
+                break;
             case TAG_DEVICE:
-                if ( device != null ) {
-                    logger.info("Tagging device " + target + " with tag \"" + rule.getTagName() + "\"" );
-                    device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                    break;
-                } else if ( host != null ) {
-                    String macAddr = host.getMacAddress();
-                    device = UvmContextFactory.context().deviceTable().getDevice( macAddr );
-                    if ( device != null ) {
-                        logger.info("Tagging device " + macAddr + " with tag \"" + rule.getTagName() + "\"" );
-                        device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                        break;
+                logger.debug("Tagging device " + target + " with tag \"" + rule.getTagName() + "\"" );
+                if ( device == null ) break;
+                device.addTag( new Tag( rule.getTagName(), System.currentTimeMillis()+(rule.getTagLifetimeSec()*1000) ) );
+                break;
+            case UNTAG_DEVICE:
+                logger.debug("Untagging device " + target + " with tag \"" + rule.getTagName() + "\"");
+                if ( device == null ) break;
+                tags = device.getTags();
+                if ( tags == null ) break;
+                for ( Tag t : tags ) {
+                    if ( rule.nameMatches( t ) ) {
+                        logger.debug("Untagging device " + target + " removing tag \"" + t.getName() + "\"");
+                        device.removeTag( t );
                     }
                 }
-                logger.info( "trigger: failed to find device \"" + target + "\"");
-                continue;
+                break;
             }
         }
     }
 
+    /**
+     * Process event through syslog rules.
+     * @param event LogEvent to process.
+     */
     private void runSyslogRules( LogEvent event )
     {
-        if ( event instanceof SyslogEvent )
+        if ( event == null )
             return;
         if ( ! settings.getSyslogEnabled() )
             return;
 
+        List<SyslogRule> rules = UvmContextFactory.context().eventManager().getSettings().getSyslogRules();
+        if ( rules == null )
+            return;
+
         JSONObject jsonObject = event.toJSONObject();
-        for ( SyslogRule rule : UvmContextFactory.context().eventManager().getSettings().getSyslogRules() ) {
+        for ( SyslogRule rule : rules ) {
             if ( ! rule.getEnabled() )
                 continue;
             if ( ! rule.isMatch( jsonObject ) ) 
@@ -548,11 +673,7 @@ public class EventManagerImpl implements EventManager
             logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
             event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-            if(rule.getLog()){
-                SyslogEvent eventEvent = new SyslogEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
-                UvmContextFactory.context().logEvent( eventEvent );
-            }
-            if ( rule.getSyslog() ){
+            if ( rule.getSyslog() ) {
                 try {
                     SyslogManagerImpl.sendSyslog( event );
                 } catch (Exception exn) {
@@ -562,12 +683,72 @@ public class EventManagerImpl implements EventManager
         }
     }
 
-    private static String findAttribute( JSONObject json, String name, int maxDepth )
+    /**
+     * Retreive an attribute value using the attribute name from the object.
+     * @param  json         JSONObject to search.
+     * @param  name         String of key to find.
+     * @return              String of matching value.  Null if not found.
+     */
+    private static String findAttribute( JSONObject json, String name )
+    {
+        String s = null;
+        if ( (s = findAttributeRecursive( json, name )) != null )
+            return s;
+        if ( ( name != null ) && !name.contains(".") )
+            if ( (s = findAttributeFlatten( json, name, 3 )) != null )
+                return s;
+        return s;
+    }
+
+    /**
+     * This looks for a specific JSON attribute
+     * foo.bar.baz returns json['foo']['bar']['baz']
+     * @param  json JSONObject to search.
+     * @param  name String of key to find.
+     * @return              String of matching value.  Null if not found.
+     */
+    private static String findAttributeRecursive( JSONObject json, String name )
+    {
+        if ( json == null || name == null ) return null;
+
+        try {
+            String[] parts = name.split("\\.",2);
+            if ( parts.length < 1 )
+                return null;
+
+            String fieldName = parts[0];
+
+            Object o = null;
+            try {o = json.get(fieldName);} catch(Exception exc) {}
+            if ( o == null )
+                return null;
+
+            if ( parts.length > 1 ) {
+                String subName = parts[1];
+                return findAttributeRecursive( new JSONObject(o), subName );
+            } else {
+                return o.toString();
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to find attribute: " + name,e);
+            return null;
+        }
+    }
+
+    /**
+     * This looks through JSONObjects recursively to find any attribute with the specified name
+     * It looks up to maxDepth levels to prevent cycles
+     * @param  json JSONObject to search.
+     * @param  name String of key to find.
+     * @param maxDepth integer of maximum depth to search.
+     * @return              String of matching value.  Null if not found.
+     */
+    private static String findAttributeFlatten( JSONObject json, String name, int maxDepth )
     {
         if ( json == null || name == null ) return null;
         if ( maxDepth < 1 ) return null;
 
-        //logger.info("findAttribute( " + name + " , " + json + ")");
+        //logger.info("findAttributeFlatten( " + name + " , " + json + ")");
         try {
             String[] keys = JSONObject.getNames(json);
             if ( keys == null ) return null;
@@ -595,7 +776,7 @@ public class EventManagerImpl implements EventManager
                         continue;
 
                     if ( o != null ) {
-                        String s = findAttribute(obj,name,maxDepth-1);
+                        String s = findAttributeFlatten(obj,name,maxDepth-1);
                         if ( s != null )
                             return s;
                     }
@@ -608,6 +789,12 @@ public class EventManagerImpl implements EventManager
         return null;
     }
 
+    /**
+     * Send this event as an email alert notification.
+     * @param  rule  Matching alert rule.
+     * @param  event LogEvent to send.
+     * @return       boolean if true, alert generated and sent, false if not sent.
+     */
     private static boolean sendEmailForEvent( AlertRule rule, LogEvent event )
     {
         if(rule.frequencyCheck() == false){
@@ -631,8 +818,6 @@ public class EventManagerImpl implements EventManager
             jsonString = jsonObject.toString();
         }
 
-        LinkedList<AdminUserSettings> adminManagerUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
-
         String subject = serverName + " " +
             I18nUtil.marktr("Event!") +
             " [" + fullName + "] ";
@@ -648,6 +833,12 @@ public class EventManagerImpl implements EventManager
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Event Rules.");
 
+        LinkedList<String> alertRecipients = new LinkedList<String>();
+
+        /*
+         * Local admin users
+         */
+        LinkedList<AdminUserSettings> adminManagerUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
         if ( adminManagerUsers != null ) {
             for ( AdminUserSettings user : adminManagerUsers ) {
                 if ( user.getEmailAddress() == null || "".equals( user.getEmailAddress() ) ){
@@ -656,19 +847,37 @@ public class EventManagerImpl implements EventManager
                 if ( ! user.getEmailAlerts() ){
                     continue;
                 }
-                try {
-                    String[] recipients = null;
-                    recipients = new String[]{ user.getEmailAddress() };
-                    UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
-                } catch ( Exception e) {
-                    logger.warn("Failed to send mail.",e);
-                }
+                alertRecipients.add( user.getEmailAddress() );
+            }
+        }
+
+        /*
+         * Report users
+         */
+        App reportsApp = UvmContextFactory.context().appManager().app("reports");
+        List<String> reportsEmailAddresses = ((Reporting) reportsApp).getAlertEmailAddresses();
+        alertRecipients.addAll(reportsEmailAddresses);
+
+        for( String emailAddress : alertRecipients){
+            logger.warn("emailAddress=" + emailAddress);
+            try {
+                String[] recipients = null;
+                recipients = new String[]{ emailAddress };
+                UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
+            } catch ( Exception e) {
+                logger.warn("Failed to send mail.",e);
             }
         }
 
         return true;
     }
 
+    /**
+     * Make json formatted event more suitable for users:
+     * * Remove unncessessary fields.
+     * * Recursively clean.
+     * @param jsonObject JSONObject to process.
+     */
     private static void cleanupJsonObject( JSONObject jsonObject )
     {
         if ( jsonObject == null )
@@ -725,19 +934,21 @@ public class EventManagerImpl implements EventManager
 
 
     /**
-     * This thread waits on the l
-     * It also explicitly releases hosts from the penalty box and quotas after expiration
+     * This thread waits on the inputQueue
      */
     private class EventWriter implements Runnable
     {
-
         private volatile Thread thread;
         private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
 
+        /**
+         * Run event queue.
+         */
         public void run()
         {
             thread = Thread.currentThread();
             LogEvent event = null;
+            long lastLoggedWarningTime = 0;
 
             /**
              * Loop indefinitely and continue running event rules
@@ -745,8 +956,10 @@ public class EventManagerImpl implements EventManager
             while (thread != null) {
                 synchronized( this ) {
                     try {
-                        if (inputQueue.size() > 10000) {
+                        // only log this warning once every 10 seconds
+                        if (inputQueue.size() > 20000 && System.currentTimeMillis() - lastLoggedWarningTime > 10000 ) {
                             logger.warn("Large input queue size: " + inputQueue.size());
+                            lastLoggedWarningTime = System.currentTimeMillis();
                         }
 
                         event = inputQueue.take();
@@ -757,17 +970,23 @@ public class EventManagerImpl implements EventManager
 
                     } catch (Exception e) {
                         logger.warn("Failed to run event rules.", e);
-                        try {Thread.sleep(1000);} catch (Exception exc) {}
+                        try {this.wait(1000);} catch (Exception exc) {}
                     } 
                 }
             }
         }
 
+        /**
+         * Start the thread.
+         */
         protected void start()
         {
             UvmContextFactory.context().newThread(this).start();
         }
 
+        /**
+         * Stop the thread.
+         */
         protected void stop()
         {
             Thread tmp = thread;

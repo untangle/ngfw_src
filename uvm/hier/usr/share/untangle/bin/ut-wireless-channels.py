@@ -1,8 +1,7 @@
-#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
+#!/usr/bin/python -u
+import uvm
 
-networkManager = uvm.networkManager()
-
-channels = networkManager.getWirelessChannels( "wlan0" )
-print channels
+uvm = uvm.Uvm().getUvmContext()
+print(uvm.networkManager().getWirelessChannels( "wlan0" ))
 
 

@@ -1,12 +1,11 @@
 Ext.define('Ung.config.administration.MainController', {
     extend: 'Ext.app.ViewController',
 
-    alias: 'controller.config.administration',
+    alias: 'controller.config-administration',
 
     control: {
         '#': {
-            afterrender: 'loadAdmin',
-            tabchange: 'onTabChange'
+            afterrender: 'loadAdmin'
         },
         '#certificates': {
             beforerender: 'loadCertificates'
@@ -77,116 +76,125 @@ Ext.define('Ung.config.administration.MainController', {
         [ 'YE', 'Yemen'.t() ], [ 'ZM', 'Zambia'.t() ], [ 'ZW', 'Zimbabwe'.t() ]
     ],
 
-    onTabChange: function (tabPanel, newCard) {
-        // window.location.hash = '#config/administration/' + newCard.getItemId();
-        // Ung.app.redirectTo('#config/administration/' + newCard.getItemId(), false);
-    },
-
     loadAdmin: function () {
-        var v = this.getView(),
-            vm = this.getViewModel();
+        var me = this, v = me.getView(),vm = me.getViewModel();
+
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.getSettings'),
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
             Rpc.asyncPromise('rpc.skinManager.getSkinsList'),
             Rpc.asyncPromise('rpc.skinManager.getSettings')
-        ], this).then(function(result) {
+        ], this)
+        .then(function(result) {
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
             vm.set({
                 adminSettings: result[0],
                 systemSettings: result[1],
                 skinsList: result[2],
                 skinSettings: result[3]
             });
-        }, function(ex) {
-            console.error(ex);
-            Util.exceptionToast(ex);
-        }).always(function() {
+
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
     loadCertificates: function () {
-        var v = this.getView(),
-            vm = this.getViewModel();
+        var me = this, v = me.getView(), vm = me.getViewModel();
 
         v.setLoading(true);
-        rpc.certificateManager = rpc.UvmContext.certificateManager();
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.certificateManager.getServerCertificateList'),
-            Rpc.asyncPromise('rpc.certificateManager.getRootCertificateInformation'),
-            Rpc.asyncPromise('rpc.certificateManager.validateActiveInspectorCertificates'),
-        ], this).then(function(result) {
+            Rpc.asyncPromise('rpc.UvmContext.certificateManager.getServerCertificateList'),
+            Rpc.asyncPromise('rpc.UvmContext.certificateManager.getRootCertificateInformation'),
+            Rpc.asyncPromise('rpc.UvmContext.certificateManager.validateActiveInspectorCertificates'),
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+        ], this)
+        .then(function(result) {
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+            var hostname = result[3].hostName + (result[3].domainName ? '.' + result[3].domainName : '');
             vm.set({
                 serverCertificates: result[0],
                 rootCertificateInformation: result[1],
                 serverCertificateVerification: result[2],
+                hostName: hostname
             });
-
-            try {
-                var networkSettings = rpc.networkManager.getNetworkSettings();
-                vm.set('hostName', networkSettings.hostName + (networkSettings.domainName ? '.' + networkSettings.domainName : ''));
-            } catch(ex) {
-                Util.exceptionToast(ex);
-            }
-        }, function(ex) {
-            console.error(ex);
-            Util.exceptionToast(ex);
-        }).always(function() {
+            vm.set('panel.saveDisabled', false);
             v.setLoading(false);
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
     refreshRootCertificate: function () {
-        var v = this.getView().down('#rootCertificateView'),
-            vm = this.getViewModel();
+        var me = this, v = me.getView().down('#rootCertificateView'), vm = me.getViewModel();
+
         v.setLoading(true);
-        Rpc.asyncData('rpc.certificateManager.getRootCertificateInformation')
-            .then(function (result) {
-                vm.set('rootCertificateInformation', result);
-            }, function (ex) {
-                Util.exceptionToast(ex);
-            }).always(function () {
+        Rpc.asyncData('rpc.UvmContext.certificateManager.getRootCertificateInformation')
+        .then(function (result) {
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+            vm.set('rootCertificateInformation', result);
+            v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
-            });
+            }
+        });
     },
 
     refreshServerCertificate: function () {
-        var v = this.getView().down('#serverCertificateView'),
-            vm = this.getViewModel();
+        var me = this, v = me.getView().down('#serverCertificateView'), vm = me.getViewModel();
+
         v.setLoading(true);
-        Rpc.asyncData('rpc.certificateManager.getServerCertificateList')
-            .then(function (result) {
-                vm.set('serverCertificates', result);
-            }, function (ex) {
-                Util.exceptionToast(ex);
-            }).always(function () {
+        Rpc.asyncData('rpc.UvmContext.certificateManager.getServerCertificateList')
+        .then(function (result) {
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+            vm.set('serverCertificates', result);
+            v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
-            });
+            }
+        });
     },
 
-    // validateCertificates: function () {
-    //     var vm = this.getViewModel();
-    //     Rpc.asyncData('rpc.certificateManager.validateActiveInspectorCertificates')
-    //         .then(function (result) {
-    //             vm.set('serverCertificateVerification', result);
-    //         }, function (ex) {
-    //             Util.exceptionToast(ex);
-    //         });
-    // },
-
     saveSettings: function () {
-        var me = this,
-            view = this.getView(),
-            vm = this.getViewModel();
+        var me = this, v = this.getView(), vm = this.getViewModel();
 
-        if (!Util.validateForms(view)) {
+        if (!Util.validateForms(v)) {
             return;
         }
 
-        view.setLoading(true);
+        var subnets = v.down('textfield[name="administrationSubnets"]');
+        if (subnets.rendered && !subnets.isValid()) {
+            Ung.app.redirectTo('#config/administration/admin');
+            Ext.MessageBox.alert('Warning'.t(), 'Invalid subnet.'.t());
+            subnets.focus(true);
+            return;
+        }
 
-        view.query('ungrid').forEach(function (grid) {
+        v.setLoading(true);
+
+        v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             /**
              * Important!
@@ -200,12 +208,11 @@ Ext.define('Ung.config.administration.MainController', {
                 });
                 store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-                // store.commitChanges();
             }
         });
 
         // set certificates
-        view.down('#serverCertificateView').getStore().each(function (cert) {
+        v.down('#serverCertificateView').getStore().each(function (cert) {
             if (cert.get('httpsServer')) { vm.set('systemSettings.webCertificate', cert.get('fileName')); }
             if (cert.get('smtpsServer')) { vm.set('systemSettings.mailCertificate', cert.get('fileName')); }
             if (cert.get('ipsecServer')) { vm.set('systemSettings.ipsecCertificate', cert.get('fileName')); }
@@ -215,16 +222,29 @@ Ext.define('Ung.config.administration.MainController', {
             Rpc.asyncPromise('rpc.adminManager.setSettings', vm.get('adminSettings')),
             Rpc.asyncPromise('rpc.skinManager.setSettings', vm.get('skinSettings')),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings'))
-        ], this).then(function() {
-            me.loadAdmin();
-            me.loadCertificates();
-            // window.location.reload();
-            Util.successToast('Administration'.t() + ' settings saved!');
-        }, function(ex) {
-            console.error(ex);
-            Util.exceptionToast(ex);
-        }).always(function() {
-            view.setLoading(false);
+        ], this)
+        .then(function() {
+            // add 3 seconds timeout to avoid exception
+            setTimeout(function () {
+                if(Util.isDestroyed(me, v)){
+                    return;
+                }
+                me.loadAdmin();
+                me.loadCertificates();
+                Util.successToast('Administration'.t() + ' settings saved!');
+
+                if(vm.get('skinChanged') == true){
+                    window.location.reload();
+                }
+
+                Ext.fireEvent('resetfields', v);
+                v.setLoading(false);
+            }, 3000);
+        }, function (ex) {
+            if(!Util.isDestroyed(vm, v)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
@@ -235,9 +255,10 @@ Ext.define('Ung.config.administration.MainController', {
             netStatus, addressList, i;
 
         try {
-            netStatus = rpc.networkManager.getInterfaceStatus();
+            netStatus = Rpc.directData('rpc.networkManager.getInterfaceStatus');
         } catch (e) {
-            Util.exceptionToast(e);
+            Util.handleException(e);
+            return;
         }
 
         addressList = '';
@@ -255,9 +276,8 @@ Ext.define('Ung.config.administration.MainController', {
             title: btn.getText(),
             certMode: certMode,
             layout: 'fit',
-            width: 600,
+            width: Math.min(Renderer.calculateWith(1), 600),
             autoShow: true,
-            // height: (certMode === "ROOT" ? 320 : 360),
             height: 320,
             border: true,
             modal: true,
@@ -269,10 +289,6 @@ Ext.define('Ung.config.administration.MainController', {
                 defaults: {
                     anchor: '100%',
                     labelWidth: 170,
-                    // labelAlign: 'right'
-                    // listeners: {
-                    //     render: helptipRenderer
-                    // }
                 },
                 items: [{
                     xtype: 'textfield',
@@ -369,12 +385,12 @@ Ext.define('Ung.config.administration.MainController', {
             '/L='  + values.locality,
             '/O='  + values.organization,
         ];
-        if (values.organizationalUnit,length > 0) {
+        if (values.organizationalUnit.length > 0) {
             certSubject.push('/OU=' + values.organizationalUnit);
         }
         certSubject = certSubject.join('');
 
-        if (altNames.length > 0) {
+        if ( (altNames != null)  && (altNames.length > 0) ) {
             var hostnameRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/;
             // Parse subject alt name list. For IP's prefix with both DNS: and IP:, for hostnames prefix with DNS:, otherwise is left unchanged
             var altNameTokens = altNames.split(',');
@@ -394,26 +410,39 @@ Ext.define('Ung.config.administration.MainController', {
 
         if (certMode === 'ROOT') {
             me.certDialog.setLoading(true);
-            Rpc.asyncData('rpc.certificateManager.generateCertificateAuthority', certSubject, altNames)
-                .then(function (result) {
-                    Util.successToast('Certificate Authority generation successfully completed. Click OK to continue.'.t());
-                    me.certDialog.close();
-                    me.refreshRootCertificate();
-                }, function (ex) {
-                    Util.exceptionToast('Error during Certificate Authority generation.  Click OK to continue.'.t());
-                }).always(function () {
+            Rpc.asyncData('rpc.UvmContext.certificateManager.generateCertificateAuthority', certSubject, altNames)
+            .then(function (result) {
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                Util.successToast('Certificate Authority generation successfully completed. Click OK to continue.'.t());
+                me.certDialog.close();
+                me.refreshRootCertificate();
+                me.certDialog.setLoading(false);
+            }, function (ex) {
+                Util.handleException('Error during Certificate Authority generation.  Click OK to continue.'.t());
+                if(!Util.isDestroyed(me)){
                     me.certDialog.setLoading(false);
-                });
+                    return;
+                }
+            });
         }
 
         if (certMode === 'SERVER') {
             me.certDialog.setLoading(true);
-            Rpc.asyncData('rpc.certificateManager.generateServerCertificate', certSubject, altNames)
+            Rpc.asyncData('rpc.UvmContext.certificateManager.generateServerCertificate', certSubject, altNames)
                 .then(function (result) {
+                    if(Util.isDestroyed(me)){
+                        return;
+                    }
+                    if (result === false) {
+                        Util.handleException('Certificate generation failed. Please confirm the information provided is valid and try again.'.t());
+                        return;
+                    }
                     me.certDialog.close();
                     me.refreshServerCertificate();
                 }, function (ex) {
-                    Util.exceptionToast('Error during certificate generation.'.t());
+                    Util.handleException('Error during certificate generation.'.t());
                 }).always(function () {
                     me.certDialog.setLoading(false);
                 });
@@ -439,44 +468,174 @@ Ext.define('Ung.config.administration.MainController', {
             title: 'Upload Server Certificate'.t(),
             items: [{
                 xtype: 'form',
-                url: 'upload',
+                name: 'upload_form',
                 border: false,
-                width: 400,
+                width: Math.min(Renderer.calculateWith(1), 800),
                 layout: 'anchor',
                 items: [{
+                    xtype: 'textarea',
+                    id: 'cert_data',
+                    fieldLabel: 'Server Certificate'.t(),
+                    labelWidth: 80,
+                    anchor: "100%",
+                    height: 150,
+                    margin: 10,
+                }, {
+                    xtype: 'textarea',
+                    id: 'key_data',
+                    fieldLabel: 'Certificate Key'.t(),
+                    labelWidth: 80,
+                    anchor: "100%",
+                    height: 150,
+                    margin: 10,
+                }, {
+                    xtype: 'textarea',
+                    id: 'extra_data',
+                    fieldLabel: 'Optional Intermediate Certificates'.t(),
+                    labelWidth: 80,
+                    anchor: "100%",
+                    height: 200,
+                    margin: 10,
+                }, {
                     xtype: 'filefield',
                     anchor: '100%',
-                    fieldLabel: 'File'.t(),
                     name: 'filename',
                     margin: 10,
                     labelWidth: 50,
                     allowBlank: false,
-                    validateOnBlur: false
+                    validateOnBlur: false,
+                    buttonOnly: true,
+                    buttonText: 'Import a certificate or key file'.t(),
+                    listeners: {
+                        change: 'handleFileImport'
+                    }
                 }, {
                     xtype: 'hidden',
                     name: 'type',
                     value: 'server_cert'
+                }, {
+                    xtype: 'hidden',
+                    name: 'argument',
+                    value: 'upload_server'
                 }],
                 buttons: [{
-                    text: 'Cancel'.t(),
+                    text: 'Upload Certificate'.t(),
+                    formBind: false,
+                    handler: function() {
+                        cd = Ext.get('cert_data');
+                        kd = Ext.get('key_data');
+                        ed = Ext.get('extra_data');
+                        Rpc.asyncData('rpc.UvmContext.certificateManager.uploadServerCertificate', cd.component.getValue(), kd.component.getValue(), ed.component.getValue())
+                        .then(function(status){
+                            if (status.result === 0) {
+                                Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
+                                me.uploadDialog.close();
+                                me.refreshServerCertificate();
+                            } else {
+                                Ext.MessageBox.alert('Certificate Upload Error'.t(), status.output);
+                            }
+                        });
+                    }
+                }, {
+                    text: 'Clear Form'.t(),
+                    handler: function() {
+                        cd = Ext.get('cert_data');
+                        kd = Ext.get('key_data');
+                        ed = Ext.get('extra_data');
+                        cd.component.setValue("");
+                        kd.component.setValue("");
+                        ed.component.setValue("");
+                    }
+                }, {
+                    text: 'Close'.t(),
                     handler: function () {
                         me.uploadDialog.close();
                     }
+                }]
+            }]
+        });
+        this.uploadDialog.show();
+    },
+
+    importSignedRequest: function () {
+        var me = this, v = this.getView();
+        this.uploadDialog = v.add({
+            xtype: 'window',
+            modal: true,
+            title: 'Import Signing Request Certificate'.t(),
+            items: [{
+                xtype: 'form',
+                name: 'upload_form',
+                border: false,
+                width: Math.min(Renderer.calculateWith(1), 800),
+                layout: 'anchor',
+                items: [{
+                    xtype: 'textarea',
+                    id: 'cert_data',
+                    fieldLabel: 'Server Certificate'.t(),
+                    labelWidth: 80,
+                    anchor: "100%",
+                    height: 150,
+                    margin: 10,
                 }, {
+                    xtype: 'textarea',
+                    id: 'extra_data',
+                    fieldLabel: 'Optional Intermediate Certificates'.t(),
+                    labelWidth: 80,
+                    anchor: "100%",
+                    height: 200,
+                    margin: 10,
+                }, {
+                    xtype: 'filefield',
+                    anchor: '100%',
+                    name: 'filename',
+                    margin: 10,
+                    labelWidth: 50,
+                    allowBlank: false,
+                    validateOnBlur: false,
+                    buttonOnly: true,
+                    buttonText: 'Import a certificate file'.t(),
+                    listeners: {
+                        change: 'handleFileImport'
+                    }
+                }, {
+                    xtype: 'hidden',
+                    name: 'type',
+                    value: 'server_cert'
+                }, {
+                    xtype: 'hidden',
+                    name: 'argument',
+                    value: 'import_signed'
+                }],
+                buttons: [{
                     text: 'Upload Certificate'.t(),
-                    formBind: true,
-                    handler: function () {
-                        me.uploadDialog.down('form').submit({
-                            success: function(form, action) {
-                                me.uploadDialog.close();
+                    formBind: false,
+                    handler: function() {
+                        cd = Ext.get('cert_data');
+                        ed = Ext.get('extra_data');
+                        Rpc.asyncData('rpc.UvmContext.certificateManager.importSignedRequest', cd.component.getValue(), ed.component.getValue())
+                        .then(function(status){
+                            if (status.result === 0) {
+                                Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
                                 me.refreshServerCertificate();
-                                parent.gridCertList.reload();
-                            },
-                            failure: function(form, action) {
                                 me.uploadDialog.close();
-                                Util.exceptionToast('Failure'.t() + '<br/>' + action.result.msg);
+                            } else {
+                                Ext.MessageBox.alert('Certificate Upload Error'.t(), status.output);
                             }
                         });
+                    }
+                }, {
+                    text: 'Clear Form'.t(),
+                    handler: function() {
+                        cd = Ext.get('cert_data');
+                        ed = Ext.get('extra_data');
+                        cd.component.setValue("");
+                        ed.component.setValue("");
+                    }
+                }, {
+                    text: 'Close'.t(),
+                    handler: function () {
+                        me.uploadDialog.close();
                     }
                 }]
             }]
@@ -494,26 +653,94 @@ Ext.define('Ung.config.administration.MainController', {
             Ext.MessageBox.alert('Certificate In Use'.t(), 'You can not delete a certificate that is assigned to one or more services.'.t());
             return;
         }
-        // if (this.isDirty()) {
-        //     Ext.MessageBox.alert('Unsaved Changes'.t() ,'You must apply unsaved changes changes before you can delete this certificate.'.t());
-        //     return;
-        // }
         Ext.MessageBox.confirm('Are you sure you want to delete this certificate?'.t(),
             '<strong>SUBJECT:</strong> ' + record.get('certSubject') + '<br/><br/><strong>ISSUER:</strong> ' + record.get('certIssuer'),
             function(button) {
                 if (button === 'yes') {
-                    try {
-                        rpc.certificateManager.removeServerCertificate(record.get('fileName'));
+                    if(Util.isDestroyed(record)){
+                        return;
+                    }
+                    Rpc.asyncData('rpc.UvmContext.certificateManager.removeServerCertificate', record.get('fileName'))
+                    .then(function (result) {
+                        if(Util.isDestroyed(me)){
+                            return;
+                        }
                         me.refreshServerCertificate();
                         Util.successToast('Certificate removed'.t());
-                    } catch (ex) {
-                        Util.exceptionToast(ex);
-                    }
+                    });
                 }
             });
     },
 
-    addAccount: function () {
+    skinChange: function(combo, newValue, oldValue){
+        var me = this,
+            vm = me.getViewModel();
+
+        if( ( oldValue != null ) &&
+            ( newValue != oldValue ) ){
+            vm.set('skinChanged', true);
+        }
+    },
+
+    /**
+     * The handleFileImport function is used to let the user build a certificate to be uploaded
+     * one piece at a time. When importing a cert or key file, the Java code passes the file to
+     * the ut-cert-parser script. The script parses the file into certData, keyData, and extraData,
+     * which are passed back to us as a JSON object. The object will only contain fields that
+     * were actually parsed, so any or all three may be missing from the object we receive.
+     * If we find certData it always goes into the cert_data textarea since the parser script
+     * always puts the end-entity certificate there. If we find keyData it always goes into the
+     * key_data textarea, and extraData is always appended to the extra_data textarea allowing
+     * multiple intermediate certificates to be easily added. This function is used for both
+     * uploadServerCertificate and importSignedRequest, the second of which doesn't have the
+     * key_data textarea so we check to be sure the component exists before setting the value.
+     */
+
+    handleFileImport: function(cmp){
+        var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
+        var file = Ext.ComponentQuery.query('textfield[name=filename]')[0].value;
+        if ( file == null || file.length === 0 ) {
+            Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to import.'.t());
+            return;
+            }
+        form.submit({
+            url: "upload",
+            success: Ext.bind(function( form, action ) {
+                detail = JSON.parse(action.result.msg);
+                cptr = Ext.get('cert_data');
+                kptr = Ext.get('key_data');
+                eptr = Ext.get('extra_data');
+                if (detail.certData) {
+                    if (cptr) {
+                        cptr.component.setValue(detail.certData);
+                    }
+                }
+                if (detail.keyData) {
+                    if (kptr) {
+                        kptr.component.setValue(detail.keyData);
+                    }
+                }
+                if (detail.extraData) {
+                    if (eptr) {
+                        work = eptr.component.getValue();
+                        eptr.component.setValue(work + detail.extraData);
+                    }
+                }
+            }, this),
+            failure: Ext.bind(function( form, action ) {
+                Ext.MessageBox.alert('Import Failure'.t(), action.result.msg);
+            }, this)
+        });
+    }
+
+});
+
+Ext.define('Ung.cmp.AdminGridController', {
+    extend: 'Ung.cmp.GridController',
+
+    alias: 'controller.unadmingrid',
+
+    addRecord: function () {
         Ext.MessageBox.show({
             title: 'Administrator Warning'.t(),
             msg: 'This action will add an ADMINISTRATOR account.'.t() + '<br/>' + '<br/>' +
@@ -535,12 +762,11 @@ Ext.define('Ung.config.administration.MainController', {
             buttons: Ext.MessageBox.YESNO,
             fn: Ext.bind(function(btn) {
                 if (btn === 'yes') {
-                    // if (Ext.get('admin_understand').dom.checked) {
-                    //     Ung.grid.Panel.prototype.addHandler.call(this, button, e, rowData);
-                    // }
+                    if (Ext.get('admin_understand').dom.checked) {
+                        this.editorWin(null);
+                    }
                 }
             }, this)});
-    }
-
+    },
 
 });

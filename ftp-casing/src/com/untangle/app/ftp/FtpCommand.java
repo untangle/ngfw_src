@@ -30,6 +30,11 @@ public class FtpCommand implements Token
         this.argument = argument;
     }
 
+    /**
+     * getSocketAddress for this FtpCommand
+     * This is only relevant for PORT or EPRT commands
+     * @return the socketAddress or null
+     */
     public InetSocketAddress getSocketAddress()
     {
         if (FtpFunction.PORT == function) {
@@ -42,28 +47,50 @@ public class FtpCommand implements Token
         }
     }
 
+    /**
+     * portCommand creates a PORT command for the provided socketAddress
+     * @param socketAddress
+     * @return FtpCommand
+     */
     public static FtpCommand portCommand(InetSocketAddress socketAddress)
     {
         String cmd = FtpUtil.unparsePort(socketAddress);
         return new FtpCommand(FtpFunction.PORT, cmd);
     }
 
+    /**
+     * extendedPortCommand creates an EPRT command for the provided socketAddress
+     * @param socketAddress
+     * @return FtpCommand
+     */
     public static FtpCommand extendedPortCommand(InetSocketAddress socketAddress)
     {
         String cmd = FtpUtil.unparseExtendedPort(socketAddress);
         return new FtpCommand(FtpFunction.EPRT, cmd);
     }
 
+    /**
+     * getFunction gets the FtpFunction for this command
+     * @return FtpFunction
+     */
     public FtpFunction getFunction()
     {
         return function;
     }
-
+       
+    /**
+     * getArgument gets the argument (if any) for this command
+     * @return The argument string 
+     */
     public String getArgument()
     {
         return argument;
     }
 
+    /**
+     * getBytes gets the ByteBuffer equivalest string for this FtpCommand
+     * @return ByteBuffer
+     */
     public ByteBuffer getBytes()
     {
         String cmd = null == function ? "" : function.toString();
@@ -80,6 +107,10 @@ public class FtpCommand implements Token
         return ByteBuffer.wrap(sb.toString().getBytes());
     }
 
+    /**
+     * toString provides the ascii string equivalent of this FtpCommand
+     * @return the string
+     */
     public String toString()
     {
         return AsciiCharBuffer.wrap(getBytes()).toString();

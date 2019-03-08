@@ -7,12 +7,14 @@ echo " = IPv4 Rules = "
 ip -4 rule ls
 echo
 
-echo " = IPv4 Table main = "
-ip -4 route show table main | grep -v '192.0.2.'
-echo
+for i in main balance default local ; do
+    echo " = IPv4 Table $i = "
+    ip -4 route show table $i
+    echo
+done
 
-echo " = IPv4 Table balance = "
-ip -4 route show table balance
+echo " = IPv4 Dynamic Routing = "
+ip -4 route show proto zebra
 echo
 
 awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
@@ -33,14 +35,12 @@ echo " = IPv6 Rules = "
 ip -6 rule ls
 echo
 
-echo " = IPv6 Table main = "
-ip -6 route show table main
-echo
-
-# Currently there is no balance table for IPv6
-#echo " = IPv6 Table balance = "
-#ip -6 route show table balance
-#echo
+# no balance table for IPv6
+for i in main default local ; do
+    echo " = IPv6 Table $i = "
+    ip -6 route show table $i
+    echo
+done
 
 awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
     echo " = IPv6 Table $table = "

@@ -3,6 +3,9 @@
  */
 package com.untangle.jvector;
 
+/**
+ * DataCrumb
+ */
 public class DataCrumb extends Crumb
 {
     /* Data can point to a byte array that is larger than the actual amount of data read,
@@ -11,6 +14,12 @@ public class DataCrumb extends Crumb
     protected int limit;
     protected int offset;
 
+    /**
+     * DataCrumb
+     * @param data
+     * @param offset
+     * @param limit
+     */
     public DataCrumb( byte[] data, int offset, int limit )
     {
         this.data = data;
@@ -20,28 +29,74 @@ public class DataCrumb extends Crumb
         offset( offset );
     }
 
+    /**
+     * DataCrumb
+     * @param data
+     * @param limit
+     */
     public DataCrumb( byte[] data, int limit )
     {
         this( data, 0, limit );
     }
 
+    /**
+     * DataCrumb
+     * @param data
+     */
     public DataCrumb( byte[] data )
     {
         this( data, data.length );
     }
 
+    /**
+     * DataCrumb
+     * @param data
+     */
     public DataCrumb( String data )
     {
         this( data.getBytes());
     }
 
-    public int    type()   { return TYPE_DATA; }
-    public byte[] data()   { return data;   }
-    public int    limit()  { return limit;  }
-    public int    offset() { return offset; }
+    /**
+     * type
+     * @return
+     */
+    public int type()
+    {
+        return TYPE_DATA;
+    }
 
     /**
-     * Change the limit of the data crumb */
+     * data
+     * @return
+     */
+    public byte[] data()
+    {
+        return data;
+    }
+
+    /**
+     * limit
+     * @return
+     */
+    public int limit()
+    {
+        return limit;
+    }
+
+    /**
+     * offset
+     * @return
+     */
+    public int offset()
+    {
+        return offset;
+    }
+
+    /**
+     * Change the limit of the data crumb
+     * @param limit
+     */
     public void limit( int limit ) 
     {
         if ( limit > data.length ) {
@@ -51,8 +106,8 @@ public class DataCrumb extends Crumb
     }
 
     /**
-     * Change the offset of the data crumb.</p>
-     * @param value - The new offset of the data crumb
+     * Change the offset of the data crumb.
+     * @param offset - The new offset of the data crumb
      */
     public void offset( int offset )
     {
@@ -63,11 +118,16 @@ public class DataCrumb extends Crumb
         this.offset = offset;        
     }
     
+    /** raze */
     public void raze()
     {
         /* Nothing to do here, C structure is freed automatically */
     }
 
+    /**
+     * advance
+     * @param amount
+     */
     protected void advance( int amount ) 
     {
         offset( offset + amount );

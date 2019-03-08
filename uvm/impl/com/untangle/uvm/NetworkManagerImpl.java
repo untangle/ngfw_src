@@ -5,18 +5,16 @@ package com.untangle.uvm;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 import java.net.InetAddress;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,12 +44,16 @@ import com.untangle.uvm.network.QosRule;
 import com.untangle.uvm.network.QosRuleCondition;
 import com.untangle.uvm.network.QosPriority;
 import com.untangle.uvm.network.DnsSettings;
-import com.untangle.uvm.network.DnsStaticEntry;
-import com.untangle.uvm.network.DnsLocalServer;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
+import com.untangle.uvm.network.NetflowSettings;
+import com.untangle.uvm.network.DynamicRoutingSettings;
+import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
+import com.untangle.uvm.network.DynamicRouteNetwork;
+import com.untangle.uvm.network.DynamicRouteOspfArea;
+import com.untangle.uvm.network.DynamicRouteOspfInterface;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -70,7 +72,7 @@ public class NetworkManagerImpl implements NetworkManager
     private final String upnpManagerScript = System.getProperty("uvm.bin.dir") + "/ut-upnp-manager";
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
-    private final String settingsFilenameBackup = "/etc/untangle-netd/network.js";
+    private final String settingsFilenameBackup = "/etc/untangle/network.js";
     
     /**
      * The current network settings
@@ -83,6 +85,9 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private InterfaceSettings[] interfaceSettingsById = new InterfaceSettings[255];
 
+    /**
+     * NetworkManagerImpl constructor
+     */
     protected NetworkManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -108,14 +113,6 @@ public class NetworkManagerImpl implements NetworkManager
                 readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
                 logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
-                if (readSettings == null) {
-                    // check for "backup" settings in /usr/share/untangle/settings.backup/
-                    String rootLocation = "/usr/share/untangle/settings.backup/untangle-vm/network.js";
-                    logger.info("Reading Network Settings from " + rootLocation);
-                    readSettings = settingsManager.load( NetworkSettings.class, rootLocation );
-                    logger.info("Reading Network Settings from " + rootLocation + " = " + readSettings);
-                }
-                    
                 if (readSettings != null)
                     settingsManager.save( this.settingsFilename, readSettings );
                     
@@ -137,20 +134,15 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = readSettings;
             configureInterfaceSettingsArray();
 
-            /* 12.2 conversion */
-            if ( this.networkSettings.getVersion() < 3 ) {
-                convertSettingsV3();
-            }
-            /* 12.2 conversion */
-            if ( this.networkSettings.getVersion() < 4 ) {
-                convertSettingsV4();
-            }
-            /* 12.2 conversion */
-            if ( this.networkSettings.getVersion() < 5 ) {
-                convertSettingsV5();
-            }
-
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
+        }
+
+        /**
+         * Fix missing access rules NGFW-11503
+         */
+        if (this.networkSettings.getAccessRules() == null) {
+            this.networkSettings.setAccessRules( defaultAccessRules() );
+            this.setNetworkSettings( this.networkSettings, false );
         }
 
         /**
@@ -171,6 +163,7 @@ public class NetworkManagerImpl implements NetworkManager
     
     /**
      * Get the network settings
+     * @return NetworkSettings
      */
     public NetworkSettings getNetworkSettings()
     {
@@ -179,6 +172,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Set the network settings
+     * @param newSettings
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
@@ -187,6 +181,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Set the network settings
+     * @param newSettings
+     * @param runSanityChecks - if true sanityCheckNetworkSettings is called
      */
     public void setNetworkSettings( NetworkSettings newSettings, boolean runSanityChecks )
     {
@@ -229,56 +225,29 @@ public class NetworkManagerImpl implements NetworkManager
         configureInterfaceSettingsArray();
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
 
+
         /**
-         * Now that the settings have been successfully saved
-         * Restart networking
+         * Now actually sync the settings to the system
          */
         ExecManagerResult result;
         boolean errorOccurred = false;
         String errorStr = null;
-
-        String[] commands = getAppropriateNetworkRestartCommand( newSettings );
-        downCommand = commands[0];
-        upCommand = commands[1];
-        
-        // run down command (usually ifdown)
-        result = UvmContextFactory.context().execManager().exec( downCommand );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            for ( String line : lines )
-                logger.info( downCommand + ": " + line );
-        } catch (Exception e) {}
-
-        // Now sync those settings to the OS
-        String cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename;
+        String cmd = "/usr/bin/sync-settings -f " + settingsFilename;
         result = UvmContextFactory.context().execManager().exec( cmd );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("Syncing settings to O/S: ");
             for ( String line : lines )
-                logger.info("sync-settings.py: " + line);
+                logger.info("sync-settings: " + line);
         } catch (Exception e) {}
 
         if ( result.getResult() != 0 ) {
             errorOccurred = true;
-            errorStr = "sync-settings.py failed: returned " + result.getResult();
-        }
-        
-        // run up command (usually ifup)
-        result = UvmContextFactory.context().execManager().exec( upCommand );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            for ( String line : lines )
-                logger.info( upCommand + ": " + line );
-        } catch (Exception e) {}
-
-        if ( result.getResult() != 0 ) {
-            errorOccurred = true;
-            errorStr = upCommand + " failed: returned " + result.getResult();
+            errorStr = "sync-settings failed: returned " + result.getResult();
         }
         
         // notify interested parties that the settings have changed
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettings );
+        UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettings );
 
         if ( errorOccurred ) {
             throw new RuntimeException(errorStr);
@@ -287,6 +256,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Renew the DHCP lease for the provided interface
+     * @param interfaceId
      */
     public void renewDhcpLease( int interfaceId )
     {
@@ -325,6 +295,10 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
         
+    /**
+     * Get a list of the settings for all enabled interfaces
+     * @return list
+     */
     public List<InterfaceSettings> getEnabledInterfaces()
     {
         LinkedList<InterfaceSettings> newList = new LinkedList<InterfaceSettings>();
@@ -333,7 +307,7 @@ public class NetworkManagerImpl implements NetworkManager
             return newList;
         
         for ( InterfaceSettings intf: this.networkSettings.getInterfaces() ) {
-            if ( ! intf.getDisabled() )
+            if (!intf.igetDisabled())
                 newList.add(intf);
         }
 
@@ -342,6 +316,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Get the IP address of the first WAN interface
+     * @return InetAddress
      */
     public InetAddress getFirstWanAddress()
     {
@@ -350,7 +325,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
-            if ( !intfSettings.getDisabled() && intfSettings.getIsWan() ) {
+            if ( !intfSettings.igetDisabled() && intfSettings.getIsWan() ) {
                 return getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
             }
         }
@@ -360,6 +335,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Get the IP address of the first non-WAN (LAN) interface
+     * @return InetAddress
      */
     public InetAddress getFirstNonWanAddress()
     {
@@ -368,7 +344,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
-            if ( !intfSettings.getDisabled() && !intfSettings.getIsWan() ) {
+            if ( !intfSettings.igetDisabled() && !intfSettings.getIsWan() ) {
                 return getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
             }
         }
@@ -378,6 +354,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Convenience method to find the InterfaceSettings for the specified Id
+     * @param interfaceId
+     * @return InterfaceSettings
      */
     public InterfaceSettings findInterfaceId( int interfaceId )
     {
@@ -396,6 +374,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Convenience method to find the InterfaceSettings for the specified systemDev
+     * @param systemDev
+     * @return InterfaceSettings
      */
     public InterfaceSettings findInterfaceSystemDev( String systemDev )
     {
@@ -412,6 +392,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Convenience method to find the InterfaceSettings for the first WAN
+     * @return InterfaceSettings
      */
     public InterfaceSettings findInterfaceFirstWan( )
     {
@@ -419,24 +400,21 @@ public class NetworkManagerImpl implements NetworkManager
             return null;
         
         for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            if ( !intf.getDisabled() && intf.getIsWan() )
+            if ( !intf.igetDisabled() && intf.getIsWan() )
                 return intf;
         }
 
         return null;
     }
 
+    /**
+     * determines the WAN status of the specified interface
+     * @param interfaceId
+     * @return true if the interface is a WAN, false if not found or not a WAN
+     */
     public boolean isWanInterface( int interfaceId )
     {
-        if ( interfaceId <= 0 )
-            return false;
-        /**
-         * 250 - openvpn
-         * 251 - l2tp
-         * 252 - xauth
-         * 253 - gre
-         */
-        if ( interfaceId >= 250 && interfaceId <= 253 )
+        if ( interfaceId < 0 )
             return false;
 
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
@@ -445,15 +423,16 @@ public class NetworkManagerImpl implements NetworkManager
             return false;
         }
 
-        if ( intfSettings.getIsWan() )
-            return true;
-        else
-            return false;
+        return intfSettings.getIsWan();
     }
 
     /**
      * returns a list of networks already used locally
      * This can be used for verification of settings in app settings
+     * @param includeDynamic
+     * @param includeL2tp
+     * @param includeOpenvpn
+     * @return list
      */
     public List<IPMaskedAddress> getCurrentlyUsedNetworks( boolean includeDynamic, boolean includeL2tp, boolean includeOpenvpn )
     {
@@ -527,6 +506,8 @@ public class NetworkManagerImpl implements NetworkManager
      * This method returns an address where the host should be able to access HTTP.
      * If HTTP is not reachable on this interface (like all WANs), it returns null.
      * If any error occurs it returns null.
+     * @param clientIntfId
+     * @return InetAddress
      */
     public InetAddress getInterfaceHttpAddress( int clientIntfId )
     {
@@ -537,39 +518,6 @@ public class NetworkManagerImpl implements NetworkManager
             return null;
         }
 
-        /**
-         * Special handling for OpenVPN
-         */
-        if ( intfId == 250 ) { // 0xfa
-            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
-            return address;
-        }
-        
-        /**
-         * Special handling for L2TP
-         */
-        if ( intfId == 251 ) { // 0xfb
-            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
-            return address;
-        }
-
-        /**
-         * Xauth doesn't get an interface but there are port forwards in place
-         * for L2TP clients so we'll just have Xauth clients use the same address
-         */
-        if ( intfId == 252 ) { // 0xfc
-            InetAddress address = getInterfaceStatus( 251 ).getV4Address();
-            return address;
-        }
-
-        /**
-         * Special handling for GRE
-         */
-        if ( intfId == 253 ) { // 0xfd
-            InetAddress address = getInterfaceStatus( intfId ).getV4Address();
-            return address;
-        }
-        
         InterfaceSettings intfSettings = findInterfaceId( intfId );
         if ( intfSettings == null ) {
             logger.warn("Failed to find interface " + intfId);
@@ -578,8 +526,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* WAN ports never have HTTP open */
         InterfaceSettings.ConfigType configType = intfSettings.getConfigType();
-        boolean isWan = intfSettings.getIsWan();
-        if ( configType == InterfaceSettings.ConfigType.ADDRESSED && isWan ) {
+        if ( configType == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan() ) {
             //this is normal no error logged
             return null;
         }
@@ -607,11 +554,13 @@ public class NetworkManagerImpl implements NetworkManager
      * Returns the InterfaceStatus of the specified interface.
      * If there is an error or the status is unknown it returns an InterfaceStatus
      * with all null attributes.
+     * @param interfaceId
+     * @return InterfaceStatus
      */
     public InterfaceStatus getInterfaceStatus( int interfaceId )
     {
         InterfaceStatus status = null;
-        String filename = "/var/lib/untangle-netd/interface-" + interfaceId + "-status.js";
+        String filename = "/var/lib/interface-status/interface-" + interfaceId + "-status.js";
 
         try {
             status = UvmContextFactory.context().settingsManager().load( InterfaceStatus.class,  filename);
@@ -628,7 +577,9 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Returns true if the specified interface is currently the master of its VRRP group
+     * Determines if the specified interface is currently the VRRP master
+     * @param interfaceId
+     * @return true if the given interfaceId is current the VRRP master of its VRRP group, false otherwise
      */
     public boolean isVrrpMaster( int interfaceId )
     {
@@ -666,6 +617,7 @@ public class NetworkManagerImpl implements NetworkManager
         
     /**
      * Return the status of all addressed interfaces
+     * @return a list of InterfaceStatus for all interface
      */
     public List<InterfaceStatus> getInterfaceStatus( )
     {
@@ -680,6 +632,7 @@ public class NetworkManagerImpl implements NetworkManager
     
     /**
      * Returns a list of all the current device status'
+     * @return a list of DeviceStatus for all current devices
      */
     @SuppressWarnings("unchecked") //JSON
     public List<DeviceStatus> getDeviceStatus( )
@@ -706,7 +659,7 @@ public class NetworkManagerImpl implements NetworkManager
      */
     protected void insertRules( )
     {
-        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
+        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle/iptables-rules.d/800-uvm" );
         if ( retCode < 0 )
             logger.warn("Unable to link iptables hook to update-rules script");
         
@@ -724,7 +677,7 @@ public class NetworkManagerImpl implements NetworkManager
      */
     protected void removeRules( )
     {
-        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle-netd/iptables-rules.d/800-uvm" );
+        int retCode = UvmContextFactory.context().execManager().execResult( "ln -fs " + this.updateRulesScript + " /etc/untangle/iptables-rules.d/800-uvm" );
         if ( retCode < 0 )
             logger.warn("Unable to link iptables hook to update-rules script");
         
@@ -737,6 +690,9 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
 
+    /**
+     * sets values in the interafceSettingsById map for quick lookups
+     */
     private void configureInterfaceSettingsArray()
     {
         /**
@@ -745,11 +701,24 @@ public class NetworkManagerImpl implements NetworkManager
         for ( int i = 0 ; i < interfaceSettingsById.length ; i++ ) {
             interfaceSettingsById[i] = null;
         }
-        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            interfaceSettingsById[intf.getInterfaceId()] = intf;
+        if ( this.networkSettings.getInterfaces() != null ) {
+            for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+                interfaceSettingsById[intf.getInterfaceId()] = intf;
+            }
         }
+        if ( this.networkSettings.getVirtualInterfaces() != null ) {
+            for ( InterfaceSettings intf : this.networkSettings.getVirtualInterfaces() ) {
+                interfaceSettingsById[intf.getInterfaceId()] = intf;
+            }
+        }
+
     }
 
+    /**
+     * Checks for any new ethernet/wifi devices
+     * IF found it will add new devices settings and interface settings for the device
+     * @param netSettings
+     */
     private void checkForNewDevices( NetworkSettings netSettings )
     {
         LinkedList<String> deviceNames = getEthernetDeviceNames();
@@ -771,7 +740,7 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Creating new InterfaceSettings for " + deviceName);
 
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
-                int interfaceId = nextFreeInterfaceId( netSettings, 1 );
+                int interfaceId = getNextFreeInterfaceId( netSettings, 1 );
                 interfaceSettings.setInterfaceId( interfaceId );
                 try {
                     interfaceSettings.setName("Interface " + GREEK_NAMES[interfaceId-1]);
@@ -787,6 +756,9 @@ public class NetworkManagerImpl implements NetworkManager
                 // Check for wireless interfaces
                 if (deviceName.startsWith("wlan")) {
                     interfaceSettings.setIsWirelessInterface(true);
+                    interfaceSettings.setWirelessChannel(6);
+                } else {
+                    interfaceSettings.setIsWirelessInterface(false);
                 }
 
                 List<InterfaceSettings> currentList = netSettings.getInterfaces();
@@ -823,12 +795,16 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
     
+    /**
+     * Create the default NetworkSettings
+     * @return NetworkSettings
+     */
     private NetworkSettings defaultSettings()
     {
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 5 ); // Currently on v5 (as of v12.2)
+            newSettings.setVersion( 7 ); // Currently on v7 (as of v13.2.1)
 
             String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
             try {
@@ -873,7 +849,10 @@ public class NetworkManagerImpl implements NetworkManager
                 external.setV4ConfigType( InterfaceSettings.V4ConfigType.AUTO );
                 external.setV6ConfigType( InterfaceSettings.V6ConfigType.DISABLED );
                 external.setV4NatEgressTraffic( true );
-                if (devName.startsWith("wlan")) external.setIsWirelessInterface(true);
+                if (devName.startsWith("wlan")) {
+                    external.setIsWirelessInterface(true);
+                    external.setWirelessChannel(6);
+                }
                 interfaces.add( external );
             }
         
@@ -895,7 +874,10 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setV6StaticAddress( null );
                 internal.setV6StaticPrefixLength( 64 );
                 internal.setBridgedTo( 1 );
-                if (devName.startsWith("wlan")) internal.setIsWirelessInterface(true);
+                if (devName.startsWith("wlan")) {
+                    internal.setIsWirelessInterface(true);
+                    internal.setWirelessChannel(6);
+                }
                 interfaces.add(internal);
             }
 
@@ -914,6 +896,7 @@ public class NetworkManagerImpl implements NetworkManager
                 // Check for wireless interfaces
                 if (devName.startsWith("wlan")) {
                     intf.setIsWirelessInterface(true);
+                    intf.setWirelessChannel(6);
                 }
 
                 intf.setPhysicalDev( devName);
@@ -926,15 +909,62 @@ public class NetworkManagerImpl implements NetworkManager
 
             newSettings.setInterfaces(interfaces);
 
+            InterfaceSettings virtualIntf;
+            LinkedList<InterfaceSettings> virtualInterfaces = new LinkedList<InterfaceSettings>();
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.OPENVPN_INTERFACE_ID,"OpenVPN");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.L2TP_INTERFACE_ID,"L2TP");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.XAUTH_INTERFACE_ID,"XAUTH");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.GRE_INTERFACE_ID,"GRE");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+            
+            newSettings.setVirtualInterfaces(virtualInterfaces);
+            
             newSettings.setPortForwardRules( new LinkedList<PortForwardRule>() );
             newSettings.setNatRules( new LinkedList<NatRule>() );
             newSettings.setBypassRules( defaultBypassRules() );
             newSettings.setStaticRoutes( new LinkedList<StaticRoute>() );
             newSettings.setQosSettings( defaultQosSettings() );
             newSettings.setUpnpSettings( defaultUpnpSettings() );
+            newSettings.setNetflowSettings( new NetflowSettings() );
+            newSettings.setDynamicRoutingSettings( defaultDynamicRoutingSettings() );
             newSettings.setDnsSettings( new DnsSettings() );
-            newSettings.setForwardFilterRules( new LinkedList<FilterRule>() );
-            newSettings.setInputFilterRules( defaultInputFilterRules() );
+            newSettings.setFilterRules( new LinkedList<FilterRule>() );
+            newSettings.setAccessRules( defaultAccessRules() );
             newSettings.setStaticDhcpEntries( new LinkedList<DhcpStaticEntry>() );
 
             /**
@@ -953,17 +983,29 @@ public class NetworkManagerImpl implements NetworkManager
         return newSettings;
     }
 
+    /**
+     * sanityCheckNetworkSettings
+     * Sanity checks the network settings.
+     * If something doesn't make sense RuntimeException is thrown with the description
+     * of the issue
+     * @param networkSettings
+     */
     private void sanityCheckNetworkSettings( NetworkSettings networkSettings )
     {
         if ( networkSettings == null ) {
                 throw new RuntimeException("null settings");
         }
         
+        boolean foundWan = false;
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             if (intf.getV4ConfigType() == null)
                 throw new RuntimeException("Missing V4 Config Type");
+            if ( intf.getConfigType() != InterfaceSettings.ConfigType.DISABLED && intf.getIsWan() )
+                foundWan = true;
         }
-
+        if (!foundWan) {
+            throw new RuntimeException("Must have at least one configured WAN interface.");
+        }
         if ( networkSettings.getHttpsPort() == networkSettings.getHttpPort() ) {
             throw new RuntimeException("HTTP and HTTPS services can not use the same port.");
         }
@@ -1169,7 +1211,7 @@ public class NetworkManagerImpl implements NetworkManager
                             throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
                     }
             }
-            for ( FilterRule rule : networkSettings.getForwardFilterRules() ) {
+            for ( FilterRule rule : networkSettings.getFilterRules() ) {
                 List<FilterRuleCondition> conditions = rule.getConditions();
                 if ( conditions != null ) 
                     for ( RuleCondition matcher : conditions ) {
@@ -1177,7 +1219,7 @@ public class NetworkManagerImpl implements NetworkManager
                             throw new RuntimeException( "Invalid condition on rule " + rule.getDescription() + ". Can not use \"is NOT\" (invert) with multiple values." );
                     }
             }
-            for ( FilterRule rule : networkSettings.getInputFilterRules() ) {
+            for ( FilterRule rule : networkSettings.getAccessRules() ) {
                 List<FilterRuleCondition> conditions = rule.getConditions();
                 if ( conditions != null ) 
                     for ( RuleCondition matcher : conditions ) {
@@ -1196,6 +1238,12 @@ public class NetworkManagerImpl implements NetworkManager
 
     }
 
+    /**
+     * sanityCheckInterfaceSettings
+     * Santicy check the interface settings
+     * If something doesn't make sense RuntimeException with the description is thrown
+     * @param intf
+     */
     private void sanityCheckInterfaceSettings( InterfaceSettings intf )
     {
         if ( intf == null )
@@ -1205,6 +1253,8 @@ public class NetworkManagerImpl implements NetworkManager
          * Check DHCP range and make sure it falls within the interface's address range
          */
         do {
+            boolean found;
+
             if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                 break;
             if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
@@ -1226,8 +1276,6 @@ public class NetworkManagerImpl implements NetworkManager
                 addrs.add( new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() ) );
             }
 
-            boolean found;
-            
             found = false;
             for( IPMaskedAddress maskedAddr : addrs ) {
                 if ( maskedAddr.contains( intf.getDhcpRangeStart() ) ) {
@@ -1248,44 +1296,90 @@ public class NetworkManagerImpl implements NetworkManager
             if (!found)
                 throw new RuntimeException( "Invalid DHCP Range End: " + intf.getDhcpRangeEnd().getHostAddress() );
         } while ( false );
+
+        /**
+         * If this interface is bridged - checked that its bridged to somewhere valid
+         */
+        if ( intf.getConfigType() == InterfaceSettings.ConfigType.BRIDGED ) {
+            Integer bridgedTo = intf.getBridgedTo();
+            if ( bridgedTo == null ) {
+                throw new RuntimeException("Interface " +
+                                           intf.getInterfaceId() +
+                                           " bridged to null interface.");
+            }
+            InterfaceSettings bridgeIntf = findInterfaceId( bridgedTo );
+            if ( bridgeIntf == null ) {
+                throw new RuntimeException("Interface " +
+                                           intf.getInterfaceId() +
+                                           " bridged to missing interface.");
+            }
+            if ( bridgeIntf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED ) {
+                throw new RuntimeException("Interface " +
+                                           intf.getInterfaceId() +
+                                           " must be bridged to addressed interface. (currently bridged to " + bridgeIntf.getInterfaceId() + ")");
+            }
+        }
     }
     
+    /**
+     * sanitizeNetworkSettings This will "sanitize" settings It will
+     * do some sanity checks and change settings as necessary to avoid
+     * any possible confusion on the backend
+     * @param networkSettings
+     */
     private void sanitizeNetworkSettings( NetworkSettings networkSettings )
     {
+        
         /**
          * Fix rule IDs
          */
         int idx = 0;
-        for (NatRule rule : networkSettings.getNatRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getNatRules() != null) {
+            for (NatRule rule : networkSettings.getNatRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (PortForwardRule rule : networkSettings.getPortForwardRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getPortForwardRules() != null) {
+            for (PortForwardRule rule : networkSettings.getPortForwardRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (BypassRule rule : networkSettings.getBypassRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getBypassRules() != null) {
+            for (BypassRule rule : networkSettings.getBypassRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (StaticRoute rule : networkSettings.getStaticRoutes()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getStaticRoutes() != null) {
+            for (StaticRoute rule : networkSettings.getStaticRoutes()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (FilterRule rule : networkSettings.getInputFilterRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getAccessRules() != null) {
+            for (FilterRule rule : networkSettings.getAccessRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (FilterRule rule : networkSettings.getForwardFilterRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getFilterRules() != null) {
+            for (FilterRule rule : networkSettings.getFilterRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (QosRule rule : networkSettings.getQosSettings().getQosRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getQosSettings() != null && networkSettings.getQosSettings().getQosRules() != null) {
+            for (QosRule rule : networkSettings.getQosSettings().getQosRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         idx = 0;
-        for (UpnpRule rule : networkSettings.getUpnpSettings().getUpnpRules()) {
-            rule.setRuleId(++idx);
+        if (networkSettings.getUpnpSettings() != null && networkSettings.getUpnpSettings().getUpnpRules() != null) {
+            for (UpnpRule rule : networkSettings.getUpnpSettings().getUpnpRules()) {
+                rule.setRuleId(++idx);
+            }
         }
         /**
          * Reset all symbolic devs to system devs
@@ -1320,16 +1414,15 @@ public class NetworkManagerImpl implements NetworkManager
          * Handle VLAN interfaces
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-            if ( ! intf.getIsVlanInterface() )
+            if (!intf.getIsVlanInterface())
                 continue;
-            
-            if ( intf.getInterfaceId() < 0 )
-                intf.setInterfaceId( nextFreeInterfaceId( networkSettings, 100 ) );
-            
             if ( intf.getVlanTag() == null )
                 throw new RuntimeException("VLAN tag missing on VLAN interface");
             if ( intf.getVlanParent() == null )
                 throw new RuntimeException("VLAN parent missing on VLAN interface");
+
+            if ( intf.getInterfaceId() < 0 )
+                intf.setInterfaceId( getNextFreeInterfaceId( networkSettings, 100 ) );
             
             InterfaceSettings parent = null;
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
@@ -1350,7 +1443,8 @@ public class NetworkManagerImpl implements NetworkManager
          */
         int pppCount = 0;
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-            if ( InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
+            if ( !InterfaceSettings.ConfigType.DISABLED.equals( intf.getConfigType() ) &&
+                 InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
                 // save the old system dev (usuallyy physdev or sometimse vlan dev as root dev)
                 intf.setV4PPPoERootDev(intf.getSystemDev());
                 intf.setSystemDev("ppp" + pppCount);
@@ -1358,7 +1452,7 @@ public class NetworkManagerImpl implements NetworkManager
                 pppCount++;
             }
         }
-        
+
         /**
          * Determine if the interface is a bridge. If so set the symbolic device name
          */
@@ -1389,9 +1483,80 @@ public class NetworkManagerImpl implements NetworkManager
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             sanitizeInterfaceSettings( intf );
         }
+
+        /**
+         * Sort Interfaces
+         * We may have added new VLAN interfaces and set their interfaceId above
+         * We need to position them in the correct place
+         */
+        List<InterfaceSettings> interfaceList = networkSettings.getInterfaces();
+        Collections.sort(interfaceList, new Comparator<InterfaceSettings>() {
+                /**
+                 * compare sorts the interfaces by ID
+                 * @param i1
+                 * @param i2
+                 * @return -1,0,1
+                 */
+                public int compare(InterfaceSettings i1, InterfaceSettings i2) {
+                    int oi1 = i1.getInterfaceId();
+                    int oi2 = i2.getInterfaceId();
+                    if (oi1 == oi2) {
+                        return 0;
+                    } else if (oi1 < oi2) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                }
+            });
+        networkSettings.setInterfaces(interfaceList);
+        
+        /**
+         *  Sanitize dynamic routing settings
+         */
+        if (networkSettings.getDynamicRoutingSettings() != null ){
+            if( networkSettings.getDynamicRoutingSettings().getBgpNeighbors() != null) {
+                idx = 0;
+                for (DynamicRouteBgpNeighbor neighbor : networkSettings.getDynamicRoutingSettings().getBgpNeighbors()) {
+                    neighbor.setRuleId(++idx);
+                }
+            }
+            if( networkSettings.getDynamicRoutingSettings().getBgpNetworks() != null) {
+                idx = 0;
+                for (DynamicRouteNetwork network : networkSettings.getDynamicRoutingSettings().getBgpNetworks()) {
+                    network.setRuleId(++idx);
+                }
+            }
+            if( networkSettings.getDynamicRoutingSettings().getOspfNetworks() != null) {
+                idx = 0;
+                for (DynamicRouteNetwork network : networkSettings.getDynamicRoutingSettings().getOspfNetworks()) {
+                    network.setRuleId(++idx);
+                }
+            }
+            if( networkSettings.getDynamicRoutingSettings().getOspfAreas() != null) {
+                idx = 0;
+                for (DynamicRouteOspfArea area : networkSettings.getDynamicRoutingSettings().getOspfAreas()) {
+                    area.setRuleId(++idx);
+                }
+            }
+            if( networkSettings.getDynamicRoutingSettings().getOspfInterfaces() != null) {
+                idx = 0;
+                for (DynamicRouteOspfInterface intf : networkSettings.getDynamicRoutingSettings().getOspfInterfaces()) {
+                    intf.setRuleId(++idx);
+                }
+            }
+        }
+        
         
     }
 
+    /**
+     * sanitizeInterfaceSettings
+     * This will "sanitize" settings
+     * It will do some sanity checks and change settings as necessary to avoid any possible
+     * confusion on the backend
+     * @param interfaceSettings
+     */
     private void sanitizeInterfaceSettings( InterfaceSettings interfaceSettings )
     {
         /**
@@ -1416,6 +1581,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * This chooses "reasonable" DHCP defaults if dhcp is enabled on the given interface
+     * @param interfaceSettings
      */
     private void initializeDhcpDefaults( InterfaceSettings interfaceSettings )
     {
@@ -1470,6 +1636,10 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
+    /**
+     * Create the default QoSSettings
+     * @return QosSettings
+     */
     private QosSettings defaultQosSettings()
     {
         QosSettings qosSettings = new QosSettings();
@@ -1550,6 +1720,10 @@ public class NetworkManagerImpl implements NetworkManager
         return qosSettings;
     }
 
+    /**
+     * Get the default UPnP settings
+     * @return UpnpSettings
+     */
     private UpnpSettings defaultUpnpSettings()
     {
         UpnpSettings upnpSettings = new UpnpSettings();
@@ -1621,7 +1795,47 @@ public class NetworkManagerImpl implements NetworkManager
         return upnpSettings;
     }
 
-    private List<FilterRule> defaultInputFilterRules()
+    /**
+     * get the default dynamic routing settings
+     * @return DynamicRoutingSettings
+     */
+    private DynamicRoutingSettings defaultDynamicRoutingSettings()
+    {
+        DynamicRoutingSettings drSettings = new DynamicRoutingSettings();
+
+        drSettings.setEnabled( false );
+        List<DynamicRouteBgpNeighbor> bgpNeighbors = new LinkedList<>();
+        drSettings.setBgpNeighbors(bgpNeighbors);
+
+        List<DynamicRouteNetwork> bgpNetworks = new LinkedList<>();
+        drSettings.setBgpNetworks(bgpNetworks);
+
+        List<DynamicRouteNetwork> ospfNetworks = new LinkedList<>();
+        drSettings.setOspfNetworks(ospfNetworks);
+
+        List<DynamicRouteOspfInterface> ospfInterfaces = new LinkedList<>();
+        drSettings.setOspfInterfaces(ospfInterfaces);
+
+        List<DynamicRouteOspfArea> ospfAreas = new LinkedList<>();
+
+        DynamicRouteOspfArea ospfArea = new DynamicRouteOspfArea();
+        ospfArea.setRuleId(1);
+        ospfArea.setDescription("Backbone");
+        ospfArea.setArea("0.0.0.0");
+        ospfArea.setType(0);
+        ospfArea.setVirtualLinks(new LinkedList<InetAddress>());
+        ospfAreas.add(ospfArea);
+
+        drSettings.setOspfAreas(ospfAreas);
+
+        return drSettings;
+    }
+
+    /**
+     * Get a list of the default access rules
+     * @return list
+     */
+    private List<FilterRule> defaultAccessRules()
     {
         List<FilterRule> rules = new LinkedList<FilterRule>();
         List<FilterRuleCondition> conditions;
@@ -1830,6 +2044,28 @@ public class NetworkManagerImpl implements NetworkManager
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
         filterRuleUpnpC.setConditions( conditions );
 
+
+        FilterRule filterRuleBgp = new FilterRule();
+        filterRuleBgp.setReadOnly( true );
+        filterRuleBgp.setEnabled( true );
+        filterRuleBgp.setIpv6Enabled( true );
+        filterRuleBgp.setDescription( "Allow Dynamic Routing BGP (TCP/179)" );
+        filterRuleBgp.setBlocked( false );
+        conditions = new LinkedList<FilterRuleCondition>();
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "179" ));
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "TCP" ));
+        filterRuleBgp.setConditions( conditions );
+
+        FilterRule filterRuleOspf = new FilterRule();
+        filterRuleOspf.setReadOnly( true );
+        filterRuleOspf.setEnabled( true );
+        filterRuleOspf.setIpv6Enabled( true );
+        filterRuleOspf.setDescription( "Allow Dynamic Routing OSPF" );
+        filterRuleOspf.setBlocked( false );
+        conditions = new LinkedList<FilterRuleCondition>();
+        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "OSPF" ));
+        filterRuleOspf.setConditions( conditions );
+        
         FilterRule filterRuleAhEsp = new FilterRule();
         filterRuleAhEsp.setReadOnly( true );
         filterRuleAhEsp.setEnabled( true );
@@ -1929,7 +2165,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleBlock.setReadOnly( true );
         List<FilterRuleCondition> rule4Conditions = new LinkedList<FilterRuleCondition>();
         filterRuleBlock.setConditions( rule4Conditions );
-        
+
         rules.add( filterRuleSsh );
         rules.add( filterRuleHttpsWan );
         rules.add( filterRuleHttpsNonWan );
@@ -1941,6 +2177,8 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleUpnp );
         rules.add( filterRuleUpnpB );
         rules.add( filterRuleUpnpC );
+        rules.add(filterRuleBgp);
+        rules.add(filterRuleOspf);
         rules.add( filterRuleAhEsp );
         rules.add( filterRuleIke );
         rules.add( filterRuleNatT );
@@ -1951,6 +2189,10 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
+    /**
+     * Get a list of the default bypass rules
+     * @return list
+     */
     private List<BypassRule> defaultBypassRules()
     {
         List<BypassRule> rules = new LinkedList<BypassRule>();
@@ -2011,18 +2253,10 @@ public class NetworkManagerImpl implements NetworkManager
         return rules;
     }
 
-    private int nextFreeInterfaceId( NetworkSettings netSettings, int min)
-    {
-        if (netSettings == null)
-            return min;
-        int free = min;
-        for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
-            if ( free <= intfSettings.getInterfaceId() )
-                free = intfSettings.getInterfaceId() + 1;
-        }
-        return free;
-    }
-
+    /**
+     * Get a list of all ethernet devices detected
+     * @return list
+     */
     private LinkedList<String> getEthernetDeviceNames()
     {
         ExecManagerResult result;
@@ -2064,177 +2298,36 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * This method predicts the files that will change when syncing the new settings to the O/S
-     * It returns a list of files that will change (in content)
-     * If the prediction fails, null is returned
-     */
-    private LinkedList<String> predictUpdatedFiles( NetworkSettings newSettings )
-    {
-        ExecManagerResult result;
-        int retCode;
-        LinkedList<String> changedFiles = new LinkedList<String>();
-        Path tmpDir = null;
-        String cmd;
-        
-        try {
-            tmpDir = Files.createTempDirectory( "tmp-sync-settings" );
-
-            // apply settings in new dir
-            cmd = "/usr/share/untangle-netd/bin/sync-settings.py -v -f " + settingsFilename + " -p " + tmpDir.getFileName();
-            retCode = UvmContextFactory.context().execManager().execResult( cmd );
-
-            if ( retCode != 0 ) {
-                logger.warn( "sync-settings.py failed: returned " + retCode );
-                return null;
-            }
-
-            cmd = "diff -rqP / " + tmpDir + " | grep -v '^Only in' | awk '{print $2}'";
-            result = UvmContextFactory.context().execManager().exec( cmd );
-            
-            if ( result.getResult() != 0 ) {
-                logger.warn( "diff failed: returned " + result.getResult() );
-                return null;
-            }
-            try {
-                String lines[] = result.getOutput().split("\\r?\\n");
-                for ( String line : lines ) {
-                    String filename = line.replaceAll("\\s","");
-                    if ( ! "".equals( filename ) )
-                        changedFiles.add( filename );
-                }
-            } catch (Exception e) {}
-        } catch ( Exception e ) {
-            logger.warn( "Failed to predict changed files", e );
-            try { Files.delete( tmpDir ); } catch ( Exception exc ) { logger.warn("Failed to delete directory " + tmpDir, exc); }
-        }
-
-        return changedFiles;
-    }
-
-    /**
-     * Usually when saving network settings we need to restart all of networking.
-     * However, in a few cases we can get away with just restarting a daemon or two.
-     *
-     * This method computes what is necessary for the provided new NetworkSettings.
-     * 
-     * Returns a string array. The first entry is the command to run before
-     * syncing settings, the second is the command to run after syncing settings
-     */
-    private String[] getAppropriateNetworkRestartCommand( NetworkSettings newSettings )
-    {
-        // default fullRestartCommands are full restart
-        //String[] fullRestartCommands = {"ifdown -a --exclude=lo", "ifup -a --exclude=lo"};
-        String[] fullRestartCommands = {"ifdown -a -v --exclude=lo", "ifup -a -v --exclude=lo"};
-
-        try {
-            LinkedList<String> changedFiles = predictUpdatedFiles( newSettings );
-
-            /**
-             * prediction failed, just do a full restart
-             */
-            if ( changedFiles == null )
-                return fullRestartCommands;
-
-            /**
-             * If nothing is new, we could do several things
-             * Currently we do nothing because in theory nothing has changed
-             * Alternatively, we could just do a full restart anyway
-             */
-            if ( changedFiles.size() == 0 ) {
-                logger.info("No config files changed. Skipping restart...");
-                return new String[] {"/bin/true", "/bin/true"};
-                //logger.info("No config files changed. Syncing settings anyway...");
-                //return fullRestartCommands;
-            }
-
-            for ( String filename : changedFiles )
-                logger.info("Changing file: " + filename);
-
-            /**
-             * If only /etc/hosts and /etc/hosts.dnsmasq have been written, just restart dnsmasq
-             */
-            if ( changedFiles.contains("/etc/hosts") && changedFiles.contains("/etc/hosts.dnsmasq") && changedFiles.size() == 2 ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
-            }
-
-            /**
-             * If only /etc/dnsmasq.d/dhcp-static has changed, just restart dnsmasq
-             */
-            if ( changedFiles.contains("/etc/dnsmasq.d/dhcp-static") && changedFiles.size() == 1 ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
-            }
-
-            /*
-             * If only miniupnp config has been written, just restart miniupnpd
-             */
-            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.contains("/etc/untangle-netd/post-network-hook.d/990-restart-upnp") && changedFiles.size() == 2 ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
-            }
-
-            /*
-             * If only miniupnp config has been written, just restart miniupnpd
-             */
-            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.size() == 1 ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
-            }
-
-            /**
-             * If only /etc/dnsmasq.conf has been written, just restart dnsmasq
-             * This is commented out because if you just change DNS settings, it will only change dnsmasq.conf
-             * We still need to do a full network restart so new /var/lib/untangle-netd/interface-x-status.js files are written
-             * with the new values (bug #12669 for more info)
-             */
-            //if ( changedFiles.contains("/etc/dnsmasq.conf") && changedFiles.size() == 1 ) {
-            //    return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
-            //}
-
-            /**
-             * If only /etc/untangle-netd/iptables-rules.d/* files are changed, just restart iptables rules
-             */
-            int count = 0;
-            for ( String changedFile : changedFiles ) {
-                if ( changedFile.startsWith("/etc/untangle-netd/iptables-rules.d/") )
-                    count++;
-            }
-            if ( count == changedFiles.size() ) {
-                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/960-iptables"};
-            }
-        }
-        catch ( Exception e ) {
-            logger.warn("Exception",e);
-        }
-        
-        return fullRestartCommands;
-    }
-
-    /**
      * Query a wireless card for a list of supported channels
+     * @param systemDev
+     * @return a list of the support wifi channels (never null)
      */
-
     public List<Integer> getWirelessChannels( String systemDev )
     {
-	List<Integer> channels = new LinkedList<Integer>();
+        List<Integer> channels = new LinkedList<Integer>();
 
-	String infoResult = UvmContextFactory.context().execManager().execOutput( "iw " + systemDev + " info" );
+        String infoResult = UvmContextFactory.context().execManager().execOutput( "iw " + systemDev + " info" );
 
-	String channelPattern = "^\\s+\\* (\\d)(\\d+) MHz \\[(\\d+)\\]";
-	String channelDisabledPattern = "passive scanning|no IBSS|disabled|no IR";
-	String wiphyPattern = ".*wiphy (\\d)";
-	Pattern channelRegex = Pattern.compile(channelPattern);
-	Pattern channelDisabledRegex = Pattern.compile(channelDisabledPattern);
-	Pattern wiphyRegex = Pattern.compile(wiphyPattern);
-	Integer maxChannel = 0;
+        String channelPattern = "^\\s+\\* (\\d)(\\d+) MHz \\[(\\d+)\\]";
+        String channelDisabledPattern = "passive scanning|no IBSS|disabled|no IR";
+        String wiphyPattern = ".*wiphy (\\d)";
+        Pattern channelRegex = Pattern.compile(channelPattern);
+        Pattern channelDisabledRegex = Pattern.compile(channelDisabledPattern);
+        Pattern wiphyRegex = Pattern.compile(wiphyPattern);
+        Integer maxChannel = 0;
 
-	channels.add(new Integer(-1));
+        // Automatic 2.4 Ghz
+        // disabled NGFW-11496
+        // channels.add(new Integer(-1));
 
-	String wiphyId = "";
+        String wiphyId = "";
 
-	try {
+        try {
             String lines[] = infoResult.split("\\n");
             for ( String line : lines ) {
-		Matcher match = wiphyRegex.matcher(line);
-		if ( match.find() ) {
-		    wiphyId = match.group(1);
+                Matcher match = wiphyRegex.matcher(line);
+                if ( match.find() ) {
+                    wiphyId = match.group(1);
                 }
             }
         } catch (Exception e) {
@@ -2242,34 +2335,50 @@ public class NetworkManagerImpl implements NetworkManager
             return channels;
         }
 
-	if ( wiphyId.length() == 0 ) {
-	    logger.error( "Error parsing wiphy for dev: " + systemDev );
-	    return channels;
-	}
-
-	String channelResult = UvmContextFactory.context().execManager().execOutput( "iw phy" + wiphyId + " info" );
-
-	try {
-        String lines[] = channelResult.split("\\n");
-        for ( String line : lines ) {
-            Matcher match = channelRegex.matcher(line);
-            Matcher disabledMatch = channelDisabledRegex.matcher(line);
-            if ( match.find() && !disabledMatch.find() ) {
-                Integer channel = Integer.valueOf(match.group(3));
-                channels.add(channel);
-                if (channel > maxChannel) maxChannel = channel;
-            }
+        if ( wiphyId.length() == 0 ) {
+            logger.error( "Error parsing wiphy for dev: " + systemDev );
+            return channels;
         }
-    } catch (Exception e) {
-        logger.error( "Error parsing wireless channels", e );
+
+        logger.debug("Query supported channels for " + systemDev + " / phy" + wiphyId + " with: iw phy" + wiphyId + " info");
+        String channelResult = UvmContextFactory.context().execManager().execOutput( "iw phy" + wiphyId + " info" );
+
+        try {
+            String lines[] = channelResult.split("\\n");
+            for ( String line : lines ) {
+                logger.debug("Parsing line: " + line);
+                Matcher match = channelRegex.matcher(line);
+                Matcher disabledMatch = channelDisabledRegex.matcher(line);
+                if ( match.find() ) {
+                    Integer channel = Integer.valueOf(match.group(3));
+                    if ( disabledMatch.find() ) {
+                        logger.debug("Ignoring channel (disabled): " + channel);
+                    } else {
+                        logger.debug("Adding channel: " + channel);
+                        channels.add(channel);
+                        if (channel > maxChannel) maxChannel = channel;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error( "Error parsing wireless channels", e );
+            return channels;
+        }
+	
+        // Automatic 5 Ghz
+        // disabled NGFW-11496
+        // if (maxChannel > 11) channels.add(1, new Integer( -2 ));
+
         return channels;
     }
-	
-	if (maxChannel > 11) channels.add(1, new Integer( -2 ));
 
-	return channels;
-    }
-
+    /**
+     * getUpnpManager
+     * runs the upnp manager script with the specified command and argument and returns the output
+     * @param command
+     * @param arguments
+     * @return output
+     */
     public String getUpnpManager(String command, String arguments)
     {
         return UvmContextFactory.context().execManager().execOutput(upnpManagerScript + " " + command + " " + arguments);
@@ -2278,6 +2387,9 @@ public class NetworkManagerImpl implements NetworkManager
     /**
      * Iterate through all wireless interfaces set the settings to the given values
      * Used by the setup wizard
+     * @param ssid
+     * @param encryption
+     * @param password
      */
     public void setWirelessSettings( String ssid, InterfaceSettings.WirelessEncryption encryption, String password )
     {
@@ -2287,43 +2399,64 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Invalid arguments: " + ssid + " " + password + " " + encryption );
             return;
         }
-        
-        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            if (! intf.getIsWirelessInterface() )
-                continue;
 
-            if (! ssid.equals( intf.getWirelessSsid() ) ) {
-                changed = true;
-                // if its a 5Mhz channel just add a 5 on the end
-                if ( intf.getWirelessChannel() != null && intf.getWirelessChannel() == -2 ) {
-                    intf.setWirelessSsid( ssid + "5" );
-                } else {
-                    intf.setWirelessSsid( ssid );
-                }
-            }
-            if (! password.equals( intf.getWirelessPassword() ) ) {
-                changed = true;
-                intf.setWirelessPassword( password );
-            }
-            if (! encryption.equals( intf.getWirelessEncryption() ) ) {
-                changed = true;
-                intf.setWirelessEncryption( encryption );
-            }
+        // Bridge to Internal if it exists and is addressed, otherwise external
+        int intfToBridge = 1;
+        InterfaceSettings bridgedInterfaceSettings = findInterfaceId(2);
+        if ( bridgedInterfaceSettings != null && bridgedInterfaceSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED ) {
+            intfToBridge = 2;
         }
 
-        if (changed)
-            setNetworkSettings( this.networkSettings, false );
+        int i = 0;
+        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+            if (!intf.getIsWirelessInterface())
+                continue;
+            i++;
+
+            List<Integer> channels = getWirelessChannels( intf.getSystemDev() );
+            if ( channels == null ) {
+                logger.warn("Unabled to determine supported channels for " + intf.getSystemDev());
+                continue;
+            }
+            int maxChannel = 0;
+            int minChannel = 99999;
+            for ( Integer ch : channels ) {
+                if ( ch > maxChannel ) maxChannel = ch;
+                if ( ch < minChannel ) minChannel = ch;
+            }
+            // for 2.4 default to max (11)
+            // for 5.0 default to min (36)
+            int defaultChannel = maxChannel;
+            if ( maxChannel > 100 )
+                defaultChannel = minChannel;
+
+            intf.setIsWan( false );
+            intf.setConfigType( InterfaceSettings.ConfigType.BRIDGED );
+            intf.setBridgedTo( intfToBridge );
+
+            intf.setWirelessChannel(defaultChannel);
+            intf.setWirelessMode( InterfaceSettings.WirelessMode.AP );
+            if ( i > 1 ) {
+                intf.setWirelessSsid( ssid + "-" + i );
+            } else {
+                intf.setWirelessSsid( ssid );
+            }
+            intf.setWirelessPassword( password );
+            intf.setWirelessEncryption( encryption );
+        }
+
+        setNetworkSettings( this.networkSettings );
     }
 
     /**
-     * Get the first wireless interface.
-     * If no wireless interface exists, return null
-     * Used by the setup wizard
+     * Find the first (lowest ID) wireless interface.
+     * 
+     * @return the first wireless interface settings, or null if not found
      */
     public InterfaceSettings getFirstWirelessInterface()
     {
-        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            if ( intf.getIsWirelessInterface() )
+        for (InterfaceSettings intf : this.networkSettings.getInterfaces()) {
+            if (intf.getIsWirelessInterface())
                 return intf;
         }
         return null;
@@ -2333,6 +2466,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Get the SSID from the first wireless interface
      * If no wireless interface exists returns null
      * Used by the setup wizard
+     * @return String
      */
     public String getWirelessSsid()
     {
@@ -2347,6 +2481,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Get the password from the first wireless interface
      * If no wireless interface exists returns null
      * Used by the setup wizard
+     * @return String
      */
     public String getWirelessPassword()
     {
@@ -2361,6 +2496,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Get the encryption from the first wireless interface
      * If no wireless interface exists returns null
      * Used by the setup wizard
+     * @return WirelessEncryption
      */
     public InterfaceSettings.WirelessEncryption getWirelessEncryption()
     {
@@ -2371,6 +2507,23 @@ public class NetworkManagerImpl implements NetworkManager
             return null;
     }
 
+    /**
+     * Return the FQDN according to the settings
+     *
+     * If domain name is null it just returns the hostname
+     * @return String of the FQDN name of this server, never null
+     */
+    public String getFullyQualifiedHostname()
+    {
+        String primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        if ( primaryAddressStr == null )
+            primaryAddressStr = "hostname";
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        if ( domainName != null )
+            primaryAddressStr = primaryAddressStr + "." + domainName;
+        return primaryAddressStr;
+    }
+    
     /**
      * @return the public url for the box, this is the address (may be hostname or ip address)
      */
@@ -2390,10 +2543,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() == null ) {
                 logger.warn("No hostname is configured");
             } else {
-                primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-                String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
-                if ( domainName != null )
-                    primaryAddressStr = primaryAddressStr + "." + domainName;
+                primaryAddressStr = getFullyQualifiedHostname();
             }
         } else if ( NetworkSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals( this.networkSettings.getPublicUrlMethod() ) ) {
             if ( this.networkSettings.getPublicUrlAddress() == null ) {
@@ -2409,159 +2559,68 @@ public class NetworkManagerImpl implements NetworkManager
         return primaryAddressStr + ":" + httpsPortStr;
     }
 
-    private void convertSettingsV3()
+    /**
+     * Provide the first free interface ID higher than the specified minimum
+     *
+     * @param netSettings - the network settings to use to check for a free ID
+     * @param minimum - the minimum ID. It will start looking for a free ID at this minimum
+     * @return the next available ID greater than or equal to minimum, or -1 if not found.
+     */
+    public int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum)
     {
-        try {
-            this.networkSettings.setUpnpSettings( defaultUpnpSettings() );
-            this.networkSettings.setPublicUrlMethod( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlMethod() );
-            if ( this.networkSettings.getPublicUrlMethod() == null )
-                this.networkSettings.setPublicUrlMethod( NetworkSettings.PUBLIC_URL_EXTERNAL_IP );
-            this.networkSettings.setPublicUrlAddress( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlAddress() );
-            if ( this.networkSettings.getPublicUrlAddress() == null )
-                this.networkSettings.setPublicUrlAddress( "hostname.example.com" );
-            this.networkSettings.setPublicUrlPort( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlPort() );
-        } catch (Exception e) {
-            logger.warn("Exception converting Networking Settings",e);
-        }
-
-        this.networkSettings.setVersion( 3 );
-
-        //we are about to upgrade to v4 and then save settings
-        //do not do this here
-        //this.setNetworkSettings( this.networkSettings, false );
-    }
-
-    private void convertSettingsV4()
-    {
-        try {
-            List<FilterRule> inputFilterRules = this.networkSettings.getInputFilterRules();
-            int pos = 1;
-            for( FilterRule rule : inputFilterRules ) {
-                if ("Allow SNMP on non-WANs".equals(rule.getDescription())) {
-                    FilterRule filterRuleUpnp;
-                    List<FilterRuleCondition> ruleUpnpConditions;
-                    FilterRuleCondition ruleUpnpMatcher1;
-                    FilterRuleCondition ruleUpnpMatcher2;
-                    FilterRuleCondition ruleUpnpMatcher3;
-
-                    filterRuleUpnp = new FilterRule();
-                    filterRuleUpnp.setReadOnly( true );
-                    filterRuleUpnp.setEnabled( true );
-                    filterRuleUpnp.setIpv6Enabled( true );
-                    filterRuleUpnp.setDescription( "Allow UPnP (TCP/5000) on non-WANs" );
-                    filterRuleUpnp.setBlocked( false );
-                    filterRuleUpnp.setReadOnly( true );
-                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
-                    ruleUpnpMatcher1 = new FilterRuleCondition();
-                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleUpnpMatcher1.setValue("5000");
-                    ruleUpnpMatcher2 = new FilterRuleCondition();
-                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleUpnpMatcher2.setValue("TCP");
-                    ruleUpnpMatcher3 = new FilterRuleCondition();
-                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleUpnpMatcher3.setValue("non_wan");
-                    ruleUpnpConditions.add(ruleUpnpMatcher1);
-                    ruleUpnpConditions.add(ruleUpnpMatcher2);
-                    ruleUpnpConditions.add(ruleUpnpMatcher3);
-                    filterRuleUpnp.setConditions( ruleUpnpConditions );
-
-                    inputFilterRules.add( pos, filterRuleUpnp );
-
-                    filterRuleUpnp = new FilterRule();
-                    filterRuleUpnp.setReadOnly( true );
-                    filterRuleUpnp.setEnabled( true );
-                    filterRuleUpnp.setIpv6Enabled( true );
-                    filterRuleUpnp.setDescription( "Allow UPnP (UDP/1900) on non-WANs" );
-                    filterRuleUpnp.setBlocked( false );
-                    filterRuleUpnp.setReadOnly( true );
-                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
-                    ruleUpnpMatcher1 = new FilterRuleCondition();
-                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleUpnpMatcher1.setValue("1900");
-                    ruleUpnpMatcher2 = new FilterRuleCondition();
-                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleUpnpMatcher2.setValue("UDP");
-                    ruleUpnpMatcher3 = new FilterRuleCondition();
-                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleUpnpMatcher3.setValue("non_wan");
-                    ruleUpnpConditions.add(ruleUpnpMatcher1);
-                    ruleUpnpConditions.add(ruleUpnpMatcher2);
-                    ruleUpnpConditions.add(ruleUpnpMatcher3);
-                    filterRuleUpnp.setConditions( ruleUpnpConditions );
-
-                    inputFilterRules.add( pos, filterRuleUpnp );
-                    break;
+        if (netSettings == null)
+            return minimum;
+        int freeId;
+        for (freeId = minimum ; freeId < InterfaceSettings.MAX_INTERFACE_ID ; freeId++) {
+            boolean found = false;
+            if ( netSettings.getInterfaces() != null ) {
+                for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
+                    if ( freeId == intfSettings.getInterfaceId() ) {
+                        found = true;
+                        break;
+                    }
                 }
-                pos++;
             }
-        } catch (Exception e) {
-            logger.warn("Exception converting Networking Settings",e);
-        }
-
-        this.networkSettings.setVersion( 4 );
-        this.setNetworkSettings( this.networkSettings, false );
-    }
-
-    private void convertSettingsV5()
-    {
-        try {
-            List<FilterRule> inputFilterRules = this.networkSettings.getInputFilterRules();
-            int pos = 1;
-            for( FilterRule rule : inputFilterRules ) {
-                if ("Allow SNMP on non-WANs".equals(rule.getDescription())) {
-                    FilterRule filterRuleUpnp;
-                    List<FilterRuleCondition> ruleUpnpConditions;
-                    FilterRuleCondition ruleUpnpMatcher1;
-                    FilterRuleCondition ruleUpnpMatcher2;
-                    FilterRuleCondition ruleUpnpMatcher3;
-
-                    filterRuleUpnp = new FilterRule();
-                    filterRuleUpnp.setReadOnly( true );
-                    filterRuleUpnp.setEnabled( true );
-                    filterRuleUpnp.setIpv6Enabled( true );
-                    filterRuleUpnp.setDescription( "Allow UPnP (UDP/5351) on non-WANs" );
-                    filterRuleUpnp.setBlocked( false );
-                    filterRuleUpnp.setReadOnly( true );
-                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
-                    ruleUpnpMatcher1 = new FilterRuleCondition();
-                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleUpnpMatcher1.setValue("5351");
-                    ruleUpnpMatcher2 = new FilterRuleCondition();
-                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleUpnpMatcher2.setValue("UDP");
-                    ruleUpnpMatcher3 = new FilterRuleCondition();
-                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleUpnpMatcher3.setValue("non_wan");
-                    ruleUpnpConditions.add(ruleUpnpMatcher1);
-                    ruleUpnpConditions.add(ruleUpnpMatcher2);
-                    ruleUpnpConditions.add(ruleUpnpMatcher3);
-                    filterRuleUpnp.setConditions( ruleUpnpConditions );
-
-                    inputFilterRules.add( pos, filterRuleUpnp );
-
-                    break;
+            if (found) continue;
+            if ( netSettings.getVirtualInterfaces() != null ) {
+                for (InterfaceSettings intfSettings : netSettings.getVirtualInterfaces()) {
+                    if ( freeId == intfSettings.getInterfaceId() ) {
+                        found = true;
+                        break;
+                    }
                 }
-                pos++;
             }
-        } catch (Exception e) {
-            logger.warn("Exception converting Networking Settings",e);
+            if (found) continue;
+            return freeId;
         }
-
-        this.networkSettings.setVersion( 5 );
-        this.setNetworkSettings( this.networkSettings, false );
+        logger.warn("Failed to find a free interface Id (min:" + minimum + " max:"  + freeId + ")");
+        return -1;
     }
-    
+
+    /**
+     * NetworkTestDownloadHandler
+     * This is the download servlet helper to allow the tcpdump test in troubleshooting
+     * to download the pcap file
+     */
     private class NetworkTestDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
 
+        /**
+         * getName
+         * @return name
+         */
         @Override
         public String getName()
         {
             return "NetworkTestExport";
         }
         
+        /**
+         * serveDownload
+         * @param req
+         * @param resp
+         */
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
             String name = req.getParameter("arg1");
@@ -2571,6 +2630,8 @@ public class NetworkManagerImpl implements NetworkManager
                 return;
             }
 
+            FileInputStream fis = null;
+            OutputStream out = null;
             try{
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type","application/vnd.tcpdump.pcap");
@@ -2578,19 +2639,28 @@ public class NetworkManagerImpl implements NetworkManager
 
                 byte[] buffer = new byte[1024];
                 int read;
-                FileInputStream fis = new FileInputStream(name);
-                OutputStream out = resp.getOutputStream();
+                fis = new FileInputStream(name);
+                out = resp.getOutputStream();
                 
                 while ( ( read = fis.read( buffer ) ) > 0 ) {
                     out.write( buffer, 0, read);
                 }
 
-                fis.close();
                 out.flush();
-                out.close();
-
             } catch (Exception e) {
                 logger.warn("Failed to export packet trace.",e);
+            } finally{
+                try{
+                    if(fis != null){
+                        fis.close();
+                    }
+                    if(out != null){
+                        out.close();
+                    }
+                }catch(IOException ex){
+                    logger.error("Unable to close formatter", ex);
+                }
+
             }
         }
     }

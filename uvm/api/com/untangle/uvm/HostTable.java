@@ -12,7 +12,7 @@ import java.net.InetAddress;
  */
 public interface HostTable
 {
-    
+
     /**
      * Gets the HostTableEtry for the specified host (specified as an IP string)
      * Returns null if no entry for the provided address is found.
@@ -32,9 +32,14 @@ public interface HostTable
     HostTableEntry getHostTableEntry( InetAddress address, boolean create );
 
     /**
-     * Search for a HostTableEntry with specified MAC address 
+     * Search for a HostTableEntry with specified MAC address
      */
     HostTableEntry findHostTableEntryByMacAddress( String macaddr );
+
+    /**
+     * Search for a HostTableEntry with specified IPsec username
+     */
+    HostTableEntry findHostTableEntryByIpsecUsername( String username );
 
     /**
      * return the "license size" (the number of hosts applicable to licensing)
@@ -45,7 +50,7 @@ public interface HostTable
      * return the largest license size the table has ever been
      */
     int getMaxActiveSize();
-    
+
     /**
      * Save the specified entry for the specified address
      * Will overwrite existing value
@@ -81,7 +86,7 @@ public interface HostTable
      * Utility function to set the appropriate attachment values
      */
     boolean decrementQuota(InetAddress address, long bytes);
-    
+
     /**
      * Check if the provided address has a quota that is exceeded
      */
@@ -91,7 +96,7 @@ public interface HostTable
      * Get the quota attainment ratio for an address
      */
     double hostQuotaAttainment( InetAddress address );
-    
+
     /**
      * Return a list of all the table entries for hosts with quotas
      * This is used for display in the UI
@@ -104,14 +109,19 @@ public interface HostTable
     void clear();
 
     /**
+     * Launch the cleanup thread immediately
+     */
+    void cleanup();
+
+    /**
      * Get the current size of the table
      */
     int getCurrentSize();
-    
+
     /**
      * Set the host table to these entries
      */
-    void setHosts( LinkedList<HostTableEntry> devices );
+    void setHosts( LinkedList<HostTableEntry> hosts, boolean merge );
 
     /**
      * save the hosts to disk

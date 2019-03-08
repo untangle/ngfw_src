@@ -4,7 +4,6 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.Objects;
 import java.util.List;
 import java.util.LinkedList;
@@ -34,6 +33,7 @@ public class DeviceTableEntry implements Serializable, JSONString
     private String      macVendor = null;
     private String      username = null;
     private String      hostname = null;
+    private String      hostnameLastKnown = null;
     private String      httpUserAgent = null;
     private int         interfaceId = 0;
     private long        lastSessionTime = 0; /* time of the last new session */
@@ -64,6 +64,7 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.setMacVendor( other.getMacVendor() );
         this.setUsername( other.getUsername() );
         this.setHostname( other.getHostname() );
+        this.setHostnameLastKnown( other.getHostnameLastKnown() );
         this.setHttpUserAgent( other.getHttpUserAgent() );
         this.setLastSessionTime( other.getLastSessionTime() );
         this.setInterfaceId( other.getInterfaceId() );
@@ -122,9 +123,28 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.hostname = newValue;
     }
 
+    public String getHostnameLastKnown() { return this.hostnameLastKnown; }
+    public void setHostnameLastKnown( String newValue )
+    {
+        if ( newValue != null ) {
+            Matcher matcher = ipv4Pattern.matcher( newValue );
+            if (matcher.matches()) {
+                return; // if its an IP, ignore it
+            }
+        }
+
+        if ( Objects.equals( newValue, this.hostnameLastKnown ) )
+            return;
+        updateEvent( "hostnameLastKnown", this.hostnameLastKnown, newValue );
+        this.hostnameLastKnown = newValue;
+    }
+
     public String getHttpUserAgent() { return this.httpUserAgent; }
     public void setHttpUserAgent( String newValue )
     {
+        // check hashcodes are equal which may be a bit quicker
+        if ( newValue != null && this.httpUserAgent != null && newValue.hashCode() == this.httpUserAgent.hashCode() )
+            return;
         if ( Objects.equals( newValue, this.httpUserAgent ) )
             return;
         updateEvent( "httpUserAgent", String.valueOf(this.httpUserAgent), String.valueOf(newValue) );
@@ -160,6 +180,7 @@ public class DeviceTableEntry implements Serializable, JSONString
     {
         if ( tag == null || tag.getName() == null )
             return;
+        updateEvent( "addTag", "", tag.getName() );
         this.tags.put( tag.getName(), tag );
     }
 
@@ -170,6 +191,14 @@ public class DeviceTableEntry implements Serializable, JSONString
         for ( Tag tag : tags ) {
             addTag( tag );
         }
+    }
+
+    public synchronized Tag removeTag( Tag tag )
+    {
+        Tag t = this.tags.remove( tag.getName() );
+        if ( t != null )
+            updateEvent( "removeTag", "", t.getName() );
+        return t;
     }
 
     public synchronized boolean hasTag( String name )
@@ -209,11 +238,18 @@ public class DeviceTableEntry implements Serializable, JSONString
         updateEvent( "username", this.username, newValue );
         this.username = newValue;
     }
+
+    /* 13.0 Deprecated */
+    public String getDeviceUsername() { return null; }
+    public void setDeviceUsername( String newValue )
+    {
+        setUsername( newValue );
+    }
     
     /**
      * Utility method to check that hostname is known
      */
-    public boolean isHostnameKnown()
+    public boolean hostnameKnown()
     {
         String hostname = getHostname();
         if (hostname == null)

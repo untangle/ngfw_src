@@ -18,9 +18,16 @@ import org.json.JSONString;
 public class DashboardSettings implements Serializable, JSONString
 {
     private Integer version;
-    
+    private Integer timeframe; //number of seconds in the past for startDate when getting data for reports and events
+    private static enum Theme {
+        DEFAULT,
+        DARK,
+        SAND
+    };
+
     private List<DashboardWidgetSettings> widgets = new LinkedList<DashboardWidgetSettings>();
-    
+    private Theme theme = Theme.DEFAULT;
+
     public DashboardSettings() { }
 
     public String toJSONString()
@@ -34,4 +41,11 @@ public class DashboardSettings implements Serializable, JSONString
 
     public Integer getVersion() { return this.version; }
     public void setVersion( Integer newValue ) { this.version = newValue ; }
+
+    public Integer getTimeframe(){ return timeframe; }
+    public void setTimeframe( Integer newValue) { this.timeframe = newValue; }
+
+    public Theme getTheme(){ return this.theme; }
+    public void setTheme( Theme newValue) { this.theme = newValue; }
+
 }

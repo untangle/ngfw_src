@@ -5,44 +5,45 @@
 package com.untangle.app.captive_portal;
 
 import java.io.Serializable;
-import java.net.InetAddress;
+import org.json.JSONString;
+
+/**
+ * This is the implementation of a captive portal user entry used to track
+ * authenticated users.
+ * 
+ * @author mahotz
+ */
 
 @SuppressWarnings("serial")
-public class CaptivePortalUserEntry implements Serializable
+public class CaptivePortalUserEntry implements Serializable, JSONString
 {
-    private InetAddress userNetAddress;
-    private String userMacAddress;
+    private String userAddress;
     private String userName;
     private Boolean isAnonymous;
-    private Boolean isMacLogin;
     private long sessionCreation;
     private long sessionActivity;
     private long sessionCounter;
 
-    public CaptivePortalUserEntry() {}
-
-    public CaptivePortalUserEntry(InetAddress userNetAddress, String userMacAddress, String userName, Boolean isAnonymous)
+    public CaptivePortalUserEntry()
     {
-        this.userNetAddress = userNetAddress;
-        this.userMacAddress = userMacAddress;
+    }
+
+    public CaptivePortalUserEntry(String userAddress, String userName, Boolean isAnonymous)
+    {
+        this.userAddress = userAddress;
         this.userName = userName;
         this.isAnonymous = isAnonymous;
-        this.isMacLogin = false;
         sessionCreation = System.currentTimeMillis();
         sessionActivity = sessionCreation;
     }
 
-    public InetAddress getUserNetAddress() { return userNetAddress; }
-    public void setUserNetAddress( InetAddress newValue ) { this.userNetAddress = newValue; }
+// THIS IS FOR ECLIPSE - @formatter:off
 
-    public String getUserMacAddress() { return userMacAddress; }
-    public void setUserMacAddress( String newValue ) { this.userMacAddress = newValue; }
+    public String getUserAddress() { return userAddress; }
+    public void setUserAddress( String newValue ) { this.userAddress = newValue; }
 
     public String getUserName() { return userName; }
     public void setUserName( String newValue ) { this.userName = newValue; }
-
-    public Boolean getMacLogin() { return isMacLogin; }
-    public void setMacLogin( Boolean newValue ) { this.isMacLogin = newValue; }
 
     public Boolean getAnonymous() { return isAnonymous; }
     public void setAnonymous( Boolean newValue ) { this.isAnonymous = newValue; }
@@ -56,6 +57,8 @@ public class CaptivePortalUserEntry implements Serializable
     public long getSessionCounter() { return sessionCounter; }
     public void setSessionCounter( long newValue ) { this.sessionCounter = newValue; }
 
+// THIS IS FOR ECLIPSE - @formatter:on
+
     public void updateActivityTimer()
     {
         sessionActivity = System.currentTimeMillis();
@@ -64,7 +67,13 @@ public class CaptivePortalUserEntry implements Serializable
 
     public String toString()
     {
-        String local = ("ADDR:" + userNetAddress.getHostAddress().toString() + " MAC:" + userMacAddress + " NAME:" + userName);
-        return(local);
+        String local = ("NAME: " + userName + " ADDR:" + userAddress);
+        return (local);
+    }
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }

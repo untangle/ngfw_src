@@ -21,14 +21,14 @@
 <body>
 
 <header>
-    <img src="/images/BrandingLogo.png"><br/>
+    <img src="/images/BrandingLogo.png" style="max-width: 150px; max-height: 140px;"><br/>
     <h1 style="letter-spacing: normal; color: #CCC; font-weight: bold;">$.PageTitle.$</h1>
 </header>
 
 <div class="form-login" style="padding: 15px;">
+    <h2>$.WelcomeText.$</h2>
+    <p style="text-align: center; font-weight: bold; margin: 20px 0;">$.MessageText.$</p>
     <form autocomplete="off" method="post" action="/capture/handler.py/infopost">
-        <h2>$.WelcomeText.$</h2>
-        <p style="text-align: center; font-weight: bold; margin: 20px 0;">$.MessageText.$</p>
         <input name="method" id="method" type="hidden" value="$.method.$" />
         <input name="nonce" id="nonce" type="hidden" value="$.nonce.$" />
         <input name="appid" id="appid" type="hidden" value="$.appid.$" />
@@ -37,13 +37,11 @@
 
         <label style="vertical-align: middle; margin: 5px;"><input name="agree" type="$.AgreeBox.$" value="agree" style="display: initial; width: auto; padding: initial; margin: initial; vertical-align: middle;"/> $.AgreeText.$</label>
         <br/><br/>
-        <p style="text-align: center; color: red; font-size: 11px; margin: 0; line-height: 30px;">$.ProblemText.$</p>
-
-        <button id="submit" type="submit">Continue</button>
-        <br/><br/>
-        <p style="text-align: center; font-size: 11px; line-height: normal;">$.FooterText.$</p>
-
+    <p style="text-align: center; color: red; font-size: 11px; margin: 0; line-height: 30px;">$.ProblemText.$</p>
+    <button id="submit" type="submit" name="submit" title="Continue">Continue</button>
+    <br/><br/>
     </form>
+    <p style="text-align: center; font-size: 11px; line-height: normal;">$.FooterText.$</p>
 </div>
 <!--DEBUG-->
 </body>

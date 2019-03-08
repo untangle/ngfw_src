@@ -9,16 +9,26 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Inet4AddressConverter
+ */
 public class Inet4AddressConverter
 {
     private static final Logger logger = Logger.getLogger( Inet4AddressConverter.class );
     
     static final int INADDRSZ = 4;
     
-    /* No point in creating any instances */
+    /**
+     * Private because all utilities functions are static
+     */
     private Inet4AddressConverter() { }
 
-    public static InetAddress getByAddress ( String dotNotation )
+    /**
+     * getByAddress
+     * @param dotNotation
+     * @return the InetAddress
+     */
+    public static InetAddress getByAddress (String dotNotation)
     {
         int input[] = new int[INADDRSZ];
 
@@ -44,6 +54,12 @@ public class Inet4AddressConverter
         return getByAddress( input );
     }
 
+    /**
+     * getByHexAddress
+     * @param hex
+     * @param isLittleEndian
+     * @return the InetAddress
+     */
     public static InetAddress getByHexAddress( String hex, boolean isLittleEndian )
     {
         int input[] = new int[INADDRSZ];
@@ -63,6 +79,11 @@ public class Inet4AddressConverter
 
     }
 
+    /**
+     * getByAddress
+     * @param input
+     * @return InetAddress
+     */
     public static InetAddress getByAddress ( int input[] )
     {
         byte byteArray[] = new byte[INADDRSZ];
@@ -88,6 +109,11 @@ public class Inet4AddressConverter
     }
 
 
+    /**
+     * toLong convert an address to long
+     * @param address
+     * @return long
+     */
     public static long toLong ( InetAddress address )
     {
         long val = 0;
@@ -102,6 +128,11 @@ public class Inet4AddressConverter
         return val;
     }
 
+    /**
+     * toAddress convert a long to address
+     * @param val - long value
+     * @return InetAddress
+     */
     public static InetAddress toAddress ( long val ) 
     {
         byte valArray[] = new byte[INADDRSZ];
@@ -121,6 +152,11 @@ public class Inet4AddressConverter
         return address;
     }
 
+    /**
+     * byteToInt
+     * @param val
+     * @return int
+     */
     private static int byteToInt ( byte val )
     {
         int num = val;

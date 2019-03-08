@@ -1,12 +1,17 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.io.Serializable;
+import org.json.JSONString;
 
+/**
+ * Class to store the results from functions in the ExecManager
+ */
 @SuppressWarnings("serial")
-public class ExecManagerResult implements Serializable
+public class ExecManagerResult implements Serializable, JSONString
 {
     Integer result;
     String output;
@@ -23,4 +28,10 @@ public class ExecManagerResult implements Serializable
 
     public String getOutput() { return this.output; }
     public void setOutput(String output) { this.output = output; }
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }

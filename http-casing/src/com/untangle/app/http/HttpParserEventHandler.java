@@ -5,19 +5,17 @@ package com.untangle.app.http;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.DeviceTable;
 import com.untangle.uvm.DeviceTableEntry;
 import com.untangle.uvm.util.AsciiCharBuffer;
-import com.untangle.uvm.util.UserAgentString;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.uvm.vnet.Token;
@@ -31,6 +29,7 @@ import com.untangle.app.http.HeaderToken;
 
 /**
  * An HTTP <code>Parser</code>.
+ * The HTTP Parser takes raw data stream (ByteBuffers) as input and outputs HTTP Tokens
  */
 public class HttpParserEventHandler extends AbstractEventHandler
 {
@@ -75,6 +74,9 @@ public class HttpParserEventHandler extends AbstractEventHandler
 
     private boolean clientSide;
     
+    /**
+     * HttpParserSessionState stores all the parser state for the session
+     */
     private class HttpParserSessionState
     {
         protected RequestLineToken requestLineToken;
@@ -88,16 +90,21 @@ public class HttpParserEventHandler extends AbstractEventHandler
         protected long lengthCounter; /* counts up to final */
     }
 
-    // constructors -----------------------------------------------------------
-
+    /**
+     * Create an HttpParserEventHandler.
+     * @param clientSide - true if this is the client side
+     * @param app - the HTTP app (casing)
+     */
     protected HttpParserEventHandler( boolean clientSide, HttpImpl app )
     {
         this.clientSide = clientSide;
         this.app = app;
     }
 
-    // Parser methods ------------------------------------------------------
-
+    /**
+     * handleTCPNewSession.
+     * @param session
+     */
     @Override
     public void handleTCPNewSession( AppTCPSession session )
     {
@@ -120,6 +127,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         lineBuffering( session, true );
     }
     
+    /**
+     * handleTCPClientChunk.
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -131,6 +143,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPServerChunk.
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -143,6 +160,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPClientObject.
+     * @param session
+     * @param obj
+     */
     @Override
     public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
@@ -156,6 +178,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received object but expected data.");
     }
     
+    /**
+     * handleTCPServerObject.
+     * @param session
+     * @param obj
+     */
     @Override
     public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
@@ -169,6 +196,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received object but expected data.");
     }
     
+    /**
+     * handleTCPClientDataEnd.
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -184,6 +216,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPServerDataEnd.
+     * @param session
+     * @param data
+     */
     @Override
     public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -198,6 +235,10 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPClientFIN.
+     * @param session
+     */
     @Override
     public void handleTCPClientFIN( AppTCPSession session )
     {
@@ -211,6 +252,10 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return;
     }
 
+    /**
+     * handleTCPServerFIN.
+     * @param session
+     */
     @Override
     public void handleTCPServerFIN( AppTCPSession session )
     {
@@ -224,6 +269,13 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return;
     }
     
+    /**
+     * Parse the actual data, and send equivalent tokens in the session
+     * @param session - the session
+     * @param data - the data to be parsed
+     * @param s2c - true if server-to-client, false if client-to-server
+     * @param last - true if last data
+     */
     private void parse( AppTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
         ByteBuffer buf = data;
@@ -284,6 +336,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * Parse the actual data, and send equivalent tokens in the session
+     * @param session - the session
+     * @param buffer - the data to be parsed
+     * @param last - true if last data
+     */
     public void parse( AppTCPSession session, ByteBuffer buffer, boolean last )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -445,6 +503,30 @@ public class HttpParserEventHandler extends AbstractEventHandler
                             state.transferEncoding = BodyEncoding.NO_BODY;
                         }
                     }
+                    String contentType = state.header.getValue("content-type");
+                    String contentLength = state.header.getValue("content-length");
+                    String fileName = findContentDispositionFilename(state.header);
+
+                    /**
+                     * Attach values to session
+                     */
+                    if (contentType != null) {
+                        session.globalAttach( AppSession.KEY_HTTP_CONTENT_TYPE, contentType );
+                    }
+                    if (contentLength != null) {
+                        try {
+                            Long contentLengthLong = Long.parseLong(contentLength);
+                            session.globalAttach(AppSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
+                        } catch (NumberFormatException e) { /* ignore it if it doesnt parse */ }
+                    }
+                    if (fileName != null) {
+                        session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_NAME, fileName);
+                        // find the last dot to extract the file extension
+                        int loc = fileName.lastIndexOf(".");
+                        if (loc != -1)
+                            session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
+                    }
+
                 } else {
                     /* the request event is saved internally and used later with getRequestEvent */
                     String referer = ( app.getHttpSettings().getLogReferer() ? state.header.getValue("referer") : null);
@@ -593,11 +675,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
                 if (!clientSide) {
                     String contentType = state.header.getValue("content-type");
                     String mimeType = null == contentType ? null : MimeType.getType(contentType);
-                    
                     RequestLine rl = null == state.requestLineToken ? null : state.requestLineToken.getRequestLine();
-
+                    String filename = findContentDispositionFilename(state.header);
+                    
                     if (null != rl) {
-                        HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, state.lengthCounter);
+                        HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, filename, state.lengthCounter);
 
                         app.logEvent(evt);
                     }
@@ -617,21 +699,63 @@ public class HttpParserEventHandler extends AbstractEventHandler
                      */
                     InetAddress clientAddr = session.sessionEvent().getCClientAddr();
                     String agentString = state.header.getValue("user-agent");
-                    HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
-                    if (clientAddr != null && agentString != null && hostEntry != null ) {
-                        UserAgentString uas = new UserAgentString(agentString);
+                    String host = state.header.getValue("host");
+                    String referer = state.header.getValue("referer");
+                    String userAgent = state.header.getValue("user-agent");
+                    String rmethod = state.requestLineToken.getMethod().toString();
+                    /**
+                     * XXX what is this: .replaceAll("(?<!:)/+", "/")
+                     * -dmorris
+                     */
+                    String uri = state.requestLineToken.getRequestLine().getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/");
+                    String path = state.requestLineToken.getRequestLine().getRequestUri().normalize().getPath();
+                    HostTableEntry hostEntry = null;
+                    DeviceTableEntry deviceEntry = null;
+                    if ( clientAddr != null )
+                        hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+                    if ( hostEntry != null )
+                        deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacAddress() );
 
-                        /**
-                         * If the current agent string is null
-                         * set the agent string and agent string information
-                         * also set in device table if its non-null
-                         */
-                        if ( hostEntry.getHttpUserAgent() == null  ) {
-                            hostEntry.setHttpUserAgent( agentString );
-                            DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacAddress() );
-                            if ( deviceEntry != null )
-                                deviceEntry.setHttpUserAgent( agentString );
+                    session.globalAttach( AppSession.KEY_HTTP_HOSTNAME, host );
+                    session.globalAttach( AppSession.KEY_HTTP_REFERER, referer );
+                    session.globalAttach( AppSession.KEY_HTTP_URI, uri );
+                    session.globalAttach( AppSession.KEY_HTTP_URL, host + uri );
+                    session.globalAttach( AppSession.KEY_HTTP_USER_AGENT, userAgent );
+                    session.globalAttach( AppSession.KEY_HTTP_REQUEST_METHOD, rmethod );
+
+                    String fpath = null;
+                    String fname = null;
+                    String fext = null;
+                    int loc;
+                    try {
+                        // extract the full file path ignoring all params
+                        fpath = (new URI(path)).toString();
+                        fname = fpath;
+
+                        // find the last slash to extract the file name
+                        loc = fpath.lastIndexOf("/");
+                        if (loc != -1) fname = fpath.substring(loc + 1);
+                        else fname = fpath;
+
+                        // find the last dot to extract the file extension
+                        loc = fname.lastIndexOf(".");
+                        if (loc != -1) fext = fname.substring(loc + 1);
+
+                        if (fpath != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
+                        // FILE_NAME can be set from earlier in the header, only overwrite if it is null
+                        if (fname != null && session.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_NAME) == null) {
+                            session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
                         }
+                        // FILE_EXTENSION can be set from earlier in the header, only overwrite if it is null
+                        if (fext != null && session.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION) == null)
+                            session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
+                    } catch (URISyntaxException e) {}
+
+                    if ( agentString != null ) {
+                        if ( hostEntry != null )
+                            hostEntry.setHttpUserAgent( agentString );
+                        if ( deviceEntry != null )
+                            deviceEntry.setHttpUserAgent( agentString );
                     }
                 }
 
@@ -678,11 +802,21 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * completeLine.
+     * @param buffer
+     * @return
+     */
     private boolean completeLine(ByteBuffer buffer)
     {
         return buffer.get(buffer.limit() - 1) == LF;
     }
 
+    /**
+     * completeHeader.
+     * @param buffer
+     * @return
+     */
     private boolean completeHeader(ByteBuffer buffer)
     {
         ByteBuffer d = buffer.duplicate();
@@ -719,6 +853,10 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * endSession.
+     * @param session
+     */
     public void endSession( AppTCPSession session )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -772,6 +910,10 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return;
     }
 
+    /**
+     * handleTimer.
+     * @param sess
+     */
     public void handleTimer( AppSession sess )
     {
         AppTCPSession session = (AppTCPSession) sess;
@@ -793,8 +935,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    // private methods ---------------------------------------------------------
-
+    /**
+     * firstLine.
+     * @param session
+     * @param data
+     * @return
+     */
     private Token firstLine( AppTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -808,7 +954,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    // Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
+    /**
+     * Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
+     * @param session
+     * @param data
+     * @return
+     */
     private RequestLineToken requestLine( AppTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -829,7 +980,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return new RequestLineToken( rl, httpVersion );
     }
 
-    // Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+    /**
+     * Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+     * @param session
+     * @param data
+     * @return
+     */
     private StatusLine statusLine( AppTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -862,7 +1018,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return new StatusLine(httpVersion, statusCode, reasonPhrase);
     }
 
-    // HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
+    /**
+     * HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
+     * @param data
+     * @return
+     */
     private String version(ByteBuffer data)
     {
         eat(data, "HTTP");
@@ -874,7 +1034,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return "HTTP/" + maj + "." + min;
     }
 
-    // Reason-Phrase  = *<TEXT, excluding CR, LF>
+    /**
+     * Reason-Phrase  = *<TEXT, excluding CR, LF>
+     * @param state
+     * @param buffer
+     * @return
+     */
     private String reasonPhrase( HttpParserSessionState state, ByteBuffer buffer )
     {
         int l = buffer.remaining();
@@ -889,11 +1054,15 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return new String(state.buf, 0, l);
     }
 
-    // Status-Code    =
-    //       "100"  ; Section 10.1.1: Continue
-    //     | ...
-    //     | extension-code
-    // extension-code = 3DIGIT
+    /**
+     * Status-Code    =
+     *       "100"  ; Section 10.1.1: Continue
+     *     | ...
+     *     | extension-code
+     * extension-code = 3DIGIT
+     * @param buffer
+     * @return
+     */
     private int statusCode(ByteBuffer buffer)
     {
         int i = eatDigits(buffer);
@@ -906,6 +1075,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return i;
     }
 
+    /**
+     * header.
+     * @param session
+     * @param data
+     * @return
+     */
     private HeaderToken header( AppTCPSession session, ByteBuffer data )
     {
         HeaderToken header = new HeaderToken();
@@ -922,12 +1097,17 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return header;
     }
 
-    // message-header = field-name ":" [ field-value ]
-    // field-name     = token
-    // field-value    = *( field-content | LWS )
-    // field-content  = <the OCTETs making up the field-value
-    //                  and consisting of either *TEXT or combinations
-    //                  of token, separators, and quoted-string>
+    /**
+     * message-header = field-name ":" [ field-value ]
+     * field-name     = token
+     * field-value    = *( field-content | LWS )
+     * field-content  = <the OCTETs making up the field-value
+     *                  and consisting of either *TEXT or combinations
+     *                  of token, separators, and quoted-string>
+     * @param session
+     * @param header
+     * @param data
+     */
     private void field( AppTCPSession session, HeaderToken header, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -982,6 +1162,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         header.addField( key, value );
     }
 
+    /**
+     * closedBody.
+     * @param session
+     * @param buffer
+     * @return
+     */
     private ChunkToken closedBody( AppTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -990,6 +1176,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return new ChunkToken(buffer.slice());
     }
 
+    /**
+     * chunkLength.
+     * @param buffer
+     * @return
+     */
     private int chunkLength(ByteBuffer buffer)
     {
         int i = 0;
@@ -1017,8 +1208,13 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return i;
     }
 
-    // chunk          = chunk-size [ chunk-extension ] CRLF
-    //                  chunk-data CRLF
+    /**
+     * chunk          = chunk-size [ chunk-extension ] CRLF
+     *                  chunk-data CRLF
+     * @param session
+     * @param buffer
+     * @return
+     */
     private ChunkToken chunk( AppTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -1033,7 +1229,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return new ChunkToken(buffer.slice());
     }
 
-    // Request-URI    = "*" | absoluteURI | abs_path | authority
+    /**
+     * Request-URI    = "*" | absoluteURI | abs_path | authority
+     * @param session
+     * @param buffer
+     * @return
+     */
     private byte[] requestUri( AppTCPSession session, ByteBuffer buffer )
        
     {
@@ -1064,6 +1265,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return a;
     }
 
+    /**
+     * eat.
+     * @param data
+     * @param s
+     */
     private void eat( ByteBuffer data, String s )
     {
         byte[] sb = s.getBytes();
@@ -1072,11 +1278,23 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * eat.
+     * @param data
+     * @param c
+     * @return
+     */
     private boolean eat(ByteBuffer data, char c)
     {
         return eat(data, (byte)c);
     }
 
+    /**
+     * eat.
+     * @param data
+     * @param c
+     * @return
+     */
     private boolean eat(ByteBuffer data, byte c)
     {
         if (!data.hasRemaining()) {
@@ -1093,9 +1311,14 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    // read *TEXT, folding LWS
-    // TEXT           = <any OCTET except CTLs,
-    //                  but including LWS>
+    /**
+     * read *TEXT, folding LWS
+     * TEXT           = <any OCTET except CTLs,
+     *                   but including LWS>
+     * @param session
+     * @param buffer
+     * @return string
+     */
     private String eatText( AppTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -1136,7 +1359,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return new String( state.buf, 0, l );
     }
 
-    // LWS            = [CRLF] 1*( SP | HT )
+    /**
+     * LWS            = [CRLF] 1*( SP | HT )
+     * @param buffer
+     * @return boolean
+     */
     private boolean eatLws(ByteBuffer buffer)
     {
         int s = buffer.position();
@@ -1169,8 +1396,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return result;
     }
 
-    // CRLF           = CR LF
-    // in our implementation, CR is optional
+    /**
+     * CRLF           = CR LF
+     * in our implementation, CR is optional
+     * @param buffer
+     */
     private void eatCrLf( ByteBuffer buffer )
     {
         byte b1 = buffer.get();
@@ -1180,8 +1410,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    // DIGIT          = <any US-ASCII digit "0".."9">
-    // this method reads 1*DIGIT
+    /**
+     * DIGIT          = <any US-ASCII digit "0".."9">
+     * this method reads 1*DIGIT
+     * @param buffer
+     * @return int
+     */
     private int eatDigits( ByteBuffer buffer )
     {
         boolean foundOne = false;
@@ -1203,7 +1437,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return i;
     }
 
-    // token          = 1*<any CHAR except CTLs or separators>
+    /**
+     * token          = 1*<any CHAR except CTLs or separators>
+     * @param session
+     * @param buffer
+     * @return the string
+     */
     private String token( AppTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -1221,10 +1460,15 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return new String( state.buf, 0, l );
     }
 
-    // separators     = "(" | ")" | "<" | ">" | "@"
-    //                | "," | ";" | ":" | "\" | <">
-    //                | "/" | "[" | "]" | "?" | "="
-    //                | "{" | "}" | SP | HT
+    /**
+     * True if byte is a seperator char
+     * separators     = "(" | ")" | "<" | ">" | "@"
+     *                | "," | ";" | ":" | "\" | <">
+     *                | "/" | "[" | "]" | "?" | "="
+     *                | "{" | "}" | SP | HT
+     * @param b - the byte
+     * @return true if seperator, false otherwise
+     */
     private boolean isSeparator(byte b)
     {
         switch (b) {
@@ -1238,12 +1482,22 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    // DIGIT          = <any US-ASCII digit "0".."9">
+    /**
+     * True if byte is digit, false otherwise
+     * DIGIT          = <any US-ASCII digit "0".."9">
+     * @param b - the byte
+     * @return true if digit, false otherwise
+     */
     private boolean isDigit(byte b)
     {
         return '0' <= b && '9' >= b;
     }
 
+    /**
+     * True if byte is hex char (1-9a-fA-F)
+     * @param b the byte
+     * @return true if hex, false otherwise
+     */
     private boolean isHex(byte b)
     {
         switch (b) {
@@ -1257,6 +1511,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * decimal value for hex char (1-f)
+     * @param c - the char
+     * @return int decimal value
+     */
     private int hexValue(char c)
     {
         switch (c) {
@@ -1280,38 +1539,67 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    // CTL            = <any US-ASCII control character
-    //                  (octets 0 - 31) and DEL (127)>
+    /**
+     * True if byte is a control char
+     *  CTL            = <any US-ASCII control character
+     *                  (octets 0 - 31) and DEL (127)>
+     * @param b - the byte
+     * @return true if control char, false otherwise
+     */
     boolean isCtl(byte b)
     {
         return 0 <= b && 31 >= b || 127 == b;
     }
 
+    /**
+     * true if byte is uppercase alpha (a-z).
+     * @param b - the byte
+     * @return true if uppercase alpha, false otherwise
+     */
     boolean isUpAlpha(byte b)
     {
         return 'A' <= b && 'Z' >= b;
     }
 
+    /**
+     * true if byte is lowercase alpha (a-z).
+     * @param b - the byte
+     * @return true if lowercase alpha, false otherwise
+     */
     boolean isLoAlpha(byte b)
     {
         return 'a' <= b && 'z' >= b;
     }
 
-    boolean isAlpha(byte b)
+    /**
+     * true if byte is alpha (a-zA-Z).
+     * @param b - the byte
+     * @return true if alphanumeric, false otherwise
+     */
+    protected boolean isAlpha(byte b)
     {
         return isUpAlpha(b) || isLoAlpha(b);
     }
 
+    /**
+     * set lineBuffering on the session
+     * @param session 
+     * @param oneLine true if line buffer is on
+     */
     protected void lineBuffering( AppTCPSession session, boolean oneLine )
     {
-        if (clientSide)
-            {
+        if (clientSide) {
             session.clientLineBuffering(oneLine);
         } else {
             session.serverLineBuffering(oneLine);
         }
     }
 
+    /**
+     * Get the read limit
+     * @param session
+     * @return the limit
+     */
     protected long readLimit( AppTCPSession session )
     {
         if (clientSide) {
@@ -1321,6 +1609,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Set the read limit
+     * @param session
+     * @param limit
+     */
     protected void readLimit( AppTCPSession session, long limit )
     {
         if (clientSide) {
@@ -1330,23 +1623,44 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * Schedule a session timer
+     * @param session
+     * @param delay
+     */
     protected void scheduleTimer( AppTCPSession session, long delay )
     {
         session.scheduleTimer(delay);
     }
 
+    /**
+     * Cancel the session timer
+     * @param session
+     */
     protected void cancelTimer( AppTCPSession session )
     {
         session.cancelTimer();
     }
 
+    /**
+     * Create an end marker streamer
+     * @return the TokenStreamer
+     */
     private TokenStreamer endMarkerStreamer()
     {
         return new TokenStreamer() {
             private boolean sent = false;
 
+            /**
+             * True if closeWhenDone
+             * @return true
+             */
             public boolean closeWhenDone() { return true; }
 
+            /**
+             * Get next token
+             * @return token
+             */
             public Token nextToken()
             {
                 if (sent) {
@@ -1359,6 +1673,42 @@ public class HttpParserEventHandler extends AbstractEventHandler
         };
     }
 
+    /**
+     * This method extracts the filename from the content disposition header
+     * @param header - the HTTP response header token
+     * @return the filename as a string if found, or null
+     */
+    public static String findContentDispositionFilename( HeaderToken header )
+    {
+        String contentDisposition = header.getValue("content-disposition");
+
+        if ( contentDisposition == null )
+            return null;
+
+        contentDisposition = contentDisposition.toLowerCase();
+
+        int indexOf = contentDisposition.indexOf("filename=");
+
+        if ( indexOf == -1 )
+            return null;
+
+        indexOf = indexOf + "filename=".length();
+
+        String filename = contentDisposition.substring( indexOf );
+
+        filename = filename.replace("\"","");
+        filename = filename.replace("'","");
+        filename = filename.replaceAll("\\s","");
+
+        return filename;
+    }
+
+    /**
+     * Dequeue the request
+     * @param session
+     * @param statusCode
+     * @return the removed request
+     */
     @SuppressWarnings("unchecked")
     RequestLineToken dequeueRequest( AppTCPSession session, int statusCode )
     {

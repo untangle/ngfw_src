@@ -1,30 +1,27 @@
 /**
  * $Id: WebFilterDecisionEngine.java 43139 2016-04-28 18:10:05Z dmorris $
  */
+
 package com.untangle.app.web_filter;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
@@ -34,14 +31,11 @@ import org.xbill.DNS.Type;
 
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
-import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.app.web_filter.DecisionEngine;
 import com.untangle.app.web_filter.WebFilterBase;
-import com.untangle.app.web_filter.WebFilterSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.AppSession;
 
 /**
  * Does blacklist lookups from zvelo API.
@@ -64,11 +58,17 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private long lastDiaUpdate = 0;
     private long lastDiaTry = 0;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The base application
+     */
     public WebFilterDecisionEngine(WebFilterBase app)
     {
         super(app);
         ourApp = app;
-        
+
         synchronized (WebFilterDecisionEngine.class) {
             if (null == serialNum) {
                 String uid = UvmContextFactory.context().getServerUID();
@@ -88,18 +88,33 @@ public class WebFilterDecisionEngine extends DecisionEngine
         }
     }
 
+    /**
+     * Check the request
+     * 
+     * @param sess
+     *        The session
+     * @param clientIp
+     *        The client address
+     * @param port
+     *        The port
+     * @param requestLine
+     *        The request line
+     * @param header
+     *        The header
+     * @return The result
+     */
     @Override
-    public String checkRequest( AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header )
+    public String checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
-        if (! isLicenseValid()) {
+        if (!isLicenseValid()) {
             return null;
         } else {
             String result = super.checkRequest(sess, clientIp, port, requestLine, header);
-            if( result == null ){
-                String term  = SearchEngine.getQueryTerm( clientIp, requestLine, header );
-                if( term != null ){
+            if (result == null) {
+                String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
+                if (term != null) {
                     WebFilterQueryEvent hbe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, getApp().getName());
-                    logger.warn("WebFilterDecisionEngine: query terms found: " + term );
+                    logger.warn("WebFilterDecisionEngine: query terms found: " + term);
                     getApp().logEvent(hbe);
                 }
             }
@@ -107,21 +122,45 @@ public class WebFilterDecisionEngine extends DecisionEngine
         }
     }
 
+    /**
+     * Check the response
+     * 
+     * @param sess
+     *        The session
+     * @param clientIp
+     *        The client address
+     * @param requestLine
+     *        The request line
+     * @param header
+     *        The header
+     * @return The result
+     */
     @Override
-    public String checkResponse( AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header )
+    public String checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
-        if (! isLicenseValid()) {
+        if (!isLicenseValid()) {
             return null;
         } else {
-            return super.checkResponse( sess, clientIp, requestLine, header );
+            return super.checkResponse(sess, clientIp, requestLine, header);
         }
     }
 
-    public String encodeDnsQuery( String domain, String uri, String command )
+    /**
+     * Encode a DNS query
+     * 
+     * @param domain
+     *        The domain
+     * @param uri
+     *        The URI
+     * @param command
+     *        The command
+     * @return The encoded query
+     */
+    public String encodeDnsQuery(String domain, String uri, String command)
     {
         String key = getDiaKey();
-        
-        String encodedUrl = encodeUrl(domain,uri);
+
+        String encodedUrl = encodeUrl(domain, uri);
         String data = domain + key + serialNum;
         String crc = crcccitt(data);
 
@@ -129,13 +168,13 @@ public class WebFilterDecisionEngine extends DecisionEngine
         // dots exceeds 255 then trim it until it will fit.  Trim by
         // removing path components, then domain components.
         int attempts = 30;
-        while ( (--attempts > 0) && (encodedUrl.length() + serialNum.length() + 4 + domain.length() + 5 >= 255) ) {
+        while ((--attempts > 0) && (encodedUrl.length() + serialNum.length() + 4 + domain.length() + 5 >= 255)) {
             int i = encodedUrl.lastIndexOf("_-.");
-            if ( i >= 0 ) {
+            if (i >= 0) {
                 encodedUrl = encodedUrl.substring(0, i);
             } else {
                 int j = encodedUrl.indexOf('.');
-                if( j >= 0 ) {
+                if (j >= 0) {
                     encodedUrl = encodedUrl.substring(j + 1);
                 }
             }
@@ -150,45 +189,60 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     /**
      * Default to the lookup command.
-     */    
-    public String encodeDnsQuery( String domain, String uri )
+     * 
+     * @param domain
+     *        The domain
+     * @param uri
+     *        The uri
+     * @return The result
+     */
+    public String encodeDnsQuery(String domain, String uri)
     {
-        return encodeDnsQuery( domain, uri, "0");
+        return encodeDnsQuery(domain, uri, "0");
     }
-    
+
+    /**
+     * Categorize a site
+     * 
+     * @param domain
+     *        The domain
+     * @param uri
+     *        The URI
+     * @return The category list
+     */
     @Override
-    protected List<String> categorizeSite(String domain, int port, String uri)
+    protected List<String> categorizeSite(String domain, String uri)
     {
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "start-checkDecisionEngineDatabase");
+        if (logger.isDebugEnabled()) {
+            logger.debug("start-checkDecisionEngineDatabase");
         }
-        if(uri == ""){
+        if (uri == "") {
             uri = "/";
         }
 
         // remove the :80 port info off the end of the domain if present
         int i = domain.indexOf(':');
-        if ( i > 0 ) {
+        if (i > 0) {
             domain = domain.substring(0, i);
         }
 
         // lookup categorization in cache
-        String catStr = HostCache.getCachedCategories( domain, uri );
-        
+        String catStr = HostCache.getCachedCategories(domain, uri);
+
         if (catStr == null) {
-            String question = encodeDnsQuery( domain, uri );
-            String[] answers = lookupDns( question );
-            if( answers.length > 0 ){
-                for( int a = 0; a < answers.length; a++ ){
-                    if ( answers[a] == null) continue;
+            String question = encodeDnsQuery(domain, uri);
+            String[] answers = lookupDns(question);
+            if (answers.length > 0) {
+                for (int a = 0; a < answers.length; a++) {
+                    if (answers[a] == null) continue;
                     String[] split = answers[a].split("\\s+");
                     String cs = null;
-                    if( split.length >= 1) {
+                    if (split.length >= 1) {
                         cs = split[0];
                     }
 
                     String cu = null;
-                    if( split.length >= 2) {
+                    if (split.length >= 2) {
                         cu = split[1];
                     }
 
@@ -199,16 +253,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }
 
             catStr = HostCache.getCachedCategories(domain, uri);
-            
-            if ( logger.isDebugEnabled()) {
-                logger.debug( "post-lookup");
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("post-lookup");
             }
 
             if (catStr == null) {
                 logger.info("zvelo null cat for : \"" + domain + uri + "\" using Miscellaneous");
                 logger.info("zvelo question     : \"" + question + "\"");
                 //logger.info("zvelo resultStr    : \"" + resultStr + "\"");
-                
+
                 // catStr = "54"; /* misc category name/string */
             }
         }
@@ -223,56 +277,83 @@ public class WebFilterDecisionEngine extends DecisionEngine
             categories.add(cat);
         }
 
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "end-checkDecisionEngineDatabase");
+        if (logger.isDebugEnabled()) {
+            logger.debug("end-checkDecisionEngineDatabase");
         }
-        
+
         return categories;
     }
 
+    /**
+     * Clear the host cache
+     * 
+     * @param expireAll
+     *        Flag to clear all or expired only
+     */
     public void clearCache(boolean expireAll)
     {
         HostCache.cleanCache(expireAll);
     }
 
-    public List<String> lookupSite( String url )
+    /**
+     * Lookup a site
+     * 
+     * @param url
+     *        The URL
+     * @return The category list
+     */
+    public List<String> lookupSite(String url)
     {
-        String[] urlSplit = splitUrl( url );
-        return categorizeSite( urlSplit[0], Integer.parseInt( urlSplit[1] ), urlSplit[2] );
+        String[] urlSplit = splitUrl(url);
+        return categorizeSite(urlSplit[0], urlSplit[2]);
     }
 
-    public int recategorizeSite( String url, int category )
+    /**
+     * Re-categorize a site
+     * 
+     * @param url
+     *        The URL
+     * @param category
+     *        The category
+     * @return The category
+     */
+    public int recategorizeSite(String url, int category)
     {
-        String[] urlSplit = splitUrl( url );
-        String question = encodeDnsQuery( urlSplit[0], urlSplit[2],  Integer.toString( category ) + "_a");
-        String[] answers = lookupDns( question );
+        String[] urlSplit = splitUrl(url);
+        String question = encodeDnsQuery(urlSplit[0], urlSplit[2], Integer.toString(category) + "_a");
+        String[] answers = lookupDns(question);
         int answerCategory = -1;
-        if( answers.length > 0 ){
+        if (answers.length > 0) {
             /**
-             * The only way this can fail is if zvelo removes the submit functionality.
+             * The only way this can fail is if zvelo removes the submit
+             * functionality.
              */
             String[] split = answers[0].split("\\s+");
-            if( -1 != url.indexOf( split[1] ) ){
+            if (-1 != url.indexOf(split[1])) {
                 answerCategory = category;
             }
         }
         return (category == answerCategory ? category : -1);
     }
 
+    /**
+     * Get dia key
+     * 
+     * @return The dia key
+     */
     public String getDiaKey()
     {
-        if (WebFilterDecisionEngine.diaKey != null)
-            return WebFilterDecisionEngine.diaKey;
+        if (WebFilterDecisionEngine.diaKey != null) return WebFilterDecisionEngine.diaKey;
 
         /* otherwise synchronize and fetch a new one */
-        
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "start-getDiaKey");
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("start-getDiaKey");
         }
         synchronized (this) {
             long t = System.currentTimeMillis();
 
-            if ((null == diaKey ) || (( t - DIA_TIMEOUT ) > lastDiaUpdate )) {
+            if ((null == diaKey) || ((t - DIA_TIMEOUT) > lastDiaUpdate)) {
                 if ((t - DIA_TRY_LIMIT) < lastDiaTry) {
                     logger.warn("DIA_TRY_LIMIT has not expired, not getting key");
                     return diaKey;
@@ -280,24 +361,26 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                 lastDiaTry = t;
 
-                CloseableHttpClient httpClient = HttpClients.custom().build();
+                int timeout = 60*1000;
+                RequestConfig defaultRequestConfig = RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout).setConnectionRequestTimeout(timeout).build();
+                CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build();
                 CloseableHttpResponse response = null;
                 CredentialsProvider credsProvider = new BasicCredentialsProvider();
                 credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), new UsernamePasswordCredentials("untangle", "wu+glev6"));
                 HttpClientContext context = HttpClientContext.create();
                 context.setCredentialsProvider(credsProvider);
-                
+
                 try {
-
                     String url = "https://dl.zvelo.com/oem/dia.key";
-                    logger.debug("Fetch URL: \"" + url + "\""); 
+                    logger.debug("Fetch URL: \"" + url + "\"");
                     HttpGet get = new HttpGet(url);
-
                     response = httpClient.execute(get, context);
-                    
+                    logger.debug("Fetched URL: \"" + url + "\"");
+
                     if (response != null && response.getStatusLine().getStatusCode() == 200) {
                         String s = EntityUtils.toString(response.getEntity(), "UTF-8");
                         s = s.trim();
+                        logger.debug("DIA key response: " + s);
 
                         if (s.toUpperCase().startsWith("ERROR")) {
                             logger.warn("Could not get a dia key: " + s.substring(0, 10));
@@ -311,22 +394,37 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 } catch (Exception exn) {
                     logger.warn("Could not get dia key", exn);
                 } finally {
-                    try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
-                    try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
+                    try {
+                        if (response != null) response.close();
+                    } catch (Exception e) {
+                        logger.warn("close", e);
+                    }
+                    try {
+                        httpClient.close();
+                    } catch (Exception e) {
+                        logger.warn("close", e);
+                    }
                 }
-                
+
             }
         }
-        
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "end-getDiaKey");
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("end-getDiaKey");
         }
 
         return diaKey;
     }
 
-    // private methods --------------------------------------------------------
-
+    /**
+     * Encode a URL
+     * 
+     * @param domain
+     *        The domain
+     * @param uri
+     *        The URI
+     * @return The encoded URL
+     */
     private static String encodeUrl(String domain, String uri)
     {
         // Remote trailing dots from domain
@@ -347,11 +445,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
         for (i = 0; i < qBuilder.length(); i++) {
 
             int numCharsAfterThisOne = (qBuilder.length() - i) - 1;
-            
+
             // Must insert a null escape to divide long spans
             if (i > lastDot + 59) {
                 qBuilder.insert(i, "_-0.");
-                lastDot = i+3;
+                lastDot = i + 3;
                 i += 4;
             }
 
@@ -359,28 +457,28 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 lastDot = i;
             }
             // Take care of the rare, but possible case of _- being in the string
-            else if ( qBuilder.charAt(i) == '_' && numCharsAfterThisOne >= 1 && qBuilder.charAt(i+1) == '-') {
+            else if (qBuilder.charAt(i) == '_' && numCharsAfterThisOne >= 1 && qBuilder.charAt(i + 1) == '-') {
                 qBuilder.replace(i, i + 2, "_-_-");
                 i += 4;
             }
             // Convert / to rfc compliant characters _-.
-            else if ( qBuilder.charAt(i) == '/') {
+            else if (qBuilder.charAt(i) == '/') {
                 qBuilder.replace(i, i + 1, "_-.");
-                lastDot = i+2;
+                lastDot = i + 2;
                 i += 3;
             }
             // Convert any dots next to each other
-            else if ( qBuilder.charAt(i) == '.' && numCharsAfterThisOne >= 1 && qBuilder.charAt(i+1) == '.') {
+            else if (qBuilder.charAt(i) == '.' && numCharsAfterThisOne >= 1 && qBuilder.charAt(i + 1) == '.') {
                 qBuilder.replace(i, i + 2, "._-2e");
                 i += 5;
             }
             // Convert any dots at the end. (these should have already been stripped but the zvelo implementation has this here)
-            else if ( qBuilder.charAt(i) == '.' && numCharsAfterThisOne == 0) {
+            else if (qBuilder.charAt(i) == '.' && numCharsAfterThisOne == 0) {
                 qBuilder.replace(i, i + 1, "_-2e");
                 i += 4;
             }
             // Convert : to _--
-            else if ( qBuilder.charAt(i) == ':') {
+            else if (qBuilder.charAt(i) == ':') {
                 qBuilder.replace(i, i + 1, "_--");
                 i += 3;
             }
@@ -388,9 +486,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
             else if (qBuilder.charAt(i) == '?' || qBuilder.charAt(i) == '#') {
                 qBuilder.delete(i, qBuilder.length());
                 break;
-            }             
+            }
             // Convert %HEXHEX to encoded form
-            else if ( qBuilder.charAt(i) == '%' && numCharsAfterThisOne >= 2 && _isHex(qBuilder.charAt(i+1)) && _isHex(qBuilder.charAt(i+2))) {
+            else if (qBuilder.charAt(i) == '%' && numCharsAfterThisOne >= 2 && _isHex(qBuilder.charAt(i + 1)) && _isHex(qBuilder.charAt(i + 2))) {
                 //String hexString = new String(new char[] {qBuilder.charAt(i+1), qBuilder.charAt(i+2)});
                 //char c = (char)( Integer.parseInt( hexString , 16) );
                 //System.out.println("HEX: \"" + hexString +"\" -> \"" + Character.toString(c) + "\"");
@@ -398,14 +496,14 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 i += 4; // 2 for length of replacement + 2 for the hex characters
             }
             // Convert % charaters to encoded form
-            else if ( qBuilder.charAt(i) == '%') {
+            else if (qBuilder.charAt(i) == '%') {
                 qBuilder.replace(i, i + 1, "_-25");
                 i += 4;
             }
             // Convert any remaining non-RFC characters.
-            else if ( ! _isRfc (qBuilder.charAt(i)) ) {
-                String replaceStr = String.format("_-%02X",((byte)qBuilder.charAt(i)) );
-                qBuilder.replace(i, i+1, replaceStr);
+            else if (!_isRfc(qBuilder.charAt(i))) {
+                String replaceStr = String.format("_-%02X", ((byte) qBuilder.charAt(i)));
+                qBuilder.replace(i, i + 1, replaceStr);
                 i += 4;
             }
         }
@@ -413,6 +511,13 @@ public class WebFilterDecisionEngine extends DecisionEngine
         return qBuilder.toString();
     }
 
+    /**
+     * Calculate the CCITT-CRC checksum for a string
+     * 
+     * @param value
+     *        The string
+     * @return The checksum
+     */
     private String crcccitt(String value)
     {
         int crc = 0xffff;
@@ -425,7 +530,14 @@ public class WebFilterDecisionEngine extends DecisionEngine
         return Long.toHexString(crc);
     }
 
-    private String[] lookupDns( String question )
+    /**
+     * Get the DNS response for a question
+     * 
+     * @param question
+     *        The question
+     * @return The response
+     */
+    private String[] lookupDns(String question)
     {
         String[] answers = null;
         String resultStr = null;
@@ -435,12 +547,12 @@ public class WebFilterDecisionEngine extends DecisionEngine
             Lookup lookup = new Lookup(question, Type.TXT);
             Record[] records = lookup.run();
             long t1 = System.currentTimeMillis();
-            long elapsedTime = t1-t0;
+            long elapsedTime = t1 - t0;
 
-            if ( elapsedTime > 300 ) {
+            if (elapsedTime > 300) {
                 logger.warn("DNS responded slowly. This may poorly effect web traffic latency. (" + elapsedTime + " ms).");
             }
-                
+
             if (null == records) {
                 logger.debug("No records for: " + question);
                 records = new Record[0];
@@ -450,15 +562,15 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
             for (Record r : records) {
                 if (r instanceof TXTRecord) {
-                    TXTRecord txt = (TXTRecord)r;
+                    TXTRecord txt = (TXTRecord) r;
                     for (Object o : txt.getStringsAsByteArrays()) {
-                        resultStr = new String((byte[])o);
-                            
+                        resultStr = new String((byte[]) o);
+
                         if (resultStr.startsWith("FAILURE:") || resultStr.startsWith("REFUSED:")) {
                             synchronized (this) {
                                 failures++;
-                                if (failures > 15) {
-                                    logger.warn("15 fails with key: " + diaKey);
+                                if (failures > 1000) {
+                                    logger.warn("1000 fails with key: " + diaKey);
                                     diaKey = null;
                                 }
                             }
@@ -467,7 +579,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                             synchronized (this) {
                                 failures = 0;
                             }
-                            answers[answers.length -1] = resultStr;
+                            answers[answers.length - 1] = resultStr;
                         }
                     }
                 }
@@ -476,29 +588,33 @@ public class WebFilterDecisionEngine extends DecisionEngine
             String message = exn.getMessage();
 
             /**
-             * Don't litter the logs with common exceptions,
-             * Otherwise print the full message
+             * Don't litter the logs with common exceptions, Otherwise print the
+             * full message
              */
             if (message.contains("invalid empty label")) {
                 logger.info("Could not lookup (invalid empty label): \"" + question + "\"");
-            }
-            else if (message.contains("Name too long")) {
+            } else if (message.contains("Name too long")) {
                 logger.info("Could not lookup (Name too long): \"" + question + "\"");
-            }
-            else if (message.contains("label too long")) {
+            } else if (message.contains("label too long")) {
                 logger.info("Could not lookup (label too long): \"" + question + "\"");
-            }
-            else {
+            } else {
                 logger.warn("Could not lookup: \"" + question + "\": " + exn.getMessage());
             }
-        } 
-        if( answers != null ){
+        }
+        if (answers != null) {
             return answers;
-        }   
+        }
         return new String[0];
     }
 
-    private String[] splitUrl( String url )
+    /**
+     * Split a URL into parts
+     * 
+     * @param url
+     *        The URL
+     * @return The parts
+     */
+    private String[] splitUrl(String url)
     {
         String[] urlFields = new String[3];
         String domain = url;
@@ -509,27 +625,27 @@ public class WebFilterDecisionEngine extends DecisionEngine
         /*
          * Strip protocol
          */
-        pos = domain.indexOf( "://");
-        if( pos > 0 ){
-            domain = domain.substring( pos + 3 );
+        pos = domain.indexOf("://");
+        if (pos > 0) {
+            domain = domain.substring(pos + 3);
         }
 
         /*
          * Split domain and URI
          */
-        pos = domain.indexOf( '/' );
-        if( pos > 0 ){
-            uri = domain.substring( pos );
-            domain = domain.substring( 0, pos );
+        pos = domain.indexOf('/');
+        if (pos > 0) {
+            uri = domain.substring(pos);
+            domain = domain.substring(0, pos);
         }
 
         /*
          * Split domain and port
          */
-        pos = domain.indexOf( ':' );
-        if( pos > 0 ){
-            port = domain.substring( pos + 1 );
-            domain = domain.substring( 0, pos );
+        pos = domain.indexOf(':');
+        if (pos > 0) {
+            port = domain.substring(pos + 1);
+            domain = domain.substring(0, pos);
         }
         urlFields[0] = domain;
         urlFields[1] = port;
@@ -538,7 +654,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
         return urlFields;
     }
 
-    // static initilization ---------------------------------------------------
+// THIS IS FOR ECLIPSE - @formatter:off
 
     static {
         CRC_TABLE = new int[]
@@ -576,43 +692,51 @@ public class WebFilterDecisionEngine extends DecisionEngine
               0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0 };
     }
 
+// THIS IS FOR ECLIPSE - @formatter:on
+
+    /**
+     * Check the license status
+     * 
+     * @return True if valid, otherwise false
+     */
     private boolean isLicenseValid()
     {
         if (ourApp.getAppName().equals("web-monitor")) return true;
 
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER_OLDNAME))
-            return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER)) return true;
         return false;
     }
 
-    private static boolean _isHex ( char c )
+    /**
+     * Determine if a character is a valid hex character
+     * 
+     * @param c
+     *        The character
+     * @return True if hex, otherwise false
+     */
+    private static boolean _isHex(char c)
     {
-        if ( '0' <= c && c <= '9' ) 
-            return true;
-        else if ( 'a' <= c && c <= 'f' )
-            return true;
-        else if ( 'A' <= c && c <= 'F' )
-            return true;
+        if ('0' <= c && c <= '9') return true;
+        else if ('a' <= c && c <= 'f') return true;
+        else if ('A' <= c && c <= 'F') return true;
         return false;
     }
 
-    private static boolean _isRfc ( char c )
+    /**
+     * Checks to see if a character is DNS RFC compliant
+     * 
+     * @param c
+     *        The character
+     * @return True if compliant, otherwise false
+     */
+    private static boolean _isRfc(char c)
     {
-        if ( 'a' <= c && c <= 'z' )
-            return true;
-        else if ( 'A' <= c && c <= 'Z' )
-            return true;
-        else if ( '0' <= c && c <= '9' ) 
-            return true;
-        else if ( c == '.')
-            return true;
-        else if ( c == '_')
-            return true;
-        else if ( c == '-')
-            return true;
+        if ('a' <= c && c <= 'z') return true;
+        else if ('A' <= c && c <= 'Z') return true;
+        else if ('0' <= c && c <= '9') return true;
+        else if (c == '.') return true;
+        else if (c == '_') return true;
+        else if (c == '-') return true;
         return false;
     }
-
 }

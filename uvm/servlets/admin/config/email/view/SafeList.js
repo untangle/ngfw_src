@@ -1,7 +1,8 @@
 Ext.define('Ung.config.email.view.SafeList', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.email.safelist',
-    itemId: 'safelist',
+    alias: 'widget.config-email-safelist',
+    itemId: 'safe-list',
+    scrollable: true,
 
     title: 'Safe List'.t(),
 
@@ -30,30 +31,39 @@ Ext.define('Ung.config.email.view.SafeList', {
         region: 'center',
         title: 'Global Safe List'.t(),
 
+        emptyText: 'No Global Safe List email addresses defined'.t(),
+
         bind: '{globalSL}',
 
-        tbar: ['@addInline'],
+        tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
-        // listProperty: '',
         emptyRow: {
-            emailAddress: 'email@' + rpc.hostname + '.com'
         },
+
+        topInsert: true,
 
         columns: [{
             header: 'Email Address'.t(),
             dataIndex: 'emailAddress',
+            width: Renderer.emailWidth,
             flex: 1,
             editor: {
                 xtype: 'textfield',
                 allowBlank: false,
                 bind: '{record.emailAddress}',
                 emptyText: '[enter email]'.t(),
-                vtype: 'email'
+                // vtype: 'email'
+            },
+            renderer: function (value) {
+                if (!value || value.length === 0) {
+                    return '<span style="color: red;">[add email address here]'.t() + '</span>';
+                }
+                return value;
             }
         }]
     }, {
-        xtype: 'grid',
-        reference: 'userSafeList',
+        xtype: 'ungrid',
+        reference: 'userSafeListGrid',
         region: 'east',
 
         width: '50%',
@@ -61,9 +71,8 @@ Ext.define('Ung.config.email.view.SafeList', {
 
         title: 'Per User Safe Lists'.t(),
 
-        viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-        },
+        emptyText: 'No Per User Safe List email addresses defined'.t(),
+
         selModel: {
             selType: 'checkboxmodel'
         },
@@ -73,25 +82,27 @@ Ext.define('Ung.config.email.view.SafeList', {
         tbar: [{
             text: 'Purge Selected'.t(),
             iconCls: 'fa fa-circle fa-red',
-            handler: 'purgeUserSafeList',
+            handler: 'externalAction',
+            action: 'purgeUserSafeList',
             disabled: true,
             bind: {
-                disabled: '{!userSafeList.selection}'
+                disabled: '{!userSafeListGrid.selection}'
             }
         }],
 
         columns: [{
             header: 'Account Address'.t(),
             dataIndex: 'emailAddress',
+            width: Renderer.emailWidth,
             flex: 1
         }, {
             header: 'Safe List Size'.t(),
-            width: 150,
-            dataIndex: 'count',
-            align: 'right'
-        }, {
-            // todo: the show detail when available data
-            header: 'Show Detail'.t()
+            width: Renderer.messageWidth,
+            dataIndex: 'count'
+        // }, {
+        //     // todo: the show detail when available data
+        //     header: 'Show Detail'.t(),
+        //     width: Renderer.actionWidth + 20,
         }],
     }]
 

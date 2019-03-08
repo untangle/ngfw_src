@@ -2,12 +2,12 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:uvm="http://java.untangle.com/jsp/uvm"
       xmlns="http://www.w3.org/1999/xhtml">
-  
+
   <jsp:directive.page import="java.net.URLEncoder"/>
   <jsp:directive.page import="java.util.Random"/>
   <jsp:directive.page import="com.untangle.app.http.BlockDetails"/>
 
-  
+
   <jsp:scriptlet>
     <![CDATA[
              BlockDetails blockDetails = (BlockDetails)request.getAttribute( "bd" );
@@ -19,17 +19,18 @@
   </jsp:scriptlet>
 
   <jsp:output omit-xml-declaration="true"
-      doctype-root-element="html"      
+      doctype-root-element="html"
       doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
-  
+
   <jsp:directive.page contentType="text/html"/>
 
   <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-    <meta content="IE=7.0000" http-equiv="X-UA-Compatible"/>  
-    <link rel="icon"  type="image/png" href="/images/block-favicon.png"/>  
+    <meta content="IE=7.0000" http-equiv="X-UA-Compatible"/>
+    <link rel="icon" type="image/png" href="/images/block-favicon.png"/>
+    <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <title><c:out value="${pageTitle}"/></title>
     <uvm:skin src="user.css" name="${skinName}"/>
 
@@ -41,7 +42,7 @@
           var url = '${bd.url}';
       ]]>
     </uvm:inlineScript>
-    
+
     <c:if test="${!empty javascript_file}">
       <script type="text/javascript" src="${javascript_file}"><!-- --></script>
     </c:if>
@@ -51,31 +52,35 @@
 
   <body class="blockpage">
     <div class="block">
-      <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt="Logo" class="company-logo"/></a>
+      <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt="Logo" class="company-logo" style="max-width: 150px; max-height: 140px;"/></a>
       <hr/>
 
       <h1><c:out value="${title}" escapeXml="false"/></h1>
-      <i class="material-icons" style="font-size: 64px; color: red; vertical-align: top;">block</i>
-      <div style="display: inline-block; vertical-align: top; width: 70%; text-align: left;">
-        <p style="font-weight: bold;">${description}</p>
-        <p style="font-size: 12px; color: #CCC;">${contact}</p>
-      </div>
-
+      <table style="margin: 0 20px; text-align: left;">
+        <tr>
+          <td><i class="fa fa-ban" style="font-size: 64px; color: red; vertical-align: top;"></i></td>
+          <td><p style="font-weight: bold;">${description}</p><p style="font-size: 12px; color: #CCC;">${contact}</p></td>
+        </tr>
+      </table>
 
       <hr/>
-      <i class="material-icons" style="font-size: 64px; color: #999; vertical-align: middle;">link</i>
-      <div style="display: inline-block; vertical-align: top; width: 70%; text-align: left; font-size: 12px; color: #CCC;">
-        <p><strong><uvm:i18n>Host:</uvm:i18n></strong> <c:out value=" ${bd.formattedHost}"/></p>
-        <p><strong><uvm:i18n>URL:</uvm:i18n></strong> <c:out value=" ${bd.formattedUrl}"/></p>
-        <c:if test="${!empty reason}">
-          <p><strong><uvm:i18n>Reason:</uvm:i18n></strong> <c:out value=" ${reason}"/></p>
-        </c:if>
 
-        <c:if test="${!empty additional_fields}">
-          ${additional_fields}
-        </c:if>
+      <table style="margin: 0 20px; text-align: left;">
+        <tr>
+          <td><i class="fa fa-link" style="font-size: 64px; color: #999; vertical-align: middle;"></i></td>
+          <td>
+            <p><strong><uvm:i18n>Host:</uvm:i18n></strong> <c:out value=" ${bd.formattedHost}"/></p>
+            <p><strong><uvm:i18n>URL:</uvm:i18n></strong> <c:out value=" ${bd.formattedUrl}"/></p>
+            <c:if test="${!empty reason}">
+              <p><strong><uvm:i18n>Reason:</uvm:i18n></strong> <c:out value=" ${reason}"/></p>
+            </c:if>
 
-      </div>
+            <c:if test="${!empty additional_fields}">
+              ${additional_fields}
+            </c:if>
+          </td>
+        </tr>
+      </table>
 
       <c:if test="${showUnblockNow}">
         <button onclick="unblockSite(false)">

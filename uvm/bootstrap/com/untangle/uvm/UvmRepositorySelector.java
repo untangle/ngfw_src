@@ -11,7 +11,6 @@ import java.io.Writer;
 import java.io.StringWriter;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.LinkedList;
@@ -36,12 +35,20 @@ public class UvmRepositorySelector implements RepositorySelector
 
     public static final String DEFAULT_LOG = "uvm";
     
+    /**
+     * UvmRepositorySelector constructor
+     * Use instance() go get the singleton instance
+     */
     private UvmRepositorySelector()
     {
         repositories = new HashMap<String, UvmHierarchy>();
         threadLogInfo = new InheritableThreadLocal<String>();
     }
 
+    /**
+     * instance() provides the UvmRepositorySelector singleton
+     * @return UvmRepositorySelector
+     */
     public static UvmRepositorySelector instance()
     {
         return INSTANCE;
@@ -49,6 +56,7 @@ public class UvmRepositorySelector implements RepositorySelector
 
     /**
      * RepositorySelector method, log4j leverages this
+     * @return LoggerRepository
      */
     public LoggerRepository getLoggerRepository()
     {
@@ -72,6 +80,7 @@ public class UvmRepositorySelector implements RepositorySelector
 
     /**
      * Set the current thread's logging config to the "App" settings
+     * @param appId
      */
     public void setLoggingApp(Long appId)
     {
@@ -88,8 +97,7 @@ public class UvmRepositorySelector implements RepositorySelector
     
     /**
      * Causes all logging repositories to reconfigure themselves from
-     * the configuration file specified in the {@link
-     * UvmLoggingContext}.
+     * the configuration file specified in the {@link UvmLoggingContext}.
      */
     public void reconfigureAll()
     {
@@ -102,6 +110,7 @@ public class UvmRepositorySelector implements RepositorySelector
 
     /**
      * Sets the current thread's logging config
+     * @param fileName
      */
     private void setThreadLoggingInformation(String fileName)
     {
@@ -117,6 +126,10 @@ public class UvmRepositorySelector implements RepositorySelector
     {
         private final String fileName;
 
+        /**
+         * UvmHierarchy
+         * @param fileName
+         */
         UvmHierarchy(String fileName)
         {
             super(new RootLogger(Level.DEBUG));
@@ -124,6 +137,13 @@ public class UvmRepositorySelector implements RepositorySelector
             this.fileName = fileName;
         }
 
+        /**
+         * Reads the data from a stream and returns it as a string
+         * UTF-8
+         * @param is - input stream
+         * @return String
+         * @throws IOException
+         */
         public String convertStreamToString(InputStream is) throws java.io.IOException
         {
             if (is != null) {
@@ -145,6 +165,9 @@ public class UvmRepositorySelector implements RepositorySelector
             }
         }
 
+        /**
+         * configure
+         */
         void configure()
         {
             InputStream is = getClass().getClassLoader().getResourceAsStream("log4j.xml");
@@ -185,15 +208,27 @@ public class UvmRepositorySelector implements RepositorySelector
         INSTANCE = new UvmRepositorySelector();
     }
 
+    /**
+     * UtThrowableRenderer
+     */
     private class UtThrowableRenderer implements org.apache.log4j.spi.ThrowableRenderer
     {
         private String prefix;
 
+        /**
+         * UtThrowableRenderer
+         * @param prefix
+         */
         public UtThrowableRenderer(String prefix)
         {
             this.prefix = prefix;
         }
 
+        /**
+         * doRender - prints the info and stack trace of a throwable
+         * @param t - throwable
+         * @return String[]
+         */
         public String[] doRender(Throwable t)
         {
             LinkedList<String> l = new LinkedList<String>();

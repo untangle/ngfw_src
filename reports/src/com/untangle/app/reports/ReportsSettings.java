@@ -3,15 +3,12 @@
  */
 package com.untangle.app.reports;
 
-import java.util.List;
 import java.util.LinkedList;
 import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.event.AlertRule;
 
 /**
@@ -79,21 +76,12 @@ public class ReportsSettings implements Serializable, JSONString
     public LinkedList<ReportEntry> getReportEntries() { return reportEntries; }
     public void setReportEntries( LinkedList<ReportEntry> newValue ) { this.reportEntries = newValue; }
 
-    /**
-     * Syslog destination hostname.
-     */
     public String getSyslogHost() { return syslogHost; }
     public void setSyslogHost( String syslogHost ) { this.syslogHost = syslogHost; }
 
-    /**
-     * Syslog destination port.
-     */
     public int getSyslogPort() { return syslogPort; }
     public void setSyslogPort( int syslogPort ) { this.syslogPort = syslogPort; }
 
-    /**
-     * Syslog protocol.
-     */
     public String getSyslogProtocol() { return syslogProtocol; }
     public void setSyslogProtocol( String syslogProtocol ) { this.syslogProtocol = syslogProtocol; }
 
@@ -122,8 +110,9 @@ public class ReportsSettings implements Serializable, JSONString
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
 
     /**
-     * DEPRECATED
+     * @deprecated
      */
+    @Deprecated
     public String getDbDriver() { return null; }
     public void setDbDriver( String dbDriver ) { return; }
 

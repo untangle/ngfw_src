@@ -89,7 +89,7 @@ update_dns_servers()
 
         mv ${t_temp} /etc/dnsmasq.conf
         chmod 664 /etc/dnsmasq.conf
-        /etc/init.d/dnsmasq restart
+        systemctl restart dnsmasq
     fi
     
     rm -f ${t_temp}
@@ -116,14 +116,14 @@ update_default_link_rule
 update_dns_servers 
 
 # tell splitd to update its balance routes (if its running)
-if [ -x /etc/untangle-netd/post-network-hook.d/040-splitd ] ; then
+if [ -x /etc/untangle/post-network-hook.d/040-splitd ] ; then
     echo "[`date`] Inserting Balancing rules..."
-    /etc/untangle-netd/post-network-hook.d/040-splitd
+    /etc/untangle/post-network-hook.d/040-splitd
 fi
-# tell splitd to update its balance routes (if its running)
-if [ -x /etc/untangle-netd/post-network-hook.d/040-wan-balancer ] ; then
+# tell wan-balancer to update its balance routes (if its running)
+if [ -x /etc/untangle/post-network-hook.d/040-wan-balancer ] ; then
     echo "[`date`] Inserting Balancing rules..."
-    /etc/untangle-netd/post-network-hook.d/040-wan-balancer
+    /etc/untangle/post-network-hook.d/040-wan-balancer
 fi
 
 

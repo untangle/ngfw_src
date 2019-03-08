@@ -5,13 +5,8 @@ package com.untangle.app.smtp.mime;
 
 import static com.untangle.uvm.util.Ascii.CRLF;
 
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Set;
-
 import javax.mail.Address;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
@@ -60,12 +55,19 @@ public class MIMEMessageTemplateValues implements TemplateValues
 
     private MimeMessage msg;
 
+    /**
+     * Initialize instance of MIMEMessageTemplateValues.
+     * @param  msg MimeMessage to initialize with.
+     * @return     Instance of MIMEMessageTemplateValues.
+     */
     public MIMEMessageTemplateValues(MimeMessage msg) {
         this.msg = msg;
     }
 
     /**
      * For use in a Template
+     * @param key String to search.
+     * @return Template value string.
      */
     public String getTemplateValue(String key)
     {
@@ -122,6 +124,9 @@ public class MIMEMessageTemplateValues implements TemplateValues
 
     /**
      * For use in Templates (see JavaDoc at the top of this class for explanation of vairable format}.
+     * @param key String to search.
+     * @return Header template value string.
+     * @throws MessagingException If error.
      */
     private String getHeaderTemplateValue(String key) throws MessagingException
     {

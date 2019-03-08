@@ -1,8 +1,8 @@
 # -*-ruby-*-
 
-smtp = BuildEnv::SRC['smtp']
-spam = BuildEnv::SRC['spam-blocker-base']
+smtp = BuildEnv::SRC['untangle-app-smtp']
+spam = BuildEnv::SRC['untangle-base-spam-blocker']
 
 deps = [smtp['src'], spam['src']]
 
-AppBuilder.makeApp(BuildEnv::SRC, 'spam-blocker', 'spam-blocker', deps, { 'spam-blocker-base' => spam } )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-spam-blocker', 'spam-blocker', deps, { 'spam-blocker-base' => spam } )

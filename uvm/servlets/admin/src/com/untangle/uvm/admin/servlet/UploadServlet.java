@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.webui.servlet;
+package com.untangle.uvm.admin.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,6 +31,13 @@ public class UploadServlet extends HttpServlet
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    /**
+     * doPost - handle POST
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
@@ -72,6 +79,12 @@ public class UploadServlet extends HttpServlet
         createResponse(resp, true, result);
     }
 
+    /**
+     * getUploadType - returns the "type" of the upload
+     * This is used to determine which upload handler we send the upload to
+     * @param items
+     * @return string 
+     */
     private String getUploadType(List<FileItem> items)
     {
         for ( FileItem fileItem : items ) {
@@ -82,6 +95,11 @@ public class UploadServlet extends HttpServlet
         return null;
     }
 
+    /**
+     * getArgument - returns any "argument" specified in the upload form
+     * @param items
+     * @return string argument or null
+     */
     private String getArgument(List<FileItem> items)
     {
         for ( FileItem fileItem : items ) {
@@ -92,6 +110,13 @@ public class UploadServlet extends HttpServlet
         return null;
     }
     
+    /**
+     * createResponse
+     * @param resp
+     * @param success
+     * @param result
+     * @throws IOException
+     */
     private void createResponse(HttpServletResponse resp, boolean success, Object result)
         throws IOException
     {

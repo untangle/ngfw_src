@@ -1,84 +1,95 @@
 Ext.define('Ung.view.dashboard.Queue', {
     alternateClassName: 'DashboardQueue',
     singleton: true,
-    processing: false,
-    paused: false,
     queue: [],
-    queueMap: {},
-    tout: null,
+    processing: false,
+
+    paused: false,
+
     add: function (widget) {
-        if (!this.queueMap[widget.id]) {
-            this.queue.push(widget);
-            // console.log('Adding: ' + widget.itemId);
-            this.process();
-        } /* else { console.log("Prevent Double queuing: " + widget.title); } */
-    },
-    addFirst: function (widget) {
-        if (!this.queueMap[widget.id]) {
-            this.queue.unshift(widget);
-            //console.log("Adding first: " + widget.title);
-            this.process();
-        }
-    },
-    next: function () {
-        //console.log("Finish last started widget.");
-        this.processing = false;
+        this.queue.push(widget);
         this.process();
     },
-    remove: function (widget) {
-        console.log('removing');
-        if (this.processing) {
-            this.processing = false;
+
+    addFirst: function (widget) {
+        this.queue.unshift(widget);
+        this.process();
+    },
+
+    isVisible: function (widget) {
+        if (!widget || !widget.getEl()) { return; }
+        var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
+        widget.visible = (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
+        if (widget.visible) {
+            DashboardQueue.add(widget);
         }
     },
+
     process: function () {
-        var me = this;
-        // ensure processing is false in some cases when it remains true
-        clearTimeout(this.tout);
-        this.tout = setTimeout(function () {
-            me.processing = false;
-            me.queue = [];
-        }, 3000);
+        var me = this, wg = me.queue[0];
 
-        //console.log(this.queue);
-        if (!this.paused && !this.processing && this.queue.length > 0) {
-            this.processing = true;
-            var widget = this.queue.shift();
+        if (me.queue.length > 0 && !me.processing) {
 
-            delete this.queueMap[widget.id];
-
-            //if (this.inView(widget)) {
-            if (!widget.isHidden()) {
-                if (widget.down('#chart')) {
-                    console.log('here');
-                    widget.down('#chart').getController().fetchData();
-                }
+            /**
+             * timeout computes if the widget needs to be refreshed based on refreshIntervalSec
+             * for custom widgets refreshIntervalSec is defined in view
+             * for report widgets refreshIntervalSec is defined in viewmodel
+             * if lastFetchTime = null means the widgets did not fatch data at all, it was just being rendered
+             */
+            if (wg.lastFetchTime === null) {
+                wg.timeout = true;
             } else {
-                widget.toQueue = true;
-                Ung.view.dashboard.Queue.next();
+                if (wg.refreshIntervalSec === 0) {
+                    wg.timeout = false;
+                } else {
+                    wg.timeout = ((new Date()).getTime() - wg.lastFetchTime)/1000 - (wg.refreshIntervalSec || wg.getViewModel().get('widget.refreshIntervalSec')) > 0;
+                }
+            }
+
+            /**
+             * if queue is paused (e.g. not in Dashboard view) or
+             * widget is not in visible area of the screen or
+             * it hasn't passed the timeout to be refreshed
+             * just remove it from queue and skip fetching
+             */
+            if (me.paused || !wg.visible || !wg.timeout || wg.isMasked()) {
+                Ext.Array.removeAt(me.queue, 0);
+                me.processing = false;
+                if (me.queue.length > 0) { me.process(); }
+                return;
+            }
+
+            me.processing = true;
+            if (wg.tout) {clearTimeout(wg.tout); }
+
+            if (wg.down('#report-widget')) {
+                wg.down('#report-widget').getController().fetchData(null, function () {
+                    var seconds = wg.getViewModel().get('widget.refreshIntervalSec');
+                    if (seconds > 0) {
+                        // wg.add({ xtype: 'component', itemId: 'timer', cls: 'timer', html: '<div class="inner" style="animation: test ' + seconds + 's linear;"></div>' });
+                        wg.tout = setTimeout(function () {
+                            DashboardQueue.add(wg);
+                        }, seconds * 1000);
+                    }
+                    wg.lastFetchTime = new Date().getTime();
+                    Ext.Array.removeAt(me.queue, 0);
+                    me.processing = false;
+                    if (me.queue.length > 0) { me.process(); }
+                });
+            } else {
+                wg.fetchData(function () {
+                    var seconds = wg.refreshIntervalSec;
+                    if (seconds > 0) {
+                        wg.tout = setTimeout(function () {
+                            DashboardQueue.add(wg);
+                        }, seconds * 1000);
+                    }
+                    wg.lastFetchTime = new Date().getTime();
+                    Ext.Array.removeAt(me.queue, 0);
+                    me.processing = false;
+                    if (me.queue.length > 0) { me.process(); }
+                });
             }
         }
-    },
-    reset: function () {
-        this.queue = [];
-        this.queueMap = {};
-        this.processing = false;
-    },
-    pause: function () {
-        this.paused = true;
-    },
-    resume: function () {
-        this.paused = false;
-        this.process();
-    },
-
-    inView: function (widget) {
-        // checks if the widget is visible
-        if (!widget.getEl()) {
-            return false;
-        }
-        var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
-        return (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
     }
-
 });

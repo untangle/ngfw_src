@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.webui.servlet;
+package com.untangle.uvm.admin.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -41,6 +41,13 @@ public class GridSettingsServlet extends HttpServlet
     
     private static final String CHARACTER_ENCODING = "utf-8";
 
+    /**
+     * doPost - handle POST 
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         boolean isExport = "export".equals(req.getParameter("type"));
@@ -52,6 +59,13 @@ public class GridSettingsServlet extends HttpServlet
 
     }
 
+    /**
+     * processImport - process an import
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     private void processImport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
 
@@ -90,6 +104,13 @@ public class GridSettingsServlet extends HttpServlet
 
     }
     
+    /**
+     * createImportRespose - create a response to import
+     * @param resp
+     * @param success
+     * @param msg
+     * @throws IOException
+     */
     private void createImportRespose(HttpServletResponse resp, boolean success, Object msg) throws IOException
     {
         resp.setContentType("text/html");
@@ -108,6 +129,10 @@ public class GridSettingsServlet extends HttpServlet
         out.close();
     }
     
+    /**
+     * importFailedMessage - craft an import failed message
+     * @return message
+     */
     private String importFailedMessage()
     {
         UvmContext uvm = UvmContextFactory.context();
@@ -115,6 +140,13 @@ public class GridSettingsServlet extends HttpServlet
         return I18nUtil.tr("Import failed. Settings must be formatted as a JSON Array.", i18n_map);
     }
     
+    /**
+     * processExport process an export
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     private void processExport(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
         String gridData = req.getParameter("gridData");
@@ -139,6 +171,11 @@ public class GridSettingsServlet extends HttpServlet
         }
     }
 
+    /**
+     * encodeHtml - encoding text to an HTML
+     * @param aText
+     * @return HTML string
+     */
     private static String encodeHtml(String aText)
     {
         final StringBuilder result = new StringBuilder();

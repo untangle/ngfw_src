@@ -26,7 +26,6 @@ import java.security.cert.X509Certificate;
 import java.security.cert.Certificate;
 import java.security.MessageDigest;
 import java.security.KeyStore;
-import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,10 +40,15 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.GlobUtil;
 
 import org.apache.log4j.Logger;
 
+/**
+ * This is where we manage all of the low level objects used to talk SSL
+ * 
+ * @author mahotz
+ * 
+ */
 class SslInspectorManager
 {
     private static String keyStorePath = "/var/cache/untangle-ssl";
@@ -93,6 +97,7 @@ class SslInspectorManager
     private final SslInspectorApp app;
 
     private X509Certificate peerCertificate;
+    private String peerThumbprint;
     private ByteBuffer casingBuffer;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
@@ -113,6 +118,16 @@ class SslInspectorManager
     public boolean tlsFlagClient;
     public boolean tlsFlagServer;
 
+    /**
+     * Constructor
+     * 
+     * @param session
+     *        The TCP session
+     * @param clientSide
+     *        True if we're talking to the client, false for server
+     * @param app
+     *        The application that created us
+     */
     public SslInspectorManager(AppTCPSession session, boolean clientSide, SslInspectorApp app)
     {
         this.session = session;
@@ -126,8 +141,9 @@ class SslInspectorManager
         casingBuffer = ByteBuffer.allocate(8192);
     }
 
-    // ---------- Functions to initialize the SSL manager SSLEngine
-
+    /**
+     * This is called when we first start processing an SSL session
+     */
     public void initializeEngine()
     {
         try {
@@ -161,18 +177,20 @@ class SslInspectorManager
         }
     }
 
-    // ---------- Function to initialize the client side SSLEngine
-
-    /*
-     * Initialize the client side engine. Since we're doing man-in-the-middle
-     * our client side acts like an SSL server, so no TrustStore needed here.
-     * For the KeyStore we need to use a fake certificate with a CN that matches
-     * the CN in the cert received on the server side of the casing. We load
-     * these certs from a common shared directory so they can be re-used by all
-     * instances once they have been created. If the cert file doesn't yet exist
-     * we call the generateFakeCertificate() function to create.
+    /**
+     * Called to initialize the client side engine. Since we're doing
+     * man-in-the-middle, our client side acts like an SSL server, so no
+     * TrustStore is needed here. For the KeyStore we need to use a fake
+     * certificate with a CN that matches the CN in the cert received on the
+     * server side of the casing. We load these certs from a common shared
+     * directory so they can be re-used by all instances once they have been
+     * created. If the cert file doesn't yet exist we call the
+     * generateFakeCertificate() function to create it.
+     * 
+     * @param baseCert
+     *        The certificate received from the actual server
+     * @throws Exception
      */
-
     public void initializeClientEngine(X509Certificate baseCert) throws Exception
     {
         String mailCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.pfx");
@@ -193,8 +211,8 @@ class SslInspectorManager
             // certs are now stored in files named with the SHA-1 thumbprint
             // instead of the old method of using the host name contained in the
             // server certificate which could cause us to load the wrong one
-            String certThumbprint = generateThumbPrint(baseCert);
-            String certFileName = (certThumbprint + ".p12");
+            peerThumbprint = generateThumbPrint(baseCert);
+            String certFileName = (peerThumbprint + ".p12");
             String certPathFile = keyStorePath + "/" + certFileName;
             String certHostName = new String();
 
@@ -229,58 +247,6 @@ class SslInspectorManager
             // our cert generator script creates certificates in PKCS12 format
             keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(new FileInputStream(certPathFile), keyStorePass.toCharArray());
-
-            /*
-             * Because Java 6 doesn't support SNI we see cases where the cert
-             * returned by a server without SNI may be different than the cert
-             * returned if SNI had been included in the request. I've seen this
-             * with t0.gstatic.com (and also t1, t2, and t3) where the server
-             * returns a generic google cert. The end result is the browser may
-             * show a hostname/certname warning message, or may ignore the
-             * content altogether. As a workaround, if the client included an
-             * SNI hostname, we search the CN and ALT names in the standard
-             * server cert to make sure it will validate. If not, we create a
-             * special certificate that matches the SNI received from the
-             * client.
-             */
-
-            // grab the SNI hostname so we can check against loaded cert
-            String sniHostname = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
-            X509Certificate loadedCert = (X509Certificate) keyStore.getCertificate("default");
-            if ((app.getSettings().getServerFakeHostname() == true) && (validateCertificate(loadedCert, sniHostname) == false)) {
-
-                // we put special certs in files named with the SNI hostname 
-                String hackFileName = (sniHostname + ".p12");
-                String hackPathFile = keyStorePath + "/" + hackFileName;
-
-                synchronized (keyStorePath) {
-                    // see if the special file already exists
-                    File special = new File(hackPathFile);
-
-                    // file not found so call the external script to generate a new cert
-                    if ((special.exists() == false) || (special.length() == 0)) {
-                        logger.info("Creating new certificate for " + sniHostname + " in " + hackFileName);
-
-                        // call the external script to generate the new certificate
-                        String argList[] = new String[2];
-                        argList[0] = hackFileName;
-                        argList[1] = "/CN=" + sniHostname;
-                        String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-                        logger.debug("SCRIPT_ARGS = " + argString);
-                        UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
-                    }
-
-                    else {
-                        logger.debug("Loading existing certificate " + hackPathFile);
-                    }
-                }
-
-                // now that we know the special cert file exists we initialize
-                // the keystore again and load it with the special certificate
-                keyStore = KeyStore.getInstance("PKCS12");
-                keyStore.load(new FileInputStream(hackPathFile), keyStorePass.toCharArray());
-            }
-
         }
 
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
@@ -299,20 +265,21 @@ class SslInspectorManager
         sslEngine.setWantClientAuth(false);
     }
 
-    // ---------- Function to initialize the server side SSLEngine
-
-    /*
-     * Initialize the server side engine. Since we're doing man-in-the-middle
-     * our server side acts like an SSL client. We only need to init the
-     * trustStore which configures the certs we will trust as a client. If blind
-     * trust is enabled, we use our own empty trust manager which will simply
-     * trust every server certificate we receive. When not enabled, we start
-     * with a standard list of well know CA's which is then supplemented with
-     * additional certs to trust installed by the customer. This will make it
-     * easy for us to update the standard CA list without losing any custom
-     * certs added by customers.
+    /**
+     * Called to initialize the server side engine. Since we're doing
+     * man-in-the-middle, our server side acts like an SSL client. We only need
+     * to init the trustStore which configures the certs we will trust as a
+     * client. If blind trust is enabled, we use our own empty trust manager
+     * which will simply trust every server certificate we receive. When not
+     * enabled, we start with a standard list of well know CA's which is then
+     * supplemented with additional certs to trust installed by the customer.
+     * This will make it easy for us to update the standard CA list without
+     * losing any custom certs added by customers.
+     * 
+     * @param sniHostname
+     *        The SNI hostname from the ClientHello
+     * @throws Exception
      */
-
     public void initializeServerEngine(String sniHostname) throws Exception
     {
         sslContext = SSLContext.getInstance("TLS");
@@ -353,9 +320,16 @@ class SslInspectorManager
         sslEngine.beginHandshake();
     }
 
-    // ---------- Other private functions
-
-    // call the openssl utility to generate a fake server certificate
+    /**
+     * This function generates a fake MitM certificate using information we pull
+     * from the real server certificate.
+     * 
+     * @param baseCert
+     *        The certificate received from the actual server
+     * @param certFileName
+     *        The name of the file to store our fake certificate
+     * @throws Exception
+     */
     private void generateFakeCertificate(X509Certificate baseCert, String certFileName) throws Exception
     {
         StringBuilder certSubject = new StringBuilder(1024);
@@ -418,43 +392,79 @@ class SslInspectorManager
         UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
     }
 
-    // ---------- Functions to access the SSL manager SSLEngine
-
+    /**
+     * @return Our clientSide flag
+     */
     public boolean getClientSide()
     {
         return (clientSide);
     }
 
+    /**
+     * @return Our SSLEngine object
+     */
     public SSLEngine getSSLEngine()
     {
         return (sslEngine);
     }
 
+    /**
+     * @return Our TCP session object
+     */
     public AppTCPSession getSession()
     {
         return (session);
     }
 
+    /**
+     * @return Our casing buffer
+     */
     public ByteBuffer getCasingBuffer()
     {
         return (casingBuffer);
     }
 
+    /**
+     * @return The peer certificate
+     */
     public X509Certificate getPeerCertificate()
     {
         return (peerCertificate);
     }
 
+    /**
+     * @return The thumbrint of the perr certificate
+     */
+    public String getPeerThumbprint()
+    {
+        return (peerThumbprint);
+    }
+
+    /**
+     * Sets our perr certificate
+     * 
+     * @param peerAddress
+     *        The address of the peer
+     * @param peerCertificate
+     *        The peer certificate
+     */
     public void setPeerCertificate(String peerAddress, X509Certificate peerCertificate)
     {
         this.peerCertificate = peerCertificate;
     }
 
+    /**
+     * @return Our data mode flag
+     */
     public boolean getDataMode()
     {
         return (dataMode);
     }
 
+    /**
+     * @param argMode
+     *        New value for our data mode flag
+     */
     public void setDataMode(boolean argMode)
     {
         this.dataMode = argMode;
@@ -508,6 +518,14 @@ for more data when a full packet has not yet been received.
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
+    /**
+     * This function will extract the SNI hostname from a ClientHello message.
+     * 
+     * @param data
+     *        The raw data received from the client
+     * @return The SNI hostname
+     * @throws Exception
+     */
     public String extractSNIhostname(ByteBuffer data) throws Exception
     {
         int counter = 0;
@@ -627,6 +645,13 @@ for more data when a full packet has not yet been received.
         return (null);
     }
 
+    /**
+     * Generate the thumbprint for a certificate
+     * 
+     * @param cert
+     *        The certificate
+     * @return The thumbprint
+     */
     public String generateThumbPrint(X509Certificate cert)
     {
         try {
@@ -643,6 +668,13 @@ for more data when a full packet has not yet been received.
         }
     }
 
+    /**
+     * Convert a series of bytes to a String with pairs of hex characters
+     * 
+     * @param bytes
+     *        The bytes to convert
+     * @return The String representation
+     */
     public static String hexify(byte bytes[])
     {
         char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -657,6 +689,14 @@ for more data when a full packet has not yet been received.
         return buf.toString();
     }
 
+    /**
+     * This function returns the list of SSL/TLS protocols that are enabled as a
+     * list of strings that can be passed to SSLEngine.setEnabledProtocols()
+     * 
+     * @param listType
+     *        The type of list, either CLIENT or SERVER
+     * @return The list of enabled protocols
+     */
     public String[] generateProtocolList(ProtocolList listType)
     {
         ArrayList<String> protoList = new ArrayList<String>();
@@ -683,6 +723,16 @@ for more data when a full packet has not yet been received.
         return (protoList.toArray(protoArray));
     }
 
+    /**
+     * Function to search a byte array for one of the special messages we use to
+     * send notifications between the two sides of the casing
+     * 
+     * @param haystack
+     *        The buffer to search
+     * @param needle
+     *        The sequence to find
+     * @return True if found, otherwise false
+     */
     public boolean checkIPCMessage(byte[] haystack, byte[] needle)
     {
         // first make sure the haystack is large enough to contain the needle
@@ -696,17 +746,14 @@ for more data when a full packet has not yet been received.
         return (true);
     }
 
-    /*
-     * We use the checkTls functions here to look for TLS handshake. The TLS
-     * extension for SMTP defined by RFC-3207 only requires 220 in a successful
-     * server reply to STARTTLS received from a client. This makes it slightly
-     * more complicated to detect when the server is switching to TLS mode. Our
-     * approach is to only look for the 220 response in the first server reply
-     * after setting the TLS flag on the client side. If found we continue with
-     * TLS handling. If not, we assume crazy things are happening and release
-     * the session.
+    /**
+     * For SMTPS we have to detect when the client requests TLS. We do this by
+     * watching for the STARTTLS command.
+     * 
+     * @param data
+     *        The raw data received from the client
+     * @return True if we find STARTTLS, otherwise false
      */
-
     public boolean checkTlsClient(ByteBuffer data)
     {
         byte[] rawdata = data.array();
@@ -730,6 +777,23 @@ for more data when a full packet has not yet been received.
         return (true);
     }
 
+    /**
+     * Determining when an SMTPS server switches to TLS is a little more
+     * difficult. The TLS extension for SMTP defined by RFC-3207 only requires
+     * 220 in a successful server reply to a STARTTLS command received from a
+     * client. This makes it slightly more complicated to detect when the server
+     * is switching to TLS mode. I've seen servers reply with just 220, and
+     * others that add text after the 220, so there isn't an exact string we can
+     * always match. We also don't want to erroneously switch to TLS mode if we
+     * happen to see 220 in a plaintext email. Our approach is to only look for
+     * the 220 response in the first server reply after setting the TLS flag on
+     * the client side. If found we continue with TLS handling. If not, we
+     * assume crazy things are happening and release the session.
+     * 
+     * @param data
+     *        The raw data received from the server
+     * @return True if we find a 220 response, otherwise false
+     */
     public boolean checkTlsServer(ByteBuffer data)
     {
         byte[] rawdata = data.array();
@@ -747,76 +811,39 @@ for more data when a full packet has not yet been received.
         return (true);
     }
 
-    // this function validates a certificate for a specific hostname
-    // by making sure the argumented hostname matches either the CN
-    // or one of the subject alt names included in the certificate
-    private boolean validateCertificate(X509Certificate argCert, String argName) throws Exception
-    {
-        // if the argumented name is null we just return true
-        if (argName == null) return (true);
-
-        // for starters if we find wildcard characters in the arg name then
-        // who knows what the hell is going on so just blindly return true
-        if (argName.contains("*") == true) return (true);
-        if (argName.contains("?") == true) return (true);
-
-        String certName = new String();
-
-        // grab the subject distinguished name from the certificate
-        LdapName ldapDN = new LdapName(argCert.getSubjectDN().getName());
-
-        // we only want the CN from the certificate
-        for (Rdn rdn : ldapDN.getRdns()) {
-            if (rdn.getType().equals("CN") == false) continue;
-            certName += rdn.getValue().toString();
-            break;
-        }
-
-        // see if the name matches the certificate common name
-        logger.debug("CHECKING CN " + certName + " FOR " + argName);
-        if (Pattern.matches(GlobUtil.globToRegex(certName), argName) == true) return (true);
-
-        // The SAN list is stored as a collection of List's where the
-        // first entry is an Integer indicating the type of name and the
-        // second entry is the String holding the actual name
-        Collection<List<?>> altNames = argCert.getSubjectAlternativeNames();
-
-        // if there aren't any alt names then nothing else to check
-        if (altNames == null) return (false);
-
-        Iterator<List<?>> iterator = altNames.iterator();
-
-        while (iterator.hasNext()) {
-            List<?> entry = iterator.next();
-            int value = ((Integer) entry.get(0)).intValue();
-
-            // check the entry type against the list we understand
-            if (validAlternateList.containsKey(value) == false) continue;
-
-            String string = entry.get(1).toString();
-
-            // if this alt name matches the arg name return true
-            logger.debug("CHECKING ALT " + string + " FOR " + argName);
-            if (Pattern.matches(GlobUtil.globToRegex(string), argName) == true) return (true);
-        }
-
-        // nothing matched above so return false
-        return (false);
-    }
-
-    // this is a dumb trust manager that will blindly trust all server certs
+    /**
+     * This is a dumb trust manager that will blindly trust all server
+     * certficiates., even though it's a REALLY bad idea.
+     */
     private TrustManager trust_all_certificates = new X509TrustManager()
     {
+        /**
+         * Throw nothing, trust everything
+         * 
+         * @param chain
+         * @param authType
+         * @throws CertificateException
+         */
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException
         {
             logger.debug("TrustManager.checkClientTrusted()");
         }
 
+        /**
+         * Throw nothing, trust everything
+         * 
+         * @param chain
+         * @param authType
+         * @throws CertificateException
+         */
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException
         {
             logger.debug("TrustManager.checkServerTrusted()");
         }
 
+        /**
+         * @return null to accept all issues
+         */
         public X509Certificate[] getAcceptedIssuers()
         {
             logger.debug("Returning NULL from TrustManager.getAcceptedIssuers()");

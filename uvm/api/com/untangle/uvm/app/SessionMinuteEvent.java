@@ -3,10 +3,7 @@
  */
 package com.untangle.uvm.app;
 
-import java.net.InetAddress;
-
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.util.I18nUtil;
 
 /**
  * This event stores the activity of a session on a given minute
@@ -41,7 +38,7 @@ public class SessionMinuteEvent extends LogEvent
      * The number of bytes sent by the client during this minute
      */
     public long getS2cBytes() { return s2cBytes; }
-    
+
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {

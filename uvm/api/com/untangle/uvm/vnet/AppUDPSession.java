@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm.vnet;
 
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 /**

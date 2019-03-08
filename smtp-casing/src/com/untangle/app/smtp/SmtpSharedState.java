@@ -31,6 +31,7 @@ class SmtpSharedState
          * <br>
          * Note that any changes to the internal state of the Tracker have <b>already</b> been made (i.e. the tracker
          * sees the response before the callback).
+         * @param code reponse to use.
          */
         void response(int code);
     }
@@ -45,12 +46,20 @@ class SmtpSharedState
         private int m_tail = 0;
         private int m_head = 0;
 
+        /**
+         * Initialize instance with length.
+         * @param len Lenth of history to retain.
+         */
         CSHistory(int len)
         {
             m_items = new String[len + 1];
             m_len = len + 1;
         }
 
+        /**
+         * Add command to history.
+         * @param str SMTP command to add.
+         */
         void add(String str)
         {
 
@@ -62,6 +71,10 @@ class SmtpSharedState
             m_tail = nextTail;
         }
 
+        /**
+         * Return List of history.
+         * @return String list of history.
+         */
         java.util.List<String> getHistory()
         {
             java.util.List<String> ret = new java.util.ArrayList<String>();
@@ -75,6 +88,11 @@ class SmtpSharedState
             return ret;
         }
 
+        /**
+         * Move to next position.
+         * @param  i Amount to move.
+         * @return   Current position.
+         */
         private int next(int i)
         {
             return (++i >= m_len) ? 0 : i;
@@ -93,6 +111,10 @@ class SmtpSharedState
     protected boolean passthru = false;
     protected SmtpSASLObserver saslObserver;
     
+    /**
+     * SMTP Shared state.
+     * @return instance of SmtpSharedState
+     */
     public SmtpSharedState()
     {
         outstandingRequests = new LinkedList<ResponseAction>();
@@ -103,17 +125,25 @@ class SmtpSharedState
 
     /**
      * Get the underlying transaction. May be null if this tracker thinks there is no outstanding transaction.
+     * @return current transation.
      */
     SmtpTransaction getCurrentTransaction()
     {
         return currentTransaction;
     }
 
+    /**
+     * Begin message transmission.
+     */
     void beginMsgTransmission()
     {
         beginMsgTransmission(null);
     }
 
+    /**
+     * Begin message transmission with a chained action.
+     * @param chainedAction Response action to add.
+     */
     void beginMsgTransmission(ResponseAction chainedAction)
     {
         getOrCreateTransaction();
@@ -131,11 +161,20 @@ class SmtpSharedState
         outstandingRequests.add(new SimpleResponseAction());
     }
 
+    /**
+     * Initialize command received.
+     * @param command Command to use.
+     */
     void commandReceived(Command command)
     {
         commandReceived(command, null);
     }
 
+    /**
+     * Initialize command received with a chained action.
+     * @param command Command to use.
+     * @param chainedAction ResponseAction to add.
+     */
     void commandReceived(Command command, ResponseAction chainedAction)
     {
         logger.debug( "Command received: " + command.getCmdString() );
@@ -167,6 +206,10 @@ class SmtpSharedState
         outstandingRequests.add(action);
     }
 
+    /**
+     * Add response.
+     * @param response Response to add.
+     */
     void responseReceived(Response response)
     {
         history.add("(s) " + response.getCode());
@@ -184,11 +227,18 @@ class SmtpSharedState
         }
     }
 
+    /**
+     * Set last transmisison timestamp to currrent time.
+     */
     private void updateLastTransmissionTimestamp()
     {
         lastTransmissionTimestamp = System.currentTimeMillis();
     }
 
+    /**
+     * Return the current transaction.  If there is now, create new one.
+     * @return SmtpTransaction of current transaction.
+     */
     private SmtpTransaction getOrCreateTransaction()
     {
         if (currentTransaction == null) {
@@ -197,6 +247,10 @@ class SmtpSharedState
         return currentTransaction;
     }
 
+    /**
+     * Return history as a string.
+     * @return String of history.
+     */
     private String historyToString()
     {
         StringBuilder sb = new StringBuilder();
@@ -209,19 +263,35 @@ class SmtpSharedState
         return sb.toString();
     }
 
+    /**
+     * Chained response action.
+     */
     private abstract class ChainedResponseAction implements ResponseAction
     {
 
         private final ResponseAction m_chained;
 
+        /**
+         * Initialize instance of ChainedResponseAction.
+         * @return instance of ChainedResponseAction
+         */
         ChainedResponseAction() {
             this(null);
         }
 
+        /**
+         * Initialize instance of ChainedResponseAction.
+         * @param chained chained value to initialize.
+         * @return instance of ChainedResponseAction
+         */
         ChainedResponseAction(ResponseAction chained) {
             m_chained = chained;
         }
 
+        /**
+         * Set response with code.
+         * @param code Code to set.
+         */
         public final void response(int code)
         {
             responseImpl(code);
@@ -230,36 +300,68 @@ class SmtpSharedState
             }
         }
 
+        /**
+         * Abstract of response implementation.
+         * @param code Code to process.
+         */
         abstract void responseImpl(int code);
     }
 
+    /**
+     * Simple Response action.
+     */
     private class SimpleResponseAction extends ChainedResponseAction
     {
 
+        /**
+         * Initialize instance of SimpleResponseAction.
+         * @return instance of SimpleResponseAction.
+         */
         SimpleResponseAction() {
             super();
         }
 
+        /**
+         * Initialize instance of SimpleResponseAction.
+         * @param chained ResponseAction indicating chained.
+         */
         SimpleResponseAction(ResponseAction chained) {
             super(chained);
         }
 
+        /**
+         * Response implementation.
+         * @param code SMTP code.
+         */
         void responseImpl(int code)
         {
             // Do nothing ourselves
         }
     }
 
+    /**
+     * Mail Response action.
+     */
     private class MAILResponseAction extends ChainedResponseAction
     {
 
         private final InternetAddress m_addr;
 
+        /**
+         * Initialize instance of MAILResponseAction.
+         * @param addr InternetAddress IP address.
+         * @param chained ResponseAction.
+         * @return instance of MAILResponseAction.
+         */
         MAILResponseAction(InternetAddress addr, ResponseAction chained) {
             super(chained);
             m_addr = addr;
         }
 
+        /**
+         * Response implementation.
+         * @param code SMTP code.
+         */
         void responseImpl(int code)
         {
             if (currentTransaction != null) {
@@ -268,16 +370,29 @@ class SmtpSharedState
         }
     }
 
+    /**
+     * RCPT response action.
+     */
     private class RCPTResponseAction extends ChainedResponseAction
     {
 
         private final InternetAddress m_addr;
 
+        /**
+         * Initialize instance of RCPTResponseAction.
+         * @param addr InternetAddress IP address.
+         * @param chained ResponseAction.
+         * @return instance of RCPTResponseAction.
+         */
         RCPTResponseAction(InternetAddress addr, ResponseAction chained) {
             super(chained);
             m_addr = addr;
         }
 
+        /**
+         * Response implementation.
+         * @param code SMTP code.
+         */
         void responseImpl(int code)
         {
             if (currentTransaction != null) {
@@ -286,13 +401,25 @@ class SmtpSharedState
         }
     }
 
+    /**
+     * DATA response action.
+     */
     private class DATAResponseAction extends ChainedResponseAction
     {
 
+        /**
+         * Initialize instance of DATAResponseAction.
+         * @param chained ResponseAction to initialize with.
+         * @return instance of DATAResponseAction.
+         */
         DATAResponseAction(ResponseAction chained) {
             super(chained);
         }
 
+        /**
+         * Response implementation.
+         * @param code SMTP code.
+         */
         void responseImpl(int code)
         {
             if (code >= 400) {
@@ -302,13 +429,25 @@ class SmtpSharedState
         }
     }
 
+    /**
+     * Transmission response action.
+     */
     private class TransmissionResponseAction extends ChainedResponseAction
     {
 
+        /**
+         * Initialize instance of TransmissionResponseAction.
+         * @param chained ResponseAction to initialize with.
+         * @return instance of TransmissionResponseAction.
+         */
         TransmissionResponseAction(ResponseAction chained) {
             super(chained);
         }
 
+        /**
+         * Response implementation.
+         * @param code SMTP code.
+         */
         void responseImpl(int code)
         {
             if (currentTransaction != null) {
@@ -335,6 +474,8 @@ class SmtpSharedState
     /**
      * Open a SASL exchange observer, based on the given mechanism name. If null is returned, a suitable SASLObserver
      * could not be found for the named mechanism (and we should punt on this session).
+     * @param mechanismName String of mechanism.
+     * @return true if able to create SASLObserverFactory, false otherwise.
      */
     boolean openSASLExchange(String mechanismName)
     {

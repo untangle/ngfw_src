@@ -15,6 +15,12 @@ public class SASLExchangeToken implements Token
 
     private final ByteBuffer m_buf;
 
+    /**
+     * Initialize instance of SASLExchangeToken.
+     *
+     * @param  data ByteBuffer to initialize with
+     * @return      Instance of SASLExchangeToken.
+     */
     public SASLExchangeToken(ByteBuffer data) {
         m_buf = data;
     }
@@ -22,6 +28,7 @@ public class SASLExchangeToken implements Token
     /**
      * Returns a duplicate of the internal ByteBuffer, allowing the caller to modify the returned ByteBuffer without
      * concern for any downstream token handlers.
+     * @return Bytes in token.
      */
     public ByteBuffer getBytes()
     {

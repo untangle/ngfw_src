@@ -27,6 +27,20 @@ signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGUSR1, signal_handler)
 signal.signal(signal.SIGUSR2, signal_handler)
 signal.signal(signal.SIGQUIT, signal_handler)
+signal.signal(signal.SIGALRM, signal_handler)
+
+##
+## Timeout class used for with print() statements to handle
+## case of stdout going away.
+##
+class timeout:
+    def __init__(self, seconds=1, error_message='Timeout'):
+        self.seconds = seconds
+        self.error_message = error_message
+    def __enter__(self):
+        signal.alarm(self.seconds)
+    def __exit__(self, type, value, traceback):
+        signal.alarm(0)
 
 ##
 ## Create packet dump as a separate process.
@@ -60,7 +74,9 @@ class DumpReader:
             count = 0
             for line in h:
                 count = count + 1
-                print line
+
+                with timeout(seconds=5):
+                    print(line)
                 if count == 1:
                     break;
             h.close()
@@ -93,8 +109,9 @@ class DumpReader:
                 continue
 			
             if show_lines == 1:
-                print line.strip()
-                sys.stdout.flush()
+                with timeout(seconds=5):
+                    print(line.strip())
+                    sys.stdout.flush()
         self.last_line_count = line_count
 
 ##
@@ -114,11 +131,11 @@ def cleanup( path ):
 ## Script usage
 ##
 def usage():
-    print "usage"
-    print "--help\tShow usage"
-    print "--timeout <sec>\tTime to run in seconds"
-    print "--filename <filename>\tFile to write"
-    print "--arguments <list>\tcpdump arguments"
+    print("usage")
+    print("--help\tShow usage")
+    print("--timeout <sec>\tTime to run in seconds")
+    print("--filename <filename>\tFile to write")
+    print("--arguments <list>\tcpdump arguments")
 
 ##
 ## Main 
@@ -155,9 +172,9 @@ def main(argv):
             arguments = arg
 
     if _debug == True:
-        print "timeout=" + str(timeout)
-        print "filename=" + filename
-        print "arguments=" + arguments
+        print("timeout=" + str(timeout))
+        print("filename=" + filename)
+        print("arguments=" + arguments)
 
     path = "/".join( filename.split( "/" )[0:-1] )
     if os.path.isdir( path ) == False:
@@ -180,7 +197,7 @@ def main(argv):
     dump_reader.read()
     
     cleanup( path )
-	
+
 if __name__ == "__main__":
     main( sys.argv[1:] )
     

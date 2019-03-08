@@ -1,8 +1,9 @@
 Ext.define('Ung.config.events.view.Alerts', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.events.alerts',
-
+    alias: 'widget.config-events-alerts',
+    itemId: 'alerts',
     title: 'Alerts'.t(),
+    scrollable: true,
 
     bodyPadding: 10,
 
@@ -11,46 +12,71 @@ Ext.define('Ung.config.events.view.Alerts', {
         title: 'Alert Rules'.t(),
         region: 'center',
 
-        bind: '{alertRules}',
-
         listProperty: 'settings.alertRules.list',
-        tbar: ['@add'],
-        // !!! add copy action
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
+        copyId: 'ruleId',
+        copyAppendField: 'description',
 
-        ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
-        conditions: [
-            Condition.fieldCondition
-        ],
+        bind:{
+            store: '{alertRules}'
+        },
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.AlertRule',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: [{
+                    comparator: '=',
+                    field: 'class',
+                    fieldValue: '*SystemStatEvent*',
+                    javaClass: 'com.untangle.uvm.event.EventRuleCondition'
+                }]
+            },
             ruleId: -1,
             enabled: true,
             thresholdEnabled: false,
-            email: false,
-            alertLimitFrequency: false,
-            alertLimitFrequencyMinutes: 0,
+            thresholdTimeframeSec: 60,
+            thresholdGroupingField: null,
+            email: true,
+            emailLimitFrequency: false,
+            emailLimitFrequencyMinutes: 0,
         },
 
         columns: [
             Column.ruleId,
             Column.enabled,
             Column.description,
+            Ung.config.events.MainController.conditionsClass,
+            Ung.config.events.MainController.conditions,
         {
             xtype:'checkcolumn',
             header: 'Log'.t(),
             dataIndex: 'log',
-            width:55
+            width: Renderer.booleanWidth,
+            sortable: false
+        },{
+            xtype:'checkcolumn',
+            header: 'Email'.t(),
+            dataIndex: 'email',
+            width: Renderer.booleanWidth
         }],
 
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions,
+            // Field.conditions,
         {
+            xtype: 'eventconditionseditor',
+            bind: '{record.conditions}',
+            fields: {
+                type: 'field',
+                comparator: 'comparator',
+                value: 'fieldValue',
+            }
+        },{
             xtype: 'fieldset',
-            title: 'And the following conditions:'.t(),
+            title: 'As well as the following conditions:'.t(),
             items:[{
                 xtype:'checkbox',
                 labelWidth: 160,
@@ -67,8 +93,8 @@ Ext.define('Ung.config.events.view.Alerts', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{record.thresholdEnabled == false}',
-                    disabled: '{record.thresholdEnabled == false}'
+                    hidden: '{!record.thresholdEnabled}',
+                    disabled: '{!record.thresholdEnabled}'
                 },
                 items: [{
                     xtype:'numberfield',
@@ -83,7 +109,11 @@ Ext.define('Ung.config.events.view.Alerts', {
                         xtype: 'numberfield',
                         fieldLabel: 'Over Timeframe'.t(),
                         labelWidth: 160,
-                        bind: '{record.thresholdTimeframeSec}',
+                        disabled: true,
+                        bind: {
+                            value: '{record.thresholdTimeframeSec}',
+                            disabled: '{!record.thresholdEnabled}'
+                        },
                         allowDecimals: false,
                         allowBlank: false,
                         minValue: 60,
@@ -131,7 +161,7 @@ Ext.define('Ung.config.events.view.Alerts', {
                     xtype:'checkbox',
                     fieldLabel: 'Limit Send Frequency'.t(),
                     labelWidth: 160,
-                    bind: '{record.alertLimitFrequency}'
+                    bind: '{record.emailLimitFrequency}'
                 },{
                     xtype: 'container',
                     layout: 'column',
@@ -140,7 +170,7 @@ Ext.define('Ung.config.events.view.Alerts', {
                         xtype: 'numberfield',
                         fieldLabel: 'To once per'.t(),
                         labelWidth: 160,
-                        bind: '{record.alertLimitFrequencyMinutes}',
+                        bind: '{record.emailLimitFrequencyMinutes}',
                         allowDecimals: false,
                         allowBlank: false,
                         minValue: 0,

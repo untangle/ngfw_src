@@ -1,9 +1,9 @@
-#! /bin/bash
+#!/bin/bash
 
 #
 # This takes the client name and site name and generates the exe file containing all the configuration
 # for the specified client. The specified client must already exist with all its config (cert etc)
-# 
+#
 
 commonName="${1}"
 siteName="${2}"
@@ -27,7 +27,5 @@ if [ -f $EXE_FILE ] && [ $EXE_FILE -nt $CLI_CRT_FILE ] && [ $EXE_FILE -nt /etc/o
     echo "$EXE_FILE already exists and is up to date"
 else
     ## Run NSIS to create client distro.
-    makensis -V1 -DCOMMON_NAME="${commonName}" -DSITE_NAME="${siteName}" ${NSI_SCRIPT}
+    makensis -V1 -DCOMMON_NAME="${commonName}" -DSITE_NAME="${siteName}" -DOPENVPN_SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/openvpn" ${NSI_SCRIPT}
 fi
-
-

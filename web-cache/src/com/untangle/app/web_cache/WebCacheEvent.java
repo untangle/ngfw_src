@@ -1,13 +1,21 @@
 /**
  * $Id$
  */
-package com.untangle.app.web_cache; // API
+
+package com.untangle.app.web_cache;
 
 import java.io.Serializable;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
+/**
+ * Class to manage the details of web cache events which are logged to the
+ * database periodically to capture cache statistics.
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class WebCacheEvent extends LogEvent implements Serializable
 {
@@ -24,7 +32,7 @@ public class WebCacheEvent extends LogEvent implements Serializable
         hitCount = missCount = bypassCount = systemCount = hitBytes = missBytes = policyId = 0;
     }
 
-    public WebCacheEvent(Integer policyId,long hitCount,long missCount,long bypassCount,long systemCount,long hitBytes,long missBytes)
+    public WebCacheEvent(Integer policyId, long hitCount, long missCount, long bypassCount, long systemCount, long hitBytes, long missBytes)
     {
         this.hitCount = hitCount;
         this.missCount = missCount;
@@ -34,6 +42,8 @@ public class WebCacheEvent extends LogEvent implements Serializable
         this.missBytes = missBytes;
         this.policyId = policyId;
     }
+
+    // THIS IS FOR ECLIPSE - @formatter:off
 
     public long getHitCount() { return(hitCount); }
     public void setHitCount( long hitCount ) { this.hitCount = hitCount; }
@@ -56,6 +66,7 @@ public class WebCacheEvent extends LogEvent implements Serializable
     public Long getPolicyId() { return(policyId); }
     public void setPolicyId( Integer policyId ) { this.policyId = policyId; }
 
+    
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
@@ -79,17 +90,19 @@ public class WebCacheEvent extends LogEvent implements Serializable
         return;
     }
 
+    // THIS IS FOR ECLIPSE - @formatter:on
+
     public String toString()
     {
         String detail = new String();
-        detail+=("WebCacheEvent(");
-        detail+=(" hitCount:" + hitCount);
-        detail+=(" missCount:" + missCount);
-        detail+=(" bypassCount:" + bypassCount);
-        detail+=(" systemCount:" + systemCount);
-        detail+=(" hitBytes:" + hitBytes);
-        detail+=(" missBytes:" + missBytes);
-        detail+=(")");
+        detail += ("WebCacheEvent(");
+        detail += (" hitCount:" + hitCount);
+        detail += (" missCount:" + missCount);
+        detail += (" bypassCount:" + bypassCount);
+        detail += (" systemCount:" + systemCount);
+        detail += (" hitBytes:" + hitBytes);
+        detail += (" missBytes:" + missBytes);
+        detail += (")");
         return detail;
     }
 
@@ -99,5 +112,4 @@ public class WebCacheEvent extends LogEvent implements Serializable
         String summary = "Web Cache " + I18nUtil.marktr("cached") + " " + getHitCount() + " " + I18nUtil.marktr("pages");
         return summary;
     }
-
 }

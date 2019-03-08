@@ -5,7 +5,6 @@ package com.untangle.uvm.network;
 
 import java.util.List;
 import java.io.Serializable;
-import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -14,15 +13,15 @@ import org.apache.log4j.Logger;
 /**
  * This in the implementation of a Bypass Rule
  *
- * A rule is basically a collection of BypassRuleConditions (matchers)
- * and what to do if the matchers match (block, log, etc)
+ * A rule is basically a collection of BypassRuleConditions (conditions)
+ * and what to do if the conditions match (block, log, etc)
  */
 @SuppressWarnings("serial")
 public class BypassRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<BypassRuleCondition> matchers;
+    private List<BypassRuleCondition> conditions;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -31,16 +30,16 @@ public class BypassRule implements JSONString, Serializable
     
     public BypassRule() { }
 
-    public BypassRule(boolean enabled, List<BypassRuleCondition> matchers, boolean bypass, String description)
+    public BypassRule(boolean enabled, List<BypassRuleCondition> conditions, boolean bypass, String description)
     {
-        this.setConditions(matchers);
+        this.setConditions(conditions);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setBypass(bypass);
         this.setDescription(description);
     }
     
-    public List<BypassRuleCondition> getConditions() { return this.matchers; }
-    public void setConditions( List<BypassRuleCondition> matchers ) { this.matchers = matchers; }
+    public List<BypassRuleCondition> getConditions() { return this.conditions; }
+    public void setConditions( List<BypassRuleCondition> conditions ) { this.conditions = conditions; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }

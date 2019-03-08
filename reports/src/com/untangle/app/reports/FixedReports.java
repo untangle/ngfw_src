@@ -6,27 +6,19 @@ package com.untangle.app.reports;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.MailSender;
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 
 import com.untangle.uvm.WebBrowser;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
 import java.net.URLEncoder;
-
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,11 +34,9 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import java.lang.Integer;
 import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
 
 import org.json.JSONObject;
 
@@ -60,6 +50,10 @@ public class FixedReports
     private static final Logger logger = Logger.getLogger( FixedReports.class );
 
     public static final String REPORTS_FIXED_TEMPLATE_FILENAME =  System.getProperty("uvm.lib.dir") + "/reports/templates/reports.html";
+    public static final int DEFAULT_BROWSER_WIDTH = 800;
+    public static final int DEFAULT_BROWSER_HEIGHT = 400;
+    public static final int MOBILE_BROWSER_WIDTH = 350;
+    public static final int MOBILE_BROWSER_HEIGHT = 350;
 
     private StringBuilder messageText = null;
 
@@ -219,6 +213,8 @@ public class FixedReports
         ReservedReports.add("intrusion-prevention-pYviv7Cg");
         // Network Summary
         ReservedReports.add("network-tn9iaE74pK");
+        // Network Data Usage
+        ReservedReports.add("network-aGUe5wYZ1x");
         // Sessions
         ReservedReports.add("network-8bTqxKxxUK");
         // Bandwidth Usage
@@ -235,8 +231,6 @@ public class FixedReports
         ReservedReports.add("policy-manager-upl31dqKb1");
         // Top Policy Usage
         ReservedReports.add("policy-manager-hWC6KjOc8Y");
-        // Alerts
-        ReservedReports.add("reporting-498VRSufOw");
         // SSL Inspector Summary
         ReservedReports.add("ssl-inspector-ggDy9pSApA");
         // Scanned Sessions
@@ -319,7 +313,7 @@ public class FixedReports
     private static final Pattern Conditional = Pattern.compile("(.+?)\\s+(not\\s+|\\!\\s+)(\\=\\=|in)\\s+(.+)");
     private static final Pattern ConditionalLogical = Pattern.compile("(.+?)\\s+(not\\s+|)(and|or)\\s+(.+)");
 
-    /*
+    /**
      * Variable context
      */
     class variableContext
@@ -329,6 +323,16 @@ public class FixedReports
         String name;
         int index;
 
+        /**
+         * Initialize this current variable context.
+         *
+         * @param tag
+         *  Tag for the context.
+         * @param name
+         *  Name of variable.
+         * @param object
+         *  Variable object.
+         */
         public variableContext(Tag tag, String name, Object object)
         {
             this.tag = tag;
@@ -337,29 +341,48 @@ public class FixedReports
             this.index = -1;
         }
 
+        /**
+         * Display context as a string for debugging purposes.
+         *
+         * @return
+         *  String of tag and name.
+         */
         public String toString(){
             return tag + ":" + name;
         }
     }
 
-    /*
+    /**
      * Conditional context
      */
     class conditionalContext
     {
         Boolean match;
 
+        /**
+         * Initialize conditional context
+         *
+         * @param match
+         *  true to match, false to not match.
+         */
         public conditionalContext(Boolean match)
         {
             this.match = match;
         }
 
+        /**
+         * Get match value.
+         * 
+         * @return
+         *  true if match is true, false otherwise.
+         */
         public Boolean getMatch(){
             return match;
         }
     }
 
-    /*
+    /**
+     * Parse context.
      */
     class parseContext
     {
@@ -375,6 +398,9 @@ public class FixedReports
         String variableName;
         int variableIndex;
 
+        /**
+         * Initialize this context.
+         */
         public parseContext()
         {
             loopBuffer = new StringBuilder();
@@ -383,6 +409,16 @@ public class FixedReports
         List<variableContext> variables = new ArrayList<variableContext>();
         List<conditionalContext> conditionals = new ArrayList<conditionalContext>();
 
+        /**
+         * Add variable to this context.
+         * 
+         * @param tag
+         *  Tag for this variable.
+         * @param name
+         *  Name of variable.
+         * @param object
+         *  Variable object.
+         */
         public void addVariable(Tag tag, String name, Object object){
 
             /* Replace if found */
@@ -398,6 +434,12 @@ public class FixedReports
             variables.add(new variableContext(tag, name, object));
         }
 
+        /**
+         * Remove the variable specified by tag.
+         *
+         * @param tag
+         *  Variable to remove.
+         */
         public void removeVariable(Tag tag){
             for(variableContext vc : variables){
                 if(vc.tag == tag){
@@ -407,6 +449,14 @@ public class FixedReports
             }
         }
 
+        /**
+         * Get the variale by tag.
+         *
+         * @param tag
+         *  Tag to match.
+         * @return
+         *  variableContext object or null if not found.
+         */
         public variableContext getVariableContext(Tag tag){
             for(variableContext vc: variables){
                 if(vc.tag.equals(tag)){
@@ -416,6 +466,16 @@ public class FixedReports
             return null;
         }
 
+        /**
+         * Get the variale by tag and name.
+         *
+         * @param tag
+         *  Tag to match.
+         * @param name
+         *  Variable name to match.
+         * @return
+         *  variableContext object or null if not found.
+         */
         public variableContext getVariableContext(Tag tag, String name){
             for(variableContext vc: variables){
                 if(vc.tag.equals(tag) && vc.name.equals(name)){
@@ -425,13 +485,23 @@ public class FixedReports
             return null;
         }
 
-        /* Multi-level conditional support in a context */
+        /**
+         * Multi-level conditional support in a context 
+         * 
+         * @param match
+         *  true to match, false to not match.
+         */
         public void pushConditional(Boolean match){
             conditionals.add(new conditionalContext(match));
         }
 
-        /*
+        /**
          * If current level match is what we want and nested is true, we match
+         *
+         * @param wantMatch
+         *  The match to find.
+         * @return
+         *  true if found, false if not.
          */
         public Boolean getCurrentConditionalMatch(Boolean wantMatch){
             Boolean walkMatch = true;
@@ -445,10 +515,22 @@ public class FixedReports
             }
             return match && walkMatch;
         }
+
+        /**
+         * Remove last conditional.
+         */
         public void popConditional(){
             conditionals.remove(conditionals.get(conditionals.size()-1));
         }
 
+        /**
+         * Return variable's object by name,
+         *
+         * @param name
+         *  Name of variable find.
+         * @return
+         *  Variable object or null if not found.
+         */
         public Object getVariable(String name){
             for(variableContext vc: variables){
                 if(vc.name.equals(name)){
@@ -462,6 +544,14 @@ public class FixedReports
             return null;
         }
 
+        /**
+         * Set varaible's object.
+         * 
+         * @param name
+         *  Name of variaable.
+         * @param obj
+         *  Variable object.
+         */
         public void setVariable(String name, Object obj)
         {
             variableName = name;
@@ -469,27 +559,55 @@ public class FixedReports
             variableIndex = 0;
         }
 
+        /**
+         * Unset current variable name and object.
+         */
         public void unsetVariable()
         {
             variableName = null;
             variableObject = null;
         }
 
+        /**
+         * Add line to the loopBuffer.
+         *
+         * @param line
+         *  Line to add.
+         */
         public void addToBuffer(String line){
             if(ignoreLine == false && getInComment() == false){
                 loopBuffer.append(line);
             }
         } 
 
+        /**
+         * Toggle the value of being inside a comment.
+         *
+         * @param value
+         *  true if in comment, false if not.
+         */
         public void setInComment(Boolean value){
             inComment = value;
         }
+        /**
+         * Get current status of bing in a comment.
+         * @return
+         *  true if in comment, false if not.
+         */
         public Boolean getInComment(){
             return inComment;
         }
     }
     private List<parseContext> parseContextStack;
 
+    /**
+     * Check for current context match.
+     *
+     * @param wantMatch
+     *  true if should match, false if not.
+     * @return
+     *  true if match found
+     */
     private boolean getParseContextStackMatch(Boolean wantMatch)
     {
         Boolean match = true;
@@ -501,7 +619,9 @@ public class FixedReports
         return match;
     }
 
-    /*
+    /**
+     * Selecting system information in a general way. 
+     * Selector is formatted like fields[,arguments][|filters]
      */
     class selector
     {
@@ -510,8 +630,11 @@ public class FixedReports
         List<String> filters = null;
         String selectorString = null;
 
-        /*
-         Selector is formatted like fields[,arguments][|filters]
+        /**
+         * Iniitalize selector from string.
+         *
+         * @param selectorString
+         *  String containing selector.
          */
         public selector(String selectorString)
         {
@@ -535,12 +658,24 @@ public class FixedReports
             arguments.remove(0);
         }
 
+        /**
+         * Display selector as its original string value.
+         *
+         * @return 
+         *  Originally passed selector string.
+         */
         public String toString(){
             return selectorString;
         }
 
     }
 
+    /**
+     * Get the configuration categories.
+     *
+     * @return
+     *  List of category strings.
+     */
     public List<String> getConfigCategories()
     {
         return FixedReports.ConfigCategories;
@@ -548,10 +683,67 @@ public class FixedReports
 
     private ReportsManager reportsManager;
 
-    /*
-     * Create and send fixed reports
+    /**
+     * Initialize fixed reports instance with a web browser instance if supported.
+     * @return instance of fixed reports/
+     */
+    public FixedReports(){
+        webbrowser = null;
+        if(WebBrowser.exists()){
+            try{
+                webbrowser = new WebBrowser(1, 5, DEFAULT_BROWSER_WIDTH, DEFAULT_BROWSER_HEIGHT, 8);
+            }catch(Exception e){
+                logger.warn("Unable to start WebBrowser instance",e);
+                webbrowser = null;
+            }
+        }
+
+    }
+
+    /**
+     * When destroying the instance, shut down the web browser.
+     */
+    public void destroy(){
+        if(webbrowser != null){
+            webbrowser.close();
+        }
+        webbrowser = null;
+    }
+
+    /**
+     * Create and send fixed reports based on current day.
+     *
+     * @param emailTemplate
+     *  EmailTemplate to process.
+     * @param users
+     *  Email addresses that will receive generatewd report.
+     * @param reportsUrl
+     *  URL to include in the message.
+     * @param reportsManager
+     *  ReportsManager object.
      */
     public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl, ReportsManager reportsManager)
+    {
+        generate(emailTemplate, users, reportsUrl, reportsManager, 0, 0);
+    }
+
+    /**
+     * Create and send fixed reports based on explicit start and stop timestamps.
+     *
+     * @param emailTemplate
+     *  EmailTemplate to process.
+     * @param users
+     *  Email addresses that will receive generatewd report.
+     * @param reportsUrl
+     *  URL to include in the message.
+     * @param reportsManager
+     *  ReportsManager object.
+     * @param startTimestamp
+     *  Beginning timestamp.
+     * @param stopTimestamp
+     *  Ending timestamp
+     */
+    public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl, ReportsManager reportsManager, long startTimestamp, long stopTimestamp)
     {
         this.reportsManager = reportsManager;
 
@@ -559,42 +751,112 @@ public class FixedReports
         i18nUtil = new I18nUtil(i18nMap);
 
         String interval = "";
+        String intervalDescription = "";
         Calendar c = Calendar.getInstance();
+
+        if(startTimestamp != 0){
+            c.setTimeInMillis(startTimestamp);
+        }
         c.set(Calendar.HOUR_OF_DAY, 0);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         Date currentDate = c.getTime();
-        if(emailTemplate.getInterval() == 2419200){
+
+        if (emailTemplate.getInterval() == 2419200) {
             // Monthly
             interval = i18nUtil.tr("Monthly");
-            c.set(Calendar.DAY_OF_MONTH, 1);
-            endDate = c.getTime();
-            c.add(Calendar.DATE, -1);
-            c.set(Calendar.DAY_OF_MONTH, 1);
-            startDate = c.getTime();
-        }else if(emailTemplate.getInterval() == 604800){
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.add(Calendar.MONTH, 1);
+                c.set(Calendar.DAY_OF_MONTH, 1);
+                endDate = c.getTime();
+            }else{
+                c.set(Calendar.DAY_OF_MONTH, 1);
+                endDate = c.getTime();
+                c.add(Calendar.DATE, -1);
+                c.set(Calendar.DAY_OF_MONTH, 1);
+                startDate = c.getTime();
+            }
+
+            intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
+        } else if (emailTemplate.getInterval() == 2) {
+            // Month to Date
+            interval = i18nUtil.tr("Month to Date");
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.setTimeInMillis(stopTimestamp);
+                endDate = c.getTime();
+            }else{
+                endDate = c.getTime();
+                c.set(Calendar.DAY_OF_MONTH, 1);
+                startDate = c.getTime();
+            }
+
+            intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
+        } else if(emailTemplate.getInterval() == 604800) {
             // Weekly, Sunday through Sunday
             interval = i18nUtil.tr("Weekly");
-            c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart());
-            endDate = c.getTime();
-            c.add(Calendar.DATE, -7);
-            startDate = c.getTime();
-        }else{
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.setTimeInMillis(startTimestamp + ( 86400000 * 7) );
+                endDate = c.getTime();
+            }else{
+                c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart() + 1);
+                endDate = c.getTime();
+                c.add(Calendar.DATE, -7);
+                startDate = c.getTime();
+            }
+            intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
+        } else if(emailTemplate.getInterval() == 1) {
+            // Week to Date
+            interval = i18nUtil.tr("Week to Date");
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.setTimeInMillis(stopTimestamp);
+                endDate = c.getTime();
+            }else{
+                endDate = c.getTime();
+                c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart() + 1);
+                startDate = c.getTime();
+            }
+            intervalDescription = dateFormatter.format(startDate) + " - " + dateFormatter.format(endDate);
+        } else if(emailTemplate.getInterval() == 86400) {
+            // Daily
+            interval = i18nUtil.tr("Daily");
+
+            if(startTimestamp != 0){
+                startDate = c.getTime();
+                c.add(Calendar.DATE, 1);
+                endDate = c.getTime();
+            }else{
+                c.add(Calendar.DATE, - 1);
+                startDate = c.getTime();
+                c.add(Calendar.DAY_OF_MONTH, 1);
+                endDate = c.getTime();
+            }
+            intervalDescription = dateFormatter.format(startDate);
+        } else {
             // Daily
             interval = i18nUtil.tr("Daily");
             c.add(Calendar.DATE, - 1);
             startDate = c.getTime();
             c.add(Calendar.DAY_OF_MONTH, 1);
             endDate = c.getTime();
+            intervalDescription = dateFormatter.format(startDate);
         }
 
-        if(currentDate.compareTo(endDate) != 0){
+        if ( (startTimestamp == 0 ) && (currentDate.compareTo(endDate) != 0) ){
+            logger.warn("Skipping report " + emailTemplate.getTitle() + " because its not its end date: " + endDate);
             return;
         }
 
         String title = emailTemplate.getTitle() + 
-            ": " + interval + " (" + dateFormatter.format(startDate) + ")" + 
+            ": " + interval + " (" + intervalDescription + ")" + 
             (emailTemplate.getMobile() == true ? " " + i18nUtil.tr("Mobile") : "");
 
         // Determine users lists with/without online access for url inclusion
@@ -621,17 +883,15 @@ public class FixedReports
 
         logger.warn("Generating report for \"" + title + "\"");
 
-        Integer browserWidth = 800;
-        Integer browserHeight = 400;
-        if(emailTemplate.getMobile() == true){
-            browserWidth = 250;
-            browserHeight = 250;
+        if(webbrowser != null){
+            Integer browserWidth = DEFAULT_BROWSER_WIDTH;
+            Integer browserHeight = DEFAULT_BROWSER_HEIGHT;
+            if(emailTemplate.getMobile() == true){
+                browserWidth = MOBILE_BROWSER_WIDTH;
+                browserHeight = MOBILE_BROWSER_HEIGHT;
+            }
+            webbrowser.resize( browserWidth, browserHeight);
         }
-
-        webbrowser = null;
-        try{
-            webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
-        }catch(Exception e){}
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
 
@@ -717,14 +977,15 @@ public class FixedReports
             parseBuffer(inputLines, outputLines, variableKeyValues);
             sendEmail(recipientsWithOnlineAccess, outputLines);
         }
-
-        if(webbrowser != null){
-            webbrowser.close();
-        }
     }
 
-    /*
+    /**
      * Send report email to recipients
+     * 
+     * @param recipientsList
+     *  List of email addresses.
+     * @param htmlOutput
+     *  Generated report HTML output.
      */
     void sendEmail(List<String> recipientsList, List<StringBuilder> htmlOutput){
         StringBuilder messageHtml = new StringBuilder();
@@ -761,8 +1022,15 @@ public class FixedReports
 
     }
 
-    /*
+    /**
      * Process the current buffer in a new context instance.
+     *
+     * @param inputLines
+     *  List of input to process.
+     * @param outputLines
+     *  List of processed lines.
+     * @param variableKeyValues
+     *  Variables and their values to process (add to context)
      */
     void parseBuffer(List<StringBuilder> inputLines, List<StringBuilder> outputLines, Map<String,Object> variableKeyValues){
         parseContextStack = new ArrayList<parseContext>();
@@ -781,8 +1049,11 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Process buffer within current context stack.
+     * 
+     * @param buffer
+     *  Buffer to process.
      */
     void parse(String buffer)
     {
@@ -968,9 +1239,14 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Determine if variable is active in this pass.
      * If defined and not in this pass, return false. Return true otherwise.
+     *
+     * @param name
+     *  Name of variable to find.
+     * @return
+     *  true if variable is active, false otherwise.
      */
     private Boolean isVariableParseActive(String name){
         Boolean active = true;
@@ -982,10 +1258,15 @@ public class FixedReports
         return active;
     }
 
-    /*
+    /**
      * Proces conditional for IF statements
+     * 
+     * @param condition
+     *  Condition to break down.
+     * @return
+     *  true if condition matched, false otherwise.
      */
-    // !!! ?? try to merge code with filter conditional
+    // TODO: !!! ?? try to merge code with filter conditional
     private Boolean parseCondition(String condition)
     {
         Boolean match = false;
@@ -1118,10 +1399,15 @@ public class FixedReports
         return match;
     }
 
-    /*
+    /**
      * Add variables as buffered writes.  
      * Most variables are single string so this may seem like overkill but others like files 
      * are too big to keep in memory.
+     *
+     * @param line
+     *  Line containing variable.
+     * @param variableSelector
+     *  Variable selector to add.
      */
     private void insertVariable(String line, selector variableSelector)
     {
@@ -1137,8 +1423,11 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Add a file to the current location as-is.
+     *
+     * @param variableSelector
+     *  Selector for the variableobject.
      */
     private void insertVariableAttachment(selector variableSelector)
     {
@@ -1183,8 +1472,11 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Add new cycle variable to current context
+     *
+     * @param argumentValues
+     *  Matcher to process.
      */
     private void insertVariableCycle(Matcher argumentValues)
     {
@@ -1208,8 +1500,11 @@ public class FixedReports
         vc.index = 0;
     }
 
-    /*
+    /**
      * Look for cycle variable in context stack and if found, loop
+     * 
+     * @param argumentValues
+     *  Matcher to process.
      */
     private void nextVariableCycle(Matcher argumentValues)
     {
@@ -1229,9 +1524,14 @@ public class FixedReports
         }
     }
 
-    /*
+    /**
      * Get a variable from its selector.  
      * This will also recurse to pull arguments into itself.
+     *
+     * @param variableSelector
+     *  Find the specified variable.
+     * @return
+     *  Object value of the variable.
      */
     private Object getVariable(selector variableSelector)
     {
@@ -1406,6 +1706,11 @@ public class FixedReports
      * Create arbitrary string-based list from stringList specifier which supports
      * following string formats:
      * "quote" unquoted "quoted with spaces"
+     *
+     * @param stringList
+     *  String to process.
+     * @return
+     *  Variable.
      */
     private Object createVariableList(String stringList){
         List<String> variableList = new ArrayList<String>();
@@ -1431,9 +1736,16 @@ public class FixedReports
         return variableList;
     }
 
-    /*
+    /**
      * Similar to condtional except use object methods for comparison.
      * (e.g., "getType=TEXT" to only pull text reports)
+     *
+     * @param object
+     *  Object to match via filters.
+     * @param filters
+     *  String list of filters.
+     * @return
+     *  true if match, false if not.
      */
     Boolean filterMatch(Object object, List<String> filters){
         if(filters.size() == 0){
@@ -1481,8 +1793,15 @@ public class FixedReports
         return match;
     }
 
-    /*
+    /**
      * Modify the object.
+     * 
+     * @param object
+     *  Object to modify.
+     * @param filters
+     *  Filters to modify with.
+     * @return
+     *  Object of filtered result
      */
     Object filterProcess(Object object, List<String> filters){
         Matcher filterMatcher;
@@ -1517,7 +1836,7 @@ public class FixedReports
         return object;
     }
 
-    /*
+    /**
      * Process a template through an argument list
      * 
      * Additionally, order results according to sortOrder list.
@@ -1527,6 +1846,15 @@ public class FixedReports
      * Basically used to sort report result list in textColumn format since results
      * are not guaranteed to be in order.  Attempt to look at last word in each
      * entry, expecting the format to be in SQL format to name column like "select ... as resultName"
+     *
+     * @param template
+     *  Template to process.
+     * @param arguments
+     *  Arguments on the object.
+     * @param sortOrder
+     *  Sort order.
+     * @return
+     *  Filtered object.
      */
     Object filterProcessFormat(Object template, JSONObject arguments, Object sortOrder){
         /*
@@ -1585,11 +1913,18 @@ public class FixedReports
         return (Object) formatted;
     }
 
-    /*
+    /**
      * Process the list and filter out duplicates.
      *
      * Simplisitic in string comparisions are expected and no method arguments are allowed.
      * Use case is to eliminate apps with the same name (e.g.,multiple policies with same app)
+     *
+     * @param incomings
+     *  Incoming to filter.
+     * @param filterSelector
+     *  Filter selector.
+     * @return
+     *  Filtered object.
      */
     Object filterProcessDistinct(Object incomings, selector filterSelector){
         List<Object> outgoings = new ArrayList<Object>();
@@ -1628,10 +1963,19 @@ public class FixedReports
         return (Object) outgoings;
     }
 
-    /*
+    /**
      * Process the list and include only those in the specified list.
      *
      * One use for this is to pull only reports within the allowed report type list.
+     *
+     * @param incomings
+     *  Incoming to filter.
+     * @param filterSelector
+     *  Filter selector.
+     * @param checklist
+     *  Checklist to include.
+     * @return
+     *  Filtered object.
      */
     Object filterProcessIn(Object incomings, selector filterSelector, Object checklist){
         List<Object> outgoings = new ArrayList<Object>();
@@ -1660,12 +2004,20 @@ public class FixedReports
         return (Object) outgoings;
     }
 
-    /*
+    /**
      * Process the list to order by the specified field.
      *
      * One use is to sort all reports so that TEXT types are first.
      * Another it to sort by category order
      *
+     * @param incomings
+     *  Incoming to filter.
+     * @param filterSelector
+     *  Filter selector.
+     * @param orderSelector
+     *  Order to use.
+     * @return
+     *  Filtered object.
      */
     @SuppressWarnings("unchecked")
     Object filterProcessOrder(Object incomings, selector filterSelector, selector orderSelector){
@@ -1730,6 +2082,17 @@ public class FixedReports
         return (Object) outgoings;
     }
 
+    /**
+     * Perform query with WebBrowser against specialized reports mode
+     * and return saved filename.
+     *
+     * @param reportUniqueId
+     *  ReportId to create.
+     * @param id
+     *  Unique HTML identifier for the image.
+     * @return
+     *  Filename from WebBrowser.
+     */
     String getChart(Object reportUniqueId, String id){
         String filename;
         if(id != null){
@@ -1743,21 +2106,23 @@ public class FixedReports
         }
 
         try {
-            String url = "http://127.0.0.1/reports/?reportChart=1" + 
-                "&reportUniqueId=" + URLEncoder.encode((String) reportUniqueId, "UTF-8") + 
-                "&startDate=" + URLEncoder.encode(Long.toString(startDate.getTime()), "UTF-8") + 
+            String url = "http://127.0.0.1/reports/?reportChart=1" +
+                "&reportUniqueId=" + URLEncoder.encode((String) reportUniqueId, "UTF-8") +
+                "&startDate=" + URLEncoder.encode(Long.toString(startDate.getTime()), "UTF-8") +
                 "&endDate=" + URLEncoder.encode(Long.toString(endDate.getTime()), "UTF-8");
             webbrowser.openUrl(url);
-            webbrowser.waitForElement("highcharts-0");
+            webbrowser.waitForElement(WebBrowser.FIND_KEYS.CLASS, "highcharts-legend", 120);
             Thread.sleep(1000);
             webbrowser.takeScreenshot(filename);
         } catch (org.openqa.selenium.TimeoutException e) {
-            webbrowser.waitForElement("label-1016");
+            webbrowser.waitForElement(WebBrowser.FIND_KEYS.CLASS, "highcharts-no-data", 120);
             webbrowser.takeScreenshot(filename);
         } catch (Exception e) {
             logger.warn("Exception",e);
-            return "";
+            webbrowser.takeScreenshot(filename);
         }
+
+        webbrowser.clearCache();
 
         return filename;
     }

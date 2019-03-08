@@ -26,8 +26,14 @@ public class Subscription
     private final PortRange serverRange;
     private final PortRange clientRange;
 
-    // constructors -----------------------------------------------------------
-
+    /**
+     * Subscription constructor
+     * @param protocol
+     * @param clientAddress
+     * @param clientRange
+     * @param serverAddress
+     * @param serverRange
+     */
     public Subscription(Protocol protocol,
                         IPMaskedAddress clientAddress, PortRange clientRange,
                         IPMaskedAddress serverAddress, PortRange serverRange)
@@ -39,6 +45,10 @@ public class Subscription
         this.serverRange = serverRange;
     }
 
+    /**
+     * Subscription constructor
+     * @param protocol
+     */
     public Subscription(Protocol protocol)
     {
         this.protocol = protocol;
@@ -48,8 +58,11 @@ public class Subscription
         this.clientRange = PortRange.ANY;
     }
 
-    // business methods -------------------------------------------------------
-
+    /**
+     * matches - returns true if the subscription matches (includes) the tuple
+     * @param tuple
+     * @return bool
+     */
     public boolean matches( SessionTuple tuple )
     {
         switch (tuple.getProtocol()) {
@@ -79,11 +92,9 @@ public class Subscription
         }
     }
 
-    // accessors --------------------------------------------------------------
-
     /**
      * Protocol of subscription, TCP or UDP.
-     *
+
      * @return the protocol.
      */
     public Protocol getProtocol()
@@ -131,8 +142,11 @@ public class Subscription
         return clientRange;
     }
 
-    // objects ----------------------------------------------------------------
-
+    /**
+     * equals
+     * @param o
+     * @return bool
+     */
     public boolean equals(Object o)
     {
         Subscription s = (Subscription)o;
@@ -143,6 +157,10 @@ public class Subscription
             && s.serverRange.equals(serverRange);
     }
 
+    /**
+     * hashCode
+     * @return int
+     */
     public int hashCode()
     {
         int result = 17;
@@ -155,6 +173,10 @@ public class Subscription
         return result;
     }
 
+    /**
+     * toString
+     * @return string
+     */
     public String toString()
     {
         return protocol.toString();

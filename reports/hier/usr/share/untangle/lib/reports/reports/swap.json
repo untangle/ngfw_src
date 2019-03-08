@@ -1,0 +1,23 @@
+{
+    "uniqueId": "system-xejkMsUFk0",
+    "category": "System",
+    "description": "The swap utilization over time.",
+    "displayOrder": 104,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes",
+    "readOnly": true,
+    "table": "server_events",
+    "timeDataColumns": [
+        "(max(swap_total)-max(swap_free)) as swap_usage"
+    ],
+    "colors": [
+        "#396c2b"
+    ],
+    "timeDataInterval": "AUTO",
+    "timeStyle": "AREA",
+    "title": "Swap Usage Bytes",
+    "type": "TIME_GRAPH",
+    "approximation": "high"
+}

@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: IntrusionPreventionUnified2Parser.java 31685 2014-11-24 15:50:30Z cblaise $
  */
 package com.untangle.app.intrusion_prevention;
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.math.BigInteger;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
@@ -22,12 +21,17 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.app.intrusion_prevention.IntrusionPreventionLogEvent;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMap;
-import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapRule;
+import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapSignature;
 
+/**
+ * Process snort's unified2 events for inclusion in Untangle event database.
+ */
 public class IntrusionPreventionSnortUnified2Parser
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final int MaximumProcessedRecords = 5000;
+    private final static int MaximumProcessedRecords = 5000;
+
+    private static final String EVENT_MAP = "/etc/suricata/intrusion-prevention.event.map.conf";
 
 	private FileChannel fc;
 	private ByteBuffer bufSerialHeader = null;
@@ -92,7 +96,10 @@ public class IntrusionPreventionSnortUnified2Parser
         IDS_EVENTV2_MPLS_LABEL_SIZE +
         IDS_EVENTV2_VLAN_ID_SIZE +
         IDS_EVENTV2_PADDING_SIZE;
-    
+   
+    /**
+     * Initialize parser.
+     */ 
 	public IntrusionPreventionSnortUnified2Parser()
     {
 		ipv4bytes = new byte[4];
@@ -104,10 +111,13 @@ public class IntrusionPreventionSnortUnified2Parser
         reloadEventMap();
     }
 
+    /**
+     * Load the map containing descriptions to the log entry identifiers.
+     */
     public void reloadEventMap()
     {
         IntrusionPreventionEventMap newIntrusionPreventionEventMap = new IntrusionPreventionEventMap();
-        File f = new File( "/etc/snort/intrusion-prevention.event.map.conf" );
+        File f = new File( EVENT_MAP );
         if (f.exists()) {
             InputStream is = null;
             try {
@@ -158,6 +168,20 @@ public class IntrusionPreventionSnortUnified2Parser
         ipsEventMap = newIntrusionPreventionEventMap;
     }
     
+    /**
+     * Read the snort unified2 event and for each entry, log to untangle event handler.
+     *
+     * @param file
+     *  Snort unified2 log file handle.
+     * @param startPosition
+     *  Location to start parsing.
+     * @param ipsApp
+     *  Intrusion Prevention application.
+     * @param currentTime
+     *  Ignore entries older than this time.
+     * @return
+     *  Long value of the last position read.
+     */
     public long parse( File file, long startPosition, IntrusionPreventionApp ipsApp, long currentTime )
     {
         fc = null;
@@ -169,18 +193,17 @@ public class IntrusionPreventionSnortUnified2Parser
                 fc.position( startPosition );
             }
 		} catch (Exception e) {
-            logger.warn( "Unable to open snort log for processing:", e );
+            logger.warn( "Unable to open ips event for processing:", e );
 		}
         
-		int packet_count = 0;
-        int eventCount = 0;
+		int packetCount = 0;
 
         long pos = -1L;
         int recordCount = 0;
 		try {
             boolean abort = false;
 			while (fc.position() != fc.size()) {
-                logger.debug( "parse: packet count=" + ++packet_count + ", file size=" + fc.size() + ", position=" + fc.position() );
+                logger.debug( "parse: packet count=" + ++packetCount + ", file size=" + fc.size() + ", position=" + fc.position() );
 				try{
                     parseSerialHeader();
                 }catch( Exception e ){
@@ -226,7 +249,7 @@ public class IntrusionPreventionSnortUnified2Parser
 			}
             pos = fc.position();
 		} catch (Exception e) {
-            logger.warn("Unable to process snort log: ", e);
+            logger.warn("Unable to process ips event: ", e);
 		}
 
         if( recordCount == MaximumProcessedRecords ){
@@ -237,12 +260,18 @@ public class IntrusionPreventionSnortUnified2Parser
             try {
                 f.close();
             } catch (Exception e) {
-                logger.warn("Unable to close snort log: ", e);
+                logger.warn("Unable to close ips event: ", e);
             }
         }
         return pos;
     }
 
+    /**
+     * Read the serial header.
+     *
+     * @throws Exception
+     *  Can occur if read size mismatches.
+     */
 	public void parseSerialHeader() throws Exception
     {
         if( bufSerialHeader == null ){
@@ -272,6 +301,14 @@ public class IntrusionPreventionSnortUnified2Parser
 		serialHeader.setLength( bufSerialHeader.getInt( pos ) );
 	}
 
+    /**
+     * Log current entry.
+     *
+     * @return
+     *  IPS log event.
+     * @throws Exception
+     *  For various detected size mismatches.
+     */
 	public IntrusionPreventionLogEvent parseIdsEvent() throws Exception
     {
         IntrusionPreventionLogEvent ipsEvent = new IntrusionPreventionLogEvent();
@@ -381,14 +418,19 @@ public class IntrusionPreventionSnortUnified2Parser
         
 		ipsEvent.setProtocol( (short) bufIdsEvent.get( pos ) );
         pos += IDS_EVENT_PROTOCOL_SIZE;
-        
-		ipsEvent.setImpactFlag( (short) bufIdsEvent.get( pos ) );
-        pos += IDS_EVENT_IMPACT_FLAG_SIZE;
-        
-		ipsEvent.setImpact( (short) bufIdsEvent.get( pos ) );
-        pos += IDS_EVENT_IMPACT_SIZE;
-        
-		ipsEvent.setBlocked( (short) bufIdsEvent.get( pos ) );
+
+        // We originally implemented the parser to work with Snort's version of unified2.
+        // When converting to Suricata, we decided that we'd already built the parser, so
+        // why re-invent the wheel parsing one of their other log formats?
+        // Hoever, we discovered that Suricata did not implement the following two fields.
+        //
+        // ipsEvent.setImpactFlag( (short) bufIdsEvent.get( pos ) );
+        // pos += IDS_EVENT_IMPACT_FLAG_SIZE;
+        //
+        // ipsEvent.setImpact( (short) bufIdsEvent.get( pos ) );
+        // pos += IDS_EVENT_IMPACT_SIZE;
+        //
+		ipsEvent.setBlocked( bufIdsEvent.get( pos ) != 0 ? true : false );
         pos += IDS_EVENT_BLOCKED_SIZE;
   
         if( ( ipsEvent.getEventType() == IntrusionPreventionSnortUnified2SerialHeader.TYPE_IDS_EVENT_V2 ) ||
@@ -403,16 +445,20 @@ public class IntrusionPreventionSnortUnified2Parser
             pos += IDS_EVENTV2_PADDING_SIZE;
         }
 
-        IntrusionPreventionEventMapRule mapRule = ipsEventMap.getRuleBySignatureAndGeneratorId( ipsEvent.getSignatureId(), ipsEvent.getGeneratorId() );
-        if( mapRule != null ){
-            ipsEvent.setMsg( mapRule.getMsg() );
-            ipsEvent.setClasstype( mapRule.getClasstype() );
-            ipsEvent.setCategory( mapRule.getCategory() );
+        IntrusionPreventionEventMapSignature mapSignature = ipsEventMap.getSignatureBySignatureAndGeneratorId( ipsEvent.getSignatureId(), ipsEvent.getGeneratorId() );
+        if( mapSignature != null ){
+            ipsEvent.setMsg( mapSignature.getMsg() );
+            ipsEvent.setClasstype( mapSignature.getClasstype() );
+            ipsEvent.setCategory( mapSignature.getCategory() );
+            ipsEvent.setRid( mapSignature.getRid() );
         }
 
         return ipsEvent;
 	}
 
+    /**
+     * For any other snort event we can't determine, skip to the next position.
+     */
 	public void parseSkip()
     {
 		try {

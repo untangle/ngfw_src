@@ -1,0 +1,8 @@
+"""
+IntrusionPrevention modules
+"""
+from intrusion_prevention.suricata_conf import SuricataConf
+from intrusion_prevention.suricata_signature import SuricataSignature
+from intrusion_prevention.suricata_signatures import SuricataSignatures
+from intrusion_prevention.intrusion_prevention_event_map import IntrusionPreventionEventMap
+from intrusion_prevention.intrusion_prevention_rule import IntrusionPreventionRule

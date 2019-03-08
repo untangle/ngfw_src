@@ -14,8 +14,8 @@ addressPool = get_app_settings_item("ipsec-vpn", "virtualAddressPool")
 
 # If not found we remove any existing interface status file and exit
 if addressPool == None:
-    if os.path.exists("/var/lib/untangle-netd/interface-251-status.js"):
-        os.remove("/var/lib/untangle-netd/interface-251-status.js")
+    if os.path.exists("/var/lib/interface-status/interface-251-status.js"):
+        os.remove("/var/lib/interface-status/interface-251-status.js")
     sys.exit(0)
 
 # We have good config data so use the first address for the server
@@ -24,7 +24,7 @@ serverAddress = str(network[1])
 blockSize = str(network.prefixlen)
 blockMask = str(network.netmask)
 
-file = open("/var/lib/untangle-netd/interface-251-status.js", "w");
+file = open("/var/lib/interface-status/interface-251-status.js", "w");
 file.write("{");
 file.write("\"javaClass\": \"com.untangle.uvm.network.InterfaceStatus\", ");
 file.write("\"v4Address\": \"" + serverAddress + "\", ");
@@ -39,8 +39,8 @@ networkPool = get_app_settings_item("ipsec-vpn", "virtualNetworkPool")
 
 # If not found we remove any existing interface status file and exit
 if networkPool == None:
-    if os.path.exists("/var/lib/untangle-netd/interface-253-status.js"):
-        os.remove("/var/lib/untangle-netd/interface-253-status.js")
+    if os.path.exists("/var/lib/interface-status/interface-253-status.js"):
+        os.remove("/var/lib/interface-status/interface-253-status.js")
     sys.exit(0)
 
 # We have good config data so use the first address for the server
@@ -49,7 +49,7 @@ serverAddress = str(network[1])
 blockSize = str(network.prefixlen)
 blockMask = str(network.netmask)
 
-file = open("/var/lib/untangle-netd/interface-253-status.js", "w");
+file = open("/var/lib/interface-status/interface-253-status.js", "w");
 file.write("{");
 file.write("\"javaClass\": \"com.untangle.uvm.network.InterfaceStatus\", ");
 file.write("\"v4Address\": \"" + serverAddress + "\", ");

@@ -1,11 +1,18 @@
 /**
  * $Id: ApplicationControlStatus.java 37325 2014-03-04 19:37:11Z dmorris $
  */
+
 package com.untangle.app.application_control;
 
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import org.apache.log4j.Logger;
-import java.nio.ByteBuffer;
+
+/**
+ * Class to track the classification status of a network session.
+ * 
+ * @author mahotz
+ * 
+ */
 
 public class ApplicationControlStatus
 {
@@ -33,7 +40,15 @@ public class ApplicationControlStatus
     public boolean tarpit;
     public int modcount;
     public int chunkCount;
-    
+
+    /**
+     * Constructor
+     * 
+     * @param sessionInfo
+     *        The sessionn information
+     * @param ipr
+     *        The IP session request
+     */
     public ApplicationControlStatus(String sessionInfo, IPNewSessionRequest ipr)
     {
         this.sessionInfo = sessionInfo;
@@ -72,10 +87,18 @@ public class ApplicationControlStatus
         this.chunkCount = 0;
     }
 
-// THIS IS FOR ECLIPSE - @formatter:off
-
+    /**
+     * Function to update a status record with the status information returned
+     * from the classd daemon
+     * 
+     * @param traffic
+     *        The status string received from the classd daemon
+     * @return The status of the update operation
+     */
     public StatusCode updateStatus(String traffic)
     {
+        // THIS IS FOR ECLIPSE - @formatter:off
+        
     /*
         The daemon will give us the status in the following format
         ----------------------------------------------------------
@@ -92,7 +115,7 @@ public class ApplicationControlStatus
         EMPTY: 1234567890
     */
 
-// THIS IS FOR ECLIPSE - @formatter:on
+        // THIS IS FOR ECLIPSE - @formatter:on
 
         String application;
         String protochain;
@@ -101,9 +124,8 @@ public class ApplicationControlStatus
         int state;
 
         // first we look for an empty response
-        if (traffic.startsWith("EMPTY: ") == true)
-            return (StatusCode.EMPTY);
-        
+        if (traffic.startsWith("EMPTY: ") == true) return (StatusCode.EMPTY);
+
         if (traffic.indexOf('\0') >= 0) {
             logger.warn("Detected NULL characters: " + traffic);
             return (StatusCode.EMPTY);
@@ -114,28 +136,23 @@ public class ApplicationControlStatus
         // strings below so the substring will go to the right offset
         String appStr = "APPLICATION: ";
         int appLoc = traffic.indexOf(appStr);
-        if (appLoc < 0)
-            return (StatusCode.FAILURE);
+        if (appLoc < 0) return (StatusCode.FAILURE);
 
         String protoStr = "PROTOCHAIN: ";
         int protoLoc = traffic.indexOf(protoStr);
-        if (protoLoc < 0)
-            return (StatusCode.FAILURE);
+        if (protoLoc < 0) return (StatusCode.FAILURE);
 
         String detailStr = "DETAIL: ";
         int detailLoc = traffic.indexOf(detailStr);
-        if (detailLoc < 0)
-            return (StatusCode.FAILURE);
+        if (detailLoc < 0) return (StatusCode.FAILURE);
 
         String confStr = "CONFIDENCE: ";
         int confLoc = traffic.indexOf(confStr);
-        if (confLoc < 0)
-            return (StatusCode.FAILURE);
+        if (confLoc < 0) return (StatusCode.FAILURE);
 
         String stateStr = "STATE: ";
         int stateLoc = traffic.indexOf(stateStr);
-        if (stateLoc < 0)
-            return (StatusCode.FAILURE);
+        if (stateLoc < 0) return (StatusCode.FAILURE);
 
         // extract each of the fields from the response
         application = traffic.substring(appLoc + appStr.length(), traffic.indexOf("\r\n", appLoc));
@@ -173,6 +190,11 @@ public class ApplicationControlStatus
         return (StatusCode.FOUND);
     }
 
+    /**
+     * Used to determine if the record has been changed
+     * 
+     * @return The number of modifications since the last call to this function
+     */
     public int getChangeCount()
     {
         int modcount = this.modcount;
@@ -180,6 +202,9 @@ public class ApplicationControlStatus
         return (modcount);
     }
 
+    /**
+     * @return A String representation of this object used for logging
+     */
     public String toString()
     {
         String string = new String();

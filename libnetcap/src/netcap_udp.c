@@ -63,9 +63,8 @@ int  netcap_udp_init ()
     if (setsockopt(_udp_send_sock, SOL_SOCKET, SO_BROADCAST,&one, sizeof(one)) < 0) {
         return perrlog ( "setsockopt" );
     }
-    if ( IP_TRANSPARENT_VALUE() != 0 ) {
-        if (setsockopt(_udp_send_sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one)) < 0) 
-            return perrlog ( "setsockopt" );
+    if (setsockopt(_udp_send_sock, SOL_IP, IP_TRANSPARENT,&one, sizeof(one)) < 0) {
+        return perrlog ( "setsockopt" );
     }
     
     return 0;
@@ -265,8 +264,8 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     cmsg->cmsg_type  = IP_TOS;
     if ( IS_NEW_KERNEL() >= 316 ) {
         tos_len   = CMSG_LEN(sizeof(int));
-        cmsg->cmsg_len   = tos_len;
         tos_val   = pkt->tos;
+        cmsg->cmsg_len   = tos_len;
         memcpy( CMSG_DATA(cmsg), &tos_val, tos_len );
     }
     else {
@@ -307,6 +306,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->src.port));
     cmsg->cmsg_level = SOL_UDP;
+    // this options is available through custom extensions untangle kernel patch
     cmsg->cmsg_type  = UDP_SPORT;
     sport = htons(pkt->src.port);
     memcpy( CMSG_DATA(cmsg),&sport,sizeof(pkt->src.port) );
@@ -319,6 +319,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(nfmark));
     cmsg->cmsg_level = SOL_IP;
+    // this options is available through custom extensions untangle kernel patch
     cmsg->cmsg_type  = IP_SENDNFMARK_VALUE();
     memcpy( CMSG_DATA( cmsg ), &nfmark, sizeof(nfmark) );
 
@@ -330,6 +331,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
     cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->src.host));
     cmsg->cmsg_level = SOL_IP;
+    // this options is available through custom extensions untangle kernel patch
     cmsg->cmsg_type  = IP_SADDR_VALUE();
     memcpy( CMSG_DATA(cmsg),&pkt->src.host,sizeof(pkt->src.host) );
 

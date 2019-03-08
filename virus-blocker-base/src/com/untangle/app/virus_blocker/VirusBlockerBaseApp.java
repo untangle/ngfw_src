@@ -1,14 +1,13 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.app.virus_blocker;
 
 import static com.untangle.uvm.util.Ascii.CRLF;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,6 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.HeaderToken;
 
@@ -83,13 +81,36 @@ public abstract class VirusBlockerBaseApp extends AppBase
     private Date lastSignatureUpdate = new Date();
     private String signatureVersion = "";
 
-    private boolean fileScannerAvailable = true;
+    protected boolean fileScannerAvailable = true;
     private VirusSettings settings;
 
     /* This can't be static because it uses policy which is per app */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher()
     {
-        /* Kill all FTP, HTTP, SMTP, sessions */
+        /**
+         * Session matcher checker and handler where we kill all FTP, HTTP, and
+         * SMTP sessions
+         * 
+         * @param policyId
+         *        The policy ID
+         * @param protocol
+         *        The protocol
+         * @param clientIntf
+         *        The client interface
+         * @param serverIntf
+         *        The server interface
+         * @param clientAddr
+         *        The client address
+         * @param serverAddr
+         *        The server address
+         * @param clientPort
+         *        The client port
+         * @param serverPort
+         *        The server port
+         * @param attachments
+         *        Session attachments
+         * @return True if the session should be terminated, otherwise false
+         */
         public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
         {
             /* Only look at TCP sessions */
@@ -111,9 +132,15 @@ public abstract class VirusBlockerBaseApp extends AppBase
         }
     };
 
-    // constructors -----------------------------------------------------------
-
-    public VirusBlockerBaseApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
+    /**
+     * Constructor
+     * 
+     * @param appSettings
+     *        The application settings
+     * @param appProperties
+     *        The application properties
+     */
+    public VirusBlockerBaseApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
         super(appSettings, appProperties);
 
@@ -133,108 +160,221 @@ public abstract class VirusBlockerBaseApp extends AppBase
         this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http", this, null, virusHttpHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, getHttpStrength(), isPremium());
         this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp", this, null, virusSmtpHandler, Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, getSmtpStrength(), isPremium());
         this.connectors = new PipelineConnector[] { virusFtpCtl, virusFtpData, virusHttp, virusSmtp };
-
-        // if the bdamserver package is not installed we set our special flag
-        try {
-            File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
-            if (daemonCheck.exists() == false) {
-                fileScannerAvailable = false;
-            }
-        } catch (Exception exn) {
-            fileScannerAvailable = false;
-        }
-
         this.replacementGenerator = new VirusReplacementGenerator(getAppSettings());
 
         String appName = getName();
     }
 
-    // VirusApp methods -------------------------------------------------
+    /**
+     * Get the application settings
+     * 
+     * @return The application settings
+     */
     public VirusSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Set the application settings
+     * 
+     * @param newSettings
+     *        The new settings
+     */
     public void setSettings(VirusSettings newSettings)
     {
         _setSettings(newSettings);
     }
 
+    /**
+     * Get the list of HTTP file extensions
+     * 
+     * @return The list of extensions
+     */
     public List<GenericRule> getHttpFileExtensions()
     {
         return settings.getHttpFileExtensions();
     }
 
+    /**
+     * Set the list of HTTP file extensions
+     * 
+     * @param fileExtensions
+     *        The list of extensions
+     */
     public void setHttpFileExtensions(List<GenericRule> fileExtensions)
     {
         settings.setHttpFileExtensions(fileExtensions);
         _setSettings(settings);
     }
 
+    /**
+     * Get the HTTP mime types
+     * 
+     * @return The list of mime types
+     */
     public List<GenericRule> getHttpMimeTypes()
     {
         return settings.getHttpMimeTypes();
     }
 
+    /**
+     * Set the HTTP mime types
+     * 
+     * @param mimeTypes
+     *        The list of mime types
+     */
     public void setHttpMimeTypes(List<GenericRule> mimeTypes)
     {
         settings.setHttpMimeTypes(mimeTypes);
         _setSettings(settings);
     }
 
+    /**
+     * Get the pass sites
+     * 
+     * @return The list of pass sites
+     */
     public List<GenericRule> getPassSites()
     {
         return settings.getPassSites();
     }
 
+    /**
+     * Get the pass sites
+     * 
+     * @param passSites
+     *        The list of pass sites
+     */
     public void setPassSites(List<GenericRule> passSites)
     {
         settings.setPassSites(passSites);
         _setSettings(settings);
     }
 
+    /**
+     * Get the virus block details
+     * 
+     * @param nonce
+     *        The nonce
+     * @return The details
+     */
     public VirusBlockDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
     }
 
+    /**
+     * Generate a nonce
+     * 
+     * @param details
+     *        The virus block details
+     * @return A nonce
+     */
     public String generateNonce(VirusBlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
     }
 
+    /**
+     * Generate a response
+     * 
+     * @param nonce
+     *        The nonce
+     * @param session
+     *        The session
+     * @param uri
+     *        The URI
+     * @return The response
+     */
     public Token[] generateResponse(String nonce, AppTCPSession session, String uri)
     {
         return replacementGenerator.generateResponse(nonce, session, uri, null);
     }
 
+    /**
+     * Generate a response
+     * 
+     * @param nonce
+     *        The nonce
+     * @param session
+     *        The session
+     * @param uri
+     *        The URI
+     * @param header
+     *        The header
+     * @return The response
+     */
     public Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
     {
         return replacementGenerator.generateResponse(nonce, session, uri, header);
     }
 
+    /**
+     * Get the date of the last virus signature update
+     * 
+     * @return The date of the last virus signature update
+     */
     public Date getLastSignatureUpdate()
     {
         return scanner.getLastSignatureUpdate();
     }
 
+    /**
+     * Checks to see if the local file scanner is available
+     * 
+     * @return True if available, otherwise false
+     */
     public boolean isFileScannerAvailable()
     {
         return fileScannerAvailable;
     }
 
+    /**
+     * Gets the HTTP strength
+     * 
+     * @return The HTTP strength
+     */
     protected abstract int getHttpStrength();
 
+    /**
+     * Gets the FTP strength
+     * 
+     * @return The FTP strength
+     */
     protected abstract int getFtpStrength();
 
+    /**
+     * Gets the SMTP strength
+     * 
+     * @return The SMTP strength
+     */
     protected abstract int getSmtpStrength();
 
+    /**
+     * Gets the name
+     * 
+     * @return The name
+     */
     public abstract String getName();
 
+    /**
+     * Gets the application name
+     * 
+     * @return The application name
+     */
     public abstract String getAppName();
 
+    /**
+     * Checks to see if application is free or premium
+     * 
+     * @return False for free, true for premium
+     */
     public abstract boolean isPremium();
 
+    /**
+     * Clear the cache for all event handlers
+     */
     public void clearAllEventHandlerCaches()
     {
         virusFtpCtlHandler.clearEventHandlerCache();
@@ -243,6 +383,9 @@ public abstract class VirusBlockerBaseApp extends AppBase
         virusSmtpHandler.clearEventHandlerCache();
     }
 
+    /**
+     * Applies application settings to all scanner systems
+     */
     public void reconfigure()
     {
         virusHttp.setEnabled(settings.getScanHttp());
@@ -251,12 +394,20 @@ public abstract class VirusBlockerBaseApp extends AppBase
         virusFtpData.setEnabled(settings.getScanFtp());
     }
 
+    /**
+     * Get the pipeline connectors
+     * 
+     * @return The pipeline connectors
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Initialize the application settings
+     */
     public void initializeSettings()
     {
         VirusSettings vs = new VirusSettings();
@@ -267,14 +418,35 @@ public abstract class VirusBlockerBaseApp extends AppBase
         setSettings(vs);
     }
 
+    /**
+     * Initialize the mime types
+     * 
+     * @param vs
+     *        The virus settings
+     */
     private void initMimeTypes(VirusSettings vs)
     {
         List<GenericRule> s = new LinkedList<GenericRule>();
         s.add(new GenericRule("message/*", "messages", "misc", null, true));
+        s.add(new GenericRule("application/zip", "application", "zip", null, true));
+        s.add(new GenericRule("application/x-tar", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-gz", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-gzip", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-compressed", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-zip-compressed", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-rar-compressed", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-7z-compressed", "application", "compressed", null, true));
+        s.add(new GenericRule("application/octet-stream", "application", "octet", null, false));
 
         vs.setHttpMimeTypes(s);
     }
 
+    /**
+     * Initialize the pass sites
+     * 
+     * @param vs
+     *        The virus settings
+     */
     private void initPassSites(VirusSettings vs)
     {
         List<GenericRule> s = new LinkedList<GenericRule>();
@@ -286,6 +458,12 @@ public abstract class VirusBlockerBaseApp extends AppBase
         vs.setPassSites(s);
     }
 
+    /**
+     * Initialize the file extensions
+     * 
+     * @param vs
+     *        The virus settings
+     */
     private void initFileExtensions(VirusSettings vs)
     {
         List<GenericRule> s = new LinkedList<GenericRule>();
@@ -293,7 +471,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
         s.add(new GenericRule("exe", "executable", "download", null, true));
         s.add(new GenericRule("com", "executable", "download", null, true));
         s.add(new GenericRule("ocx", "executable", "ActiveX", null, true));
-        s.add(new GenericRule("dll", "executable", "ActiveX", null, false));
+        s.add(new GenericRule("dll", "executable", "ActiveX", null, true));
         s.add(new GenericRule("cab", "executable", "ActiveX", null, true));
         s.add(new GenericRule("bin", "executable", "download", null, true));
         s.add(new GenericRule("bat", "executable", "download", null, true));
@@ -306,6 +484,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
         s.add(new GenericRule("vbe", "script", "download", null, true));
         s.add(new GenericRule("vbs", "script", "download", null, true));
         s.add(new GenericRule("zip", "archive", "download", null, true));
+        s.add(new GenericRule("7z", "archive", "download", null, true));
         s.add(new GenericRule("eml", "archive", "download", null, true));
         s.add(new GenericRule("hqx", "archive", "download", null, true));
         s.add(new GenericRule("rar", "archive", "download", null, true));
@@ -334,6 +513,9 @@ public abstract class VirusBlockerBaseApp extends AppBase
         vs.setHttpFileExtensions(s);
     }
 
+    /**
+     * Called after the application has been initialized
+     */
     @Override
     protected void postInit()
     {
@@ -368,14 +550,26 @@ public abstract class VirusBlockerBaseApp extends AppBase
         }
     }
 
-    protected void preStart( boolean isPermanentTransition )
+    /**
+     * Called before the application is started
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    protected void preStart(boolean isPermanentTransition)
     {
         deployWebAppIfRequired(logger);
 
         reconfigure();
     }
 
-    protected void postStart( boolean isPermanentTransition )
+    /**
+     * Called after the application is started
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    protected void postStart(boolean isPermanentTransition)
     {
         /**
          * killall sessions on HTTP, FTP, etc This is so it blocks viruses
@@ -384,23 +578,43 @@ public abstract class VirusBlockerBaseApp extends AppBase
         killMatchingSessionsGlobal(VIRUS_SESSION_MATCHER);
     }
 
-    protected void postStop( boolean isPermanentTransition )
+    /**
+     * Called after the application is stopped
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    protected void postStop(boolean isPermanentTransition)
     {
         unDeployWebAppIfRequired(logger);
     }
 
-    // package protected methods ----------------------------------------------
-
+    /**
+     * Gets the virus scanner
+     * 
+     * @return The virus scanner
+     */
     protected VirusScanner getScanner()
     {
         return scanner;
     }
 
+    /**
+     * Sets the virus scanner
+     * 
+     * @param scanner
+     *        The scanner
+     */
     protected void setScanner(VirusScanner scanner)
     {
         this.scanner = scanner;
     }
-    
+
+    /**
+     * Gets the trickle rate percentage
+     * 
+     * @return The trickle rate percentage
+     */
     protected int getTricklePercent()
     {
         return TRICKLE_RATE;
@@ -447,6 +661,12 @@ public abstract class VirusBlockerBaseApp extends AppBase
         this.incrementMetric(STAT_PASS_POLICY);
     }
 
+    /**
+     * Deploy the web application
+     * 
+     * @param logger
+     *        The logger
+     */
     private static synchronized void deployWebAppIfRequired(Logger logger)
     {
         if (deployCount == 0) {
@@ -460,6 +680,12 @@ public abstract class VirusBlockerBaseApp extends AppBase
         deployCount++;
     }
 
+    /**
+     * Undeploy the web application
+     * 
+     * @param logger
+     *        The logger
+     */
     private static synchronized void unDeployWebAppIfRequired(Logger logger)
     {
         deployCount--;
@@ -476,6 +702,9 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Set the current settings to new Settings And save the settings to disk
+     * 
+     * @param newSettings
+     *        The new settings
      */
     protected void _setSettings(VirusSettings newSettings)
     {

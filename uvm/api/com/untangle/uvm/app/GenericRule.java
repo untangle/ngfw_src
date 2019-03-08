@@ -1,10 +1,14 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.uvm.app;
 
+/**
+ * Generic rule 
+ */
 @SuppressWarnings("serial")
-public class GenericRule extends BaseRule implements java.io.Serializable
+public class GenericRule extends BaseRule implements java.io.Serializable, org.json.JSONString
 {
     String string = null;
     Object attachment = null;
@@ -43,5 +47,11 @@ public class GenericRule extends BaseRule implements java.io.Serializable
     public void setString(String string)
     {
         this.string = string;
+    }
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }

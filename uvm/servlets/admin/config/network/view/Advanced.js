@@ -1,9 +1,9 @@
 Ext.define('Ung.config.network.view.Advanced', {
     extend: 'Ext.panel.Panel',
-
-    alias: 'widget.config.network.advanced',
-
+    alias: 'widget.config-network-advanced',
+    itemId: 'advanced',
     viewModel: true,
+    scrollable: true,
 
     title: 'Advanced'.t(),
 
@@ -18,18 +18,15 @@ Ext.define('Ung.config.network.view.Advanced', {
 
     items: [{
         xtype: 'tabpanel',
-
-        // tabPosition: 'left',
-        // tabRotation: 0,
-        // tabStretchMax: true,
+        itemId: 'advanced',
 
         items: [{
             title: 'Options'.t(),
+            itemId: 'options',
             padding: 10,
+            scrollable: true,
             defaults: {
                 xtype: 'checkbox',
-                // labelWidth: 250,
-                // labelAlign: 'right'
             },
             items: [{
                 boxLabel: 'Enable SIP NAT Helper'.t(),
@@ -51,7 +48,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                 bind: '{settings.blockDuringRestarts}'
             }, {
                 boxLabel: 'Block replay packets'.t(),
-                bind: '{settings.blockReplayPackets}'
+                bind: '{settings.blockReplayPackets}',
+                hidden: !Rpc.directData('rpc.isExpertMode'),
             }, {
                 boxLabel: 'Log bypassed sessions'.t(),
                 bind: '{settings.logBypassedSessions}'
@@ -67,12 +65,12 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             title: 'QoS'.t(),
-
+            itemId: 'qos',
+            scrollable: true,
             items: [{
                 xtype: 'combo',
                 fieldLabel: 'Queue Discipline'.t(),
                 labelAlign: 'right',
-                padding: 5,
                 width: 400,
                 bind: {
                     store: '{queueDisciplineStore}',
@@ -82,45 +80,47 @@ Ext.define('Ung.config.network.view.Advanced', {
                 editable: false
             }, {
                 xtype: 'checkbox',
-                padding: 5,
                 fieldLabel: 'QoS Enabled'.t(),
                 labelAlign: 'right',
                 bind: '{settings.qosSettings.qosEnabled}'
             }, {
                 xtype: 'combo',
-                padding: 5,
                 fieldLabel: 'Default Priority'.t(),
                 labelAlign: 'right',
+                hidden: true,
                 bind: {
                     store: '{qosPriorityNoDefaultStore}',
                     value: '{settings.qosSettings.defaultPriority}',
-                    disabled: '{!settings.qosSettings.qosEnabled}'
+                    disabled: '{!settings.qosSettings.qosEnabled}',
+                    hidden: '{!settings.qosSettings.qosEnabled}'
                 },
                 queryMode: 'local',
                 editable: false
             }, {
                 xtype: 'tabpanel',
-                // tabPosition: 'left',
-                // tabRotation: 0,
-                // tabStretchMax: false,
+                itemId: 'qos',
                 layout: 'fit',
                 disabled: true,
+                hidden: true,
                 bind: {
-                    disabled: '{!settings.qosSettings.qosEnabled}'
+                    disabled: '{!settings.qosSettings.qosEnabled}',
+                    hidden: '{!settings.qosSettings.qosEnabled}'
                 },
                 items: [{
-                    xtype: 'grid', // normal grid because uses a chained store
+                    xtype: 'ungrid',
+                    itemId: 'bandwidth',
                     title: 'WAN Bandwidth'.t(),
-                    // bodyPadding: 10,
+                    scrollable: true,
                     tbar: [{
                         xtype: 'tbtext',
                         padding: '8 5',
                         style: { fontSize: '12px' },
                         html: Ext.String.format('{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>'
-                        // Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d_Mbit, u, u_Mbit )
                     }],
 
                     listProperty: 'settings.interfaces.list',
+
+                    emptyText: 'No WAN Bandwidth defined'.t(),
 
                     bind: '{wanInterfaces}',
 
@@ -140,48 +140,47 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                     columns: [{
                         header: 'Id'.t(),
-                        width: 70,
+                        width: Renderer.idWidth,
                         align: 'right',
                         dataIndex: 'interfaceId'
                     }, {
                         header: 'WAN'.t(),
+                        width: Renderer.messageidth,
                         flex: 1,
                         dataIndex: 'name'
                     }, {
                         header: 'Config Type'.t(),
                         dataIndex: 'configType',
-                        width: 150
+                        width: Renderer.messageWidth,
+                        renderer: Ung.config.network.MainController.addressedRenderer
                     }, {
                         header: 'Download Bandwidth'.t(),
                         dataIndex: 'downloadBandwidthKbps',
-                        width: 250,
+                        width: Renderer.messageWidth,
                         editor: {
                             xtype: 'numberfield',
                             allowBlank : true,
                             allowDecimals: false,
                             minValue: 0
                         },
-                        renderer: function (value) {
-                            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
-                        }
+                        renderer: Ung.config.network.MainController.qosBandwidthRenderer
                     }, {
                         header: 'Upload Bandwidth'.t(),
                         dataIndex: 'uploadBandwidthKbps',
-                        width: 250,
+                        width: Renderer.messageWidth,
                         editor: {
                             xtype: 'numberfield',
                             allowBlank : true,
                             allowDecimals: false,
                             minValue: 0
                         },
-                        renderer: function (value) {
-                            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
-                        }
+                        renderer: Ung.config.network.MainController.qosBandwidthRenderer
                     }]
                 }, {
                     xtype: 'panel',
+                    itemId: 'rules',
                     title: 'QoS Rules'.t(),
-                    // bodyPadding: 10,
+                    scrollable: true,
 
                     layout: {
                         type: 'vbox',
@@ -230,20 +229,21 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }, {
                         xtype: 'ungrid',
                         title: 'QoS Custom Rules'.t(),
+                        scrollable: true,
 
                         border: false,
 
                         tbar: ['@add', '->', {
                             xtype: 'tbtext',
-                            padding: '8 5',
                             style: { fontSize: '12px' },
                             html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
-                        }],
+                        }, '@import', '@export'],
 
                         recordActions: ['edit', 'delete', 'reorder'],
 
+                        emptyText: 'No QOS Rules defined'.t(),
+
                         listProperty: 'settings.qosSettings.qosRules.list',
-                        ruleJavaClass: 'com.untangle.uvm.network.QosRuleCondition',
 
                         emptyRow: {
                             ruleId: -1,
@@ -257,73 +257,61 @@ Ext.define('Ung.config.network.view.Advanced', {
                             }
                         },
 
-                        conditions: [
-                            Condition.dstLocal,
-                            Condition.dstAddr,
-                            Condition.dstPort,
-                            Condition.protocol([['TCP','TCP'], ['UDP','UDP']]),
-                            Condition.srcIntf,
-                            Condition.srcAddr,
-                            Condition.srcPort
-                        ],
-
                         label: 'Perform the following action(s):'.t(),
 
                         bind: '{qosRules}',
 
                         columns: [{
                             header: 'Rule Id'.t(),
-                            width: 70,
+                            width: Renderer.idWidth,
                             align: 'right',
                             resizable: false,
                             dataIndex: 'ruleId',
-                            renderer: function(value) {
-                                return value < 0 ? 'new'.t() : value;
-                            }
+                            renderer: Renderer.id
                         }, {
                             xtype: 'checkcolumn',
                             header: 'Enable'.t(),
                             dataIndex: 'enabled',
                             resizable: false,
-                            width: 70
+                            width: Renderer.booleanWidth,
                         }, {
                             header: 'Description',
-                            width: 200,
-                            dataIndex: 'description',
-                            renderer: function (value) {
-                                return value || '<em>no description<em>';
-                            }
-                        }, {
-                            header: 'Conditions'.t(),
-                            flex: 1,
-                            dataIndex: 'conditions',
-                            renderer: 'conditionsRenderer'
-                        }, {
+                            width: Renderer.messageWidth,
+                            dataIndex: 'description'
+                        },
+                        Column.conditions,
+                        {
                             header: 'Priority'.t(),
-                            width: 100,
+                            width: Renderer.priorityWidth,
                             dataIndex: 'priority',
-                            renderer: function (value) {
-                                switch (value) {
-                                  case 1: return 'Very High'.t();
-                                  case 2: return 'High'.t();
-                                  case 3: return 'Medium'.t();
-                                  case 4: return 'Low'.t();
-                                  case 5: return 'Limited'.t();
-                                  case 6: return 'Limited More'.t();
-                                  case 7: return 'Limited Severely'.t();
-                                }
-                            }
+                            renderer: Ung.config.network.MainController.qosPriorityRenderer
                         }],
                         editorFields: [
                             Field.enableRule(),
                             Field.description,
-                            Field.conditions,
+                            Field.conditions(
+                                'com.untangle.uvm.network.QosRuleCondition', [
+                                'DST_LOCAL',
+                                'DST_ADDR',
+                                'DST_PORT',
+                                {
+                                    name: 'PROTOCOL',
+                                    values: [["TCP","TCP"],["UDP","UDP"]]
+                                },
+                                'SRC_INTF',
+                                'SRC_ADDR',
+                                'SRC_PORT',
+                                'CLIENT_TAGGED',
+                                'SERVER_TAGGED'
+                            ]),
                             Field.priority
                         ]
                     }]
                 }, {
-                    xtype: 'grid',
+                    xtype: 'ungrid',
+                    itemId: 'priorities',
                     title: 'QoS Priorities'.t(),
+                    scrollable: true,
 
                     bind: '{qosPriorities}',
 
@@ -342,225 +330,123 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                     columns: [{
                         header: 'Priority'.t(),
-                        width: 150,
+                        width: Renderer.priorityWidth,
+                        flex: 1,
                         align: 'right',
                         dataIndex: 'priorityName',
-                        renderer: function (value) {
-                            return value.t();
-                        }
+                        // renderer: function (value) {
+                        //     return value.t();
+                        // }
+                        renderer: Renderer.localized
                     }, {
                         header: 'Upload Reservation'.t(),
                         dataIndex: 'uploadReservation',
-                        width: 150,
+                        flex: 1,
+                        width: Renderer.messageWidth,
                         editor : {
                             xtype: 'numberfield',
                             allowBlank : false,
                             minValue : 0.1,
                             maxValue : 100
                         },
-                        renderer: function (value, metadata, record) {
-                            return value === 0 ? 'No reservation' : value + '%';
-                        }
+                        renderer: Ung.config.network.MainController.qosPriorityReserverationRenderer
                     }, {
                         header: 'Upload Limit'.t(),
                         dataIndex: 'uploadLimit',
-                        width: 150,
+                        width: Renderer.messageWidth,
+                        flex: 1,
                         editor : {
                             xtype: 'numberfield',
                             allowBlank : false,
                             minValue : 0.1,
                             maxValue : 100
                         },
-                        renderer: function (value, metadata, record) {
-                            return value === 0 ? 'No reservation' : value + '%';
-                        }
+                        renderer: Ung.config.network.MainController.qosPriorityLimitRenderer
                     }, {
                         header: 'Download Reservation'.t(),
                         dataIndex: 'downloadReservation',
-                        width: 150,
+                        width: Renderer.messageWidth,
+                        flex: 1,
                         editor : {
                             xtype: 'numberfield',
                             allowBlank : false,
                             minValue : 0.1,
                             maxValue : 100
                         },
-                        renderer: function (value, metadata, record) {
-                            return value === 0 ? 'No reservation' : value + '%';
-                        }
+                        renderer: Ung.config.network.MainController.qosPriorityReserverationRenderer
                     }, {
                         header: 'Download Limit'.t(),
                         dataIndex: 'downloadLimit',
-                        width: 150,
+                        width: Renderer.messageWidth,
+                        flex: 1,
                         editor : {
                             xtype: 'numberfield',
                             allowBlank : false,
                             minValue : 0.1,
                             maxValue : 100
                         },
-                        renderer: function (value, metadata, record) {
-                            return value === 0 ? 'No limit' : value + '%';
-                        }
-                    }, {
-                        flex: 1
+                        renderer: Ung.config.network.MainController.qosPriorityLimitRenderer
                     }]
                 }, {
-                    xtype: 'grid',
-                    itemId: 'qosStatistics',
+                    xtype: 'ungrid',
+                    itemId: 'qos_statistics',
                     title: 'QoS Statistics'.t(),
                     groupField:'interface_name',
+                    scrollable: true,
 
                     columnLines: true,
                     enableColumnHide: false,
 
-                    store: {
-                        data: [] // todo: to set data
-                    },
+                    bind: '{qosStatistics}',
 
-
-                    viewConfig: {
-                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-                    },
+                    emptyText: 'No QOS Statistics available'.t(),
 
                     tbar: [{
                         text: 'Refresh'.t(),
                         iconCls: 'fa fa-refresh',
-                        handler: 'refreshQosStatistics'
+                        handler: 'externalAction',
+                        action: 'refreshQosStatistics'
                     }],
 
                     columns: [{
                         header: 'Interface'.t(),
-                        width: 150,
-                        dataIndex: 'interface_name',
-                        renderer: function (value) {
-                            return value.t();
-                        }
+                        width: Renderer.messageWidth,
+                        flex: 1,
+                        dataIndex: 'interface_name'
                     }, {
                         header: 'Priority'.t(),
                         dataIndex: 'priority',
-                        width: 150
+                        flex: 1,
+                        width: Renderer.priorityWidth,
                     }, {
                         header: 'Data'.t(),
                         dataIndex: 'sent',
-                        width: 150,
-                    }, {
-                        flex: 1
+                        flex: 1,
+                        width: Renderer.sizeWidth,
+                        renderer: Renderer.datasize
                     }]
                 }]
             }],
         }, {
-            title: 'Filter Rules'.t(),
-            layout: 'border',
+            title: 'Access Rules'.t(),
+            itemId: 'access_rules',
+            layout: 'fit',
+            scrollable: true,
 
             items: [{
-                xtype: 'ungrid',
-                region: 'center',
-                title: 'Forward Filter Rules'.t(),
-
-                tbar: ['@add'],
-                recordActions: ['edit', 'delete', 'reorder'],
-
-                listProperty: 'settings.forwardFilterRules.list',
-                ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
-
-                conditions: [
-                    Condition.dstLocal,
-                    Condition.dstAddr,
-                    Condition.dstPort,
-                    Condition.dstIntf,
-                    Condition.srcMac,
-                    Condition.srcAddr,
-                    Condition.srcPort,
-                    Condition.srcIntf,
-                    Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
-                ],
-
-                emptyRow: {
-                    ruleId: -1,
-                    enabled: true,
-                    ipvsEnabled: false,
-                    description: '',
-                    javaClass: 'com.untangle.uvm.network.FilterRule',
-                    conditions: {
-                        javaClass: 'java.util.LinkedList',
-                        list: []
-                    },
-                    blocked: false
-                },
-
-                bind: '{forwardFilterRules}',
-
-                columns: [{
-                    header: 'Rule Id'.t(),
-                    width: 70,
-                    align: 'right',
-                    resizable: false,
-                    dataIndex: 'ruleId',
-                    renderer: function (value) {
-                        return value < 0 ? 'new'.t() : value;
-                    }
-                }, {
-                    xtype: 'checkcolumn',
-                    header: 'Enable'.t(),
-                    dataIndex: 'enabled',
-                    resizable: false,
-                    width: 70
-                }, {
-                    xtype: 'checkcolumn',
-                    header: 'IPv6'.t(),
-                    dataIndex: 'ipv6Enabled',
-                    resizable: false,
-                    width: 70
-                }, {
-                    header: 'Description',
-                    width: 200,
-                    dataIndex: 'description',
-                    renderer: function (value) {
-                        return value || '<em>no description<em>';
-                    }
-                }, {
-                    header: 'Conditions'.t(),
-                    flex: 1,
-                    dataIndex: 'conditions',
-                    renderer: 'conditionsRenderer'
-                }, {
-                    xtype: 'checkcolumn',
-                    header: 'Block'.t(),
-                    dataIndex: 'blocked',
-                    resizable: false,
-                    width: 70
-                }],
-                editorFields: [
-                    Field.enableRule('Enable Forward Filter Rule'.t()),
-                    Field.enableIpv6,
-                    Field.description,
-                    Field.conditions,
-                    Field.blockedCombo
-                ]
-            }, {
                 xtype: 'ungrid',
                 region: 'south',
                 height: '70%',
                 split: true,
 
-                title: 'Input Filter Rules'.t(),
+                title: 'Access Rules'.t(),
 
-                tbar: ['@add'],
+                tbar: ['@add', '->', '@import', '@export'],
                 recordActions: ['edit', 'delete', 'reorder'],
 
-                listProperty: 'settings.inputFilterRules.list',
-                ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
+                emptyText: 'No Access Rules defined'.t(),
 
-                conditions: [
-                    Condition.dstLocal,
-                    Condition.dstAddr,
-                    Condition.dstPort,
-                    Condition.dstIntf,
-                    Condition.srcMac,
-                    Condition.srcAddr,
-                    Condition.srcPort,
-                    Condition.srcIntf,
-                    Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
-                ],
+                listProperty: 'settings.accessRules.list',
 
                 emptyRow: {
                     ruleId: -1,
@@ -576,47 +462,40 @@ Ext.define('Ung.config.network.view.Advanced', {
                     readOnly: false
                 },
 
-                bind: '{inputFilterRules}',
+                bind: '{accessRules}',
 
                 columns: [{
                     header: 'Rule Id'.t(),
-                    width: 70,
+                    width: Renderer.idWidth,
                     align: 'right',
                     resizable: false,
                     dataIndex: 'ruleId',
-                    renderer: function (value) {
-                        return value < 0 ? 'new'.t() : value;
-                    }
+                    renderer: Renderer.id
                 }, {
                     xtype: 'checkcolumn',
                     header: 'Enable'.t(),
                     dataIndex: 'enabled',
                     resizable: false,
-                    width: 70
+                    width: Renderer.booleanWidth,
                 }, {
                     xtype: 'checkcolumn',
                     header: 'IPv6'.t(),
                     dataIndex: 'ipv6Enabled',
                     resizable: false,
-                    width: 70
+                    width: Renderer.booleanWidth,
                 }, {
                     header: 'Description',
-                    width: 200,
+                    width: Renderer.messageWidth,
                     dataIndex: 'description',
-                    renderer: function (value) {
-                        return value || '<em>no description<em>';
-                    }
-                }, {
-                    header: 'Conditions'.t(),
-                    flex: 1,
-                    dataIndex: 'conditions',
-                    renderer: 'conditionsRenderer'
-                }, {
+                    flex: 1
+                },
+                Column.conditions,
+                {
                     xtype: 'checkcolumn',
                     header: 'Block'.t(),
                     dataIndex: 'blocked',
                     resizable: false,
-                    width: 70,
+                    width: Renderer.booleanWidth,
                     listeners: {
                         beforecheckchange: function (col, rowIndex, checked, record) {
                             if (record.get('readOnly')) {
@@ -627,201 +506,213 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }
                 }],
                 editorFields: [
-                    Field.enableRule('Enable Input Filter Rule'.t()),
+                    Field.enableRule('Enable Access Rule'.t()),
                     Field.enableIpv6,
                     Field.description,
-                    Field.conditions,
+                    Field.conditions(
+                        'com.untangle.uvm.network.FilterRuleCondition', [{
+                            // DST_LOCAL makes no sense on Access Rules because definitionally they are destined local
+                            // However, we used to allow users to add it so we keep this here so it renders correctly
+                            // but visible is false so it will not appear when creating new rules.
+                            name:"DST_LOCAL",
+                            visible: false
+                        },
+                        "DST_ADDR",
+                        "DST_PORT",
+                        "DST_INTF",
+                        "SRC_MAC",
+                        "SRC_ADDR",
+                        "SRC_PORT",
+                        "SRC_INTF",
+                        "PROTOCOL",
+                        "CLIENT_TAGGED",
+                        "SERVER_TAGGED"
+                    ]),
                     Field.blockedCombo
                 ]
             }]
         }, {
             title: 'UPnP'.t(),
-            layout: 'border',
+            itemId: 'upnp',
+            scrollable: true,
 
-            dockedItems: [{
-                xtype: 'toolbar',
-                dock: 'top',
-                items: [{
-                    xtype: 'checkbox',
-                    fieldLabel: 'Enabled'.t(),
-                    labelAlign: 'right',
-                    bind: '{settings.upnpSettings.upnpEnabled}'
-                }, {
-                    xtype: 'checkbox',
-                    fieldLabel: 'Secure Mode'.t(),
-                    labelAlign: 'right',
-                    disabled: true,
-                    bind: {
-                        value: '{settings.upnpSettings.secureMode}',
-                        disabled: '{!settings.upnpSettings.upnpEnabled}'
-                    }
-                }]
-            }],
-
-            items: [{
-                xtype: 'grid',
-                itemId: 'upnpStatus',
-                region: 'center',
-
-                title: 'Status'.t(),
-                enableColumnHide: false,
-                enableSorting: false,
-                forceFit: true,
-
-                viewConfig: {
-                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-                },
-
-                tbar: [{
-                    text: 'Refresh'.t(),
-                    iconCls: 'fa fa-refresh',
-                    handler: 'refreshUpnpStatus'
-                }],
-
-                disabled: true,
-                bind: {
-                    disabled: '{!settings.upnpSettings.upnpEnabled}'
-                },
-
-                store: {
-                    data: [] // todo: to set data
-                },
-
-                columns: [{
-                    header: 'Protocol'.t(),
-                    width: 100,
-                    dataIndex: 'upnp_protocol'
-                }, {
-                    header: 'Client IP Address'.t(),
-                    width: 150,
-                    dataIndex: 'upnp_client_ip_address'
-                }, {
-                    header: 'Client Port'.t(),
-                    width: 150,
-                    dataIndex: 'upnp_client_port'
-                }, {
-                    header: 'Destination Port'.t(),
-                    width: 150,
-                    dataIndex: 'upnp_destination_port'
-                }, {
-                    header: 'Bytes'.t(),
-                    flex: 1,
-                    dataIndex: 'bytes',
-                    renderer: function (value, metadata, record) {
-                        if (Ext.isEmpty(value)) {
-                            return 'Not set'.t();
-                        } else {
-                            var v = value;
-                            switch (value[value.length-1]) {
-                              case 'K':
-                                v = parseInt(value.substr(0,value.length - 1), 10);
-                                value = v * 1024;
-                                break;
-                              case 'M':
-                                v = parseInt(value.substr(0,value.length - 1), 10);
-                                value = v * 1024 * 1024;
-                                break;
-                            }
-                            value = value / 1000;
-                            var mbit_value = value/1000;
-                            return Number(value).toFixed(2) + ' kbps' + ' (' + Number(mbit_value).toFixed(2) + ' Mbit' + ')';
-                        }
-                    }
-                }, {
-                    xtype: 'actioncolumn',
-                    width: 60,
-                    header: 'Delete'.t(),
-                    align: 'center',
-                    resizable: false,
-                    tdCls: 'action-cell',
-                    iconCls: 'fa fa-trash-o fa-red'
-                }]
+            items:[{
+                xtype: 'checkbox',
+                fieldLabel: 'UPnP Enabled'.t(),
+                labelAlign: 'right',
+                bind: '{settings.upnpSettings.upnpEnabled}'
             }, {
-                xtype: 'ungrid',
-                region: 'south',
-                height: '50%',
-                split: true,
-                title: 'Access Control Rules'.t(),
-
-                tbar: ['@add'],
-                recordActions: ['edit', 'delete', 'reorder'],
-
-                listProperty: 'settings.upnpSettings.upnpRules.list',
-                ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
-
-                conditions: [
-                    Condition.dstPort,
-                    Condition.srcAddr,
-                    Condition.srcPort
-                ],
-
-                label: 'Perform the following action(s):'.t(),
-
-                emptyRow: {
-                    ruleId: -1,
-                    enabled: true,
-                    description: '',
-                    javaClass: 'com.untangle.uvm.network.UpnpRule',
-                    conditions: {
-                        javaClass: 'java.util.LinkedList',
-                        list: []
-                    },
-                    priority: 1,
-                    allow: true
-                },
-
+                xtype: 'checkbox',
+                fieldLabel: 'Secure Mode'.t(),
+                labelAlign: 'right',
                 disabled: true,
-
+                hidden: true,
                 bind: {
-                    store: '{upnpRules}',
-                    disabled: '{!settings.upnpSettings.upnpEnabled}'
+                    value: '{settings.upnpSettings.secureMode}',
+                    disabled: '{!settings.upnpSettings.upnpEnabled}',
+                    hidden: '{!settings.upnpSettings.upnpEnabled}'
+                }
+            },{
+                xtype: 'tabpanel',
+                itemId: 'upnp',
+                layout: 'fit',
+                disabled: true,
+                hidden: true,
+                bind: {
+                    disabled: '{!settings.upnpSettings.upnpEnabled}',
+                    hidden: '{!settings.upnpSettings.upnpEnabled}'
                 },
+                items: [{
+                    xtype: 'panel',
+                    itemId: 'status',
+                    title: 'Status'.t(),
+                    scrollable: true,
+                    items:[{
+                        xtype: 'ungrid',
+                        itemId: 'upnp_status',
+                        region: 'center',
 
-                columns: [{
-                    header: 'Rule Id'.t(),
-                    width: 70,
-                    align: 'right',
-                    resizable: false,
-                    dataIndex: 'ruleId',
-                    renderer: function(value) {
-                        return value < 0 ? 'new'.t() : value;
-                    }
-                }, {
-                    xtype: 'checkcolumn',
-                    header: 'Enable'.t(),
-                    dataIndex: 'enabled',
-                    resizable: false,
-                    width: 70
-                }, {
-                    header: 'Description',
-                    width: 200,
-                    dataIndex: 'description',
-                    renderer: function (value) {
-                        return value || '<em>no description<em>';
-                    }
-                }, {
-                    header: 'Conditions'.t(),
-                    flex: 1,
-                    dataIndex: 'conditions',
-                    renderer: 'conditionsRenderer'
-                }, {
-                    header: 'Action'.t(),
-                    width: 100,
-                    dataIndex: 'allow',
-                    renderer: function (value) {
-                        return value ? 'Allow'.t() : 'Deny'.t();
-                    }
-                }],
-                editorFields: [
-                    Field.enableRule(),
-                    Field.description,
-                    Field.conditions,
-                    Field.allow
-                ]
+                        enableColumnHide: false,
+                        enableSorting: false,
+
+                        emptyText: 'No UPnP Status available'.t(),
+
+                        tbar: [{
+                            text: 'Refresh'.t(),
+                            iconCls: 'fa fa-refresh',
+                            handler: 'externalAction',
+                            action: 'refreshUpnpStatus'
+                        }],
+
+                        disabled: true,
+                        hidden: true,
+                        bind: {
+                            store: '{upnpStatus}',
+                            disabled: '{!settings.upnpSettings.upnpEnabled}',
+                            hidden: '{!settings.upnpSettings.upnpEnabled}'
+                        },
+
+                        columns: [{
+                            header: 'Protocol'.t(),
+                            width: Renderer.protocolWidth,
+                            flex: 1,
+                            dataIndex: 'upnp_protocol'
+                        }, {
+                            header: 'Client IP Address'.t(),
+                            width: Renderer.ipWidth,
+                            flex: 1,
+                            dataIndex: 'upnp_client_ip_address'
+                        }, {
+                            header: 'Client Port'.t(),
+                            width: Renderer.portWidth,
+                            flex: 1,
+                            dataIndex: 'upnp_client_port'
+                        }, {
+                            header: 'Destination Port'.t(),
+                            width: Renderer.portWidth ,
+                            flex: 1,
+                            dataIndex: 'upnp_destination_port'
+                        }, {
+                            header: 'Bytes'.t(),
+                            width: Renderer.sizeWidth,
+                            flex: 1,
+                            dataIndex: 'bytes',
+                            renderer: Renderer.dataSize
+                        }, {
+                            xtype: 'actioncolumn',
+                            width: Renderer.actionWidth,
+                            header: 'Delete'.t(),
+                            align: 'center',
+                            resizable: false,
+                            tdCls: 'action-cell',
+                            iconCls: 'fa fa-trash-o fa-red',
+                            handler: 'externalAction',
+                            action: 'deleteUpnp'
+                        }]
+
+                    }]
+                },{
+                    xtype: 'panel',
+                    itemId: 'access_control_rules',
+                    title: 'Access Control Rules'.t(),
+                    scrollable: true,
+                    items: [{
+                        xtype: 'ungrid',
+
+                        tbar: ['@add', '->', '@import', '@export'],
+                        recordActions: ['edit', 'delete', 'reorder'],
+
+                        emptyText: 'No Access Control Rules defined'.t(),
+
+                        listProperty: 'settings.upnpSettings.upnpRules.list',
+
+                        emptyRow: {
+                            ruleId: -1,
+                            enabled: true,
+                            description: '',
+                            javaClass: 'com.untangle.uvm.network.UpnpRule',
+                            conditions: {
+                                javaClass: 'java.util.LinkedList',
+                                list: []
+                            },
+                            priority: 1,
+                            allow: true
+                        },
+
+                        disabled: true,
+                        hidden: true,
+
+                        bind: {
+                            store: '{upnpRules}',
+                            disabled: '{!settings.upnpSettings.upnpEnabled}',
+                            hidden: '{!settings.upnpSettings.upnpEnabled}'
+                        },
+
+                        columns: [{
+                            header: 'Rule Id'.t(),
+                            width: Renderer.idWidth,
+                            align: 'right',
+                            resizable: false,
+                            dataIndex: 'ruleId',
+                            renderer: Renderer.id
+                        }, {
+                            xtype: 'checkcolumn',
+                            header: 'Enable'.t(),
+                            dataIndex: 'enabled',
+                            resizable: false,
+                            width: Renderer.booleanWidth,
+                        }, {
+                            header: 'Description',
+                            width: Renderer.messageWidth,
+                            flex: 1,
+                            dataIndex: 'description'
+                        },
+                        Column.conditions,
+                        {
+                            header: 'Action'.t(),
+                            width: Renderer.idWidth,
+                            dataIndex: 'allow',
+                            renderer: Ung.config.network.MainController.upnpAction
+                        }],
+                        editorFields: [
+                            Field.enableRule(),
+                            Field.description,
+                            Field.conditions(
+                                'com.untangle.uvm.network.UpnpRuleCondition',[
+                                'DST_PORT',
+                                'SRC_ADDR',
+                                'SRC_PORT'
+                            ]),
+                            Field.allow
+                        ]
+                    }]
+                }]
             }]
         }, {
             title: 'DNS & DHCP'.t(),
+            itemId: 'dns_and_dhcp',
             xtype: 'panel',
+            scrollable: true,
             tbar: [{
                 xtype: 'tbtext',
                 padding: '8 5',
@@ -839,8 +730,10 @@ Ext.define('Ung.config.network.view.Advanced', {
                 bind: '{settings.dnsmasqOptions}'
             }]
         }, {
-            xtype: 'grid',
+            xtype: 'ungrid',
+            itemId: 'network_cards',
             title: 'Network Cards'.t(),
+            scrollable: true,
 
             bind: '{devices}',
 
@@ -855,14 +748,17 @@ Ext.define('Ung.config.network.view.Advanced', {
 
             columns: [{
                 header: 'Device Name'.t(),
-                width: 250,
+                width: Renderer.messageWidth,
+                flex: 1,
                 dataIndex: 'deviceName'
             }, {
                 header: 'MTU'.t(),
-                width: 100,
+                width: Renderer.sizeWidth,
                 dataIndex: 'mtu',
                 renderer: function (value) {
-                    return value || 'Auto'.t();
+                    if (value == null || value === "")
+                        return 'Auto'.t();
+                    return value;
                 },
                 editor: {
                     xtype: 'numberfield'
@@ -870,20 +766,9 @@ Ext.define('Ung.config.network.view.Advanced', {
             }, {
                 header: 'Ethernet Media'.t(),
                 dataIndex: 'duplex',
-                width: 250,
-                renderer: function (value) {
-                    switch (value) {
-                      case 'AUTO': return 'Auto'.t();
-                      case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
-                      case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
-                      case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
-                      case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
-                      case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
-                      case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
-                      case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
-                      case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
-                    }
-                },
+                width: Renderer.messageWidth,
+                flex: 1,
+                renderer: Ung.config.network.MainController.networkMediaRenderer,
                 editor: {
                     xtype: 'combo',
                     store: [
@@ -900,8 +785,1008 @@ Ext.define('Ung.config.network.view.Advanced', {
                     queryMode: 'local',
                     editable: false
                 }
+            }]
+        }, {
+            title: 'Netflow'.t(),
+            itemId: 'netflow',
+            scrollable: true,
+            defaults: {
+                labelAlign: 'right'
+            },
+
+            items:[{
+                xtype: 'checkbox',
+                fieldLabel: 'Netflow Enabled'.t(),
+                bind: '{settings.netflowSettings.enabled}'
+            },{
+                xtype: 'textfield',
+                fieldLabel: 'Host'.t(),
+                bind: {
+                    disabled: '{!settings.netflowSettings.enabled}',
+                    value: '{settings.netflowSettings.host}'
+                }
             }, {
-                flex: 1
+                xtype: 'numberfield',
+                fieldLabel: 'Port'.t(),
+                minValue: 0,
+                allowDecimals: false,
+                allowBlank: false,
+                blankText: 'You must provide a valid port.'.t(),
+                vtype: 'port',
+                bind: {
+                    disabled: '{!settings.netflowSettings.enabled}',
+                    value: '{settings.netflowSettings.port}'
+                }
+            },{
+                xtype: 'combo',
+                fieldLabel: 'Version'.t(),
+                store: [
+                    [1,'v1'],
+                    [5,'v5'],
+                    [9,'v9']
+                ],
+                bind: {
+                    disabled: '{!settings.netflowSettings.enabled}',
+                    value: '{settings.netflowSettings.version}'
+                },
+                queryMode: 'local',
+                editable: false
+            }]
+        }, {
+            title: 'Dynamic Routing'.t(),
+            itemId: 'dynamic_routing',
+            scrollable: true,
+
+            defaults:{
+                margin: 10
+            },
+
+            items:[{
+                xtype: 'checkbox',
+                fieldLabel: 'Dynamic Routing Enabled'.t(),
+                labelAlign: 'right',
+                labelWidth: 160,
+                bind: '{settings.dynamicRoutingSettings.enabled}'
+            },{
+                xtype: 'tabpanel',
+                itemId: 'dynamic_routing',
+                layout: 'fit',
+                disabled: true,
+                hidden: true,
+                bind: {
+                    disabled: '{!settings.dynamicRoutingSettings.enabled}',
+                    hidden: '{!settings.dynamicRoutingSettings.enabled}'
+                },
+                items: [{
+                    xtype: 'panel',
+                    width: '100%',
+                    region: 'south',
+                    itemId: 'status',
+                    title: 'Status'.t(),
+                    split: true,
+                    collapsible: false,
+                    items:[{
+                        xtype: 'ungrid',
+                        split: true,
+                        itemId: 'dynamic_routing_status',
+                        title: 'Acquired Dynamic Routes'.t(),
+
+                        emptyText: 'No Acquired Dynamic Routes found'.t(),
+
+                        bind: {
+                            store: '{dymamicRoutes}'
+                        },
+                        columns: [{
+                            header: 'Network'.t(),
+                            dataIndex:'network',
+                            width: Renderer.networkWidth
+                        },{
+                            header: 'Prefix'.t(),
+                            dataIndex: 'prefix',
+                            width: Renderer.prefixWidth
+                        },{
+                            header: 'Via'.t(),
+                            dataIndex: 'via',
+                            width: Renderer.ipWidth
+                        },{
+                            header: 'Interface'.t(),
+                            dataIndex: 'interface',
+                            width: Renderer.messageWidth,
+                            renderer: Renderer.interface
+                        },{
+                            header: 'Device'.t(),
+                            dataIndex: 'dev',
+                            width: Renderer.idWidth
+                        },{
+                            header: 'Attributes'.t(),
+                            dataIndex: 'attributes',
+                            width: Renderer.messageWdith,
+                            renderer: Ung.config.network.MainController.routeAttributes,
+                            flex: 1
+                        }],
+                    },{
+                        xtype: 'ungrid',
+                        split: true,
+                        itemId: 'bgp_status',
+                        title: 'BGP Status'.t(),
+
+                        emptyText: 'No BGP Status available'.t(),
+
+                        bind: {
+                            store: '{bgpStatus}',
+                            hidden: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                        },
+                        columns: [{
+                            header: 'Neighbor'.t(),
+                            dataIndex: 'neighbor',
+                            width: Renderer.networkWidth
+                        }, {
+                            header: 'AS'.t(),
+                            dataIndex: 'as',
+                            width: Renderer.idWidth
+                        }, {
+                            header: 'Msgs Recv'.t(),
+                            dataIndex: 'msgsRecv',
+                            width: Renderer.dataSize,
+                            renderer: Renderer.count
+                        }, {
+                            header: 'Msgs Sent'.t(),
+                            dataIndex: 'msgsSent',
+                            width: Renderer.dataSize,
+                            renderer: Renderer.count
+                        }, {
+                            header: 'Uptime'.t(),
+                            dataIndex: 'uptime',
+                            width: Renderer.timestampWidth,
+                            flex: 1,
+                            renderer: Renderer.elapsedTime
+                        }],
+                    }, {
+                        xtype: 'ungrid',
+                        split: true,
+                        itemId: 'ospf_status',
+                        title: 'OSPF Status'.t(),
+
+                        emptyText: 'No OSPF Status available'.t(),
+
+                        bind: {
+                            store: '{ospfStatus}',
+                            hidden: '{!settings.dynamicRoutingSettings.ospfEnabled}'
+                        },
+                        columns: [{
+                            header: 'Neighbor ID'.t(),
+                            dataIndex: 'neighbor',
+                            width: Renderer.ipWidth
+                        },{
+                            header: 'Neighbor Address'.t(),
+                            dataIndex: 'address',
+                            width: Renderer.ipWidth
+                        },{
+                            header: 'Time Remaining'.t(),
+                            dataIndex: 'time',
+                            width: Renderer.timestamp
+                        },{
+                            header: 'Device'.t(),
+                            dataIndex: 'dev',
+                            width: Renderer.idWidth
+                        },{
+                            header: 'Interface'.t(),
+                            dataIndex: 'interface',
+                            width: Renderer.messageWidth,
+                            renderer: Renderer.interface,
+                            flex: 1
+                        }]
+                    }],
+                    tbar: [{
+                        xtype: 'button',
+                        iconCls: 'fa fa-refresh',
+                        text: 'Refresh',
+                        handler: 'getDynamicRoutingStatus'
+                    }]
+                },{
+                    xtype: 'panel',
+                    itemId: 'bgp',
+                    title: 'BGP'.t(),
+                    scrollable: true,
+
+                    items: [{
+                        xtype: 'checkbox',
+                        fieldLabel: 'BGP Enabled'.t(),
+                        bind: '{settings.dynamicRoutingSettings.bgpEnabled}',
+                        margin: 10
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: 'Router ID'.t(),
+                        bind: {
+                            value: '{settings.dynamicRoutingSettings.bgpRouterId}',
+                            disabled: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                        },
+                        emptyText: '[no router id]'.t(),
+                        blankText: 'Router ID must be specified.'.t(),
+                        vtype: 'routerId',
+                        margin: 10
+                    },{
+                        xtype: 'textfield',
+                        fieldLabel: 'Router AS'.t(),
+                        bind: {
+                            value: '{settings.dynamicRoutingSettings.bgpRouterAs}',
+                            disabled: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                        },
+                        emptyText: '[no router as]'.t(),
+                        blankText: 'Router AS must be specified.'.t(),
+                        vtype: 'routerAs',
+                        margin: 10
+                    },{
+                        xtype: 'tabpanel',
+                        itemId: 'bgp',
+                        bind:{
+                            disabled: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                        },
+                        items:[{
+                            xtype: 'ungrid',
+                            itemId: 'neighbors',
+                            title: 'Neighbors'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No BGP Neighbors defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.bgpNeighbors.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                ipAddress: '',
+                                as: '',
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteBgpNeighbor',
+                            },
+
+                            bind: {
+                                store: '{bgpNeighbors}'
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                xtype: 'checkcolumn',
+                                header: 'Enable'.t(),
+                                dataIndex: 'enabled',
+                                resizable: false,
+                                width: Renderer.booleanWidth,
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'IP Address',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'ipAddress'
+                            }, {
+                                header: 'AS',
+                                width: Renderer.idWidth,
+                                flex: 1,
+                                dataIndex: 'as'
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                            {
+                                xtype:'textfield',
+                                bind: '{record.ipAddress}',
+                                fieldLabel: 'Target IP Address'.t(),
+                                emptyText: "[no target ip address]".t(),
+                                allowBlank: false,
+                                vtype: 'ip4Address'
+                            },{
+                                xtype:'textfield',
+                                bind: '{record.as}',
+                                fieldLabel: 'Target AS'.t(),
+                                emptyText: "[no target as]".t(),
+                                vtype: 'routerAs',
+                                allowBlank: false
+                            }]
+                        },{
+                            xtype: 'ungrid',
+                            itemId: 'networks',
+                            title: 'Networks'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No BGP Networks defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.bgpNetworks.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                network: '',
+                                prefix: 32,
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteNetwork',
+                            },
+
+                            bind: {
+                                store: '{bgpNetworks}',
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                xtype: 'checkcolumn',
+                                header: 'Enable'.t(),
+                                dataIndex: 'enabled',
+                                resizable: false,
+                                width: Renderer.booleanWidth,
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'Network',
+                                width: Renderer.networkWidth,
+                                flex: 1,
+                                dataIndex: 'network'
+                            }, {
+                                header: 'Netmask/Prefix'.t(),
+                                width: Renderer.ipWidth,
+                                dataIndex: 'prefix'
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                                Field.network,
+                                Field.netMask
+                            ]
+                        }]
+                    }]
+                },{
+                    xtype: 'panel',
+                    itemId: 'ospf',
+                    title: 'OSPF'.t(),
+                    scrollable: true,
+
+                    items: [{
+                        xtype: 'checkbox',
+                        fieldLabel: 'OSPF Enabled'.t(),
+                        bind: '{settings.dynamicRoutingSettings.ospfEnabled}',
+                        margin: 10
+                    },{
+                        xtype: 'tabpanel',
+                        itemId: 'ospf',
+
+                        bind:{
+                            disabled: '{!settings.dynamicRoutingSettings.ospfEnabled}'
+                        },
+
+                        items:[{
+                            xtype: 'ungrid',
+                            itemId: 'networks',
+                            title: 'Networks'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No OSPF Networks defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.ospfNetworks.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                network: '',
+                                prefix: 32,
+                                area: 0,
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteNetwork'
+                            },
+
+                            bind: {
+                                store: '{ospfNetworks}',
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                xtype: 'checkcolumn',
+                                header: 'Enable'.t(),
+                                dataIndex: 'enabled',
+                                resizable: false,
+                                width: Renderer.booleanWidth,
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'Network',
+                                width: Renderer.networkWidth,
+                                flex: 1,
+                                dataIndex: 'network'
+                            }, {
+                                header: 'Netmask/Prefix'.t(),
+                                width: Renderer.ipWidth,
+                                dataIndex: 'prefix'
+                            }, {
+                                header: 'Area',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'area',
+                                renderer: Ung.config.network.MainController.ospfAreaRenderer
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                                Field.network,
+                                Field.netMask,
+                            {
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.area}',
+                                    store: '{ospfAreas}'
+                                },
+                                displayField: 'comboValueField',
+                                valueField: 'ruleId',
+                                fieldLabel: 'Area'.t(),
+                                emptyText: "[enter area]".t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
+                            }]
+                        },{
+                            xtype: 'ungrid',
+                            itemId: 'areas',
+                            title: 'Areas'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No OSPF Areas defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.ospfAreas.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                area: '',
+                                type: 0,
+                                authentication: 0,
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteOspfArea',
+                                virtualLinks: {
+                                    javaClass: "java.util.LinkedList",
+                                    list: []
+                                }
+                            },
+
+                            bind: {
+                                store: '{ospfAreas}',
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'Area',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'area'
+                            }, {
+                                header: 'Type',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'type',
+                                renderer: Ung.config.network.MainController.ospfAreaTypeRenderer
+                            }, {
+                                header: 'Authentication',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'authentication',
+                                renderer: Ung.config.network.MainController.ospfInterfaceAuthenticationRenderer
+                            }],
+
+                            editorXtype: 'ung.cmp.unospfarearecordeditor',
+                            editorFields: [
+                                Field.description,
+                            {
+                                xtype:'textfield',
+                                bind: '{record.area}',
+                                fieldLabel: 'Area'.t(),
+                                emptyText: "[no area]".t(),
+                                vtyoe: 'routerArea',
+                                allowBlank: false
+                            },{
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.type}',
+                                    store: '{ospfAreaTypes}'
+                                },
+                                displayField: 'type',
+                                valueField: 'value',
+                                fieldLabel: 'Type'.t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
+                            },{
+                                xtype: 'container',
+                                layout: 'column',
+                                margin: '0 0 5 0',
+                                width: 800,
+                                hidden: true,
+                                disabled: true,
+                                bind:{
+                                    hidden: '{record.type}',
+                                    disabled: '{record.type}'
+                                },
+                                items: [{
+                                    xtype: 'label',
+                                    html: 'Virtual Links'.t(),
+                                    width: 190,
+                                },{
+                                    xtype: 'ungrid',
+                                    itemId: 'unvirtuallinkgrid',
+                                    width: 305,
+                                    border: false,
+                                    titleCollapse: true,
+                                    tbar: ['@addInline'],
+                                    recordActions: ['delete'],
+                                    bind: '{record.virtualLinks.list}',
+                                    maxHeight: 140,
+                                    emptyRow: {
+                                        field1: ''
+                                    },
+                                    columns: [{
+                                        header: 'Virtual Link Address'.t(),
+                                        dataIndex: 'field1',
+                                        width: 200,
+                                        flex: 1,
+                                        editor : {
+                                            xtype: 'textfield',
+                                            vtype: 'ip4Address',
+                                            emptyText: '[enter virtual address]'.t(),
+                                            allowBlank: false
+                                        }
+                                    }]
+                                },{
+                                    xtype: 'label',
+                                    html: '(optional)'.t(),
+                                    cls: 'boxlabel'
+                                }]
+                            },{
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.authentication}',
+                                    store: '{ospfAuthenticationTypes}'
+                                },
+                                displayField: 'type',
+                                valueField: 'value',
+                                fieldLabel: 'Authentication'.t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
+                             }]
+                        },{
+                            xtype: 'ungrid',
+                            itemId: 'interfaces',
+                            title: 'Interface Overrides'.t(),
+
+                            tbar: ['@add', '->', '@import', '@export'],
+                            recordActions: ['edit', 'delete'],
+
+                            emptyText: 'No OSPF Interfaces defined'.t(),
+
+                            listProperty: 'settings.dynamicRoutingSettings.ospfInterfaces.list',
+
+                            emptyRow: {
+                                ruleId: -1,
+                                enabled: true,
+                                description: '',
+                                helloInterval: 10,
+                                deadInterval: 40,
+                                retransmitInterval: 5,
+                                transmitDelay: 1,
+                                autoInterfaceCost: true,
+                                authentication: 0,
+                                routerPriority: 1,
+                                javaClass: 'com.untangle.uvm.network.DynamicRouteOspfInterface',
+                            },
+
+                            bind: {
+                                store: '{ospfInterfaces}',
+                            },
+
+                            columns: [{
+                                header: 'Rule Id'.t(),
+                                width: Renderer.idWidth,
+                                align: 'right',
+                                resizable: false,
+                                dataIndex: 'ruleId',
+                                renderer: Renderer.id
+                            }, {
+                                xtype: 'checkcolumn',
+                                header: 'Enable'.t(),
+                                dataIndex: 'enabled',
+                                resizable: false,
+                                width: Renderer.booleanWidth,
+                            }, {
+                                header: 'Description',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'description'
+                            }, {
+                                header: 'Device',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'dev'
+                            }, {
+                                header: 'Interface',
+                                width: Renderer.messageWidth,
+                                flex: 1,
+                                dataIndex: 'dev',
+                                renderer: Ung.config.network.MainController.ospDeviceRenderer
+                            }, {
+                                header: 'Hello Interval',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'helloInterval'
+                            }, {
+                                header: 'Dead Interval',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'deadInterval'
+                            }, {
+                                header: 'Retransmit Interval',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'retransmitInterval'
+                            }, {
+                                header: 'Transmit Delay',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'transmitDelay'
+                            }, {
+                                header: 'Authentication',
+                                width: Renderer.ipWidth,
+                                flex: 1,
+                                dataIndex: 'authentication',
+                                renderer: Ung.config.network.MainController.ospfInterfaceAuthenticationRenderer
+                            }, {
+                                header: 'Router Priority',
+                                width: Renderer.intervalWidth,
+                                flex: 1,
+                                dataIndex: 'routerPriority'
+                            }],
+                            editorFields: [
+                                Field.enableRule(),
+                                Field.description,
+                            {
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.dev}',
+                                    store: '{ospfDevices}'
+                                },
+                                displayField: 'comboValueField',
+                                valueField: 'dev',
+                                fieldLabel: 'Device'.t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false,
+                                listeners: {
+                                    beforerender: Ung.config.network.MainController.ospfInterfaceComboBeforeRender
+                                },
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Hello Interval'.t(),
+                                bind: '{record.helloInterval}',
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Dead Interval'.t(),
+                                bind: '{record.deadInterval}',
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Retransmit Interval'.t(),
+                                bind: '{record.retransmitInterval}',
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Transmit Delay'.t(),
+                                bind: '{record.transmitDelay}',
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'checkbox',
+                                fieldLabel: 'Auto Interface Cost'.t(),
+                                bind: '{record.autoInterfaceCost}'
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Interface Cost'.t(),
+                                disabled: true,
+                                hidden: true,
+                                bind:{
+                                    value: '{record.interfaceCost}',
+                                    disabled: '{record.autoInterfaceCost}',
+                                    hidden: '{record.autoInterfaceCost}'
+                                },
+                                vtype: 'routerInterval'
+                            },{
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{record.authentication}',
+                                    store: '{ospfAuthenticationTypes}'
+                                },
+                                displayField: 'type',
+                                valueField: 'value',
+                                fieldLabel: 'Authentication'.t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Password'.t(),
+                                disabled: true,
+                                hidden: true,
+                                allowBlank: false,
+                                bind:{
+                                    value: '{record.authenticationPassword}',
+                                    disabled: '{record.authentication != 1}',
+                                    hidden: '{record.authentication != 1}'
+                                }
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Key ID'.t(),
+                                disabled: true,
+                                hidden: true,
+                                allowBlank: false,
+                                bind:{
+                                    value: '{record.authenticationKeyId}',
+                                    disabled: '{record.authentication != 2}',
+                                    hidden: '{record.authentication != 2}'
+                                }
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Key'.t(),
+                                disabled: true,
+                                hidden: true,
+                                allowBlank: false,
+                                bind:{
+                                    value: '{record.authenticationKey}',
+                                    disabled: '{record.authentication != 2}',
+                                    hidden: '{record.authentication != 2}'
+                                }
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Router Priority'.t(),
+                                bind: '{record.routerPriority}',
+                                vtype: 'routerPriority'
+                            }]
+                        },{
+                            xtype: 'panel',
+                            title: 'Advanced Options'.t(),
+                            itemId: 'advanced_options',
+                            padding: 10,
+
+                            bind:{
+                                disabled: '{!settings.dynamicRoutingSettings.ospfEnabled}'
+                            },
+
+                            defaults:{
+                                margin: 10,
+                                labelWidth: 200,
+                            },
+                            items:[{
+                                xtype: 'textfield',
+                                fieldLabel: 'Router ID'.t(),
+                                bind: '{settings.dynamicRoutingSettings.ospfRouterId}',
+                                emptyText: '[auto-generated]'.t(),
+                                vtype: 'routerId'
+                            },{
+                                xtype: 'checkbox',
+                                fieldLabel: 'Specify Default Metric'.t(),
+                                bind: '{settings.dynamicRoutingSettings.ospfUseDefaultMetricEnabled}',
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Default Metric'.t(),
+                                disabled: true,
+                                hidden: true,
+                                bind: {
+                                    value: '{settings.dynamicRoutingSettings.ospfDefaultMetric}',
+                                    disabled: '{!settings.dynamicRoutingSettings.ospfUseDefaultMetricEnabled}',
+                                    hidden: '{!settings.dynamicRoutingSettings.ospfUseDefaultMetricEnabled}'
+                                },
+                                vtype: 'metric'
+                            },{
+                                xtype: 'combo',
+                                bind: {
+                                    value: '{settings.dynamicRoutingSettings.ospfAbrType}',
+                                    store: '{ospfAbrTypes}'
+                                },
+                                displayField: 'type',
+                                valueField: 'value',
+                                fieldLabel: 'ABR Type'.t(),
+                                emptyText: "[enter area]".t(),
+                                queryMode: 'local',
+                                editable: false,
+                                allowBlank: false
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Auto cost reference bandwidth (MBits/s)'.t(),
+                                bind: '{settings.dynamicRoutingSettings.ospfAutoCost}',
+                                vtype: 'routerAutoCost'
+                            },{
+                                xtype: 'fieldset',
+                                title: 'Default Information originate'.t(),
+
+                                items:[{
+                                    xtype: 'combo',
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType}',
+                                        store: '{ospfDefaultInformationOriginates}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    fieldLabel: 'Type'.t(),
+                                    emptyText: "[enter area]".t(),
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
+                                },{
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Metric'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateMetric}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType == 0}'
+                                    },
+                                    vtype: 'metric'
+                                },{
+                                    xtype: 'combo',
+                                    fieldLabel: 'Metric Type'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateExternalType}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfDefaultInformationOriginateType == 0}',
+                                        store: '{ospfMetricTypes}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
+                                }]
+                            },{
+                                xtype: 'fieldset',
+                                title: 'Redistribute Connected'.t(),
+                                collapsed: true,
+
+                                checkboxToggle: true,
+                                checkbox: {
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistConnectedEnabled}'
+                                },
+                                items:[{
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Metric'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistConnectedMetric}',
+                                    vtype: 'metric'
+                                },{
+                                    xtype: 'combo',
+                                    fieldLabel: 'Metric Type'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfRedistConnectedExternalType}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfRedistConnectedEnabled == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfRedistConnectedEnabled == 0}',
+                                        store: '{ospfMetricTypes}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
+                                }]
+                            },{
+                                xtype: 'fieldset',
+                                title: 'Redistribute Static'.t(),
+                                collapsed: true,
+
+                                checkboxToggle: true,
+                                checkbox: {
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistStaticEnabled}'
+                                },
+                                items:[{
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Metric'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistStaticMetric}',
+                                    vtype: 'metric'
+                                },{
+                                    xtype: 'combo',
+                                    fieldLabel: 'Metric Type'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfRedistStaticExternalType}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfRedistStaticEnabled == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfRedistStaticEnabled == 0}',
+                                        store: '{ospfMetricTypes}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
+                                }]
+                            },{
+                                xtype: 'fieldset',
+                                title: 'Redistribute BGP'.t(),
+                                collapsed: true,
+                                bind:{
+                                    disabled: '{!settings.dynamicRoutingSettings.bgpEnabled}'
+                                },
+
+                                checkboxToggle: true,
+                                checkbox: {
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistBgpEnabled}'
+                                },
+                                items:[{
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Metric'.t(),
+                                    bind: '{settings.dynamicRoutingSettings.ospfRedistBgpMetric}',
+                                    vtype: 'metric'
+                                },{
+                                    xtype: 'combo',
+                                    fieldLabel: 'Metric Type'.t(),
+                                    hidden: true,
+                                    disabled: true,
+                                    bind: {
+                                        value: '{settings.dynamicRoutingSettings.ospfRedistBgpExternalType}',
+                                        disabled: '{settings.dynamicRoutingSettings.ospfRedistBgpEnabled == 0}',
+                                        hidden: '{settings.dynamicRoutingSettings.ospfRedistBgpEnabled == 0}',
+                                        store: '{ospfMetricTypes}'
+                                    },
+                                    displayField: 'type',
+                                    valueField: 'value',
+                                    queryMode: 'local',
+                                    editable: false,
+                                    allowBlank: false
+                                }]
+                            }]
+                        }]
+                    }]
+                }]
             }]
         }]
     }]

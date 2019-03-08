@@ -15,16 +15,30 @@ import com.untangle.uvm.app.RuleCondition;
 @SuppressWarnings("serial")
 public class PolicyRuleCondition extends RuleCondition
 {
+    /**
+     * PolicyRuleCondition creates a new PolicyRuleCondition
+     */
     public PolicyRuleCondition( )
     {
         super();
     }
 
+    /**
+     * PolicyRuleCondition creates a new PolicyRuleCondition
+     * @param matcherType
+     * @param value
+     */
     public PolicyRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
 
+    /**
+     * PolicyRuleCondition creates a new PolicyRuleCondition
+     * @param matcherType
+     * @param value
+     * @param invert
+     */
     public PolicyRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );

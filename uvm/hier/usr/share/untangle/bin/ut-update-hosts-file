@@ -1,0 +1,55 @@
+#!/usr/bin/python
+
+# This script reads all of the IP addresses from the interface status files
+# located in /var/lib/interface-status. The platform creates and removes status
+# files there as system interfaces come and go. This includes WAN, LAN and
+# others such as OpenVPN, L2TP, GRE, etc.
+#
+# We use the address list we create to update /etc/hosts.untangle which is
+# loaded by dnsmasq. We include an entry for each unique IP configured on the
+# server, and we end up with multiple entries for the configured hostname.
+# The dnsmasq daemon is configured to return the best matching IP for
+# our hostname based on address of the interface where the query was received.
+# This allows captive portal redirect using hostname instead of IP to work
+# because we resolve the hostname to an address appropriate for the client
+# and the network on which they are located.
+
+import os
+import sys
+import json
+
+statpath = '/var/lib/interface-status'
+fullname = None
+facelist = {}
+
+# use the argumented host + domain name
+if (len(sys.argv) > 1):
+    fullname = str(sys.argv[1])
+
+# if argument is missing use a known default
+if (fullname == None):
+    fullname = 'server.ngfw'
+
+# build the list of interface addresses
+for file in os.listdir(statpath):
+    if file.startswith("interface-"):
+        rawfile = open(statpath + "/" + file);
+        rawdata = rawfile.read();
+        rawfile.close();
+        facedata = json.loads(rawdata);
+        if ('v4Address' in facedata):
+            idx = facedata['v4Address']
+            facelist[idx] = fullname
+
+# write all the interface addresses to the special hosts file
+outfile = open("/etc/hosts.untangle","w")
+outfile.write("## Auto Generated\n");
+outfile.write("## DO NOT EDIT. Changes will be overwritten.\n\n")
+
+for key, value in facelist.iteritems():
+    outfile.write(key)
+    outfile.write('\t\t')
+    outfile.write(value)
+    outfile.write('\n')
+
+outfile.close()

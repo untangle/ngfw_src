@@ -1,0 +1,21 @@
+#!/bin/dash
+
+# If openvpn is running - restart it
+if [ ! -z "`pidof openvpn`" ] ; then
+    systemctl --no-block restart openvpn
+fi
+
+# HUP doesnt seem to work - openvpn dies on startup
+# killall -HUP openvpn 2>/dev/null
+
+# Rewrite status files
+echo "Writing status file: /var/lib/interface-status/interface-250-status.js"
+/usr/share/untangle-sync-settings/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/interface-status/interface-250-status.js
+if [ ! -f /var/lib/interface-status/interface-250-status.js ] ; then
+    echo "Missing status file: /var/lib/interface-status/interface-250-status.js"
+fi
+echo "Writing status file: /var/lib/interface-status/interface-tun0-status.js"
+/usr/share/untangle-sync-settings/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/interface-status/interface-tun0-status.js
+if [ ! -f /var/lib/interface-status/interface-tun0-status.js ] ; then
+    echo "Missing status file: /var/lib/interface-status/interface-tun0-status.js"
+fi

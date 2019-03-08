@@ -13,8 +13,18 @@ public abstract class UvmContextBase
 {
     protected Main main;
     
+    /**
+     * getTranslations
+     * gets the translation map
+     * @param module
+     * @return map
+     */
     public abstract Map<String, String> getTranslations(String module);
     
+    /**
+     * getCompanyName
+     * @return String - CompanyName
+     */
     public abstract String getCompanyName();
 
     /**

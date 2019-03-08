@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.smtp;
@@ -17,9 +17,17 @@ public class MailExportFactory
 
     private MailExport export;
 
+    /**
+     * Initialize MailExportFactory instance.
+     * @return MailExportFactory instance.
+     */
     private MailExportFactory() {
     }
 
+    /**
+     * Initialize MailExportFactory.
+     * @return FACTORY
+     */
     public static MailExportFactory factory()
     {
         return FACTORY;
@@ -28,8 +36,6 @@ public class MailExportFactory
     /**
      * Allows the casing to export its interface for its policy.
      * 
-     * @param policy
-     *            policy for these Exports.
      * @param export
      *            exported interface.
      */
@@ -47,8 +53,6 @@ public class MailExportFactory
     /**
      * Gets the exported interface for a given policy.
      * 
-     * @param policy
-     *            the policy of the exported interface.
      * @return the exported interface.
      */
     public MailExport getExport()

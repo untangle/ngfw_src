@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.setup.jabsorb;
 
 import java.util.Map;
@@ -11,15 +13,16 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.AdminManager;
-import com.untangle.uvm.SystemManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
+import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.WizardSettings;
 import com.untangle.uvm.AdminUserSettings;
 
 import org.json.JSONObject;
 
+/** SetupContextImpl */
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {
     private final Logger logger = Logger.getLogger( this.getClass());
@@ -30,11 +33,20 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     private static final String INITIAL_USER_NAME = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";
 
+    /**
+     * SetupContextImpl create a SetupContextImpl
+     * @param context
+     */
     private SetupContextImpl( UvmContext context )
     {
         this.context = context;
     }
 
+    /**
+     * setLanguage - sets the language (called from setup wizard)
+     * @param language
+     * @param source
+     */
     public void setLanguage( String language, String source )
     {
         LanguageManager lm = this.context.languageManager();
@@ -43,10 +55,18 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         ls.setSource( source );
         lm.setLanguageSettings( ls );
     }
-    
-    public void setAdminPassword( String password, String email ) throws TransactionRolledbackException
+
+    /**
+     * setAdminPassword - set the admin password (called from setup wizard)
+     * @param password
+     * @param email
+     * @param installType
+     * @throws TransactionRolledbackException
+     */
+    public void setAdminPassword( String password, String email, String installType ) throws TransactionRolledbackException
     {
         AdminSettings adminSettings = this.context.adminManager().getSettings();
+        SystemSettings systemSettings = this.context.systemManager().getSettings();
         AdminUserSettings admin = null;
 
         /**
@@ -70,29 +90,46 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             admin.setPassword( password );
         }
 
+        systemSettings.setInstallType( installType );
+
         this.context.adminManager().setSettings( adminSettings );
+        this.context.systemManager().setSettings( systemSettings );
     }
 
+    /**
+     * getWizardSettings - gets the current Wizard Settings
+     * @return WizardSettings
+     */
     public WizardSettings getWizardSettings()
     {
         return this.context.getWizardSettings();
     }
 
+    /**
+     * setTimeZone - sets the timezone (called from setup wizard)
+     * @param timeZone
+     * @throws TransactionRolledbackException
+     */
     public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException
     {
         this.context.systemManager().setTimeZone( timeZone );
     }
 
+    /**
+     * getTranslations - get the translation map
+     * @return the map
+     */
     public Map<String, String> getTranslations()
     {
         return this.context.languageManager().getTranslations("untangle");
     }
-    
+
     /**
-     * This call returns one big JSONObject with references to all the important
-     * information This is used to avoid lots of separate synchornous calls via
-     * the Setup Wizards UI. Reducing all these seperate calls to initialize the UI
-     * reduces startup time
+     * This call returns one big JSONObject with references to all the
+     * important information This is used to avoid lots of separate
+     * synchornous calls via the Setup Wizards UI. Reducing all these
+     * seperate calls to initialize the UI reduces startup time
+     * @return <doc>
      */
     public org.json.JSONObject getSetupWizardStartupInfo()
     {
@@ -105,6 +142,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("oemName", this.context.oemManager().getOemName());
             json.put("fullVersionAndRevision", this.context.adminManager().getFullVersionAndRevision());
             json.put("adminEmail", this.context.adminManager().getAdminEmail());
+            json.put("language", this.context.languageManager().getLanguageSettings().getLanguage());
             json.put("translations", this.context.languageManager().getTranslations("untangle"));
             json.put("wizardSettings", this.context.getWizardSettings());
         } catch (Exception e) {
@@ -113,6 +151,10 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         return json;
     }
 
+    /**
+     * makeSetupContext constructor
+     * @return SetupContext
+     */
     public static UtJsonRpcServlet.SetupContext makeSetupContext()
     {
         UvmContext uvm = UvmContextFactory.context();

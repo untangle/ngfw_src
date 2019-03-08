@@ -1,13 +1,11 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +41,10 @@ public class Main
     private URLClassLoader uvmClassLoader;
     private UvmContextBase uvmContext;
 
-    // constructor -------------------------------------------------------------
-
+    /**
+     * Private constructor
+     * Use getMain() to get singleton instance
+     */
     private Main()
     {
         /**
@@ -56,6 +56,8 @@ public class Main
 
     /**
      * The fun starts here.
+     * @param args
+     * @throws Exception
      */
     public static final void main(String[] args) throws Exception
     {
@@ -69,12 +71,14 @@ public class Main
         }
     }
 
+    /**
+     * getMain - returns the singleton instance
+     * @return Main
+     */
     public static Main getMain()
     {
         return MAIN;
     }
-
-    // public methods ----------------------------------------------------------
 
     /**
      * <code>fatalError</code> can be called to indicate that a fatal
@@ -82,20 +86,21 @@ public class Main
      * otherwise recover) itself.  One example is an OutOfMemory
      * error.
      *
+     * @param str
      * @param x a <code>Throwable</code> giving the related/causing
      * exception, if any, otherwise null.
      */
-    public void fatalError(String throwingLocation, Throwable x)
+    public void fatalError(String str, Throwable x)
     {
         try {
             if (x != null) {
-                logger.error("FATAL ERROR: " + throwingLocation, x);
-                System.err.println("FATAL ERROR: " + throwingLocation);
+                logger.error("FATAL ERROR: " + str, x);
+                System.err.println("FATAL ERROR: " + str);
                 System.err.println("Throwable: " + x.getMessage());
                 x.printStackTrace(System.err);
             } else {
-                logger.error("FATAL ERROR: " + throwingLocation);
-                System.err.println("FATAL ERROR: " + throwingLocation);
+                logger.error("FATAL ERROR: " + str);
+                System.err.println("FATAL ERROR: " + str);
             }
         } catch (Throwable y) {
             System.out.println("Throwable: " + x.getMessage());
@@ -105,6 +110,11 @@ public class Main
         }
     }
 
+    /**
+     * loadClass - load a class in the standard classloader
+     * @param className
+     * @return Class
+     */
     @SuppressWarnings("rawtypes")
     public Class loadClass(String className)
     {
@@ -117,21 +127,33 @@ public class Main
         }
     }
     
+    /**
+     * getTranslations
+     * gets the translation map
+     * @param module
+     * @return map
+     */
     public Map<String, String> getTranslations(String module)
     {
         return uvmContext.getTranslations(module);
     }
 
+    /**
+     * getCompanyName
+     * @return String - CompanyName
+     */
     public String getCompanyName()
     {
         return uvmContext.getCompanyName();
     }
 
-    // private methods ---------------------------------------------------------
-
+    /**
+     * Initialize the UVM, starting up base services.
+     * @throws Exception
+     */
     private void init() throws Exception
     {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {public void run() { destroy(); }}));
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {/** run */ public void run() { destroy(); }}));
 
         logger.info("Setting up properties...");
         setProperties();
@@ -154,6 +176,10 @@ public class Main
         System.out.println("UVM postInit complete");
     }
 
+    /**
+     * configureClassLoader
+     * @throws Exception
+     */
     private void configureClassLoader() throws Exception
     {
         List<URL> urls = new ArrayList<URL>();
@@ -174,6 +200,9 @@ public class Main
         Thread.currentThread().setContextClassLoader(uvmClassLoader);
     }
     
+    /**
+     * Destroy the UVM, stopping all services.
+     */
     private void destroy()
     {
         logger.info("UVM shutdown initiated...");
@@ -183,6 +212,10 @@ public class Main
         System.out.println("UVM shutdown complete.");
     }
 
+    /**
+     * Setup all java properties
+     * @throws Exception
+     */
     private void setProperties() throws Exception
     {
         String prefix = System.getProperty("prefix");
@@ -237,6 +270,10 @@ public class Main
         
     }
 
+    /**
+     * startUvm - start the UVM
+     * @throws Exception
+     */
     private void startUvm() throws Exception
     {
         uvmContext = (UvmContextBase)uvmClassLoader.loadClass(UVM_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
@@ -244,12 +281,21 @@ public class Main
         uvmContext.init();
     }
 
+    /**
+     * restartApps
+     * @throws Exception
+     */
     private void restartApps() throws Exception
     {
         logger.info("Restarting apps...");
         uvmContext.postInit();
     }
 
+    /**
+     * loadExtensions - loads any classes in the extensions directory
+     * It will also donate a thread
+     * @throws Exception
+     */
     private void loadExtensions() throws Exception
     {
         try {

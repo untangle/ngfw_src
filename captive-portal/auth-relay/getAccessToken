@@ -1,0 +1,195 @@
+#!/usr/bin/python
+
+import urlparse
+import requests
+import json
+import sys
+import os
+
+#------------------------------------------------------------------------------
+
+def handle_google(logfile,authcode):
+
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		authfile = open("/var/cache/apache2/google_auth.txt","r")
+		authtext = authfile.read()
+		authfile.close()
+	else:
+		authdata = {}
+		authdata['code'] = authcode
+		authdata['client_id'] = '271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com'
+		authdata['client_secret'] = 'GMbC0PUZe2qCw_sq98_-SE5l'
+		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['grant_type'] = 'authorization_code'
+		authresp = requests.post("https://www.googleapis.com/oauth2/v4/token", data=authdata)
+		authtext = authresp.text;
+
+	logfile.write("AUTH: %s\n" % (authtext));
+	authjson = json.loads(authtext)
+
+	if (not "access_token" in authjson):
+		return("ERROR: missing access")
+
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		userfile = open("/var/cache/apache2/google_user.txt","r")
+		usertext = tokefile.read()
+		userfile.close()
+	else:
+		userdata = {}
+		userdata['access_token'] = authjson['access_token']
+		userresp = requests.get("https://www.googleapis.com/plus/v1/people/me", params=userdata)
+		usertext = userresp.text
+
+	logfile.write("USER: %s\n" % (usertext));
+	userjson = json.loads(usertext)
+
+	if ("emails" in userjson):
+		for item in userjson['emails']:
+			if (item['type'] == 'account'):
+				return(item['value'])
+
+	if ("displayName" in userjson):
+		return(userjson['displayName'])
+
+	return("ERROR: missing identity")
+
+#------------------------------------------------------------------------------
+
+def handle_facebook(logfile,authcode):
+
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		authfile = open("/var/cache/apache2/facebook_auth.txt","r")
+		authtext = authfile.read()
+		authfile.close()
+	else:
+		authdata = {}
+		authdata['code'] = authcode
+		authdata['client_id'] = '1840471182948119'
+		authdata['client_secret'] = '0f93a8ce9631adf41115447354432bb8'
+		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['grant_type'] = 'authorization_code'
+		authresp = requests.get("https://graph.facebook.com/v2.9/oauth/access_token", params=authdata)
+		authtext = authresp.text;
+
+	logfile.write("AUTH: %s\n" % (authtext));
+	authjson = json.loads(authtext)
+
+	if (not "access_token" in authjson):
+		return("ERROR: missing access")
+
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		userfile = open("/var/cache/apache2/google_user.txt","r")
+		usertext = tokefile.read()
+		userfile.close()
+	else:
+		userdata = {}
+		userdata['access_token'] = authjson['access_token']
+		userdata['fields'] = 'id,name,email'
+		userresp = requests.get("https://graph.facebook.com/me", params=userdata)
+		usertext = userresp.text
+
+	logfile.write("USER: %s\n" % (usertext));
+	userjson = json.loads(usertext)
+
+	if ("email" in userjson):
+		return(userjson['email'])
+
+	if ("name" in userjson):
+		return(userjson['name'])
+
+	return("ERROR: missing identity")
+
+#------------------------------------------------------------------------------
+
+def handle_microsoft(logfile,authcode):
+
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		authfile = open("/var/cache/apache2/microsoft_auth.txt","r")
+		authtext = authfile.read()
+		authfile.close()
+	else:
+		authdata = {}
+		authdata['code'] = authcode
+		authdata['client_id'] = 'f963a9b1-4d6c-4970-870d-3a75014e1364'
+		authdata['client_secret'] = 'qOYMyx9TdyAjveTQ6T1CA5e'
+		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['grant_type'] = 'authorization_code'
+		authresp = requests.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", data=authdata)
+		authtext = authresp.text;
+
+	logfile.write("AUTH: %s\n" % (authtext));
+	authjson = json.loads(authtext)
+
+	if (not "access_token" in authjson):
+		return("ERROR: missing access")
+
+	if os.path.isfile("/var/cache/apache2/development.flag"):
+		userfile = open("/var/cache/apache2/microsoft_user.txt","r")
+		usertext = tokefile.read()
+		userfile.close()
+	else:
+		userhead = {}
+		userhead['Authorization'] = ('Bearer ' + authjson['access_token'])
+		userresp = requests.get("https://graph.microsoft.com/v1.0/me", headers=userhead)
+		usertext = userresp.text
+
+	logfile.write("USER: %s\n" % (usertext));
+	userjson = json.loads(usertext)
+
+	if ("userPrincipalName" in userjson):
+		return(userjson['userPrincipalName'])
+
+	if ("displayName" in userjson):
+		return(userjson['displayName'])
+
+	return("ERROR: missing identity")
+
+#------------------------------------------------------------------------------
+qstring = None
+
+sys.stdout.write("Content-type: text\n\n")
+
+if ("QUERY_STRING" in os.environ):
+	qstring = os.environ['QUERY_STRING']
+
+if (qstring == None):
+	sys.stdout.write("ERROR: missing query string")
+	sys.exit()
+
+qparams = urlparse.parse_qs(qstring)
+
+if ('authType' in qparams):
+	authtype = qparams['authType'][0]
+else:
+	sys.stdout.write("ERROR: missing auth type")
+	sys.exit()
+
+if ('authCode' in qparams):
+	authcode = qparams['authCode'][0]
+else:
+	sys.stdout.write("ERROR: missing auth code")
+	sys.exit()
+
+logfile = open("/tmp/authcode.log","a")
+logfile.write("%s\n" % ("--------------------"));
+logfile.write("QSTR: %s\n" % (qstring));
+logfile.write("TYPE: %s\n" % (authtype));
+logfile.write("CODE: %s\n" % (authcode));
+
+if (authtype == "GOOGLE"):
+	result = handle_google(logfile,authcode)
+
+elif (authtype == "FACEBOOK"):
+	result = handle_facebook(logfile,authcode)
+
+elif (authtype == "MICROSOFT"):
+	result = handle_microsoft(logfile,authcode)
+
+else:
+	result = "ERROR: invalid auth type"
+
+logfile.write("XMIT: %s\n" % (result));
+logfile.close()
+
+sys.stdout.write(result)
+sys.exit()

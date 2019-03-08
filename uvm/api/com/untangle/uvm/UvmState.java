@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.io.Serializable;
@@ -13,7 +14,7 @@ import java.util.Map;
  *
  */
 @SuppressWarnings("serial")
-public class UvmState implements Serializable
+public class UvmState implements Serializable, org.json.JSONString
 {
 
     /**
@@ -72,5 +73,11 @@ public class UvmState implements Serializable
     Object readResolve()
     {
         return getInstance(state);
+    }
+    
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }

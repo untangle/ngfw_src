@@ -4,8 +4,8 @@ Ext.define('Ung.cmp.GoogleDrive', {
     isConfigured: function () {
         var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorApp, googleManager;
         try{
-            directoryConnectorLicense = Rpc.directData('rpc.UvmContext.licenseManager').isLicenseValid('untangle-app-directory-connector');
-            directoryConnectorApp = Rpc.directData('rpc.UvmContext.appManager').app('untangle-app-directory-connector');
+            directoryConnectorLicense = Rpc.directData('rpc.UvmContext.licenseManager').isLicenseValid('directory-connector');
+            directoryConnectorApp = Rpc.directData('rpc.UvmContext.appManager').app('directory-connector');
             if( directoryConnectorLicense && directoryConnectorApp ){
                 googleManager = directoryConnectorApp.getGoogleManager();
                 if( googleManager && googleManager.isGoogleDriveConnected() ){
@@ -13,7 +13,7 @@ Ext.define('Ung.cmp.GoogleDrive', {
                 }
             }
         }catch(e){
-            Util.exceptionToast('isConfigured: Unable to determine \'' + e + '\'');
+            Util.handleException('isConfigured: Unable to determine \'' + e + '\'');
         }
         return googleDriveConfigured;
     },

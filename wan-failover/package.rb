@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'wan-failover', 'wan-failover', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-wan-failover', 'wan-failover', [] )
 
 
 

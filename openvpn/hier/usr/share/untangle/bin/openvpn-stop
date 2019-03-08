@@ -1,11 +1,4 @@
 #! /bin/bash
 
-/etc/init.d/openvpn stop
+systemctl stop openvpn
 
-killall openvpn > /dev/null 2>&1
-
-sleep .5
-
-killall -KILL openvpn > /dev/null 2>&1
-
-true 

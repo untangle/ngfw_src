@@ -1,6 +1,7 @@
 /**
  * $Id: UrlRewriter.java 37269 2014-02-26 23:46:16Z dmorris $
  */
+
 package com.untangle.app.web_filter;
 
 import java.net.InetAddress;
@@ -18,11 +19,10 @@ import org.apache.log4j.Logger;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.util.UrlMatchingUtil;
-import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Map search engine to their query URIs
- *
+ * 
  */
 public class SearchEngine
 {
@@ -31,13 +31,25 @@ public class SearchEngine
     private static final List<Pattern> searchEngines;
     static {
         searchEngines = new ArrayList<Pattern>();
-        searchEngines.add(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*") );
-        searchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*") );
-        searchEngines.add(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*") );
-        searchEngines.add(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)p=([^&]+).*") );
+        searchEngines.add(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
+        searchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*"));
+        searchEngines.add(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
+        searchEngines.add(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)p=([^&]+).*"));
     };
 
-    public static String getQueryTerm( InetAddress clientIp, RequestLineToken requestLine,  HeaderToken header )
+    /**
+     * Get the query term
+     * 
+     * @param clientIp
+     *        The client address
+     * @param requestLine
+     *        The request line token
+     * @param header
+     *        The header token
+     * 
+     * @return The query term
+     */
+    public static String getQueryTerm(InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
         URI uri = null;
         try {
@@ -58,18 +70,18 @@ public class SearchEngine
         String url = host + uri.toString();
 
         logger.debug("getQueryTerms: trying to match string '" + url + "'");
-        for (Pattern p : searchEngines ){
+        for (Pattern p : searchEngines) {
             logger.debug("getQueryTerms: ... with pattern '" + p.pattern() + "'");
-            Matcher m = p.matcher( url );
-            if( m.matches() ){
+            Matcher m = p.matcher(url);
+            if (m.matches()) {
                 logger.debug("getQueryTerms: ...... match !");
                 String term = "";
-                if( m.groupCount() >= 3 ){
+                if (m.groupCount() >= 3) {
                     term = m.group(3);
                 }
-                try{
-                    term = URLDecoder.decode( term, "UTF-8" );
-                } catch( Exception e) {
+                try {
+                    term = URLDecoder.decode(term, "UTF-8");
+                } catch (Exception e) {
 
                 }
                 return term;
@@ -77,5 +89,4 @@ public class SearchEngine
         }
         return null;
     }
-
 }

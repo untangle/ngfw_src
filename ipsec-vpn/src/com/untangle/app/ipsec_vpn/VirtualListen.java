@@ -8,6 +8,14 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * This class is used to represent an IP address on which the IPsec daemon will
+ * be configured to listen for and accept inbound VPN connections.
+ * 
+ * @author mahotz
+ * 
+ */
+
 @SuppressWarnings("serial")
 public class VirtualListen implements JSONString, Serializable
 {

@@ -1,0 +1,6 @@
+version: '2'
+services:
+    build:
+      image: untangleinc/ngfw:build
+      volumes:
+        - ./:/opt/untangle/build

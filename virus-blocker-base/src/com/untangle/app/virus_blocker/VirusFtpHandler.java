@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.virus_blocker;
 
 import java.net.InetSocketAddress;
@@ -9,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
@@ -20,7 +20,6 @@ import com.untangle.app.ftp.FtpReply;
 import com.untangle.app.ftp.FtpEventHandler;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
-import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.TokenStreamerAdaptor;
 import com.untangle.uvm.vnet.AppSession;
@@ -38,6 +37,9 @@ class VirusFtpHandler extends FtpEventHandler
 
     private final Logger logger = Logger.getLogger(FtpEventHandler.class);
 
+    /**
+     * Holds the virus scanner FTP state
+     */
     private class VirusFtpState extends VirusBlockerState
     {
         private VirusFileManager fileManager = null;
@@ -55,11 +57,23 @@ class VirusFtpHandler extends FtpEventHandler
      */
     private static final Map<Long, String> fileNamesByCtlSessionId = new ConcurrentHashMap<Long, String>();
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        blocker base application
+     */
     VirusFtpHandler(VirusBlockerBaseApp app)
     {
         this.app = app;
     }
 
+    /**
+     * Handle new TCP sessions
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     public void handleTCPNewSession(AppTCPSession session)
     {
@@ -67,6 +81,14 @@ class VirusFtpHandler extends FtpEventHandler
         session.attach(state);
     }
 
+    /**
+     * Handle client data
+     * 
+     * @param session
+     *        The session
+     * @param c
+     *        The data chunk
+     */
     @Override
     protected void doClientData(AppTCPSession session, ChunkToken c)
     {
@@ -90,6 +112,14 @@ class VirusFtpHandler extends FtpEventHandler
         }
     }
 
+    /**
+     * Handle server data
+     * 
+     * @param session
+     *        The session
+     * @param c
+     *        The data chunk
+     */
     @Override
     protected void doServerData(AppTCPSession session, ChunkToken c)
     {
@@ -113,6 +143,12 @@ class VirusFtpHandler extends FtpEventHandler
         }
     }
 
+    /**
+     * Handle end of client data
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     protected void doClientDataEnd(AppTCPSession session)
     {
@@ -136,6 +172,12 @@ class VirusFtpHandler extends FtpEventHandler
         }
     }
 
+    /**
+     * Handle end of server data
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     protected void doServerDataEnd(AppTCPSession session)
     {
@@ -159,6 +201,14 @@ class VirusFtpHandler extends FtpEventHandler
         }
     }
 
+    /**
+     * Handle command
+     * 
+     * @param session
+     *        The session
+     * @param command
+     *        The command
+     */
     @Override
     protected void doCommand(AppTCPSession session, FtpCommand command)
     {
@@ -179,6 +229,14 @@ class VirusFtpHandler extends FtpEventHandler
         return;
     }
 
+    /**
+     * Handle reply
+     * 
+     * @param session
+     *        The session
+     * @param reply
+     *        The reply
+     */
     protected void doReply(AppTCPSession session, FtpReply reply)
     {
         if (reply.getReplyCode() == FtpReply.PASV || reply.getReplyCode() == FtpReply.EPSV) {
@@ -193,6 +251,15 @@ class VirusFtpHandler extends FtpEventHandler
         return;
     }
 
+    /**
+     * Handle trickle
+     * 
+     * @param session
+     *        The session
+     * @param b
+     *        The buffer
+     * @return The chunk
+     */
     private ChunkToken trickle(AppTCPSession session, ByteBuffer b)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
@@ -213,6 +280,13 @@ class VirusFtpHandler extends FtpEventHandler
         return new ChunkToken(b);
     }
 
+    /**
+     * Scan a stream
+     * 
+     * @param session
+     *        The session
+     * @return The streamer
+     */
     private TCPStreamer scan(AppTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
@@ -246,12 +320,24 @@ class VirusFtpHandler extends FtpEventHandler
         }
     }
 
+    /**
+     * Handle TCP finalized
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     public void handleTCPFinalized(AppTCPSession session)
     {
         session.cleanupTempFiles();
     }
 
+    /**
+     * Create a file to be scaned
+     * 
+     * @param session
+     *        The session
+     */
     private void createFile(AppTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
@@ -293,11 +379,26 @@ class VirusFtpHandler extends FtpEventHandler
 
     }
 
+    /**
+     * Add filename
+     * 
+     * @param ctlSessionId
+     *        The session ID
+     * @param fileName
+     *        The filename
+     */
     public static void addFileName(Long ctlSessionId, String fileName)
     {
         fileNamesByCtlSessionId.put(ctlSessionId, fileName);
     }
 
+    /**
+     * Remove filename
+     * 
+     * @param ctlSessionId
+     *        The session ID
+     * @return result
+     */
     public static String removeFileName(Long ctlSessionId)
     {
         if (fileNamesByCtlSessionId.containsKey(ctlSessionId)) {
@@ -306,6 +407,13 @@ class VirusFtpHandler extends FtpEventHandler
         return null;
     }
 
+    /**
+     * Check the ignore status for a host
+     * 
+     * @param host
+     *        The host to check
+     * @return To if ignored, otherwise false
+     */
     private boolean ignoredHost(InetAddress host)
     {
         if (host == null) {
@@ -336,6 +444,9 @@ class VirusFtpHandler extends FtpEventHandler
         return false;
     }
 
+    /**
+     * Clear the event handler cache
+     */
     protected void clearEventHandlerCache()
     {
     }

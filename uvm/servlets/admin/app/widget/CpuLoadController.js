@@ -25,12 +25,12 @@ Ext.define('Ung.widget.CpuLoadController', {
         this.lineChart = new Highcharts.Chart({
             chart: {
                 type: 'areaspline',
-                renderTo: view.lookupReference('cpulinechart').getEl().dom,
+                renderTo: view.lookup('cpulinechart').getEl().dom,
                 marginBottom: 15,
                 marginTop: 20,
                 //padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
-                animation: false,
+                animation: true,
                 style: {
                     fontFamily: 'Source Sans Pro',
                     fontSize: '12px'
@@ -161,15 +161,10 @@ Ext.define('Ung.widget.CpuLoadController', {
                 name: 'load',
                 data: (function () {
                     var data = [], time = Date.now(), i;
-                    try {
-                        time = rpc.systemManager.getMilliseconds();
-                    } catch (e) {
-                        console.log('Unable to get current millis.');
-                    }
                     time = Math.round(time/1000) * 1000;
-                    for (i = -19; i <= 0; i += 1) {
+                    for (i = -6; i <= 0; i += 1) {
                         data.push({
-                            x: time + i * 3000,
+                            x: time + i * 10000,
                             y: 0
                         });
                     }

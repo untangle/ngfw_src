@@ -1,6 +1,7 @@
 Ext.define('Ung.config.system.view.Backup', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.system.backup',
+    alias: 'widget.config-system-backup',
+    itemId: 'backup',
 
     viewModel: true,
 

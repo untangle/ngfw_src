@@ -30,7 +30,11 @@ public class Load
      */
     private final int timeframeSec;
 
-
+    /**
+     * Initialize instance of Load.
+     * @param  timeframeSec integer of timeframe in seconds.
+     * @return              instance of Load
+     */
     public Load( int timeframeSec )
     {
         this.timeframeSec = timeframeSec;
@@ -38,6 +42,11 @@ public class Load
         this.lastUpdate = System.currentTimeMillis();
     }
     
+    /**
+     * Add to the load.
+     * @param  times integer of count to increase
+     * @return       double new value of load.
+     */
     public double incrementLoad(int times)
     {
         long now = System.currentTimeMillis();
@@ -57,11 +66,20 @@ public class Load
         return this.load;
     }
     
+    /**
+     * Incrment load by 1.
+     * @return [description]
+     * @return       double new value of load.
+     */
     public double incrementLoad()
     {
         return incrementLoad(1);
     }
 
+    /**
+     * Return current load.
+     * @return       double current value of load.
+     */
     public double getLoad()
     {
         return incrementLoad(0);

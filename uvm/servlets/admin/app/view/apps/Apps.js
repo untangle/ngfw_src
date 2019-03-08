@@ -3,30 +3,25 @@ Ext.define('Ung.view.apps.Apps', {
     xtype: 'ung.apps',
     itemId: 'apps',
     layout: 'card',
-    /* requires-start */
-    requires: [
-        'Ung.view.apps.AppsController'
-    ],
-    /* requires-end */
+
+    itemType: Rpc.directData('rpc.skinInfo.appsViewType') === 'rack' ? 'rackitem' : 'simpleitem',
+
     controller: 'apps',
     viewModel: {
         data: {
-            onInstalledApps: false
+            onInstalledApps: true,
+            policyName: '',
+            appsCount: 0,
+            servicesCount: 0
         },
         stores: {
-            apps: {
-                // data: '{appsData}',
-                fields: ['name', 'displayName', 'url', 'type', 'status'],
-                sorters: [{
-                    property: 'viewPosition',
-                    direction: 'ASC'
-                }]
+            installableApps: {
+                sorters: [ { property: 'viewPosition', direction: 'ASC' }],
+            },
+            installableServices: {
+                sorters: [ { property: 'viewPosition', direction: 'ASC' }]
             }
         }
-    },
-
-    config: {
-        policy: undefined
     },
 
     defaults: {
@@ -35,103 +30,95 @@ Ext.define('Ung.view.apps.Apps', {
 
     dockedItems: [{
         xtype: 'toolbar',
+        ui: 'footer',
         dock: 'top',
-        border: false,
+        style: { background: '#D8D8D8' },
         items: [{
-            xtype: 'combobox',
-            editable: false,
-            multiSelect: false,
-            queryMode: 'local',
-            hidden: true,
-            bind: {
-                value: '{policyId}',
-                store: '{policies}',
-                hidden: '{!onInstalledApps}'
-            },
-            valueField: 'policyId',
-            displayField: 'displayName',
-            listeners: {
-                change: 'setPolicy'
-            }
-        }, {
             xtype: 'button',
-            html: 'Install Apps'.t(),
-            iconCls: 'fa fa-download',
-            hrefTarget: '_self',
-            hidden: true,
-            bind: {
-                href: '#apps/{policyId}/install',
-                hidden: '{!onInstalledApps}'
-            }
-        }, {
-            xtype: 'button',
-            html: 'Back to Apps'.t(),
+            text: 'Back to Apps',
             iconCls: 'fa fa-arrow-circle-left',
-            hrefTarget: '_self',
+            focusable: false,
             hidden: true,
             bind: {
-                href: '#apps/{policyId}',
+                text: 'Back to Apps (<strong>{policyName}</strong>)',
                 hidden: '{onInstalledApps}'
+            },
+            handler: 'backToApps'
+        }, {
+            xtype: 'button',
+            reference: 'policyBtn',
+            hidden: true,
+            iconCls: 'fa fa-file-text-o',
+            focusable: false,
+            bind: {
+                text: '{policyName}',
+                hidden: '{!onInstalledApps || !policyManagerInstalled}'
+            }
+        }, {
+            xtype: 'button',
+            text: 'Install Apps'.t(),
+            iconCls: 'fa fa-download',
+            focusable: false,
+            handler: 'showInstall',
+            hidden: true,
+            bind: {
+                hidden: '{!onInstalledApps}'
+            }
+        }, {
+            xtype: 'component',
+            reference: 'installHeader',
+            html: '',
+            hidden: true,
+            bind: {
+                html: 'Available Apps for &nbsp;<i class="fa fa-file-text-o"></i> <strong>{policyName}</strong>',
+                hidden: '{onInstalledApps || !policyManagerInstalled}'
             }
         }]
     }],
 
+
     items: [{
-        xtype: 'dataview',
-        scrollable: true,
         itemId: 'installedApps',
-        bind: '{apps}',
-        tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +
-            '<tpl for=".">' +
-                '<tpl if="type === \'FILTER\'">' +
-                '<a href="{url}" class="app-item">' +
-                '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
-                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                '<span class="app-name">{displayName}</span>' +
-                '</a>' +
-                '</tpl>' +
-            '</tpl>' +
-            '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
-            '<tpl for=".">' +
-                '<tpl if="type === \'SERVICE\'">' +
-                '<a href="{url}" class="app-item">' +
-                '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
-                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                '<span class="app-name">{displayName}</span>' +
-                '</a>' +
-                '</tpl>' +
-            '</tpl>',
-        itemSelector: 'a'
+        xtype: Rpc.directData('rpc.skinInfo.appsViewType') === 'rack' ? 'apps-rack' : 'apps-simple',
     }, {
-        xtype: 'dataview',
         scrollable: true,
+
         itemId: 'installableApps',
-        bind: {
-            store: '{apps}'
-        },
-        tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +'<tpl for=".">' +
-            '<tpl if="type === \'FILTER\'">' +
-                '<div class="app-install-item {status}">' +
-                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                '<i class="fa fa-download fa-3x"></i>' +
-                '<i class="fa fa-check fa-3x"></i>' +
-                '<span class="loader">Loading...</span>' +
-                '<h3>{displayName}</h3>' + '<p>{desc}</p>' +
-                '</div>' +
-                '</tpl>' +
-            '</tpl>' +
-            '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
-            '<tpl for=".">' +
-                '<tpl if="type === \'SERVICE\'">' +
-                '<div class="app-install-item {status}">' +
-                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                '<i class="fa fa-download fa-3x"></i>' +
-                '<i class="fa fa-check fa-3x"></i>' +
-                '<span class="loader">Loading...</span>' +
-                '<h3>{displayName}</h3>' + '<p>{desc}</p>' +
-                '</div>' +
-                '</tpl>' +
-            '</tpl>',
-        itemSelector: 'div'
+        layout: { type: 'vbox', align: 'stretch' },
+        items: [{
+            xtype: 'component',
+            cls: 'apps-title',
+            html: 'Apps'.t()
+        }, {
+            xtype: 'dataview',
+            bind: '{installableApps}',
+            tpl: '<tpl for=".">' +
+                    '<div class="app-install-item {extraCls}">' +
+                    '<img src="' + '/icons/apps/{name}.svg" width=80 height=80/>' +
+                    '<i class="fa fa-download fa-3x"></i>' +
+                    '<i class="fa fa-check fa-3x"></i>' +
+                    '<span class="loader">Loading...</span>' +
+                    '<h3>{displayName}</h3>' + '<p>{desc}</p>' +
+                    '</div>' +
+                '</tpl>',
+            itemSelector: 'div'
+        }, {
+            xtype: 'component',
+            cls: 'apps-title',
+            html: 'Service Apps'.t()
+        }, {
+            xtype: 'dataview',
+            bind: '{installableServices}',
+            tpl: '<tpl for=".">' +
+                    '<div class="app-install-item {extraCls}">' +
+                    '<img src="' + '/icons/apps/{name}.svg" width=80 height=80/>' +
+                    '<i class="fa fa-download fa-3x"></i>' +
+                    '<i class="fa fa-check fa-3x"></i>' +
+                    '<span class="loader">Loading...</span>' +
+                    '<h3>{displayName}</h3>' + '<p>{desc}</p>' +
+                    '</div>' +
+                '</tpl>',
+            itemSelector: 'div'
+        }]
     }]
 });

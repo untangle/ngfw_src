@@ -4,8 +4,6 @@
 package com.untangle.uvm;
 
 import java.net.InetAddress;
-import java.util.Iterator;
-import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -16,6 +14,9 @@ import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.app.SessionStatsEvent;
 import com.untangle.uvm.app.SessionTuple;
 
+/**
+ * NetcapConntrackHook is the global conntrack hook for netcap
+ */
 public class NetcapConntrackHook implements NetcapCallback
 {
     private static final int BYPASS_MARK = 0x01000000;
@@ -29,6 +30,10 @@ public class NetcapConntrackHook implements NetcapCallback
 
     private HashMap<SessionTuple,Long> conntrackSessionIdMap = new HashMap<SessionTuple, Long>();
     
+    /**
+     * getInstance gets the singleton instance
+     * @return singleton
+     */
     public static NetcapConntrackHook getInstance()
     {
         if ( INSTANCE == null )
@@ -37,22 +42,41 @@ public class NetcapConntrackHook implements NetcapCallback
         return INSTANCE;
     }
 
-    /* Singleton */
+    /**
+     * Singleton
+     */
     private NetcapConntrackHook() {}
 
+    /**
+     * init creates the instancen
+     */
     private static synchronized void init()
     {
         if ( INSTANCE == null )
             INSTANCE = new NetcapConntrackHook();
     }
 
+    /**
+     * event
+     * @param sessionId
+     */
     public void event( long sessionId ) {}
 
+    /**
+     * lookupSessionId - lookup the session ID in the conntrack map
+     * @param tuple 
+     * @return Session ID
+     */
     public Long lookupSessionId( SessionTuple tuple )
     {
         return conntrackSessionIdMap.get( tuple );
     }
     
+    /**
+     * event - process an conntrack event
+     * @param conntrackPtr
+     * @param type
+     */
     public void event( long conntrackPtr, int type )
     {
         if ( conntrackPtr == 0 ) {

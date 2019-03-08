@@ -1,10 +1,8 @@
 Ext.define('Ung.config.system.view.Regional', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.system.regional',
+    alias: 'widget.config-system-regional',
     itemId: 'regional',
-
     viewModel: true,
-
     scrollable: true,
 
     title: 'Regional'.t(),
@@ -98,6 +96,7 @@ Ext.define('Ung.config.system.view.Regional', {
                 disabled: true,
                 hidden: true,
                 value: new Date(),
+                format: 'timestamp_fmt'.t(),
                 bind: {
                     value: '{manualDate}',
                     format: '{manualDateFormat}',
@@ -119,6 +118,15 @@ Ext.define('Ung.config.system.view.Regional', {
                 store: '{timeZones}',
                 value: '{timeZone.ID}'
             },
+            listeners: {
+                change: function (ck, newValue) {
+                    // warn if changing timezone but dont warn on initial render
+                    if (ck.initialized) {
+                        Ext.MessageBox.alert('Timezone changed'.t(),"A reboot is required after changing the timezone!".t());
+                    }
+                    ck.initialized = true;
+                }
+            },
             displayField: 'name',
             valueField: 'value',
             editable: false,
@@ -138,13 +146,16 @@ Ext.define('Ung.config.system.view.Regional', {
                 value: '{languageSettings.language}'
             },
             displayField: 'name',
-            valueField: 'cc',
+            valueField: 'code',
             editable: false,
             queryMode: 'local',
             listConfig:{
                 getInnerTpl: function() {
                     return '<div data-qtip="{statistics}">{name}</div>';
                 }
+            },
+            listeners: {
+                change: 'languageChange'
             }
         }, {
             xtype: 'fieldset',
@@ -226,7 +237,7 @@ Ext.define('Ung.config.system.view.Regional', {
                     bind: '{timeFormat}',
                     store: [
                         ['h:i:s a', 'h:i:s a (e.g. 06:45:35 PM) - default'],
-                        ['G:i:s', 'G:i:s (e.g. 18:45:35)']
+                        ['H:i:s', 'H:i:s (e.g. 18:45:35)']
                     ],
                     queryMode: 'local',
                     editable: false

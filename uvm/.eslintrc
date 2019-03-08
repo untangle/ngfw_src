@@ -1,0 +1,29 @@
+{
+    "env": {
+        "browser": true
+    },
+    "extends": "eslint:recommended",
+
+    "rules": {
+        "indent": ["error", 4],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "no-console": "off"
+    },
+    "globals": {
+        "Ext": true,
+        "Highcharts": true,
+        "JSONRpcClient": true,
+        "Ung": true,
+        "Rpc": true,
+        "rpc": true,
+        "Util": true,
+        "Metrics": true,
+        "TableConfig": true,
+        "DashboardQueue": true,
+        "Renderer": true,
+        "Converter": true,
+        "Theme": true
+    }
+}

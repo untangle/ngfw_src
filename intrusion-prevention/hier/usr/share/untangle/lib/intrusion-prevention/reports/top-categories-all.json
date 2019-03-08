@@ -1,0 +1,18 @@
+{
+    "uniqueId": "intrusion-prevention-cMWjJBsIa",
+    "category": "Intrusion Prevention",
+    "description": "The number of intrusions detected by category.",
+    "displayOrder": 401,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "category",
+    "pieSumColumn": "count(*)",
+    "readOnly": true,
+    "table": "intrusion_prevention_events",
+    "title": "Top Categories (all)",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}
