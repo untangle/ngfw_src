@@ -433,4 +433,19 @@ class UvmTests(unittest.TestCase):
                 break
         assert("Connected" in result)
 
+    def test_140_change_language(self):
+        """Check if changing language converts the GUI"""
+        # Set language to Spanish
+        language_settings = uvmContext.languageManager().getLanguageSettings()
+        language_settings_orig = copy.deepcopy(language_settings)
+        language_settings['language'] = 'es'
+        uvmContext.languageManager().setLanguageSettings(language_settings)
+        result = subprocess.call('"wget -q -O -  -t 2 --timeout 10 --content-on-error http://localhost/admin/download" 2>&1 | grep -q "no permitido"', shell=True)
+
+        # revert language
+        uvmContext.languageManager().setLanguageSettings(language_settings_orig)
+        
+        assert(result)
+
+
 test_registry.register_module("uvm", UvmTests)
