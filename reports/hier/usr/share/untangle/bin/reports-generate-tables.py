@@ -13,11 +13,11 @@ import traceback
 import getopt
 
 def usage():
-     print """\
+     print("""\
 usage: %s [options]
 Options:
     -d <driver>     : "postgresql" or "sqlite"
-""" % sys.argv[0]
+""" % sys.argv[0])
 
 class ArgumentParser(object):
     def __init__(self):
@@ -38,13 +38,13 @@ class ArgumentParser(object):
                   handlers[opt[0]](opt[1])
              return args
         except getopt.GetoptError, exc:
-             print exc
+             print(exc)
              usage()
              exit(1)
 
 DRIVER = 'postgresql'
 PREFIX = '@PREFIX@'
-PYTHON_DIR = '%s/usr/lib/python%d.%d' % (PREFIX, sys.version_info[0], sys.version_info[1])
+PYTHON_DIR = '%s/usr/lib/python%d.%d/dist-packages' % (PREFIX, sys.version_info[0], sys.version_info[1])
 REPORTS_PYTHON_DIR = '%s/reports' % (PYTHON_DIR)
 
 if (PREFIX != ''):
@@ -83,9 +83,9 @@ for f in os.listdir(REPORTS_PYTHON_DIR):
           #obj = eval(name)
           try:
                if "generate_tables" in dir(app):
-                    # print "%s.generate_tables()" % name
+                    # print("%s.generate_tables()" % name)
                     app.generate_tables()
           except:
-               print "%s.generate_tables() Exception:" % name
+               print("%s.generate_tables() Exception:" % name)
                traceback.print_exc()
                

@@ -1,5 +1,0 @@
-#!/bin/dash
-
-# Make sure the www-data user is a member of the uvmlogin group
-# which allows the mod_python handler to make calls to the uvm
-usermod -G uvmlogin www-data

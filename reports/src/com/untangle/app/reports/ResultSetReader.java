@@ -28,11 +28,29 @@ public class ResultSetReader implements Runnable
 {
     private static final Logger logger = Logger.getLogger(ResultSetReader.class);
 
+    /**
+     * MAX_RESULTS defines the maximum # of results that can be serialized in memory at one time
+     * with getAllEvents()
+     * If more than this number of results is required it should be read my chunk
+     * with getNextChunk()
+     */
+    private static final int MAX_RESULTS = 500000;
+
     private ResultSet resultSet;
     private Connection connection;
     private Statement statement;
     private final Thread thread;
     
+    /**
+     * Initialize ResultSetReader
+     *
+     * @param resultSet
+     *  ResultSet object
+     * @param connection
+     *  Connection object
+     * @param statement
+     *  Statement object
+     */
     public ResultSetReader( ResultSet resultSet, Connection connection, Statement statement )
     {
         this.resultSet = resultSet;
@@ -52,16 +70,34 @@ public class ResultSetReader implements Runnable
         thread.start();
     }
 
+    /**
+     * Return the result set.
+     *
+     * @return
+     *  ResultSet object.
+     */
     public ResultSet getResultSet()
     {
         return this.resultSet;
     }
 
+    /**
+     * Return the connection
+     *
+     * @return
+     *  Connection object.
+     */
     public Connection getConnection()
     {
         return this.connection;
     }
 
+    /**
+     * Test if the result set is closed.
+     *
+     * @return
+     *  true if closed, false otherwise.
+     */
     public boolean isClosed()
     {
         try {
@@ -72,12 +108,20 @@ public class ResultSetReader implements Runnable
         }
     }
     
+    /**
+     * Get the next set of results.
+     *
+     * @param chunkSize
+     *  Maximum number of results to return.
+     * @return
+     *  ArrayList of result objects.
+     */
     public ArrayList<Object> getNextChunk( int chunkSize )
     {
         ArrayList<Object> newList = new ArrayList<Object>( chunkSize );
 
         try {
-            if ( resultSet.isClosed() ) {
+            if ( resultSet.isClosed()  ){
                 return newList;
             }
 
@@ -114,19 +158,29 @@ public class ResultSetReader implements Runnable
         return newList;
     }
 
+    /**
+     * Get all results in JSON format.
+     *
+     * @return
+     *  ArrayList of all results in JSON format.
+     */
     public ArrayList<JSONObject> getAllEvents()
     {
+        ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
+
         try {
             if (resultSet == null || connection == null)
-                return null;
+                return newList;
+            if ( resultSet.isClosed() || !resultSet.isBeforeFirst() /*isEmpty*/ )
+                return newList;
 
             ResultSetMetaData metadata = resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
-                
-            ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
 
-            while (resultSet.next()) {
+            int count = 0;
+            while (resultSet.next() && count < MAX_RESULTS) {
                 try {
+                    count++;
                     JSONObject row = new JSONObject();
                     for ( int i = 1 ; i < numColumns+1 ; i++ ) {
                         Object o = resultSet.getObject( i );
@@ -144,6 +198,10 @@ public class ResultSetReader implements Runnable
                     logger.warn("Failed to process row - skipping.",e);
                 }
             }
+            if ( count >= MAX_RESULTS ) {
+                logger.warn("Results truncated due to MAX_RESULTS");
+            }
+
             return newList;
         } catch (SQLException e) {
             logger.warn("Failed to query database", e );
@@ -153,6 +211,9 @@ public class ResultSetReader implements Runnable
         }
     }
     
+    /**
+     * Close the connection object.
+     */
     public synchronized void closeConnection()
     {
         if ( this.statement != null ) {

@@ -1,15 +1,20 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.license;
 
 import java.io.Serializable;
-import java.util.Date;
+
+import org.json.JSONObject;
+import org.json.JSONString;
 
 import org.apache.log4j.Logger;
 
+/**
+ * License revocations
+ */
 @SuppressWarnings("serial")
-public class LicenseRevocation implements Serializable
+public class LicenseRevocation implements Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -31,6 +36,9 @@ public class LicenseRevocation implements Serializable
 
     /**
      * Returns the unique identifier of the product of this license
+     *
+     * @return
+     *     Name of product
      */
     public String getName()
     {
@@ -44,6 +52,9 @@ public class LicenseRevocation implements Serializable
 
     /**
      * Returns the unique identifier of the product of this license
+     *
+     * @return
+     *     UID for license revocation.
      */
     public String getUID()
     {
@@ -60,4 +71,15 @@ public class LicenseRevocation implements Serializable
         return "<" + this.uid + "/" + this.name + ">";
     }
 
+    /**
+     * Convert settings to JSON string.
+     *
+     * @return
+     *      JSON string.
+     */
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
 }

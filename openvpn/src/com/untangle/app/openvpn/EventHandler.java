@@ -1,65 +1,87 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.openvpn;
 
-import java.net.InetAddress;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.app.IPMatcher;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import org.apache.log4j.Logger;
 
+/**
+ * Event handler for OpenVPN traffic
+ * 
+ * @author mahotz
+ * 
+ */
 class EventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger( EventHandler.class );
+    private final Logger logger = Logger.getLogger(EventHandler.class);
 
     private final OpenVpnAppImpl app;
 
-    public EventHandler( OpenVpnAppImpl app )
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application that created the handler
+     */
+    public EventHandler(OpenVpnAppImpl app)
     {
         super(app);
 
         this.app = app;
     }
 
-    public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
-        
+    /**
+     * Handler for new TCP sessions
+     * 
+     * @param sessionRequest
+     *        The TCP session request
+     */
+    public void handleTCPNewSessionRequest(TCPNewSessionRequest sessionRequest)
+
     {
-        handleNewSessionRequest( sessionRequest );
+        handleNewSessionRequest(sessionRequest);
     }
 
-    public void handleUDPNewSessionRequest( UDPNewSessionRequest sessionRequest )
-        
+    /**
+     * Handler for new UDP sessions
+     * 
+     * @param sessionRequest
+     *        The UDP session request
+     */
+    public void handleUDPNewSessionRequest(UDPNewSessionRequest sessionRequest)
+
     {
-        handleNewSessionRequest( sessionRequest );
+        handleNewSessionRequest(sessionRequest);
     }
 
-    private void handleNewSessionRequest( IPNewSessionRequest request )
+    /**
+     * Handler for all sessions
+     * 
+     * @param request
+     *        The IP session request
+     */
+    private void handleNewSessionRequest(IPNewSessionRequest request)
     {
-        if ( logger.isDebugEnabled()) logger.debug( "New session: [" + request.id() + "]" );
+        if (logger.isDebugEnabled()) logger.debug("New session: [" + request.id() + "]");
 
-        if ( request.getClientIntf() != IntfConstants.OPENVPN_INTF && request.getServerIntf() != IntfConstants.OPENVPN_INTF ) {
-            /* Nothing to do - not VPN traffic*/
+        if (request.getClientIntf() != InterfaceSettings.OPENVPN_INTERFACE_ID && request.getServerIntf() != InterfaceSettings.OPENVPN_INTERFACE_ID) {
+            /* Nothing to do - not VPN traffic */
             request.release();
             return;
-        }
-        else if ( request.getClientIntf() == IntfConstants.OPENVPN_INTF && request.getServerIntf() == IntfConstants.OPENVPN_INTF ) {
+        } else if (request.getClientIntf() == InterfaceSettings.OPENVPN_INTERFACE_ID && request.getServerIntf() == InterfaceSettings.OPENVPN_INTERFACE_ID) {
             /* from the VPN to the VPN? just release it */
             request.release();
-        }
-        else if ( request.getClientIntf() == IntfConstants.OPENVPN_INTF ) {
+        } else if (request.getClientIntf() == InterfaceSettings.OPENVPN_INTERFACE_ID) {
             /* OPENVPN client going to another interface */
             app.incrementPassCount();
             request.release();
-        }
-        else {
+        } else {
             /* Local user trying to reach a OPENVPN client */
             app.incrementPassCount();
             request.release();

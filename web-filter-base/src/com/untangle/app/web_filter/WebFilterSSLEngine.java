@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: WebFilterSSLEngine.java 43513 2016-05-31 18:44:31Z mahotz $
  */
 
@@ -9,12 +9,10 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.KeyManagerFactory;
 
 import java.net.InetAddress;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.io.FileInputStream;
 import java.security.cert.CertificateException;
@@ -28,6 +26,16 @@ import com.untangle.uvm.UvmContextFactory;
 
 import org.apache.log4j.Logger;
 
+/**
+ * We do just enough processing of HTTPS sessions using SSLEngine so we can
+ * return a block page when required. It will always cause a browser warning,
+ * either because our cert isn't trusted or because we're redirecting to a
+ * different place than the client requested, but we figure in most cases it's
+ * better than just dropping the session and letting the client timeout.
+ * 
+ * @author mahotz
+ * 
+ */
 public class WebFilterSSLEngine
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -37,6 +45,16 @@ public class WebFilterSSLEngine
     private String nonceStr;
     private String appStr;
 
+    /**
+     * Constructor
+     * 
+     * @param session
+     *        The session
+     * @param nonceStr
+     *        The nonce
+     * @param appStr
+     *        The application name
+     */
     protected WebFilterSSLEngine(AppTCPSession session, String nonceStr, String appStr)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
@@ -68,13 +86,17 @@ public class WebFilterSSLEngine
         }
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Handles a chunk of client data
+     * 
+     * @param buff
+     *        The client data
+     */
     public void handleClientData(ByteBuffer buff)
     {
         // pass the data to the client data worker function
         boolean success = false;
-        
+
         try {
             success = clientDataWorker(buff);
         }
@@ -85,7 +107,7 @@ public class WebFilterSSLEngine
         }
 
         // null result means something went haywire
-        if ( ! success ) {
+        if (!success) {
             session.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, null);
             session.resetClient();
             session.resetServer();
@@ -97,6 +119,15 @@ public class WebFilterSSLEngine
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Processes a chunk of client data
+     * 
+     * @param data
+     *        The data
+     * @return True if processing was successful, otherwise false
+     * @throws Exception
+     */
+
     private boolean clientDataWorker(ByteBuffer data) throws Exception
     {
         ByteBuffer target = ByteBuffer.allocate(32768);
@@ -105,7 +136,7 @@ public class WebFilterSSLEngine
 
         logger.debug("PARAM_BUFFER = " + data.toString());
 
-        while ( ! done ) {
+        while (!done) {
             status = sslEngine.getHandshakeStatus();
             logger.debug("STATUS = " + status);
 
@@ -120,7 +151,8 @@ public class WebFilterSSLEngine
                 return false;
             }
 
-            switch (status) {
+            switch (status)
+            {
             // should never happen since this will only be returned from
             // a call to wrap or unwrap but we include it to be complete
             case FINISHED:
@@ -157,8 +189,16 @@ public class WebFilterSSLEngine
         return done;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NEED_TASK. We call run for all outstanding
+     * tasks and then return false to break out of the parser processing loop so
+     * we can receive more data.
+     * 
+     * @param data
+     *        The data received
+     * @return False
+     * @throws Exception
+     */
     private boolean doNeedTask(ByteBuffer data) throws Exception
     {
         Runnable runnable;
@@ -171,8 +211,16 @@ public class WebFilterSSLEngine
         return false;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NEED_UNWRAP
+     * 
+     * @param data
+     *        The data received
+     * @param target
+     *        The buffer to store the unwrapped data
+     * @return True to continue the parser loop, false to break out
+     * @throws Exception
+     */
     private boolean doNeedUnwrap(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result;
@@ -188,29 +236,34 @@ public class WebFilterSSLEngine
             data.compact();
             logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
 
-            session.setClientBuffer( data );
+            session.setClientBuffer(data);
             return true;
         }
 
         // check for engine problems
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine unwrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine unwrap fault");
 
         // if the engine result hasn't changed we need more processing
-        if (result.getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)
-            return false;
+        if (result.getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP) return false;
 
         // the unwrap call shouldn't produce data during handshake and if
         // that is the case we return null here allowing the loop to continue
-        if (result.bytesProduced() == 0)
-            return false;
+        if (result.bytesProduced() == 0) return false;
 
         // unwrap calls during handshake should never produce data
         throw new Exception("SSLEngine produced unexpected data during handshake unwrap");
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when SSLEngine status = NEED_WRAP
+     * 
+     * @param data
+     *        The data received
+     * @param target
+     *        The buffer to store the wrapped data
+     * @return True to continue the parser loop, false to break out
+     * @throws Exception
+     */
     private boolean doNeedWrap(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result;
@@ -220,27 +273,34 @@ public class WebFilterSSLEngine
         logger.debug("EXEC_WRAP " + result.toString());
 
         // check for engine problems
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine wrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
         // if the engine result hasn't changed we need more processing
-        if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP)
-            return false;
+        if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP) return false;
 
         // if the wrap call didn't produce any data return null
-        if (result.bytesProduced() == 0)
-            return false;
+        if (result.bytesProduced() == 0) return false;
 
         // the wrap call produced some data so return it to the client
         target.flip();
         ByteBuffer array[] = new ByteBuffer[1];
         array[0] = target;
-        session.sendDataToClient( array );
+        session.sendDataToClient(array);
         return true;
     }
 
-    // ------------------------------------------------------------------------
-
+    /**
+     * Called when we receive data and dataMode is true, meaning we're done with
+     * the handshake and we're now passing data back and forth between the two
+     * sides.
+     * 
+     * @param data
+     *        The data received
+     * @param target
+     *        The buffer to store the unwrapped data
+     * @return True to continue the parser loop, false to break out
+     * @throws Exception
+     */
     private boolean doNotHandshaking(ByteBuffer data, ByteBuffer target) throws Exception
     {
         SSLEngineResult result = null;
@@ -252,21 +312,24 @@ public class WebFilterSSLEngine
         logger.debug("LOCAL_BUFFER = " + target.toString());
 
         // make sure we get a good status return from the SSL engine
-        if (result.getStatus() != SSLEngineResult.Status.OK)
-            throw new Exception("SSLEngine unwrap fault");
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine unwrap fault");
 
         // if unwrap doesn't produce any data then we are handshaking and 
         // must return null to let the handshake process continue
-        if (result.bytesProduced() == 0)
-            return false;
+        if (result.bytesProduced() == 0) return false;
 
         // when unwrap finally returns some data it will be the client request
         logger.debug("CLIENT REQUEST = " + new String(target.array(), 0, target.position()));
 
         InetAddress host = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
+        String hostStr = host.getHostAddress().toString();
+        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+        if ( httpPort != 80 ) {
+            hostStr = hostStr + ":" + httpPort;
+        }
 
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: http://" + host.getHostAddress().toString() + "/web-filter/blockpage?nonce=" + nonceStr + "&appid=" + appStr + "\r\n";
+        vector += "Location: http://" + hostStr + "/web-filter/blockpage?nonce=" + nonceStr + "&appid=" + appStr + "\r\n";
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";
@@ -290,20 +353,42 @@ public class WebFilterSSLEngine
         ByteBuffer array[] = new ByteBuffer[1];
         obuff.flip();
         array[0] = obuff;
-        session.sendDataToClient( array );
+        session.sendDataToClient(array);
         return true;
     }
 
+    /**
+     * This is a dumb trust manager that will blindly trust all server
+     * certficiates. We use it here simply to prevent SSLEngine from loading the
+     * cacerts since we don't ever interact with the server.
+     */
     private TrustManager trust_all_certificates = new X509TrustManager()
     {
+        /**
+         * Throw nothing, trust everything
+         * 
+         * @param chain
+         * @param authType
+         * @throws CertificateException
+         */
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException
         {
         }
 
+        /**
+         * Throw nothing, trust everything
+         * 
+         * @param chain
+         * @param authType
+         * @throws CertificateException
+         */
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException
         {
         }
 
+        /**
+         * @return null to accept all issuers
+         */
         public X509Certificate[] getAcceptedIssuers()
         {
             return null;

@@ -5,7 +5,6 @@ package com.untangle.uvm;
 
 import java.util.Set;
 import java.util.List;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
@@ -13,19 +12,13 @@ import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.AppTCPSession;
-import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.SessionEventHandler;
-import com.untangle.uvm.app.App;
 
 /**
- * PipelineConnectorImpl is the implementation of a single PipelineConnector.
- * Status and control of a pipe happen here.
- * Events are handled in Dispatcher instead.
+ * PipelineConnectorImpl is the implementation of a single PipelineConnector. Status and control of a pipe happen here. Events are handled in Dispatcher instead.
  */
 public class PipelineConnectorImpl implements PipelineConnector
 {
@@ -63,11 +56,36 @@ public class PipelineConnectorImpl implements PipelineConnector
     
     protected static final Logger logger = Logger.getLogger( PipelineConnectorImpl.class );
     
+    /**
+     * PipelineConnectorImpl constructor
+     * @param name
+     * @param app
+     * @param subscription
+     * @param listener
+     * @param inputFitting
+     * @param outputFitting
+     * @param affinity
+     * @param affinityStrength
+     * @param premium
+     */
     public PipelineConnectorImpl( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium )
     {
         this( name, app, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, null );
     }
 
+    /**
+     * PipelineConnectorImpl constructor
+     * @param name
+     * @param app
+     * @param subscription
+     * @param listener
+     * @param inputFitting
+     * @param outputFitting
+     * @param affinity
+     * @param affinityStrength
+     * @param premium
+     * @param buddy
+     */
     public PipelineConnectorImpl( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy )
     {
         this.name = name;
@@ -86,40 +104,133 @@ public class PipelineConnectorImpl implements PipelineConnector
             dispatcher.setSessionEventHandler( listener );
     }
     
+    /**
+     * isEnabled
+     * @return enabled
+     */
     public boolean isEnabled()
     {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled)
+    /**
+     * setEnabled
+     * @param newValue
+     */
+    public void setEnabled(boolean newValue)
     {
-        this.enabled = enabled;
+        this.enabled = newValue;
     }
 
-    public String getName() { return this.name; }
-    public String getBuddy() { return this.buddy; }
-    public App getApp() { return this.app; }
-    public App app() { return this.app; }
-    public Affinity getAffinity() { return this.affinity; }
-    public Integer getAffinityStrength() { return this.affinityStrength; }
-    public Dispatcher getDispatcher() { return dispatcher; }
-    public boolean isPremium() { return premium; }
+    /**
+     * getName
+     * @return name
+     */
+    public String getName()
+    {
+        return this.name;
+    }
+
+    /**
+     * getBuddy
+     * @return buddy
+     */
+    public String getBuddy()
+    {
+        return this.buddy;
+    }
+
+    /**
+     * getApp
+     * @return app
+     */
+    public App getApp()
+    {
+        return this.app;
+    }
+
+    /**
+     * app (alias for getApp)
+     * @return app
+     */
+    public App app()
+    {
+        return this.app;
+    }
+
+    /**
+     * getAffinity
+     * @return affinity
+     */
+    public Affinity getAffinity()
+    {
+        return this.affinity;
+    }
+
+    /**
+     * getAffinityStrength
+     * @return affinityStrength
+     */
+    public Integer getAffinityStrength()
+    {
+        return this.affinityStrength;
+    }
+
+    /**
+     * getDispatcher
+     * @return dispatcher
+     */
+    public Dispatcher getDispatcher()
+    {
+        return dispatcher;
+    }
+
+    /**
+     * isPremium
+     * @return premium
+     */
+    public boolean isPremium()
+    {
+        return premium;
+    }
     
+    /**
+     * getInputFitting returns the input fitting
+     * (the type of input this PipelineConnector takes)
+     * This is used to calculate which PipelineConnectors can be connected
+     * after this PipelineConnector
+     * @return Fitting
+     */
     public Fitting getInputFitting()
     {
         return inputFitting;
     }
 
+    /**
+     * getOutputFitting returns the output fitting
+     * (the type of output this PipelineConnector outputs)
+     * This is used to calculate which PipelineConnectors can be connected
+     * after this PipelineConnector
+     * @return Fitting
+     */
     public Fitting getOutputFitting()
     {
         return outputFitting;
     }
 
+    /**
+     * get the AppProperties for the app that owns this PipelineConnector
+     * @return AppProperties
+     */
     public AppProperties appProperties()
     {
         return app().getAppProperties();
     }
 
+    /**
+     * Gets a list of the session IDs currently being processed by this PipelineConnector
+     * @return list
+     */
     public long[] liveSessionIds()
     {
         if (dispatcher == null)
@@ -127,6 +238,10 @@ public class PipelineConnectorImpl implements PipelineConnector
         return dispatcher.liveSessionIds();
     }
 
+    /**
+     * Gets the AppSessions currently being processed by this PipelineConnector
+     * @return list
+     */
     public List<AppSession> liveSessions()
     {
         if (dispatcher != null)
@@ -139,7 +254,6 @@ public class PipelineConnectorImpl implements PipelineConnector
      * This is called by the App (or AppManager?) to disconnect
      * from a live PipelineConnector. Since it is live we must be sure to shut down the
      * Dispatcher nicely (in comparison to shutdown, below).
-     *
      */
     public void destroy()
     {
@@ -156,6 +270,7 @@ public class PipelineConnectorImpl implements PipelineConnector
 
     /**
      * Add a session to the map of active sessions.
+     * @param session
      * @return True if the session was added, false if the agent is dead, or the session
      *   has already been added.
      */
@@ -166,6 +281,7 @@ public class PipelineConnectorImpl implements PipelineConnector
 
     /**
      * Remove a session from the map of active sessions associated with this netcap agent.
+     * @param session
      * @return True if the session was removed, false if the session was not in the list 
      *   of active session.
      */
@@ -174,6 +290,11 @@ public class PipelineConnectorImpl implements PipelineConnector
         return activeSessions.remove( session );
     }
 
+    /**
+     * returns true if this PipelineConnector is subscribed to this session attributes
+     * @param tuple
+     * @return true if subscribed, false otherwise
+     */
     public boolean matches( com.untangle.uvm.app.SessionTuple tuple )
     {
         if ( !enabled ) {
@@ -187,6 +308,10 @@ public class PipelineConnectorImpl implements PipelineConnector
         return true;
     }
     
+    /**
+     * toString
+     * @return string
+     */
     public String toString()
     {
         return this.name;

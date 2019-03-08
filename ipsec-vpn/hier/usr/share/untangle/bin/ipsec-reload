@@ -1,18 +1,18 @@
 #!/bin/dash
 
 # Stop the xlt2pd and ipsec daemons
-/etc/init.d/xl2tpd stop 2>&1 1>> /dev/null
-/etc/init.d/ipsec stop 2>&1 1>> /dev/null
+systemctl stop xl2tpd 2>&1 1>> /dev/null
+systemctl stop ipsec 2>&1 1>> /dev/null
 
 # Start the xl2tpd and ipsec daemons
-/etc/init.d/ipsec start 2>&1 1>> /dev/null
-/etc/init.d/xl2tpd start 2>&1 1>> /dev/null
+systemctl start ipsec 2>&1 1>> /dev/null
+systemctl start xl2tpd 2>&1 1>> /dev/null
 
 # Call the script to create the L2TP interface status file
 /usr/share/untangle/bin/ipsec-create-statfile
 
 # Update the iptables rules
-/etc/untangle-netd/iptables-rules.d/710-ipsec
-/etc/untangle-netd/iptables-rules.d/711-xauth
+/etc/untangle/iptables-rules.d/710-ipsec
+/etc/untangle/iptables-rules.d/711-xauth
 
 exit 0

@@ -9,14 +9,28 @@ Ext.define('Ung.config.email.EmailTestController', {
             processing: true,
             processingIcon: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'
         });
-        rpc.UvmContext.mailSender().sendTestMessage(function (result, ex) {
+        Rpc.asyncData('rpc.UvmContext.mailSender.sendTestMessage', v.down('textfield').getValue())
+        .then(function (result) {
+            if(Util.isDestroyed(vm, btn)){
+                return;
+            }
+            if (result == 'Completed') {
+                vm.set({
+                    processing: null,
+                    processingIcon: '<i class="fa fa-check fa-3x fa-fw" style="color: green;"></i> <br/>' + 'Email sent. Verify successful delivery with recipient.'.t()
+                });
+            } else {
+                vm.set({
+                    processing: null,
+                    processingIcon: '<i class="fa fa-close fa-3x fa-fw" style="color: red;"></i> <br/>' + result
+                });
+            }
             btn.setDisabled(false);
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-            vm.set({
-                processing: null,
-                processingIcon: '<i class="fa fa-check fa-3x fa-fw" style="color: green;"></i> <br/>' + 'Success'.t()
-            });
-        }, v.down('textfield').getValue());
+        }, function(ex){
+            if(!Util.isDestroyed(btn)){
+                btn.setDisabled(false);
+            }
+        });
     },
     cancel: function () {
         this.getView().close();

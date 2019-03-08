@@ -21,7 +21,7 @@
 
   <servlet>
     <servlet-name>JSONRPCServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.jabsorb.UtJsonRpcServlet</servlet-class>
+    <servlet-class>com.untangle.uvm.admin.jabsorb.UtJsonRpcServlet</servlet-class>
     <init-param>
       <param-name>gzip_threshold</param-name>
       <param-value>200</param-value>
@@ -35,7 +35,7 @@
 
   <servlet>
     <servlet-name>UploadServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.UploadServlet</servlet-class>
+    <servlet-class>com.untangle.uvm.admin.servlet.UploadServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
@@ -45,7 +45,7 @@
 
   <servlet>
     <servlet-name>DownloadServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.DownloadServlet</servlet-class>
+    <servlet-class>com.untangle.uvm.admin.servlet.DownloadServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
@@ -55,7 +55,7 @@
 
   <servlet>
     <servlet-name>I18NServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.I18NServlet</servlet-class>
+    <servlet-class>com.untangle.uvm.admin.servlet.I18NServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
@@ -65,7 +65,7 @@
 
   <servlet>
     <servlet-name>GridSettingsServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.GridSettingsServlet</servlet-class>
+    <servlet-class>com.untangle.uvm.admin.servlet.GridSettingsServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>

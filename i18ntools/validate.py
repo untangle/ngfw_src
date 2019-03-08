@@ -45,10 +45,10 @@ def main(argv):
     for id in language_ids:
         language = Languages.get_by_id(id)
         po = i18n.PoFile(language=language["id"])
-        print "\tProcessing: %s, %s," % (language["name"], po.file_name)
+        print("\tProcessing: %s, %s," % (language["name"], po.file_name))
         po.load()
-        print ""
-        print "record count=%d" % (len(po.records)),
+        print("")
+        print("record count=%d" % (len(po.records)),)
         character_count = 0
         word_count = 0
         for record in po.records:
@@ -59,7 +59,7 @@ def main(argv):
             if len("".join(record.msg_str)) == 0:
                 character_count = character_count + len(record.msg_id)
                 word_count = word_count + len(re.findall(r'\w+', record.msg_id))
-        print ", %d/%d chars/words to translate" % (character_count, word_count)
+        print(", %d/%d chars/words to translate" % (character_count, word_count))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

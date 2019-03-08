@@ -1,5 +1,5 @@
 /**
- * $Id: FacebookAuthenticator.java,v 1.00 2017/03/03 19:30:10 dmorris Exp $
+ * $Id: RadiusManagerImpl.java,v 1.00 2017/03/03 19:30:10 dmorris Exp $
  * 
  * Copyright (c) 2003-2017 Untangle, Inc.
  *
@@ -11,10 +11,6 @@
  * with Untangle.
  */
 package com.untangle.app.directory_connector;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collections;
 
 import org.apache.log4j.Logger;
 
@@ -40,12 +36,23 @@ public class RadiusManagerImpl
      */
     private RadiusLdapAdapter radiusAdapter;
 
+    /**
+     * Radius Manager constructor.
+     *
+     * @param settings  Radius settings.
+     * @param app       Directory Connector Application
+     */
     public RadiusManagerImpl( RadiusSettings settings, DirectoryConnectorApp app )
     {
         this.app = app;
         setSettings(settings);
     }
 
+    /**
+     * Configure Radius settings.
+     *
+     * @param settings  Radius settings.
+     */
     public void setSettings( RadiusSettings settings )
     {
         this.currentSettings = settings;
@@ -53,6 +60,14 @@ public class RadiusManagerImpl
         radiusAdapter = new RadiusLdapAdapter(settings);
     }
     
+    /**
+     * Test Radius settings against server
+     *
+     * @param newSettings  Directory connector settings.
+     * @param username  Username to try
+     * @param password  Password to try.
+     * @return Result of connection attempt.
+     */
     public String getRadiusStatusForSettings( DirectoryConnectorSettings newSettings, String username, String password )
     {
         boolean success = false;
@@ -92,6 +107,13 @@ public class RadiusManagerImpl
             return "RADIUS authentication failure.";
     }
 
+    /**
+     * Perform authentication against Radius server.
+     *
+     * @param username Username to authenticate.
+     * @param pwd Password for the user.
+     * @return true if authenticated against a server, false if not.
+     */
     public boolean authenticate( String username, String pwd )
     {
         if (username == null || username.equals("") || pwd == null || pwd.equals("")) 

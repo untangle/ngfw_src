@@ -3,6 +3,9 @@
  */
 package com.untangle.jnetcap;
 
+/**
+ * Port range represents a range of ports
+ */
 public class PortRange
 {
     private final int low;
@@ -27,6 +30,7 @@ public class PortRange
 
     /**
      * Retrieve the low value
+     * @return the low value
      */
     public int low()
     {
@@ -35,12 +39,18 @@ public class PortRange
 
     /**
      * Retrieve the high value
+     * @return the high value
      */
     public int high()
     {
         return high;
     }
 
+    /**
+     * True if the two objects are equal
+     * @param o - the object
+     * @return boolean
+     */
     public boolean equals(Object o)
     {
         if (!(o instanceof PortRange)) {
@@ -51,6 +61,11 @@ public class PortRange
         }
     }
 
+    /**
+     * Overridden hash function
+     * @return hash
+     */
+    @Override
     public int hashCode()
     {
         return low*high;

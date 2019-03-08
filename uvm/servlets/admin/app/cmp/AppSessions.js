@@ -14,16 +14,14 @@ Ext.define('Ung.cmp.AppSessions', {
 
     disabled: true,
     bind: {
-        disabled: '{instance.targetState !== "RUNNING"}',
+        disabled: '{!state.on}',
     },
 
     layout: 'fit',
-    // bodyPadding: '10 10 10 0',
     items: [{
         xtype: 'component',
         reference: 'appchart',
         width: '100%',
         height: '100%'
-        // height: 150
     }]
 });

@@ -12,8 +12,14 @@ import org.apache.commons.codec.binary.Base64;
 
 import com.untangle.uvm.PasswordUtil;
 
+import org.json.JSONString;
+import org.json.JSONObject;
+
+/**
+ * ReportsUser settings.
+ */
 @SuppressWarnings("serial")
-public class ReportsUser implements Serializable
+public class ReportsUser implements Serializable, JSONString
 {
     private String emailAddress;
     private boolean emailAlerts = false;
@@ -71,5 +77,11 @@ public class ReportsUser implements Serializable
         if ( "".equals( passwordHashBase64 ) )
             return;
         this.passwordHash = Base64.decodeBase64(passwordHashBase64.getBytes());
+    }
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 }

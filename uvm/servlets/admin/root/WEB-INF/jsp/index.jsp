@@ -4,27 +4,42 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <title>Untangle - ${buildStamp}</title>
+        <title>${companyName}</title>
 
+        <!-- JsonRPC -->
         <script src="/jsonrpc/jsonrpc.js"></script>
-        <script src="/highcharts-5.0.9/highstock.js"></script>
-        <script src="/highcharts-5.0.9/highcharts-3d.js"></script>
+
+        <!-- Highchart lib, map -->
+        <script src="/highcharts-6.0.2/highstock.js"></script>
+        <script src="/highcharts-6.0.2/highcharts-3d.js"></script>
+        <script src="/highcharts-6.0.2/highcharts-more.js"></script>
+        <script src="/highcharts-6.0.2/exporting.js"></script>
+        <script src="/highcharts-6.0.2/export-data.js"></script>
+        <script src="/highcharts-6.0.2/no-data-to-display.js"></script>
+        <script src="/highcharts-6.0.2/map.js"></script>
+        <script src="/highcharts-6.0.2/proj4.js"></script>
 
         <!-- ExtJS lib & theme -->
+        <c:set var="debug" value="${param['debug']}"/>
+        <c:choose>
+            <c:when test="${debug == '1' or '@PREFIX@' != ''}">
         <script src="/ext6.2/ext-all-debug.js"></script>
+            </c:when>
+            <c:otherwise>
+        <script src="/ext6.2/ext-all.js"></script>
+            </c:otherwise>
+        </c:choose>
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
-        <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
+        <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" type="text/css" />
 
-        <%-- Triton theme already contains fontawesome --%>
-        <c:if test="${extjsTheme!='triton'}">
-        <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-        </c:if>
+        <!-- FontAwesome -->
+        <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 
         <%-- Import custom fonts (see sass/_vars.scss)--%>
-        <link href="/ext6.2/fonts/source-sans-pro/css/fonts.css" rel="stylesheet" />
-        <link href="/ext6.2/fonts/roboto-condensed/css/fonts.css" rel="stylesheet" />
+        <link href="/ext6.2/fonts/source-sans-pro/css/fonts.css" rel="stylesheet" type="text/css" />
+        <link href="/ext6.2/fonts/roboto-condensed/css/fonts.css" rel="stylesheet" type="text/css" />
 
-        <link href="styles/ung-all.css" rel="stylesheet" />
+        <link href="styles/ung-all.css" rel="stylesheet" type="text/css" />
 
         <%-- app loader style --%>
         <style type="text/css">
@@ -48,62 +63,23 @@
             }
         </style>
 
+        <script src="/script/common/bootstrap.js"></script>
         <script>
-            Highcharts.setOptions({
-                global: {
-                    useUTC: false
-                }
-            });
-
-            // JSON Rpc client
-            var rpc = new JSONRpcClient('/admin/JSON-RPC');
-
-            Ext.QuickTips.init();
-
-            // Disable Ext Area to avoid unwanted debug messages
-            Ext.enableAria = false;
-            Ext.enableAriaButtons = false;
-            Ext.enableAriaPanels = false;
-            Ext.supports.MouseWheel = false;
-
-            // IMPORTANT! override the default models ext idProperty so it does not interfere with backend 'id'
-            Ext.data.Model.prototype.idProperty = '_id';
-
             Ext.onReady(function () {
-                try {
-                    var startUpInfo = rpc.UvmContext.getWebuiStartupInfo();
-                } catch (ex) {
-                    alert(ex);
-                    // Ext.get('app-loader').destroy();
-                }
-                Ext.apply(rpc, startUpInfo);
-
-                if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
-                if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
-                if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
-                if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
-
-
-                String.prototype.t = function() {
-                    return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
-                };
-
-                // Ext.application({
-                //     name: 'Ung',
-                //     extend: 'Ung.Application',
-                // });
-
-                console.log(rpc.appManager);
-
-                // load the untangle app only after the rpc is in place and translations set
-                Ext.Loader.loadScript({
-                    url: 'script/ung-all.js',
-                    onLoad: function () {
-                        Ext.application({
-                            name: 'Ung',
-                            extend: 'Ung.Application'
-                        });
-                    }
+                // setups all initializations and load required scrips
+                Bootstrap.load([
+                    '/script/common/util-all.js', // include custom grid module
+                    '/script/common/reports-all.js', // include reports module
+                    '/script/common/ungrid-all.js', // include custom grid module
+                    'script/ung-all.js'
+                ], 'ADMIN', function (ex) {
+                    if (ex) { console.error(ex); return; };
+                    // if everything is initialized just launch the application
+                    Ext.application({
+                        extend: 'Ung.Application',
+                        namespace: 'Ung',
+                        context: 'ADMIN'
+                    });
                 });
             });
         </script>
@@ -112,7 +88,7 @@
     <body>
         <div id="app-loader">
             <div style="position: absolute; left: 50%; top: 30%; margin-left: -75px; margin-top: -60px; width: 150px; height: 140px; font-size: 16px;">
-                <img src="/images/BrandingLogo.png"/>
+                <img src="/images/BrandingLogo.png" style="max-width: 150px; max-height: 140px;"/>
                 <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
             </div>
         </div>

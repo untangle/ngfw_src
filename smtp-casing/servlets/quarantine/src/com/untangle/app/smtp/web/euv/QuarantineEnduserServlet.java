@@ -34,11 +34,22 @@ public class QuarantineEnduserServlet extends HttpServlet
     private QuarantineUserView m_quarantine;
     private SafelistManipulation m_safelist;
 
+    /**
+     * Initialize the container.
+     */
     public QuarantineEnduserServlet()
     {
         assignInstance(this);
     }
 
+    /**
+     * Container service
+     * 
+     * @param  req              HttpServletRequest object.
+     * @param  resp             HttpServletResponse object.
+     * @throws ServletException If there's an problem with the servlet.
+     * @throws IOException      General input/ooutput error.
+     */
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
@@ -48,6 +59,8 @@ public class QuarantineEnduserServlet extends HttpServlet
 
     /**
      * Hack, 'cause servlets suck
+     *
+     * @return QuarantineEnduserServlet instance.
      */
     public static QuarantineEnduserServlet instance()
     {
@@ -122,6 +135,11 @@ public class QuarantineEnduserServlet extends HttpServlet
         return m_quarantine;
     }
 
+    /**
+     * Get the maximum time (in ms) that a message will be retained before it is deleted.
+     * 
+     * @return String of maximum days.
+     */
     public String getMaxDaysToIntern()
     {
         if (null == m_mailApp) {
@@ -133,6 +151,11 @@ public class QuarantineEnduserServlet extends HttpServlet
         return maxDaysToIntern;
     }
 
+    /**
+     * Get the maximum time (in ms) that an inbox can be untocuhed before is cleaned up.
+     * 
+     * @return String of maximum days.
+     */
     public String getMaxDaysIdleInbox()
     {
         if (null == m_mailApp) {
@@ -160,6 +183,11 @@ public class QuarantineEnduserServlet extends HttpServlet
         }
     }
 
+    /**
+     * If instance is null, assign to this container.
+     * 
+     * @param servlet QuarantineEnduserServlet to assign.
+     */
     private static synchronized void assignInstance(QuarantineEnduserServlet servlet)
     {
         if(s_instance == null) {

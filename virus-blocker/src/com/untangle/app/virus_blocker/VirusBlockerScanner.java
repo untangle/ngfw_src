@@ -14,9 +14,11 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.virus_blocker.VirusScanner;
 import com.untangle.app.virus_blocker.VirusScannerResult;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.vnet.AppSession;
 
+/**
+ * The virus blocker scanner
+ */
 public class VirusBlockerScanner implements VirusScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -25,16 +27,32 @@ public class VirusBlockerScanner implements VirusScanner
 
     private VirusBlockerApp app;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The virus blocker application
+     */
     public VirusBlockerScanner(VirusBlockerApp app)
     {
         this.app = app;
     }
 
+    /**
+     * Get the vendor name
+     * 
+     * @return The vendor name
+     */
     public String getVendorName()
     {
         return "virus_blocker";
     }
 
+    /**
+     * Get the date of the last virus signature update
+     * 
+     * @return The date of the last virus signature update
+     */
     public Date getLastSignatureUpdate()
     {
         DataOutputStream txstream = null;
@@ -88,23 +106,25 @@ public class VirusBlockerScanner implements VirusScanner
         return (new Date(timeSeconds * 1000l));
     }
 
+    /**
+     * Scan a file for a virus
+     * 
+     * @param scanfile
+     *        The file to scan
+     * @param session
+     *        The application session
+     * @return The scan result
+     */
     public VirusScannerResult scanFile(File scanfile, AppSession session)
     {
-        if (!isLicenseValid()) {
-            logger.warn("VirusBlocker scan circumvented: license expired.");
-            return VirusScannerResult.ERROR;
+
+        if (UvmContextFactory.context().licenseManager().isLicenseValid("virus-blocker")) {
+            VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher(scanfile, session, app.getSettings().getEnableCloudScan(), app.getSettings().getEnableLocalScan());
+            return scan.doScan(VirusBlockerScanner.timeout);
+        } else if (UvmContextFactory.context().licenseManager().isLicenseValid("virus-blocker-cloud")) {
+            VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher(scanfile, session, app.getSettings().getEnableCloudScan(), false);
+            return scan.doScan(VirusBlockerScanner.timeout);
         }
-
-        VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher( scanfile, session, app.getSettings().getEnableCloudScan(), app.getSettings().getEnableLocalScan() );
-        return scan.doScan(VirusBlockerScanner.timeout);
-    }
-
-    private boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER_OLDNAME))
-            return true;
-        return false;
+        return VirusScannerResult.ERROR;
     }
 }

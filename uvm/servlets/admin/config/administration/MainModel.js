@@ -1,11 +1,11 @@
 Ext.define('Ung.config.administration.MainModel', {
     extend: 'Ext.app.ViewModel',
 
-    alias: 'viewmodel.config.administration',
+    alias: 'viewmodel.config-administration',
 
     data: {
         title: 'Administration'.t(),
-        iconName: 'icon_config_admin',
+        iconName: 'administration',
 
         adminSettings: null,
         systemSettings: null,

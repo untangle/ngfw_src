@@ -3,8 +3,6 @@
  */
 package com.untangle.uvm;
 
-import java.io.File;
-
 /**
  * A plugin is just runnable with a stop method added
  */

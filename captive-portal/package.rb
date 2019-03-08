@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-http = BuildEnv::SRC['http']
+http = BuildEnv::SRC['untangle-app-http']
 
-AppBuilder.makeApp(BuildEnv::SRC, 'captive-portal', 'captive-portal', [http['src']])
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-captive-portal', 'captive-portal', [http['src']])
 

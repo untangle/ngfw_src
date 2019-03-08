@@ -1,4 +1,6 @@
-
+/**
+ * $Id$
+ */
 package com.untangle.uvm;
 
 import java.io.Serializable;
@@ -22,6 +24,7 @@ public class SessionMonitorEntry implements Serializable, JSONString
     private String state;
 
     private String hostname;
+    private String username;
     private InetAddress localAddr;
     private InetAddress remoteAddr;
 
@@ -58,6 +61,8 @@ public class SessionMonitorEntry implements Serializable, JSONString
 
     public String getHostname() {return hostname;}
     public void   setHostname( String hostname ) {this.hostname = hostname;}
+    public String getUsername() {return username;}
+    public void   setUsername( String username ) {this.username = username;}
     public InetAddress getLocalAddr() { return localAddr; }
     public void setLocalAddr(InetAddress newValue) { this.localAddr = newValue; }
     public InetAddress getRemoteAddr() { return remoteAddr; }

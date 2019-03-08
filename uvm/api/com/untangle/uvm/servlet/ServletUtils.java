@@ -7,14 +7,14 @@ import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.Serializer;
 
-import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.GenericStringSerializer;
+import com.untangle.uvm.admin.jabsorb.serializer.EnumSerializer;
+import com.untangle.uvm.admin.jabsorb.serializer.IPMaskedAddressSerializer;
+import com.untangle.uvm.admin.jabsorb.serializer.InetAddressSerializer;
+import com.untangle.uvm.admin.jabsorb.serializer.MimeTypeSerializer;
+import com.untangle.uvm.admin.jabsorb.serializer.TimeSerializer;
+import com.untangle.uvm.admin.jabsorb.serializer.TimeZoneSerializer;
+import com.untangle.uvm.admin.jabsorb.serializer.URLSerializer;
+import com.untangle.uvm.admin.jabsorb.serializer.GenericStringSerializer;
 import com.untangle.uvm.app.ProtocolMatcher;
 import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.app.IntMatcher;
@@ -25,32 +25,59 @@ import com.untangle.uvm.app.UserMatcher;
 import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.app.UrlMatcher;
 
+/**
+ * ServletUtils provides utility methods for servlets
+ */
 @SuppressWarnings("unchecked")
+/** ServletUtils */
 public class ServletUtils 
 {
     public static final ServletUtils INSTANCE = new ServletUtils();
     
+    /**
+     * private constructor use getInstance()
+     */
     private ServletUtils()
     {
         
     }
     
-    public void registerSerializers(JSONRPCBridge bridge ) throws Exception
+    /**
+     * registerSerializers - register standard serializers
+     * @param bridge
+     * @throws Exception
+     */
+    public void registerSerializers(JSONRPCBridge bridge) throws Exception
     {
         registerSerializers(JSON_RPC_BRIDGE_REGISTRATOR, bridge);
     }
     
+    /**
+     * registerSerializers - register default serializers
+     * @param serializer
+     * @throws Exception
+     */
     public void registerSerializers(JSONSerializer serializer) throws Exception
     {
         serializer.registerDefaultSerializers();
         registerSerializers(JSON_SERIALIZER_REGISTRATOR, serializer);
     }
     
+    /**
+     * getInstance
+     * @return ServletUtils
+     */
     public static ServletUtils getInstance()
     {
         return INSTANCE;
     }
     
+    /**
+     * registerSerializers registers common serializers
+     * @param registrator
+     * @param root
+     * @throws Exception
+     */
     private <T> void registerSerializers(Registrator<T> registrator, T root) throws Exception
     {
         // general serializers

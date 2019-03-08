@@ -4,10 +4,10 @@ import copy
 import os
 
 # This script for maintaining the default (wizard) rulesets
-# It parses through defaults_master.js and builds the other default files
+# It parses through defaults_master.json and builds the other default files
 # This is only run by the developer when updating the master set of rules
 
-# defaults_master.js is the master file used to create the individual starting configs
+# defaults_master.json is the master file used to create the individual starting configs
 # this contains all the possible rules for the wizard default rulesets
 
 # There is a set of "standard rules"
@@ -22,7 +22,7 @@ import os
 # Home is standard+home
 
 
-master_file = open('defaults_master.js').read()
+master_file = open('defaults_master.json').read()
 master_json = json.loads(master_file)
 
 ruleset = master_json['rules']['list']
@@ -45,9 +45,9 @@ for profile in "school","business","metered","home":
     jsonobj = copy.deepcopy(master_json)
     jsonobj['rules']['list'] = rulelist
 
-    print "Writing \"%s\" profile to \"defaults_%s.js\" file" % (profile, profile)
-    outfile = open('defaults_%s.js.tmp'%profile,'wb')
+    print("Writing \"%s\" profile to \"defaults_%s.json\" file" % (profile, profile))
+    outfile = open('defaults_%s.json.tmp'%profile,'wb')
     json.dump(jsonobj,outfile)
     outfile.close()
-    os.system('python -m simplejson.tool defaults_%s.js.tmp > defaults_%s.js'%(profile,profile))
-    os.system('rm -f \'defaults_%s.js.tmp\'' % profile)
+    os.system('python -m simplejson.tool defaults_%s.json.tmp > defaults_%s.json'%(profile,profile))
+    os.system('rm -f \'defaults_%s.json.tmp\'' % profile)

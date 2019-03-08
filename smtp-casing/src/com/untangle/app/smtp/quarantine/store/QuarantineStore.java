@@ -73,8 +73,11 @@ public class QuarantineStore
     private AddressLock addressLock;
     private MasterTable masterTable;
 
-    // private InboxDirectoryTree m_dirTracker;
-
+    /**
+     * Iniitalize instance of QuarantineStore.
+     * @param  dir String of directory.
+     * @return     Instance of QuarantineStore..
+     */
     public QuarantineStore(File dir) {
         rootDir = dir;
 
@@ -102,12 +105,18 @@ public class QuarantineStore
 
     /**
      * Total size of the entire store (in bytes)
+     * @return long of total size of store.
      */
     public long getTotalSize()
     {
         return masterTable.getTotalQuarantineSize();
     }
 
+    /**
+     * return formatted total size as a string.
+     * @param  inMB if true, return as MB, otherwise as bytes.
+     * @return      String of total size summary.
+     */
     public final String getFormattedTotalSize(boolean inMB)
     {
         try {
@@ -127,6 +136,7 @@ public class QuarantineStore
 
     /**
      * Provides a summary of all Inboxes.
+     * @return List of InboxSummary.
      */
     public List<InboxSummary> listInboxes()
     {
@@ -259,6 +269,13 @@ public class QuarantineStore
             // Visit each one via "eject"
             eject(mapping.getKey(), new QuarantineEjectionHandler()
             {
+                /**
+                 * Delete message.
+                 * @param record       InboxRecord to delete.
+                 * @param inboxAddress String of address.
+                 * @param recipients   Array of String of address recipients.
+                 * @param data         Inbox file.
+                 */
                 @Override
                 public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
                 {
@@ -325,8 +342,7 @@ public class QuarantineStore
     /**
      * Gets the inbox for the given address. Return "codes" are part of the generic result.
      * 
-     * @param address
-     *            the address
+     * @param address String of address.
      * 
      * @return the result
      */
@@ -359,6 +375,8 @@ public class QuarantineStore
     /**
      * Note that if one or more of the mails no longer exist, this is not considered an error.
      * 
+     * @param address String of address.
+     * @param mailIDs Variable argument of String of messagge ids.
      * @return the result. If <code>SUCCESS</code>, then the index just after the modification is returned attached to
      *         the result
      */
@@ -367,6 +385,13 @@ public class QuarantineStore
         logger.debug("Rescue requested for " + mailIDs.length + " mails for account \"" + address + "\"");
         return eject(address, new QuarantineEjectionHandler()
         {
+                /**
+                 * Delete message.
+                 * @param record       InboxRecord to delete.
+                 * @param inboxAddress String of address.
+                 * @param recipients   Array of String of address recipients.
+                 * @param data         Inbox file.
+                 */
             @Override
             public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
             {
@@ -396,6 +421,8 @@ public class QuarantineStore
     /**
      * Note that if one or more of the mails no longer exist, this is not considered an error.
      * 
+     * @param address String of address.
+     * @param mailIDs Variable argument of String of messagge ids.
      * @return the result. If <code>SUCCESS</code>, then the index just after the modification is returned attached to
      *         the result
      */
@@ -404,6 +431,13 @@ public class QuarantineStore
         logger.debug("Purge requested for " + mailIDs.length + " mails for account \"" + address + "\"");
         return eject(address, new QuarantineEjectionHandler()
         {
+            /**
+             * Delete message.
+             * @param record       InboxRecord to delete.
+             * @param inboxAddress String of address.
+             * @param recipients   Array of String of address recipients.
+             * @param data         Inbox file.
+            */
             @Override
             public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
             {
@@ -417,16 +451,19 @@ public class QuarantineStore
         }, new ListEjectionSelector(mailIDs));
     }
 
-    //
-    // Eject mails, passing them either to a handler for rescue or purge
-    // (delete).
-    // The EjectionSelector is able to view the entire InboxIndex, and select
-    // which mails are to be purged based on the context of the calling
-    // operation.
-    //
-    // @return the result. If <code>SUCCESS</code>, then
-    // the index just after the modification is returned attached to the result
-    //
+    /**
+     * Eject mails, passing them either to a handler for rescue or purge
+     * (delete).
+     * The EjectionSelector is able to view the entire InboxIndex, and select
+     * which mails are to be purged based on the context of the calling
+     * operation.
+     *
+     * @param address String of address.
+     * @param handler QuarantineEjectionHandler.
+     * @param selector EjectionSelector.
+     * @return the result. If <code>SUCCESS</code>, then
+     * the index just after the modification is returned attached to the result
+     */
     private Pair<GenericStatus, InboxIndex> eject(String address, QuarantineEjectionHandler handler,
             EjectionSelector selector)
     {
@@ -496,10 +533,16 @@ public class QuarantineStore
         return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
     }
 
-    //
-    // This method performs <b>no locking</b> (assumes the caller
-    // has done this).
-    //
+    /**
+     * This method performs <b>no locking</b> (assumes the caller
+     * has done this).
+     * @param  inboxDir        File of inbox directory.
+     * @param  inboxAddr       String of inbox address.
+     * @param  recipients      Array of string of recipient addresses.
+     * @param  fileNameInInbox String of filename in inbox.
+     * @param  summary         MailSummary
+     * @return                 if true, quarantine record was written otherwise false.
+     */
     private boolean appendSummaryToIndex(File inboxDir, String inboxAddr, String[] recipients, String fileNameInInbox,
             MailSummary summary)
     {
@@ -510,12 +553,14 @@ public class QuarantineStore
 
     }
 
-    //
-    // This method performs no locking, and does not update the master index
-    //
-    // @return the File within the Inbox w/ the
-    // newly added mail, or null if there was an error.
-    //
+    /**
+     * This method performs no locking, and does not update the master index
+     *
+     * @param source File of source mailbox.
+     * @param targetDir Fileof target mailbox.
+     * @return the File within the Inbox w/ the
+     * newly added mail, or null if there was an error.
+     */
     private String moveFileToInbox(File source, File targetDir)
     {
 
@@ -530,12 +575,14 @@ public class QuarantineStore
         return null;
     }
 
-    //
-    // This method performs no locking, and does not update the master index
-    //
-    // @return the File within the Inbox w/ the newly added mail, or null if
-    // there was an error.
-    //
+    /**
+     * This method performs no locking, and does not update the master index
+     *
+     * @param source File of source mailbox.
+     * @param targetDir Fileof target mailbox.
+     * @return the File within the Inbox w/ the newly added mail, or null if
+     * there was an error.
+     */
     private String copyFileToInbox(File source, File targetDir)
     {
 
@@ -554,11 +601,13 @@ public class QuarantineStore
         }
     }
 
-    //
-    // Creates an File object in the target directory.
-    // Guaranteed to be unique ('cause I'm using Java's
-    // stuff to do it).
-    //
+    /**
+     * Creates an File object in the target directory.
+     * Guaranteed to be unique ('cause I'm using Java's
+     * stuff to do it).
+     * @param targetDir Fileof target mailbox.
+     * @return File of temp file.
+     */
     private File createDataFile(File targetDir)
     {
         try {
@@ -571,17 +620,25 @@ public class QuarantineStore
         }
     }
 
+    /**
+     * Return inbox path.
+     * @param  address String of address.
+     * @return         Path for inbox.
+     */
     private String getInboxPath(String address)
     {
         return rootDir.getAbsolutePath() + "/inboxes/" + address;
     }
 
-    //
-    // This method may lock the address if
-    // the account does not already exist (so
-    // do not call with the address locked or
-    // the system will be hosed).
-    //
+    /**
+     * This method may lock the address if
+     * the account does not already exist (so
+     * do not call with the address locked or
+     * the system will be hosed).
+     * @param lcAddress String of address.
+     * @param autoCreate I?f true, automatically create if doesn't exist.
+     * @return File of inbox directory.
+     */
     private File getInboxDir(String lcAddress, boolean autoCreate)
     {
 
@@ -599,8 +656,12 @@ public class QuarantineStore
         return baseDir;
     }
 
-    // "WL" = "With Lock"
+    /**
+     * "WL" = "With Lock"
     // Assumes lock is already obtained
+     * @param  lcAddress Address of inbox.
+     * @return           File of inbox.
+     */
     private File getOrCreateInboxDirWL(String lcAddress)
     {
 
@@ -626,15 +687,24 @@ public class QuarantineStore
         }
     }
 
+    /**
+     * Ejection Selector.
+     */
     private abstract class EjectionSelector
     {
-        //
-        // Any in the returned list <b>must</b>
-        // be removed from index
-        //
+        /**
+         * Any in the returned list <b>must</b>
+         * be removed from index
+         * @param  index InboxIndex.
+         * @param  rf    File of returned list.
+         * @return       List of InboxRecord.
+         */
         abstract List<InboxRecord> selectEjections(InboxIndex index, File rf);
     }
 
+    /**
+     * Pruning Selector.
+     */
     private class PruningSelector extends EjectionSelector
     {
 
@@ -642,12 +712,25 @@ public class QuarantineStore
         private long m_inboxCutoff;
         private List<String> m_doomedInboxes;
 
+        /**
+         * Initialize instance of PruningSelector.
+         * @param mailCutoff Max number of messages.
+         * @param inboxCutoff Index cutoff.
+         * @return instance of PruningSelector.
+         */
         PruningSelector(long mailCutoff, long inboxCutoff) {
             m_mailCutoff = mailCutoff;
             m_inboxCutoff = inboxCutoff;
             m_doomedInboxes = new ArrayList<String>();
         }
 
+        /**
+         * Any in the returned list <b>must</b>
+         * be removed from index
+         * @param  index InboxIndex.
+         * @param  rf    File of returned list.
+         * @return       List of InboxRecord.
+         */
         List<InboxRecord> selectEjections(InboxIndex index, File rf)
         {
             ArrayList<InboxRecord> ret = new ArrayList<InboxRecord>();
@@ -671,21 +754,40 @@ public class QuarantineStore
             return ret;
         }
 
+        /**
+         * Return list of inboxes to rmeoved.
+         * @return List of inbox addresses.
+         */
         List<String> getDoomedInboxes()
         {
             return m_doomedInboxes;
         }
     }
 
+    /**
+     * List Ejection Selector.
+     */
     private class ListEjectionSelector extends EjectionSelector
     {
 
         private final String[] m_list;
 
+        /**
+         * Initialize instance of ListEjectionSelector.
+         * @param list Array of string of list.
+         * @return instance of ListEjectionSelector.
+         */
         ListEjectionSelector(String[] list) {
             m_list = list;
         }
 
+        /**
+         * Any in the returned list <b>must</b>
+         * be removed from index
+         * @param  index InboxIndex.
+         * @param  rf    File of returned list.
+         * @return       List of InboxRecord.
+         */
         List<InboxRecord> selectEjections(InboxIndex index, File rf)
         {
             List<InboxRecord> toEject = new ArrayList<InboxRecord>();

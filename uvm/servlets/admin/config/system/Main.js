@@ -1,6 +1,6 @@
 Ext.define('Ung.config.system.Main', {
     extend: 'Ung.cmp.ConfigPanel',
-    alias: 'widget.config.system',
+    alias: 'widget.config-system',
 
     /* requires-start */
     requires: [
@@ -8,24 +8,20 @@ Ext.define('Ung.config.system.Main', {
         'Ung.config.system.MainModel',
     ],
     /* requires-end */
-    controller: 'config.system',
+    controller: 'config-system',
 
     viewModel: {
-        type: 'config.system'
+        type: 'config-system',
+        localizationChanged: false
     },
 
-    items: [{
-        xtype: 'config.system.regional'
-    }, {
-        xtype: 'config.system.support'
-    }, {
-        xtype: 'config.system.backup'
-    }, {
-        xtype: 'config.system.restore'
-    }, {
-        xtype: 'config.system.protocols'
-    }, {
-        xtype: 'config.system.shield'
-    }]
+    items: [
+        { xtype: 'config-system-regional' },
+        { xtype: 'config-system-support' },
+        { xtype: 'config-system-backup' },
+        { xtype: 'config-system-restore' },
+        { xtype: 'config-system-protocols' },
+        { xtype: 'config-system-shield' }
+    ]
 
 });

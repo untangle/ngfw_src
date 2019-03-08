@@ -1,9 +1,11 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.shield;
 
 import java.util.LinkedList;
+
+import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -12,7 +14,7 @@ import org.json.JSONString;
  * Settings for the Shield App.
  */
 @SuppressWarnings("serial")
-public class ShieldSettings implements java.io.Serializable
+public class ShieldSettings implements Serializable, JSONString
 {
     private Integer version = null; /* default is set in initializeSettings() */
     private boolean shieldEnabled = true;

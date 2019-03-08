@@ -10,42 +10,53 @@ import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
+/**
+ * This class contains the main traffic handlers where we decide if traffic
+ * should be captured or allowed.
+ * 
+ * @author mahotz
+ * 
+ */
 public class CaptivePortalTrafficHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
     private CaptivePortalApp app = null;
 
-    public CaptivePortalTrafficHandler( CaptivePortalApp app )
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application instance that created us
+     */
+    public CaptivePortalTrafficHandler(CaptivePortalApp app)
     {
         super(app);
         this.app = app;
     }
 
-    // TCP stuff --------------------------------------------------
-
+    /**
+     * This is the handler for all TCP traffic. The basic goal is to block all
+     * traffic from unauthenticated clients, and allow all traffic from
+     * authenticated clients. We apply capture and passed host rules as
+     * appropriate and handle edge cases where we need to work cooperatively
+     * with other apps and services that may be installed.
+     * 
+     * @param sessreq
+     *        The session request passed to us when the session was created
+     * @return = nothing
+     */
     @Override
-    public void handleTCPNewSessionRequest( TCPNewSessionRequest sessreq )
+    public void handleTCPNewSessionRequest(TCPNewSessionRequest sessreq)
     {
         // first we look for and ignore all traffic on port 80 since
         // the http handler will take care of all that
         if (sessreq.getNewServerPort() == 80) {
-            sessreq.release();
-            return;
-        }
-
-        // if the https inspector has attached the session manager then
-        // we can allow the traffic since it will come later as http
-        if (sessreq.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
             sessreq.release();
             return;
         }
@@ -91,10 +102,23 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
             return;
         }
 
+        // If the traffic needs to be captured and ssl inspector is active then
+        // we set a special flag to force it to inspect even if it would
+        // otherwise be ignored. This will let us capture the HTTP session
+        // and ensure any redirect is sent using the MitM certificate which
+        // will eliminate errors on capture redirect even to pages that we
+        // aren't ultimately going to inspect once the client has authenticated.
+        if (sessreq.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
+            sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE, new Boolean(true));
+            sessreq.release();
+            return;
+        }
+
         // the traffic needs to be blocked but we have detected SSL traffic
         // so we add a special global attachment that the https handler uses
-        // to detect sessions that need https-->http redirection
-        if (sessreq.getNewServerPort() == 443) {
+        // to detect sessions that need https-->http redirection but only if
+        // that feature is not disabled.
+        if ((app.getSettings().getDisableSecureRedirect() == false) && (sessreq.getNewServerPort() == 443)) {
             sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_REDIRECT, sessreq.getOrigClientAddr());
             sessreq.release();
             return;
@@ -107,10 +131,21 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         sessreq.rejectReturnRst();
     }
 
-    // UDP stuff --------------------------------------------------
-
+    /**
+     * This is the handler for all UDP traffic. The basic goal is to block all
+     * traffic from unauthenticated clients, and allow all traffic from
+     * authenticated clients. We apply capture and passed host rules as
+     * appropriate and handle edge cases where we need to work cooperatively
+     * with other apps and services that may be installed. We also have special
+     * handling for port 53 DNS traffic which we must service to allow the
+     * initial browser request and capture redirect to happen.
+     * 
+     * @param sessreq
+     *        The session request passed to us when the session was created
+     * @return = nothing
+     */
     @Override
-    public void handleUDPNewSessionRequest( UDPNewSessionRequest sessreq )
+    public void handleUDPNewSessionRequest(UDPNewSessionRequest sessreq)
     {
         // first check is to see if the user is already authenticated
         if (app.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
@@ -172,9 +207,33 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         sessreq.rejectSilently();
     }
 
+    /**
+     * This handler will only see UDP packets with a target port of 53 sent from
+     * an unauthenticated client to an external DNS server. We hook queries for
+     * our FQDN and answer them directly picking the best response based on the
+     * client interface. For all other queries we do a standard lookup.
+     * 
+     * We first make sure we received a valid DNS query. If not, we return a
+     * REFUSED message, otherwise we do the name to address lookup, and send
+     * back the response. The primary goal is to service DNS requests ourselves
+     * rather than pass traffic externally to thwart attempts by unauthenticated
+     * clients to tunnel traffic in creative ways. We also need to give back a
+     * sane response to LAN and VPN clients to handle cases where the capture
+     * redirect is generated using the hostname instead of IP address.
+     * 
+     * @param session
+     *        The session details
+     * @param data
+     *        The UDP data received from the client
+     * @param header
+     *        The IP packet header received from the client
+     * @return = nothing
+     */
     @Override
-    public void handleUDPClientPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
+    public void handleUDPClientPacket(AppUDPSession session, ByteBuffer data, IPPacketHeader header)
     {
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
         DNSPacket packet = new DNSPacket();
         ByteBuffer response = null;
         InetAddress addr = null;
@@ -183,17 +242,32 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         packet.ExtractQuery(data.array(), data.limit());
         logger.debug(packet.queryString());
 
-        // this handler will only see UDP packets with a target port
-        // of 53 sent from unauthenticated client so if it doesn't seem
-        // like a valid DNS A query we build a refused message by
-        // passing null to the packet response generator
-        if (packet.isValidDNSQuery() != true) {
+        // if it doesn't seem like a valid query create a REFUSED response 
+        if (packet.isValidDNSQuery() == false) {
             app.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
             response = packet.GenerateResponse(null);
+
+            // send the packet to the client and return
+            session.sendClientPacket(response, header);
+            logger.debug(packet.replyString());
+            return;
         }
 
-        // we have a good query for an A record so do the lookup
-        else {
+        // start with our hostname but prefer hostName + domainName if both are
+        // defined, and always add the trailing dot for the name comparison
+        String fullName = (hostName + ".");
+        if ((domainName != null) && (domainName.length() > 0)) fullName = (hostName + "." + domainName + ".");
+
+        // if the query is for our hostname we get the HTTP address for the
+        // client interface where the query was received
+        if (fullName.toLowerCase().equals(packet.getQname().toLowerCase())) {
+            logger.debug("Query for our hostname detected. Returning our address for client interface " + Integer.toString(session.getClientIntf()));
+            addr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
+        }
+
+        // if any other query or addr is null because getInterfaceHttpAddress
+        // returned null we just do a standard resolver lookup.
+        if (addr == null) {
             try {
                 addr = InetAddress.getByName(packet.getQname());
             }
@@ -203,13 +277,13 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
             catch (Exception e) {
                 logger.info("Exception attempting to resolve " + packet.getQname() + " = " + e);
             }
-
-            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSQUERY, 1);
-            response = packet.GenerateResponse(addr);
         }
 
+        app.incrementBlinger(CaptivePortalApp.BlingerType.SESSQUERY, 1);
+        response = packet.GenerateResponse(addr);
+
         // send the packet to the client
-        session.sendClientPacket( response, header );
+        session.sendClientPacket(response, header);
         logger.debug(packet.replyString());
     }
 }

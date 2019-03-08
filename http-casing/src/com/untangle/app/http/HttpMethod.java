@@ -9,7 +9,6 @@ import java.util.Map;
 
 /**
  * HTTP method, RFC 2616 section 5.1.1.
- *
  */
 @SuppressWarnings("serial")
 public class HttpMethod implements Serializable
@@ -53,21 +52,32 @@ public class HttpMethod implements Serializable
     private final char key;
     private final String method;
 
-    // constructors -----------------------------------------------------------
-
+    /**
+     * Private constructor to stop instantiation - use factories
+     * @param key - the key for the method
+     * @param method - the method string
+     */
     private HttpMethod(char key, String method)
     {
         this.key = key;
         this.method = method;
     }
 
-    // static factories -------------------------------------------------------
-
+    /**
+     * Factory to get the global instance for the specified key char
+     * @param key - the key char
+     * @return the global singleton of that key
+     */
     public static HttpMethod getInstance(char key)
     {
         return INSTANCES.get(key);
     }
 
+    /**
+     * Factory to get the global instance for the specified method
+     * @param methStr - the method , ie "GET"
+     * @return the global singleton for that method
+     */
     public static HttpMethod getInstance(String methStr)
     {
         HttpMethod method = BY_NAME.get(methStr.toUpperCase());
@@ -78,19 +88,21 @@ public class HttpMethod implements Serializable
         return method;
     }
 
+    /**
+     * Get the key character
+     * @return char
+     */
     public char getKey()
     {
         return key;
     }
 
-    // Object methods ---------------------------------------------------------
-
-    public String toString() { return method; }
-
-    // Serialization ----------------------------------------------------------
-
-    Object readResolve()
+    /**
+     * Get human readable string
+     * @return string
+     */
+    public String toString()
     {
-        return getInstance(key);
+        return method;
     }
 }

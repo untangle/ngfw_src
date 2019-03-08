@@ -9,10 +9,13 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         macAddrMaskRe: /^[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}$/,
         ip4AddrMaskRe: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
         ip6AddrMaskRe: /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/,
-        email: /^(")?(?:[^\."])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,63}$/,
+        email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         ipAddrRange: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
         cidrRange: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/[0-3]?[0-9]$/,
-        ipNetmask: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+        ipNetmask: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+        openvpnName: /^[A-Za-z0-9]([-.0-9A-Za-z]*[0-9A-Za-z])?$/,
+        positiveInteger: /^[0-9]+$/,
+        domainNameRe: /^[a-zA-Z0-9\-_.]+$/
     },
 
     isSinglePortValid: function(val) {
@@ -79,6 +82,15 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     email: function (v) {
         return this.mask.email.test(v);
     },
+    emailText: 'You must provide a valid login name or email address.'.t(),
+
+    // matchers
+    emailwildcard: function (v) {
+        return v == '*' || this.mask.email.test(v);
+    },
+    emailwildcardText: 'You must provide an email address or wildcard.'.t(),
+
+
     ipMatcher: function(val) {
         if (val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {
             switch (val) {
@@ -138,6 +150,18 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     macAddressText: 'Invalid Mac Address.'.t(),
 
+    openvpnName: function (val) {
+        return this.mask.openvpnName.test(val);
+
+    },
+    openvpnNameText: 'A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed.'.t(),
+
+
+    domainName: function(value){
+        return this.mask.domainNameRe.test(value);
+    },
+    domainNameText: 'A domain can only contain numbers, letters, dashes and periods.'.t(),
+
     cidrBlock:  function (v) {
         return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(v));
     },
@@ -193,5 +217,82 @@ Ext.define('Ung.overrides.form.field.VTypes', {
             maxValue = 65535;
         return (minValue <= val && val <= maxValue);
     },
-    portText: Ext.String.format('The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none.'.t(), 1, 65535)
+    portText: Ext.String.format('The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none.'.t(), 1, 65535),
+
+    x500attributes: function(val){
+        if(val == ''){
+            return false;
+        }
+        var valid = true;
+        val.split(',').forEach(function(attribute){
+            /*
+             * Various LDAP implementations may have attribute keys beyond
+             * what's defined in RFC 2253.  Instead of hunting them all
+             * down, verify they are of a <key>=<value> format.
+             */
+            if(attribute.split('=').length != 2 ){
+                valid = false;
+            }
+        });
+        return valid;
+    },
+    x500attributesText: 'Invalid x500 attribute found'.t(),
+
+    // BPP/OSPF router id
+    routerId: function(value){
+        return this.mask.ip4AddrMaskRe.test(value);
+    },
+    routerIdText: 'Invalid Router ID'.t(),
+
+    // OSPF area id
+    routerArea: function(value){
+        return this.mask.ip4AddrMaskRe.test(value);
+    },
+    routerAreaText: 'Invalid Area'.t(),
+
+    // BPP/OSPF router AS
+    routerAs: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
+        var number = parseInt(value, 10);
+        return (number > 0) && (number <= 4294967295);
+    },
+    routerAsText: 'Invalid Router AS'.t(),
+
+    metric: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
+        var number = parseInt(value, 10);
+        return (number >= 0) && (number <= 16777214);
+    },
+    metricText: 'Invalid metric number'.t(),
+
+    routerInterval: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
+        var number = parseInt(value, 10);
+        return (number > 0) && (number <= 65535);
+    },
+    routerIntervalText: 'Invalid interval'.t(),
+
+    routerPriority: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
+        var number = parseInt(value, 10);
+        return (number >= 0) && (number <= 65535);
+    },
+    routerPriorityText: 'Invalid router priority'.t(),
+
+    routerAutoCost: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
+        var number = parseInt(value, 10);
+        return (number >= 0) && (number <= 4294967);
+    },
+    routerAutoCostText: 'Invalid auto cost reference bandwidth'.t()
 });

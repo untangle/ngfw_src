@@ -15,13 +15,33 @@ public interface DirectoryConnector
     /**
      * Query if a user is a member of a group (Currently this only applies to Active Directory)
      */
-    public boolean isMemberOf( String username, String group );
+    public boolean isMemberOfGroup( String username, String group );
+
+    /**
+     * Query if a user is a member of a group (Currently this only applies to Active Directory)
+     */
+    public boolean isMemberOfGroup( String username, GroupMatcher group );
 
     /**
      * Retrieve a list of groups this user belongs to (Currently only applies to Active Directory)
      */
-    public List<String> memberOf(String user);
-    
+    public List<String> memberOfGroup(String user);
+
+    /**
+     * Query if a user is a member of a domain (Currently this only applies to Active Directory)
+     */
+    public boolean isMemberOfDomain( String username, String domain );
+
+    /**
+     * Query if a user is a member of a domain (Currently this only applies to Active Directory)
+     */
+    public boolean isMemberOfDomain( String username, DomainMatcher domainMatcher );
+
+    /**
+     * Retrieve a list of groups this user belongs to (Currently only applies to Active Directory)
+     */
+    public List<String> memberOfDomain(String user);
+
     /**
      * Authenticate a user against Active Directory
      */
@@ -33,20 +53,10 @@ public interface DirectoryConnector
     public boolean radiusAuthenticate( String username, String group );
 
     /**
-     * Authenticate a user using Google
-     */
-    public boolean googleAuthenticate( String username, String group );
-
-    /**
-     * Authenticate a user using Facebook
-     */
-    public boolean facebookAuthenticate( String username, String group );
-    
-    /**
      * Authenticate a user using any authentication method
      */
     public boolean anyAuthenticate( String username, String group );
-    
+
     /**
      * Return true if Google Drive is configured, false otherwise
      */

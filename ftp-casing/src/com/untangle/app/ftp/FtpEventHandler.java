@@ -29,32 +29,74 @@ public abstract class FtpEventHandler extends AbstractEventHandler
      */
     private static final Map<InetSocketAddress, Long> ctlSessionIdByDataSocket = new ConcurrentHashMap<InetSocketAddress, Long>();
     
+    /**
+     * Create a new FtpEventHandler
+     */
     protected FtpEventHandler() {}
 
+    /**
+     * doCommand handles FtpCommand tokens (it just passes them by default)
+     * Override for different behavior
+     * @param session
+     * @param command
+     */
     protected void doCommand( AppTCPSession session, FtpCommand command )
     {
         session.sendObjectToServer( command );
     }
 
+    /**
+     * doReply handles FtpReply tokens (it just passes them by default)
+     * Override for different behavior
+     * @param session
+     * @param reply
+     */
     protected void doReply( AppTCPSession session, FtpReply reply )
     {
         session.sendObjectToClient( reply );
     }
 
+    /**
+     * doClientData handles client data (it just passes it by default)
+     * Override for different behavior
+     * @param session
+     * @param chunk
+     */
     protected void doClientData( AppTCPSession session, ChunkToken chunk )
     {
         session.sendObjectToServer( chunk );
     }
 
+    /**
+     * doServerData handles server data (it just passes it by default)
+     * Override for different behavior
+     * @param session
+     * @param chunk
+     */
     protected void doServerData( AppTCPSession session, ChunkToken chunk )
     {
         session.sendObjectToClient( chunk );
     }
 
+    /**
+     * doClientDataEnd - does nothing by default
+     * Override for different behavior
+     * @param session
+     */
     protected void doClientDataEnd( AppTCPSession session ) { }
     
+    /**
+     * doServerDataEnd - does nothing by default
+     * Override for different behavior
+     * @param session
+     */
     protected void doServerDataEnd( AppTCPSession session ) { }
 
+    /**
+     * handleTCPServerObject - handles a token from the server
+     * @param session
+     * @param obj
+     */
     @Override
     public final void handleTCPServerObject( AppTCPSession session, Object obj )
     {
@@ -86,6 +128,11 @@ public abstract class FtpEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPClientObject - handles a token from the client
+     * @param session
+     * @param obj
+     */
     @Override
     public final void handleTCPClientObject( AppTCPSession session, Object obj )
     {
@@ -117,12 +164,22 @@ public abstract class FtpEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * handleTCPClientFIN - handle FIN from the client (it just passes by default)
+     * Override for different behavior
+     * @param session
+     */
     @Override
     public final void handleTCPClientFIN( AppTCPSession session )
     {
         doClientDataEnd( session );
     }
 
+    /**
+     * handleTCPServerFIN - handle a FIN from the server (it just passes by default)
+     * Override for different behavior
+     * @param session <doc>
+     */
     @Override
     public final void handleTCPServerFIN( AppTCPSession session )
     {
@@ -140,7 +197,9 @@ public abstract class FtpEventHandler extends AbstractEventHandler
     }
 
     /**
-     * Remove the mapping of this data socket
+     * removeDataSocket - Remove the mapping of this data socket
+     * @param dataSocket
+     * @return ctlSessionId
      */
     public static Long removeDataSocket(InetSocketAddress dataSocket)
     {
@@ -152,6 +211,7 @@ public abstract class FtpEventHandler extends AbstractEventHandler
     
     /**
      * Remove all mappings of this control session
+     * @param ctlSessionId
      */
     public static void removeDataSockets(long ctlSessionId)
     {

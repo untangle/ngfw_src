@@ -21,28 +21,26 @@ import java.net.URL;
 import org.apache.log4j.Logger;
 import com.untangle.uvm.CertCacheManager;
 
-/*
+/**
  * The Certificate Cache Manager is used to fetch and cache SSL certificates
- * from external servers.  This allows us to do rule processing and make
- * other decisions based on the cert contents.  It was orignally written
- * for use in the SSL Inspector to allow cert based ignore rules, but later
- * moved into the uvm for use by web filter and possibly other apps.  We need
- * this because an SSL connection doesn't see the server certificate until
- * after the handshake has started, at which point it is too late to cleanly
- * release the session.  To solve the problem we open a separate connection
- * to the server to fetch the certificate.  The certs are then cached by
- * server IP address so the extra connection and fetch overhead only happens
- * the first time we connect to the server. Since many browsers do the
- * pipelining thing, it's possible that multiple connections will be
- * initiated at nearly the same time, and they could all race to do the
- * initial prefetch.  To work around this, the fetch logic synchronizes
- * on certLocker which tracks active prefetch operations.  This ensures
- * that only the first thread does the actual fetch, allowing others to
- * simply wait until the fetch is complete. We also do negative caching
- * so we don't repeatedly try to fetch the certificate from servers that
- * are not responding, or update the certificate too frequently.   
+ * from external servers. This allows us to do rule processing and make other
+ * decisions based on the cert contents. It was orignally written for use in the
+ * SSL Inspector to allow cert based ignore rules, but later moved into the uvm
+ * for use by web filter and possibly other apps. We need this because an SSL
+ * connection doesn't see the server certificate until after the handshake has
+ * started, at which point it is too late to cleanly release the session. To
+ * solve the problem we open a separate connection to the server to fetch the
+ * certificate. The certs are then cached by server IP address so the extra
+ * connection and fetch overhead only happens the first time we connect to the
+ * server. Since many browsers do the pipelining thing, it's possible that
+ * multiple connections will be initiated at nearly the same time, and they
+ * could all race to do the initial prefetch. To work around this, the fetch
+ * logic synchronizes on certLocker which tracks active prefetch operations.
+ * This ensures that only the first thread does the actual fetch, allowing
+ * others to simply wait until the fetch is complete. We also do negative
+ * caching so we don't repeatedly try to fetch the certificate from servers that
+ * are not responding, or update the certificate too frequently.
  */
-
 public class CertCacheManagerImpl implements CertCacheManager
 {
     private static ConcurrentHashMap<String, CertificateHolder> certTable = new ConcurrentHashMap<String, CertificateHolder>();
@@ -52,25 +50,47 @@ public class CertCacheManagerImpl implements CertCacheManager
     private final long cacheTimeout = 60000;
     private final int prefetchTimeout = 1000;
 
+    /**
+     * Holder for certificates that are cached in our hash map
+     */
     class CertificateHolder
     {
+        /**
+         * Constructor
+         * 
+         * @param argCert
+         *        The certificate
+         */
         CertificateHolder(X509Certificate argCert)
         {
             creationTime = System.currentTimeMillis();
             ourCert = argCert;
         }
 
+        /**
+         * Constructor
+         */
         CertificateHolder()
         {
             creationTime = System.currentTimeMillis();
             ourCert = null;
         }
 
+        /**
+         * Gets the certificate
+         * 
+         * @return The certificate
+         */
         X509Certificate getCertificate()
         {
             return (ourCert);
         }
 
+        /**
+         * Checks to see if a certificate should be refreshed
+         * 
+         * @return True if refresh needed, otherwise false
+         */
         boolean checkUpdateTimer()
         {
             long currentTime = System.currentTimeMillis();
@@ -82,6 +102,15 @@ public class CertCacheManagerImpl implements CertCacheManager
         private long creationTime;
     }
 
+    /**
+     * Gets and returns a server certificate to the caller. If we have the
+     * certificate in our cache, we return it directly. If not, we fetch it from
+     * the server, store it in our cache, and return it to the caller.
+     * 
+     * @param serverAddress
+     *        The server address
+     * @return The certificate, or null if not available
+     */
     public X509Certificate fetchServerCertificate(String serverAddress)
     {
         X509Certificate serverCertificate = null;
@@ -142,10 +171,8 @@ public class CertCacheManagerImpl implements CertCacheManager
             certHolder = certTable.get(serverAddress);
             serverCertificate = certHolder.getCertificate();
 
-            if (serverCertificate == null)
-                logger.debug("CertLocker empty " + serverAddress);
-            else
-                logger.debug("CertLocker acquire " + serverAddress);
+            if (serverCertificate == null) logger.debug("CertLocker empty " + serverAddress);
+            else logger.debug("CertLocker acquire " + serverAddress);
 
             return (serverCertificate);
         }
@@ -222,6 +249,19 @@ public class CertCacheManagerImpl implements CertCacheManager
         return (serverCertificate);
     }
 
+    /**
+     * When apps get server certificates in the normal course of handling
+     * traffic, they call this function to uppdate the cache. For maximum
+     * efficiency, we only replace the cached certificate when it has exceeded
+     * the cache timeout. TODO - A future enhancement would be to compare the
+     * serial numbers of the two certificates, and update the cache if we detect
+     * the cert has changed.
+     * 
+     * @param serverAddress
+     *        The server address
+     * @param serverCertificate
+     *        The certificate
+     */
     public void updateServerCertificate(String serverAddress, X509Certificate serverCertificate)
     {
         CertificateHolder certHolder = certTable.get(serverAddress);
@@ -244,24 +284,57 @@ public class CertCacheManagerImpl implements CertCacheManager
         logger.debug("CertCache Update " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectDN().toString() + ") IssuerDN(" + serverCertificate.getIssuerDN().toString() + ")");
     }
 
+    /**
+     * We currently only use cached certs for rule matching, not for encryption
+     * or authentication, so it's safe to skip all validation.
+     */
     private TrustManager trust_all_certificates = new X509TrustManager()
     {
+        /**
+         * Throw nothing, trust everything
+         * 
+         * @param chain
+         * @param authType
+         * @throws CertificateException
+         */
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException
         {
         }
 
+        /**
+         * Throw nothing, trust everything
+         * 
+         * @param chain
+         * @param authType
+         * @throws CertificateException
+         */
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException
         {
         }
 
+        /**
+         * @return null to accept all issuers
+         */
         public X509Certificate[] getAcceptedIssuers()
         {
             return null;
         }
     };
 
+    /**
+     * Since our certs are only used for rule matching, we also don't bother
+     * validating the hostname, so we use this trust all class to allow
+     * everything.
+     */
     private HostnameVerifier verify_all_hostnames = new HostnameVerifier()
     {
+        /**
+         * @param hostname
+         *        The hostname
+         * @param session
+         *        The SSL session
+         * @return True to verify/allow everything
+         */
         public boolean verify(String hostname, SSLSession session)
         {
             return (true);

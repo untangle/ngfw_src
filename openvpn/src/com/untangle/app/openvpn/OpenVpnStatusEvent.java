@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.openvpn;
 
 import java.io.Serializable;
@@ -12,9 +13,12 @@ import com.untangle.uvm.util.I18nUtil;
 
 /**
  * OpenVPN client status event
+ * 
+ * @author mahotz
+ * 
  */
 @SuppressWarnings("serial")
-public class OpenVpnStatusEvent extends LogEvent implements Serializable
+public class OpenVpnStatusEvent extends LogEvent implements Serializable, org.json.JSONString
 {
     private InetAddress address;
     private InetAddress poolAddress;
@@ -27,31 +31,33 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
     private long bytesRxDelta; /* Delta bytes transmitted since last event */
     private long bytesTxDelta; /* Delta bytes transmitted since last event */
 
-    public OpenVpnStatusEvent() {}
-
-    public OpenVpnStatusEvent( Timestamp start, InetAddress address, int port, InetAddress poolAddress, String clientName )
+    public OpenVpnStatusEvent()
     {
-        this.start       = start;
-        this.address     = address;
-        this.poolAddress = poolAddress;
-        this.clientName  = clientName;
-        this.port        = port;
     }
 
-    public OpenVpnStatusEvent( Timestamp start, InetAddress address, int port, InetAddress poolAddress, String clientName, long bytesRxTotal, long bytesTxTotal, long bytesRxDelta, long bytesTxDelta )
+    public OpenVpnStatusEvent(Timestamp start, InetAddress address, int port, InetAddress poolAddress, String clientName)
     {
-        this.start       = start;
-        this.address     = address;
+        this.start = start;
+        this.address = address;
         this.poolAddress = poolAddress;
-        this.clientName  = clientName;
-        this.port        = port;
+        this.clientName = clientName;
+        this.port = port;
+    }
+
+    public OpenVpnStatusEvent(Timestamp start, InetAddress address, int port, InetAddress poolAddress, String clientName, long bytesRxTotal, long bytesTxTotal, long bytesRxDelta, long bytesTxDelta)
+    {
+        this.start = start;
+        this.address = address;
+        this.poolAddress = poolAddress;
+        this.clientName = clientName;
+        this.port = port;
         this.bytesRxTotal = bytesRxTotal;
         this.bytesTxTotal = bytesTxTotal;
         this.bytesRxDelta = bytesRxDelta;
         this.bytesTxDelta = bytesTxDelta;
     }
-    
-    public OpenVpnStatusEvent( OpenVpnStatusEvent oldEvent )
+
+    public OpenVpnStatusEvent(OpenVpnStatusEvent oldEvent)
     {
         this.address = oldEvent.address;
         this.poolAddress = oldEvent.poolAddress;
@@ -64,65 +70,36 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
         this.bytesRxDelta = oldEvent.bytesRxDelta;
         this.bytesTxDelta = oldEvent.bytesTxDelta;
     }
-    
-    /**
-     * Address where the client connected from.
-     */
+
+// THIS IS FOR ECLIPSE - @formatter:off
+
     public InetAddress getAddress() { return this.address; }
     public void setAddress( InetAddress newValue ) { this.address = newValue; }
 
-    /**
-     * Port used to connect
-     */
     public int getPort() { return this.port; }
     public void setPort( int port ) { this.port = port; }
 
-    /**
-     * Address where the client connected from.
-     */
     public InetAddress getPoolAddress() { return this.poolAddress; }
     public void setPoolAddress( InetAddress newValue ) { this.poolAddress = newValue; }
     
-    /**
-     * Name of the client that was connected.
-     */
     public String getClientName() { return this.clientName; }
     public void setClientName( String newValue ) { this.clientName = newValue; }
 
-    /**
-     * Time the session started.
-     */
     public Timestamp getStart() { return this.start; }
     public void setStart( Timestamp newValue ) { this.start = newValue; }
 
-    /**
-     * Time the session ended. <b>Note that this
-     * may be null if the session is still open</b>
-     */
     public Timestamp getEnd() { return this.end; }
     public void setEnd( Timestamp newValue ) { this.end = newValue; }
 
-    /**
-     * Total bytes received during this session.
-     */
     public long getBytesRxTotal() { return this.bytesRxTotal; }
     public void setBytesRxTotal( long newValue ) { this.bytesRxTotal = newValue; }
 
-    /**
-     * Total transmitted received during this session.
-     */
     public long getBytesTxTotal() { return this.bytesTxTotal; }
     public void setBytesTxTotal( long newValue ) { this.bytesTxTotal = newValue; }
 
-    /**
-     * Delta bytes received since last event
-     */
     public long getBytesRxDelta() { return this.bytesRxDelta; }
     public void setBytesRxDelta( long newValue ) { this.bytesRxDelta = newValue; }
 
-    /**
-     * Delta bytes transmitted since last event
-     */
     public long getBytesTxDelta() { return this.bytesTxDelta; }
     public void setBytesTxDelta( long newValue ) { this.bytesTxDelta = newValue; }
 
@@ -151,6 +128,8 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
         return;
     }
 
+// THIS IS FOR ECLIPSE - @formatter:on
+
     @Override
     public String toSummaryString()
     {
@@ -158,4 +137,9 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable
         return summary;
     }
 
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }

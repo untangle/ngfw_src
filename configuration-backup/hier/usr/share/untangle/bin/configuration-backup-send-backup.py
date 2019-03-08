@@ -1,12 +1,14 @@
-#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
+#!/usr/bin/python -u
+import uvm
 import sys
 
+uvm = uvm.Uvm().getUvmContext()
 appManager = uvm.appManager()
 
 app = appManager.app( "configuration-backup" )
 
 if app == None:
-    print "configuration-backup app not installed."
+    print("configuration-backup app not installed.")
     sys.exit(0)
 
 app.sendBackup()

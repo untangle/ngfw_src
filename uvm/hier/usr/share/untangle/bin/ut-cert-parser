@@ -1,0 +1,88 @@
+#!/usr/bin/python
+
+import json
+import sys
+import os
+
+UNTANGLE_DIR = '%s/usr/lib/python%d.%d/dist-packages' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
+if ( "@PREFIX@" != ''):
+    sys.path.insert(0, UNTANGLE_DIR)
+
+import pem
+
+# This script uses the pem library to parse a certificate file uploaded via
+# the certificate manager into separate certificate, key, and intermediate
+# parts. The parts are returned in a JSON object that is parsed by the UI
+# and placed in the corresponding textarea's in the certificate upload dialog.
+
+tempFile = "/tmp/ut-cert-parser.tmp"
+
+certData = ""
+keyData = ""
+extraData = ""
+
+def errorExit(message):
+    problem = {}
+    problem["errorData"] = message
+    print json.dumps(problem)
+    exit()
+
+if len(sys.argv) < 2:
+    errorExit("Missing file name")
+    
+if not os.access(sys.argv[1],os.R_OK):
+    errorExit("Unable to read file")
+
+list = pem.parse_file(sys.argv[1])
+
+if len(list) == 0:
+    errorExit("The file does not contain any valid certificates or keys")
+
+for item in list:
+    # handle certificates
+    if isinstance(item, pem._core.Certificate):
+
+        # write the certificate to a temporary file
+        out = open(tempFile,"w")
+        out.write(item.as_text())
+        out.close()
+
+        # pass the certificate to openssl and grep for CA:TRUE in the output
+        # endFlag will be zero for CA certs and non-zero for end-entity certs
+        endFlag = os.system("openssl x509 -noout -text -in " + tempFile + " | grep -q 'CA:TRUE'")
+
+        # remove the temporary file
+        os.remove(tempFile)
+
+        # if we found CA:TRUE then we have an intermediate certificate
+        if endFlag == 0:
+            extraData += item.as_text()
+        # we did not find CA:TRUE so this must be the end-entity certificate
+        else:
+            if len(certData) != 0:
+                errorExit("The file contains more than one end-entity certificate")
+            certData = item.as_text()
+
+    # handle the key
+    if isinstance(item, pem._core.Key):
+
+        # if we find more than one key we return an error
+        if len(keyData) != 0:
+            errorExit("The file contains more than one private key.")
+        keyData = item.as_text()
+
+# put any valid data in a dictionary and then dump the dictionary in JSON
+# format for the caller
+result = {}
+
+if (len(certData) > 0):
+    result["certData"] = certData
+
+if (len(keyData) > 0):
+    result["keyData"] = keyData
+
+if (len(extraData) > 0):
+    result["extraData"] = extraData
+
+print json.dumps(result)
+

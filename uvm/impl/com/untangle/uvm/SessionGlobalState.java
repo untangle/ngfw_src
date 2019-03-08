@@ -6,7 +6,6 @@ package com.untangle.uvm;
 import java.util.List;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Iterator;
@@ -66,6 +65,13 @@ public class SessionGlobalState
      */
     private List<PipelineConnectorImpl> originalAgents;
     
+    /**
+     * SessionGlobalState constructor
+     * @param netcapSession
+     * @param clientSideListener
+     * @param serverSideListener
+     * @param netcapHook
+     */
     SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, SideListener serverSideListener, NetcapHook netcapHook )
     {
         this.netcapHook = netcapHook;
@@ -82,65 +88,258 @@ public class SessionGlobalState
         this.stringAttachments = new HashMap<String,Object>();
     }
 
+    /**
+     * id
+     * @return id
+     */
     public long id()
     {
         return id;
     }
-    
+
+    /**
+     * getProtocol
+     * @return protocol
+     */
     public short getProtocol()
     {
         return protocol;
     }
 
+    /**
+     * getCreationTime
+     * @return creationTime
+     */
     public long getCreationTime()
     {
         return this.creationTime;
     }
 
-    public long getEndTime() { return this.endTime; }
-    public void setEndTime( long newValue ) { this.endTime = newValue; }
+    /**
+     * getEndTime
+     * @return endTime
+     */
+    public long getEndTime()
+    {
+        return this.endTime;
+    }
 
-    public long getLastUpdateBytes() { return this.lastUpdateBytes; }
-    public void setLastUpdateBytes( long newValue ) { this.lastUpdateBytes = newValue; }
+    /**
+     * setEndTime
+     * @param newValue
+     */
+    public void setEndTime( long newValue )
+    {
+        this.endTime = newValue;
+    }
+
+    /**
+     * getLastUpdateBytes
+     * @return lastUpdateBytes
+     */
+    public long getLastUpdateBytes()
+    {
+        return this.lastUpdateBytes;
+    }
+
+    /**
+     * setLastUpdateBytes
+     * @param newValue
+     */
+    public void setLastUpdateBytes( long newValue )
+    {
+        this.lastUpdateBytes = newValue;
+    }
+
+    /**
+     * user
+     * @return user
+     */
+    public String user()
+    {
+        return this.user;
+    }
+
+    /**
+     * setUser
+     * @param newValue
+     */
+    public void setUser( String newValue )
+    {
+        this.user = newValue;
+    }
+
+    /**
+     * getSessionEvent
+     * @return sessionEvent
+     */
+    public SessionEvent getSessionEvent()
+    {
+        return this.sessionEvent;
+    }
+
+    /**
+     * setSessionEvent
+     * @param newValue
+     */
+    public void setSessionEvent( SessionEvent newValue )
+    {
+        this.sessionEvent = newValue;
+    }
+
+    /**
+     * getClientSideTuple
+     * @return clientSideTuple
+     */
+    public SessionTuple getClientSideTuple()
+    {
+        return this.clientSideTuple;
+    }
+
+    /**
+     * setClientSideTuple
+     * @param newValue
+     */
+    public void setClientSideTuple( SessionTuple newValue )
+    {
+        this.clientSideTuple = newValue;
+    }
+
+    /**
+     * getServerSideTuple
+     * @return serverSideTuple
+     */
+    public SessionTuple getServerSideTuple()
+    {
+        return this.serverSideTuple;
+    }
+
+    /**
+     * setServerSideTuple
+     * @param newValue
+     */
+    public void setServerSideTuple( SessionTuple newValue )
+    {
+        this.serverSideTuple = newValue;
+    }
+
+    /**
+     * getClientIntf
+     * @return clientIntf
+     */
+    public int getClientIntf()
+    {
+        return this.clientIntf;
+    }
+
+    /**
+     * setClientIntf
+     * @param newValue
+     */
+    public void setClientIntf( int newValue )
+    {
+        this.clientIntf = newValue;
+    }
+
+    /**
+     * getServerIntf
+     * @return serverIntf
+     */
+    public int getServerIntf()
+    {
+        return this.serverIntf;
+    }
+
+    /**
+     * setServerIntf
+     * @param newValue
+     */
+    public void setServerIntf( int newValue )
+    {
+        this.serverIntf = newValue;
+    }
+
+    /**
+     * getHostEntry
+     * @return hostEntry
+     */
+    public HostTableEntry getHostEntry()
+    {
+        return this.hostEntry;
+    }
+
+    /**
+     * setHostEntry
+     * @param newValue
+     */
+    public void setHostEntry( HostTableEntry newValue )
+    {
+        this.hostEntry = newValue;
+    }
+
+
+    /**
+     * getDeviceEntry
+     * @return deviceEntry
+     */
+    public DeviceTableEntry getDeviceEntry()
+    {
+        return this.deviceEntry;
+    }
+
+    /**
+     * setDeviceEntry
+     * @param newValue
+     */
+    public void setDeviceEntry( DeviceTableEntry newValue )
+    {
+        this.deviceEntry = newValue;
+    }
+
+    /**
+     * getUserEntry
+     * @return userEntry
+     */
+    public UserTableEntry getUserEntry()
+    {
+        return this.userEntry;
+    }
+
+    /**
+     * setUserEntry
+     * @param newValue
+     */
+    public void setUserEntry( UserTableEntry newValue )
+    {
+        this.userEntry = newValue;
+    }
     
-    public String user() { return this.user; }
-    public void setUser( String newValue ) { this.user = newValue; }
-
-    public SessionEvent getSessionEvent() { return this.sessionEvent; }
-    public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
-
-    public SessionTuple getClientSideTuple() { return this.clientSideTuple; }
-    public void setClientSideTuple( SessionTuple newValue ) { this.clientSideTuple = newValue; }
-
-    public SessionTuple getServerSideTuple() { return this.serverSideTuple; }
-    public void setServerSideTuple( SessionTuple newValue ) { this.serverSideTuple = newValue; }
-
-    public int getClientIntf() { return this.clientIntf; }
-    public void setClientIntf( int newValue ) { this.clientIntf = newValue; }
-
-    public int getServerIntf() { return this.serverIntf; }
-    public void setServerIntf( int newValue ) { this.serverIntf = newValue; }
-
-    public HostTableEntry getHostEntry() { return this.hostEntry; }
-    public void setHostEntry( HostTableEntry newValue ) { this.hostEntry = newValue; }
-
-    public DeviceTableEntry getDeviceEntry() { return this.deviceEntry; }
-    public void setDeviceEntry( DeviceTableEntry newValue ) { this.deviceEntry = newValue; }
-
-    public UserTableEntry getUserEntry() { return this.userEntry; }
-    public void setUserEntry( UserTableEntry newValue ) { this.userEntry = newValue; }
-    
+    /**
+     * getTags returns a list of tags in this SessionGlobalState
+     * @return list
+     */
     public List<Tag> getTags()
     {
         removeExpiredTags();
         return new LinkedList<Tag>(this.tags.values());
     }
 
+    /**
+     * getTagsString returns the list of tags as a string
+     * Each tag name is concatenated with a comma
+     * It does not include the expirations times
+     * Example: "foo,bar"
+     * @return String
+     */
     public String getTagsString()
     {
         return Tag.tagsToString( getTags() );
     }
 
+    /**
+     * addTag adds a tag to the tags on this SessionGlobalState
+     * @param tag
+     */
     public void addTag( Tag tag )
     {
         if ( tag == null || tag.getName() == null )
@@ -148,6 +347,10 @@ public class SessionGlobalState
         this.tags.put( tag.getName(), tag );
     }
 
+    /**
+     * addTags adds a list of tags to the tags on this SessionGlobalState
+     * @param tags
+     */
     public void addTags( Collection<Tag> tags )
     {
         if ( tags == null )
@@ -157,6 +360,11 @@ public class SessionGlobalState
         }
     }
 
+    /**
+     * hasTag checks if the tag is in the list of tags (and not expired)
+     * @param name of tag
+     * @return true if found, false otherwise
+     */
     public boolean hasTag( String name )
     {
         Tag t = this.tags.get( name );
@@ -169,6 +377,9 @@ public class SessionGlobalState
         return true;
     }
 
+    /**
+     * removeExpiredTags removes any expired tags from the list of tags
+     */
     public void removeExpiredTags()
     {
         for ( Iterator<Tag> i = this.tags.values().iterator() ; i.hasNext() ; ) {
@@ -178,13 +389,19 @@ public class SessionGlobalState
         }
     }
     
+    /**
+     * Get the NetcapSession for this Session
+     * @return NetcapSession
+     */
     public NetcapSession netcapSession()
     {
         return netcapSession;
     }
 
     /**
-     * Retrieve the netcap TCP Session.  If this is not a TCP session, this will throw an exception.
+     * Retrieve the netcap TCP Session.  If this is not a TCP session,
+     * this will throw an exception.
+     * @return NetcapTCPSession
      */
     public NetcapTCPSession netcapTCPSession()
     {
@@ -192,28 +409,47 @@ public class SessionGlobalState
     }
 
     /**
-     * Retrieve the netcap UDP Session.  If this is not a UDP session, this will throw an exception.
+     * Retrieve the netcap UDP Session.  If this is not a UDP session,
+     * this will throw an exception.
+     * @return NetcapUDPSession
      */
     public NetcapUDPSession netcapUDPSession()
     {
         return (NetcapUDPSession)netcapSession;
     }
 
+    /**
+     * clientSideListener returns the client side listener
+     * @return SideListener
+     */
     public SideListener clientSideListener()
     {
         return clientSideListener;
     }
 
+    /**
+     * serverSideListener returns the server side listener
+     * @return SideListener
+     */
     public SideListener serverSideListener()
     {
         return serverSideListener;
     }
 
+    /**
+     * getPipelineConnectors returns the list of original PipelineConnectors
+     * processing this session
+     * @return list
+     */
     public List<PipelineConnectorImpl> getPipelineConnectors()
     {
         return originalAgents;
     }
 
+    /**
+     * getPipelineDescription builds a string description of the original pipeline
+     * @return string
+     */
     public String getPipelineDescription()
     {
         if ( originalAgents == null )
@@ -229,32 +465,59 @@ public class SessionGlobalState
         return pipelineDescription;
     }
     
+    /**
+     * set the list of original PipelineConnectors processing this session
+     * @param agents
+     */
     public void setPipelineConnectorImpls( List<PipelineConnectorImpl> agents )
     {
         this.originalAgents = agents;
     }
 
+    /**
+     * netcapHook returns the netcapHook for this session
+     * @return netcapHook
+     */
     public NetcapHook netcapHook()
     {
         return netcapHook;
     }
 
+    /**
+     * Attach an object with the specified key
+     * @param key
+     * @param attachment
+     * @return the previous attachment for this key
+     */
     public Object attach(String key, Object attachment)
     {
         logger.debug("globalAttach( " + key + " , " + attachment + " )");
         return this.stringAttachments.put(key,attachment);
     }
 
+    /**
+     * Get an attachment for the specified key
+     * @param key
+     * @return the obj (or null)
+     */
     public Object attachment(String key)
     {
         return this.stringAttachments.get(key);
     }
 
+    /**
+     * getAttachments returns all attachments
+     * @return map of the string to objects
+     */
     public Map<String,Object> getAttachments()
     {
         return this.stringAttachments;
     }
 
+    /**
+     * toString
+     * @return <doc>
+     */
     public String toString()
     {
         return (sessionEvent == null ? "null" : sessionEvent.toString());

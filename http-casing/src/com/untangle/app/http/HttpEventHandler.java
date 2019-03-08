@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
@@ -29,6 +27,9 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
  * Adapts a stream of HTTP tokens to methods relating to the protocol
  * state.
  *
+ * HttpEventHandler provides the base class that http-processing apps
+ * override. It handles the basic handling of http processing and will
+ * call abstract methods when interesting events happen.
  */
 public abstract class HttpEventHandler extends AbstractEventHandler
 {
@@ -64,6 +65,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         RESPONSE
     }
 
+    /**
+     * HttpSessionState stores all the HTTP session state of a given session
+     */
     private class HttpSessionState
     {
         protected final List<RequestLineToken> requests = new LinkedList<RequestLineToken>();
@@ -94,81 +98,188 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         protected boolean responsePersistent;
     }
 
+    /**
+     * Create a new HttpEventHandler.
+     */
     protected HttpEventHandler()
     {
         super();
     }
 
+    /**
+     * doRequestLine should be overridden by the final class to determine how RequestLineTokens are handled
+     * @param session - the session
+     * @param rl  - the RequestLineToken
+     * @return the RequestLineToken to pass down the pipeline (or null)
+     */
     protected abstract RequestLineToken doRequestLine( AppTCPSession session, RequestLineToken rl );
+
+    /**
+     * doRequestHeader should be overridden by the final class to determine how HeaderTokens are handled
+     * @param session  - the session
+     * @param h  - the HeaderToken
+     * @return the HeaderToken to pass down the pipeline (or null)
+     */
     protected abstract HeaderToken doRequestHeader( AppTCPSession session, HeaderToken h );
+
+    /**
+     * doRequestBody should be overridden by the final class to determine how ChunkTokens are handled
+     * @param session - the session
+     * @param c - the ChunkToken
+     * @return the ChunkToken to pass down the pipeline (or null)
+     */
     protected abstract ChunkToken doRequestBody( AppTCPSession session, ChunkToken c );
+
+    /**
+     * doRequestBodyEnd should be overridden by the final class to determine how the end of the body is handled
+     * @param session - the session
+     */
     protected abstract void doRequestBodyEnd( AppTCPSession session );
 
+    /**
+     * doStatusLine should be overridden by the final class to determine how StatusLine is handled
+     * @param session - the session
+     * @param sl - the StatusLine
+     * @return the StatusLine to pass down the pipeline (or null)
+     */
     protected abstract StatusLine doStatusLine( AppTCPSession session, StatusLine sl );
+
+    /**
+     * doResponseHeader should be overridden by the final class to determine how HeaderTokens are handled
+     * @param session - the session
+     * @param h - the HeaderToken
+     * @return the HeaderToken to pass down the pipeline (or null)
+     */
     protected abstract HeaderToken doResponseHeader( AppTCPSession session, HeaderToken h );
+
+    /**
+     * doResponseBody should be overridden by the final class to determine how ChunkTokens are handled
+     * @param session - the session
+     * @param c - the ChunkToken
+     * @return the ChunkToken to pass down the pipeline (or null)
+     */
     protected abstract ChunkToken doResponseBody( AppTCPSession session, ChunkToken c );
+
+    /**
+     * doResponseBodyEnd should be overridden by the final class to determine how the end of the body is handled
+     * @param session - the session
+     */
     protected abstract void doResponseBodyEnd( AppTCPSession session );
 
+    /**
+     * Get the ClientState for the session
+     * @param session - the session
+     * @return ClientState
+     */
     protected ClientState getClientState( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.clientState;
     }
 
+    /**
+     * Get the ServerState for the session
+     * @param session - the session
+     * @return ServerState
+     */
     protected ServerState getServerState( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.serverState;
     }
 
+    /**
+     * get RequestLine for the session
+     * @param session
+     * @return RequestLine
+     */
     protected RequestLineToken getRequestLine( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.requestLineToken;
     }
 
+    /**
+     * get RequestLineToken for the session
+     * @param session
+     * @return RequestLineToken
+     */
     protected RequestLineToken getResponseRequest( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.responseRequest;
     }
 
+    /**
+     * get the StatusLine for the session
+     * @param session
+     * @return StatusLine
+     */
     protected StatusLine getStatusLine( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.statusLine;
     }
 
+    /**
+     * Get the Response Host for the session
+     * @param session
+     * @return response host as a string
+     */
     protected String getResponseHost( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.hosts.get( state.responseRequest );
     }
 
+    /**
+     * get requestPersistent for the session
+     * @param session
+     * @return boolean
+     */
     protected boolean isRequestPersistent( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.requestPersistent;
     }
 
+    /**
+     * get pesponsePersistent for the session
+     * @param session
+     * @return boolean
+     */
     protected boolean isResponsePersistent( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.responsePersistent;
     }
 
+    /**
+     * get requestMode for the session
+     * @param session
+     * @return Mode
+     */
     protected Mode getRequestMode( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.requestMode;
     }
 
+    /**
+     * get responseMode for the session
+     * @param session
+     * @return Mode
+     */
     protected Mode getResponseMode( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.responseMode;
     }
 
+    /**
+     * Release the specified session
+     * @param session
+     */
     protected void releaseRequest( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -181,16 +292,32 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         state.requestMode = Mode.RELEASED;
     }
 
+    /**
+     * Stream the specified TokenStreamer's data to the client
+     * @param session
+     * @param streamer
+     */
     protected void streamClient( AppTCPSession session, TokenStreamer streamer )
     {
         stream( session, AppSession.CLIENT, streamer );
     }
 
+    /**
+     * Stream the specified TokenStreamer's data to the server
+     * @param session
+     * @param streamer
+     */
     protected void streamServer( AppTCPSession session, TokenStreamer streamer )
     {
         stream( session, AppSession.SERVER, streamer );
     }
 
+    /**
+     * Stream the specified TokenStreamer's data to the server/client
+     * @param session
+     * @param side - client/server
+     * @param streamer
+     */
     protected void stream( AppTCPSession session, int side, TokenStreamer streamer )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -223,6 +350,11 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         session.sendStreamer( side, tcpStreamer );
     }
 
+    /**
+     * Block the request and return the specified response
+     * @param session
+     * @param response
+     */
     protected void blockRequest( AppTCPSession session, Token[] response)
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -237,6 +369,10 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         state.requestResponse = response;
     }
 
+    /**
+     * Release the session
+     * @param session
+     */
     protected void releaseResponse( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -250,6 +386,11 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         state.responseMode = Mode.RELEASED;
     }
 
+    /**
+     * Block the response and replace with the specified response
+     * @param session
+     * @param response
+     */
     protected void blockResponse( AppTCPSession session, Token[] response )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -264,6 +405,10 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         state.responseResponse = response;
     }
 
+    /**
+     * handleTCPNewSession.
+     * @param session
+     */
     @Override
     public void handleTCPNewSession( AppTCPSession session )
     {
@@ -271,6 +416,11 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         session.attach( SESSION_STATE_KEY, state );
     }
 
+    /**
+     * handleTCPServerObject.
+     * @param session
+     * @param obj
+     */
     @Override
     public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
@@ -294,6 +444,11 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPClientObject.
+     * @param session
+     * @param obj
+     */
     @Override
     public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
@@ -321,6 +476,10 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * Flush all queued data to client and server
+     * @param session
+     */
     public void releaseFlush( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -339,8 +498,13 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         return;
     }
 
-    // private methods --------------------------------------------------------
-
+    /**
+     * Handle the specified token in the HTTP state machine
+     * This handles the core logic of the HttpEventHandler
+     * and will call the specified abstract methods when events happen
+     * @param session
+     * @param token
+     */
     @SuppressWarnings("fallthrough")
     private void doHandleClientToken( AppTCPSession session, Token token )
     {
@@ -353,10 +517,6 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             state.requestLineToken = (RequestLineToken)token;
             state.requestLineToken = doRequestLine( session, state.requestLineToken );
 
-            String rmethod = state.requestLineToken.getMethod().toString();
-            if (rmethod != null)
-                session.globalAttach(AppSession.KEY_HTTP_REQUEST_METHOD, rmethod);
-            
             switch ( state.requestMode ) {
             case QUEUEING:
                 state.requestQueue.add( state.requestLineToken );
@@ -390,43 +550,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 state.requestPersistent = isPersistent(h);
                 Mode preMode = state.requestMode;
 
-                /**
-                 * Attach metadata
-                 */
-                String host = h.getValue("host");
-                String referer = h.getValue("referer");
-                String uri = getRequestLine( session ).getRequestUri().normalize().getPath();
-                session.globalAttach( AppSession.KEY_HTTP_HOSTNAME, host );
-                session.globalAttach( AppSession.KEY_HTTP_REFERER, referer );
-                session.globalAttach( AppSession.KEY_HTTP_URI, uri );
-                session.globalAttach( AppSession.KEY_HTTP_URL, host + uri );
-
-                String fpath = null;
-                String fname = null;
-                String fext = null;
-                int loc;
-                try {
-                    // extract the full file path ignoring all params
-                    fpath = (new URI(uri)).toString();
-
-                    // find the last slash to extract the file name
-                    loc = fpath.lastIndexOf("/");
-                    if (loc != -1) fname = fpath.substring(loc + 1);
-
-                    // find the last dot to extract the file extension
-                    loc = fname.lastIndexOf(".");
-                    if (loc != -1) fext = fname.substring(loc + 1);
-
-                    if (fpath != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
-                    if (fname != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
-                    if (fext != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
-                } catch (URISyntaxException e) {
-                }
-
-                
                 h = doRequestHeader( session, h );
 
-                host = h.getValue("host");
+                String host = h.getValue("host");
                 state.hosts.put( state.requestLineToken, host );
                 
                 switch ( state.requestMode ) {
@@ -567,6 +693,11 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handle a token from the server
+     * @param session
+     * @param token
+     */
     @SuppressWarnings("fallthrough")
     private void doHandleServerToken( AppTCPSession session, Token token )
     {
@@ -622,30 +753,6 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             if ( state.responseMode != Mode.BLOCKED ) {
                 HeaderToken h = (HeaderToken)token;
                 state.responsePersistent = isPersistent(h);
-
-                /**
-                 * Attach metadata
-                 */
-                String contentType = h.getValue("content-type");
-                if (contentType != null) {
-                    session.globalAttach( AppSession.KEY_HTTP_CONTENT_TYPE, contentType );
-                }
-                String contentLength = h.getValue("content-length");
-                if (contentLength != null) {
-                    try {
-                        Long contentLengthLong = Long.parseLong(contentLength);
-                        session.globalAttach(AppSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
-                    } catch (NumberFormatException e) { /* ignore it if it doesnt parse */ }
-                }
-                String fileName = findContentDispositionFilename(h);
-                if (fileName != null) {
-                    session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_NAME, fileName);
-                    // find the last dot to extract the file extension
-                    int loc = fileName.lastIndexOf(".");
-                    if (loc != -1)
-                        session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
-
-                }
                 h = doResponseHeader( session, h );
 
                 switch ( state.responseMode ) {
@@ -751,6 +858,12 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Iterate to the next client state from the specified clientState
+     * @param clientState
+     * @param o - the ChunkToken
+     * @return the next ClientState
+     */
     private ClientState nextClientState( ClientState clientState, Object o )
     {
         switch ( clientState ) {
@@ -782,6 +895,12 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Iterate to the next server state from the specified serverState
+     * @param serverState
+     * @param o - the ChunkToken
+     * @return the next ServerState
+     */
     private ServerState nextServerState( ServerState serverState, Object o)
     {
         switch ( serverState ) {
@@ -816,35 +935,15 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Returns true if this is a persistent connection
+     * calculated by the presence of a connection=keep-alive header
+     * @param header - the HeaderToken
+     * @return true if persistent, false otherwise
+     */
     private boolean isPersistent(HeaderToken header)
     {
         String con = header.getValue("connection");
         return null == con ? false : con.equalsIgnoreCase("keep-alive");
     }
-
-    public static String findContentDispositionFilename( HeaderToken header )
-    {
-        String contentDisposition = header.getValue("content-disposition");
-
-        if ( contentDisposition == null )
-            return null;
-
-        contentDisposition = contentDisposition.toLowerCase();
-        
-        int indexOf = contentDisposition.indexOf("filename=");
-
-        if ( indexOf == -1 )
-            return null;
-
-        indexOf = indexOf + "filename=".length();
-        
-        String filename = contentDisposition.substring( indexOf );
-        
-        filename = filename.replace("\"","");
-        filename = filename.replace("'","");
-        filename = filename.replaceAll("\\s","");
-        
-        return filename;
-    }
-
 }

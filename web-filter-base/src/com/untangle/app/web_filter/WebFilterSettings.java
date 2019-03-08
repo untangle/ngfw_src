@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.web_filter;
@@ -11,13 +11,12 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.GenericRule;
-import com.untangle.uvm.app.AppSettings;
 
 /**
  * WebFilter settings.
  */
 @SuppressWarnings("serial")
-public class WebFilterSettings implements Serializable
+public class WebFilterSettings implements Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -82,33 +81,17 @@ public class WebFilterSettings implements Serializable
     public List<GenericRule> V1_getBlockedExtensions() { return blockedExtensions; }
     public void setBlockedExtensions( List<GenericRule > blockedExtensions) { this.blockedExtensions = blockedExtensions; }
 
-    /**
-     * Block all requests to hosts identified only by an IP address.
-     */
     public Boolean getBlockAllIpHosts() { return blockAllIpHosts; }
     public void setBlockAllIpHosts( Boolean blockAllIpHosts ) { this.blockAllIpHosts = blockAllIpHosts; }
 
-    /**
-     * Block all requests to hosts identified only by an IP address.
-     */
     public Boolean getPassReferers() { return passReferers; }
     public void setPassReferers( Boolean passReferers ) { this.passReferers = passReferers; }
 
-    /**
-     * Add header for Google to ensure only allowed domains for non-search applications
-     */
     public Boolean getRestrictGoogleApps() { return restrictGoogleApps; }
     public void setRestrictGoogleApps( Boolean restrictGoogleApps ) { this.restrictGoogleApps = restrictGoogleApps; }
 
-    /**
-     * Domain list (comma separated string) for restrictGoogleApps
-     */
     public String getRestrictGoogleAppsDomain() { return restrictGoogleAppsDomain; }
     public void setRestrictGoogleAppsDomain( String restrictGoogleAppsDomain ) { this.restrictGoogleAppsDomain = restrictGoogleAppsDomain; }
-
-    /**
-     * If true, enables checking of HTTPS traffic.
-     */
 
     public Boolean getEnableHttpsSni() { return enableHttpsSni; }
     public void setEnableHttpsSni( Boolean enableHttpsSni ) { this.enableHttpsSni = enableHttpsSni; }
@@ -119,43 +102,24 @@ public class WebFilterSettings implements Serializable
     public Boolean getEnableHttpsSniIpFallback() { return enableHttpsSniIpFallback; }
     public void setEnableHttpsSniIpFallback( Boolean newValue ) { this.enableHttpsSniIpFallback = newValue; }
     
-    /**
-     * If true, enforces safe search on popular search engines.
-     */
     public Boolean getEnforceSafeSearch() { return enforceSafeSearch; }
     public void setEnforceSafeSearch( Boolean newValue ) { this.enforceSafeSearch = newValue; }
 
     public Boolean getBlockQuic() { return blockQuic; }
     public void setBlockQuic( Boolean newValue ) { this.blockQuic = newValue; }
     
-    /**
-     * If true, ask for a password to unblock a site.
-     */
     public Boolean getUnblockPasswordEnabled() { return this.unblockPasswordEnabled; }
     public void setUnblockPasswordEnabled( Boolean newValue ) { this.unblockPasswordEnabled = newValue; }
 
-    /**
-     * If true, ask for a password to unblock a site.
-     */
     public Boolean getUnblockPasswordAdmin() { return this.unblockPasswordAdmin; }
     public void setUnblockPasswordAdmin( Boolean newValue ) { this.unblockPasswordAdmin = newValue; }
     
-    /**
-     * String to use for the unblock password
-     */
     public String getUnblockPassword() { return this.unblockPassword; }
     public void setUnblockPassword( String newValue ) { this.unblockPassword = newValue; }
 
-    /**
-     * The mode for bypass
-     */
     public String getUnblockMode() { return this.unblockMode; }
     public void setUnblockMode( String unblockMode ) { this.unblockMode = unblockMode; }
 
-    /**
-     * The timeout for bypass (seconds)
-     * If unblock mode is set to Host, then the unblock will last for this many seconds
-     */
     public Integer getUnblockTimeout() { return this.unblockTimeout; }
     public void setUnblockTimeout( Integer unblockTimeout ) { this.unblockTimeout = unblockTimeout; }
     

@@ -10,34 +10,58 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * IntrusionPrevention event rule mapping
+ * IntrusionPrevention event signature mapping
  */
 @SuppressWarnings("serial")
 public class IntrusionPreventionEventMap implements Serializable
 {
-    private Set<IntrusionPreventionEventMapRule> rules = new HashSet<IntrusionPreventionEventMapRule>();
+    private Set<IntrusionPreventionEventMapSignature> signatures = new HashSet<IntrusionPreventionEventMapSignature>();
 
-    public List<IntrusionPreventionEventMapRule> getRules() { return new LinkedList<IntrusionPreventionEventMapRule>(this.rules); }
-    public void setRules( List<IntrusionPreventionEventMapRule> newValue ) { this.rules = new HashSet<IntrusionPreventionEventMapRule>(newValue); }
+    /**
+     * Read the signatures.
+     *
+     * @return
+     *  List of event map type signatures.
+     */
+    public List<IntrusionPreventionEventMapSignature> getSignatures() { 
+        return new LinkedList<IntrusionPreventionEventMapSignature>(this.signatures); 
+    }
+    /**
+     * Set the signatures.
+     *
+     * @param newValue
+     *  List of event map type signatures.
+     */
+    public void setSignatures( List<IntrusionPreventionEventMapSignature> newValue ) { this.signatures = new HashSet<IntrusionPreventionEventMapSignature>(newValue); }
 
-    public IntrusionPreventionEventMapRule getRuleBySignatureAndGeneratorId( long signatureId, long generatorId ){
-        IntrusionPreventionEventMapRule bestMatchRule = null;
-    	for( IntrusionPreventionEventMapRule rule : this.rules ){
-            if( ( rule.getSid() == signatureId ) &&
-                ( rule.getGid() == generatorId ) ){
+    /**
+     * Look for signature signature.
+     *
+     * @param signatureId
+     *  Signature id to match.
+     * @param generatorId
+     *  Generator id to match.
+     * @return
+     *  MapSignature containing the best match.
+     */
+    public IntrusionPreventionEventMapSignature getSignatureBySignatureAndGeneratorId( long signatureId, long generatorId ){
+        IntrusionPreventionEventMapSignature bestMatchSignature = null;
+    	for( IntrusionPreventionEventMapSignature signature : this.signatures ){
+            if( ( signature.getSid() == signatureId ) &&
+                ( signature.getGid() == generatorId ) ){
                 /*
                  * Explicit signature and signature match.
                  */
-                return rule;                
+                return signature;                
             }
-    		if( rule.getSid() == signatureId ){
+    		if( signature.getSid() == signatureId ){
                 /*
                  * Fall back to just a signature match
                  */
-    			bestMatchRule = rule;
+    			bestMatchSignature = signature;
     		}
     	}
-    	return bestMatchRule;
+    	return bestMatchSignature;
     }
     
 }

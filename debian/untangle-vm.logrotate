@@ -34,7 +34,16 @@ copytruncate
 missingok
 }
 
-/var/log/uvm/app*.log {
+/var/log/uvm/apps.log {
+rotate 5
+size 500k
+compress
+notifempty
+copytruncate
+missingok
+}
+
+/var/log/uvm/app-*.log {
 rotate 2
 size 500k
 compress
@@ -43,7 +52,7 @@ copytruncate
 missingok
 }
 
-/var/log/uvm/apt.log {
+/var/log/uvm/upgrade.log {
 rotate 2
 size 500k
 compress
@@ -70,7 +79,7 @@ copytruncate
 missingok
 }
 
-/var/log/uvm/pyconnector.log {
+/var/log/uvm/tunnel.log {
 rotate 1
 size 50k
 compress

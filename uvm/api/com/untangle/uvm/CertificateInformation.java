@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 
@@ -9,6 +9,9 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * Class to store certificate details for display in the user interface
+ */
 @SuppressWarnings("serial")
 public class CertificateInformation implements JSONString, Serializable
 {

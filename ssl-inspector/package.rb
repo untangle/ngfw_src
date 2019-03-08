@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-AppBuilder.makeCasing(BuildEnv::SRC, 'ssl-inspector', 'ssl-inspector', [])
+AppBuilder.makeCasing(BuildEnv::SRC, 'untangle-app-ssl-inspector', 'ssl-inspector', [])

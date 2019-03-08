@@ -1,6 +1,7 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.uvm.util;
 
 import java.io.UnsupportedEncodingException;
@@ -9,12 +10,16 @@ import org.apache.log4j.Logger;
 
 /**
  * Utilities for escaping URIs.
- *
  */
 public class UriUtil
 {
     private static Logger logger = Logger.getLogger(UriUtil.class);
 
+    /**
+     * Escape a URI
+     * @param uri The URI to escape
+     * @return The escaped URI
+     */
     public static String escapeUri(String uri)
     {
         StringBuilder sb = new StringBuilder(uri.length() + 32);
@@ -85,6 +90,11 @@ public class UriUtil
         return sb.toString();
     }
 
+    /**
+     * See if a byte is hex
+     * @param b The byte to check
+     * @return True if hex, otherwise false
+     */
     private static boolean isHex(byte b)
     {
         switch (b) {

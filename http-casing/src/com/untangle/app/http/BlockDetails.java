@@ -11,29 +11,48 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class BlockDetails implements Serializable
 {
-    private static final int SUB_LINE_LEN = 80;
     private static final int MAX_LEN = 40;
 
     private final String host;
     private final String uri;
 
+    /**
+     * Create a BlockDetails instance for the following host and URI
+     * @param host - the host (being blocked)
+     * @param uri - the URI (being blocked)
+     */
     public BlockDetails(String host, String uri)
     {
         this.host = host;
         this.uri = uri;
     }
 
+    /**
+     * Get the host for this BlockDetails
+     * @return the host
+     */
     public String getHost()
     {
         return host;
     }
 
+    /**
+     * Get a pretty formatted host string
+     * for display on the block page
+     * @return the formatted host
+     */
     public String getFormattedHost()
     {
-        return null == host ? "" : breakLine(host, SUB_LINE_LEN);
+        return null == host ? "" : truncateString(host, MAX_LEN);
     }
-
-    public String getWhitelistHost()
+    
+    /**
+     * Returns the host that should be added to the unblock list
+     * if the user unblocks this blocked request
+     * This is just getHost() with the "www." removed if present
+     * @return the host to unblock
+     */
+    public String getUnblockHost()
     {
         if (null == host) {
             return null;
@@ -44,55 +63,55 @@ public class BlockDetails implements Serializable
         }
     }
 
+    /**
+     * Get the URI for this BlockDetails
+     * @return the URI
+     */
     public String getUri()
     {
         return uri;
     }
 
+    /**
+     * Get the full URL for the block details
+     * This is the host + uri or just the back button
+     * if the host is not known
+     * @return the full URL
+     */
     public String getUrl()
     {
-        if (null == host) {
+        if (host == null) {
             return "javascript:history.back()";
         } else {
             return "http://" + host + uri;
         }
     }
 
+    /**
+     * Get a pretty formatted URL string
+     * for display on the block page
+     * @return the pretty formatted URL string
+     */
     public String getFormattedUrl()
-    {
-        if (null == host) {
+     {
+        if (host == null) {
             return "";
+        } else if (uri == null) {
+            return truncateString("http://" + host, MAX_LEN);
         } else {
-            return shorten("http://" + host + uri, MAX_LEN);
+            return truncateString("http://" + host + uri, MAX_LEN);
         }
     }
-
-    // private methods --------------------------------------------------------
-
-    private String breakLine(String orgLine, int subLineLen) {
-        StringBuffer newLine = new StringBuffer(orgLine.length());
-        char chVal;
-        int subLineCnt = 0;
-        subLineLen--;
-        for (int idx = 0; idx < orgLine.length(); idx++) {
-            chVal = orgLine.charAt(idx);
-            if ('\n' == chVal || ' ' == chVal) {
-                newLine.append(chVal);
-                subLineCnt = 1;
-            } else if (subLineLen == subLineCnt) {
-                newLine.append('\n');
-                newLine.append(chVal);
-                subLineCnt = 1;
-            } else {
-                newLine.append(chVal);
-                subLineCnt++;
-            }
-        }
-        return newLine.toString();
-    }
-
-    private String shorten(String s, int maxLen)
+    
+    /**
+     * Truncate the provided strength to maxLen if it is longer
+     * @param s - the original string
+     * @param maxLen - the maximum length
+     * @return the new (truncated) string
+     */
+    private String truncateString(String s, int maxLen)
     {
         return s.length() > maxLen ? s.substring(0, maxLen) : s;
     }
+
 }

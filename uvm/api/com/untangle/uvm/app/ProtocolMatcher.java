@@ -33,7 +33,7 @@ public class ProtocolMatcher
      * but will never matching inside the JVM because they are not processed by the UVM
      * As such they are allowed (for iptables based rules) but will never match
      */
-    private static final String[] OTHER_MARKERS = { "icmp", "gre", "esp", "ah", "sctp" };
+    private static final String[] OTHER_MARKERS = { "icmp", "gre", "esp", "ah", "sctp", "ospf" };
     
     private static ProtocolMatcher ANY_MATCHER = new ProtocolMatcher(MARKER_ANY);
     private static ProtocolMatcher TCP_MATCHER = new ProtocolMatcher(MARKER_TCP);
@@ -66,6 +66,7 @@ public class ProtocolMatcher
     
     /**
      * Create a protocol matcher from the given string
+     * @param matcher The string for initialization
      */
     public ProtocolMatcher( String matcher )
     {
@@ -116,12 +117,20 @@ public class ProtocolMatcher
             return false;
         }
     }
-    
+
+    /**
+     * Return string representation
+     * @return The string representation
+     */
     public String toString()
     {
         return this.matcher;
     }
 
+    /**
+     * Initialize using the argumented string matcher
+     * @param matcher The init matcher
+     */
     private void initialize( String matcher )
     {
         matcher = matcher.toLowerCase().trim().replaceAll("\\s","");

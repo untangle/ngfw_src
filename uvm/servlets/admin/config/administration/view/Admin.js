@@ -1,7 +1,8 @@
 Ext.define('Ung.config.administration.view.Admin', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.administration.admin',
+    alias: 'widget.config-administration-admin',
     itemId: 'admin',
+    scrollable: true,
 
     viewModel: true,
 
@@ -10,23 +11,25 @@ Ext.define('Ung.config.administration.view.Admin', {
 
     items: [{
         xtype: 'ungrid',
-        // border: false,
         title: 'Admin Accounts'.t(),
         region: 'center',
+
+        controller: 'unadmingrid',
 
         bind: '{accounts}',
 
         listProperty: 'adminSettings.users.list',
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['changePassword', 'delete'],
+
+        emptyText: 'No Admin Accounts defined'.t(),
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.AdminUserSettings',
             username: '',
             description: '',
             emailAddress: '',
-            // "emailAlerts": true,
-            // "emailSummaries": true,
+            emailAlerts: false,
             passwordHashBase64: null,
             passwordHashShadow: null,
             password: null
@@ -34,7 +37,7 @@ Ext.define('Ung.config.administration.view.Admin', {
 
         columns: [{
             header: 'Username'.t(),
-            width: 150,
+            width: Renderer.usernameWidth,
             dataIndex: 'username',
             editor: {
                 allowBlank: false,
@@ -43,6 +46,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             }
         }, {
             header: 'Description'.t(),
+            width: Renderer.messageWidth,
             flex: 1,
             dataIndex: 'description',
             editor:{
@@ -50,15 +54,17 @@ Ext.define('Ung.config.administration.view.Admin', {
             }
         }, {
             header: 'Email Address'.t(),
-            width: 200,
+            width: Renderer.emailWidth,
             dataIndex: 'emailAddress',
             editor: {
                 emptyText: '[no email]'.t(),
                 vtype: 'email'
             }
         }, {
-            dataIndex: 'passwordHashBase64',
-            width: 250
+            xtype: 'checkcolumn',
+            header: 'Email Alerts'.t(),
+            dataIndex: 'emailAlerts',
+            width: Renderer.booleanWidth + 20
         }],
         editorFields: [{
             xtype: 'textfield',
@@ -67,12 +73,18 @@ Ext.define('Ung.config.administration.view.Admin', {
             allowBlank: false,
             emptyText: '[enter username]'.t(),
             blankText: 'The username cannot be blank.'.t()
-        }, Field.description, {
+        },
+        Field.description,
+        {
             xtype: 'textfield',
             bind: '{record.emailAddress}',
             fieldLabel: 'Email Address'.t(),
             emptyText: '[no email]'.t(),
             vtype: 'email'
+        },{
+            xtype: 'checkbox',
+            bind: '{record.emailAlerts}',
+            fieldLabel: 'Email Alerts'.t()
         }, {
             xtype: 'textfield',
             inputType: 'password',
@@ -99,6 +111,15 @@ Ext.define('Ung.config.administration.view.Admin', {
             labelAlign: 'right',
             labelWidth: 250,
             bind: '{systemSettings.httpAdministrationAllowed}'
+        }, {
+            xtype: 'textfield',
+            name: 'administrationSubnets',
+            fieldLabel: 'Restrict Administration Subnet(s)'.t(),
+            vtype: 'ipMatcher',
+            labelAlign: 'right',
+            maxWidth: 400,
+            labelWidth: 250,
+            bind: '{systemSettings.administrationSubnets}'
         }, {
             xtype: 'textfield',
             fieldLabel: 'Default Administration Username Text'.t(),

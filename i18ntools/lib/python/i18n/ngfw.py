@@ -13,7 +13,7 @@ class Ngfw:
     """
     NGFW
     """
-    file_name = "ngfw.js"
+    file_name = "ngfw.json"
     path = "ngfw"
 
     directories = []
@@ -28,7 +28,7 @@ class Ngfw:
             directories = Utility.get_base_path().split("/")
             while found == False and len(directories) > 0:
                 check_path = "/".join(directories)
-                if os.path.isdir(check_path + "/ngfw_src") and os.path.isdir(check_path + "/ngfw_hades-src"):
+                if os.path.isdir(check_path + "/ngfw_src"):
                     found = True
                     self.base_path = check_path
                 del directories[len(directories)-1]
@@ -56,7 +56,7 @@ class Ngfw:
         try:
             settings = json.load(ngfw_file)
         except:
-            print "\n".join(str(v) for v in sys.exc_info())
+            print("\n".join(str(v) for v in sys.exc_info()))
         for key in settings:
             self.__dict__[key] = settings[key]
             if key == "json_parse_directories":
@@ -68,12 +68,7 @@ class Ngfw:
         Determine module directory from name
         """
         module_names = module.split("-", 3)
-        if module_names[1] == "libuvm" or module_names[1] == "vm":
-            source_directory = "uvm"
-        elif module_names[1] == "base" or module_names[1] == "casing":
-            source_directory = "-".join(["-".join(module_names[2:]), module_names[1]])
-        else:
-            source_directory = "-".join(module_names[2:])
+        source_directory = module
 
         for path in self.search_paths:
             module_directory = path + "/" + source_directory

@@ -102,7 +102,15 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.AppManagerImpl">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.uvm.CertCacheManagerImpl">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.HostsFileManagerImpl">
     <priority value="INFO"/>
   </category>
 
@@ -119,6 +127,10 @@
   </category>
   
   <category name="com.untangle.uvm.ConntrackMonitorImpl">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.EventManagerImpl">
     <priority value="INFO"/>
   </category>
   
@@ -223,6 +235,10 @@
   </category>
 
   <category name="com.untangle.app.openvpn">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.app.tunnel_vpn">
     <priority value="INFO"/>
   </category>
 

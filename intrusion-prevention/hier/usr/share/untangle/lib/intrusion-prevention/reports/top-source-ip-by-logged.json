@@ -1,0 +1,24 @@
+{
+    "uniqueId": "intrusion-prevention-jt2pchkQ",
+    "category": "Intrusion Prevention",
+    "description": "The number of intrusions logged by source IP address.",
+    "displayOrder": 502,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "source_addr",
+    "pieSumColumn": "count(*)",
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "operator": "=",
+        "value": "false"
+    }],
+    "readOnly": true,
+    "table": "intrusion_prevention_events",
+    "title": "Top Source IP Addresses (logged)",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

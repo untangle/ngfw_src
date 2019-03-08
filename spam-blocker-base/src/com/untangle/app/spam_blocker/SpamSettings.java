@@ -1,9 +1,11 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.app.spam_blocker;
 
 import java.io.Serializable;
+import org.json.JSONString;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
  * Settings for the SpamApp.
  */
 @SuppressWarnings("serial")
-public class SpamSettings implements Serializable
+public class SpamSettings implements Serializable, JSONString
 {
     private List<SpamDnsbl> spamDnsblList;
     private SpamSmtpConfig smtpConfig;
@@ -31,5 +33,11 @@ public class SpamSettings implements Serializable
     // {
     //     argSettings.setSpamDnsblList(this.spamDnsblList);
     //     argSettings.setSmtpConfig(this.smtpConfig);
-    // }    
+    // }
+    
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }

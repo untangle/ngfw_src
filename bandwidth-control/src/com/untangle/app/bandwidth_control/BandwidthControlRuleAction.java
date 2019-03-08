@@ -13,7 +13,6 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.HookManager;
 import com.untangle.uvm.Tag;
@@ -21,6 +20,14 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.AppSession;
 
 
+/**
+ * This object represents the "action" of a BandwidthControlRule
+ * There are several types of actions:
+ *   SET_PRIORITY
+ *   TAG_HOST
+ *   GIVE_HOST_QUOTA
+ *   GIVE_USER_QUOTA
+ */
 @SuppressWarnings("serial")
 public class BandwidthControlRuleAction implements JSONString, Serializable
 {
@@ -31,6 +38,9 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     
     private final Logger logger = Logger.getLogger(getClass());
 
+    /**
+     * The action type enumeration
+     */
     public enum ActionType {
         SET_PRIORITY, /* priority 1-7 */
         TAG_HOST, /* tagName tagTimeSec */
@@ -83,6 +93,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     
     /**
      * Get the action type for this action
+     * @return the ActionType
      */
     public ActionType getActionType()
     {
@@ -91,6 +102,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
     /**
      * Set the action type for this action
+     * @param action - the ActionType
      */
     public void setActionType(ActionType action)
     {
@@ -113,6 +125,8 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
      * 
      * Not all action types use this setting
      * For those actions that do not use this value is undefined
+     *
+     * @return the priority or null
      */
     public Integer getPriority()
     {
@@ -120,7 +134,8 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     }
 
     /**
-     * Set the priority for this action 
+     * Set the priority for this action
+     * @param priority - the priority
      */
     public void setPriority(Integer priority)
     {
@@ -130,6 +145,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Get the tag time for this action
      * This only applies for the TAG_HOST action
+     * @return - the tag lifetime
      */
     public Integer getTagTime()
     {
@@ -139,6 +155,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Set the tag time for this action
      * This only applies for the TAG_HOST action
+     * @param seconds - the tag lifetime
      */
     public void setTagTime(Integer seconds)
     {
@@ -146,7 +163,9 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     }
 
     /**
+     * DEPRECATED 
      * Keep the old deprecated name so JSON serialization works
+     * @param seconds - deprecated
      */
     public void setPenaltyTime(Integer seconds)
     {
@@ -156,6 +175,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Get the tag name for this action
      * This only applies for the TAG_HOST action
+     * @return the tag name
      */
     public String getTagName()
     {
@@ -165,6 +185,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Set the tag name for this action
      * This only applies for the TAG_HOST action
+     * @param newValue - the new tag name
      */
     public void setTagName(String newValue)
     {
@@ -174,6 +195,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Get the quota time for this action
      * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
+     * @return the quota lifetime
      */
     public Integer getQuotaTime()
     {
@@ -183,6 +205,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Set the quota time for this action
      * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
+     * @param seconds - the quota lifetime
      */
     public void setQuotaTime(Integer seconds)
     {
@@ -192,6 +215,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Get the quota bytes for this action
      * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
+     * @return the quota size
      */
     public Long getQuotaBytes()
     {
@@ -201,6 +225,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Set the quota bytes for this action
      * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
+     * @param bytes - the new quota size
      */
     public void setQuotaBytes(Long bytes)
     {
@@ -210,12 +235,17 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * Sets the app that owns this rule and rule action
      * This reference is necessary to effect some actions (like adding to penalty box)
+     * @param app - the bandwidth control app
      */
     public void setApp( BandwidthControlApp app )
     {
         this.app = app;
     }
 
+    /**
+     * Sets the rule associated with this action
+     * @param rule - the rule that holds this action
+     */
     public void setRule( BandwidthControlRule rule )
     {
         this.rule = rule;
@@ -224,6 +254,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * This prints this action in JSON format
      * This is used for JSON serialization
+     * @return - the json string equivalent of this object
      */
     public String toJSONString()
     {
@@ -233,6 +264,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
     /**
      * This applies the action to the given session
+     * @param sess - the session
      */
     public void apply( AppSession sess )
     {
@@ -277,7 +309,9 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
                 logger.warn( "No HostTableEntry. Failed to tag host: " + address.getHostAddress());
             } else {
                 boolean wasAlreadyTagged = entry.hasTag( this.tagName );
-                entry.addTag(new Tag(this.tagName,this.tagTimeSec*1000L));
+                Tag tag = new Tag( this.tagName );
+                tag.setLifetimeMillis( this.tagTimeSec*1000L );
+                entry.addTag(tag);
 
                 this.app.incrementCount( BandwidthControlApp.STAT_TAGGED, 1 );
                 if (!wasAlreadyTagged)

@@ -1,16 +1,8 @@
 #! /bin/bash
 
-ourInit() {
-if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
-  invoke-rc.d $1 $2
-else
-  /etc/init.d/$1 $2
-fi
-}
-
 if [ "$1" = "purge" ] ; then
     rm -f /etc/init.d/untangle-vm
-    update-rc.d untangle-vm remove > /dev/null
+    deb-systemd-helper disable untangle-vm.service > /dev/null
 fi
 
 exit 0

@@ -14,7 +14,12 @@ public class MapTemplateValues
     extends java.util.Properties
     implements TemplateValues {
 
-
+    /**
+     * Get template value.
+     * 
+     * @param  key String of key to find.
+     * @return     Value
+     */
     public String getTemplateValue(String key) {
         return getProperty(key);
     }

@@ -1,7 +1,8 @@
 Ext.define('Ung.config.email.view.OutgoingServer', {
     extend: 'Ext.form.Panel',
-    alias: 'widget.config.email.outgoingserver',
-    itemId: 'outgoingserver',
+    alias: 'widget.config-email-outgoingserver',
+    itemId: 'outgoing-server',
+    scrollable: true,
 
     viewModel: true,
     title: 'Outgoing Server'.t(),
@@ -14,7 +15,9 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
         items: [{
             xtype: 'component',
             padding: 10,
-            html: Ext.String.format('The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the cloud hosted mail relay server is preferred. Alternatively, you can configure mail to be sent directly to mail account servers. You can also specify a valid SMTP server that will relay mail for the {0} Server.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('The Outgoing Email Server settings determine how the {0} Server sends emails such as reports, quarantine digests, etc. In most cases the cloud hosted mail relay server is preferred. Alternatively, you can configure mail to be sent directly to mail account servers. You can also specify a valid SMTP server that will relay mail for the {0} Server.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'radiogroup',
             margin: '0 0 10 10',
@@ -41,6 +44,7 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
             items: [{
                 xtype: 'textfield',
                 fieldLabel: 'Server Address or Hostname'.t(),
+                bind: '{mailSender.smtpHost}'
             }, {
                 xtype: 'textfield',
                 width: 260,
@@ -60,7 +64,7 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
                 xtype: 'checkbox',
                 fieldLabel: 'Use Authentication'.t(),
                 reference: 'cb',
-                bind: '{mailSender.authUser !== null}'
+                bind: '{mailSender.sendMethod == "CUSTOM" && mailSender.authUser !== null}'
             }, {
                 xtype: 'textfield',
                 fieldLabel: 'Login'.t(),
@@ -86,12 +90,15 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
         padding: 10,
         items: [{
             xtype: 'textfield',
-            fieldLabel: Ext.String.format('The {0} Server will send email from this address.'.t(), rpc.companyName),
+            bind:{
+                value: '{mailSender.fromAddress}',
+                fieldLabel: Ext.String.format('The {0} Server will send email from this address.'.t(), '{companyName}'),
+            },
             labelAlign: 'top',
             emptyText: '[enter email]'.t(),
             vtype: 'email',
             allowBlank: false,
-            bind: '{mailSender.fromAddress}'
+            name: 'FromAddress',
         }]
     }, {
         xtype: 'fieldset',

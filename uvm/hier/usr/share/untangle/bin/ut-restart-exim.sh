@@ -4,7 +4,7 @@
 /usr/sbin/update-exim4.conf
 
 # restart daemon
-/etc/init.d/exim4 restart
+systemctl restart exim4
 RET=$?
 
 # flush queue

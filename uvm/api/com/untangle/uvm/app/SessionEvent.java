@@ -235,7 +235,7 @@ public class SessionEvent extends LogEvent
             HostTableEntry clientEntry = null;
             if ( clientAddr != null )
                 clientEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
-            if ( clientEntry != null && clientEntry.isHostnameKnown() ) {
+            if ( clientEntry != null && clientEntry.hostnameKnown() ) {
                 return clientEntry.getHostname();
             }
 
@@ -246,7 +246,7 @@ public class SessionEvent extends LogEvent
                 HostTableEntry serverEntry = null;
                 if ( serverAddr != null )
                     serverEntry = UvmContextFactory.context().hostTable().getHostTableEntry( serverAddr );
-                if ( serverEntry != null && serverEntry.isHostnameKnown() ) {
+                if ( serverEntry != null && serverEntry.hostnameKnown() ) {
                     return serverEntry.getHostname();
                 }
             }

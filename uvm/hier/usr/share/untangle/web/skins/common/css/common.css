@@ -41,7 +41,7 @@
 }
 
 .icon-policy-manager {
-    background-image: url(../images/admin/apps/policy-manager_80x80.png);
+    background-image: url(/icons/apps/policy-manager.svg);
 }
 /* app item install icon */
 .icon-arrow-install {
@@ -244,35 +244,35 @@ img.icon-drag {
 }
 /* config icons */
 .icon-config-network {
-    background-image: url(../images/admin/config/icon_config_network.png);
+    background-image: url(/icons/config/network.svg);
 }
 
 .icon-config-admin {
-    background-image: url(../images/admin/config/icon_config_admin.png);
+    background-image: url(/icons/config/administration.svg);
 }
 
 .icon-config-events {
-    background-image: url(../images/admin/config/icon_config_events.png);
+    background-image: url(/icons/config/events.svg);
 }
 
 .icon-config-email {
-    background-image: url(../images/admin/config/icon_config_email.png);
+    background-image: url(/icons/config/email.svg);
 }
 
 .icon-config-directory {
-    background-image: url(../images/admin/config/icon_config_directory.png);
+    background-image: url(/icons/config/local-directory.svg);
 }
 
 .icon-config-upgrade {
-    background-image: url(../images/admin/config/icon_config_upgrade.png);
+    background-image: url(/icons/config/upgrade.svg);
 }
 
 .icon-config-system {
-    background-image: url(../images/admin/config/icon_config_system.png);
+    background-image: url(/icons/config/system.svg);
 }
 
 .icon-config-about {
-    background-image: url(../images/admin/config/icon_config_about.png);
+    background-image: url(/icons/config/about.svg);
 }
 
 .x-btn .icon-test-run {

@@ -11,6 +11,9 @@ import org.apache.commons.codec.binary.Base64;
 
 import com.untangle.uvm.PasswordUtil;
 
+/**
+ * Uvm administrator user settings.
+ */
 @SuppressWarnings("serial")
 public class AdminUserSettings implements Serializable, JSONString
 {

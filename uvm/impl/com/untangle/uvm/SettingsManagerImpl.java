@@ -27,6 +27,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -37,6 +38,9 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SettingsChangesEvent;
 import com.untangle.uvm.app.HostnameLookup;
 
+/**
+ * SettingsManager is the manager for all settings files
+ */
 public class SettingsManagerImpl implements SettingsManager
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -73,68 +77,22 @@ public class SettingsManagerImpl implements SettingsManager
      */
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
 
+    /**
+     * SettingsManagerImpl constructor
+     */
     protected SettingsManagerImpl()
     {
     }
 
-    public void run13Conversion()
-    {
-        // 13.0 conversion
-        if ( java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-shield")) ||
-             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-casing-http")) ||
-             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-reports")) ||
-             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-firewall")) ) {
-
-        logger.warn("==================================");
-        logger.warn("==================================");
-        logger.warn("Converting old directory names ...");
-        logger.warn("==================================");
-        logger.warn("==================================");
-            
-            logger.warn("Converting old directory names ...");
-            
-            String[] cmds  = { "/usr/bin/rename 's/untangle-node-//' " + System.getProperty("uvm.settings.dir") + "/*",
-                               "/usr/bin/rename 's/untangle-casing-//' " + System.getProperty("uvm.settings.dir") + "/*",
-                               "service apache2 restart",
-
-                               "/bin/sed " +
-                               "-e 's/NodeManager/AppManager/g' " +
-                               "-e 's/\"nodes\"/\"apps\"/g' " +
-                               "-e 's/\"nextNodeId\"/\"nextNodeId\"/g' " +
-                               "-e 's/NodeSettings/AppSettings/g' " +
-                               "-e 's/nodeName/appName/g' " +
-                               "-i " + System.getProperty("uvm.settings.dir") + "/untangle-vm/nodes*",
-
-                               "/bin/sed " +
-                               "-e 's/SmtpNodeSettings/SmtpSettings/g' " +
-                               "-i " + System.getProperty("uvm.settings.dir") + "/smtp/settings*",
-
-                               // just rename the symlink - not the destination
-                               "/usr/bin/rename 's/nodes.js/apps.js/' " + System.getProperty("uvm.settings.dir") + "/untangle-vm/nodes.js",
-            };
-
-            for ( String command : cmds ) {
-                logger.warn("Converting old directory names: " + command);
-                
-                ExecManagerResult result = UvmContextFactory.context().execManager().exec( command );
-                try {
-                    String lines[] = result.getOutput().split("\\r?\\n");
-                    for ( String line : lines )
-                        logger.info( "conversion: " + line );
-                } catch (Exception e) {}
-            }
-
-            logger.warn("==================================");
-            logger.warn("==================================");
-            logger.warn("Converted old directory names .   ");
-            logger.warn("==================================");
-            logger.warn("==================================");
-            
-        }
-    }
-    
     /**
-     * Documented in SettingsManager.java
+     * Load the settings from the store using a unique identifier.
+     * 
+     * @param clz
+     *            Type of class to load.
+     * @param fileName
+     *            The fileName of the file
+     * @return The object that was loaded or null if an object was not loaded.
+     * @throws SettingsException
      */
     public <T> T load( Class<T> clz, String fileName ) throws SettingsException
     {
@@ -146,14 +104,28 @@ public class SettingsManagerImpl implements SettingsManager
     }
 
     /**
-     * Documented in SettingsManager.java
+     * Load the settings from the store using a unique identifier.
+     * 
+     * @param clz
+     *            Type of class to load.
+     * @param urlStr
+     *            The URL to load the settings for
+     * @return The object that was loaded or null if an object was not loaded.
+     * @throws SettingsException
      */
     public <T> T loadUrl( Class<T> clz, String urlStr ) throws SettingsException
     {
         InputStream is = null;
 
-        CloseableHttpClient httpClient = HttpClients.custom().build();
         CloseableHttpResponse response = null;
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectTimeout(90000)
+            .setSocketTimeout(90000)
+            .setConnectionRequestTimeout(90000)
+            .build();
+        CloseableHttpClient httpClient = HttpClients.custom()
+            .setDefaultRequestConfig(requestConfig)
+            .build();
         
         try {
             URL url = new URL(urlStr);
@@ -185,7 +157,13 @@ public class SettingsManagerImpl implements SettingsManager
     }
 
     /**
-     * Documented in SettingsManager.java
+     * From the specified settings file, get the previous version and return a string diff
+     *
+     * @param fileName
+     *      Filename to compare.  Expected to be in event log format settings_dir/name.js-version-js
+     * @return
+     *      String diff
+     * @throws SettingsException
      */
     public String getDiff(String fileName) throws SettingsException
     {
@@ -246,13 +224,30 @@ public class SettingsManagerImpl implements SettingsManager
     }
 
     /**
-     * Documented in SettingsManager.java
+     * Save the settings from the store using a unique identifier.
+     * 
+     * @param fileName
+     *            The filename to save the class to
+     * @param value
+     *            The value to be saved.
+     * @throws SettingsException
      */
     public void save( String fileName, Object value ) throws SettingsException
     {
         save( fileName, value, true );
     }
     
+    /**
+     * Move the settings file from its input location and store using a unique identifier.
+     * 
+     * @param fileName
+     *            The filename to save the class to
+     * @param value
+     *            The value to be saved
+     * @param saveVersion
+     *            True if older versions should be saved.
+     * @throws SettingsException
+     */
     public void save( String fileName, Object value, boolean saveVersion ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
@@ -262,6 +257,19 @@ public class SettingsManagerImpl implements SettingsManager
         _saveImpl( fileName, value, saveVersion, true );
     }
 
+    /**
+     * Save the settings from the store using a unique identifier.
+     * 
+     * @param fileName
+     *            The filename to save the class to
+     * @param value
+     *            The value to be saved.
+     * @param saveVersion
+     *            True if older versions should be saved.
+     * @param prettyFormat
+     *            True if the file should be pretty printed with indentation and whitespace
+     * @throws SettingsException
+     */
     public void save( String fileName, Object value, boolean saveVersion, boolean prettyFormat ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
@@ -271,6 +279,17 @@ public class SettingsManagerImpl implements SettingsManager
         _saveImpl( fileName, value, saveVersion, prettyFormat );
     }
     
+    /**
+     * Move the settings file from its input location and store using a unique identifier.
+     * 
+     * @param fileName
+     *            The filename to save the class to
+     * @param inputFilename
+     *            The source filename to move
+     * @param saveVersion
+     *            True if older versions should be saved.
+     * @throws SettingsException
+     */
     public void save( String fileName, String inputFilename, boolean saveVersion ) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
@@ -281,8 +300,8 @@ public class SettingsManagerImpl implements SettingsManager
     }
 
     /**
+     * Set the serializer used for settings
      * @param serializer
-     *            the serializer to set
      */
     protected void setSerializer( JSONSerializer serializer )
     {
@@ -290,7 +309,8 @@ public class SettingsManagerImpl implements SettingsManager
     }
 
     /**
-     * @return the serializer
+     * Get the serializer used for settings
+     * @return serializer
      */
     protected JSONSerializer getSerializer()
     {
@@ -300,6 +320,10 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Implementation of the load
      * This opens the file, and then calls loadInputStream
+     * @param clz the class
+     * @param fileName the filename to load
+     * @return The loaded value
+     * @throws SettingSException
      */
     private <T> T _loadImpl( Class<T> clz, String fileName ) throws SettingsException
     {
@@ -324,6 +348,10 @@ public class SettingsManagerImpl implements SettingsManager
 
     /**
      * Implementation of the load using a stream
+     * @param clz the class
+     * @param is - inputstream
+     * @return the value
+     * @throws SettingsException
      */
     @SuppressWarnings("unchecked") //JSON
     private <T> T _loadInputStream( Class<T> clz, InputStream is ) throws SettingsException
@@ -362,22 +390,27 @@ public class SettingsManagerImpl implements SettingsManager
     
     /**
      * Implementation of the save
-     *
-     * This serializes the JSON object to a tmp file
-     * Then formats that tmp file and copies it to another file
-     * Then it repoints the symlink
+     * This serializes the JSON object to a tmp file Then formats that
+     * tmp file and copies it to another file Then it repoints the
+     * symlink
+     * @param fileName
+     * @param value
+     * @param saveVersion
+     * @param prettyPrint
+     * @throws SettingsException
      */
     private void _saveImpl( String fileName, Object value, boolean saveVersion, boolean prettyPrint ) throws SettingsException
     {
         String outputFileName = _getVersionedFileName( fileName, saveVersion );
         File outputFile = new File(outputFileName);
 
-        Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.SETTINGS_CHANGE, fileName, value, saveVersion, outputFileName );
 
         /*
          * Synchronized on the name of the parent directory, so two files cannot
          * modify the same file at the same time
          */
+        Object lock = this.getLock(outputFile.getParentFile().getAbsolutePath());
         synchronized (lock) {
             FileWriter fileWriter = null;
 
@@ -420,11 +453,16 @@ public class SettingsManagerImpl implements SettingsManager
     }
 
     /**
-     * Implementation of the save from an existing file, not a json object.
-     *
-     * This serializes the JSON object to a tmp file
-     * Then formats that tmp file and copies it to another file
-     * Then it repoints the symlink
+     * Implementation of the save from an existing file, not a json
+     * object.
+     * This serializes the JSON object to a tmp file Then formats that
+     * tmp file and copies it to another file Then it repoints the
+     * symlink
+     * @param fileName
+     * @param inputFileName
+     * @param saveVersion
+     * @param prettyFormat
+     * @throws SettingsException
      */
     private void _saveImpl( String fileName, String inputFileName, boolean saveVersion, boolean prettyFormat ) throws SettingsException
     {
@@ -462,6 +500,8 @@ public class SettingsManagerImpl implements SettingsManager
      *          Versioned filename.
      * @param saveVersion
      *          If true, create symlink
+     * @param prettyFormat
+     *          If true, uses "pretty" formatting
      */
     private void _saveCommit( String fileName, String outputFileName, boolean saveVersion, boolean prettyFormat )
     {
@@ -541,6 +581,9 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Check if a filename is "legal"
      * Must have valid characterns and an extension
+     * @param name
+     * @return true if legal, false otherwise
+     * @throws IllegalArgumentException
      */
     private boolean _checkLegalName(String name) throws IllegalArgumentException
     {
@@ -564,8 +607,10 @@ public class SettingsManagerImpl implements SettingsManager
     }
 
     /**
-     * Finds the file extension and returns it as a string
-     * Example fileName = foo.js returns ".js"
+     * Finds the file extension and returns it as a string Example
+     * fileName = foo.js returns ".js"
+     * @param fileName <doc>
+     * @return <doc>
      */
     private String _findFileExtension( String fileName )
     {
@@ -580,10 +625,12 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * From the specified base filename, create a versioned name.
      *
-     * @param filename
+     * @param fileName
      *          Settings file name.
      * @param saveVersion
      *          Indiciates whether to generate a versioned file name.
+     * @return
+     *          returns the fully "versioned" filename
      */
     private String _getVersionedFileName( String fileName, boolean saveVersion )
     {

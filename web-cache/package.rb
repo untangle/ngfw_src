@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'web-cache', 'web-cache', [])
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-web-cache', 'web-cache', [])
 

@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -22,22 +21,34 @@ import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.Dimension;
 
 import com.untangle.uvm.util.IOUtil;
 
-/*
- * Use web browser
+/**
+ * Use web browser (Chromium) to pull data from a web site.
  */
 public class WebBrowser
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    public enum FIND_KEYS {
+        CLASS,
+        CSS_SELECTOR,
+        ID,
+        LINKTEXT,
+        PARTIALLINKTEXT,
+        TAG,
+        XPATH
+    }
     private WebDriver driver = null;
-    private Wait<WebDriver> wait = null;
 
     private String tempDirectory = "/tmp/webbrowser";
-    private static String chromeDriver = "/usr/lib/chromium/chromedriver";
-    private static String chromeBrowser = "/usr/bin/chromium";
+    private final static String chromeDriver = "/usr/bin/chromedriver";
+    private final static String chromeBrowser = "/usr/bin/chromium";
+
+    private final static String CLEAR_BROWSER_URL = "chrome://settings/clearBrowserData";
+    private final static String CLEAR_BROWSER_CONFIRM_BUTTON = "* /deep/ #clearBrowsingDataConfirm";
 
     private Integer displaySequence = 1;
     private Integer displayScreen = 5;
@@ -48,11 +59,18 @@ public class WebBrowser
 
     /**
      * Start browser
-     * @param displaySequence display sequence to use
-     * @param displayScreen display screen to use
-     * @param screenWidth Screen width to use
-     * @param screenHeight Screen height to use
-     * @param screenDepth Screen depth to use
+     * @param 
+     *  displaySequence display sequence to use
+     * @param 
+     *  displayScreen display screen to use
+     * @param 
+     *  screenWidth Screen width to use
+     * @param 
+     *  screenHeight Screen height to use
+     * @param 
+     *  screenDepth Screen depth to use
+     * @throws
+     *  File not found exception if cannot open Chromium web driver.  Currently not available for ARM.,
     */
 	public WebBrowser(Integer displaySequence, Integer displayScreen, Integer screenWidth, Integer screenHeight, Integer screenDepth)
     throws java.io.FileNotFoundException
@@ -89,6 +107,7 @@ public class WebBrowser
         try{
             UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
             UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand + " >/dev/null 2>&1 &");
+
             ChromeDriverService service = new ChromeDriverService.Builder()
                 .usingDriverExecutable(new File(chromeDriver))
                 .usingAnyFreePort()
@@ -97,8 +116,9 @@ public class WebBrowser
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--no-sandbox");
             options.addArguments("--user-data-dir=" + tempDirectory);
+            options.addArguments("--disable-default-apps");
+
             driver = new ChromeDriver(service, options);
-            wait = new WebDriverWait(driver, 300);
         }catch(UnreachableBrowserException e){
             logger.warn("Unable to open driver, ", e);
         }
@@ -111,7 +131,6 @@ public class WebBrowser
      */
 	public void close()
 	{
-        wait = null;
         try { 
             driver.close(); 
         } catch (Exception e) {
@@ -129,6 +148,9 @@ public class WebBrowser
 
     /**
      * Allow others to determine what we know without forcing an exception check.
+     *
+     * @return
+     *  true if driver found, false if not.
      */
     static public Boolean exists(){
         File f = new File(chromeDriver);
@@ -138,6 +160,8 @@ public class WebBrowser
     /**
      * Open the web browser to the specified URL
      *
+     * @param
+     *  url The URL to open.
      */
 	public void openUrl(String url)
 	{
@@ -146,6 +170,9 @@ public class WebBrowser
 
 	/**
 	 * Get temp directory path
+     *
+     * @return
+     *  String of temporary directory
 	 */
 	public String getTempDirectory()
 	{
@@ -154,15 +181,41 @@ public class WebBrowser
 
 	/**
 	 * Wait for element.  
-     * @param elementId id to wait upon.
+     * @param
+     *  key to wait upon (see FIND_KEYS).
+     * @param 
+     *  value to wait upon.
+     * @param 
+     *  seconds to wait
      * @return true if found, false if not found.
 	 */
-	public Boolean waitForElement(String elementId)
+	public Boolean waitForElement(FIND_KEYS key, String value, int seconds)
 	{
-		Boolean found = false;
-        found = wait.until(new ExpectedCondition<Boolean>() {
+	   Boolean found = false;
+       Wait<WebDriver> wait = new WebDriverWait(driver, seconds);
+       found = wait.until(new ExpectedCondition<Boolean>() {
+            /**
+             * Process wait, looking for the specific item value to appear.
+             *
+             * @param
+             *  driver  Webdriver to use.
+             * @return
+             *  true if found, false otherwise
+             */
         	public Boolean apply(WebDriver driver) {
-                if( driver.findElement(By.id(elementId)) != null ){
+                By by = null;
+                switch(key){
+                    case CLASS:
+                        by = By.className(value);
+                        break;
+                    case CSS_SELECTOR:
+                        by = By.cssSelector(value);
+                        break;
+                    case ID:
+                    default:
+                        by = By.id(value);
+                }
+                if( driver.findElement(by) != null ){
                     return true;
                 }
                 return false;
@@ -190,5 +243,28 @@ public class WebBrowser
 		}
 		return success;
 	}
+
+    /**
+     * Resize the browser window.
+     *
+     * @param width New width.
+     * @param height New height.
+     */
+    public void resize(int width, int height){
+        driver.manage().window().setSize( new Dimension( width, height ) );
+    }
+
+    /**
+     * Clear the web browser's cache.
+     */
+    public void clearCache(){
+        try{
+            driver.get(CLEAR_BROWSER_URL);
+            waitForElement(WebBrowser.FIND_KEYS.CSS_SELECTOR, CLEAR_BROWSER_CONFIRM_BUTTON, 10);
+            driver.findElement(By.cssSelector(CLEAR_BROWSER_CONFIRM_BUTTON)).click();
+        }catch(Exception e){
+            logger.error("Unable to clear cache " + e);
+        }
+    }
 
 }

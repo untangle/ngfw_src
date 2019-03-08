@@ -1,0 +1,24 @@
+{
+    "uniqueId": "intrusion-prevention-cMWjJBsI",
+    "category": "Intrusion Prevention",
+    "description": "The number of intrusions logged by category.",
+    "displayOrder": 402,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "category",
+    "pieSumColumn": "count(*)",
+    "conditions": [{
+        "column": "blocked",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "operator": "=",
+        "value": "false"
+    }],
+    "readOnly": true,
+    "table": "intrusion_prevention_events",
+    "title": "Top Categories (logged)",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

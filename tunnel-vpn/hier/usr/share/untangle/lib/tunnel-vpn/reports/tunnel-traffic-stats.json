@@ -1,0 +1,18 @@
+{
+    "uniqueId": "tunnel-vpn-LrKXhKoao5",
+    "category": "Tunnel VPN",
+    "description": "The amount of traffic for each Tunnel VPN tunnel.",
+    "displayOrder": 90,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": false,
+    "units": "bytes",
+    "pieGroupColumn": "tunnel_name",
+    "pieSumColumn": "sum(in_bytes + out_bytes)",
+    "readOnly": true,
+    "table": "tunnel_vpn_stats",
+    "title": "Top Tunnel Traffic",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

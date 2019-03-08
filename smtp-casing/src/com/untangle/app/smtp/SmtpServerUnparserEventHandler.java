@@ -25,6 +25,9 @@ import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
+/**
+ * Unparse SMTP server event handler.
+ */
 class SmtpServerUnparserEventHandler extends AbstractEventHandler
 {
     protected static final String SHARED_STATE_KEY = "SMTP-shared-state";
@@ -33,17 +36,28 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
 
     private static final Logger logger = Logger.getLogger(SmtpServerUnparserEventHandler.class);
 
+    /**
+     * Maintain SmtpServerUnprserEventHandler state.
+     */
     private class SmtpServerUnparserEventHandlerState
     {
         protected ByteBufferByteStuffer byteStuffer;
         protected MIMEAccumulator accumulator;
     }
 
+    /**
+     * Initialize SmtpServerUnparserEventHandler.
+     * @return Instance of SmtpServerUnparserEventHandler.
+     */
     public SmtpServerUnparserEventHandler()
     {
         super();
     }
 
+    /**
+     * Handle new TCP session.
+     * @param session AppTCPSession handle.
+     */
     @Override
     public void handleTCPNewSession( AppTCPSession session )
     {
@@ -51,6 +65,11 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         session.attach( SERVER_UNPARSER_STATE_KEY, state );
     }
 
+    /**
+     * Process client chunk.
+     * @param session AppTCPSession to handle.
+     * @param data    ByteBuffer containing data to process.
+     */
     @Override
     public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -67,6 +86,11 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received data when expect object");
     }
 
+    /**
+     * Process server chunk.
+     * @param session AppTCPSession to handle.
+     * @param data    ByteBuffer containing data to process.
+     */
     @Override
     public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -83,6 +107,11 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received data when expect object");
     }
 
+    /**
+     * Process client object.
+     * @param session AppTCPSession to handle.
+     * @param obj     Object to process.
+     */
     @Override
     public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
@@ -96,6 +125,11 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         unparse( session, obj, false );
     }
     
+    /**
+     * Process server object.
+     * @param session AppTCPSession to handle.
+     * @param obj     Object to process.
+     */
     @Override
     public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
@@ -110,6 +144,11 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received object but expected data.");
     }
 
+    /**
+     * Process client data end.
+     * @param session AppTCPSession to handle.
+     * @param data    ByteBuffer to process.
+     */
     @Override
     public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -119,6 +158,11 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Process server data end.
+     * @param session AppTCPSession to handle.
+     * @param data    ByteBuffer to process.
+     */
     @Override
     public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -128,12 +172,20 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * Process client FIN.
+     * @param session AppTCPSession to handle.
+     */
     @Override
     public void handleTCPClientFIN( AppTCPSession session )
     {
         session.shutdownServer();
     }
 
+    /**
+     * Process server FIN.
+     * @param session AppTCPSession to handle.
+     */
     @Override
     public void handleTCPServerFIN( AppTCPSession session )
     {
@@ -141,6 +193,10 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received unexpected event.");
     }
 
+    /**
+     * Handle TCP finalized.
+     * @param session AppTCPSession to handle.
+     */
     @Override
     public void handleTCPFinalized( AppTCPSession session )
     {
@@ -154,6 +210,12 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
     
     // private methods --------------------------------------------------------
 
+    /**
+     * Handle AppTcpSession.
+     * @param session AppTCPSession to handle.
+     * @param obj     Object to parse.
+     * @param s2c     If true, server to client.  Client to server otherwise.
+     */
     private void unparse( AppTCPSession session, Object obj, boolean s2c )
     {
         Token token = (Token) obj;
@@ -182,6 +244,11 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Perform unparsing of session.
+     * @param session AppTCPSession to process.
+     * @param token   Token to process.
+     */
     protected void doUnparse( AppTCPSession session, Token token )
     {
         SmtpServerUnparserEventHandlerState state = (SmtpServerUnparserEventHandlerState) session.attachment( SERVER_UNPARSER_STATE_KEY );
@@ -346,6 +413,10 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         return;
     }
 
+    /**
+     * Start TLS session
+     * @param session AppTCPSession to handle.
+     */
     private void tlsStarting( AppTCPSession session )
     {
         logger.debug("TLS Command accepted.  Enter passthru mode so as to not attempt to parse cyphertext");
@@ -363,12 +434,22 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
         private AppTCPSession session;
         private String offendingCommand;
 
+        /**
+         * Initialize instnace of CommandParseErrorResponseCallback.
+         * @param  session              APPTCPSession to handle.
+         * @param  bufWithOffendingLine ByteBuffer to process.
+         * @return Instance of CommandParseErrorResponseCallback
+         */
         protected CommandParseErrorResponseCallback( AppTCPSession session, ByteBuffer bufWithOffendingLine )
         {
             this.session = session;
             this.offendingCommand = bbToString(bufWithOffendingLine);
         }
 
+        /**
+         * Handle response.
+         * @param code SMTP code to proccess.
+         */
         public void response(int code)
         {
             if (code < 300) {
@@ -389,11 +470,20 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
     {
         private AppTCPSession session;
 
+        /**
+         * Initialize instance of TLSResponseCallback.
+         * @param  session AppTCPSession to use.
+         * @return indstance of TLSResponseCallback.
+         */
         protected TLSResponseCallback( AppTCPSession session )
         {
             this.session = session;
         }
         
+        /**
+         * Handle TLS response to client.
+         * @param code SMTP code.
+         */
         public void response(int code)
         {
             if (code < 300) {
@@ -406,6 +496,8 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
 
     /**
      * Is the casing currently in passthru mode
+     * @param session AppTCPSession to detect.
+     * @return true if passthu, otherwise not.
      */
     protected boolean isPassthru( AppTCPSession session )
     {
@@ -416,7 +508,7 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
     /**
      * Called by the unparser to declare that we are now in passthru mode. This is called either because of a parsing
      * error by the caller, or the reciept of a passthru token.
-     * 
+     * @param session AppTCPSession to set passthru.
      */
     protected void declarePassthru( AppTCPSession session)
     {

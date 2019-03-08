@@ -4,7 +4,6 @@
 package com.untangle.uvm;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -19,11 +18,18 @@ import com.untangle.jvector.UDPSource;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.AppUDPSession;
 
+/**
+ * NetcapUDPHook is the global netcap UDP handling hook
+ */
 public class NetcapUDPHook implements NetcapCallback
 {
     private static NetcapUDPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
+    /**
+     * getInstance gets the NetcapUDPHook singleton
+     * @return singleton
+     */
     public static NetcapUDPHook getInstance() {
         if ( INSTANCE == null )
             init();
@@ -31,26 +37,43 @@ public class NetcapUDPHook implements NetcapCallback
         return INSTANCE;
     }
 
-    /* Singleton */
+    /**
+     * Singleton
+     */
     private NetcapUDPHook()
     {
     }
 
+    /**
+     * init
+     */
     private static synchronized void init()
     {
         if ( INSTANCE == null )
             INSTANCE = new NetcapUDPHook();
     }
 
+    /**
+     * process
+     * @param sessionID
+     */
     public void event( long sessionID )
     {
         Thread.currentThread().setName("Session " + sessionID);
         new UDPNetcapHook( sessionID ).run();
     }
 
+    /**
+     * no-op
+     * @param conntrackPtr
+     * @param type
+     */
     public void event( long conntrackPtr, int type )
     {}
 
+    /**
+     * UDPNetcapHook is instantiated per UDP session
+     */
     private class UDPNetcapHook extends NetcapHook
     {
         /**
@@ -69,6 +92,10 @@ public class NetcapUDPHook implements NetcapCallback
 
         protected UDPNewSessionRequestImpl prevRequest = null;
 
+        /**
+         * UDPNetcapHook
+         * @param id
+         */
         protected UDPNetcapHook( long id )
         {
             netcapUDPSession = new NetcapUDPSession( id );
@@ -86,28 +113,46 @@ public class NetcapUDPHook implements NetcapCallback
                                            netcapUDPSession.serverSide().server().host().getHostAddress() + ":" + netcapUDPSession.serverSide().server().port() + ")");
         }
 
+        /**
+         * timeout
+         * @return timeout
+         */
         protected int timeout()
         {
             return TIMEOUT;
         }
 
+        /**
+         * netcapSession
+         * @return netcapUDPSession
+         */
         protected NetcapSession netcapSession()
         {
             return netcapUDPSession;
         }
 
+        /**
+         * clientSideListener
+         * @return clientSideListener
+         */
         protected SideListener clientSideListener()
         {
             return clientSideListener;
         }
 
+        /**
+         * serverSideListener
+         * @return serverSideListener
+         */
         protected SideListener serverSideListener()
         {
             return serverSideListener;
         }
 
         /**
-         * Complete the connection for the server side.  
+         * Complete the connection for the server side.
+         * @param sessionEvent
+         * @return bool
          */
         protected boolean serverComplete( SessionEvent sessionEvent )
         {
@@ -139,6 +184,7 @@ public class NetcapUDPHook implements NetcapCallback
          * the client side traffic object.  The connection always completes, if the
          * client is uninterested, they will send an ICMP packet which will one
          * day get vectored.
+         * @return bool
          */
         protected boolean clientComplete()
         {
@@ -158,36 +204,62 @@ public class NetcapUDPHook implements NetcapCallback
             return true;
         }
 
+        /**
+         * noop
+         */
         protected void clientReject()
         {
             /* XXX do something */
         }
 
+        /**
+         * noop
+         */
         protected void clientRejectSilent()
         {
             /* XXX do something */
         }
 
+        /**
+         * makeClientSink - makes a UDP Sink for this session
+         * @return Sink
+         */
         protected Sink makeClientSink()
         {
             return new UDPSink( clientSideAttributes, clientSideListener);
         }
 
+        /**
+         * makeServerSink - makes a UDP Sink for this session
+         * @return Sink
+         */
         protected Sink makeServerSink()
         {
             return new UDPSink( serviceSideAttributes, serverSideListener);
         }
 
+        /**
+         * makeClientSource - makes a UDPSource for this session
+         * @return Source
+         */
         protected Source makeClientSource()
         {
             return new UDPSource( netcapUDPSession.clientMailbox(), clientSideListener );
         }
 
+        /**
+         * makeServerSource - makes a UDPSource for this session
+         * @return Source
+         */
         protected Source makeServerSource()
         {
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
+        /**
+         * initializeAppSessions
+         * @param sessionEvent
+         */
         protected void initializeAppSessions( SessionEvent sessionEvent )
         {
             UDPNewSessionRequestImpl prevRequest = null;
@@ -224,6 +296,9 @@ public class NetcapUDPHook implements NetcapCallback
             }
         }
 
+        /**
+         * raze
+         */
         protected void raze()
         {
             try {
@@ -249,6 +324,9 @@ public class NetcapUDPHook implements NetcapCallback
             }
         }
 
+        /**
+         * checkEndpoints
+         */
         protected void checkEndpoints()
         {
             /* If both sides are shutdown, give a timeout to complete vectoring */
@@ -261,6 +339,9 @@ public class NetcapUDPHook implements NetcapCallback
             }
         }
 
+        /**
+         * releaseToBypass - will release this UDP session from all layer-7 processing
+         */
         @Override
         protected void releaseToBypass()
         {
@@ -280,18 +361,32 @@ public class NetcapUDPHook implements NetcapCallback
             this.setCleanupSessionOnExit( false );
         }
 
+        /**
+         * UDPSideListener
+         */
         private class UDPSideListener extends SideListener
         {
+            /**
+             * UDPSideListener constructor
+             */
             protected UDPSideListener()
             {
             }
 
+            /**
+             * shutdownEvent
+             * @param source
+             */
             public void shutdownEvent( Source source )
             {
                 super.shutdownEvent( source );
                 checkEndpoints();
             }
 
+            /**
+             * shutdownEvent
+             * @param sink
+             */
             public void shutdownEvent( Sink sink )
             {
                 super.shutdownEvent( sink );

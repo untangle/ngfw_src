@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, width=device-width" charset="UTF-8">
+<link href="/images/favicon-captive-portal.png" type="image/png" rel="icon"></link>
+
+<title>$.CompanyName.$ | $.PageTitle.$</title>
+<style type="text/css">
+/* <![CDATA[ */
+@import url(/images/base.css);
+/* ]]> */
+</style>
+
+<script type="text/javascript" src="/capture/secure.js"></script>
+
+<script language="javascript">
+    $.SecureEndpointCheck.$
+</script>
+
+</head>
+<body>
+
+<header>
+    <img src="/images/BrandingLogo.png" style="max-width: 150px; max-height: 140px;"><br/>
+    <h1 style="letter-spacing: normal; color: #CCC; font-weight: bold;">$.PageTitle.$</h1>
+</header>
+
+<div class="form-login" style="padding: 15px;">
+    <h2>$.WelcomeText.$</h2>
+    <p style="text-align: center; font-weight: bold; margin: 20px 0;">$.MessageText.$</p>
+    <form autocomplete="off" method="post" action="/capture/handler.py/authpost">
+        <table><tr>
+            <td>
+                <a href=https://accounts.google.com/o/oauth2/v2/auth?client_id=271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com&redirect_uri=https://auth-relay.untangle.com/callback.php&response_type=code&scope=email&state=$.GoogleState.$>
+                <img src="/capture/google.png" height=64 width=64></a>
+            </td>
+            <td>
+                <a href=https://accounts.google.com/o/oauth2/v2/auth?client_id=271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com&redirect_uri=https://auth-relay.untangle.com/callback.php&response_type=code&scope=email&state=$.GoogleState.$>Login with Google account</a>
+            </td>
+        </tr><tr>
+            <td>
+                <a href=https://www.facebook.com/v2.9/dialog/oauth?client_id=1840471182948119&redirect_uri=https://auth-relay.untangle.com/callback.php&response_type=code&scope=email&state=$.FacebookState.$>
+                <img src="/capture/facebook.png" height=64 width=64></a>
+            </td>
+            <td>
+                <a href=https://www.facebook.com/v2.9/dialog/oauth?client_id=1840471182948119&redirect_uri=https://auth-relay.untangle.com/callback.php&response_type=code&scope=email&state=$.FacebookState.$>Login with Facebook account</a>
+            </td>
+        </tr><tr>
+            <td>
+                <a href=https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f963a9b1-4d6c-4970-870d-3a75014e1364&redirect_uri=https://auth-relay.untangle.com/callback.php&response_type=code&scope=openid%20User.Read&state=$.MicrosoftState.$>
+                <img src="/capture/microsoft.png" height=64 width=64></a>
+            </td>
+            <td>
+                <a href=https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f963a9b1-4d6c-4970-870d-3a75014e1364&redirect_uri=https://auth-relay.untangle.com/callback.php&response_type=code&scope=openid%20User.Read&state=$.MicrosoftState.$>Login with Microsoft account</a>
+            </td>
+        </tr></table>
+    </form>
+    <p style="text-align: center; font-size: 11px; line-height: normal;">$.FooterText.$</p>
+    <p id="submit" name="submit"></p>
+</div>
+<!--DEBUG-->
+</body>
+</html>

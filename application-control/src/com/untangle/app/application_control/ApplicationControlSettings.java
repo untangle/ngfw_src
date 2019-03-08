@@ -6,50 +6,40 @@ package com.untangle.app.application_control;
 
 import java.util.LinkedList;
 import java.util.Hashtable;
+import java.io.Serializable;
 import org.json.JSONString;
 import org.json.JSONObject;
 
+/**
+ * Class to represent the application control settings
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
-public class ApplicationControlSettings implements java.io.Serializable, JSONString
+public class ApplicationControlSettings implements Serializable, JSONString
 {
     private LinkedList<ApplicationControlProtoRule> protoList = null;
     private LinkedList<ApplicationControlLogicRule> logicList = null;
     private Hashtable<String, ApplicationControlProtoRule> protoHash = null;
     private boolean daemonDebug = false;
 
-    public LinkedList<ApplicationControlProtoRule> getProtoRules()
-    {
-        return (protoList);
-    }
+    // THIS IS FOR ECLIPSE - @formatter:off
 
-    public void setProtoRules(LinkedList<ApplicationControlProtoRule> protoList)
-    {
-        this.protoList = protoList;
-    }
+    public LinkedList<ApplicationControlProtoRule> getProtoRules() { return (protoList); }
+    public void setProtoRules(LinkedList<ApplicationControlProtoRule> protoList) { this.protoList = protoList; }
 
-    public LinkedList<ApplicationControlLogicRule> getLogicRules()
-    {
-        return (logicList);
-    }
+    public LinkedList<ApplicationControlLogicRule> getLogicRules() { return (logicList); }
+    public void setLogicRules(LinkedList<ApplicationControlLogicRule> logicList) { this.logicList = logicList; }
 
-    public void setLogicRules(LinkedList<ApplicationControlLogicRule> logicList)
-    {
-        this.logicList = logicList;
-    }
+    public boolean getDaemonDebug() { return (daemonDebug); }
+    public void setDaemonDebug(boolean daemonDebug) { this.daemonDebug = daemonDebug; }
 
-    public boolean getDaemonDebug()
-    {
-        return (daemonDebug);
-    }
-
-    public void setDaemonDebug(boolean daemonDebug)
-    {
-        this.daemonDebug = daemonDebug;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:on
 
     public void applyAppRules(ApplicationControlStatistics statistics)
     {
-        this.protoHash = new Hashtable<String, ApplicationControlProtoRule>();
+        this.protoHash = new Hashtable<>();
         long liveCount = 0;
         long flagCount = 0;
         long blockCount = 0;

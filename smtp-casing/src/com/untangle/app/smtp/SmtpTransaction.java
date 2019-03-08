@@ -56,6 +56,10 @@ public final class SmtpTransaction implements TemplateValues
     private List<EmailAddressWithStatus> recipients;
     private boolean hasAtLeastOneRecipient = false;
 
+    /**
+     * Initialize instance of SmtpTransaction.
+     * @return Instance of SmtpTransaction.
+     */
     public SmtpTransaction()
     {
         this.recipients = new ArrayList<EmailAddressWithStatus>();
@@ -65,6 +69,7 @@ public final class SmtpTransaction implements TemplateValues
 
     /**
      * Access the state of the transaction
+     * @return Current transaxction state
      */
     public TransactionState getState()
     {
@@ -97,6 +102,7 @@ public final class SmtpTransaction implements TemplateValues
 
     /**
      * Test if this transaction is still open.
+     * @return true if open state, false if not.
      */
     public boolean isOpen()
     {
@@ -109,7 +115,7 @@ public final class SmtpTransaction implements TemplateValues
      * @param confirmedOnly
      *            if true, only those recipients who have been positivly acknowledged by the server are returned.
      * 
-     * @return the recipients
+     * @return List of InternetAddress recipients.
      */
     public List<InternetAddress> getRecipients(boolean confirmedOnly)
     {
@@ -124,6 +130,7 @@ public final class SmtpTransaction implements TemplateValues
 
     /**
      * A recipient has been requested (an "RCPT TO...") issued. Queue the recipient provisionally.
+     * @param addr InternetAddress of email address.
      */
     public void toRequest(InternetAddress addr)
     {
@@ -133,7 +140,8 @@ public final class SmtpTransaction implements TemplateValues
     /**
      * The server has responded to a previous RCPT TO... request. The Transaction should change its internal recipient
      * collection accordingly
-     * 
+     *
+     * @param addr      InternetAddress of email address.
      * @param accept
      *            if true, the server accepted the recipient.
      */
@@ -174,6 +182,7 @@ public final class SmtpTransaction implements TemplateValues
     /**
      * The client has issued a "MAIL FROM..." command. The transaction will record this address as the FROM
      * provisionally.
+     * @param addr InternetAddress of email address.
      */
     public void fromRequest(InternetAddress addr)
     {
@@ -183,7 +192,8 @@ public final class SmtpTransaction implements TemplateValues
 
     /**
      * Change the internal envelope data to reflect the server's response to the "MAIL" command
-     * 
+     *
+     * @param addr InternetAddress of email address.
      * @param accept
      *            did the server accept the address.
      */
@@ -203,6 +213,7 @@ public final class SmtpTransaction implements TemplateValues
 
     /**
      * Get the FROM for the envelope. May be null. To test if this has been confirmed, use {@link #isFromConfirmed}
+     * @return InternetAddress email address of from address.
      */
     public InternetAddress getFrom()
     {
@@ -211,6 +222,7 @@ public final class SmtpTransaction implements TemplateValues
 
     /**
      * Test if the FROM has been confirmed by the server.
+     * @return true if address confirmed, false if not.
      */
     public boolean isFromConfirmed()
     {
@@ -219,6 +231,8 @@ public final class SmtpTransaction implements TemplateValues
 
     /**
      * For use in Templates (see JavaDoc at the top of this class for explanation of vairable format}.
+     * @param key String of template key.
+     * @return String of template value.
      */
     public String getTemplateValue(String key)
     {
@@ -239,11 +253,19 @@ public final class SmtpTransaction implements TemplateValues
         return null;
     }
 
+    /**
+     * Email address with confirmed status.
+     */
     private class EmailAddressWithStatus
     {
         final InternetAddress addr;
         boolean confirmed;
 
+        /**
+         * Initialize instance of EmailAddressWithStatus.
+         * @param addr InternetAddress of email to set.
+         * @return instance of EmailAddressWithStatus with confirmed set to false
+         */
         EmailAddressWithStatus(InternetAddress addr) {
             this.addr = addr;
             this.confirmed = false;

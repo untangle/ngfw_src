@@ -1,36 +1,43 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.wan_failover;
 
 import java.io.Serializable;
+import org.json.JSONString;
 
+/**
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
-public class WanStatus implements Serializable
+public class WanStatus implements Serializable, JSONString
 {
     private Integer interfaceId;
-    private String  interfaceName;
-    private String  systemName;
+    private String interfaceName;
+    private String systemName;
     private Boolean online;
 
     private Integer totalTestsRun = 0;
     private Integer totalTestsPassed = 0;
     private Integer totalTestsFailed = 0;
-    
-    public WanStatus( Integer interfaceId, String interfaceName, String systemName, Boolean online )
+
+    public WanStatus(Integer interfaceId, String interfaceName, String systemName, Boolean online)
     {
         this.interfaceId = interfaceId;
         this.interfaceName = interfaceName;
         this.systemName = systemName;
         this.online = online;
     }
-    
+
     public Integer getInterfaceId()
     {
         return this.interfaceId;
     }
 
-    public void setInterfaceId( Integer newValue )
+    public void setInterfaceId(Integer newValue)
     {
         this.interfaceId = newValue;
     }
@@ -40,7 +47,7 @@ public class WanStatus implements Serializable
         return this.interfaceName;
     }
 
-    public void setInterfaceName( String newValue )
+    public void setInterfaceName(String newValue)
     {
         this.interfaceName = newValue;
     }
@@ -50,17 +57,17 @@ public class WanStatus implements Serializable
         return this.systemName;
     }
 
-    public void setSystemName( String newValue )
+    public void setSystemName(String newValue)
     {
         this.systemName = newValue;
     }
-    
+
     public Boolean getOnline()
     {
         return this.online;
     }
 
-    public void setOnline( Boolean newValue )
+    public void setOnline(Boolean newValue)
     {
         this.online = newValue;
     }
@@ -70,7 +77,7 @@ public class WanStatus implements Serializable
         return this.totalTestsRun;
     }
 
-    public void setTotalTestsRun( Integer newValue )
+    public void setTotalTestsRun(Integer newValue)
     {
         this.totalTestsRun = newValue;
     }
@@ -80,7 +87,7 @@ public class WanStatus implements Serializable
         return this.totalTestsPassed;
     }
 
-    public void setTotalTestsPassed( Integer newValue )
+    public void setTotalTestsPassed(Integer newValue)
     {
         this.totalTestsPassed = newValue;
     }
@@ -90,10 +97,14 @@ public class WanStatus implements Serializable
         return this.totalTestsFailed;
     }
 
-    public void setTotalTestsFailed( Integer newValue )
+    public void setTotalTestsFailed(Integer newValue)
     {
         this.totalTestsFailed = newValue;
     }
-    
-}
 
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
+}

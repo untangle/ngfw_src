@@ -47,6 +47,17 @@ fi
 if [ ! -z "$3" -a "$3" != "" ]; then
     UT_EXT_MODE="req_ext_san"
     UT_SAN_LIST="$3"
+elif grep -qE '^9\.' /etc/debian_version ; then
+    # NGFW-11179: on Stretch, openssl errors out when reading the
+    # empty [req_ext_nil] section of ut-openssl.cnf. Trying to
+    # populate that section with some unimportant variable fixes the
+    # ut-certgen run, but it unfortunately also makes the ut-rootgen
+    # one fail. At this point the easiest solution is to always add a
+    # DNS:$(hostname) subjectAlternativeName.
+    # To make sure this doesn't have an impact on 13.2 itself, we
+    # isolate this fix to Stretch-based installs only.
+    UT_EXT_MODE="req_ext_san"
+    UT_SAN_LIST="DNS:$(hostname)"
 else
     UT_EXT_MODE="req_ext_nil"
     UT_SAN_LIST="empty"
@@ -64,8 +75,8 @@ if [ ! -r $UT_ROOT_PATH/untangle.key -o ! -r $UT_ROOT_PATH/untangle.crt ]; then
     exit 3
 fi
 
-# if the serial.txt file doesn't exist we create it now
-if [ ! -r $UT_ROOT_PATH/serial.txt ]; then
+# if the serial.txt file doesn't exist or is empty we create it now
+if [ ! -s $UT_ROOT_PATH/serial.txt ]; then
     date +%s000000 > $UT_ROOT_PATH/serial.txt
 fi
 
@@ -87,6 +98,10 @@ case $1 in
     # using the existing private key file that was previously created
     # when the original Apache server certificate was generated
         $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -extensions v3_cert -new -key $UT_ROOT_PATH/apache.key -out $UT_ROOT_PATH/request.csr -subj "$2"
+        if [ $? != 0 ]; then
+            echo "REQUEST: Error generating certificate signing request"
+            exit 4
+        fi
     ;;
     APACHE)
     # When making the initial Apache server certificate we generate a new CSR
@@ -96,32 +111,69 @@ case $1 in
     # the PEM file that we copy into the Apache directory.  Finally we create
     # the PFX file that can be loaded by apps using the SSLEngine stuff.
         $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -extensions v3_host -newkey rsa:2048 -keyout $UT_ROOT_PATH/apache.key -out $UT_ROOT_PATH/apache.csr -subj "$2"
+        if [ $? != 0 ]; then
+            echo "APACHE: Error generating certificate signing request"
+            exit 5
+        fi
         $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_host -startdate 100102030405Z -enddate 380102030405Z -out $TEMP/server.crt -outdir $TEMP -infiles $UT_ROOT_PATH/apache.csr
+        if [ $? != 0 ]; then
+            echo "APACHE: Error generating signed certificate"
+            exit 6
+        fi
         grep -A 1000 BEGIN $TEMP/server.crt > $UT_ROOT_PATH/apache.crt
         cat $UT_ROOT_PATH/apache.crt $UT_ROOT_PATH/apache.key > $UT_ROOT_PATH/apache.pem
         $OPENSSL_TOOL pkcs12 -export -passout pass:password -name default -in $UT_ROOT_PATH/apache.crt -inkey $UT_ROOT_PATH/apache.key -out $UT_ROOT_PATH/apache.pfx
+        if [ $? != 0 ]; then
+            echo "APACHE: Error creating PKCS12 certificate file"
+            exit 7
+        fi
     ;;
     SERVER)
     # Server certificates are handled just like the default APACHE cert but we
     # put everything into files using the base filename passed to the script
         $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -extensions v3_host -newkey rsa:2048 -keyout $UT_ROOT_PATH/$4.key -out $UT_ROOT_PATH/$4.csr -subj "$2"
+        if [ $? != 0 ]; then
+            echo "SERVER: Error generating certificate signing request"
+            exit 8
+        fi
         $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_host -startdate 100102030405Z -enddate 380102030405Z -out $TEMP/server.crt -outdir $TEMP -infiles $UT_ROOT_PATH/$4.csr
+        if [ $? != 0 ]; then
+            echo "SERVER: Error generating signed certificate"
+            exit 9
+        fi
         grep -A 1000 BEGIN $TEMP/server.crt > $UT_ROOT_PATH/$4.crt
         cat $UT_ROOT_PATH/$4.crt $UT_ROOT_PATH/$4.key > $UT_ROOT_PATH/$4.pem
         $OPENSSL_TOOL pkcs12 -export -passout pass:password -name default -in $UT_ROOT_PATH/$4.crt -inkey $UT_ROOT_PATH/$4.key -out $UT_ROOT_PATH/$4.pfx
+        if [ $? != 0 ]; then
+            echo "SERVER: Error creating PKCS12 certificate file"
+            exit 10
+        fi
     ;;
     *)
     # In all other cases we are making a fake MITM certificate so we generate
     # a new CSR and sign it with our CA and put the server key and signed
     # cert into a PKCS12 file that can be loaded by the Java code
         $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -extensions v3_fake -newkey rsa:2048 -keyout $TEMP/server.key -out $TEMP/server.csr -subj "$2"
+        if [ $? != 0 ]; then
+            echo "MITM: Error generating certificate signing request"
+            exit 11
+        fi
         $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_fake -startdate 100102030405Z -enddate 380102030405Z -out $TEMP/server.crt -outdir $TEMP -infiles $TEMP/server.csr
+        if [ $? != 0 ]; then
+            echo "MITM: Error generating signed certificate"
+            exit 12
+        fi
         $OPENSSL_TOOL pkcs12 -export -passout pass:password -name default -in $TEMP/server.crt -inkey $TEMP/server.key -out $CERT_PATH/$1
+        if [ $? != 0 ]; then
+            echo "MITM: Error creating PKCS12 certificate file"
+            exit 13
+        fi
     ;;
 esac
 
 # Cleanup any working files we created
-# rm -f $TEMP/server.key
-# rm -f $TEMP/server.csr
-# rm -f $TEMP/server.crt
-# rm -f $TEMP/$SERIAL.pem
+rm -f $TEMP/server.key
+rm -f $TEMP/server.csr
+rm -f $TEMP/server.crt
+rm -f $TEMP/$SERIAL.pem
+exit 0

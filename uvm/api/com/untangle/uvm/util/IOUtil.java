@@ -1,6 +1,7 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.uvm.util;
 
 import java.io.File;
@@ -164,8 +165,9 @@ public class IOUtil
      * Reads the contents of a file as a byte[].  Obviously be careful
      * with memory.
      *
-     * @param f the file
+     * @param source the file
      * @return the byte[] with the bytes of the file
+     * @throws IOException
      */
     public static byte[] fileToBytes(File source) throws IOException
     {
@@ -199,6 +201,7 @@ public class IOUtil
      *
      * @param bytes the bytes
      * @param writeTo the target file
+     * @throws IOException
      */
     public static void bytesToFile(byte[] bytes, File writeTo) throws IOException
     {
@@ -215,6 +218,7 @@ public class IOUtil
      * @param writeTo the target file
      * @param append should these bytes be appended if the file
      *        already exists
+     * @throws IOException
      */
     public static void bytesToFile(byte[] bytes, int start, int len, File writeTo, boolean append) throws IOException
     {
@@ -233,16 +237,39 @@ public class IOUtil
 
     }
 
+    /**
+     * Pipe data from the input to the output stream
+     * @param in The input stream
+     * @param out The output stream
+     * @return The amount of data piped
+     * @throws IOException
+     */
     public static long pipe(final InputStream in, final OutputStream out) throws IOException
     {
         return pipe(in, out, new byte[DEF_BUF_SZ], Long.MAX_VALUE);
     }
 
+    /**
+     * Pipe data from the input to the output stream
+     * @param in The input stream
+     * @param out The output stream
+     * @param maxTransfer The maximum amount of data to transfer
+     * @return The amount of data piped
+     * @throws IOException
+     */
     public static long pipe(final InputStream in, final OutputStream out, final long maxTransfer) throws IOException
     {
         return pipe(in, out, new byte[DEF_BUF_SZ], maxTransfer);
     }
 
+    /**
+     * Pipe data from the input to the output stream
+     * @param in The input stream
+     * @param out The output stream
+     * @param transferBuf The transfer buffer
+     * @return The amount of data piped
+     * @throws IOException
+     */
     public static long pipe(final InputStream in, final OutputStream out, final byte[] transferBuf) throws IOException
     {
         return pipe(in, out, transferBuf, Long.MAX_VALUE);
@@ -321,5 +348,4 @@ public class IOUtil
         }
         return f.delete();
     }
-
 }

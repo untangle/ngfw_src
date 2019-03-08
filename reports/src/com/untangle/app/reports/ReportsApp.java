@@ -15,9 +15,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
@@ -35,13 +32,12 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.EventManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.event.EventRule;
 import com.untangle.uvm.event.EventSettings;
-import com.untangle.uvm.network.FilterRule;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.app.HostnameLookup;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -51,10 +47,13 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import org.apache.commons.codec.binary.Base64;
 
+/**
+ * Reports application
+ */
 public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 {
     public static final String REPORTS_EVENT_LOG_DOWNLOAD_HANDLER = "reportsEventLogExport";
-    
+
     private static final Logger logger = Logger.getLogger(ReportsApp.class);
 
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
@@ -75,7 +74,17 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     protected static String dbDriver = "postgresql";
     
     private ReportsSettings settings;
-    
+
+    private final FixedReportsQueue fixedReportsQueue;
+
+    /**
+     * Initialize reports application.
+     *
+     * @param appSettings
+     *  Reports application settings.
+     * @param appProperties
+     *  Reports application properties.
+     */
     public ReportsApp( AppSettings appSettings, AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -88,14 +97,40 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             eventReader = new EventReaderImpl( this );
         ReportsManagerImpl.getInstance().setReportsApp( this );
         
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
+        try {
+            UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
+        } catch (Throwable e) {
+            // this is ignored because it is removed from demo
+            logger.warn("Error registering event log export helper.",e);
+        }
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new ReportsDataRestoreUploadHandler() );
+        this.fixedReportsQueue = new FixedReportsQueue( this );
     }
 
+    /**
+     * Save the passed settings.
+     *
+     * @param newSettings
+     *  New reports settings.
+     */
     public void setSettings( final ReportsSettings newSettings )
     {
-        this.sanityCheck( newSettings );
+        setSettings( newSettings, true );
+    }
+
+    /**
+     * Save the passed settings.
+     *
+     * @param newSettings
+     *  New reports settings.
+     * @param sanityCheck
+     *  If true, perform sanity checks on the settings.
+     */
+    public void setSettings( final ReportsSettings newSettings, final boolean sanityCheck )
+    {
+        if (sanityCheck)
+            this.sanityCheck( newSettings );
 
         /**
          * Set the Email Template Ids
@@ -106,6 +141,22 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             idx = ++idx;
             mapOldNewEmailTemplateIds.put(template.getTemplateId(), idx);
             template.setTemplateId(idx);
+        }
+
+        /**
+         * Remove any report entries with a duplicate title (in same category)
+         */
+        HashMap<String, ReportEntry> names = new HashMap<String, ReportEntry>();
+        for (Iterator<ReportEntry> i = newSettings.getReportEntries().iterator(); i.hasNext(); ) {
+            ReportEntry entry = i.next();
+            String name = entry.getCategory() + "/" + entry.getTitle();
+            ReportEntry existing = names.get( name );
+            if ( existing != null ) {
+                logger.warn("REMOVING Duplicate report entry title: " + name);
+                i.remove();
+                continue;
+            }
+            names.put( name, entry );
         }
 
         /* Manage id changes for users with email report flag. */
@@ -161,11 +212,20 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         writeCronFile();
     }
 
+    /**
+     * Read reports settings.
+     *
+     * @return
+     *  ReportSettings object.
+     */
     public ReportsSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * Setup the reports database for first time use.
+     */
     public void initializeDB()
     {
         synchronized (this) {
@@ -221,32 +281,62 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
-    public void runFixedReport() throws Exception
+    /**
+     * Generate and email single report.
+     *
+     * @param templateId report identifier to run.
+     * @param startTimestamp Beginning timestamp in milliseconds.
+     * @param stopTimestamp Ending timestamp in milliseconds.
+     *
+     * @throws Exception
+     *  If there an issue generating the report.
+     */
+    public void runFixedReport(Integer templateId, long startTimestamp, long stopTimestamp) throws Exception
     {
         flushEvents();
 
-        synchronized (this) {
-            String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
-            for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
-                FixedReports fixedReports = new FixedReports();
-                List<ReportsUser> users = new LinkedList<ReportsUser>();
-                for ( ReportsUser user : settings.getReportsUsers() ) {
-                    if( user.getEmailSummaries() && user.getEmailTemplateIds().contains(emailTemplate.getTemplateId()) ){
-                        users.add(user);
-                    }
-                }
-                if( users.size() > 0){
-                    fixedReports.generate(emailTemplate, users, url, ReportsManagerImpl.getInstance());
-                }
-            }
-        }        
+        fixedReportsQueue.add( templateId, startTimestamp, stopTimestamp);
+
     }
 
+    /**
+     * Generate and email fixed reports.
+     *
+     * @throws Exception
+     *  If there an issue generating the report.
+     */
+    public void runFixedReports() throws Exception
+    {
+        flushEvents();
+
+        for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
+            fixedReportsQueue.add( emailTemplate.getTemplateId(), 0, 0);
+        }
+    }
+
+    /**
+     * Get the number of reports queued.
+     *
+     * @return integer value of queue size.
+     */
+    public int getFixedReportQueueSize(){
+        return fixedReportsQueue.size();
+    }
+
+    /** 
+     * Force all currently pending events to be written to disk.
+     */
     public void flushEvents()
     {
         forceFlush();
     }
 
+    /** 
+     * Return the number of evnets in the pending queue.
+     *
+     * @return
+     *  Number of events in the pending queue.
+     */
     protected int getEventsPendingCount()
     {
         if (ReportsApp.eventWriter != null)
@@ -255,11 +345,22 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return 0;
     }
     
+    /** 
+     * Save settings using default values.
+     */
     public void initializeSettings()
     {
         setSettings( defaultSettings() );
     }
 
+    /**
+     * Perform a lookup of IP address in the hostname maps.
+     *
+     * @param address
+     *  IP address to find.
+     * @return
+     *  String of the hostnane.
+     */
     public String lookupHostname( InetAddress address )
     {
         ReportsSettings settings = this.getSettings();
@@ -276,11 +377,21 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return null;
     }
 
+    /** 
+     * Send the sevent to the event writer.
+     *
+     * @param evt
+     *  Event to log.
+     */
     public void logEvent( LogEvent evt )
     {
         ReportsApp.eventWriter.logEvent( evt );
     }
 
+    /**
+     * Force all currently pending events to be written to disk.
+     * 
+     */
     public void forceFlush()
     {
         logger.info("forceFlush() ...");
@@ -288,16 +399,60 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             ReportsApp.eventWriter.forceFlush();
     }
 
+    /** 
+     * Return the average event write time.
+     *
+     * @return
+     *  Double value indicating the average write time.
+     */
     public double getAvgWriteTimePerEvent()
     {
         return ReportsApp.eventWriter.getAvgWriteTimePerEvent();
     }
 
+    /** 
+     * Return the average event write delay time.
+     *
+     * @return
+     *  Long value indicating the average delay of writes.
+     */
     public long getWriteDelaySec()
     {
         return ReportsApp.eventWriter.getWriteDelaySec();
     }
+
+    /** 
+     * Return email addresses with alert permission.
+     *
+     * @return
+     *  List of email addresses with alert permission.
+     */
+    public List<String> getAlertEmailAddresses(){
+        List<String> emailAddresses = new LinkedList<String>();
+
+        App reportsApp = UvmContextFactory.context().appManager().app("reports");
+        if(reportsApp == null || !AppState.RUNNING.equals(reportsApp.getRunState())){
+            return emailAddresses;
+        }
+
+        for ( ReportsUser user : settings.getReportsUsers() ) {
+            if( user.getEmailAddress().equals("admin") ){
+                continue;
+            }
+            if( user.getEmailAlerts()){
+                emailAddresses.add(user.getEmailAddress());
+            }
+        }
+
+        return emailAddresses;
+    }
     
+    /** 
+     * Create a new DB connection.
+     *
+     * @return
+     *  Database Connection object.
+     */
     public Connection getDbConnection()
     {
         try {
@@ -332,17 +487,32 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /** 
+     * Return the reports manager object.
+     *
+     * @return
+     *  ReportsManager object.
+     */
     public ReportsManager getReportsManager()
     {
         return ReportsManagerImpl.getInstance();
     }
     
+    /**
+     * Get the pineliene connector.
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return new PipelineConnector[0];
     }
 
+    /** 
+     * Perform post application initialization tasks including converting settings from
+     * previous versions.
+     */
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -373,33 +543,18 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
 
         /**
-         * 12.1 conversion
+         * Report updates
          */
-        if ( settings.getVersion() == 1 ) {
-            logger.warn("Running v12.1 conversion...");
-            conversion_12_1();
-        }
+        ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
 
-        /**
-         * 12.2 conversion
-         */
-        if ( settings.getVersion() == 3 ) {
-            logger.warn("Running v12.2 conversion...");
-            conversion_12_2_0();
-        }
         /*
-         * 13.3 conversion
+         * 13.0 conversion
          */
-        if ( settings.getVersion() == 4 ) {
+        if ( settings.getVersion() == null || settings.getVersion() < 5 ) {
             logger.warn("Running v13.0 conversion...");
             conversion_13_0_0();
         }
 
-        /**
-         * Report updates
-         */
-        ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
-        
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified()){
@@ -407,6 +562,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /**
+     * Pre reports start. Setup reports servlet, start database, initialize, eventwriter, etc.
+     *
+     * @param isPermanentTransition
+     */
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
@@ -427,12 +587,23 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         ReportsApp.eventWriter.start( this );
 
         /* Enable to run event writing performance tests */
-        // new Thread(new PerformanceTest()).start();
+        this.fixedReportsQueue.start();
     }
 
+    /**
+     * Post reports stop.  Shut reports servelet, shut down database, etc.
+     *
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
+        try{
+            this.fixedReportsQueue.stop();
+        }catch( Exception e ){
+            logger.warn( "Error disabling Fixed Reports queue", e );
+        }
+
         ReportsApp.eventWriter.stop();
 
         UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
@@ -441,13 +612,20 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             UvmContextFactory.context().daemonManager().decrementUsageCount( "postgresql" );
     }
 
+    /**
+     * Before destroying the app, don't do anything.
+     */
     @Override
     protected void preDestroy() 
     {
     }
-    
 
-    
+    /**
+     * Return the list of default email templates.
+     *
+     * @return
+     *  LinkedList of default EmailTemplate objects.
+     */        
     private LinkedList<EmailTemplate> defaultEmailTemplates()
     {
         LinkedList<EmailTemplate> templates = new LinkedList<EmailTemplate>();
@@ -460,14 +638,27 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         enabledConfigIds.add("_recommended");
         enabledAppIds = new LinkedList<String>();
         enabledAppIds.add("_recommended");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("Recommended daily reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Reports"), I18nUtil.marktr("Recommended daily reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
         emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 
-        return templates;
+        enabledConfigIds = new LinkedList<String>();
+        enabledConfigIds.add("network-aGUe5wYZ1x");
+        enabledAppIds = new LinkedList<String>();
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Data Usage"), I18nUtil.marktr("Month to date data usage"), 2, false, enabledConfigIds, enabledAppIds);
+        templates.add( emailTemplate );
 
+        return templates;
     }
 
+    /**
+     * Return the list of report users
+     *
+     * @param reportsUsers
+     *  Starting list of ReportUser.
+     * @return
+     *  LinkedList of default ReportUser objects.
+     */
     private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers)
     {
         List<Integer> templateIds = new LinkedList<Integer>();
@@ -502,6 +693,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return reportsUsers;
     }
 
+    /** 
+     * Return default reports application settings.
+     *
+     * @return
+     *  ReportSettings object containing default values.
+     */
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
@@ -518,12 +715,19 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return settings;
     }
     
+    /** 
+     * Get the appropriate database driver.
+     *
+     * @return
+     *  String containing name of driver.
+     */
     private String determineDbDriver()
     {
+        BufferedReader reader = null;
         try {
             File keyFile = new File(REPORTS_DB_DRIVER_FILE);
             if (keyFile.exists()) {
-                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                reader = new BufferedReader(new FileReader(keyFile));
                 String value = reader.readLine();
 
                 switch( value ) {
@@ -538,14 +742,24 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 }
 
                 ReportsApp.dbDriver = value;
-                return ReportsApp.dbDriver;
             }
         } catch (IOException x) {
             logger.error("Unable to read DB driver", x);
+        } finally {
+            if( reader != null ){
+                try{
+                    reader.close();
+                } catch (Exception x) {
+                    logger.error("Unable to close reader", x);
+                }
+            }
         }
         return ReportsApp.dbDriver;
     }
 
+    /** 
+     * Write reports application cronjob file.
+     */
     private void writeCronFile()
     {
         // write the cron file for nightly runs
@@ -583,18 +797,27 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
             return;
-        }
-        try {
-            out.close();
-        } catch (IOException ex) {
-            logger.error("Unable to close file", ex);
-            return;
+        }finally{
+            if(out != null){
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
         }
 
         // Make it executable
         UvmContextFactory.context().execManager().execResult( "chmod 755 " + CRON_FILE );
     }
 
+    /** 
+     * Perform settings sanity checks and throw exceptions:
+     *  * If user has online access but no password.
+     * 
+     * @param settings
+     *  Settings to validate.
+     */
     private void sanityCheck( ReportsSettings settings )
     {
         if ( settings.getReportsUsers() != null) {
@@ -607,6 +830,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /** 
+     * Restore a database from a file.
+     *
+     * @param item
+     *  FileItem containing filename.
+     * @return
+     *  Result of the restore data script.
+     */
     private int restoreData( FileItem item )
     {
         try {
@@ -629,54 +860,31 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
-    private void conversion_12_1()
-    {
-        settings.setVersion( 2 );
-
-        for ( ReportEntry entry : settings.getReportEntries() ) {
-            if ( entry.getType() == ReportEntry.ReportEntryType.PIE_GRAPH && entry.getPieStyle() == null ) {
-                entry.setPieStyle( ReportEntry.PieStyle.PIE );
-            }
-        }
-        
-        setSettings( settings );
-    }
-
-    private void conversion_12_2_0()
-    {
-        settings.setVersion( 4 );
-
-        try {
-            settings.setEmailTemplates( defaultEmailTemplates() );
-        } catch (Exception e) {
-            logger.warn("Conversion Exception",e);
-        }
-
-        try {
-            settings.setReportsUsers( defaultReportsUsers(settings.getReportsUsers()) );
-        } catch (Exception e) {
-            logger.warn("Conversion Exception",e);
-        }
-
-        setSettings( settings );
-    }
-
+    /**
+     *  Convert object paths to 13.0.0 using external sed operation.
+     */
     private void conversion_paths_13_0_0()
     {
-        int result = UvmContextFactory.context().execManager().execResult("/bin/grep -q com.untangle.app.reports.AlertRule " + System.getProperty("uvm.settings.dir") + "/" + "/reports/" + "/settings*.js");
+        int result = UvmContextFactory.context().execManager().execResult("/bin/grep -q com.untangle.node.reports.AlertRule " + System.getProperty("uvm.settings.dir") + "/" + "/reports/" + "/settings*.js");
         if ( result != 0 )
             return;
 
         // Convert event rule paths to new locations for 12.2 to 13.0
         String[] oldNames = new String[] {
-                                "com.untangle.app.reports.AlertRuleCondition",
-                                "com.untangle.app.reports.AlertRuleConditionField",
-                                "com.untangle.app.reports.AlertRule"
+                                "com.untangle.node.reports.AlertRuleCondition",
+                                "com.untangle.node.reports.AlertRuleConditionField",
+                                "com.untangle.node.reports.AlertRule",
+                                "\"alert\":",
+                                "\"alertLimitFrequency\":",
+                                "\"alertLimitFrequencyMinutes\":"
                              };
         String[] newNames = new String[] {
                                 "com.untangle.uvm.event.EventRuleCondition",
                                 "com.untangle.uvm.event.EventRuleConditionField",
-                                "com.untangle.uvm.event.AlertRule"
+                                "com.untangle.uvm.event.AlertRule",
+                                "\"email\":",
+                                "\"emailLimitFrequency\":",
+                                "\"emailLimitFrequencyMinutes\":"
                              };
         for ( int i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
@@ -685,6 +893,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /**
+     *  Convert settings to 13.0.0.
+     */
     private void conversion_13_0_0()
     {
         settings.setVersion( 5 );
@@ -712,25 +923,61 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 }
             }
 
-            // Rename "Alert" report categories to "Event"
             if(settings.getReportEntries() != null){
-                for ( ReportEntry entry : settings.getReportEntries() ) {
-                    if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ){
+                // Rename "Alert" report categories to "Event"
+                // Remove reporting-* entries
+                // Remove Web Filter Lite reports
+                for (Iterator<ReportEntry> i = settings.getReportEntries().iterator(); i.hasNext(); ) {
+                    ReportEntry entry = i.next();
+                    if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ) {
                         entry.setCategory( "Events" );
+                    }
+                    if ( entry.getUniqueId().startsWith("reporting-") ) {
+                        i.remove();
+                    }
+                    if ( "Web Filter Lite".equals(entry.getCategory()) ) {
+                        i.remove();
                     }
                 }
             }
+
+            // fix duplicate report names
+            HashMap<String, ReportEntry> names = new HashMap<String, ReportEntry>();
+            for ( ReportEntry entry : settings.getReportEntries() ) {
+                String name = entry.getCategory() + "/" + entry.getTitle();
+                ReportEntry existing = names.get( name );
+                if ( existing != null ) {
+                    logger.warn("Duplicate report entry title: " + entry.getTitle());
+                    for ( int i=2; i < 100; i++ ) {
+                        String newTitle = entry.getTitle() + " " + i;
+                        String newName = entry.getCategory() + "/" + newTitle;
+                        if ( names.get( newName ) == null ) {
+                            logger.warn("Changing title to: " + newTitle);
+                            entry.setTitle( newTitle );
+                            names.put( entry.getTitle(), entry );
+                            break;
+                        }
+                    }
+                } else {
+                    names.put( name, entry );
+                }
+            }
+
         } catch (Exception e) {
             logger.warn("Conversion Exception",e);
         }
 
-        setSettings( settings );
+        setSettings( settings, false );
     }
 
-
-
+    /**
+     * Perform event writing performance tests.
+     */
     private class PerformanceTest implements Runnable
     {
+        /**
+         * Write events to test performance.
+         */
         public void run()
         {
             for (int i=0; i<5; i++) logger.warn("--- Running Performance Tests ---");
@@ -779,17 +1026,38 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
         
     }
-    
+
+    /**
+     * Export log events
+     */
     private class EventLogExportDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
 
+        /**
+         * Return name of handler.
+         *
+         * @return
+         *  Fixed string "eventLogExport".
+         */
         @Override
         public String getName()
         {
             return "eventLogExport";
         }
         
+        /**
+         * Convert event resultset reader to CSV format.
+         *
+         * @param resultSetReader
+         *  Results from query.
+         * @param resp
+         *  HttpServletResponse object to send output on.
+         * @param columnListStr
+         *  List of column names, comma separated.
+         * @param name
+         *  Name of file to generate.
+         */
         protected void toCsv( ResultSetReader resultSetReader, HttpServletResponse resp, String columnListStr, String name )
         {
             if (resultSetReader == null)
@@ -842,6 +1110,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             }
         }
         
+        /**
+         * Return date
+         *
+         * @param ts
+         *  Current timestamp.
+         * @return
+         *  Date based on timestamp.
+         */
         private Date getDate(String ts)
         {
             try {
@@ -853,6 +1129,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             return null;
         }
         
+        /**
+         * Perform download, generating query.
+         *
+         * @param req
+         *  HttpServletRequest object.
+         * @param resp
+         *  HttpServletResponse object.
+         */
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
             try {
@@ -870,6 +1154,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 ReportEntry query = (ReportEntry) UvmContextFactory.context().getSerializer().fromJSON( arg2 );
                 SqlCondition[] conditions;
                 String columnListStr = arg4;
+
                 Date startDate = getDate(arg5);
                 Date endDate = getDate(arg6);
 
@@ -883,7 +1168,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                     return;
                 }
 
-                logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + ")");
+                logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + " startDate: " + startDate + " endDate: " + endDate + " )");
 
                 ReportsApp reports = (ReportsApp) UvmContextFactory.context().appManager().app("reports");
                 if (reports == null) {
@@ -899,15 +1184,31 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
     
-    // called by the UI to download images
+    /**
+     * Download images from the UI.
+    */
     private class ImageDownloadHandler implements DownloadHandler
     {
+        /**
+         * Return name of handler.
+         *
+         * @return
+         *  Fixed string "imageDownload".
+         */
         @Override
         public String getName()
         {
             return "imageDownload";
         }
 
+        /**
+         * Perform download of image.
+         *
+         * @param req
+         *  HttpServletRequest object.
+         * @param resp
+         *  HttpServletResponse object.
+         */
         @Override
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
@@ -932,14 +1233,35 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         }
     }
 
+    /**
+     * Restore database from uploaded file.
+     */
     private class ReportsDataRestoreUploadHandler implements UploadHandler
     {
+        /**
+         * Return name of handler.
+         *
+         * @return
+         *  Fixed string "reportsDataRestore".
+         */
         @Override
         public String getName()
         {
             return "reportsDataRestore";
         }
         
+        /**
+         * Perform restore of fille into database.
+         *
+         * @param fileItem
+         *  FileItem containing name.
+         * @param argument
+         *  Unused.
+         * @throws Exception
+         *  Thrown if unable to restore data.
+         * @return
+         *  String of result.
+         */
         @Override
         public String handleFile(FileItem fileItem, String argument) throws Exception
         {

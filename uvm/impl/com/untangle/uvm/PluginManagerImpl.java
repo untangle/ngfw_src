@@ -1,25 +1,24 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.nio.file.FileVisitOption;
 
 import org.apache.log4j.Logger;
 
 /**
- * The plugin manager manages the dynamically loadable class files "plugins" found in the
- * plugins directory
+ * The plugin manager manages the dynamically loadable class files "plugins"
+ * found in the plugins directory
  */
 public class PluginManagerImpl implements PluginManager
 {
@@ -30,10 +29,20 @@ public class PluginManagerImpl implements PluginManager
      */
     private static final PluginManagerImpl INSTANCE = new PluginManagerImpl();
 
-    private HashMap<String,Plugin> loadedPlugins = new HashMap<String,Plugin>();
-    
-    private PluginManagerImpl() {}
+    private HashMap<String, Plugin> loadedPlugins = new HashMap<String, Plugin>();
 
+    /**
+     * Constructor
+     */
+    private PluginManagerImpl()
+    {
+    }
+
+    /**
+     * Create a URL class loader
+     * 
+     * @return
+     */
     private URLClassLoader createClassLoader()
     {
         try {
@@ -48,28 +57,34 @@ public class PluginManagerImpl implements PluginManager
 
             urls.add(new URL("file://" + System.getProperty("uvm.lang.dir") + "/"));
             return new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
-        } catch ( Throwable exn ) {
-            logger.warn( "Failed to create pluginClassLoader", exn );
+        } catch (Throwable exn) {
+            logger.warn("Failed to create pluginClassLoader", exn);
             return null;
         }
     }
 
+    /**
+     * Get our singleton instance
+     * 
+     * @return The instance
+     */
     public synchronized static PluginManagerImpl getInstance()
     {
         return INSTANCE;
     }
-    
+
     /**
-     * This finds all the class files (excluding inner classes)
-     * in the plugins directory and calls loadPlugin on each class
+     * This finds all the class files (excluding inner classes) in the plugins
+     * directory and calls loadPlugin on each class
      */
     public void loadPlugins()
     {
         try {
             String pathStr = System.getProperty("uvm.lib.dir") + "/plugins";
-            Files.walk(Paths.get(pathStr))
+            Files.walk(Paths.get(pathStr), FileVisitOption.FOLLOW_LINKS)
                 .filter(Files::isRegularFile)
                 .filter(path -> !path.toString().contains("$"))
+                .filter(path -> path.toString().contains("Plugin"))
                 .forEach(path -> {
                         String name = path.toString();
                         name = name.substring(0, name.lastIndexOf('.')); // remove file extension
@@ -84,51 +99,68 @@ public class PluginManagerImpl implements PluginManager
 
     /**
      * Unload the plugin (if it exists)
+     * 
+     * @param className
+     *        - the className of the plugin to unload
      */
-    public void unloadPlugin( String className )
+    public void unloadPlugin(String className)
     {
         try {
-            Plugin previousInstance = loadedPlugins.get( className );
-            if ( previousInstance != null ) {
+            Plugin previousInstance = loadedPlugins.get(className);
+            if (previousInstance != null) {
                 logger.info("Unloading plugin: " + className + "@" + previousInstance.hashCode());
                 previousInstance.stop();
-                loadedPlugins.remove( className );
+                loadedPlugins.remove(className);
                 logger.info("Unloaded  plugin: " + className + "@" + previousInstance.hashCode());
             }
         } catch (Throwable t) {
             logger.warn("Extension exception: ", t);
         }
     }
-    
+
     /**
-     * This loads the specified class name
-     * It will call the instance method to create an instance, then create a thread and call run()
-     *
-     * If the class has already been loaded it will stop the previous instance
+     * Get the plugin of the specified className
+     * 
+     * @param className
+     *        - the className of the plugin
+     * @return the plugin or null if not found
      */
-    @SuppressWarnings({"rawtypes","unchecked"})
-    private void loadPlugin( String className )
+    public Plugin getPlugin(String className)
     {
-        unloadPlugin( className );
+        return loadedPlugins.get(className);
+    }
+
+    /**
+     * This loads the specified class name It will call the instance method to
+     * create an instance, then create a thread and call run()
+     * 
+     * If the class has already been loaded it will stop the previous instance
+     * 
+     * @param className
+     *        The class name
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void loadPlugin(String className)
+    {
+        unloadPlugin(className);
 
         try {
             logger.info("Loading   plugin: " + className);
-            Class clazz = createClassLoader().loadClass( className );
-            if ( clazz == null ) {
+            Class clazz = createClassLoader().loadClass(className);
+            if (clazz == null) {
                 logger.warn("Failed to find ExamplePluginImpl");
             } else {
-                Plugin plugin = (Plugin)clazz.getMethod("instance").invoke(null);
-                logger.info("Loaded    plugin: " + className );
-                logger.info("Starting  plugin: " + className );
+                Plugin plugin = (Plugin) clazz.getMethod("instance").invoke(null);
+                logger.info("Loaded    plugin: " + className);
+                logger.info("Starting  plugin: " + className);
                 Thread thread = new Thread(plugin);
                 thread.start();
                 logger.info("Started   plugin: " + className + " " + thread);
 
-                loadedPlugins.put( className, plugin );
+                loadedPlugins.put(className, plugin);
             }
         } catch (Throwable t) {
             logger.warn("Extension exception: ", t);
         }
     }
-
 }

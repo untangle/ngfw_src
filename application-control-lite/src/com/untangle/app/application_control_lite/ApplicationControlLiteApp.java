@@ -1,14 +1,11 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.application_control_lite;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -23,6 +20,10 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 
+/**
+ * The Application Control Lite application
+ * It uses signatures (regex) on network traffic to identify applications
+ */
 public class ApplicationControlLiteApp extends AppBase 
 {
     private static final String STAT_SCAN = "scan";
@@ -38,8 +39,11 @@ public class ApplicationControlLiteApp extends AppBase
 
     private ApplicationControlLiteSettings appSettings = null;
 
-    // constructors -----------------------------------------------------------
-
+    /**
+     * Instantiate an application control lite app with the provided appSettings and appProperties
+     * @param appSettings the application settings
+     * @param appProperties the applicaiton properties
+     */
     public ApplicationControlLiteApp( AppSettings appSettings, AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -52,15 +56,19 @@ public class ApplicationControlLiteApp extends AppBase
         this.connectors = new PipelineConnector[] { connector };
     }
 
-    // ApplicationControlLite methods ----------------------------------------------------
-
+    /**
+     * Get the current settings
+     * @return the current settings
+     */
     public ApplicationControlLiteSettings getSettings()
     {
-        if( this.appSettings == null )
-            logger.error("Settings not yet initialized. State: " + this.getRunState() );
         return this.appSettings;
     }
 
+    /**
+     * Set the settings
+     * @param newSettings The new settings
+     */
     public void setSettings(final ApplicationControlLiteSettings newSettings)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -79,56 +87,20 @@ public class ApplicationControlLiteApp extends AppBase
         reconfigure();
     }
 
-    public int getPatternsTotal()
-    {
-        return(appSettings.getPatterns().size());
-    }
-
-    public int getPatternsLogged()
-    {
-        LinkedList<ApplicationControlLitePattern>list = appSettings.getPatterns();
-        int count = 0;
-        
-            for(int x = 0;x < list.size();x++)
-            {
-            ApplicationControlLitePattern curr = list.get(x);
-            if (curr.getLog()) count++;
-            }
-        
-        return(count);
-    }
-
-    public int getPatternsBlocked()
-    {
-        LinkedList<ApplicationControlLitePattern>list = appSettings.getPatterns();
-        int count = 0;
-        
-            for(int x = 0;x < list.size();x++)
-            {
-            ApplicationControlLitePattern curr = list.get(x);
-            if (curr.isBlocked()) count++;
-            }
-        
-        return(count);
-    }
-
+    /**
+     * Get the pipeline connectors for this ad blocker
+     * @return the pipelineconnectors array
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
-    /*
-     * First time initialization
+    /**
+     * The postInit() hook
+     * This loads the settings from file or initializes them if necessary
      */
-    @Override
-    public void initializeSettings()
-    {
-        ApplicationControlLiteSettings settings = new ApplicationControlLiteSettings();
-        settings.setPatterns(new LinkedList<ApplicationControlLitePattern>());
-        setSettings(settings);
-    }
-
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -149,7 +121,9 @@ public class ApplicationControlLiteApp extends AppBase
         try {
             if (readSettings == null) {
                 logger.warn("No settings found... initializing with defaults");
-                initializeSettings();
+                ApplicationControlLiteSettings settings = new ApplicationControlLiteSettings();
+                settings.setPatterns(new LinkedList<ApplicationControlLitePattern>());
+                setSettings(settings);
             } else {
                 appSettings = readSettings;
                 reconfigure();
@@ -159,9 +133,13 @@ public class ApplicationControlLiteApp extends AppBase
         }
     }
 
+    /**
+     * This initalizes all the in-memory data structures for the current settings.
+     * It should be called after changing and/or saving settings.
+     */
     public void reconfigure()
     {
-        HashSet<ApplicationControlLitePattern> enabledPatternsSet = new HashSet<ApplicationControlLitePattern>();
+        HashSet<ApplicationControlLitePattern> enabledPatternsSet = new HashSet<>();
 
         logger.info("Reconfigure()");
 
@@ -176,29 +154,38 @@ public class ApplicationControlLiteApp extends AppBase
             for(int x = 0;x < curPatterns.size();x++) {
                 ApplicationControlLitePattern pat = curPatterns.get(x);
 
-                if ( pat.getLog() || pat.getAlert() || pat.isBlocked() ) {
+                if ( pat.getLog() || pat.isBlocked() ) {
                     logger.info("Matching on pattern \"" + pat.getProtocol() + "\"");
                     enabledPatternsSet.add(pat);
                 }
             }
         }
 
-        handler.patternSet(enabledPatternsSet);
-        handler.byteLimit(appSettings.getByteLimit());
-        handler.chunkLimit(appSettings.getChunkLimit());
-        handler.stripZeros(appSettings.isStripZeros());
+        handler.setPatternSet(enabledPatternsSet);
+        handler.setByteLimit(appSettings.getByteLimit());
+        handler.setChunkLimit(appSettings.getChunkLimit());
+        handler.setStripZeros(appSettings.isStripZeros());
     }
 
+    /**
+     * Increment the scan count metric
+     */
     void incrementScanCount()
     {
         this.incrementMetric(STAT_SCAN);
     }
 
+    /**
+     * Increment the block count metric
+     */
     void incrementBlockCount()
     {
         this.incrementMetric(STAT_BLOCK);
     }
 
+    /**
+     * Increment the detect count metric
+     */
     void incrementDetectCount()
     {
         this.incrementMetric(STAT_DETECT);

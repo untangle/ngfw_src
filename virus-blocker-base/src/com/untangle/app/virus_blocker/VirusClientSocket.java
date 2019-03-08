@@ -10,7 +10,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public final class VirusClientSocket {
+/**
+ * Class to manage client connection to a virus scanning server
+ */
+public final class VirusClientSocket
+{
     public final static String CLAMD_DEFHOST = "127.0.0.1"; // default host
     public final static int CLAMD_DEFPORT = 3310; // default port
 
@@ -20,7 +24,18 @@ public final class VirusClientSocket {
     private BufferedOutputStream bufOutputStream;
     private BufferedReader bufReader;
 
-    private VirusClientSocket(Socket socket, OutputStream oSocketStream, InputStream iSocketStream) {
+    /**
+     * Constructor
+     * 
+     * @param socket
+     *        The network socket
+     * @param oSocketStream
+     *        The output stream
+     * @param iSocketStream
+     *        The input stream
+     */
+    private VirusClientSocket(Socket socket, OutputStream oSocketStream, InputStream iSocketStream)
+    {
         this.socket = socket;
         this.oSocketStream = oSocketStream;
         this.iSocketStream = iSocketStream;
@@ -28,7 +43,18 @@ public final class VirusClientSocket {
         bufReader = new BufferedReader(new InputStreamReader(iSocketStream));
     }
 
-    public static VirusClientSocket create(String host, int port) throws Exception {
+    /**
+     * Create a client socket
+     * 
+     * @param host
+     *        The server address
+     * @param port
+     *        The server port
+     * @return The client socket
+     * @throws Exception
+     */
+    public static VirusClientSocket create(String host, int port) throws Exception
+    {
         try {
             Socket socket = new Socket(host, port);
             OutputStream oSocketStream = socket.getOutputStream();
@@ -41,31 +67,60 @@ public final class VirusClientSocket {
         }
     }
 
-    // for writes to socket (lowest level)
-    public OutputStream getOutputStream() {
+    /**
+     * Gets the output stream
+     * 
+     * @return The output stream
+     */
+    public OutputStream getOutputStream()
+    {
         return oSocketStream;
     }
 
-    // for writes to socket
-    public BufferedOutputStream getBufferedOutputStream() {
+    /**
+     * Gets the buffered output stream
+     * 
+     * @return The buffered output stream
+     */
+    public BufferedOutputStream getBufferedOutputStream()
+    {
         return bufOutputStream;
     }
 
-    // for reads from socket (lowest level)
-    public InputStream getInputStream() {
+    /**
+     * Gets the input stream
+     * 
+     * @return The input stream
+     */
+    public InputStream getInputStream()
+    {
         return iSocketStream;
     }
 
-    // for reads from socket
-    public BufferedReader getBufferedReader() {
+    /**
+     * Gets the buffered input stream
+     * 
+     * @return The buffered input stream
+     */
+    public BufferedReader getBufferedReader()
+    {
         return bufReader;
     }
 
-    public void close(String host, int port) throws Exception {
+    /**
+     * Closes the client socket
+     * 
+     * @param host
+     *        The server address
+     * @param port
+     *        The server port
+     * @throws Exception
+     */
+    public void close(String host, int port) throws Exception
+    {
         if (null != socket) {
             try {
-                if (true == socket.isClosed())
-                    return; // return after finally
+                if (true == socket.isClosed()) return; // return after finally
 
                 // we can't close streams attached to socket
                 // until we are ready to close socket
@@ -88,9 +143,14 @@ public final class VirusClientSocket {
         return;
     }
 
-    public String toString() {
-        if (null != socket)
-            return socket.toString();
+    /**
+     * Creates a string representation of a virus client socket
+     * 
+     * @return The string representation
+     */
+    public String toString()
+    {
+        if (null != socket) return socket.toString();
 
         return "<no socket>";
     }

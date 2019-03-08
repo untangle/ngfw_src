@@ -1,11 +1,25 @@
 #! /bin/bash
 
+oldVersion=""
+if [ "$1" = "configure" ] ; then
+  # oldVersion will be non-empty if untangle-linux-config has been
+  # configured before
+  oldVersion="$2"
+fi
+
+# remove old conffiles
+rm -f /etc/init.d/untangle-pyconnector /etc/default/pyconnector
+
 # right permissions for log dir
 UVM_LOGDIR="/var/log/uvm"
 /bin/chmod 775 ${UVM_LOGDIR}
 
 # Create the uvmlogin group (processed by users in this group can access API)
 addgroup uvmlogin 2>/dev/null
+
+# Make sure the www-data user is a member of the uvmlogin group
+# which allows the mod_python handlers to make calls RPC to the uvm
+usermod -G uvmlogin www-data
 
 # enable en_US locale (used by java)
 sed -i -e "s/.*en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/" /etc/locale.gen
@@ -28,42 +42,55 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
     update-rc.d untangle-vm defaults 95 5 > /dev/null
 fi
 
-# 12.1 upgrade
-sed -e 's/stable-120\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
-sed -e 's/stable-120x\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
-
-# 12.1 remove references to old distros
-sed -e '/\sfocus/d'   -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\spicanto/d' -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\sseagull/d' -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\selectra/d' -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\sthunder/d' -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\shayate/d'  -i /etc/apt/sources.list.d/untangle.list
-sed -e '/\scrypton/d' -i /etc/apt/sources.list.d/untangle.list
-
-# 12.1 remove old log files
-rm -f /var/log/restart-uvm.log
-rm -f /var/log/uvm/kernel-modules.log
-find /var/log/uvm -name '*crash*' -mtime +30 2>/dev/null | xargs rm -f
-
-# 12.1 remove old ntp servers from ntp.conf
-sed -e '/74.123/d' -i  /etc/ntp.conf
-
-# 12.1 upgrade
-if [ -d /var/lib/google-drive ] ; then
-    rm -rf /var/lib/google-drive/*
+# restore OEM settings if they exist
+if [ -f /usr/share/untangle/bin/oem-apply.sh ] ; then
+    /usr/share/untangle/bin/oem-apply.sh
 fi
 
-# 12.2 upgrade
-rm -rf /usr/share/untangle/web/reports/data
-rm -rf /usr/lib/python2.7/reports/node
-sed -e 's/stable-121\s/stable-122 /g' -i /etc/apt/sources.list.d/untangle.list
+# compile python files
+# FIXME: the list should be dynamic
+for d in reports tests uvm uvm_login.py intrusion_prevention ; do
+  pycompile /usr/lib/python2.7/dist-packages/$d
+done
 
-# 13.0 upgrade
-sed -e 's/stable-122\s/stable-130 /g' -i /etc/apt/sources.list.d/untangle.list
-rm -rf /usr/share/untangle/lib/untangle-node-idps
-rm -rf /usr/share/untangle/lib/untangle-node-ips
-rm -rf /usr/share/untangle/lib/untangle-node-web-filter-lite
-rm -f /var/log/uvm/node*
+# Remove old python cache directory.
+OLD_UVM_PYTHON_LIBRARY=/usr/lib/python2.7/uvm
+if [ -d $OLD_UVM_PYTHON_LIBRARY ] ; then
+    rm -rf $OLD_UVM_PYTHON_LIBRARY
+fi
+
+# untangle-vm does not yet have a service file
+# it still uses an init'd script
+# for now we need to raise the global tasks max
+sed -e 's/.*DefaultTasksMax=.*/DefaultTasksMax=infinity/' -i /etc/systemd/system.conf
+sed -e 's/.*DefaultLimitNOFILE=.*/DefaultLimitNOFILE=1000000/' -i /etc/systemd/system.conf
+
+# Delete old postgres configs
+rm -rf /etc/postgresql/8.4
+rm -rf /var/lib/postgresql/8.4
+rm -rf /etc/postgresql/9.1
+rm -rf /var/lib/postgresql/9.1
+rm -rf /etc/postgresql/9.4
+rm -rf /var/lib/postgresql/9.4
+
+# Remove extra lines created by the stretch installer
+sed -e '/^deb cdrom/d' -i /etc/apt/sources.list
+
+#
+# 14.1 upgrade
+#
+
+# Point to stable-141
+sed -e 's/stable-140\s/stable-141 /g' -i /etc/apt/sources.list.d/untangle.list
+sed -e 's/jessie/stretch/g' -i /etc/apt/sources.list.d/untangle.list
+
+# We no longer use upstream
+sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
+
+# Try again if failed
+if grep -q 'sync-settings failed' /var/log/uvm/stretch.log ; then
+    mv -f /var/log/uvm/stretch.log /var/log/uvm/stretch.log.old
+    nohup /usr/share/untangle/bin/ut-stretch-post-upgrade.sh >> /var/log/uvm/stretch.log 2>&1 &
+fi
 
 exit 0

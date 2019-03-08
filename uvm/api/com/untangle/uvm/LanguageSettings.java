@@ -4,15 +4,13 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-
-import java.util.List;
-import java.util.LinkedList;
-
+import org.json.JSONObject;
+import org.json.JSONString;
 /**
  * Uvm language settings.
  */
 @SuppressWarnings("serial")
-public class LanguageSettings implements Serializable
+public class LanguageSettings implements Serializable, JSONString
 {
     private String language = "en";
     private String source = "official";
@@ -53,5 +51,17 @@ public class LanguageSettings implements Serializable
     public void copy(LanguageSettings settings)
     {
         settings.setLanguage(this.language);
+    }
+
+    /**
+     * Convert settings to JSON string.
+     *
+     * @return
+     *      JSON string.
+     */
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 }

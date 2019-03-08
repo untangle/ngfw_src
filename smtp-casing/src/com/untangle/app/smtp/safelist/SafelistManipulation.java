@@ -51,6 +51,25 @@ public interface SafelistManipulation
     public String[] removeFromSafelist(String safelistOwnerAddress, String toRemove) throws NoSuchSafelistException,
             SafelistActionFailedException;
 
+    /**
+     * Remove an entry from multiple safelists.
+     * <br>
+     * Asking for the removal of an address which is <b>not</b> in the list is not an error and will be silently
+     * ignored.
+     * 
+     * @param safelistOwnerAddress
+     *            the logical address owner
+     * @param toRemove
+     *            Array of addresses to remove.
+     * 
+     * @return the contents of the safelist <i>after</i> the operation has been performed
+     * 
+     * @exception NoSuchSafelistException
+     *                Note that this should not be thrown if {@link #hasOrCanHaveSafelist hasOrCanHaveSafelist} returns
+     *                true for this address
+     * @exception SafelistActionFailedException
+     *                general back-end problem (you're hosed)
+     */
     public String[] removeFromSafelists(String safelistOwnerAddress, String[] toRemove) throws NoSuchSafelistException,
             SafelistActionFailedException;
 
@@ -115,6 +134,9 @@ public interface SafelistManipulation
      * created for the given address. If this method returns true, the methods which manupulate the contents of the
      * safelist should not throw the {@link com.untangle.app.smtp.safelist.NoSuchSafelistException
      * NoSuchSafelistException} they all declare.
+     *
+     * @param address Address to check.
+     * @return true if has or can, false otherwise.
      */
     public boolean hasOrCanHaveSafelist(String address);
 

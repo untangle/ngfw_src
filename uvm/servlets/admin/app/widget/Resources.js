@@ -4,14 +4,9 @@ Ext.define('Ung.widget.Resources', {
 
     controller: 'widget',
 
-    hidden: true,
     border: false,
     baseCls: 'widget',
-    cls: 'small adding',
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
+    cls: 'small',
 
     layout: {
         type: 'vbox',
@@ -46,7 +41,9 @@ Ext.define('Ung.widget.Resources', {
             xtype: 'component',
             flex: 1,
             padding: '5 10',
+            hidden: true,
             bind: {
+                hidden: '{!stats.SwapTotal}',
                 html: '<div>' +
                         '<p style="margin: 2px; text-align: left; font-weight: bold; font-size: 14px;">' + 'Swap'.t() + '</p>' +
                         '<div class="load-bar"><div class="load-bar-inner" style="left: -{stats.freeSwapPercent}%;"></div><p>{stats.totalSwap}</p></div>' +

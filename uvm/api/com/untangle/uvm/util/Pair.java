@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.util;
@@ -20,12 +20,23 @@ public class Pair<A,B> implements java.io.Serializable
     public final A a;
     public final B b;
 
+    /**
+     * Iniitalize instnace of Pair with second value null.
+     * @param  a A object to create.
+     * @return   intance of Pair.
+     */
     public Pair(A a)
     {
         this.a = a;
         this.b = null;
     }
 
+    /**
+     * Iniitalize instnace of Pair..
+     * @param  a A object to create.
+     * @param  b B object to create.
+     * @return   intance of Pair.
+     */
     public Pair(A a, B b)
     {
         this.a = a;

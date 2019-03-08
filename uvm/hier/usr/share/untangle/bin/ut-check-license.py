@@ -35,7 +35,7 @@ def checkLicense(app):
             validity = license['valid']
 
             if validity is None:
-                print "License found: Invalid";
+                print("License found: Invalid")
                 return False;
 
             # if its a string type, convert to boolean
@@ -43,25 +43,25 @@ def checkLicense(app):
                 validity = ((validity == 'True') or (validity == 'true')) 
 
             if validity == True:
-                print "License found: Valid";
+                print("License found: Valid")
                 return True;
             if validity == False:
-                print "License found: Invalid";
+                print("License found: Invalid")
                 return False;
 
     except Exception, e:
-        print "Exception:", e
+        print("Exception:", e)
         return False;
 
-    print "License not found for: " + app ;
+    print("License not found for: " + app)
     return False;
 
 
 if len(sys.argv) < 2:
-    print "usage: %s app" % sys.argv[0]
+    print("usage: %s app" % sys.argv[0])
     sys.exit(1)
 
-isValid = checkLicense(sys.argv[1]);
+isValid = checkLicense(sys.argv[1])
 
 if (isValid):
     sys.exit(0);

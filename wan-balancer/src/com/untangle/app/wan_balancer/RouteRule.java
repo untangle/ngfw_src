@@ -5,7 +5,6 @@ package com.untangle.app.wan_balancer;
 
 import java.util.List;
 import java.io.Serializable;
-import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;

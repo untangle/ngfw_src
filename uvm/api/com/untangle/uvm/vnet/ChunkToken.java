@@ -14,6 +14,10 @@ public class ChunkToken implements Token
 
     private final ByteBuffer data;
 
+    /**
+     * ChunkToken constructor
+     * @param data
+     */
     public ChunkToken(ByteBuffer data)
     {
         this.data = data;
@@ -23,12 +27,17 @@ public class ChunkToken implements Token
      * This method directly returns the internal ByteBuffer,
      * so changes to the returned ByteBuffer <b>will</b>
      * be seen by any downstream token handlers.
+     * @return ByteBuffer
      */
     public ByteBuffer getData()
     {
         return data;
     }
 
+    /**
+     * getSize - return the size of the data encapsulated in this ChunkToken
+     * @return int
+     */
     public int getSize()
     {
         return data.remaining();
@@ -38,6 +47,7 @@ public class ChunkToken implements Token
      * Returns a duplicate of the internal ByteBuffer, allowing
      * the caller to modify the returned ByteBuffer without concern
      * for any downstream token handlers.
+     * @return ByteBuffer
      */
     public ByteBuffer getBytes()
     {

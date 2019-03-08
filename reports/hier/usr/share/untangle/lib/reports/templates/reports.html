@@ -34,7 +34,7 @@ td.title {
 td.description {
 	color: #ffffff;
 	background-color: #858585;
-	font-size: 12px;	
+	font-size: 12px;
 }
 
 </style>
@@ -44,7 +44,7 @@ td.description {
 <table>
 <tr style="background-color:#ffffff; color:#333333;">
 <td style="width:82px;">
-<img src="{{ attachment,/var/www/images/BrandingLogo.png|id=logo@untangle.com }}"/>
+<img src="{{ attachment,/var/www/images/BrandingLogo.png|id=logo@untangle.com }}" style="max-width: 150px; max-height: 140px;"/>
 </td>
 <td style="font-size:22px; font-weight:bold; vertical-align:top; padding:10px;">
 <br/>
@@ -109,7 +109,7 @@ Summary
 </td>
 <td>
 {% for interface in networkManager.getEnabledInterfaces %}
-{% if interface.getDisabled == false %}
+{% if interface.igetDisabled == false %}
 {% if interface.getIsWan == true %}
 {% with interfaceId=interface.getInterfaceId %}
 {% with status=networkManager.getInterfaceStatus,interface.getInterfaceId %}
@@ -128,7 +128,7 @@ Summary
 {% trans "Version" %}
 </td>
 <td>
-{{ getFullVersion }} 
+{{ getFullVersion }}
 {% if systemManager.upgradesAvailable == true %}
 {%trans "(upgrades available)" %}
 {% endif%}
@@ -163,7 +163,7 @@ Summary
 			{% endwith %}
 		{% else %}
 			<td align="center">
-			<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100%;max-width:780px;float:left !important;" >
+			<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}.{{startDate.getTime}}.{{endDate.getTime}}@{{networkManager.getNetworkSettings.getHostName}}.{{networkManager.getNetworkSettings.getDomainName}} }}" style="display:block;width:100%;max-width:780px;float:left !important;" />
 			</td>
 		{% endif %}
 		</tr>
@@ -196,7 +196,7 @@ Summary
 					<tr><td><table>
 					<tr style="background-color:#d0d0d0;">
 						<td style="width:48px;">
-						<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/apps/{{ app.getAppProperties.getName }}_42x42.png|id=icon-{{ app.getAppProperties.getName }}@untangle.com }}" />
+						<img src="{{ attachment,/usr/share/untangle/web/icons/apps/{{ app.getAppProperties.getName }}_42x42.png|id=icon-{{ app.getAppProperties.getName }}@untangle.com }}" />
 						</td>
 						<td style="font-size:20px; color:#444444; font-weight:bold;">
 						{{ app.getAppProperties.getDisplayName }}
@@ -224,7 +224,7 @@ Summary
 							{% endwith %}
 						{% else %}
 							<td align="center">
-							<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100%;max-width:780px;float:left !important;" >
+							<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}.{{startDate.getTime}}.{{startDate.getTime}}@{{networkManager.getNetworkSettings.getHostName}}.{{networkManager.getNetworkSettings.getDomainName}} }}" style="display:block;width:100%;max-width:780px;float:left !important;" />
 							</td>
 						{% endif %}
 						</tr>

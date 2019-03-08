@@ -1,12 +1,14 @@
 Ext.define('Ung.config.network.view.Hostname', {
     extend: 'Ext.form.Panel',
-    alias: 'widget.config.network.hostname',
+    alias: 'widget.config-network-hostname',
+    itemId: 'hostname',
+    scrollable: true,
+
     withValidation: true, // requires validation on save
     viewModel: true,
 
     title: 'Hostname'.t(),
     bodyPadding: 10,
-    scrollable: true,
 
     items: [{
         xtype: 'fieldset',
@@ -20,7 +22,9 @@ Ext.define('Ung.config.network.view.Hostname', {
                 xtype: 'textfield',
                 fieldLabel: 'Hostname'.t(),
                 labelAlign: 'right',
-                emptyText: 'untangle',
+                emptyText: 'hostname',
+                allowBlank: false,
+                blankText: 'Hostname must be specified.'.t(),
                 name: 'HostName',
                 bind: '{settings.hostName}',
                 maskRe: /[a-zA-Z0-9\-]/
@@ -40,8 +44,10 @@ Ext.define('Ung.config.network.view.Hostname', {
                 labelAlign: 'right',
                 emptyText: 'example.com',
                 allowBlank: false,
+                blankText: 'Domain Name must be specified.'.t(),
                 name: 'DomainName',
-                bind: '{settings.domainName}'
+                bind: '{settings.domainName}',
+                vtype: 'domainName'
             }, {
                 xtype: 'displayfield',
                 value: '(eg: example.com)'.t(),
@@ -76,7 +82,12 @@ Ext.define('Ung.config.network.view.Hostname', {
                     ['dnspark','DNSPark'],
                     ['no-ip','No-IP'],
                     ['dnsomatic','DNS-O-Matic'],
-                    ['cloudflare','Cloudflare']]
+                    ['freedns','FreeDNS'],
+                    ['google','Google'],
+                    ['googledomains','Google Domains'],
+                    //['cloudflare','Cloudflare'],
+                    ['duckdns','DuckDNS']
+                   ]
         }, {
             xtype: 'textfield',
             fieldLabel: 'Username'.t(),
@@ -100,7 +111,9 @@ Ext.define('Ung.config.network.view.Hostname', {
         items: [{
             xtype: 'component',
             margin: '0 0 10 0',
-            html: Ext.String.format('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'radio',
             boxLabel: '<strong>' + 'Use IP address from External interface (default)'.t() + '</strong>',
@@ -109,7 +122,9 @@ Ext.define('Ung.config.network.view.Hostname', {
         }, {
             xtype: 'component',
             margin: '0 0 10 25',
-            html: Ext.String.format('This works if your {0} Server has a routable public static IP address.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('This works if your {0} Server has a routable public static IP address.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'radio',
             boxLabel: '<strong>' + 'Use Hostname'.t() + '</strong>',
@@ -118,7 +133,9 @@ Ext.define('Ung.config.network.view.Hostname', {
         }, {
             xtype: 'component',
             margin: '0 0 5 25',
-            html: Ext.String.format('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'component',
             margin: '0 0 10 25',
@@ -133,7 +150,9 @@ Ext.define('Ung.config.network.view.Hostname', {
         }, {
             xtype: 'component',
             margin: '0 0 10 25',
-            html: Ext.String.format('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'.t(), rpc.companyName)
+            bind:{
+                html: Ext.String.format('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'.t(), '{companyName}')
+            }
         }, {
             xtype: 'textfield',
             margin: '0 0 5 25',

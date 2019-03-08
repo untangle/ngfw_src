@@ -4,7 +4,6 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -20,9 +19,10 @@ public class SystemSettings implements Serializable, JSONString
     private int version = 3;
     private int httpsPort;
 
-    private boolean supportEnabled = true;
+    private boolean supportEnabled = false;
     private boolean cloudEnabled = true;
     private boolean httpAdministrationAllowed = true;
+    private String administrationSubnets = null;
 
     private boolean autoUpgrade;
     private DayOfWeekMatcher autoUpgradeDays;
@@ -43,6 +43,8 @@ public class SystemSettings implements Serializable, JSONString
     private String mailCertificate = "apache.pem";
     private String ipsecCertificate = "apache.pem";
 
+    private String installType = "";
+
     public SystemSettings() { }
 
     public String toJSONString()
@@ -56,6 +58,12 @@ public class SystemSettings implements Serializable, JSONString
      */
     public boolean getHttpAdministrationAllowed() { return this.httpAdministrationAllowed; }
     public void setHttpAdministrationAllowed( boolean newValue ) { this.httpAdministrationAllowed = newValue; }
+
+    /**
+     * Get whether or not local insecure administration is enabled.
+     */
+    public String getAdministrationSubnets() { return this.administrationSubnets; }
+    public void setAdministrationSubnets( String newValue ) { this.administrationSubnets = newValue; }
     
     /**
      * Untangle cloud access flag
@@ -111,6 +119,12 @@ public class SystemSettings implements Serializable, JSONString
     */
     public String getTimeSource(){ return timeSource; }
     public void setTimeSource( String newValue) { this.timeSource = newValue; }
+
+    /**
+     * Install Type
+     */
+    public String getInstallType(){ return installType; }
+    public void setInstallType( String newValue) { this.installType = newValue; }
 
     /**
      * These are used to get and set the certificates used by the

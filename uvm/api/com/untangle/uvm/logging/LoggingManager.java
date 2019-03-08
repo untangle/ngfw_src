@@ -3,8 +3,6 @@
  */
 package com.untangle.uvm.logging;
 
-import com.untangle.uvm.logging.LogEvent;
-
 /**
  * Manager for Logging.
  */

@@ -1,41 +1,36 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.shield;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
-import java.util.Iterator;
 import java.io.File;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.app.AppSettings;
-import com.untangle.uvm.app.AppMetric;
-import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
+/**
+ * ShieldApp is the hidden "shield" application
+ */
 public class ShieldApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(ShieldApp.class);
 
-    private static final String SHIELD_RULES_FILE = "/etc/untangle-netd/iptables-rules.d/600-shield";
+    private static final String SHIELD_RULES_FILE = "/etc/untangle/iptables-rules.d/600-shield";
 
     private final PipelineConnector[] connectors;
 
     private ShieldSettings settings;
 
+    /**
+     * ShieldApp creates a new ShieldApp
+     * @param appSettings
+     * @param appProperties
+     */
     public ShieldApp( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -43,6 +38,10 @@ public class ShieldApp extends AppBase
         this.connectors = new PipelineConnector[] { };
     }
 
+    /**
+     * setSettings sets the current settings
+     * @param newSettings
+     */
     public void setSettings(final ShieldSettings newSettings)
     {
         /**
@@ -77,6 +76,10 @@ public class ShieldApp extends AppBase
         syncToSystem( true );
     }
 
+    /**
+     * getSettings gets the current settings
+     * @return ShieldSettings
+     */
     public ShieldSettings getSettings()
     {
         if( settings == null )
@@ -85,12 +88,19 @@ public class ShieldApp extends AppBase
         return settings;
     }
 
+    /**
+     * getConnectors gets the current PipelineConnectors
+     * @return PipelineConnector[]
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * initializeSettings initializes new settings
+     */
     public void initializeSettings()
     {
         ShieldSettings settings = new ShieldSettings();
@@ -99,6 +109,9 @@ public class ShieldApp extends AppBase
         setSettings( settings );
     }
 
+    /**
+     * postInit hook
+     */
     @Override
     protected void postInit()
     {
@@ -130,11 +143,6 @@ public class ShieldApp extends AppBase
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
-        if ( settings.getVersion() == null || settings.getVersion() < 1 ) {
-            convertSettingsToV1( settings );
-            setSettings( settings );
-        }
-
         /**
          * If the settings file date is newer than the system files, re-sync them
          */
@@ -148,6 +156,10 @@ public class ShieldApp extends AppBase
         }
     }
 
+    /**
+     * postStop hook
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
@@ -157,12 +169,19 @@ public class ShieldApp extends AppBase
         }
     }
 
+    /**
+     * postDestroy hook
+     */
     @Override
     protected void postDestroy()
     {
         syncToSystem( false );
     }
 
+    /**
+     * syncToSystem the current settings 
+     * @param enabled
+     */
     private void syncToSystem( boolean enabled )
     {
         /**
@@ -187,75 +206,5 @@ public class ShieldApp extends AppBase
         lines = output.split("\\r?\\n");
         for ( String line : lines )
             logger.info(SHIELD_RULES_FILE + ": " + line);
-    }
-
-    private void convertSettingsToV1( ShieldSettings settings )
-    {
-        logger.warn("Converting Shield settings from to V1...");
-
-        settings.setVersion(1);
-
-        if (settings.getRules() != null ) {
-
-            /**
-             * Remove any rules with unsupported conditions
-             */
-            for (Iterator<ShieldRule> it = settings.getRules().iterator(); it.hasNext() ;) {
-                ShieldRule rule = it.next();
-
-                for ( ShieldRuleCondition condition : rule.getConditions() ) {
-                    boolean removed = false;
-                    switch( condition.getConditionType() ) {
-                    case USERNAME: removed = true; it.remove(); break;
-                    case CLIENT_HOSTNAME: removed = true; it.remove(); break;
-                    case SERVER_HOSTNAME: removed = true; it.remove(); break;
-                    case SRC_MAC: removed = true; it.remove(); break;
-                    case DST_MAC: removed = true; it.remove(); break;
-                    case CLIENT_MAC_VENDOR: removed = true; it.remove(); break;
-                    case SERVER_MAC_VENDOR: removed = true; it.remove(); break;
-                    case CLIENT_IN_PENALTY_BOX: removed = true; it.remove(); break;
-                    case SERVER_IN_PENALTY_BOX: removed = true; it.remove(); break;
-                    case CLIENT_HAS_NO_QUOTA: removed = true; it.remove(); break;
-                    case SERVER_HAS_NO_QUOTA: removed = true; it.remove(); break;
-                    case CLIENT_QUOTA_EXCEEDED: removed = true; it.remove(); break;
-                    case SERVER_QUOTA_EXCEEDED: removed = true; it.remove(); break;
-                    case DIRECTORY_CONNECTOR_GROUP: removed = true; it.remove(); break;
-                    case HTTP_USER_AGENT: removed = true; it.remove(); break;
-                    case HTTP_USER_AGENT_OS: removed = true; it.remove(); break;
-                    case CLIENT_COUNTRY: removed = true; it.remove(); break;
-                    case SERVER_COUNTRY: removed = true; it.remove(); break;
-                    default: break;
-                    }
-                    if (removed) {
-                        logger.warn("Removing shield rule (unsupported condition): " + rule);
-                        break;
-                    }
-                }
-            }
-
-            /**
-             * Change the action to the new format as best is possible
-             */
-            for( ShieldRule rule : settings.getRules() ) {
-                int multiplier = rule.getMultiplier();
-
-                // if unlimited - set unlimited (pass)
-                if ( multiplier < 0 ) {
-                    logger.warn("Setting unlimited rule to unlimited: " + rule);
-                    rule.setAction(ShieldRule.ShieldRuleAction.PASS);
-                    continue;
-                }
-                // if a high multiplier - set unlimited (pass)
-                if ( multiplier > 20 ) {
-                    logger.warn("Setting high multiplier rule to unlimited: " + rule);
-                    rule.setAction(ShieldRule.ShieldRuleAction.PASS);
-                    continue;
-                }
-                logger.warn("Setting normal rule to scan: " + rule);
-                rule.setAction(ShieldRule.ShieldRuleAction.SCAN);
-            }
-        }
-
-        logger.warn("Converting Shield settings to V1...done");
     }
 }

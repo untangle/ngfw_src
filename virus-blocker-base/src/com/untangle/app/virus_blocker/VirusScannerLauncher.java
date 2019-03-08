@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.virus_blocker;
 
 import java.io.File;
@@ -10,6 +11,9 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AppSession;
 
+/**
+ * Virus Blocker Scanner Launcher
+ */
 abstract public class VirusScannerLauncher implements Runnable
 {
     protected final Logger logger = Logger.getLogger(getClass());
@@ -20,6 +24,14 @@ abstract public class VirusScannerLauncher implements Runnable
     // This must be volatile since they are written and read by different threads.  bug948
     protected volatile VirusScannerResult result = null;
 
+    /**
+     * Constructor
+     * 
+     * @param scanfile
+     *        The file to be scanned
+     * @param session
+     *        The application session
+     */
     protected VirusScannerLauncher(File scanfile, AppSession session)
     {
         if (scanfile != null) scanfilePath = scanfile.getAbsolutePath();
@@ -27,9 +39,14 @@ abstract public class VirusScannerLauncher implements Runnable
     }
 
     /**
+     * 
      * Starts the scan and waits for timeout milliseconds for a result If a
      * result is reached, it is returned. If the time expires
      * VirusScannerResult.ERROR is returned
+     * 
+     * @param timeout
+     *        The scan timeout
+     * @return The scan result
      */
     public VirusScannerResult doScan(long timeout)
     {
@@ -65,5 +82,8 @@ abstract public class VirusScannerLauncher implements Runnable
         }
     }
 
+    /**
+     * The run function
+     */
     abstract public void run();
 }

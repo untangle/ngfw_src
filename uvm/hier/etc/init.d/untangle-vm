@@ -17,10 +17,10 @@ UVM_LOGDIR=${UVM_LOGDIR:-/var/log/uvm}
 UVM_RUNDIR=${UVM_RUNDIR:-/tmp}
 UVM_NICENESS=${UVM_NICENESS:-0}
 UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm}
-UVM_USER=${UVM_USER:-$USER}
+UVM_USER=${UVM_USER:-root}
 UVM_PID_FILE="/var/run/uvm.pid"
 UVM_STATUS_FILE="/var/run/uvm.status"
-UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER "
+UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER"
 UVM_TIMEOUT=300
 
 # if in the build
@@ -86,18 +86,12 @@ case "$1" in
     start)
         log_daemon_msg "Starting $DESC"
 
-        # This is a hack to not start during install phase
-        if grep -q mv_install /proc/cmdline ; then
-            echo "Skipping."
-            log_end_msg 0
-            exit
-        fi
-
-        if [ "`uvmStatus`" == "running" ] || [ "`uvmStatus`" == "launching" ] || [ "`uvmStatus`" == "booting" ]; then
-            echo "untangle-vm already running."
-		    log_end_msg 0
-            exit
-        fi
+        case $(uvmStatus) in
+	    running|launching|booting)
+                echo "untangle-vm already running."
+		log_end_msg 0
+		exit ;;
+        esac
         
         updateStatus "[" "Starting"
 
@@ -125,9 +119,10 @@ case "$1" in
                 updateStatusExit "x]\n" "Stopped"
             fi
 
-            if [ "`uvmStatus`" == "running" ] || [ "`uvmStatus`" == "starting" ]; then
-                break
-            fi
+            case $(uvmStatus) in
+	        running|starting)
+                    break ;;
+	    esac
 
             sleep 1
         done
@@ -145,7 +140,7 @@ case "$1" in
         done
 
         echo "x]"
-	    log_end_msg 0
+	log_end_msg 0
         ;;
 
     stop)
@@ -221,13 +216,13 @@ case "$1" in
 	    log_end_msg 0
         ;;
 
-    restart|force-reload)
+    restart|reload|force-reload)
         $0 stop
         $0 start
         ;;
 
     *)
-        echo "Usage: /etc/init.d/untangle-vm {start|stop|restart|force-reload}"
+        echo "Usage: /etc/init.d/untangle-vm {start|stop|restart|reload|force-reload}"
         exit
 esac
 

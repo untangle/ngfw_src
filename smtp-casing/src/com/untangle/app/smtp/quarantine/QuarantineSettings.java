@@ -49,6 +49,10 @@ public class QuarantineSettings implements Serializable
         return allowedAddressPatterns;
     }
 
+    /**
+     * Write allwowed address patterns.
+     * @param patterns List of EmailAddressRule.
+     */
     public void setAllowedAddressPatterns(List<EmailAddressRule> patterns)
     {
         if (patterns == null) {
@@ -164,16 +168,28 @@ public class QuarantineSettings implements Serializable
      * settings file.
      */
 
+    /**
+     * Return secret key.
+     * @return String of secret key.
+     */
     public String getSecretKey()
     {
         return (secretKey);
     }
 
+    /**
+     * return binary key.
+     * @return Array of byte of binary key.
+     */
     public byte[] grabBinaryKey()
     {
         return (binaryKey);
     }
 
+    /**
+     * Write secret key.
+     * @param key String of secret key.
+     */
     public void setSecretKey(String key)
     {
         // first we save the argumented key in our string version
@@ -191,6 +207,10 @@ public class QuarantineSettings implements Serializable
         }
     }
 
+    /**
+     * Write bnary key.
+     * @param key Array of byte of key.
+     */
     public void initBinaryKey(byte[] key)
     {
         // first we save the argumented key in our binary version
@@ -209,27 +229,38 @@ public class QuarantineSettings implements Serializable
         secretKey = local.toString();
     }
 
+    /**
+     * Return the longest period of time (in ms) that a mail may be interned before it is automagically purged.
+     * @return Length of time in ms.
+     */
     public long getMaxMailIntern()
     {
         return maxMailIntern;
     }
 
     /**
-     * Get the longest period of time (in ms) that a mail may be interned before it is automagically purged.
+     * Write the longest period of time (in ms) that a mail may be interned before it is automagically purged.
+     * @param max Length of time in ms.
      */
     public void setMaxMailIntern(long max)
     {
         maxMailIntern = max;
     }
 
+    /**
+     * Return the maximum relative time (in milliseconds) that inboxes can be idle before they are implicitly cleaned-up.
+     * This is a relative unit (ie "2 weeks")
+     * @return Max idle time in ms.
+     */
     public long getMaxIdleInbox()
     {
         return maxIdleInbox;
     }
 
     /**
-     * Set the maximum relative time (in milliseconds) that inboxes can be idle before they are implicitly cleaned-up.
+     * Write the maximum relative time (in milliseconds) that inboxes can be idle before they are implicitly cleaned-up.
      * This is a relative unit (ie "2 weeks")
+     * @param max Max idle time in ms.
      */
     public void setMaxIdleInbox(long max)
     {
@@ -237,7 +268,7 @@ public class QuarantineSettings implements Serializable
     }
 
     /**
-     * 
+     * Determine whether to send daily digests.
      * @return a boolean to determine whether to send daily digests
      */
     public boolean getSendDailyDigests()
@@ -247,6 +278,7 @@ public class QuarantineSettings implements Serializable
 
     /**
      * Set whether to send daily digests
+     * @param sendDailyDigests If true, send, otherwise do not.
      */
     public void setSendDailyDigests(boolean sendDailyDigests)
     {

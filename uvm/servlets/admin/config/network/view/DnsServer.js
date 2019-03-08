@@ -1,6 +1,8 @@
 Ext.define('Ung.config.network.view.DnsServer', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.network.dnsserver',
+    alias: 'widget.config-network-dns-server',
+    itemId: 'dns-server',
+    scrollable: true,
 
     viewModel: true,
 
@@ -14,13 +16,15 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
         title: 'Static DNS Entries'.t(),
 
-        tbar: ['@add'],
+        tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
+
+        emptyText: 'No Static DNS Entries defined'.t(),
 
         listProperty: 'settings.dnsSettings.staticEntries.list',
 
         emptyRow: {
-            name: '[no name]'.t(),
+            name: '',
             address: '1.2.3.4',
             javaClass: 'com.untangle.uvm.network.DnsStaticEntry'
         },
@@ -30,16 +34,18 @@ Ext.define('Ung.config.network.view.DnsServer', {
         columns: [{
             header: 'Name'.t(),
             dataIndex: 'name',
+            width: Renderer.hostnameWidth,
             flex: 1,
             editor: {
                 xtype: 'textfield',
                 allowBlank: false,
                 bind: '{record.name}',
+                maskRe: /[a-zA-Z0-9\-_.]/,
                 emptyText: '[enter name]'.t()
             }
         }, {
             header: 'Address'.t(),
-            width: 200,
+            width: Renderer.ipWidth,
             dataIndex: 'address',
             editor: {
                 xtype: 'textfield',
@@ -58,13 +64,15 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
         title: 'Domain DNS Servers'.t(),
 
-        tbar: ['@add'],
+        tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
+
+        emptyText: 'No Domain DNS Servers defined'.t(),
 
         listProperty: 'settings.dnsSettings.localServers.list',
 
         emptyRow: {
-            domain: '[no domain]'.t(),
+            domain: '',
             localServer: '1.2.3.4',
             javaClass: 'com.untangle.uvm.network.DnsLocalServer'
         },
@@ -74,16 +82,18 @@ Ext.define('Ung.config.network.view.DnsServer', {
         columns: [{
             header: 'Domain'.t(),
             dataIndex: 'domain',
+            width: Renderer.hostnameWidth,
             flex: 1,
             editor: {
                 xtype: 'textfield',
                 allowBlank: false,
                 emptyText: '[enter domain]'.t(),
+                maskRe: /[a-zA-Z0-9\-_.]/,
                 bind: '{record.domain}',
             }
         }, {
             header: 'Server'.t(),
-            width: 200,
+            width: Renderer.ipWidth,
             dataIndex: 'localServer',
             editor: {
                 xtype: 'textfield',
@@ -94,7 +104,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
             }
         }],
 
-        plugins: 'responsive',
+        // responsive plugin is added inside ungrid
         responsiveConfig: {
             wide: {
                 region: 'east',
@@ -102,7 +112,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
             },
             tall: {
                 region: 'south',
-                height: '50%',
+                height: '50%'
             }
         }
     }]

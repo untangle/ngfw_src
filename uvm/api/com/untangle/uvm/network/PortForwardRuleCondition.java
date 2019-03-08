@@ -13,7 +13,7 @@ import com.untangle.uvm.app.RuleCondition;
  * A PortForwardRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class PortForwardRuleCondition extends RuleCondition
+public class PortForwardRuleCondition extends RuleCondition implements java.io.Serializable, org.json.JSONString
 {
     public PortForwardRuleCondition( )
     {
@@ -28,5 +28,10 @@ public class PortForwardRuleCondition extends RuleCondition
     public PortForwardRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
+    }
+
+    public String toJSONString()
+    {
+        return (new org.json.JSONObject(this)).toString();
     }
 }

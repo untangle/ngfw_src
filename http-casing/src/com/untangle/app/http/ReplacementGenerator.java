@@ -13,7 +13,6 @@ import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.AppTCPSession;
 
@@ -38,48 +37,95 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     private static final Pattern IMAGE_PATTERN = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))", Pattern.CASE_INSENSITIVE);
 
     private final NonceFactory<T> nonceFactory = new NonceFactory<T>();
-    private final AppSettings appId;
+    private final AppSettings appSettings;
 
-    // constructors -----------------------------------------------------------
-
-    public ReplacementGenerator( AppSettings appId )
+    /**
+     * Create a ReplacementGenerator
+     * @param appSettings - the app settings for the blocking app
+     */
+    public ReplacementGenerator( AppSettings appSettings )
     {
-        this.appId = appId;
+        this.appSettings = appSettings;
     }
 
-    // public methods ---------------------------------------------------------
-
+    /**
+     * Generate a nonce
+     * @param o - the blockdetails
+     * @return the string nonce
+     */
     public String generateNonce( T o )
     {
         return nonceFactory.generateNonce(o);
     }
 
+    /**
+     * Get the BlockDetails for the specified nonce
+     * @param nonce
+     * @return the BlockDetails
+     */
     public T getNonceData( String nonce )
     {
         return nonceFactory.getNonceData(nonce);
     }
 
+    /**
+     * Remove the BlockDetails for the specified nonce
+     * @param nonce
+     * @return the BlockDetails
+     */
     public T removeNonce( String nonce )
     {
         return nonceFactory.removeNonce(nonce);
     }
 
+    /**
+     * Generate a response (as a token array)
+     * for the specified BlockDetails and session
+     * @param o - the BlockDetails
+     * @param session
+     * @return the token array
+     */
     public Token[] generateResponse( T o, AppTCPSession session )
     {
         return generateResponse(o, session, null, null );
     }
 
+    /**
+     * Generate a response (as a token array)
+     * for the specified BlockDetails and session
+     * @param o - the BlockDetails
+     * @param session
+     * @param uri
+     * @param requestHeader
+     * @return the token array
+     */
     public Token[] generateResponse( T o, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
         String n = generateNonce(o);
         return generateResponse(n, session, uri, requestHeader );
     }
 
+    /**
+     * Generate a response (as a token array)
+     * for the specified nonce and session
+     * @param nonce
+     * @param session
+     * @return the token array
+     */
     public Token[] generateResponse( String nonce, AppTCPSession session )
     {
         return generateResponse(nonce, session, null, null );
     }
 
+    /**
+     * Generate a response (as a token array)
+     * for the specified nonce and session
+     * @param nonce
+     * @param session
+     * @param uri
+     * @param requestHeader
+     * @return the token array
+     */
     public Token[] generateResponse( String nonce, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
         if (imagePreferred(uri, requestHeader)) {
@@ -101,23 +147,52 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         }
     }
 
+    /**
+     * Generate the "Simple" (text-only) response for the specified
+     * nonce and session
+     * @param nonce
+     * @param session
+     * @param uri
+     * @param requestHeader
+     * @return the token array
+     */
     public Token[] generateSimpleResponse( String nonce, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
         return generateSimplePage(nonce, imagePreferred(uri, requestHeader));
     }
     
-    // protected methods ------------------------------------------------------
-
+    /**
+     * getReplacement - must be overridden by final class
+     * @param data
+     * @return the string
+     */
     protected abstract String getReplacement( T data );
-    protected abstract String getRedirectUrl( String nonce, String host, AppSettings appId );
 
+    /**
+     * getRedirectUrl for the specified nonce and host
+     * must be overridden by final class
+     * @param nonce 
+     * @param host
+     * @param appSettings
+     * @return the URL
+     */
+    protected abstract String getRedirectUrl( String nonce, String host, AppSettings appSettings );
+
+    /**
+     * Get the AppSettings
+     * @return AppSettings
+     */
     protected AppSettings getAppSettings()
     {
-        return this.appId;
+        return this.appSettings;
     }
 
-    // private methods --------------------------------------------------------
-
+    /**
+     * Create a "simple" (text-only) replacement page for the specified nonce and gif
+     * @param nonce
+     * @param gif
+     * @return the token array
+     */
     private Token[] generateSimplePage( String nonce, boolean gif )
     {
         ChunkToken chunk;
@@ -151,6 +226,12 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return response;
     }
 
+    /**
+     * Create a redirect replacement page to redirect to a blockpage
+     * @param nonce
+     * @param host
+     * @return the token array
+     */
     private Token[] generateRedirect( String nonce, String host )
     {
         Token response[] = new Token[4];
@@ -159,7 +240,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         response[0] = sl;
 
         HeaderToken h = new HeaderToken();
-        h.addField("Location", getRedirectUrl(nonce, host, appId));
+        h.addField("Location", getRedirectUrl(nonce, host, appSettings));
         h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
         h.addField("Pragma", "no-cache");
         h.addField("Expires", "Mon, 10 Jan 2000 00:00:00 GMT");
@@ -175,6 +256,13 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return response;
     }
 
+    /**
+     * Returns true if an image is preferred in this case
+     * For blocked images we just return an image so the browser gets what it expects
+     * @param uri
+     * @param header
+     * @return true if image is preferred
+     */
     private boolean imagePreferred( String uri, HeaderToken header )
     {
         if (null != uri && IMAGE_PATTERN.matcher(uri).matches()) {

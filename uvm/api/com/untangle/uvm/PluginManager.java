@@ -3,11 +3,11 @@
  */
 package com.untangle.uvm;
 
-import java.io.File;
-
 public interface PluginManager
 {
     void loadPlugins();
 
-    void unloadPlugin( String className );
+    void unloadPlugin(String className);
+
+    Plugin getPlugin(String className);
 }

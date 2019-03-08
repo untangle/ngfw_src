@@ -1,15 +1,14 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
-import java.net.InetSocketAddress;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.event.EventSettings;
@@ -28,22 +27,37 @@ public class SyslogManagerImpl
     public static final String LOG_TAG = "uvm";
     public static final String LOG_TAG_PREFIX = LOG_TAG + "[0]: ";
 
-    private static final String RSYSLOG = "/etc/init.d/rsyslog";
     private static final File CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
     private static final String CONF_LINE = ":msg, startswith, \" " + LOG_TAG + "\\[\" @";
 
     private static boolean enabled;
 
-    private SyslogManagerImpl() { }
+    /**
+     * Constructor
+     */
+    private SyslogManagerImpl()
+    {
+    }
 
+    /**
+     * Get the syslog manager
+     * 
+     * @return The manager
+     */
     static SyslogManagerImpl manager()
     {
         return MANAGER;
     }
 
-    public static void sendSyslog( LogEvent e )
+    /**
+     * Send an event to the system log
+     * 
+     * @param e
+     *        The event
+     */
+    public static void sendSyslog(LogEvent e)
     {
-        if (!enabled){
+        if (!enabled) {
             return;
         }
 
@@ -55,17 +69,30 @@ public class SyslogManagerImpl
 
     }
 
+    /**
+     * Check for changes to the configuration file
+     * 
+     * @param settingsFilename
+     *        The settings file name
+     * @param eventSettings
+     *        The event settings
+     */
     public static void reconfigureCheck(String settingsFilename, EventSettings eventSettings)
     {
         File settingsFile = new File(settingsFilename);
 
-        if (settingsFile.lastModified() > CONF_FILE.lastModified()){
+        if (settingsFile.lastModified() > CONF_FILE.lastModified()) {
             reconfigure(eventSettings);
         }
         setEnabled(eventSettings);
-
     }
 
+    /**
+     * Reconfigure with new settings
+     * 
+     * @param eventSettings
+     *        The new settings
+     */
     public static void reconfigure(EventSettings eventSettings)
     {
         if (eventSettings != null && eventSettings.getSyslogEnabled()) {
@@ -76,8 +103,7 @@ public class SyslogManagerImpl
 
             // set rsylsog conf
             String conf = CONF_LINE;
-            if (protocol.equalsIgnoreCase("TCP"))
-            {
+            if (protocol.equalsIgnoreCase("TCP")) {
                 conf += "@";
             }
             conf += hostname + ":" + port;
@@ -90,12 +116,14 @@ public class SyslogManagerImpl
             } catch (IOException ex) {
                 logger.error("Unable to write file", ex);
                 return;
-            }
-            try {
-                out.close();
-            } catch (IOException ex) {
-                logger.error("Unable to close file", ex);
-                return;
+            } finally {
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
             }
         } else {
             // Remove rsyslog conf
@@ -105,14 +133,17 @@ public class SyslogManagerImpl
 
         // restart syslog
         File pidFile = new File("/var/run/rsyslogd.pid");
-        if (pidFile.exists())
-            UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
+        if (pidFile.exists()) UvmContextFactory.context().execManager().exec("systemctl restart rsyslog");
     }
-    
+
+    /**
+     * Set the enabled flag based on the event settings
+     * 
+     * @param eventSettings
+     *        The event settings
+     */
     public static void setEnabled(EventSettings eventSettings)
     {
-        enabled = 
-            ( eventSettings != null && eventSettings.getSyslogEnabled()) 
-            ? true : false;
+        enabled = (eventSettings != null && eventSettings.getSyslogEnabled()) ? true : false;
     }
 }

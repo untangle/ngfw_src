@@ -1,12 +1,16 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
+
+import java.io.Serializable;
 
 /**
  * Skin informations
  */
-public class SkinInfo
+@SuppressWarnings("serial")
+public class SkinInfo implements Serializable, org.json.JSONString
 {
     private String name = null;
     private String displayName = null;
@@ -56,4 +60,9 @@ public class SkinInfo
     public String getAppsViewType() { return appsViewType; }
     public void setAppsViewType(String appsViewType) { this.appsViewType = appsViewType; }
 
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }

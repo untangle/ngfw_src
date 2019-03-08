@@ -1,12 +1,17 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm.app;
 
 import java.io.Serializable;
+import org.json.JSONString;
 
+/**
+ * Class to manage an application metric
+ */
 @SuppressWarnings("serial")
-public class AppMetric implements Serializable
+public class AppMetric implements Serializable, JSONString
 {
     private String name;
     private String displayName;
@@ -40,5 +45,11 @@ public class AppMetric implements Serializable
     public String toString()
     {
         return "AppMetric[" + name + "] = " + value;
+    }
+    
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }

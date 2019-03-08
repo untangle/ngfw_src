@@ -80,6 +80,13 @@ public class MIMEAccumulator
         private ByteBuffer buf;
         private boolean writtenToFile = false;
 
+        /**
+         * Initialzie instance of MIMEChunkToken.
+         * @param  buf    ByteBuffer to initialize with.
+         * @param  isLast If true, this is the last chunk.
+         * @param  index  Index o this chunk.
+         * @return        Instance of MIMEChunkToken.
+         */
         private MIMEChunkToken(ByteBuffer buf, boolean isLast, int index)
         {
             this.isLast = isLast;
@@ -89,6 +96,7 @@ public class MIMEAccumulator
 
         /**
          * Does this chunk represent the end of the message. Such chunks may or may not {@link #hasData have data}.
+         * @return true if this is the last chunk, false otherwise.
          */
         public boolean isLast()
         {
@@ -97,6 +105,7 @@ public class MIMEAccumulator
 
         /**
          * Does this chunk have any data. Boundary cases in parsing mayt result in blank chunks.
+         * @return true if this chunk still has data, false otherwise.
          */
         public boolean hasData()
         {
@@ -108,6 +117,7 @@ public class MIMEAccumulator
          * returned. <br>
          * <br>
          * <b>If unparsing, please first consult {@link #shouldUnparse shouldUnparse}</b>
+         * @return ByteBuffer of data.
          */
         public ByteBuffer getData()
         {
@@ -116,22 +126,34 @@ public class MIMEAccumulator
 
         /**
          * Length of internal buffer. May be 0 is internal buffer is null
+         * @return length of buffer.
          */
         public int length()
         {
             return this.buf == null ? 0 : this.buf.remaining();
         }
 
+        /**
+         * Specify that this buffer was written to a file.
+         */
         private void writtenToFile()
         {
             this.writtenToFile = true;
         }
 
+        /**
+         * Return if buffer was written to file.
+         * @return If true, was written to file, otherwise false.
+         */
         private boolean isWrittenToFile()
         {
             return this.writtenToFile;
         }
 
+        /**
+         * Return index of buffer.
+         * @return Index of buffer.
+         */
         private int getIndex()
         {
             return this.index;
@@ -140,6 +162,7 @@ public class MIMEAccumulator
         /**
          * Test if this chunk should be unparsed. False will be returned if this was passed t0 "appendChunkTokenToFile" yet
          * the MIMEAccumulator has yet to be unparsed.
+         * @return if true, chunk should be unparsed, false otherwise.
          */
         public boolean shouldUnparse()
         {
@@ -148,6 +171,8 @@ public class MIMEAccumulator
 
         /**
          * Obviously only for deep debugging
+         * @param logger Logger to use.
+         * @param prefix Log message prefix.
          */
         public void superDebugMe(Logger logger, String prefix)
         {
@@ -155,11 +180,20 @@ public class MIMEAccumulator
             logger.debug(prefix + " " + toString() + " \"" + body + "\"");
         }
 
+        /**
+         * Compare accumulators.
+         * @param  ref MIMEAccumulator to check.
+         * @return     If true, same accumulator, false otherwise.
+         */
         private boolean isSameAccumulator(MIMEAccumulator ref)
         {
             return ref == MIMEAccumulator.this;
         }
 
+        /**
+         * Get string of index identifier.
+         * @return String of index.
+         */
         public String toString()
         {
             return "[CID:" + getIndex() + "]";
@@ -171,8 +205,8 @@ public class MIMEAccumulator
      * <br>
      * If exception thrown, no open files or descriptors are left.
      * 
-     * @param pipeline
-     *            the pipeline (for creating a temp file).
+     * @param session AppTCPSession to use.
+     * @throws IOException if unable to create temp file.
      */
     public MIMEAccumulator( AppTCPSession session ) throws IOException
     {
@@ -207,6 +241,7 @@ public class MIMEAccumulator
      *            the buffer (may be null)
      * @param isLast
      *            true if this is the last chunk in the MIME message
+     * @return MIMEChunkToken instance.
      */
     public MIMEAccumulator.MIMEChunkToken createChunkToken(ByteBuffer buf, boolean isLast)
     {
@@ -335,6 +370,7 @@ public class MIMEAccumulator
 
     /**
      * Get the length of the headers (in bytes) including any terminator (CRLF).
+     * @return length of headers.
      */
     public int getHeadersLength()
     {
@@ -381,6 +417,7 @@ public class MIMEAccumulator
 
     /**
      * Get the size of the underlying file (the number of bytes accumulated thus-far). This includes the header bytes
+     * @return Size of file.
      */
     public int fileSize()
     {
@@ -397,7 +434,8 @@ public class MIMEAccumulator
      * This method implicitly calls {@link #closeInput closeInput}. <br>
      * <br>
      * Null is returned if there is an error, but the caller is responsible for any cleanup.
-     * 
+     *
+     * @param messageInfo SmtpMessageEvent to process.
      * @return a parsed MIMEMEssage, or null if an error occured. If there is an error, it has been logged.
      */
     public MimeMessage parseBody(SmtpMessageEvent messageInfo)
@@ -493,7 +531,8 @@ public class MIMEAccumulator
 
     /**
      * Appends the bytes to the file
-     * 
+     *
+     * @param buf ByteBuffer to append.
      * @return false if there was an error
      */
     private boolean appendToFile(ByteBuffer buf)
@@ -513,6 +552,8 @@ public class MIMEAccumulator
 
     /**
      * Callback from a chunk to see if it should be unparsed.
+     * @param chunk MIMEChunkToken to parse.
+     * @return true if chunk hasn't been written to file, false ohtherwise.
      */
     private boolean shouldUnparseImpl(MIMEChunkToken chunk)
     {
@@ -525,6 +566,9 @@ public class MIMEAccumulator
         }
     }
 
+    /**
+     * Set unparsed to true.
+     */
     private void setUnparsed()
     {
         this.logger.debug("Unparsed at chunk " + this.greatestChunkTokenAppendedAndUnparsed);
@@ -533,6 +577,7 @@ public class MIMEAccumulator
 
     /**
      * Method which returns a new index for chunks.
+     * @return The next index.
      */
     private synchronized int nextIndex()
     {
@@ -541,6 +586,9 @@ public class MIMEAccumulator
 
     // ----------------- Inner Class -----------------------
 
+    /**
+     * Partial TCP streamer.
+     */
     private class PartialTCPStreamer implements TCPStreamer
     {
 
@@ -549,6 +597,10 @@ public class MIMEAccumulator
         private final ByteBuffer readBuf = ByteBuffer.allocate(CHUNK_SZ);
         private Logger logger = Logger.getLogger(MIMEAccumulator.PartialTCPStreamer.class);
 
+        /**
+         * Initialize instance of PartialTCPStreamer.
+         * @return PartialTCPStreamer.
+         */
         PartialTCPStreamer() {
             this.logger.debug("Created Partial MIME message streamer");
 
@@ -572,6 +624,9 @@ public class MIMEAccumulator
             }
         }
 
+        /**
+         * Close the accumulator.
+         */
         private void close()
         {
             try {
@@ -582,11 +637,19 @@ public class MIMEAccumulator
             this.fileInChannel = null;
         }
 
+        /**
+         * Close when done.
+         * @return Always return false.
+         */
         public boolean closeWhenDone()
         {
             return false;
         }
 
+        /**
+         * Return the next chunk.
+         * @return ByteBuffer of next chunk.
+         */
         public ByteBuffer nextChunk()
         {
             this.logger.debug("Next ChunkToken called");

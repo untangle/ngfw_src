@@ -1,19 +1,14 @@
 #!/bin/bash
 
 # stop the daemon first
-if [ -x /etc/init.d/ntp ] ; then
-   /etc/init.d/ntp stop	
-fi
+systemctl stop ntp	
 
 # force time sync now
 echo "Syncing time..."
 ntpd -q -g
 CODE=$?
 
-# stop the daemon first
-if [  -x /etc/init.d/ntp ] && [ `ls /etc/rc3.d/*ntp 2>/dev/null` ] ; then
-   /etc/init.d/ntp start	
-fi
+# start the daemon
+systemctl start ntp	
 
-#exit $CODE
 exit 0

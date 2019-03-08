@@ -82,7 +82,7 @@ static int  _netcap_tcp_setsockopt_srv ( int sock, int mark )
         .mark = MARK_BYPASS | mark
     };
     
-    if (setsockopt(sock, SOL_IP, IP_TRANSPARENT_VALUE(), &one, sizeof(one) )<0) 
+    if (setsockopt(sock,SOL_IP,IP_TRANSPARENT,&one,sizeof(one))<0) 
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_NODELAY,&one,sizeof(one))<0) 
         perrlog("setsockopt");

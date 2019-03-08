@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: SpamBlockerScanner.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
@@ -16,12 +16,15 @@ import com.untangle.app.spam_blocker.SpamReport;
 import com.untangle.app.spam_blocker.SpamScanner;
 import com.untangle.uvm.app.License;
 
+/**
+ * Implements the spam blocker scannner
+ */
 public class SpamBlockerScanner implements SpamScanner
 {
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String SPAM_SCANNER_USERNAME = "spamd";
-    
+
     private static final int timeout = 45000;
 
     private static int activeScanCount = 0;
@@ -30,15 +33,28 @@ public class SpamBlockerScanner implements SpamScanner
     private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty("uvm.bin.dir") + "/spam-blocker-get-last-update";
     private static final String GET_LAST_SIGNATURE_UPDATE_CHECK = System.getProperty("uvm.bin.dir") + "/spam-blocker-get-last-update-check";
 
+    /**
+     * Constructor
+     */
     public SpamBlockerScanner()
     {
     }
 
+    /**
+     * Get the vendor name
+     * 
+     * @return The vendor name
+     */
     public String getVendorName()
     {
         return "SpamBlocker";
     }
 
+    /**
+     * Get the active scan count
+     * 
+     * @return The active scan count
+     */
     public int getActiveScanCount()
     {
         synchronized (activeScanMonitor) {
@@ -46,6 +62,15 @@ public class SpamBlockerScanner implements SpamScanner
         }
     }
 
+    /**
+     * Called to scan a file
+     * 
+     * @param msgFile
+     *        The file to scan
+     * @param threshold
+     *        The spam score threshold
+     * @return The spam report
+     */
     public SpamReport scanFile(File msgFile, float threshold)
     {
         if (!isLicenseValid()) {
@@ -73,6 +98,11 @@ public class SpamBlockerScanner implements SpamScanner
         }
     }
 
+    /**
+     * Get the date of the last spam signature update
+     * 
+     * @return The date of the last spam signature update
+     */
     public Date getLastSignatureUpdate()
     {
         try {
@@ -86,6 +116,11 @@ public class SpamBlockerScanner implements SpamScanner
         }
     }
 
+    /**
+     * Get the date of the last signature update check
+     * 
+     * @return The date of the last signature update check
+     */
     public Date getLastSignatureUpdateCheck()
     {
         try {
@@ -99,18 +134,24 @@ public class SpamBlockerScanner implements SpamScanner
         }
     }
 
+    /**
+     * Get the spam signature version
+     * 
+     * @return
+     */
     public String getSignatureVersion()
     {
         /* This is currently not displayed in the UI or reports */
         return "";
     }
 
+    /**
+     * Checks to see if the license is valid
+     * 
+     * @return True if license is valid, otherwise false
+     */
     protected boolean isLicenseValid()
     {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SPAM_BLOCKER))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SPAM_BLOCKER_OLDNAME))
-            return true;
-        return false;
+        return UvmContextFactory.context().licenseManager().isLicenseValid(License.SPAM_BLOCKER);
     }
 }

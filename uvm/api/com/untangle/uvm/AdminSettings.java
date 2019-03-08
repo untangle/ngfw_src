@@ -21,9 +21,6 @@ public class AdminSettings implements Serializable, JSONString
 
     public AdminSettings() { }
 
-    /**
-     * Specifies a set of system administrators with login access to the system
-     */
     public LinkedList<AdminUserSettings> getUsers() { return users; }
     public void setUsers( LinkedList<AdminUserSettings> users ) { this.users = users; }
 

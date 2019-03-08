@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.virus_blocker;
 
 import java.io.Serializable;
@@ -24,6 +25,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.GlobUtil;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 
 /**
  * Virus handler for HTTP.
@@ -68,6 +70,9 @@ class VirusHttpHandler extends HttpEventHandler
 
     private VirusUrlCache<VirusUrlCacheKey, VirusUrlCacheEntry> urlCache = new VirusUrlCache<VirusUrlCacheKey, VirusUrlCacheEntry>();
 
+    /**
+     * Holds the Virus scanner HTTP state
+     */
     protected class VirusHttpState extends VirusBlockerState
     {
         private VirusFileManager fileManager = null;
@@ -78,11 +83,23 @@ class VirusHttpHandler extends HttpEventHandler
         private int totalSize;
     }
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The virus blocker base application
+     */
     protected VirusHttpHandler(VirusBlockerBaseApp app)
     {
         this.app = app;
     }
 
+    /**
+     * Handle new TCP sessions
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     public void handleTCPNewSession(AppTCPSession session)
     {
@@ -91,6 +108,15 @@ class VirusHttpHandler extends HttpEventHandler
         session.attach(state);
     }
 
+    /**
+     * Handle the request line
+     * 
+     * @param session
+     *        The session
+     * @param requestLine
+     *        The request line
+     * @return The request line
+     */
     @Override
     protected RequestLineToken doRequestLine(AppTCPSession session, RequestLineToken requestLine)
     {
@@ -99,6 +125,15 @@ class VirusHttpHandler extends HttpEventHandler
         return requestLine;
     }
 
+    /**
+     * Handle the request header
+     * 
+     * @param session
+     *        The session
+     * @param requestHeader
+     *        The request header
+     * @return The request header
+     */
     @Override
     protected HeaderToken doRequestHeader(AppTCPSession session, HeaderToken requestHeader)
     {
@@ -111,10 +146,9 @@ class VirusHttpHandler extends HttpEventHandler
             RequestLineToken requestLine = getRequestLine(session);
             if (requestLine != null) state.host = requestLine.getRequestUri().normalize().getHost();
         }
-        if (state.uri == null) {
-            RequestLineToken requestLine = getRequestLine(session);
-            if (requestLine != null) state.uri = requestLine.getRequestUri().normalize().getPath();
-        }
+        RequestLineToken requestLineToken = getRequestLine(session);
+        if (requestLineToken != null) state.uri = requestLineToken.getRequestUri().normalize().getPath();
+        else state.uri = "";
 
         if (!ignoredHost(state.host)) {
             String virusName = lookupCache(state.host, state.uri);
@@ -129,7 +163,7 @@ class VirusHttpHandler extends HttpEventHandler
                 blockRequest(session, response);
 
                 RequestLine requestLine = getRequestLine(session).getRequestLine();
-                app.logEvent(new VirusHttpEvent(requestLine, false, virusName, app.getName()));
+                app.logEvent(new VirusHttpEvent(requestLine, session.sessionEvent(), false, virusName, app.getName()));
 
                 return requestHeader;
             }
@@ -139,23 +173,56 @@ class VirusHttpHandler extends HttpEventHandler
         return requestHeader;
     }
 
+    /**
+     * Handle the request body
+     * 
+     * @param session
+     *        The session
+     * @param chunk
+     *        The chunk
+     * @return The chunk
+     */
     @Override
     protected ChunkToken doRequestBody(AppTCPSession session, ChunkToken chunk)
     {
         return chunk;
     }
 
+    /**
+     * Handle the request body end
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     protected void doRequestBodyEnd(AppTCPSession session)
     {
     }
 
+    /**
+     * Handle the status line
+     * 
+     * @param session
+     *        The session
+     * @param statusLine
+     *        The status line
+     * @return The status line
+     */
     @Override
     protected StatusLine doStatusLine(AppTCPSession session, StatusLine statusLine)
     {
         return statusLine;
     }
 
+    /**
+     * Handle the response header
+     * 
+     * @param session
+     *        The session
+     * @param header
+     *        The header
+     * @return The header
+     */
     @Override
     protected HeaderToken doResponseHeader(AppTCPSession session, HeaderToken header)
     {
@@ -168,22 +235,22 @@ class VirusHttpHandler extends HttpEventHandler
         logger.debug("content-disposition: " + contentDisposition);
         String mimeType = header.getValue("content-type");
         logger.debug("content-type: " + mimeType);
-        String contentDispositionFilename = findContentDispositionFilename(header);
+        String contentDispositionFilename = (String) session.globalAttachment(AppSession.KEY_HTTP_RESPONSE_FILE_NAME);
         logger.debug("content-disposition filename: " + contentDispositionFilename);
 
-        if ( rl == null || rl.getMethod() == HttpMethod.HEAD ) {
+        if (rl == null || rl.getMethod() == HttpMethod.HEAD) {
             logger.debug("CONTINUE or HEAD");
             state.scan = false;
-        } else if ( ignoredHost(state.host) ) {
+        } else if (ignoredHost(state.host)) {
             logger.debug("ignoring content from: " + state.host);
             state.scan = false;
-        } else if ( matchesExtension(state.uri) ) {
+        } else if (matchesExtension(state.uri)) {
             logger.debug("matches uri-extension");
             state.scan = true;
-        } else if ( matchesExtension(contentDispositionFilename) ) {
+        } else if (matchesExtension(contentDispositionFilename)) {
             logger.debug("matched file-extension");
             state.scan = true;
-        } else if ( matchesMimeType(mimeType) ) {
+        } else if (matchesMimeType(mimeType)) {
             logger.debug("matched mime-type");
             state.scan = true;
         } else {
@@ -203,6 +270,15 @@ class VirusHttpHandler extends HttpEventHandler
         return header;
     }
 
+    /**
+     * Handle the response body
+     * 
+     * @param session
+     *        The session
+     * @param chunk
+     *        The chunk
+     * @return The chunk
+     */
     @Override
     protected ChunkToken doResponseBody(AppTCPSession session, ChunkToken chunk)
     {
@@ -210,6 +286,12 @@ class VirusHttpHandler extends HttpEventHandler
         return state.scan ? bufferOrTrickle(session, chunk) : chunk;
     }
 
+    /**
+     * Handle the response body end
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     protected void doResponseBodyEnd(AppTCPSession session)
     {
@@ -228,6 +310,12 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
+    /**
+     * Scan a file
+     * 
+     * @param session
+     *        The session
+     */
     private void scanFile(AppTCPSession session)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
@@ -250,7 +338,7 @@ class VirusHttpHandler extends HttpEventHandler
         }
 
         RequestLine requestLine = getResponseRequest(session).getRequestLine();
-        app.logEvent(new VirusHttpEvent(requestLine, result.isClean(), result.getVirusName(), app.getName()));
+        app.logEvent(new VirusHttpEvent(requestLine, session.sessionEvent(), result.isClean(), result.getVirusName(), app.getName()));
 
         if (result.isClean()) {
             app.incrementPassCount();
@@ -287,6 +375,13 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
+    /**
+     * Check for extension match
+     * 
+     * @param filename
+     *        The file
+     * @return True for match, otherwise false
+     */
     private boolean matchesExtension(String filename)
     {
         if (filename == null) return false;
@@ -301,6 +396,13 @@ class VirusHttpHandler extends HttpEventHandler
         return false;
     }
 
+    /**
+     * Check for mime type match
+     * 
+     * @param mimeType
+     *        The mime type
+     * @return True for match, otherwise false
+     */
     private boolean matchesMimeType(String mimeType)
     {
         int longestMatch = 0;
@@ -346,6 +448,12 @@ class VirusHttpHandler extends HttpEventHandler
         return false;
     }
 
+    /**
+     * Setup a temporary file to hold the content to be scanned
+     * 
+     * @param session
+     *        The session
+     */
     private void setupFile(AppTCPSession session)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
@@ -369,12 +477,27 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
+    /**
+     * Handle TCP finalized
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     public void handleTCPFinalized(AppTCPSession session)
     {
         session.cleanupTempFiles();
     }
 
+    /**
+     * Buffer or trickle content data
+     * 
+     * @param session
+     *        The session
+     * @param chunk
+     *        The chunk
+     * @return The chunk
+     */
     private ChunkToken bufferOrTrickle(AppTCPSession session, ChunkToken chunk)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
@@ -426,6 +549,13 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
+    /**
+     * Trickle content data
+     * 
+     * @param session
+     *        The session
+     * @return The chunk
+     */
     private ChunkToken trickle(AppTCPSession session)
     {
         if (logger.isDebugEnabled()) {
@@ -463,6 +593,13 @@ class VirusHttpHandler extends HttpEventHandler
         return new ChunkToken(inbuf);
     }
 
+    /**
+     * Get the keep-alive flag from the header
+     * 
+     * @param header
+     *        The header
+     * @return The keep-alive flag
+     */
     @SuppressWarnings("unused")
     private boolean isPersistent(HeaderToken header)
     {
@@ -470,6 +607,13 @@ class VirusHttpHandler extends HttpEventHandler
         return con == null ? false : con.equalsIgnoreCase("keep-alive");
     }
 
+    /**
+     * Check a host against the ignore list
+     * 
+     * @param host
+     *        The host to check
+     * @return True if ignored, otherwise false
+     */
     private boolean ignoredHost(String host)
     {
         if (host == null) {
@@ -500,6 +644,13 @@ class VirusHttpHandler extends HttpEventHandler
 
     /**
      * Add a cache result to the url cache Only positive results can be cached
+     * 
+     * @param host
+     *        The host
+     * @param uri
+     *        The URI
+     * @param virusName
+     *        The virus name
      */
     private void addCache(String host, String uri, String virusName)
     {
@@ -516,8 +667,15 @@ class VirusHttpHandler extends HttpEventHandler
     }
 
     /**
+     * 
      * Lookup a virus result from the url cache returns the virus name if its a
      * known virus or null
+     * 
+     * @param host
+     *        The host
+     * @param uri
+     *        The URI
+     * @return The cached virus name or null if not known
      */
     private String lookupCache(String host, String uri)
     {
@@ -548,18 +706,34 @@ class VirusHttpHandler extends HttpEventHandler
     {
         private static final int MAX_ENTRIES = 500;
 
+        /**
+         * Removed the oldest entry
+         * 
+         * @param eldest
+         * @return Result
+         */
         protected boolean removeEldestEntry(Map.Entry<K, V> eldest)
         {
             return size() > MAX_ENTRIES;
         }
     }
 
+    /**
+     * Virus URL Cache Key
+     */
     @SuppressWarnings("serial")
     private class VirusUrlCacheKey implements Serializable
     {
         protected String host;
         protected String uri;
 
+        /**
+         * Compare with an object
+         * 
+         * @param o2
+         *        The object for comparison
+         * @return True if equal, otherwise false
+         */
         public boolean equals(Object o2)
         {
             if (!(o2 instanceof VirusUrlCacheKey)) {
@@ -575,6 +749,11 @@ class VirusHttpHandler extends HttpEventHandler
             return true;
         }
 
+        /**
+         * Get the hash code
+         * 
+         * @return The hash code
+         */
         public int hashCode()
         {
             int hashCode1 = (host == null ? 1 : host.hashCode());
@@ -584,6 +763,9 @@ class VirusHttpHandler extends HttpEventHandler
 
     }
 
+    /**
+     * Virus URL Cache Entry
+     */
     @SuppressWarnings("serial")
     private class VirusUrlCacheEntry implements Serializable
     {
@@ -591,6 +773,9 @@ class VirusHttpHandler extends HttpEventHandler
         protected long creationTimeMillis;
     }
 
+    /**
+     * Clear the event handler cache
+     */
     protected void clearEventHandlerCache()
     {
         logger.debug("urlCache clear: removing " + urlCache.size() + " items");

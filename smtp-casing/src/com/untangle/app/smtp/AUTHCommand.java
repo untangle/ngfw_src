@@ -12,6 +12,13 @@ public class AUTHCommand extends Command
     private String m_mechanismName;
     private String m_initialResponse;
 
+    /**
+     * Initialize auth command.
+     * 
+     * @param  cmdStr String containing the command.
+     * @param  argStr String containing argumnts.
+     * @return        Instance of AuthCommand.
+     */
     public AUTHCommand(String cmdStr, String argStr)
     {
         super(CommandType.AUTH, cmdStr, argStr);
@@ -20,6 +27,8 @@ public class AUTHCommand extends Command
 
     /**
      * Get the name of the SASL mechanism.
+     *
+     * @return Name of the SASL mechianism.
      */
     public String getMechanismName()
     {
@@ -28,12 +37,19 @@ public class AUTHCommand extends Command
 
     /**
      * Note that the initial "response" (dumb name, but from the spec) is still base64 encoded.
+     *
+     * @return Return base64 encoded reponse.
      */
     public String getInitialResponse()
     {
         return m_initialResponse;
     }
 
+    /**
+     * Parse the argument.
+     * 
+     * @param argStr Argument string to parse.
+     */
     @Override
     protected void setArgStr(String argStr)
     {
@@ -41,6 +57,9 @@ public class AUTHCommand extends Command
         parseArgStr();
     }
 
+    /**
+     * Parse the argument string into mechanism and reponnse if space is found.
+     */
     private void parseArgStr()
     {
         String argStr = getArgString();

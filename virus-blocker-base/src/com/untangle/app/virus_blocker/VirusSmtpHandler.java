@@ -1,13 +1,13 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.virus_blocker;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.net.InetAddress;
 
 import javax.activation.DataHandler;
@@ -51,12 +51,21 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
     private final WrappedMessageGenerator generator;
 
+    /**
+     * Hold the virus blocker state
+     */
     protected class VirusSmtpState extends VirusBlockerState
     {
         private VirusFileManager fileManager = null;
         private boolean memoryMode = false;
     }
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The virus blocker base application
+     */
     public VirusSmtpHandler(VirusBlockerBaseApp app)
     {
         super();
@@ -69,30 +78,63 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
     }
 
+    /**
+     * Get scanning enabled flag
+     * 
+     * @param session
+     *        The session
+     * @return The enabled flag
+     */
     @Override
     public boolean getScanningEnabled(AppTCPSession session)
     {
         return app.getSettings().getScanSmtp();
     }
 
+    /**
+     * Get maximum server wait time
+     * 
+     * @param session
+     *        The session
+     * @return Maximum server wait time
+     */
     @Override
     public long getMaxServerWait(AppTCPSession session)
     {
         return timeout;
     }
 
+    /**
+     * Get maximum client wait time
+     * 
+     * @param session
+     *        The session
+     * @return Maximum client wait time
+     */
     @Override
     public long getMaxClientWait(AppTCPSession session)
     {
         return timeout;
     }
 
+    /**
+     * Get give up size
+     * 
+     * @param session
+     *        The session
+     * @return The give up size
+     */
     @Override
     public int getGiveUpSz(AppTCPSession session)
     {
         return Integer.MAX_VALUE;
     }
 
+    /**
+     * Get the translated body template
+     * 
+     * @return The translated body template
+     */
     @Override
     public String getTranslatedBodyTemplate()
     {
@@ -102,12 +144,30 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         return bodyTemplate;
     }
 
+    /**
+     * Get the translated subject template
+     * 
+     * @return The translated subject template
+     */
     @Override
     public String getTranslatedSubjectTemplate()
     {
         return MOD_SUB_TEMPLATE;
     }
 
+    /**
+     * Scan a message and generate a result
+     * 
+     * @param session
+     *        The session
+     * @param msg
+     *        The message
+     * @param tx
+     *        The transaction
+     * @param msgInfo
+     *        The message info
+     * @return The scanned message result
+     */
     @Override
     public ScannedMessageResult blockPassOrModify(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
@@ -216,6 +276,19 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         return new ScannedMessageResult(BlockOrPassResult.PASS);
     }
 
+    /**
+     * Scan a message and generate a result
+     * 
+     * @param session
+     *        The session
+     * @param msg
+     *        The message to scan
+     * @param tx
+     *        The transaction
+     * @param msgInfo
+     *        The message info
+     * @return The scanned message result
+     */
     @Override
     public BlockOrPassResult blockOrPass(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
@@ -312,6 +385,15 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         return BlockOrPassResult.PASS;
     }
 
+    /**
+     * Determine if an extension is allowed
+     * 
+     * @param extension
+     *        The extension
+     * @param session
+     *        The session
+     * @return True if allowed, otherwise false
+     */
     @Override
     protected boolean isAllowedExtension(String extension, AppTCPSession session)
     {
@@ -326,6 +408,15 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
     }
 
+    /**
+     * Determine if a command is allowed
+     * 
+     * @param command
+     *        The command
+     * @param session
+     *        The session
+     * @return True if allowed, otherwise false
+     */
     @Override
     protected boolean isAllowedCommand(String command, AppTCPSession session)
     {
@@ -340,7 +431,13 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     /**
-     * Returns null if there was an error.
+     * Scan a MIME part
+     * 
+     * @param session
+     *        The session
+     * @param part
+     *        The part to scan
+     * @return The scan result or null if there was an error
      */
     private VirusScannerResult scanPart(AppTCPSession session, Part part)
     {
@@ -373,6 +470,15 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
     }
 
+    /**
+     * Write a MIME part to a file
+     * 
+     * @param session
+     *        The session
+     * @param part
+     *        The part to write
+     * @return The state or null if there was an error
+     */
     private VirusSmtpState partToFile(AppTCPSession session, Part part)
     {
         VirusSmtpState state = new VirusSmtpState();
@@ -407,6 +513,13 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
     }
 
+    /**
+     * Check for ignored host
+     * 
+     * @param host
+     *        The host to check
+     * @return True if ignored, otherwise false
+     */
     private boolean ignoredHost(InetAddress host)
     {
         if (host == null) {
@@ -438,6 +551,15 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         return false;
     }
 
+    /**
+     * Check if content should be scanned
+     * 
+     * @param disposition
+     *        The disposition
+     * @param contentType
+     *        The content type
+     * @return True if it should be scanned, otherwise false
+     */
     private boolean shouldScan(String disposition, String contentType)
     {
         if (disposition != null) {
@@ -452,6 +574,9 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         return false;
     }
 
+    /**
+     * Clare the event handler cache
+     */
     protected void clearEventHandlerCache()
     {
     }

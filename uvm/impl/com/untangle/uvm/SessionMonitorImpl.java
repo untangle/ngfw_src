@@ -1,38 +1,33 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm;
 
 import java.util.List;
-import java.util.Arrays;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.net.InetAddress;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SessionMonitor;
-import com.untangle.uvm.UvmState;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.SessionEvent;
-import com.untangle.uvm.network.InterfaceSettings;
 
 /**
- * SessionMonitor is a utility class that provides some convenient functions
- * to monitor and view current sessions and state existing in the untangle-vm
- *
+ * SessionMonitor is a utility class that provides some convenient
+ * functions to monitor and view current sessions and state existing
+ * in the untangle-vm
  * This is used by the UI to display state
  */
 public class SessionMonitorImpl implements SessionMonitor
@@ -41,66 +36,38 @@ public class SessionMonitorImpl implements SessionMonitor
 
     public static final short PROTO_TCP = 6;
     public static final short PROTO_UDP = 17;
-    
+
     private static ExecManager execManager = null;
-    
+
     UvmContext uvmContext;
-    
+
+    /**
+     * SessionMonitorImpl constructor
+     */
     public SessionMonitorImpl ()
     {
         SessionMonitorImpl.execManager = UvmContextFactory.context().createExecManager();
         uvmContext = UvmContextFactory.context();
     }
 
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int appId)
-    {
-        /**
-         * Find the the system interface name that matches this ID
-         */
-        try {
-            int interfaceId = Integer.parseInt(interfaceIdStr);
-            InterfaceSettings intf = uvmContext.networkManager().findInterfaceId( interfaceId );
-            
-            if (intf == null) {
-                logger.warn( "Unabled to find interface " + interfaceId );
-                return null;
-            }
-            
-            String systemName = intf.getSystemDev();
-            return _getMergedBandwidthSessions(systemName);
-
-        } catch (Exception e) {
-            logger.warn("Unable to retrieve sessions",e);
-            return null;
-        }
-    }
-    
     /**
-     * documented in SessionMonitor.java
-     */
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr)
-    {
-        return getMergedBandwidthSessions(interfaceIdStr, 0);
-    }
-
-    /**
-     * documented in SessionMonitor.java
-     */
-    public List<SessionMonitorEntry> getMergedBandwidthSessions()
-    {
-        return getMergedBandwidthSessions("0");
-    }
-
-    /**
-     * documented in SessionMonitor.java
+     * This returns a list of descriptors for all sessions in the conntrack table
+     * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
+     * such as policy
+     * @return list
      */
     public List<SessionMonitorEntry> getMergedSessions()
     {
         return getMergedSessions(0);
     }
-    
+
     /**
-     * documented in SessionMonitor.java
+     * This returns a list of descriptors for all sessions in the conntrack table
+     * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
+     * such as policy. This only lists sessions being processed by the given appId
+     * If appId == 0, then getMergedSessions() is returned
+     * @param appId
+     * @return list
      */
     public List<SessionMonitorEntry> getMergedSessions(long appId)
     {
@@ -113,20 +80,12 @@ public class SessionMonitorImpl implements SessionMonitor
         if (app != null)
             appSessions = app.liveAppSessions();
 
-        for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
+        for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {
             SessionMonitorEntry session = i.next();
 
-            session.setPolicy("");             
+            session.setPolicy("");
             if (session.getClientIntf() == null || session.getClientIntf() == 0 ) {
                 session.setClientIntf(Integer.valueOf(-1));
-            } else {
-                if ( UvmContextFactory.context().networkManager().isWanInterface( session.getClientIntf() ) ) {
-                    session.setLocalAddr( session.getPostNatServer() );
-                    session.setRemoteAddr( session.getPreNatClient() );
-                } else {
-                    session.setLocalAddr( session.getPreNatClient() );
-                    session.setRemoteAddr( session.getPostNatServer() );
-                }
             }
             if ( session.getServerIntf() == null || session.getServerIntf() == 0 ) {
                 session.setServerIntf(Integer.valueOf(-1));
@@ -134,7 +93,7 @@ public class SessionMonitorImpl implements SessionMonitor
             if ( session.getHostname() == null || session.getHostname().length() == 0 ) {
                 session.setHostname( SessionEvent.determineBestHostname( session.getPreNatClient(), session.getClientIntf(), session.getPostNatServer(), session.getServerIntf() ) );
             }
-            session.setPriority(session.getQosPriority()); 
+            session.setPriority(session.getQosPriority());
 
             SessionTuple tuple = _makeTuple( session );
             // find corresponding session in UVM
@@ -151,7 +110,7 @@ public class SessionMonitorImpl implements SessionMonitor
                 session.setServerKBps( conntrackState.s2cRateBps/1000.0f );
                 session.setTotalKBps( conntrackState.totalRateBps/1000.0f );
             }
-            
+
             if ( sessionState != null ) {
                 try {
                     int priority = sessionState.netcapSession().clientQosMark();
@@ -161,12 +120,12 @@ public class SessionMonitorImpl implements SessionMonitor
                     NetcapHook hook = sessionState.netcapHook();
                     if (hook == null)
                         continue;
-                        
+
                     Integer policyId = hook.getPolicyId();
                     if (policyId == null)
                         session.setPolicy("");
                     else
-                        session.setPolicy(policyId.toString()); 
+                        session.setPolicy(policyId.toString());
 
                     session.setSessionId(sessionState.id());
                     session.setCreationTime(sessionState.getCreationTime());
@@ -175,18 +134,19 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setClientIntf(new Integer(sessionState.getClientIntf()));
                     session.setServerIntf(new Integer(sessionState.getServerIntf()));
                     session.setHostname(sessionState.getSessionEvent().getHostname());
+                    session.setUsername(sessionState.getSessionEvent().getUsername());
 
                     session.setClientCountry(sessionState.getSessionEvent().getClientCountry());
-                    session.setClientLatitude(sessionState.getSessionEvent().getClientLatitude());                    
+                    session.setClientLatitude(sessionState.getSessionEvent().getClientLatitude());
                     session.setClientLongitude(sessionState.getSessionEvent().getClientLongitude());
 
                     session.setServerCountry(sessionState.getSessionEvent().getServerCountry());
-                    session.setServerLatitude(sessionState.getSessionEvent().getServerLatitude());                    
-                    session.setServerLongitude(sessionState.getSessionEvent().getServerLongitude());                    
+                    session.setServerLatitude(sessionState.getSessionEvent().getServerLatitude());
+                    session.setServerLongitude(sessionState.getSessionEvent().getServerLongitude());
 
                     session.setTags(sessionState.getTags());
                     session.setTagsString(sessionState.getTagsString());
-                    
+
                     /**
                      * The conntrack entry shows that this session has been redirect to the local host
                      * We need to overwrite that with the correct info
@@ -227,6 +187,14 @@ public class SessionMonitorImpl implements SessionMonitor
                 // session.setBypassed(Boolean.TRUE);
             }
 
+            if ( UvmContextFactory.context().networkManager().isWanInterface( session.getClientIntf() ) ) {
+                session.setLocalAddr( session.getPostNatServer() );
+                session.setRemoteAddr( session.getPreNatClient() );
+            } else {
+                session.setLocalAddr( session.getPreNatClient() );
+                session.setRemoteAddr( session.getPostNatServer() );
+            }
+
             /**
              * Ignore sessions to 192.0.2.200
              */
@@ -256,7 +224,7 @@ public class SessionMonitorImpl implements SessionMonitor
          * If a appId was specified remove all sessions not being touched by that appId
          */
         if ( appSessions != null ) {
-            for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
+            for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {
                 SessionMonitorEntry entry = i.next();
                 Long sessionId = entry.getSessionId();
                 boolean found = false;
@@ -276,6 +244,8 @@ public class SessionMonitorImpl implements SessionMonitor
 
     /**
      * Retrieve the session stats (but not the sessions themselves)
+     * This is a JSON object with some keys to store values such as totalSessions, scannedSession, etc.
+     * @return JSONObject
      */
     public org.json.JSONObject getSessionStats()
     {
@@ -317,86 +287,56 @@ public class SessionMonitorImpl implements SessionMonitor
     }
 
     /**
-     * Returns a fully merged list for the given interface
-     * systemIntfName is the system interface (example: "eth0")
-     * This takes 5 seconds to gather data before it returns
+     * Retrieve the session stats by policy id
+     * This is a JSON object which has policy ids as keys and sessions count, total kbps for each policy
+     * @return JSONObject
      */
-    private List<SessionMonitorEntry> _getMergedBandwidthSessions(String systemIntfName)
+    public org.json.JSONObject getPoliciesSessionsStats()
     {
-        List<SessionMonitorEntry> jnettopSessions = _getJnettopSessionMonitorEntrys(systemIntfName);
-        List<SessionMonitorEntry> sessions = this.getMergedSessions();
+        List<SessionMonitorEntry> sessions = getMergedSessions();
+        org.json.JSONObject json = new org.json.JSONObject();
 
-        HashMap<SessionTuple,SessionMonitorEntry> map = new HashMap<SessionTuple,SessionMonitorEntry>();
-        for (SessionMonitorEntry entry : jnettopSessions) {
-            SessionTuple tuple = _makeTuple( entry.getProtocol(),
-                                                 0,
-                                                 0,
-                                                 entry.getPreNatClient(),
-                                                 entry.getPreNatServer(),
-                                                 entry.getPreNatClientPort(),
-                                                 entry.getPreNatServerPort());
-            
-            map.put( tuple, entry );
+        Map<String, Float> totals = new HashMap<String,Float>();
+        Map<String, Integer> counts = new HashMap<String, Integer>();
+
+        try {
+            if ( sessions != null ) {
+                for (SessionMonitorEntry entry: sessions) {
+                    if ( entry == null ) continue;
+                    String policy = entry.getPolicy();
+                    if ( policy != null ) {
+                        if ( totals.containsKey(policy)) {
+                            Float existing = totals.get(policy);
+                            totals.put(policy, entry.getTotalKBps() != null ? existing + entry.getTotalKBps() : existing);
+                        } else
+                            totals.put(policy, entry.getTotalKBps() != null ? entry.getTotalKBps() : 0.0f);
+                        if ( counts.containsKey(policy)) {
+                            Integer existing = counts.get(policy);
+                            counts.put(policy, existing + 1);
+                        } else
+                            counts.put(policy, 1);
+                    }
+                }
+
+                for (String key: totals.keySet()) {
+                    org.json.JSONObject entry = new org.json.JSONObject();
+                    entry.put("totalKbps", totals.get(key));
+                    entry.put("sessionCount", counts.get(key));
+                    json.put(key, entry);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error generating session stats by", e);
         }
 
-        for (SessionMonitorEntry session : sessions) {
-            
-            session.setClientKBps(Float.valueOf(0.0f));
-            session.setServerKBps(Float.valueOf(0.0f));
-            session.setTotalKBps(Float.valueOf(0.0f));
-
-            SessionTuple a = _makeTuple(session.getProtocol(), session.getClientIntf(), session.getServerIntf(),
-                                        session.getPreNatClient(),session.getPreNatServer(),
-                                        session.getPreNatClientPort(),session.getPreNatServerPort());
-            SessionTuple b = _makeTuple(session.getProtocol(), session.getClientIntf(), session.getServerIntf(),
-                                        session.getPreNatServer(),session.getPreNatClient(),
-                                        session.getPreNatServerPort(),session.getPreNatClientPort());
-            SessionTuple c = _makeTuple(session.getProtocol(), session.getClientIntf(), session.getServerIntf(),
-                                        session.getPostNatClient(),session.getPostNatServer(),
-                                        session.getPostNatClientPort(),session.getPostNatServerPort());
-            SessionTuple d = _makeTuple(session.getProtocol(), session.getClientIntf(), session.getServerIntf(),
-                                        session.getPostNatServer(),session.getPostNatClient(),
-                                        session.getPostNatServerPort(),session.getPostNatClientPort());
-
-            SessionMonitorEntry matchingEntry = null;
-            if ( matchingEntry == null ) {
-                matchingEntry = map.remove(a);
-            }
-            if ( matchingEntry == null ) {
-                matchingEntry = map.remove(b);
-            }
-            if ( matchingEntry == null ) {
-                matchingEntry = map.remove(c);
-            }
-            if ( matchingEntry == null ) {
-                matchingEntry = map.remove(d);
-            }
-
-            if ( matchingEntry == null ) {
-                logger.debug("Session not found in jnettop: " +
-                             session.getPreNatClient() + ":" + session.getPreNatClientPort() + " -> " + session.getPreNatServer() + ":" + session.getPreNatServerPort() + "  |  " +
-                             session.getPostNatClient() + ":" + session.getPostNatClientPort() + " -> " + session.getPostNatServer() + ":" + session.getPostNatServerPort());
-            } else {
-                session.setClientKBps(matchingEntry.getClientKBps());
-                session.setServerKBps(matchingEntry.getServerKBps());
-                session.setTotalKBps(matchingEntry.getTotalKBps());
-            }
-        }
-
-        // check for sessions that jnettop found that but we were unable to locate the corresponding conntrack/uvm session
-        for (SessionMonitorEntry session : map.values()) {
-            logger.warn("Unused jnettop session : " +
-                        session.getPreNatClient() + ":" + session.getPreNatClientPort() + " -> " + session.getPreNatServer() + ":" + session.getPreNatServerPort() + "  | " +
-                        session.getTotalKBps() + "KB/s");
-                
-        }
-        
-        return sessions;
+        return json;
     }
 
     /**
      * This returns a list of sessions and bandwidth usages reported by jnettop over 5 seconds
      * This takes 5 seconds to gather data before it returns
+     * @param systemIntfName
+     * @return list
      */
     @SuppressWarnings("unchecked") //JSON
     private List<SessionMonitorEntry> _getJnettopSessionMonitorEntrys(String systemIntfName)
@@ -407,21 +347,33 @@ public class SessionMonitorImpl implements SessionMonitor
             String output = SessionMonitorImpl.execManager.execOutput(execStr);
             List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
             return entryList;
-            
+
         } catch (org.jabsorb.serializer.UnmarshallException exc) {
             logger.error("Unable to read jnettop - invalid JSON",exc);
             return null;
         }
     }
-    
+
     /**
      * This returns a list of descriptors for all sessions in the conntrack table
+     * @return list
      */
     private List<SessionMonitorEntry> _getConntrackSessionMonitorEntrys()
     {
         return parseProcNetIpConntrack();
     }
 
+    /**
+     * Make a SessionTuple
+     * @param protocolStr
+     * @param clientIntf
+     * @param serverIntf
+     * @param preNatClient
+     * @param preNatServer
+     * @param preNatClientPort
+     * @param preNatServerPort
+     * @return SessionTuple
+     */
     private SessionTuple _makeTuple( String protocolStr, int clientIntf, int serverIntf, InetAddress preNatClient, InetAddress preNatServer, int preNatClientPort, int preNatServerPort )
     {
         short protocol;
@@ -436,6 +388,11 @@ public class SessionMonitorImpl implements SessionMonitor
         return new SessionTuple( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort );
     }
 
+    /**
+     * Make a tuple from a SessionMonitorEntry
+     * @param session
+     * @return SessionTuple
+     */
     private SessionTuple _makeTuple( SessionMonitorEntry session )
     {
         short protocol;
@@ -454,25 +411,47 @@ public class SessionMonitorImpl implements SessionMonitor
                                      session.getPreNatServerPort() );
     }
 
+    /**
+     * makeTuple copies a tuple
+     * @param tuple
+     * @return SessionTuple
+     */
     private SessionTuple _makeTuple( SessionTuple tuple )
     {
         return new SessionTuple( tuple );
     }
-    
+
+    /**
+     * Parse proc/net/nf_conntrack
+     * and return a list of SessionMonitorEntry
+     * @return the list of sessions with the conntrack information
+     */
     private List<SessionMonitorEntry> parseProcNetIpConntrack()
     {
         BufferedReader br = null;
         String line;
         LinkedList<SessionMonitorEntry> list = new LinkedList<SessionMonitorEntry>();
-        
+        String conntrackFilename;
+        if ( Files.exists(Paths.get("/proc/net/ip_conntrack")) )
+            conntrackFilename = "/proc/net/ip_conntrack";
+        else
+            conntrackFilename = "/proc/net/nf_conntrack";
+
         try {
-            br = new BufferedReader(new FileReader("/proc/net/ip_conntrack"));
+            br = new BufferedReader(new FileReader(conntrackFilename));
             while ((line = br.readLine()) != null) {
                 try {
                     if ( logger.isDebugEnabled() )
                         logger.debug("parseProcNetIpConntrack line: " + line);
                     String[] parts = line.split("\\s+");
                     SessionMonitorEntry newEntry = new SessionMonitorEntry();
+
+                    // if using the new nf_conntrack, remove first two fields
+                    if ( conntrackFilename == "/proc/net/nf_conntrack" ) {
+                        String[] newArray=new String[parts.length];
+                        System.arraycopy(parts,2,newArray,0,parts.length-2);
+                        parts = newArray;
+                    }
 
                     if ( parts.length < 10 ) {
                         logger.warn("Too few parts: " + line);
@@ -490,7 +469,7 @@ public class SessionMonitorImpl implements SessionMonitor
                             logger.debug("parseProcNetIpConntrack ignore line: " + line);
                         continue;
                     }
-                        
+
                     newEntry.setProtocol(parts[0].toUpperCase());
 
                     int src_count = 0;
@@ -499,6 +478,8 @@ public class SessionMonitorImpl implements SessionMonitor
                     int dport_count = 0;
                     for ( int i = 0 ; i < parts.length ; i++ ) {
                         String part = parts[i];
+                        if ( part == null )
+                            continue;
                         String[] subparts = part.split("=");
                         if ( subparts.length != 2 )
                             continue;
@@ -511,38 +492,38 @@ public class SessionMonitorImpl implements SessionMonitor
                         switch ( varname ) {
                         case "src":
                             if ( src_count == 0 )
-                                newEntry.setPreNatClient( InetAddress.getByName( varval ) ); // request src is pre nat client 
-                            else 
+                                newEntry.setPreNatClient( InetAddress.getByName( varval ) ); // request src is pre nat client
+                            else
                                 newEntry.setPostNatServer( InetAddress.getByName( varval ) ); // reply src is post nat server
                             src_count++;
                             break;
                         case "dst":
                             if ( dst_count == 0 )
                                 newEntry.setPreNatServer( InetAddress.getByName( varval ) ); // request dst is pre nat server
-                            else 
+                            else
                                 newEntry.setPostNatClient( InetAddress.getByName( varval ) ); // reply dst is pre nat client
                             dst_count++;
                             break;
                         case "sport":
                             if ( sport_count == 0 )
                                 newEntry.setPreNatClientPort( Integer.parseInt( varval ) ); // request sport is pre nat client port
-                            else 
+                            else
                                 newEntry.setPostNatServerPort( Integer.parseInt( varval ) ); // reply sport is post nat server port
                             sport_count++;
                             break;
                         case "dport":
                             if ( dport_count == 0 )
                                 newEntry.setPreNatServerPort( Integer.parseInt( varval ) ); // request dport is pre nat server port
-                            else 
+                            else
                                 newEntry.setPostNatClientPort( Integer.parseInt( varval ) ); // reply dport is post nat client port
                             dport_count++;
                             break;
                         case "mark":
                             int mark = Integer.parseInt( varval );
-                            newEntry.setMark( mark ); 
+                            newEntry.setMark( mark );
                             newEntry.setBypassed( ((mark & 0x01000000) != 0) );
                             newEntry.setQosPriority( (mark & 0x000F0000) >> 16 );
-                            newEntry.setClientIntf( (mark & 0x000000FF) >> 0 );
+                            newEntry.setClientIntf( (mark & 0x000000FF) );
                             newEntry.setServerIntf( (mark & 0x0000FF00) >> 8 );
                             break;
                         default:
@@ -553,7 +534,7 @@ public class SessionMonitorImpl implements SessionMonitor
                     }
 
                     list.add(newEntry);
-                    
+
                 } catch ( Exception lineException ) {
                     logger.warn("Failed to parse /proc/net/ip_conntrack line: " + line, lineException);
                 }

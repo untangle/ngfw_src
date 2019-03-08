@@ -13,27 +13,20 @@ import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.NetcapSession;
-import com.untangle.jvector.IncomingSocketQueue;
-import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.Relay;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
-import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.GeographyManager;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.app.SessionNatEvent;
 import com.untangle.uvm.app.SessionStatsEvent;
 import com.untangle.uvm.app.PolicyManager;
-import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.app.HostnameLookup;
+import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * Helper class for the IP session hooks.
@@ -83,6 +76,10 @@ public abstract class NetcapHook implements Runnable
     protected int state      = IPNewSessionRequestImpl.REQUESTED;
     protected int rejectCode = REJECT_CODE_SRV;
 
+    /**
+     * getVector
+     * @return Vector
+     */
     public Vector getVector()
     {
         return this.vector;
@@ -115,7 +112,7 @@ public abstract class NetcapHook implements Runnable
                 logger.debug( "New thread for session id: " + sessionId + " " + sessionGlobalState );
             }
 
-            if ( serverIntf == IntfConstants.UNKNOWN_INTF ) {
+            if (serverIntf < InterfaceSettings.MIN_INTERFACE_ID || serverIntf > InterfaceSettings.MAX_INTERFACE_ID) {
                 logger.warn( "Unknown destination interface: " + netcapSession + ". Killing session." );
                 raze();
                 return;
@@ -156,13 +153,6 @@ public abstract class NetcapHook implements Runnable
                 if ( ! UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
                     hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
                 }
-                /* include OpenVPN, L2TP, Xauth, and GRE clients in host table */
-                if ( netcapSession.clientSide().interfaceId() == 0xfa ||
-                     netcapSession.clientSide().interfaceId() == 0xfb ||
-                     netcapSession.clientSide().interfaceId() == 0xfc ||
-                     netcapSession.clientSide().interfaceId() == 0xfd ) {
-                    hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
-                }
                 /* Lastly if use the server's host if there is still no host and the server is local */
                 if ( hostEntry == null && ! UvmContextFactory.context().networkManager().isWanInterface( serverIntf ) ) {
                     hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( serverAddr, true ); /* create/get host */
@@ -179,7 +169,10 @@ public abstract class NetcapHook implements Runnable
                 username = hostEntry.getUsername();
                 sessionGlobalState.addTags( hostEntry.getTags() );
 
-                if ( clientIntf != hostEntry.getInterfaceId() ) {
+                // if the local host is creating the session
+                // and the source interface does not equal the host's current interface
+                // correct it
+                if ( clientAddr.equals(hostEntry.getAddress()) && clientIntf != hostEntry.getInterfaceId() ) {
                     hostEntry.setInterfaceId( clientIntf );
                 }
                 if ( ! hostEntry.getEntitled() ) {
@@ -200,7 +193,10 @@ public abstract class NetcapHook implements Runnable
             if ( deviceEntry != null ) {
                 deviceEntry.setLastSessionTime( System.currentTimeMillis() );
                 sessionGlobalState.addTags( deviceEntry.getTags() );
-                if ( clientIntf != deviceEntry.getInterfaceId() ) {
+                // if the local host is creating the session
+                // and the source interface does not equal the host's current interface
+                // correct it
+                if ( clientAddr.equals(hostEntry.getAddress()) && clientIntf != deviceEntry.getInterfaceId() ) {
                     deviceEntry.setInterfaceId( clientIntf );
                 }
                 if ( username == null ) /* if we don't know if from the host entry, use the device entry */
@@ -215,6 +211,7 @@ public abstract class NetcapHook implements Runnable
             if ( username != null ) {
                 userEntry = UvmContextFactory.context().userTable().getUserTableEntry( username, true );
             }
+            sessionGlobalState.setUser( username );
             /**
              * If user exists
              * Update device entry and also update SessionGlobalState
@@ -231,9 +228,6 @@ public abstract class NetcapHook implements Runnable
                 hostname = SessionEvent.determineBestHostname( clientAddr, clientIntf, serverAddr, serverIntf );
             }
             
-            sessionGlobalState.setUser( username );
-            sessionGlobalState.attach( AppSession.KEY_PLATFORM_USERNAME, username );
-            sessionGlobalState.attach( AppSession.KEY_PLATFORM_HOSTNAME, hostname );
 
             /**
              * Determine the policy to process this session
@@ -441,7 +435,8 @@ public abstract class NetcapHook implements Runnable
         }
 
         sessionGlobalState.setEndTime( System.currentTimeMillis() );
-        logSessionStatsEvent( sessionEvent );
+        if ( sessionEvent != null )
+            logSessionStatsEvent( sessionEvent );
 
         /**
          * Remove the session from the active sessions table
@@ -495,21 +490,37 @@ public abstract class NetcapHook implements Runnable
         }
     }
 
+    /**
+     * getClientSide - get the client side tuple
+     * @return SessionTuple
+     */
     public SessionTuple getClientSide()
     {
         return this.clientSide;
     }
 
+    /**
+     * getServerSide - get the server side tuple
+     * @return SessionTuple
+     */
     public SessionTuple getServerSide()
     {
         return this.serverSide;
     }
 
+    /**
+     * getPolicyId - get the policy ID for this session
+     * @return int
+     */
     public Integer getPolicyId()
     {
         return this.policyId;
     }
 
+    /**
+     * setCleanupSessionOnExit
+     * @param newValue
+     */
     public void setCleanupSessionOnExit( boolean newValue )
     {
         this.cleanupSessionOnExit = newValue;
@@ -518,6 +529,7 @@ public abstract class NetcapHook implements Runnable
     /**
      * Describe <code>connectServer</code> method here.
      *
+     * @param sessionEvent
      * @return a <code>boolean</code> true if the server was completed
      * OR we explicitly rejected
      */
@@ -590,6 +602,9 @@ public abstract class NetcapHook implements Runnable
         return clientActionCompleted;
     }
 
+    /**
+     * buildPipeline - builds the actual pipeline (list of relays)
+     */
     protected void buildPipeline() 
     {
         LinkedList<Relay> relayList = new LinkedList<Relay>();
@@ -662,6 +677,11 @@ public abstract class NetcapHook implements Runnable
         vector = new Vector( relayList );
     }
 
+    /**
+     * processSession
+     * @param request
+     * @param session
+     */
     @SuppressWarnings("fallthrough")
     protected void processSession( IPNewSessionRequestImpl request, AppSessionImpl session )
     {
@@ -810,6 +830,10 @@ public abstract class NetcapHook implements Runnable
         return !isEndpointed;
     }
 
+    /**
+     * logSessionStatsEvent - logs the SessionStatsEvent
+     * @param sessionEvent
+     */
     private void logSessionStatsEvent( SessionEvent sessionEvent )
     {
         try {
@@ -856,6 +880,10 @@ public abstract class NetcapHook implements Runnable
         }
     }
     
+    /**
+     * alive - returns true if session is alive, false otherwise
+     * @return bool
+     */
     protected boolean alive()
     {
         if ( state == IPNewSessionRequestImpl.REQUESTED || state == IPNewSessionRequestImpl.ENDPOINTED ) {
@@ -865,6 +893,10 @@ public abstract class NetcapHook implements Runnable
         return false;
     }
 
+    /**
+     * printRelays - prints relays list/description to debug
+     * @param relayList
+     */
     protected void printRelays( List<Relay> relayList )
     {
         if ( logger.isDebugEnabled()) {
@@ -876,17 +908,34 @@ public abstract class NetcapHook implements Runnable
         }
     }
 
-    /* Get the desired timeout for the vectoring machine */
+    /**
+     * Get the desired timeout for the vectoring machine
+     * @return int
+     */
     protected abstract int  timeout();
 
+    /**
+     * netcapSession
+     * @return NetcapSession
+     */
     protected abstract NetcapSession netcapSession();
 
+    /**
+     * clientSideListener
+     * @return SideListener
+     */
     protected abstract SideListener clientSideListener();
+
+    /**
+     * serverSideListener
+     * @return SideListener
+     */
     protected abstract SideListener serverSideListener();
 
     /**
      * Complete the connection to the server, returning whether or not
      * the connection was succesful.
+     * @param sessionEvent
      * @return - True connection was succesful, false otherwise.
      */
     protected abstract boolean serverComplete( SessionEvent sessionEvent );
@@ -897,15 +946,50 @@ public abstract class NetcapHook implements Runnable
      * @return - True connection was succesful, false otherwise.
      */
     protected abstract boolean clientComplete();
+
+    /**
+     * clientReject
+     */
     protected abstract void clientReject();
+
+    /**
+     * clientRejectSilent
+     */
     protected abstract void clientRejectSilent();
 
+    /**
+     * makeClientSink
+     * @return Sink
+     */
     protected abstract Sink makeClientSink();
+
+    /**
+     * makeServerSink
+     * @return Sink
+     */
     protected abstract Sink makeServerSink();
+
+    /**
+     * makeClientSource
+     * @return Source
+     */
     protected abstract Source makeClientSource();
+
+    /**
+     * makeServerSource
+     * @return Source
+     */
     protected abstract Source makeServerSource();
 
+    /**
+     * initializeAppSessions
+     * @param sessionEvent
+     */
     protected abstract void initializeAppSessions( SessionEvent sessionEvent );
+
+    /**
+     * raze
+     */
     protected abstract void raze();
 
     /**

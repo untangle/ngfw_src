@@ -1,48 +1,33 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.openvpn;
 
-import java.net.InetAddress;
 import java.util.LinkedList;
 
-import com.untangle.uvm.app.IPMaskedAddress;
-
+/**
+ * Class to represent an OpenVPN remote client
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
-public class OpenVpnRemoteClient implements java.io.Serializable
+public class OpenVpnRemoteClient implements java.io.Serializable, org.json.JSONString
 {
-    /**
-     * Is this remote client enabled?
-     */
     private boolean enabled = true;
-
-    /**
-     * Name of the remote client
-     */
     private String name;
-
-    /**
-     * The ID of the group that this client belongs to.
-     */
     private int groupId;
-
-    /**
-     * Should this client be exported to other remote clients
-     */
     private boolean export = false;
-
-    /**
-     * The network that should be exported to other clients
-     * Comma seperated list of CIDR networks
-     */
     private String exportNetwork;
 
-    /**
-     * A list of config items unique to this client
-     */
     private LinkedList<OpenVpnConfigItem> clientConfigItems = new LinkedList<OpenVpnConfigItem>();
-    
-    public OpenVpnRemoteClient() {}
+
+    public OpenVpnRemoteClient()
+    {
+    }
+
+// THIS IS FOR ECLIPSE - @formatter:off
 
     public boolean getEnabled() { return this.enabled; }
     public void setEnabled( boolean newValue ) { this.enabled = newValue; }
@@ -61,4 +46,12 @@ public class OpenVpnRemoteClient implements java.io.Serializable
 
     public LinkedList<OpenVpnConfigItem> getClientConfigItems() { return clientConfigItems; }
     public void setClientConfigItems( LinkedList<OpenVpnConfigItem> argList ) { this.clientConfigItems = argList; }
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }

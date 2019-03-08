@@ -6,11 +6,9 @@ package com.untangle.app.smtp;
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.mail.internet.MimeUtility;
@@ -94,7 +92,8 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
     public void setAddresses( Set<SmtpMessageAddressEvent> newValue ) { this.addresses = newValue; }
 
     /**
-     * The message id
+     * The message id.
+     * @return Message id.
      */
     public Long getMessageId() { return messageId; }
     public void setMessageId( Long newValue ) { this.messageId = newValue; }

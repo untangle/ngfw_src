@@ -1,7 +1,8 @@
 Ext.define('Ung.config.network.view.PortForwardRules', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.network.portforwardrules',
-    itemId: 'portForwardRules',
+    alias: 'widget.config-network-port-forward-rules',
+    itemId: 'port-forward-rules',
+    scrollable: true,
 
     viewModel: true,
 
@@ -21,29 +22,22 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         name: 'Port Forward Rules',
         flex: 3,
 
-        tbar: ['@add', '->', '@import', '@export'],
+        simpleEditorAlias: 'config-network-portforwardsimple',
+
+        tbar: ['@addSimple', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'settings.portForwardRules.list',
         recordJavaClass: 'com.untangle.uvm.network.PortForwardRule',
-        ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
-        conditions: [
-            Condition.dstLocal,
-            Condition.dstAddr,
-            Condition.dstPort,
-            Condition.srcAddr,
-            Condition.srcPort,
-            Condition.srcIntf,
-            Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
-        ],
+        emptyText: 'No Port Forward Rules defined'.t(),
 
         actionText: 'Forward to the following location:'.t(),
         emptyRow: {
             ruleId: -1,
-            simple: true,
+            simple: false, // set simple by default on false, and only when saving simple rules will be set true
             enabled: true,
-            // description: '',
+            description: '',
             javaClass: 'com.untangle.uvm.network.PortForwardRule',
             conditions: {
                 javaClass: 'java.util.LinkedList',
@@ -76,16 +70,27 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
             Column.conditions, {
                 header: 'New Destination'.t(),
                 dataIndex: 'newDestination',
-                width: 150
+                width: Renderer.messageWidth
             }, {
                 header: 'New Port'.t(),
                 dataIndex: 'newPort',
-                width: 80
+                width: Renderer.portWidth
             }],
         editorFields: [
             Field.enableRule('Enable Port Forward Rule'.t()),
             Field.description,
-            Field.conditions,
+            Field.conditions(
+                'com.untangle.uvm.network.PortForwardRuleCondition',[
+                "DST_LOCAL",
+                "DST_ADDR",
+                "DST_PORT",
+                "SRC_ADDR",
+                "SRC_PORT",
+                "SRC_INTF",
+                "PROTOCOL",
+                "CLIENT_TAGGED",
+                "SERVER_TAGGED"
+            ]),
             Field.newDestination,
             Field.newPort
         ]
@@ -104,7 +109,6 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         title: 'The following ports are currently reserved and can not be forwarded:'.t(),
         items: [{
             xtype: 'component',
-            // name: 'portForwardWarnings',
             bind: {
                 html: '{portForwardWarnings}'
             }

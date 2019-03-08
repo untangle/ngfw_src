@@ -1,57 +1,72 @@
 /**
  * $Id: IntrusionPreventionApp.java 38584 2014-09-03 23:23:07Z dmorris $
  */
-
-/*
- * The major difference between this module and others is configuration management.
- */
 package com.untangle.app.intrusion_prevention;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jabsorb.JSONSerializer;
+
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.codec.binary.Hex;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookCallback;
-import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.StaticRoute;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppBase;
-import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.util.StringUtil;
 
+/**
+ * Manage Intrusion Prevention configuration.
+ *
+ * The major difference between this and other applications is that configuration is handled through
+ * special upload/downloaders.  This is due to the size of IPS settings which:
+ *
+ * * Are not used by uvm at all so they take up 20+MB of memory.
+ * * Deallocating that much memory causes uvm to cause garbage collection errors.
+ *
+ */
 public class IntrusionPreventionApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -59,71 +74,461 @@ public class IntrusionPreventionApp extends AppBase
     private static final String STAT_SCAN = "scan";
     private static final String STAT_DETECT = "detect";
     private static final String STAT_BLOCK = "block";
+    private static final String STAT_MEMORY = "memory";
     
     private final EventHandler handler;
     private final PipelineConnector [] connectors = new PipelineConnector[0];
     private final IntrusionPreventionEventMonitor ipsEventMonitor;    
 
-    private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/740-snort";
+    private static final String DAEMON_NAME = "suricata";
+    private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/740-suricata";
+    private static final String GET_CONFIG = System.getProperty("prefix") + "/usr/share/untangle/bin/intrusion-prevention-get-config.py";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
-    private static final String DEFAULTS_SETTINGS = "/usr/share/untangle-snort-config/current/templates/defaults.js";
-    private static final String SNORT_DEBIAN_CONF = "/etc/snort/snort.debian.conf";
-    private static final String SNORT_CONF = "/etc/snort/snort.conf";
+    private static final String ENGINE_RULES_DIRECTORY = "/etc/suricata/rules";
+    private static final String CURRENT_RULES_DIRECTORY = "/usr/share/untangle-suricata-config/current";
+    private static final String DEFAULTS_FILE = "/usr/share/untangle-suricata-config/current/templates/defaults.js";
+    private static final String CLASSIFICATION_FILE = "/usr/share/untangle-suricata-config/current/rules/classification.config";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
+    private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
+    private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
+    private static final String RESERVED_RULE_PREFIX = "reserved_";
+    private static final String CLASSIFICATION_ID_PREFIX = RESERVED_RULE_PREFIX + "classification_";
+    private static final Pattern SYSTEMCTL_STATUS_MAINPID = Pattern.compile("^MainPID=(\\d+)");
+    private static final Pattern SMAP_KERNEL_PAGE_SIZE = Pattern.compile("^KernelPageSize:\\s*(.+)");
+    private static final String RELOAD_RULES_COMMAND = "/usr/bin/suricatasc -c 'reload-rules'";
+    private static final String GET_SURICATA_ERRORS="/bin/journalctl -u suricata --no-pager -S \"$(/bin/systemctl show suricata | grep StateChangeTimestamp= | cut -d= -f2)\" | grep '<Error'";
 
-    private float memoryThreshold = .25f;
+    private long kernelPageSize = 0;
     private boolean updatedSettingsFlag = false;
+    private boolean daemonReady = false;
 
     private final HookCallback networkSettingsChangeHook;
 
-    private List<IPMaskedAddress> homeNetworks = null;
-    private List<String> interfaceIds = null;
+    private IntrusionPreventionSettings settings = null;
 
+    private List<IPMaskedAddress> homeNetworks = null;
+
+    private long statScanCurrent = 0;
+    private long statDetectCurrent = 0;
+    private long statBlockCurrent = 0;
+
+    /**
+     * Setup IPS application
+     *
+     * @param appSettings       Application settings.
+     * @param appProperties     Application properties
+     */
     public IntrusionPreventionApp( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
 
-        handler = new EventHandler(this);
-        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), false );
-        this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
+        this.handler = new EventHandler(this);
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
         this.addMetric(new AppMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
         this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new AppMetric(STAT_MEMORY, I18nUtil.marktr("Memory usage")));
 
-        setScanCount(0);
-        setDetectCount(0);
-        setBlockCount(0);
+        setMetricsScanCount(0);
+        setMetricsDetectCount(0);
+        setMetricsBlockCount(0);
+        updateMetricsMemory();
 
         this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
-
-        File settingsFile = new File( getSettingsFileName() );
-        File snortConf = new File(SNORT_CONF);
-        File snortDebianConf = new File(SNORT_DEBIAN_CONF);
-        if (settingsFile.lastModified() > snortDebianConf.lastModified() ||
-            snortConf.lastModified() > snortDebianConf.lastModified() ) {
-            logger.warn("Settings file newer than snort debian configuration, Syncing...");
-            reconfigure();
-        }
     }
 
+    /**
+     * Get the pineliene connector.
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Post IPS initialization
+     *
+     * @return PipelineConector
+     */
     @Override
     protected void postInit()
     {
-        logger.info("Post init");
+        String appID = this.getAppSettings().getId().toString();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        IntrusionPreventionSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/" + "settings_" + appID + ".js";
 
         readAppSettings();
+
+        try {
+            readSettings = settingsManager.load(IntrusionPreventionSettings.class, settingsFileName);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:", e);
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            this.settings = new IntrusionPreventionSettings();
+        }else{ 
+            logger.info("Loading Settings...");
+
+            this.settings = readSettings;
+            logger.debug("Settings: " + this.settings.toJSONString());
+        }
+        boolean updated = false;
+        updated = synchronizeSettingsWithDefaults();
+        updated = synchronizeSettingsWithClassifications() || updated;
+        updated = synchronizeSettingsWithVariables() || updated;
+
+        if(updated){
+            this.setSettings(this.settings);
+        }
     }
 
+    /**
+     * Get intrusion prevention settings.
+     *
+     * @return IntrusionPreventionSettings
+     *
+     */
+    public IntrusionPreventionSettings getSettings()
+    {
+        return this.settings;
+    }
+
+    /**
+     * Set intrusion prevention settings.
+     *
+     * @param newSettings
+     *      New settings to configure.
+     */
+    public void setSettings(final IntrusionPreventionSettings newSettings)
+    {
+        setSettings(newSettings, false);
+    }
+
+
+    /**
+     * Set intrusion prevention settings.
+     *
+     * @param newSettings
+     *      New settings to configure.
+     * @param block
+     *      Daemon blocking to send to reconfigure.
+     */
+    public void setSettings(final IntrusionPreventionSettings newSettings, boolean block)
+    {
+        /**
+         * Set the rule ids.
+         */
+        int idx = 0;
+        for (IntrusionPreventionRule rule : newSettings.getRules()) {
+            if(!rule.getId().startsWith(RESERVED_RULE_PREFIX)){
+                idx = ++idx;
+                rule.setId(Integer.toString(idx));
+            }
+        }
+
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String appID = this.getAppSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "intrusion-prevention/" + "settings_" + appID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.", e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try { logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
+
+        this.reconfigure(block);
+    }
+
+    /**
+     * Merge JSON object into another.
+     * @param  source        [description]
+     * @param  destination   [description]
+     * @return               [description]
+     * @throws JSONException [description]
+     */
+    private static JSONObject merge(JSONObject source, JSONObject destination) throws JSONException {
+        for (String key: JSONObject.getNames(source)) {
+                Object value = source.get(key);
+                if (!destination.has(key)) {
+                    // new value for "key":
+                    destination.put(key, value);
+                } else {
+                    // existing value for "key" - recursively deep merge:
+                    if (value instanceof JSONObject) {
+                        JSONObject valueJson = (JSONObject)value;
+                        merge(valueJson, destination.getJSONObject(key));
+                    } else {
+                        destination.put(key, value);
+                    }
+                }
+        }
+        return destination;
+    }
+
+    /**
+     * Integrate values from defaults into settings.
+     * The defaults.js file is distributed with the signature downloads and lets
+     * us make in the field modifications of settings.
+     * @return               Boolean true if defaults were synchronized, otherwise false.
+     */
+    public boolean synchronizeSettingsWithDefaults(){
+        boolean changed = false;
+        File f = new File(DEFAULTS_FILE);
+        if( f.exists() ){
+            JSONObject defaults = null;
+            String defaultsContents = null;
+            FileInputStream is = null;
+            try{
+                is = new FileInputStream(DEFAULTS_FILE);
+                defaultsContents = IOUtils.toString(is, "UTF-8");
+                defaults = new JSONObject( defaultsContents );
+            }catch (Exception e){
+                logger.error("synchronizeSettingsWithDefaults: jsonobject",e);
+            }finally{
+                try{
+                    if(is != null){
+                        is.close();
+                    }
+                }catch( IOException e){
+                    logger.error("synchronizeSettingsWithDefaults: failed to close file");
+                }
+            }
+            try{
+                String defaultsMd5sum = md5sum(defaultsContents);
+                if(!defaultsMd5sum.equals(this.settings.getDefaultsMd5sum())){
+                    /**
+                     * Only sync if file has changed.
+                     */
+                    JSONSerializer serializer = UvmContextFactory.context().getSerializer();
+                    Iterator<?> keys = defaults.keys();
+                    while( keys.hasNext()){
+                        String key = (String) keys.next();
+                        if(key.equals("rules")){
+                            /**
+                             * Special handling for rules:  Replace but keep existing enabled values.
+                             */
+                            List<IntrusionPreventionRule> rules = settings.getRules();
+
+                            JSONArray defaultRules = defaults.getJSONObject(key).getJSONArray("list");
+                            for(int i = 0; i < defaultRules.length(); i++){
+                                IntrusionPreventionRule defaultRule = (IntrusionPreventionRule) serializer.fromJSON(defaultRules.getString(i));
+
+                                boolean found = false;
+                                for(int j = 0; j < rules.size(); j++){
+                                    IntrusionPreventionRule rule = rules.get(j);
+                                    if(rule.getId().equals(defaultRule.getId())){
+                                        defaultRule.setEnabled(rule.getEnabled());
+                                        rules.set(j, defaultRule);
+                                        found = true;
+                                    }
+                                }
+                                if(found == false){
+                                    rules.add(defaultRule);
+                                }
+                            }
+                        }else{
+                            try{
+                                /**
+                                 * For everything else, perform a straight merge assuming methods exist.
+                                 */
+                                Method getMethod = this.settings.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
+                                Method setMethod = this.settings.getClass().getMethod("set" + key.substring(0, 1).toUpperCase() + key.substring(1), defaults.get(key).getClass());
+                                if(defaults.get(key).getClass().toString().equals("JSONObject")){
+                                    setMethod.invoke(this.settings, merge((JSONObject) defaults.get(key), (JSONObject) getMethod.invoke(this.settings)));
+                                }else{
+                                    setMethod.invoke(this.settings, defaults.get(key));                                    
+                                }
+                            }catch(Exception e){
+                                logger.error("synchronizeSettingsWithDefaults: method exception", e);
+                            }
+                        }
+
+                    }
+                    this.settings.setDefaultsMd5sum(defaultsMd5sum);
+                    changed = true;
+                }
+            }catch(Exception e){
+                logger.error("synchronizeSettingsWithDefaults: json parsing - ", e);
+            }
+        }
+        return changed;
+    }
+
+    /**
+     * Integrate values from classifications into settings.
+     * The defaults.js file is distributed with the signature downloads and lets
+     * us make in the field modifications of settings.
+     * @return               Boolean true if classifications were synchronized, otherwise false.
+     */
+    public boolean synchronizeSettingsWithClassifications(){
+        boolean changed = false;
+        File f = new File(CLASSIFICATION_FILE);
+        if( f.exists() ){
+            String classificationContents = null;
+            FileInputStream is = null;
+            try{
+                is = new FileInputStream(CLASSIFICATION_FILE);
+                classificationContents = IOUtils.toString(is, "UTF-8");
+            }catch (Exception e){
+                logger.error("synchronizeSettingsWithClassifications: open",e);
+            }finally{
+                try{
+                    if(is != null){
+                        is.close();
+                    }
+                }catch( IOException e){
+                    logger.error("synchronizeSettingsWithClassifications: failed to close file");
+                }
+            }
+            try{
+                String classificationMd5sum = md5sum(classificationContents);
+                if(!classificationMd5sum.equals(this.settings.getClassificationMd5sum())){
+                    /**
+                     * Only sync if file has changed.
+                     */
+                    List<IntrusionPreventionRule> classificationRules = new LinkedList<>();
+                    List<IntrusionPreventionRuleCondition> classificationConditions = null;
+
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("default", classificationConditions, "Low Priority", false, CLASSIFICATION_ID_PREFIX + "_4")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("log", classificationConditions, "Medium Priority", false, CLASSIFICATION_ID_PREFIX + "_3")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "High Priority", false, CLASSIFICATION_ID_PREFIX + "_2")
+                    );
+                    classificationConditions = new LinkedList<>();
+                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                    classificationRules.add(
+                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical Priority", false, CLASSIFICATION_ID_PREFIX + "_1")
+                    );
+
+                    Matcher match = null;
+                    for(String line : classificationContents.split("\\r?\\n")){
+                        Matcher matcher = CLASSIFICATION_PATTERN.matcher(line);
+                        if(matcher.find()){
+                            for(IntrusionPreventionRule rule : classificationRules){
+                                String id = rule.getId();
+                                if(id.substring(id.length() -1).equals(matcher.group(3))){
+                                    classificationConditions = rule.getConditions();
+                                    String value = classificationConditions.get(0).getValue();
+                                    classificationConditions.get(0).setValue( value + ( value.isEmpty() ? ""  : ",") + matcher.group(1));
+                                    rule.setConditions(classificationConditions);
+                                }
+                            }
+                        }
+                    }
+
+                    List<IntrusionPreventionRule> rules = settings.getRules();
+                    for(IntrusionPreventionRule classificationRule : classificationRules){
+                        boolean found = false;
+                        for(int j = 0; j < rules.size(); j++){
+                            IntrusionPreventionRule rule = rules.get(j);
+                            if(rule.getId().equals(classificationRule.getId())){
+                                classificationRule.setEnabled(rule.getEnabled());
+                                rules.set(j, classificationRule);
+                                found = true;
+                            }
+                        }
+                        if(found == false){
+                            rules.add(0, classificationRule);
+                        }
+                    }
+
+                    this.settings.setClassificationMd5sum(classificationMd5sum);
+                    changed = true;
+                }
+
+            }catch(Exception e){
+                logger.error("synchronizeSettingsWithClassifications: parsing - ", e);
+            }
+        }
+        return changed;
+    }
+
+    /**
+     * Integrate variables from suricata.configuration.
+     * @return               Boolean true if rules were synchronized, otherwise false.
+     */
+    public boolean synchronizeSettingsWithVariables(){
+        boolean changed = false;
+        String result = UvmContextFactory.context().execManager().execOutput(GET_CONFIG + " --variables");
+        String variablesMd5sum = md5sum(result);
+        if(!variablesMd5sum.equals(this.settings.getVariablesMd5sum())){
+            List<IntrusionPreventionVariable> variables = this.settings.getVariables();
+            for ( String line : result.split("\\r?\\n") ){
+                String variableLine[] = line.split("=");
+
+                Boolean found = false;
+                for( IntrusionPreventionVariable variable : variables){
+                    if(variable.getName().equals(variableLine[0])){
+                        found = true;
+                    }
+                }
+                if(found == false){
+                    variables.add( new IntrusionPreventionVariable(variableLine[0], variableLine[1]) );
+                }
+            }
+            this.settings.setVariables(variables);
+            this.settings.setVariablesMd5sum(variablesMd5sum);
+            changed = true;
+        }
+        return changed;
+    }
+
+    /**
+     * Calculate md5 sym
+     * @param  input String to perform md5sum on.
+     * @return     Hext string of md5 sum.
+     */
+    private String md5sum(String input) {
+        String sum = "";
+        try{
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.reset();
+            messageDigest.update(input.getBytes(Charset.forName("UTF8")));
+            byte[] resultByte = messageDigest.digest();
+            sum = new String(Hex.encodeHex(resultByte));
+        }catch(Exception e){
+            logger.error("md5sum:", e);
+        }
+        return sum;
+    }
+
+    /**
+     * Pre IPS stop. Register callback?
+     *
+     * @param isPermanentTransition
+     */
     @Override
     protected void preStop( boolean isPermanentTransition )
     {
@@ -135,35 +540,89 @@ public class IntrusionPreventionApp extends AppBase
         }
     }
 
+    /**
+     * Post IPS stop.  Shut down suricata.  Run iptables rules to remove.
+     *
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
+        UvmContextFactory.context().daemonManager().decrementUsageCount( DAEMON_NAME );
         iptablesRules();
     }
 
+    /**
+     * Pre IPS start. Start suricata, unregister calllback hook.
+     *
+     * @param isPermanentTransition
+     */
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
+        String rulesFilename = null;
+        try{
+            rulesFilename = this.settings.getSuricataSettings().getString("default-rule-path");
+            rulesFilename += "/" + this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
+        }catch(Exception e){
+            logger.warn("preStart: Unable to get rulesFilename", e);
+        }
+
+        File f = new File( rulesFilename );
+        if( !f.exists() ){
+            reconfigure(false);
+        }
+
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        if(wizardCompleted() == false){
-            throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
-        }
-        UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
+        UvmContextFactory.context().daemonManager().incrementUsageCount( DAEMON_NAME );
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
+        updateMetricsMemory();
     }
 
+    /**
+     * Post  IPS start. Start iptables rules.
+     *
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
         iptablesRules();
-
     }
 
-    public void reconfigure()
+    /**
+     * When app removed, remove the rules file to force it be re-created if reinstaled.
+     */
+    @Override
+    protected void postDestroy(){
+        String rulesFilename = null;
+        try{
+            rulesFilename = this.settings.getSuricataSettings().getString("default-rule-path");
+            rulesFilename += "/" + this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
+        }catch(Exception e){
+            logger.warn("preStart: Unable to get rulesFilename", e);
+        }
+
+        File f = new File( rulesFilename );
+        if(f.exists() ){
+            f.delete();
+        }
+    }
+
+    /**
+     * Reconfigure IPS.
+     *
+     * @param block
+     *        Boolean if true, use suricatasc which blocks.  Otherwise, just send the signal to suricata.
+     */
+    public void reconfigure(boolean block)
     {
+        if(this.settings == null){
+            return;
+        }
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
 
         String homeNetValue = "";
         for( IPMaskedAddress ma : this.homeNetworks ){
@@ -172,18 +631,9 @@ public class IntrusionPreventionApp extends AppBase
                 ma.getMaskedAddress().getHostAddress().toString() + "/" + ma.getPrefixLength();
         }
 
-        String interfacesValue = "";
-        for( String i : this.interfaceIds ){
-            interfacesValue += 
-                ( interfacesValue.length() > 0 ? "," : "" ) + i; 
-        }
-
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
-            " --app_id " + this.getAppSettings().getId().toString() +
-            " --home_net " + homeNetValue + 
-            " --interfaces " + interfacesValue + 
-            " --iptables_script " + IPTABLES_SCRIPT
+            " --home_net \"" + homeNetValue + "\""
         );
 
         String result = UvmContextFactory.context().execManager().execOutput(configCmd );
@@ -195,67 +645,193 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
         }catch( Exception e ){
-            logger.warn( "Unable to generate snort configuration:", e );
+            logger.warn( "Unable to generate suricata.configuration:", e );
         }
         reloadEventMonitorMap();
-        stop();
-        start();
+
+        iptablesRules();
+
+        try {
+            if (getRunState() == AppSettings.AppState.RUNNING) {
+                if(block){
+                    result = UvmContextFactory.context().execManager().execOutput(RELOAD_RULES_COMMAND);
+                    try{
+                        String lines[] = result.split("\\r?\\n");
+                        for ( String line : lines ){
+                            if( line.trim().length() > 1 ){
+                                logger.warn("reconfigure: reload suricata rules: " + line);
+                            }
+                        }
+                    }catch( Exception e ){
+                        logger.warn( "Unable to reload suricata rules:", e );
+                    }
+                }else{
+                    UvmContextFactory.context().daemonManager().reload( DAEMON_NAME );
+                }
+            }
+        } catch (Exception exn) {
+            logger.error("Could not save IPS settings", exn);
+        }
+
     }
 
-    public Date getLastUpdate()
-    {
-        try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " rules");
-            long timeSeconds = Long.parseLong( result.trim());
+    /**
+     * Get status information.
+     * @return JSONObject containing keys
+     */
+    public JSONObject getAppStatus(){
+        JSONObject status = null;
+        try{
+            status = new JSONObject();
 
-            return new Date( timeSeconds * 1000l );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to get last update.", e );
-            return null;
-        } 
-    }
+            status.put("daemonReady", daemonReady);
+            status.put("homeNetworks", this.homeNetworks);
 
-    public Date getLastUpdateCheck()
-    {
-        try {
-            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
-            long timeSeconds = Long.parseLong( result.trim());
+            String result = null;
+            long timeSeconds = 0;
+            try {
+                result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE + " signatures");
+                try{
+                    timeSeconds = Long.parseLong( result.trim());
+                }catch(Exception e){}
+            } catch ( Exception e ) {
+                logger.warn( "Unable to get last update.", e );
+            }
+            status.put("lastUpdate", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
 
-            return new Date( timeSeconds * 1000l );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to get last update.", e );
-            return null;
-        } 
+            timeSeconds = 0;
+            try {
+                result = UvmContextFactory.context().execManager().execOutput( GET_LAST_UPDATE );
+                try{
+                    timeSeconds = Long.parseLong( result.trim());
+                }catch(Exception e){}
+            } catch ( Exception e ) {
+                logger.warn( "Unable to get last update check.", e );
+            }
+            status.put("lastUpdateCheck", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
+
+            try {
+                result = UvmContextFactory.context().execManager().execOutput(GET_SURICATA_ERRORS);
+            } catch ( Exception e ) {
+                logger.warn( "Unable to get last update.", e );
+            }
+            status.put("errors", result);
+        }catch (Exception e){
+            logger.error("getStatus: jsonobject",e);
+        }
+
+        return status;
     }
 
     // private methods ---------------------------------------------------------
 
+    /**
+     * Determine the settings filename to use.
+     */
     private void readAppSettings()
     {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
 
         logger.info("Loading settings from " + settingsFile);
 
     }
 
-    public void setScanCount( long value )
+    /**
+     * Set the scan count to the specified value.
+     *
+     * @param value     New scan count value
+     */
+    public void setMetricsScanCount( long value )
     {
-        this.setMetric(STAT_SCAN, value);
-    }
-
-    public void setDetectCount( long value)
-    {
-        this.setMetric(STAT_DETECT, value);
-    }
-
-    public void setBlockCount( long value )
-    {
-        this.setMetric(STAT_BLOCK, value);
+        if( value < this.getMetric(STAT_SCAN).getValue() ){
+            this.statScanCurrent = this.getMetric(STAT_SCAN).getValue();
+        }
+        this.setMetric(STAT_SCAN, this.statScanCurrent + value);
     }
 
     /**
-     * Insert or remove iptables rules if snort daemon is running
+     * Set the detect count to the specified value.
+     *
+     * @param value     New detect count value
+     */
+    public void setMetricsDetectCount( long value)
+    {
+        if( value < this.getMetric(STAT_DETECT).getValue() ){
+            this.statDetectCurrent = this.getMetric(STAT_DETECT).getValue();
+        }
+        this.setMetric(STAT_DETECT, this.statDetectCurrent + value);
+    }
+
+    /**
+     * Set the block count to the specified value.
+     *
+     * @param value     New block count value
+     */
+    public void setMetricsBlockCount( long value )
+    {
+        if( value < this.getMetric(STAT_BLOCK).getValue() ){
+            this.statBlockCurrent = this.getMetric(STAT_BLOCK).getValue();
+        }
+        this.setMetric(STAT_BLOCK, this.statBlockCurrent + value);
+    }
+
+    /**
+     * Set the memory used by Suricata.
+     *
+     * In theory getting systemctl status for suricata will give us the resident memory we
+     * want under the MemoryCurrent field.
+     *
+     * Except systemctl under a 3.x kernel will not return the memory even with
+     * memory auditing enabled.  So we need to work to get the kernel page size
+     * and the number of resident memory pages from proc.
+     *
+     */
+    public void updateMetricsMemory()
+    {
+        long memory = 0;
+        String[] lines = UvmContextFactory.context().daemonManager().getStatus( DAEMON_NAME ).split("\\r?\\n");
+        for ( String line : lines ){
+            Matcher matcher = SYSTEMCTL_STATUS_MAINPID.matcher(line);
+            if(matcher.find()){
+                String mainPid = matcher.group(1);
+                try{
+                    if(this.kernelPageSize == 0){
+                        for(String smapLine : new String(Files.readAllBytes(Paths.get(new File("/proc/" + mainPid + "/smaps").getPath()))).split("\\r?\\n")){
+                            Matcher smapMatcher = SMAP_KERNEL_PAGE_SIZE.matcher(smapLine);
+                            if(smapMatcher.find()){
+                                this.kernelPageSize = StringUtil.humanReadabletoLong(smapMatcher.group(1));
+                                break;
+                            }
+                        }
+                    }
+                    File statmFile = new File("/proc/" + mainPid + "/statm");
+                    String value = new String(Files.readAllBytes(Paths.get(statmFile.getPath()))).split(" ")[1];
+                    memory = Long.parseLong(value) * this.kernelPageSize;
+                }catch(Exception e){}
+            }
+        }
+        this.setMetric(STAT_MEMORY, memory );
+    }
+
+    /**
+     * Set daemonReady flag.
+     * @param  ready boolean true if daeon ready, false it not.
+     */
+    public void setDaemonReady(boolean ready){
+        daemonReady = ready;
+    }
+
+    /**
+     * Return result of suricata status.
+     * @return String of suricata log.
+     */
+    public String getStatus()
+    {
+        return UvmContextFactory.context().execManager().execOutput(GET_STATUS_COMMAND);
+    }
+
+    /**
+     * Insert or remove iptables rules if suricata daemon is running
      */
     private synchronized void iptablesRules()
     {
@@ -266,7 +842,7 @@ public class IntrusionPreventionApp extends AppBase
 
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( IPTABLES_SCRIPT );
         try {
-            String lines[] = result.getOutput().split("\\r?\\n");
+            String[] lines = result.getOutput().split("\\r?\\n");
             logger.info( IPTABLES_SCRIPT + ": ");
             for ( String line : lines )
                 logger.info( IPTABLES_SCRIPT + ": " + line);
@@ -276,91 +852,42 @@ public class IntrusionPreventionApp extends AppBase
 
         if ( result.getResult() != 0 ) {
             logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
-            throw new RuntimeException("Failed to manage rules");
+            throw new RuntimeException("Failed to manage iptables rules");
         }
     }
 
-    private Boolean wizardCompleted()
-    {
-        String settingsFileName = getSettingsFileName();
-        File f = new File(settingsFileName);
-        if(f.exists()){
-            int retCode = UvmContextFactory.context().execManager().execResult( "grep -q '\"configured\": true,' " + settingsFileName);
-            if(retCode == 0){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public String getSettingsFileName()
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
-    }
-
-    public String getDefaultsSettingsFileName()
-    {
-        return DEFAULTS_SETTINGS;
-    }
-
-    public void initializeSettings()
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appId = this.getAppSettings().getId().toString();
-        String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + appId + ".js";
-
-        String configCmd = new String(System.getProperty("uvm.bin.dir") + 
-            "/intrusion-prevention-sync-settings.py" + 
-            " --app_id " + appId +
-            " --rules /usr/share/untangle-snort-config/current" +
-            " --settings " + tempFileName
-        );
-        String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-        try{
-            String lines[] = result.split("\\r?\\n");
-            for ( String line : lines ){
-                if( line.trim().length() > 1 ){
-                    logger.warn("initializeSettings: intrusion-prevention-sync-settings: " + line);
-                }
-            }
-        }catch( Exception e ){
-            logger.warn("Unable to initialize settings: ", e );
-        }
-
-        try {
-            settingsManager.save( getSettingsFileName(), tempFileName, true );
-        } catch (Exception exn) {
-            logger.error("Could not save app settings", exn);
-        }
-    }
-
-    public void saveSettings( String tempFileName )
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-
-        try {
-            settingsManager.save( getSettingsFileName(), tempFileName, true );
-        } catch (Exception exn) {
-            logger.error("Could not save app settings", exn);
-        }
-    }
-
+    /**
+     * Set the update settings flag.
+     *
+     * @param updatedSettingsFlag Boolean value
+     */
     public void setUpdatedSettingsFlag( boolean updatedSettingsFlag )
     {
         this.updatedSettingsFlag = updatedSettingsFlag;
     }
 
+    /**
+     * Get the update settings flag.
+     *
+     * @return 
+     *  true updated set, false not updated..
+     */
     public boolean getUpdatedSettingsFlag()
     {
         return this.updatedSettingsFlag;
     }
 
+    /**
+     * Tell the ips monitor to reload the event map.
+     */
     public void reloadEventMonitorMap()
     {
         this.ipsEventMonitor.unified2Parser.reloadEventMap();
     }
 
+    /**
+     * Force stats to restart by stopping and restarting.
+     */
     public void forceUpdateStats()
     {
         this.ipsEventMonitor.stop();
@@ -368,30 +895,50 @@ public class IntrusionPreventionApp extends AppBase
         try { Thread.sleep( 2000 ); } catch ( InterruptedException e ) {}
     }
 
-    /*
-     * IPS settings are very large, around 30MB.  Managing this through uvm's
-     * standard settings management causes Java garbage collection to go nuts
+    /**
+     * IPS settings are managed through a download hander to get/set.
+     *
+     * This seems like overkill.  However, we originally supported editing all
+     * signatures, resulting in a settings file around 300MB.  Managing this through
+     * uvm's standard settings management causes Java garbage collection to go nuts
      * and almost always causes uvm to reload.
      * 
      * Besides not wanting to re-work uvm's GC settings, the bigger issue
      * is that uvm does not need to know anything about IPS settings;
      * everything is handled in backend scripts that manage and generate
-     * configuration for Snort.
+     * configuration for Suricata.
      *
      * Therefore, the easiest way to get around the GC issue is to simply
      * make IPS settings use the download manager for downloads and uploads.
+     *
+     * Today we use rules as the primary means to control signatures.  In theory
+     * most people will use that instead of editing signatures manually either via
+     * via the UI or export/import.  However, the fact stlll remains that uvm 
+     * doesn't need to know anything about IPS settings and that's why we retain
+     * this method so no memory is used for maintaining IPS settings/
      *
      */
     private class IntrusionPreventionSettingsDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
 
+        /**
+         * IPS download/upload handler.
+         *
+         * @return Name of the download handler.
+         */
         @Override
         public String getName()
         {
             return "IntrusionPreventionSettings";
         }
         
+        /**
+         * Handle upload/download.
+         *
+         * @param req   HTTP request
+         * @param resp  HTTP response.
+         */
         public void serveDownload( HttpServletRequest req, HttpServletResponse resp )
         {
 
@@ -407,124 +954,45 @@ public class IntrusionPreventionApp extends AppBase
                 return;
             }
 
-            if( action.equals("load") ||
-                action.equals("wizard") ){
-                String settingsName;
-                if( action.equals("wizard") ){
-                    settingsName = app.getDefaultsSettingsFileName();
-                }else{
-                    settingsName = app.getSettingsFileName();
-                }
+            if(action.equals("signatures")){
+                resp.setCharacterEncoding(CHARACTER_ENCODING);
+                resp.setHeader("Content-Type","text/plain");
+
+                List<File> signatureFiles = new LinkedList<>();
+                getSignatureFiles( signatureFiles, new File(CURRENT_RULES_DIRECTORY));
+                getSignatureFiles( signatureFiles, new File(ENGINE_RULES_DIRECTORY));
+
+                byte[] buffer = new byte[1024];
+                int read;
+                FileInputStream fis = null;
                 try{
-                    resp.setCharacterEncoding(CHARACTER_ENCODING);
-                    resp.setHeader("Content-Type","application/json");
-
-                    File f = new File( settingsName );
-                    if( !f.exists() && 
-                        action.equals("load") ){
-                        app.initializeSettings();
-                    }
-                    byte[] buffer = new byte[1024];
-                    int read;
-                    FileInputStream fis = new FileInputStream(settingsName);
                     OutputStream out = resp.getOutputStream();
-                
-                    while ( ( read = fis.read( buffer ) ) > 0 ) {
-                        out.write( buffer, 0, read);
+                    for(File entry: signatureFiles){
+                        String entryLine = "# filename: " + entry.getName() + "\n";
+                        byte[] name = entryLine.getBytes(CHARACTER_ENCODING);
+                        out.write(name);
+                        fis = new FileInputStream(entry);
+                        while ( ( read = fis.read( buffer ) ) > 0 ) {
+                            out.write( buffer, 0, read);
+                        }
+                        fis.close();
                     }
-
-                    fis.close();
                     out.flush();
                     out.close();
-
                 } catch (Exception e) {
                     logger.warn("Failed to load IPS settings",e);
-                }
-                app.setUpdatedSettingsFlag( false );
-            }else if( action.equals("save")) {
-                /*
-                 * Save/uploads are a bit of a problem due to size.  For load/downloads,
-                 * the settings file is automatically compressed by Apache/Tomcat from 
-                 * around 30MB to 3MB which is hardly noticable.
-                 *
-                 * The reverse is almost never true and the client will attempt to upload 
-                 * without compression.  To get around this, we receive a JSON "patch"
-                 * which we pass to the configuration management scripts to integrate into settings.
-                 */
-                SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-                String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
-                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
-                int verifyResult = 1;
-                try{
-                    byte[] buffer = new byte[1024];
-                    int read;
-                    InputStream in = req.getInputStream();
-                    FileOutputStream fos = new FileOutputStream( tempPatchName );
-
-                    while ( ( read = in.read( buffer ) ) > 0 ) {
-                        fos.write( buffer, 0, read);
-                    }
-
-                    in.close();
-                    fos.flush();
-                    fos.close();
-
-                    /*
-                     * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
-                     */
-                    String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
-                    verifyResult = UvmContextFactory.context().execManager().execResult(verifyCommand);
-
-                    String configCmd = new String(
-                        System.getProperty("uvm.bin.dir") + 
-                        "/intrusion-prevention-sync-settings.py" + 
-                        " --app_id " + appId +
-                        " --rules /usr/share/untangle-snort-config/current" +
-                        " --settings " + tempSettingsName + 
-                        " --patch " + tempPatchName
-                    );
-                    String result = UvmContextFactory.context().execManager().execOutput(configCmd );
+                }finally{
                     try{
-                        String lines[] = result.split("\\r?\\n");
-                        for ( String line : lines ){
-                            if( line.trim().length() > 1 ){
-                                logger.warn("DownloadHandler: intrusion-prevention-sync-settings: " + line);
-                            }
+                        if(fis != null){
+                            fis.close();
                         }
-                    }catch( Exception e ){
-                        logger.warn("Unable to initialize settings: ", e );
+                    }catch( IOException e){
+                        logger.warn("Failed to close file");
                     }
-
-                    File fp = new File( tempPatchName );
-                    fp.delete();
-
-                }catch( IOException e ){
-                    logger.warn("Failed to save IPS settings");
-                }
-
-                String responseText = "{success:true}";
-                if( verifyResult == 0 ){
-                    app.saveSettings( tempSettingsName );
-                }else{
-                     responseText = "{success:false}";
-                }
-
-                try{
-                    resp.setCharacterEncoding(CHARACTER_ENCODING);
-                    resp.setHeader("Content-Type","application/json");
-
-                    OutputStream out = resp.getOutputStream();
-                    out.write( responseText.getBytes(), 0, responseText.getBytes().length );
-                    out.flush();
-                    out.close();
-                } catch (Exception e) {
-                    logger.warn("Failed to send IPS save response");
                 }
             }else if(action.equals("export")){
-                SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
                 String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
                 String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
-                int verifyResult = 1;
 
                 String changedSet = req.getParameter("arg4");
                 BufferedWriter writer = null;
@@ -534,42 +1002,29 @@ public class IntrusionPreventionApp extends AppBase
                      */
                     writer = new BufferedWriter( new FileWriter(tempPatchName));
                     writer.write(changedSet);
-                    writer.close();
 
                     /*
                      * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
                      */
                     String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
-                    verifyResult = UvmContextFactory.context().execManager().execResult(verifyCommand);
-
-                    String configCmd = new String(
-                        System.getProperty("uvm.bin.dir") + 
-                        "/intrusion-prevention-sync-settings.py" + 
-                        " --app_id " + appId +
-                        " --rules /usr/share/untangle-snort-config/current" +
-                        " --settings " + tempSettingsName + 
-                        " --patch " + tempPatchName + 
-                        " --export"
-                    );
-                    String result = UvmContextFactory.context().execManager().execOutput(configCmd );
-                    try{
-                        String lines[] = result.split("\\r?\\n");
-                        for ( String line : lines ){
-                            if( line.trim().length() > 1 ){
-                                logger.warn("DownloadHandler: export, intrusion-prevention-sync-settings: " + line);
-                            }
-                        }
-                    }catch( Exception e ){
-                        logger.warn("Unable to sync export settings: ", e );
-                    }
+                    UvmContextFactory.context().execManager().execResult(verifyCommand);
 
                     File fp = new File( tempPatchName );
                     fp.delete();
 
                 }catch( IOException e ){
                     logger.warn("Failed to synchronize export IPS settings");
+                }finally{
+                    if(writer != null){
+                        try{
+                            writer.close();
+                        }catch( Exception e ){
+                            logger.warn("Failed to synchronize export IPS settings");
+                        }
+                    }
                 }
 
+                FileInputStream fis = null;
                 try{
                     String oemName = UvmContextFactory.context().oemManager().getOemName();
                     String version = UvmContextFactory.context().version().replace(".","_");
@@ -583,55 +1038,77 @@ public class IntrusionPreventionApp extends AppBase
 
                     byte[] buffer = new byte[1024];
                     int read;
-                    FileInputStream fis = new FileInputStream(tempSettingsName);
+                    fis = new FileInputStream(tempSettingsName);
                     OutputStream out = resp.getOutputStream();
                 
                     while ( ( read = fis.read( buffer ) ) > 0 ) {
                         out.write( buffer, 0, read);
                     }
 
-                    fis.close();
                     out.flush();
                     out.close();
 
                 } catch (Exception e) {
                     logger.warn("Failed to export IPS settings",e);
+                } finally {
+                    if (fis != null){
+                        try {
+                            fis.close();
+                        }catch(Exception e){
+                            logger.warn("Unable to cloe IPS settings",e);
+                        }
+                    }
                 }
             }
+        }
+
+        /**
+         * [getSignatureFiles description]
+         * @param files [description]
+         * @param path  [description]
+         */
+        private void getSignatureFiles(List<File> files, File path){
+            if(path.isDirectory()){
+                File[] entries = path.listFiles();
+                for(File entry : entries){
+                    getSignatureFiles(files, entry);
+                }
+            }else{
+                if(path.getName().endsWith(".rules")){
+                    files.add(path);
+                }
+            }
+            return;
         }
     }
 
     /*
-     * The HOME_NET snort value is highly dependent on non-WAN interface values.
-     * If it changes, we must reconfigure snort.  However, reconfiguring snort
-     * is an expensive operation due to timeto restart snort.  To make this as painless
+     * The HOME_NET suricata value is highly dependent on non-WAN interface values.
+     * If it changes, we must reconfigure suricata.  However, reconfiguring suricata
+     * is an expensive operation due to timeto restart suricata.  To make this as painless
      * as possible, at startup we calculate initial HOME_NET value and recalc on
      * network changes.  Only if HOME_NET changes will a reconfigure occur.
      */
 
-    /*
-     * Build non-WAN networks
+    /**
+     * Build known networks
+     *
+     * @param networkSettings   Network settings.
+     * @return List of IP addresses.
      */
-    private List<IPMaskedAddress> calculateHomeNetworks( NetworkSettings networkSettings, boolean getWan )
+    private List<IPMaskedAddress> calculateHomeNetworks( NetworkSettings networkSettings)
     {
         boolean match;
         IPMaskedAddress maskedAddress;
-        List<IPMaskedAddress> addresses = new LinkedList<IPMaskedAddress>();
+        List<IPMaskedAddress> addresses = new LinkedList<>();
         /*
          * Pull static addresses
          */
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-            if ( interfaceSettings.getDisabled() || interfaceSettings.getBridged() ){
-                continue;
-            }
             if ( interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED ){
                 continue;
             }
             if ( interfaceSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC ){
-                continue;
-            }
-            if( ( ( getWan == false ) && ( interfaceSettings.getIsWan() == true ) ) ||
-                ( ( getWan == true ) && ( interfaceSettings.getIsWan() == false ) ) ){
                 continue;
             }
             
@@ -653,62 +1130,67 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }   
         }
-        if( getWan == true ){
-            /*
-             * Pull dynamic addresses for WAN interfaces
-             */
-            boolean isWanInterface;
-            for( InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus() ) {
-                isWanInterface = false;
-                for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-                    if( interfaceSettings.getInterfaceId() != intfStatus.getInterfaceId() ){
-                        continue;
-                    }
-                    if(interfaceSettings.getDisabled() || interfaceSettings.getBridged() ){
-                        continue;
-                    }
-                    if( interfaceSettings.getIsWan()){
-                        isWanInterface = true;
-                    }
-                }
-                if( isWanInterface == false ){
+        /*
+         * Pull dynamic addresses for WAN interfaces
+         */
+        boolean isWanInterface;
+        for( InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus() ) {
+            isWanInterface = false;
+            for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
+                if(interfaceSettings.getInterfaceId() != intfStatus.getInterfaceId()) {
                     continue;
                 }
-                if ( intfStatus.getV4Address() == null || intfStatus.getV4Netmask() == null ){
+                if(interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED) {
                     continue;
-                }
-                match = false;
-                maskedAddress = new IPMaskedAddress( intfStatus.getV4Address(), intfStatus.getV4PrefixLength());
-                for( IPMaskedAddress ma : addresses ){
-                    if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
-                        ( ma.getPrefixLength() == maskedAddress.getPrefixLength() ) ){
-                        match = true;
-                    }
-                }
-                if( match == false ){
-                    addresses.add( maskedAddress );
                 }
             }
+            if ( intfStatus.getV4Address() == null || intfStatus.getV4Netmask() == null ){
+                continue;
+            }
+            match = false;
+            maskedAddress = new IPMaskedAddress( intfStatus.getV4Address(), intfStatus.getV4PrefixLength());
+            for( IPMaskedAddress ma : addresses ){
+                if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                    ( ma.getPrefixLength() == maskedAddress.getPrefixLength() ) ){
+                    match = true;
+                }
+            }
+            if( match == false ){
+                addresses.add( maskedAddress );
+            }
         }
-        if( addresses.size() == 0 ){
-            /*
-             * No LAN interfaces were found.  This means the system
-             * is in bridged-to-WAN networking mode and we should
-             * use the WAN network as home.
-             */
-            addresses = calculateHomeNetworks(networkSettings, true);
+
+        /**
+         * Pull static routes
+         */
+        for (StaticRoute route : UvmContextFactory.context().networkManager().getNetworkSettings().getStaticRoutes()) {
+            match = false;
+            maskedAddress = new IPMaskedAddress( route.getNetwork(), route.getPrefix());
+            for( IPMaskedAddress ma : addresses ){
+                if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                    ( ma.getPrefixLength() == route.getPrefix() ) ){
+                    match = true;
+                }
+            }
+            if( match == false ){
+                addresses.add( maskedAddress );
+            }
         }
+
         return addresses; 
     }
 
-    /*
+    /**
      * Build active interface identifiers.
+     *
+     * @param networkSettings   Network settings.
+     * @return List of IP addresses.
      */
     private List<String> calculateInterfaces( NetworkSettings networkSettings )
     {
-        List<String> interfaces = new LinkedList<String>();
+        List<String> interfaces = new LinkedList<>();
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-            if ( interfaceSettings.getDisabled() ){
+            if (interfaceSettings.getConfigType() == InterfaceSettings.ConfigType.DISABLED) {
                 continue;
             }
             interfaces.add( interfaceSettings.getSystemDev() );
@@ -716,13 +1198,16 @@ public class IntrusionPreventionApp extends AppBase
         return interfaces; 
     }
 
-    /*
+    /**
      * Compare currently known non-WAN addresses to new addresses.  
      * If they're different, trigger a reconfigure event.
+     *
+     * @param networkSettings   Network settings.
+     * @throws Exception Exception if something happens.
      */
     private void networkSettingsEvent( NetworkSettings networkSettings ) throws Exception
     {
-        List<IPMaskedAddress> newHomeNetworks = calculateHomeNetworks( networkSettings, false );
+        List<IPMaskedAddress> newHomeNetworks = calculateHomeNetworks( networkSettings);
 
         boolean sameNetworks = true;
         if( newHomeNetworks.size() != this.homeNetworks.size() ){
@@ -738,20 +1223,31 @@ public class IntrusionPreventionApp extends AppBase
         }
         if( sameNetworks == false ){
             this.homeNetworks = newHomeNetworks;
-            this.interfaceIds = calculateInterfaces(networkSettings);
-            this.reconfigure();
+            this.reconfigure(false);
         }
     }
 
+    /**
+     * Hook into network setting saves.
+     */
     private class IntrusionPreventionNetworkSettingsHook implements HookCallback
     {
+        /**
+        * @return Name of callback hook
+        */
         public String getName()
         {
             return "intrusion-prevention-network-settings-change-hook";
         }
 
-        public void callback( Object o )
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
+        public void callback( Object... args )
         {
+            Object o = args[0];
             if ( ! (o instanceof NetworkSettings) ) {
                 logger.warn( "Invalid network settings: " + o);
                 return;

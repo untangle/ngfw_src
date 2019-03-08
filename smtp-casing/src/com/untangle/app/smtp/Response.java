@@ -23,10 +23,23 @@ public class Response implements Token
     private int m_code;
     private String[] m_args;
 
+    /**
+     * Constructor using code.
+     *
+     * @param  code Integer code to crate response with/
+     * @return      Instance of Reponse.
+     */
     public Response(int code) {
         this(code, "");
     }
 
+    /**
+     * Constructor using code and argument.
+     *
+     * @param  code Integer code to crate response with/
+     * @param  arg  String of argument.
+     * @return      Instance of Reponse.
+     */
     public Response(int code, String arg) {
         m_code = code;
         if (arg == null) {
@@ -35,6 +48,13 @@ public class Response implements Token
         m_args = new String[] { arg };
     }
 
+    /**
+     * Constructor using code and array of arguments.
+     *
+     * @param  code Integer code to crate response with/
+     * @param  args Arrat of String of argument.
+     * @return      Instance of Reponse.
+     */
     public Response(int code, String[] args) {
         m_code = code;
         m_args = (args == null ? BLANK_ARGS : args);
@@ -42,6 +62,8 @@ public class Response implements Token
 
     /**
      * Get the numerical code associated with this response
+     *
+     * @return integer of code.
      */
     public int getCode()
     {
@@ -58,6 +80,11 @@ public class Response implements Token
         return m_args;
     }
 
+    /**
+     * Return bytes from response.
+     *
+     * @return ByteBuffer object of bytes.
+     */
     public ByteBuffer getBytes()
     {
         int len = 0;
@@ -96,6 +123,8 @@ public class Response implements Token
 
     /**
      * For debug logging.
+     *
+     * @return Debug result.
      */
     public String toDebugString()
     {

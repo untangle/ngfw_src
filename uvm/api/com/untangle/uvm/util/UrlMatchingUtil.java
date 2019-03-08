@@ -1,3 +1,7 @@
+/**
+ * $Id$
+ */
+
 package com.untangle.uvm.util;
 
 import java.net.InetAddress;
@@ -9,6 +13,9 @@ import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.app.UrlMatcher;
 
+/**
+ * URI matching utility
+ */
 public class UrlMatchingUtil
 {
     private static final Logger logger = Logger.getLogger(UrlMatchingUtil.class);
@@ -16,14 +23,13 @@ public class UrlMatchingUtil
     /**
      * normalize the hostname
      * 
-     * @param host
-     *            host of the URL
+     * @param oldhost
+     *        host of the URL
      * @return the normalized string for that hostname, or null if param is null
      */
     public static String normalizeHostname(String oldhost)
     {
-        if (null == oldhost)
-            return null;
+        if (null == oldhost) return null;
 
         // lowercase name
         String host = oldhost.toLowerCase();
@@ -44,7 +50,7 @@ public class UrlMatchingUtil
      * <b>This method assumes trailing dots are stripped from host.</b>
      * 
      * @param host
-     *            a <code>String</code> value
+     *        a <code>String</code> value
      * @return a <code>String</code> value
      */
     public static String nextHost(String host)
@@ -65,17 +71,18 @@ public class UrlMatchingUtil
     /**
      * checkSiteList checks the host+uri against the provided list
      * 
-     * @param host
-     *            host of the URL
+     * @param domain
+     *        host of the URL
      * @param uri
-     *            URI of the URL
+     *        URI of the URL
+     * @param rules
+     *        The list of rules
      * @return the rule that matches, null if DNE6
      */
-    public static GenericRule checkSiteList( String domain, String uri, List<GenericRule> rules )
+    public static GenericRule checkSiteList(String domain, String uri, List<GenericRule> rules)
     {
         for (GenericRule rule : rules) {
-            if (rule.getEnabled() != null && !rule.getEnabled())
-                continue;
+            if (rule.getEnabled() != null && !rule.getEnabled()) continue;
 
             Object matcherO = rule.attachment();
             UrlMatcher matcher = null;
@@ -86,13 +93,13 @@ public class UrlMatchingUtil
              * and attached to the rule
              */
             if (matcherO == null || !(matcherO instanceof UrlMatcher)) {
-                matcher = new UrlMatcher( rule.getString() );
-                rule.attach( matcher );
+                matcher = UrlMatcher.getMatcher(rule.getString());
+                rule.attach(matcher);
             } else {
                 matcher = (UrlMatcher) matcherO;
             }
 
-            if ( matcher.isMatch( domain, uri ) ) {
+            if (matcher.isMatch(domain, uri)) {
                 logger.debug("LOG: " + domain + uri + " in site list");
                 return rule;
             }
@@ -105,14 +112,15 @@ public class UrlMatchingUtil
      * checkClientPassList checks the clientIp against the client pass list
      * 
      * @param clientIp
-     *            IP of the host
+     *        IP of the host
+     * @param rulesList
+     *        The list of rules
      * @return the rule that matches, null if DNE
      */
     public static GenericRule checkClientList(InetAddress clientIp, List<GenericRule> rulesList)
     {
         for (GenericRule rule : rulesList) {
-            if (rule.getEnabled() != null && !rule.getEnabled())
-                continue;
+            if (rule.getEnabled() != null && !rule.getEnabled()) continue;
 
             Object matcherO = rule.attachment();
             IPMatcher matcher = null;
@@ -124,12 +132,12 @@ public class UrlMatchingUtil
              */
             if (matcherO == null || !(matcherO instanceof IPMatcher)) {
                 matcher = new IPMatcher(rule.getString());
-                rule.attach( matcher );
+                rule.attach(matcher);
             } else {
                 matcher = (IPMatcher) matcherO;
             }
 
-            if ( matcher.isMatch(clientIp) ) {
+            if (matcher.isMatch(clientIp)) {
                 logger.debug("LOG: " + clientIp + " in client pass list");
                 return rule;
             }
@@ -137,5 +145,4 @@ public class UrlMatchingUtil
 
         return null;
     }
-
 }

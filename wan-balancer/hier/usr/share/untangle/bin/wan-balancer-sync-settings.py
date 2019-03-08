@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Sync Settings is takes the wan-balancer settings JSON file and "syncs" it to the 
 # It reads through the settings and writes the appropriate files:
 #
-# /etc/untangle-netd/iptables-rules.d/330-wan-balancer-rules
-# /etc/untangle-netd/post-network-hook.d/040-wan-balancer
+# /etc/untangle/iptables-rules.d/330-wan-balancer-rules
+# /etc/untangle/post-network-hook.d/040-wan-balancer
 #
 # This script should be called after changing the settings file to "sync" the settings to the OS.
 
@@ -17,8 +17,9 @@ import os
 import traceback
 import json
 import datetime
+import itertools
 
-from   netd import *
+from   sync import *
 
 class ArgumentParser(object):
     def __init__(self):
@@ -57,8 +58,8 @@ class ArgumentParser(object):
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
-        except getopt.GetoptError, exc:
-            print exc
+        except getopt.GetoptError as exc:
+            print(exc)
             printUsage()
             exit(1)
 
@@ -108,23 +109,23 @@ def write_iptables_route_rule( file, route_rule, verbosity=0 ):
 
     if 'destinationWan' in route_rule:
         if int(route_rule.get('destinationWan')) == 0:
-            target = " -j RETURN " 
+            target = " -j ACCEPT " 
         else:
             target = " -j MARK --set-mark 0x%04X/0x%04X " % ( int(route_rule.get('destinationWan'))<<8 ,0xff00) 
     else:
-        print "ERROR: invalid route rule target: %s" + str(route_rule)
+        print("ERROR: invalid route rule target: %s" + str(route_rule))
         return
 
     description = "Route Rule #%i" % int(route_rule['ruleId'])
+    commands = IptablesUtil.conditions_to_prep_commands( route_rule['conditions']['list'], description, verbosity );
     iptables_conditions = IptablesUtil.conditions_to_iptables_string( route_rule['conditions']['list'], description, verbosity );
-
     iptables_commands = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + target for ipt in iptables_conditions ]
-    iptables_commands_return = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + " -j RETURN " for ipt in iptables_conditions ]
-
+    accept_commands = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + " -j ACCEPT " for ipt in iptables_conditions ]
+    all_commands = list(itertools.chain(*zip(iptables_commands,accept_commands)))
+    commands += all_commands
+    
     file.write("# %s\n" % description);
-    for cmd in iptables_commands:
-        file.write(cmd + "\n")
-    for cmd in iptables_commands_return:
+    for cmd in commands:
         file.write(cmd + "\n")
     return
 
@@ -177,9 +178,9 @@ fi
         for route_rule in route_rules:
             try:
                 write_iptables_route_rule( file, route_rule, parser.verbosity );
-            except Exception,e:
+            except Exception as e:
                 traceback.print_exc(e)
-    except Exception,e:
+    except Exception as e:
         traceback.print_exc(e)
 
 def write_route_file( file, verbosity=0 ):
@@ -209,7 +210,7 @@ def write_route_file( file, verbosity=0 ):
             interfaceId = int(intf.get('interfaceId'))
             weight = int(settings.get('weights')[intf.get('interfaceId') - 1])
             if ( weight != 0 ):
-                file.write("if [ ! -z  \"`ip rule ls | grep fwmark | grep uplink.%i 2>/dev/null`\" ] ; then " % (interfaceId) + "\n")
+                file.write("if [ ! -z  \"`ip rule ls | grep fwmark | egrep 'uplink.%i\s' 2>/dev/null`\" ] ; then " % (interfaceId) + "\n")
                 file.write("    ROUTE_STR=\"$ROUTE_STR `ip route show table uplink.%i | sed -e 's/default/nexthop/'` weight %i\"" % (interfaceId, weight) + "\n")
                 file.write("fi" + "\n")
     file.write("\n");
@@ -250,8 +251,8 @@ try:
     settingsData = settingsFile.read()
     settingsFile.close()
     settings = json.loads(settingsData)
-except IOError,e:
-    print "Unable to read settings file: ",e
+except IOError as e:
+    print("Unable to read settings file: ",e)
     exit(1)
 
 try:
@@ -259,13 +260,13 @@ try:
     networkSettingsData = networkSettingsFile.read()
     networkSettingsFile.close()
     networkSettings = json.loads(networkSettingsData)
-except IOError,e:
-    print "Unable to read network settings file: ",e
+except IOError as e:
+    print("Unable to read network settings file: ",e)
     exit(1)
 
 try:
     check_settings(settings)
-except Exception,e:
+except Exception as e:
     traceback.print_exc(e)
     exit(1)
 
@@ -274,10 +275,10 @@ NetworkUtil.settings = networkSettings
 
 fixup_settings()
 
-if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
+if parser.verbosity > 0: print("Syncing %s to system..." % parser.file)
 
 # Write 330-wan-balancer iptables file
-filename = parser.prefix + "/etc/untangle-netd/iptables-rules.d/330-wan-balancer"
+filename = parser.prefix + "/etc/untangle/iptables-rules.d/330-wan-balancer"
 fileDir = os.path.dirname( filename )
 if not os.path.exists( fileDir ):
     os.makedirs( fileDir )
@@ -290,11 +291,11 @@ file.flush()
 file.close()
 os.system("chmod a+x %s" % filename)
 
-if parser.verbosity > 0: print "Wrote %s" % filename
+if parser.verbosity > 0: print("Wrote %s" % filename)
 
 
 # Write 040-wan-balancer post network hook file
-filename = parser.prefix + "/etc/untangle-netd/post-network-hook.d/040-wan-balancer"
+filename = parser.prefix + "/etc/untangle/post-network-hook.d/040-wan-balancer"
 fileDir = os.path.dirname( filename )
 if not os.path.exists( fileDir ):
     os.makedirs( fileDir )
@@ -307,5 +308,5 @@ file.flush()
 file.close()
 os.system("chmod a+x %s" % filename)
 
-if parser.verbosity > 0: print "Wrote %s" % filename
+if parser.verbosity > 0: print("Wrote %s" % filename)
 

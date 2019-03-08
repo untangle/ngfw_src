@@ -2,15 +2,15 @@
 
 deps = []
 
-%w(smtp ftp http).each do |c|
+%w(untangle-app-smtp untangle-app-ftp untangle-app-http).each do |c|
   deps << BuildEnv::SRC[c]['src']
 end
 
-virus = BuildEnv::SRC['virus-blocker-base']
+virus = BuildEnv::SRC['untangle-base-virus-blocker']
 
-AppBuilder.makeBase(BuildEnv::SRC, 'virus-blocker-base', 'virus-blocker-base', deps)
+AppBuilder.makeBase(BuildEnv::SRC, 'untangle-base-virus-blocker', 'virus-blocker-base', deps)
 
-http = BuildEnv::SRC['http']
+http = BuildEnv::SRC['untangle-app-http']
 
 deps = [virus['src'], http['src']]
 

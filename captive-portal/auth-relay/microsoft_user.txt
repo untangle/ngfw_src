@@ -1,0 +1,1 @@
+{"@odata.context":"https://graph.microsoft.com/v1.0/$metadata#users/$entity","givenName":"Untangle","surname":"Engineering","displayName":"Untangle Engineering","id":"1111111111111111","userPrincipalName":"engineering@untangle.com","businessPhones":[],"jobTitle":null,"mail":null,"mobilePhone":null,"officeLocation":null,"preferredLanguage":null}

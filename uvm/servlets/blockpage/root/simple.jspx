@@ -4,10 +4,10 @@
       xmlns="http://www.w3.org/1999/xhtml">
 
   <jsp:output omit-xml-declaration="true"
-      doctype-root-element="html"      
+      doctype-root-element="html"
       doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
-  
+
   <jsp:directive.page contentType="text/html"/>
 
   <head>
@@ -21,10 +21,10 @@
   <body id="simple">
     <div id="content">
       <div id="header">
-        <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.png" alt=""/></a>
+        <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.png" alt="" style="max-width: 150px; max-height: 140px;"/></a>
         <h1><span><c:out value="${title}"/></span></h1>
       </div>
-      
+
       <div id="main">
         <c:out escapeXml="false" value="${requestScope.content}"/>
       </div>
@@ -34,9 +34,9 @@
 
       </div>
     </div>
-    
+
     <!-- This is used in the CSS Zen Garden -->
     <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
     <div id="extra-div-1"><span></span></div>
-  </body>  
+  </body>
 </html>

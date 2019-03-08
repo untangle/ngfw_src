@@ -1,6 +1,8 @@
 Ext.define('Ung.config.network.view.NatRules', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.network.natrules',
+    alias: 'widget.config-network-nat-rules',
+    itemId: 'nat-rules',
+    scrollable: true,
 
     viewModel: true,
 
@@ -19,21 +21,12 @@ Ext.define('Ung.config.network.view.NatRules', {
         xtype: 'ungrid',
         flex: 3,
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
-        listProperty: 'settings.natRules.list',
-        ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
+        emptyText: 'No NAT Rules defined'.t(),
 
-        conditions: [
-            Condition.dstAddr,
-            Condition.dstPort,
-            Condition.dstIntf,
-            Condition.srcAddr,
-            Condition.srcPort,
-            Condition.srcIntf,
-            Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
-        ],
+        listProperty: 'settings.natRules.list',
 
         emptyRow: {
             ruleId: -1,
@@ -51,50 +44,49 @@ Ext.define('Ung.config.network.view.NatRules', {
 
         columns: [{
             header: 'Rule Id'.t(),
-            width: 70,
+            width: Renderer.idWidth,
             align: 'right',
             resizable: false,
             dataIndex: 'ruleId',
-            renderer: function(value) {
-                return value < 0 ? 'new'.t() : value;
-            }
+            renderer: Renderer.id
         }, {
             xtype: 'checkcolumn',
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70
+            width: Renderer.booleanWidth,
         }, {
             header: 'Description',
-            width: 200,
-            dataIndex: 'description',
-            renderer: function (value) {
-                return value || '<em>no description<em>';
-            }
-        }, {
-            header: 'Conditions'.t(),
-            flex: 1,
-            dataIndex: 'conditions',
-            renderer: 'conditionsRenderer'
-        }, {
+            width: Renderer.messageWidth,
+            dataIndex: 'description'
+        },
+        Column.conditions,
+        {
             header: 'NAT Type'.t(),
             dataIndex: 'auto',
-            width: 100,
-            renderer: function (val) {
-                return val ? 'Auto'.t() : 'Custom'.t();
-            }
+            width: Renderer.idWidth,
+            renderer: Ung.config.network.MainController.natTypeRenderer
         }, {
             header: 'New Source'.t(),
             dataIndex: 'newSource',
-            width: 120,
-            renderer: function (value, metaData, record) {
-                return record.get('auto') ? '' : value;
-            }
+            width: Renderer.networkWidth,
+            renderer: Ung.config.network.MainController.natNewSourceRenderer
         }],
         editorFields: [
             Field.enableRule('Enable NAT Rule'.t()),
             Field.description,
-            Field.conditions,
+            Field.conditions(
+                'com.untangle.uvm.network.NatRuleCondition',[
+                "DST_ADDR",
+                "DST_PORT",
+                "DST_INTF",
+                "SRC_ADDR",
+                "SRC_PORT",
+                "SRC_INTF",
+                "PROTOCOL",
+                "CLIENT_TAGGED",
+                "SERVER_TAGGED"
+            ]),
             Field.natType,
             Field.natSource
         ]

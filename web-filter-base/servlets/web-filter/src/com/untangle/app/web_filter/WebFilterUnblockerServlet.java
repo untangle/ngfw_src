@@ -13,18 +13,29 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.app.web_filter.WebFilterBase;
+
+/**
+ * Implementation of the Web Filter unblock page servlet
+ */
 
 @SuppressWarnings("serial")
 public class WebFilterUnblockerServlet extends HttpServlet
 {
 
+    /**
+     * Handle for POST requests
+     * 
+     * @param request
+     *        The web request
+     * @param response
+     *        The server response
+     * @throws ServletException
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException
     {
-        Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
+        Map<String, String> i18n_map = UvmContextFactory.context().languageManager().getTranslations("untangle");
 
         response.setContentType("text/xml");
         response.addHeader("Cache-Control", "no-cache");
@@ -35,18 +46,22 @@ public class WebFilterUnblockerServlet extends HttpServlet
 
         AppManager nm = UvmContextFactory.context().appManager();
         WebFilterBase app = null;
-        if ( app == null )
-            try {app = (WebFilterBase) nm.app( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
-        if ( app == null )
-            try {app = (WebFilterBase) nm.app( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
+        if (app == null) try {
+            app = (WebFilterBase) nm.app(Long.parseLong(request.getParameter("tid")));
+        } catch (Exception e) {
+        }
+        if (app == null) try {
+            app = (WebFilterBase) nm.app(Long.parseLong(request.getParameter("appid")));
+        } catch (Exception e) {
+        }
 
         try {
-            if ( app == null ) { 
-                response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "App ID not found.", i18n_map ));
+            if (app == null) {
+                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr("App ID not found.", i18n_map));
                 return;
             }
-            if ( !(app instanceof WebFilter) ) {
-                response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Invalid App ID.", i18n_map ));
+            if (!(app instanceof WebFilter)) {
+                response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr("Invalid App ID.", i18n_map));
                 return;
             }
 
@@ -60,4 +75,3 @@ public class WebFilterUnblockerServlet extends HttpServlet
         }
     }
 }
-

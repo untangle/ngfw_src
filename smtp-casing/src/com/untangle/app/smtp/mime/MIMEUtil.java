@@ -43,6 +43,8 @@ public class MIMEUtil
 
     /**
      * Return a list of all parts of a messages
+     * @param msg MimeMessage to process.
+     * @return List of Part.
      */
     public static List<Part> getParts(MimeMessage msg)
     {
@@ -57,6 +59,13 @@ public class MIMEUtil
         return list;
     }
 
+    /**
+     * Get parts from content.
+     * @param  list               List of Part
+     * @param  part               Part to process.
+     * @throws IOException        If unable to process.
+     * @throws MessagingException If message exception.
+     */
     private static void getParts(List<Part> list, Part part) throws IOException, MessagingException
     {
         Object msgContent = part.getContent();
@@ -137,7 +146,8 @@ public class MIMEUtil
 
     /**
      * Changes the part into an empty "text/plain" part, discarding any previous content
-     * 
+     *
+     * @param part Part to process.
      * @throws MessagingException
      */
     public static void convertToEmptyTextPart(Part part) throws MessagingException
@@ -161,6 +171,8 @@ public class MIMEUtil
      *            the new body content (should be line-formatted such that lines are not longer than 76 chars).
      * @param oldMsg
      *            the old message
+     * @return MimeMessage.
+     * @throws Exception on error.
      */
     public static MimeMessage simpleWrap(String plainBodyContent, MimeMessage oldMsg) throws Exception
     {
@@ -226,6 +238,7 @@ public class MIMEUtil
 
     /**
      * Creates a unique boundary value
+     * @return String of boundary.
      */
     public static String makeBoundary()
     {
@@ -238,6 +251,11 @@ public class MIMEUtil
         return sb.toString();
     }
 
+    /**
+     * Determine if address is empty.
+     * @param  address InternetAddress to process.
+     * @return         true if empty, false otherwise.
+     */
     public static boolean isNullAddress(InternetAddress address)
     {
         if (address.getAddress() == null || address.getAddress().trim().length() == 0)
@@ -248,6 +266,9 @@ public class MIMEUtil
     /**
      * Helper method to parse a single address, which may or may not contains a personal. Should contain only one
      * address. If there are no addresses, the {@link #NULL_ADDRESS NULL_ADDRESS} is returned. <br>
+     * @param str String to parse.
+     * @return InternetAddress parsed from string.
+     * @throws AddressException on conversion error.
      */
     public static InternetAddress parseEmailAddress(String str) throws AddressException
     {
@@ -267,7 +288,8 @@ public class MIMEUtil
     /**
      * Convert to a String suitable for SMTP transport. This removes any of the "personal" stuff, and makes sure it has
      * leading and trailing "<>".
-     * 
+     * @param address InternetAddress to process.
+     * @return String of InternetAddress.
      */
     public static String toSMTPString(InternetAddress address)
     {
@@ -288,6 +310,11 @@ public class MIMEUtil
         return ensureBrackets(address.toString());
     }
 
+    /**
+     * Add brackets if needed.
+     * @param  str String to add brackets around.
+     * @return     String with brackets.
+     */
     private static String ensureBrackets(String str)
     {
         if (0 != str.indexOf('<')) {
@@ -299,6 +326,11 @@ public class MIMEUtil
         return str;
     }
 
+    /**
+     * Return number of attachments from message.
+     * @param  msg MimeMessage to process.
+     * @return     Number of attachments.
+     */
     public static int attachmentCount(MimeMessage msg)
     {
         int cnt = 0;

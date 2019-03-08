@@ -4,14 +4,20 @@
 
 package com.untangle.app.application_control;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import java.io.Serializable;
 import org.json.JSONString;
 import org.json.JSONObject;
 
+/**
+ * Class to store cumulative traffic statistics
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
-public class ApplicationControlStatistics implements java.io.Serializable, JSONString
+public class ApplicationControlStatistics implements Serializable, JSONString
 {
     // counters for sessions, allowed, flagged, and blocked
     private AtomicLong sessionCount = new AtomicLong();
@@ -36,111 +42,39 @@ public class ApplicationControlStatistics implements java.io.Serializable, JSONS
         logicLiveCount = 0;
     }
 
-    // functions to retrieve the session counters
+    // THIS IS FOR ECLIPSE - @formatter:off
 
-    public long getSessionCount()
-    {
-        return (sessionCount.get());
-    }
+    public long getSessionCount() { return (sessionCount.get()); }
+    public void IncrementSessionCount() { sessionCount.incrementAndGet(); }
 
-    public long getAllowedCount()
-    {
-        return (allowedCount.get());
-    }
+    public long getAllowedCount() { return (allowedCount.get()); }
+    public void IncrementAllowedCount() { allowedCount.incrementAndGet(); }
 
-    public long getFlaggedCount()
-    {
-        return (flaggedCount.get());
-    }
+    public long getFlaggedCount() { return (flaggedCount.get()); }
+    public void IncrementFlaggedCount() { flaggedCount.incrementAndGet(); }
+    
+    public long getBlockedCount() { return (blockedCount.get()); }
+    public void IncrementBlockedCount() { blockedCount.incrementAndGet(); }
 
-    public long getBlockedCount()
-    {
-        return (blockedCount.get());
-    }
+    public long getProtoTotalCount() { return (protoTotalCount); }
+    public void setProtoTotalCount(long value) { protoTotalCount = value; }
 
-    // functions to increment the session counters
+    public long getProtoFlagCount() { return (protoFlagCount); }
+    public void setProtoFlagCount(long value) { protoFlagCount = value; }
 
-    public void IncrementSessionCount()
-    {
-        sessionCount.incrementAndGet();
-    }
+    public long getProtoBlockCount() { return (protoBlockCount); }
+    public void setProtoBlockCount(long value) { protoBlockCount = value; }
 
-    public void IncrementAllowedCount()
-    {
-        allowedCount.incrementAndGet();
-    }
+    public long getProtoTarpitCount() { return (protoTarpitCount); }
+    public void setProtoTarpitCount(long value) { protoTarpitCount = value; }
 
-    public void IncrementFlaggedCount()
-    {
-        flaggedCount.incrementAndGet();
-    }
+    public long getLogicTotalCount() { return (logicTotalCount); }
+    public void setLogicTotalCount(long value) { logicTotalCount = value; }
 
-    public void IncrementBlockedCount()
-    {
-        blockedCount.incrementAndGet();
-    }
+    public long getLogicLiveCount() { return (logicLiveCount); }
+    public void setLogicLiveCount(long value) { logicLiveCount = value; }
 
-    // functions used to get and set the rule counts displayed in the UI
-
-    public long getProtoTotalCount()
-    {
-        return (protoTotalCount);
-    }
-
-    public void setProtoTotalCount(long value)
-    {
-        protoTotalCount = value;
-    }
-
-    public long getProtoFlagCount()
-    {
-        return (protoFlagCount);
-    }
-
-    public void setProtoFlagCount(long value)
-    {
-        protoFlagCount = value;
-    }
-
-    public long getProtoBlockCount()
-    {
-        return (protoBlockCount);
-    }
-
-    public void setProtoBlockCount(long value)
-    {
-        protoBlockCount = value;
-    }
-
-    public long getProtoTarpitCount()
-    {
-        return (protoTarpitCount);
-    }
-
-    public void setProtoTarpitCount(long value)
-    {
-        protoTarpitCount = value;
-    }
-
-    public long getLogicTotalCount()
-    {
-        return (logicTotalCount);
-    }
-
-    public void setLogicTotalCount(long value)
-    {
-        logicTotalCount = value;
-    }
-
-    public long getLogicLiveCount()
-    {
-        return (logicLiveCount);
-    }
-
-    public void setLogicLiveCount(long value)
-    {
-        logicLiveCount = value;
-    }
+    // THIS IS FOR ECLIPSE - @formatter:on
 
     public String toJSONString()
     {

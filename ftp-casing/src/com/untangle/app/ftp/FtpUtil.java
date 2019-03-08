@@ -22,6 +22,11 @@ class FtpUtil
     static final Pattern EXTENDED_PORT_PATTERN;
     static final Pattern EXTENDED_PASV_PATTERN;
 
+    /**
+     * Parse the PORT command
+     * @param s - the command string
+     * @return the addr/port pair
+     */
     static InetSocketAddress parsePort(String s)
     {
         String[] toks = Pattern.compile(",").split(s);
@@ -49,6 +54,11 @@ class FtpUtil
         return new InetSocketAddress(addr, port);
     }
 
+    /**
+     * Parse the EPRT command
+     * @param s - the command string
+     * @return the addr/port pair
+     */
     static InetSocketAddress parseExtendedPort(String s)
     {
         Matcher matcher = EXTENDED_PORT_PATTERN.matcher( s );
@@ -64,6 +74,11 @@ class FtpUtil
         }
     }
 
+    /**
+     * Parse the PASV command
+     * @param s - the command string
+     * @return the inet address
+     */
     static InetSocketAddress parseExtendedPasvReply(String s)
     {
         Matcher matcher = EXTENDED_PASV_PATTERN.matcher(s);
@@ -79,6 +94,11 @@ class FtpUtil
         }
     }
 
+    /**
+     * Unparse/create a port command from a socket address
+     * @param socketAddress
+     * @return the command string
+     */
     static String unparsePort(InetSocketAddress socketAddress)
     {
         StringBuffer sb = new StringBuffer();
@@ -96,6 +116,11 @@ class FtpUtil
         return sb.toString();
     }
 
+    /**
+     * Unparse/create a port command string from a socket address
+     * @param socketAddress
+     * @return the command string
+     */
     static String unparseExtendedPort(InetSocketAddress socketAddress)
     {
         StringBuffer sb = new StringBuffer();
@@ -109,6 +134,11 @@ class FtpUtil
         return sb.toString();
     }
 
+    /**
+     * Unparse/create a pasv reply string from a socket address
+     * @param socketAddress
+     * @return the reply string
+     */
     static String unparseExtendedPasvReply(InetSocketAddress socketAddress)
     {
         StringBuffer sb = new StringBuffer();

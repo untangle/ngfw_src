@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 /**
  * Streams a file out as chunks.
- * 
  */
 public class VirusChunkStreamer implements TokenStreamer
 {
@@ -42,6 +41,20 @@ public class VirusChunkStreamer implements TokenStreamer
     private Iterator<Token> iterator = null;
     private StreamState state;
 
+    /**
+     * Constructor
+     * 
+     * @param file
+     *        The file
+     * @param channel
+     *        The file channel
+     * @param beginTokens
+     *        Begin token list
+     * @param endTokens
+     *        End token list
+     * @param closeWhenDone
+     *        Close when done flag
+     */
     private VirusChunkStreamer(File file, FileChannel channel, List<Token> beginTokens, List<Token> endTokens, boolean closeWhenDone)
     {
         this.file = file;
@@ -58,27 +71,76 @@ public class VirusChunkStreamer implements TokenStreamer
         }
     }
 
+    /**
+     * Constructor
+     * 
+     * @param file
+     *        The file
+     * @param channel
+     *        The file channel
+     * @param beginToken
+     *        Begin token
+     * @param endToken
+     *        End token
+     * @param closeWhenDone
+     *        Close when done flag
+     */
     public VirusChunkStreamer(File file, FileChannel channel, Token beginToken, Token endToken, boolean closeWhenDone)
     {
         this(file, channel, null == beginToken ? null : Arrays.asList(new Token[] { beginToken }), null == endToken ? null : Arrays.asList(new Token[] { endToken }), closeWhenDone);
     }
 
+    /**
+     * Constructor
+     * 
+     * @param file
+     *        The file
+     * @param beginToken
+     *        Begin token
+     * @param endToken
+     *        End token
+     * @param closeWhenDone
+     *        Close when done flag
+     * @throws IOException
+     */
     public VirusChunkStreamer(File file, Token beginToken, Token endToken, boolean closeWhenDone) throws IOException
     {
         this(file, new FileInputStream(file).getChannel(), beginToken, endToken, closeWhenDone);
     }
 
+    /**
+     * Constructor
+     * 
+     * @param fileManager
+     *        File manager
+     * @param beginToken
+     *        Begin token
+     * @param endToken
+     *        End token
+     * @param closeWhenDone
+     *        Close when done flag
+     */
     public VirusChunkStreamer(VirusFileManager fileManager, Token beginToken, Token endToken, boolean closeWhenDone)
     {
         this(null, null, null == beginToken ? null : Arrays.asList(new Token[] { beginToken }), null == endToken ? null : Arrays.asList(new Token[] { endToken }), closeWhenDone);
         this.fileManager = fileManager;
     }
 
+    /**
+     * Checks the close when done flag
+     * 
+     * @return True if close when done is enabled, otherwise false
+     */
     public boolean closeWhenDone()
     {
         return closeWhenDone;
     }
 
+    /**
+     * Get the next token
+     * 
+     * @return The next token
+     */
     @SuppressWarnings("fallthrough")
     public Token nextToken()
     {
@@ -135,6 +197,14 @@ public class VirusChunkStreamer implements TokenStreamer
         }
     }
 
+    /**
+     * Reads data from the data source
+     * 
+     * @param buf
+     *        The destination for the data
+     * @return The result from the read command
+     * @throws IOException
+     */
     int localRead(ByteBuffer buf) throws IOException
     {
         if (fileManager != null) return (fileManager.read(buf));

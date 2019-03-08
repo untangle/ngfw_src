@@ -4,15 +4,7 @@
 package com.untangle.app.reports;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -30,7 +22,7 @@ public class EmailTemplate implements JSONString, Serializable
     private String title;
     private String description;
     private Integer interval;
-    private Integer intervalWeekStart = 1;
+    private Integer intervalWeekStart = 0;
     private Boolean mobile;
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
     private List<String> enabledConfigIds = null;

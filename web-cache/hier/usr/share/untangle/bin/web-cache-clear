@@ -10,7 +10,7 @@ if [ ! -d "$CACHE_DIR" ]; then
 fi
 
 # Stop the Squid process
-/etc/init.d/squid stop
+systemctl stop squid
 
 # Wipe everything in the cache directory
 /bin/rm -r -f "$CACHE_DIR"/*
@@ -19,6 +19,6 @@ fi
 /usr/sbin/squid -z
 
 # Start the Squid process
-/etc/init.d/squid start
+systemctl start squid
 
 exit 0
