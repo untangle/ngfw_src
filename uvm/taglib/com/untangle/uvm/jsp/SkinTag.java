@@ -15,32 +15,51 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
  * but since global tags are loaded in a different classloader, they cannot see
  * the UVM classes, and so the template has to pass in the name of the skin.
  */
-
 public class SkinTag extends SimpleTagSupport
 {
     private String src = null;
     private String name = null;
 
+    /**
+     * getSrc
+     * @return
+     */
     public String getSrc()
     {
         return this.src;
     }
 
+    /**
+     * setSrc
+     * @param newValue
+     */
     public void setSrc( String newValue )
     {
         this.src = newValue;
     }
     
+    /**
+     * getName
+     * @return
+     */
     public String getName()
     {
         return this.name;
     }
 
+    /**
+     * setName
+     * @param newValue
+     */
     public void setName( String newValue )
     {
         this.name = newValue;
     }
     
+    /**
+     * doTag
+     * @throws JspException
+     */
     public final void doTag() throws JspException
     {
         PageContext pageContext = (PageContext)getJspContext();
@@ -54,6 +73,7 @@ public class SkinTag extends SimpleTagSupport
         }
     }
 
+    /** release */
     public void release()
     {
         this.src = null;

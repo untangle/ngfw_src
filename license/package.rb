@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'license', 'license', [])
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-license', 'license', [])
 

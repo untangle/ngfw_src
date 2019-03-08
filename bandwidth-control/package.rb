@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'bandwidth-control', 'bandwidth-control', [])
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-bandwidth-control', 'bandwidth-control', [])

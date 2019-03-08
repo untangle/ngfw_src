@@ -4,7 +4,6 @@
 package com.untangle.uvm;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -18,12 +17,18 @@ import com.untangle.jvector.TCPSource;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.AppTCPSession;
 
+/**
+ * NetcapTCPHook is the global netcap TCP hook
+ */
 public class NetcapTCPHook implements NetcapCallback
 {
     private static NetcapTCPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
-
+    /**
+     * Get the NetcapTCPHook singleton
+     * @return NetcapTCPHook
+     */
     public static NetcapTCPHook getInstance()
     {
         if ( INSTANCE == null )
@@ -32,23 +37,40 @@ public class NetcapTCPHook implements NetcapCallback
         return INSTANCE;
     }
 
-    /* Singleton */
+    /**
+     * Singleton
+     */
     private NetcapTCPHook() {}
 
+    /**
+     * init
+     */
     private static synchronized void init()
     {
         if ( INSTANCE == null )
             INSTANCE = new NetcapTCPHook();
     }
 
+    /**
+     * process
+     * @param sessionID
+     */
     public void event( long sessionID )
     {
         Thread.currentThread().setName("Session " + sessionID);
         new TCPNetcapHook( sessionID ).run();
     }
 
+    /**
+     * noop
+     * @param conntrackPtr
+     * @param type
+     */
     public void event( long conntrackPtr, int type ) {}
     
+    /**
+     * TCPNetcapHook is instantiated per TCP session
+     */
     private class TCPNetcapHook extends NetcapHook
     {
         protected static final int TIMEOUT = -1;
@@ -65,6 +87,10 @@ public class NetcapTCPHook implements NetcapCallback
         protected final TCPSideListener clientSideListener = new TCPSideListener();
         protected final TCPSideListener serverSideListener = new TCPSideListener();
 
+        /**
+         * TCPNetcapHook
+         * @param id
+         */
         protected TCPNetcapHook( long id )
         {
             netcapTCPSession   = new NetcapTCPSession( id );
@@ -83,26 +109,47 @@ public class NetcapTCPHook implements NetcapCallback
                                            netcapTCPSession.serverSide().server().host().getHostAddress() + ":" + netcapTCPSession.serverSide().server().port() + ")");
         }
 
+        /**
+         * timeout
+         * @return <doc>
+         */
         protected int timeout()
         {
             return TIMEOUT;
         }
 
+        /**
+         * netcapSession
+         * @return <doc>
+         */
         protected NetcapSession netcapSession()
         {
             return netcapTCPSession;
         }
 
+        /**
+         * clientSideListener
+         * @return <doc>
+         */
         protected SideListener clientSideListener()
         {
             return clientSideListener;
         }
 
+        /**
+         * serverSideListener
+         * @return <doc>
+         */
         protected SideListener serverSideListener()
         {
             return serverSideListener;
         }
 
+        /**
+         * serverComplete
+         * @param sessionEvent <doc>
+         * @return <doc>
+         */
         protected boolean serverComplete( SessionEvent sessionEvent )
         {
             InetAddress clientAddr = sessionEvent.getSClientAddr();
@@ -129,6 +176,10 @@ public class NetcapTCPHook implements NetcapCallback
             return ifServerComplete;
         }
 
+        /**
+         * clientComplete
+         * @return <doc>
+         */
         protected boolean clientComplete()
         {
             if ( logger.isDebugEnabled()) {
@@ -148,6 +199,9 @@ public class NetcapTCPHook implements NetcapCallback
             return ifClientComplete;
         }
 
+        /**
+         * clientReject
+         */
         protected void clientReject()
         {
             if ( logger.isDebugEnabled()) logger.debug( "TCP - Rejecting client" );
@@ -176,6 +230,9 @@ public class NetcapTCPHook implements NetcapCallback
             }
         }
 
+        /**
+         * clientRejectSilent
+         */
         protected void clientRejectSilent()
         {
             if ( logger.isDebugEnabled()) logger.debug( "TCP - Dropping client" );
@@ -183,11 +240,19 @@ public class NetcapTCPHook implements NetcapCallback
             netcapTCPSession.clientDrop();
         }
 
+        /**
+         * makeClientSink - make a TCPSink for this session
+         * @return Sink
+         */
         protected Sink makeClientSink()
         {
             return new TCPSink( netcapTCPSession.clientSide().fd(), clientSideListener );
         }
 
+        /**
+         * makeServerSink - make a TCPSink for this session
+         * @return Sink
+         */
         protected Sink makeServerSink()
         {
             if ( !ifServerComplete ) {
@@ -197,11 +262,19 @@ public class NetcapTCPHook implements NetcapCallback
             return new TCPSink( netcapTCPSession.serverSide().fd(), serverSideListener );
         }
 
+        /**
+         * makeClientSource - make a TCPSource for this session
+         * @return Source
+         */
         protected Source makeClientSource()
         {
             return new TCPSource( netcapTCPSession.clientSide().fd(), clientSideListener );
         }
 
+        /**
+         * makeServerSource - make a TCPSource for this session
+         * @return Source
+         */
         protected Source makeServerSource()
         {
             if ( !ifServerComplete ) {
@@ -211,6 +284,10 @@ public class NetcapTCPHook implements NetcapCallback
             return new TCPSource( netcapTCPSession.serverSide().fd(), serverSideListener );
         }
 
+        /**
+         * initializeAppSessions
+         * @param sessionEvent
+         */
         protected void initializeAppSessions( SessionEvent sessionEvent )
         {
             TCPNewSessionRequestImpl prevRequest = null;
@@ -251,11 +328,17 @@ public class NetcapTCPHook implements NetcapCallback
             }
         }
         
+        /**
+         * raze
+         */
         protected void raze()
         {
             netcapTCPSession.raze();
         }
 
+        /**
+         * checkEndpoints
+         */
         protected void checkEndpoints()
         {
             /* If both sides are shutdown, give a timeout to complete vectoring */
@@ -271,34 +354,62 @@ public class NetcapTCPHook implements NetcapCallback
             }
         }
 
+        /**
+         * releaseToBypass does nothing for TCP
+         * throws exception
+         */
         @Override
         protected void releaseToBypass()
         {
             logger.warn("releaseToBypass() not supported for TCP.", new Exception());
         }
         
+        /**
+         * TCPSideListener
+         */
         private class TCPSideListener extends SideListener
         {
+            /**
+             * TCPSideListener constructor
+             */
             protected TCPSideListener()
             {
             }
 
+            /**
+             * dataEvent
+             * @param source
+             * @param numBytes
+             */
             public void dataEvent( Source source, int numBytes )
             {
                 super.dataEvent( source, numBytes );
             }
 
+            /**
+             * dataEvent
+             * @param sink
+             * @param numBytes
+             */
             public void dataEvent( Sink sink, int numBytes )
             {
                 super.dataEvent( sink, numBytes );
             }
 
+            /**
+             * shutdownEvent
+             * @param source
+             */
             public void shutdownEvent( Source source )
             {
                 super.shutdownEvent( source );
                 checkEndpoints();
             }
 
+            /**
+             * shutdownEvent
+             * @param sink
+             */
             public void shutdownEvent( Sink sink )
             {
                 super.shutdownEvent( sink );

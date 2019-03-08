@@ -22,97 +22,167 @@ public class WebFilterBaseHandler extends HttpEventHandler
 
     protected final WebFilterBase app;
 
-    // constructors -----------------------------------------------------------
-
-    protected WebFilterBaseHandler( WebFilterBase app )
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application instance
+     */
+    protected WebFilterBaseHandler(WebFilterBase app)
     {
         this.app = app;
     }
 
-    // HttpEventHandler methods -----------------------------------------------
-
+    /**
+     * Handle the request line
+     * 
+     * @param session
+     *        The session
+     * @param requestLine
+     *        The request line
+     * @return The request line
+     */
     @Override
-    protected RequestLineToken doRequestLine( AppTCPSession session, RequestLineToken requestLine )
+    protected RequestLineToken doRequestLine(AppTCPSession session, RequestLineToken requestLine)
     {
         return requestLine;
     }
 
+    /**
+     * Handle the request header
+     * 
+     * @param sess
+     *        The session
+     * @param requestHeader
+     *        The header
+     * @return The header
+     */
     @Override
-    protected HeaderToken doRequestHeader( AppTCPSession sess, HeaderToken requestHeader )
+    protected HeaderToken doRequestHeader(AppTCPSession sess, HeaderToken requestHeader)
     {
         app.incrementScanCount();
 
-        String nonce = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 80, getRequestLine( sess ),requestHeader);
+        String nonce = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), sess.getServerPort(), getRequestLine(sess), requestHeader);
 
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
         }
 
-        if ( nonce == null ) {
+        if (nonce == null) {
             app.incrementPassCount();
-            
-            releaseRequest( sess );
+
+            releaseRequest(sess);
         } else {
             app.incrementBlockCount();
 
-            String uri = getRequestLine( sess ).getRequestUri().toString();
-            Token[] response = app.generateResponse( nonce, sess, uri, requestHeader );
-            blockRequest( sess, response );
+            String uri = getRequestLine(sess).getRequestUri().toString();
+            Token[] response = app.generateResponse(nonce, sess, uri, requestHeader);
+            blockRequest(sess, response);
         }
 
         return requestHeader;
     }
 
+    /**
+     * Handle the request body
+     * 
+     * @param session
+     *        The session
+     * @param chunk
+     *        The chunk
+     * @return The chunk
+     */
     @Override
-    protected ChunkToken doRequestBody( AppTCPSession session, ChunkToken c )
+    protected ChunkToken doRequestBody(AppTCPSession session, ChunkToken chunk)
     {
-        return c;
+        return chunk;
     }
 
+    /**
+     * Handle the reqest body end
+     * 
+     * @param session
+     *        The session
+     */
     @Override
-    protected void doRequestBodyEnd( AppTCPSession session )
-    { }
+    protected void doRequestBodyEnd(AppTCPSession session)
+    {
+    }
 
+    /**
+     * Handle the status line
+     * 
+     * @param session
+     *        The session
+     * @param statusLine
+     *        The status line
+     * @return The status line
+     */
     @Override
-    protected StatusLine doStatusLine( AppTCPSession session, StatusLine statusLine )
+    protected StatusLine doStatusLine(AppTCPSession session, StatusLine statusLine)
     {
         return statusLine;
     }
 
+    /**
+     * Handle the response header
+     * 
+     * @param sess
+     *        The session
+     * @param responseHeader
+     *        The response header
+     * @return The response header
+     */
     @Override
-    protected HeaderToken doResponseHeader( AppTCPSession sess, HeaderToken responseHeader )
+    protected HeaderToken doResponseHeader(AppTCPSession sess, HeaderToken responseHeader)
     {
-        if ( getStatusLine( sess ).getStatusCode() == 100 ) {
-            releaseResponse( sess );
+        if (getStatusLine(sess).getStatusCode() == 100) {
+            releaseResponse(sess);
         } else {
-            String nonce = app.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest( sess ), responseHeader);
-            
+            String nonce = app.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest(sess), responseHeader);
+
             if (logger.isDebugEnabled()) {
                 logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + nonce);
             }
 
-            if ( nonce == null ) {
+            if (nonce == null) {
                 app.incrementPassCount();
 
-                releaseResponse( sess );
+                releaseResponse(sess);
             } else {
                 app.incrementBlockCount();
 
-                Token[] response = app.generateResponse( nonce, sess );
-                blockResponse( sess, response );
+                Token[] response = app.generateResponse(nonce, sess);
+                blockResponse(sess, response);
             }
         }
 
         return responseHeader;
     }
 
+    /**
+     * Handle the response body
+     * 
+     * @param session
+     *        The session
+     * @param chunk
+     *        The chunk
+     * @return The chunk
+     */
     @Override
-    protected ChunkToken doResponseBody( AppTCPSession session, ChunkToken c )
+    protected ChunkToken doResponseBody(AppTCPSession session, ChunkToken chunk)
     {
-        return c;
+        return chunk;
     }
 
+    /**
+     * Handle the response body end
+     * 
+     * @param session
+     *        The session
+     */
     @Override
-    protected void doResponseBodyEnd( AppTCPSession session )
-    { }
+    protected void doResponseBodyEnd(AppTCPSession session)
+    {
+    }
 }

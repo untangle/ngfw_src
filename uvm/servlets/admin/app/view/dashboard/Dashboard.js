@@ -2,181 +2,122 @@
  * Dashboard view which holds the widgets and manager
  */
 Ext.define('Ung.view.dashboard.Dashboard', {
-    extend: 'Ext.container.Container',
-    xtype: 'ung.dashboard',
-    itemId: 'dashboard',
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.ung-dashboard',
+    itemId: 'dashboardMain',
 
-    /* requires-start */
-    requires: [
-        'Ung.view.dashboard.DashboardController',
-        'Ung.view.dashboard.Queue',
-        'Ung.widget.Report',
-
-        'Ung.widget.WidgetController',
-        'Ung.widget.Information',
-        'Ung.widget.Resources',
-        'Ung.widget.CpuLoad',
-        'Ung.widget.NetworkInformation',
-        'Ung.widget.NetworkLayout',
-        'Ung.widget.MapDistribution'
-    ],
-    /* requires-end */
     controller: 'dashboard',
-    viewModel: true,
-    //viewModel: 'dashboard',
+    viewModel: {
+        data: {
+            managerVisible: false
+        }
+    },
 
     config: {
-        settings: null // the dashboard settings object
+        settings: null // the dashboard settings object / not used, need to check
     },
 
-    layout: 'border',
+    layout: 'fit',
 
-    defaults: {
-        border: false
-    },
+    dockedItems: [{
+        xtype: 'dashboardmanager',
+        dock: 'left',
+        width: 250,
+        hidden: true,
+        bind: {
+            hidden: '{!managerVisible}'
+        }
+    }],
 
     items: [{
-        region: 'west',
-        title: 'Manage Widgets'.t(),
-        // weight: 30,
-        width: 300,
-        collapsible: true,
-        bodyBorder: true,
-        // shadow: false,
-        animCollapse: false,
-        collapsed: true,
-        // collapseMode: 'mini',
-        titleCollapse: true,
-        floatable: false,
-        cls: 'widget-manager',
-        split: true,
-        xtype: 'grid',
-        reference: 'dashboardNav',
-        // forceFit: true,
-        hideHeaders: true,
-        // disableSelection: true,
-        // trackMouseOver: false,
-
-        store: 'widgets',
-
-        bodyStyle: {
-            border: 0
-        },
-        viewConfig: {
-            plugins: {
-                ptype: 'gridviewdragdrop',
-                dragText: 'Drag and drop to reorganize'.t(),
-                dragZone: {
-                    onBeforeDrag: function (data, e) {
-                        return Ext.get(e.target).hasCls('drag-handle');
-                    }
-                }
-            },
-            stripeRows: false,
-            getRowClass: function (record) {
-                return !record.get('enabled') ? 'disabled' : '';
-            },
-            listeners: {
-                drop: 'onDrop'
-            }
-        },
-        columns: [{
-            width: 14,
-            align: 'center',
-            sortable: false,
-            hideable: false,
-            resizable: false,
-            menuDisabled: true,
-            tdCls: 'drag-handle'
-        }, {
-            width: 30,
-            align: 'center',
-            sortable: false,
-            hideable: false,
-            resizable: false,
-            menuDisabled: true,
-            //handler: 'toggleWidgetEnabled',
-            dataIndex: 'enabled',
-            renderer: 'enableRenderer'
-        }, {
-            dataIndex: 'entryId',
-            renderer: 'widgetTitleRenderer',
-            flex: 1
-        }, {
-            xtype: 'actioncolumn',
-            width: 30,
-            align: 'center',
-            sortable: false,
-            hideable: false,
-            resizable: false,
-            menuDisabled: true,
-            handler: 'removeWidget',
-            renderer: function (value, meta, record) {
-                return '<i class="fa fa-times" style="color: #999; font-size: 20px;"></i>';
-            }
-        }/*, {
-            xtype: 'actioncolumn',
-            align: 'center',
-            width: 25,
-            sortable: false,
-            hideable: false,
-            resizable: false,
-            menuDisabled: true,
-            renderer: function (value, meta, record) {
-                if (record.get('type') !== 'ReportEntry') {
-                    return '';
-                }
-                return '<i style="font-size: 16px; color: #777; padding-top: 4px;" class="material-icons">settings</i>';
-            }
-        }*/],
-        listeners: {
-            itemmouseleave : 'onItemLeave',
-            cellclick: 'onItemClick'
-        },
-        tbar: [{
-            itemId: 'addWidgetBtn',
-            text: 'Add'.t(),
-            iconCls: 'fa fa-plus-circle'
-            // menu: Ext.create('Ext.menu.Menu', {
-            //     mouseLeaveDelay: 0
-            // })
-        }, '->', {
-            text: 'Import'.t(),
-            iconCls: 'fa fa-download'
-            // handler: 'applyChanges'
-        }, {
-            text: 'Export'.t(),
-            iconCls: 'fa fa-upload'
-            //handler: 'applyChanges'
-        }],
-        bbar: [{
-            text: 'Reset'.t(),
-            iconCls: 'fa fa-rotate-left',
-            handler: 'resetDashboard'
-        }, '->', {
-            text: 'Apply'.t(),
-            iconCls: 'fa fa-floppy-o',
-            handler: 'applyChanges'
-        }]
-    }, {
-        xtype: 'container',
-        region: 'center',
         reference: 'dashboard',
-        cls: 'dashboard',
-        padding: 8,
-        scrollable: true
-        // dockedItems: [{
-        //     xtype: 'toolbar',
-        //     dock: 'top',
-        //     border: false,
-        //     items: [{
-        //         xtype: 'button',
-        //         text: 'Manage Widgets'.t()
-        //     }]
-        // }]
+        itemId: 'dashboard',
+        bodyCls: 'dashboard',
+        bodyPadding: 8,
+        border: false,
+        // bodyBorder: false,
+        scrollable: true,
+        dockedItems: [{
+            xtype: 'toolbar',
+            dock: 'top',
+            ui: 'footer',
+            height: 30,
+            style: { background: '#D8D8D8' },
+            items: [{
+                text: 'Settings'.t(),
+                iconCls: 'fa fa-cog',
+                focusable: false,
+                handler: 'toggleManager',
+                hidden: true,
+                bind: {
+                    hidden: '{managerVisible}'
+                }
+            }, {
+                xtype: 'globalconditions',
+                context: 'DASHBOARD',
+                hidden: true,
+                bind: {
+                    hidden: '{!reportsAppStatus.installed || !reportsAppStatus.enabled}'
+                }
+            }, {
+                xtype: 'container',
+                itemId: 'since',
+                margin: '0 5',
+                layout: {
+                    type: 'hbox',
+                    align: 'middle'
+                },
+                hidden: true,
+                bind: {
+                    hidden: '{!reportsAppStatus.installed || !reportsAppStatus.enabled}'
+                },
+                items: [{
+                    xtype: 'component',
+                    margin: '0 5 0 0',
+                    style: {
+                        fontSize: '11px'
+                    },
+                    html: '<strong>' + 'Since:'.t() + '</strong>'
+                }, {
+                    xtype: 'button',
+                    iconCls: 'fa fa-clock-o',
+                    focusable: false,
+                    menu: {
+                        plain: true,
+                        showSeparator: false,
+                        mouseLeaveDelay: 0,
+                        items: [
+                            { text: '1 Hour ago'.t(), value: 1 },
+                            { text: '3 Hours ago'.t(), value: 3 },
+                            { text: '6 Hours ago'.t(), value: 6 },
+                            { text: '12 Hours ago'.t(), value: 12 },
+                            { text: '24 Hours ago'.t(), value: 24 }
+                        ],
+                        listeners: {
+                            click: 'updateSince'
+                        }
+                    }
+                }],
+            }, {
+                xtype: 'component',
+                style: { fontSize: '12px' },
+                html: '<i class="fa fa-info-circle"></i> <strong>Reports App not installed!</strong> Report based widgets are not available.',
+                hidden: true,
+                bind: {
+                    hidden: '{reportsAppStatus.installed}'
+                }
+            }, {
+                xtype: 'component',
+                style: { fontSize: '12px' },
+                html: '<i class="fa fa-info-circle"></i> <strong>Reports App is disabled!</strong> Report based widgets are not available.',
+                hidden: true,
+                bind: {
+                    hidden: '{!reportsAppStatus.installed || reportsAppStatus.enabled}'
+                }
+            }]
+        }]
     }],
     listeners: {
-        //afterrender: 'onAfterRender',
         showwidgeteditor: 'showWidgetEditor'
     }
 });

@@ -35,13 +35,16 @@ public final class AsciiUtil {
 
     private static final byte UPPER_LOWER_DIFF = 0x20;
 
-    //Ensure this is only a collection of functions
+    /**
+     * Ensure this is only a collection of functions
+     */
     private AsciiUtil() {}
-
 
     /**
      * For debugging.  Prints the character.  If the character is
      * not printable on a normal terminal, prints the decimal value
+     * @param b byte to convert to String.
+     * @return String of converted byte.
      */
     public static String asciiByteToString(byte b) {
         if(b>=33 && b <=126) {
@@ -75,6 +78,9 @@ public final class AsciiUtil {
 
     /**
      * Advances the position to endIndexExclusive
+     * @param buf ByteBuffer to advance.
+     * @param endIndexExclusive integer to set for limit and position.
+     * @return String of this value.
      */
     public static String readString(ByteBuffer buf,
                                     int endIndexExclusive) {
@@ -98,6 +104,7 @@ public final class AsciiUtil {
      * @param returnDelim if true, the delimiter will be returned
      *        as part of the String token.  Note that (obviously)
      *        EOF cannot be returned.
+     * @return String of this value.
      */
     public static String readString(ByteBuffer buf,
                                     byte delim,
@@ -128,6 +135,7 @@ public final class AsciiUtil {
      *        as part of the String token.  If <code>isEOFDelim</code>
      *        is false and the end of the buffer is reached without
      *        another delimiter, null is returned.
+     * @return String of this value.
      */
     public static String readString(ByteBuffer buf,
                                     byte delim,
@@ -179,19 +187,28 @@ public final class AsciiUtil {
     }
 
     /**
-     * Is the given byte a CR or LF
+     * Determine if given byte a CR or LF
+     * @param b Byte to check.
+     * @return true of bute is CR or LF, false otherwise.
      */
     public static boolean isEOL(byte b) {
         return b == CR || b == LF;
     }
 
     /**
-     * Is the given byte a HTAB or space
+     * Determine if given byte a HTAB or space
+     * @param b Byte to check.
+     * @return true of bute is tab or space, false otherwise.
      */
     public static boolean isLWS(byte b) {
         return b == SP || b == HTAB;
     }
 
+    /**
+     * Determine if given byte a number.
+     * @param b Byte to check.
+     * @return true of bute is number 0-9.
+     */
     public static boolean isNumber(byte b) {
         return (b >=48 && b <=57);
     }
@@ -221,6 +238,8 @@ public final class AsciiUtil {
     /**
      * Checks for a "blank" line, meaning the contents of the buffer
      * is only LWS.
+     * @param buf ByteBuffer to check.
+     * @return true if entire buffer is space or tab, false if not.
      */
     public static boolean isAllLWS(ByteBuffer buf) {
         buf.mark();
@@ -248,6 +267,12 @@ public final class AsciiUtil {
         }
         return b;
     }
+    /**
+     * Converts the byte to upper-case, if it is in the alpha range.
+     *
+     * @param b the byte
+     * @return a uppercase byte equivilant, or the passed-in byte
+     */
     public static final byte toUpper(byte b) {
         if(b >= 97 && b <= 122) {
             return (byte) (b-UPPER_LOWER_DIFF);
@@ -258,6 +283,9 @@ public final class AsciiUtil {
     /**
      * Compare the ASCII bytes, using a case-insensitive compare
      * if they are alpha characters.
+     * @param b1 First byte to compare.
+     * @param b2 Second byte to compare.
+     * @return true if the two bytes ignorin case.
      */
     public static final boolean equalsIgnoreCase(final byte b1, final byte b2) {
         return toLower(b1) == toLower(b2);
@@ -266,8 +294,10 @@ public final class AsciiUtil {
     /**
      * Compare two arrays, optionally ignoring case
      * (assuming the arrays are ASCII bytes).
-     *
-     *
+     * @param a1 First array of bytes to compare.
+     * @param a2 Second array of bytes to compare.
+     * @param ignoreCase boolean if true, compare ignoring case, otherwise considuer case.
+     * @return boolean true if arrays are equal, false otherwise.
      */
     public static final boolean compareArrays(final byte[] a1,
                                               final byte[] a2,
@@ -285,8 +315,14 @@ public final class AsciiUtil {
     /**
      * Compare two arrays, optionally ignoring case
      * (assuming the arrays are ASCII bytes).
-     *
-     *
+     * @param a1 First array of bytes to compare.
+     * @param a1Start integer of starting position in first array.
+     * @param a1Len integer of length in first array
+     * @param a2 Second array of bytes to compare.
+     * @param a2Start integer of starting position in second array
+     * @param a2Len integer of length in first array
+     * @param ignoreCase boolean if true, compare ignoring case, otherwise considuer case.
+     * @return boolean true if arrays are equal, false otherwise.
      */
     public static final boolean compareArrays(final byte[] a1,
                                               final int a1Start,
@@ -323,6 +359,10 @@ public final class AsciiUtil {
      * Test if the buffers contain the same bytes.
      * <br><br>
      * This has been added to this class for case-insensitive compares.
+     * @param b1 ByteBuffer to compare.
+     * @param b2 ByteBuffer to compare.
+     * @param ignoreCase boolean if true, compare ignoring case, otherwise considuer case.
+     * @return boolean true if buffers are equal, false otherwise.
      */
     public static final boolean buffersEqual(ByteBuffer b1,
                                              ByteBuffer b2,
@@ -340,6 +380,10 @@ public final class AsciiUtil {
      * <br><br>
      * Note that this method does <b>not</b> modify the
      * source or target buffers.
+     * @param target ByteBuffer to consider.
+     * @param compare ByteBuffer to test.
+     * @param ignoreCase boolean if true, compare ignoring case, otherwise considuer case.
+     * @return boolean target begins with bytes in compare, false otherwise.
      */
     public static final boolean startsWith(final ByteBuffer target,
                                            final ByteBuffer compare,

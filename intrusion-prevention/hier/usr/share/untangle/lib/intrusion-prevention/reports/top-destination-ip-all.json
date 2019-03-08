@@ -1,0 +1,18 @@
+{
+    "uniqueId": "intrusion-prevention-oBzMcymva",
+    "category": "Intrusion Prevention",
+    "description": "The number of intrusions detected by destination IP address.",
+    "displayOrder": 701,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "dest_addr",
+    "pieSumColumn": "count(*)",
+    "readOnly": true,
+    "table": "intrusion_prevention_events",
+    "title": "Top Destination IP Addresses (all)",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

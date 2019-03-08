@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.shield;
@@ -10,9 +10,6 @@ import java.net.InetAddress;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.vnet.AppSession;
 
 /**
  * This in the implementation of a Shield Rule

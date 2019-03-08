@@ -1,110 +1,37 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997, 2006 by Joey Hess.
-#
-# This version is for a hypothetical package that builds an
-# architecture-dependant package, as well as an architecture-independent
-# package.
 
-# Uncomment this to turn on verbose mode.
-# export DH_VERBOSE=1
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
 
-# This is the debhelper compatibility version to use.
+%:
+	dh $@ 
 
-UVM_DESTDIR := $(CURDIR)/debian/untangle-vm
+override_dh_gencontrol:
+	if [ -f debian/version ] ; then dh_gencontrol -- -v"`cat debian/version`" ; else dh_gencontrol ; fi
 
-ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -g
-endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
-
-configure: configure-stamp
-configure-stamp:
-	@dh_testdir
-	@touch configure-stamp
-
-build-arch: configure-stamp  build-arch-stamp
-build-arch-stamp:
-	@dh_testdir
-	rm -f ./debian/tmp/stamp*
-	rake builduvmcore
-	@touch build-arch-stamp
-
-build-indep: configure-stamp build-indep-stamp
-build-indep-stamp: build-arch-stamp
-	@dh_testdir
-	rake build
-	@touch build-indep-stamp
-
-build: build-arch build-indep
-
-clean: distclean
+override_dh_clean:
+	rm -f *-stamp
+	dh_clean
 	rake clean
 
-distclean:
-	@dh_testdir
-	@dh_testroot
-	@rm -f build-arch-stamp build-indep-stamp configure-stamp
-	@rm -f ./debian/*.init
-	@dh_clean
+override_dh_build-arch:
+	rake builduvmcore
+	touch build-arch-stamp
 
-install: install-indep install-arch
+override_dh_build-indep:
+	rake build
+	touch build-arch-indep
 
-install-indep: build-indep
-	@dh_testdir
-	@dh_testroot
-	@dh_installdirs -i
-	rake install
-	find debian/untangle-libuvm/usr/share/untangle -type f -print0 | xargs -0 chmod 644
-
-install-arch: build-arch
+override_dh_install-arch:
 	@dh_testdir
 	@dh_testroot
 	@dh_installdirs -a
 	rake installuvmcore
 
-binary-common:
+override_dh_install-indep:
 	@dh_testdir
 	@dh_testroot
-#	@dh_movefiles
-#	@dh_installdebconf
-	@dh_shlibdeps
-	@dh_installdocs -n
-#	@dh_installexamples
-#	@dh_installmenu
-	@dh_installlogrotate
-#	@dh_installemacsen
-#	@dh_installpam
-#	@dh_installmime
-	@dh_installinit -n
-#	@dh_installcron
-#	@dh_installman
-#	@dh_installinfo
-#	@dh_undocumented
-	@dh_installchangelogs
-	@dh_strip
-#	@dh_link
-	@dh_compress
-#	@dh_fixperms
-#	@dh_lintian
-	@dh_installdeb
-#	@dh_perl
-	@if [ -f debian/version ] ; then \
-	    dh_gencontrol -- -v"`cat debian/version`" ; \
-	  else \
-	    dh_gencontrol ; \
-	  fi ; \
-	done
-	@dh_md5sums
-	@dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
-
-binary-indep: install-indep
-	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
-
-binary-arch: install-arch
-	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
-
-binary: binary-arch binary-indep
-.PHONY: build clean distclean binary-arch binary-indep binary install-arch install-arch install configure
+	@dh_installdirs -i
+	rake install
+	find debian/untangle-libuvm/usr/share/untangle -type f -print0 | xargs -0 chmod 644

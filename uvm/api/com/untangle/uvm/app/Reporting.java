@@ -3,8 +3,7 @@
  */
 package com.untangle.uvm.app;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 import com.untangle.uvm.logging.LogEvent;
 
@@ -17,4 +16,6 @@ public interface Reporting
     double getAvgWriteTimePerEvent();
 
     long getWriteDelaySec();
+
+    List<String> getAlertEmailAddresses();
 }

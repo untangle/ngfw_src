@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.directory_connector;
@@ -19,11 +19,13 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.app.directory_connector.DirectoryConnectorApp;
 import com.untangle.app.directory_connector.LoginEvent;
 
+/**
+ * Registration
+ */
 @SuppressWarnings("serial")
 public class Registration extends HttpServlet
 {
@@ -31,9 +33,22 @@ public class Registration extends HttpServlet
     private static final String AD_DOWNLOAD_NAME = System.getProperty( "uvm.home" ) + "/web/userapi/untangle_user.vbs";
     private static final String AD_DOWNLOAD_TYPE = "application/download";
     private static final String AD_REPLACE_ADDRESS = "%UNTANGLE_REPLACE_WITH_ADDRESS%";
+    private static final String AD_REPLACE_SECRET = "%UNTANGLE_REPLACE_WITH_SECRET%";
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
+    /**
+     * Handle GET from user API request.
+     *
+     * @param request
+     *  HttpServelnetRequest object.
+     * @param response
+     *  HttpServletResponse object.
+     * @throws ServletException
+     *  If problem handling requeust.
+     * @throws IOException
+     *  If problem acceping request.
+     */
     protected void doGet( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
     {
         DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().appManager().app("directory-connector");
@@ -60,6 +75,14 @@ public class Registration extends HttpServlet
         String action = null;
         String secretKey = null;
         String clientIp = null;
+        InetAddress inetAddress;
+
+        try {
+            inetAddress = InetAddress.getByName(request.getRemoteAddr());
+        } catch (Exception e) {
+            logger.warn( "Unable to parse the internet address: " + request.getRemoteAddr());
+            return;
+        }
 
         Map<String, String[]> parameters = request.getParameterMap();
 
@@ -83,9 +106,21 @@ public class Registration extends HttpServlet
                 return;
             }
         }
-        if ( clientIp == null || clientIp.equals("") )
-            clientIp = request.getRemoteAddr();
-        
+        if ( clientIp != null && !clientIp.equals("") ) {
+            /**
+             * Only allow the client IP to be specified manually if the spoofing is allowed
+             * Or the secretkey is specified (and correct)
+             */
+            if ( directoryConnector.getSettings().getApiManualAddressAllowed() || (secretKey != null && !secretKey.equals("")) ) {
+                try {
+                    inetAddress = InetAddress.getByName(clientIp);
+                } catch (Exception e) {
+                    logger.warn( "Unable to parse the internet address: " + request.getRemoteAddr());
+                    return;
+                }
+            }
+        }
+
         logger.debug("User API ( action=" + action + " username=" + username + " hostname=" + hostname + " clientIp=" + clientIp + " secretKey=" + secretKey + " )");
         
         //String remoteHost = request.getRemoteHost();
@@ -99,7 +134,6 @@ public class Registration extends HttpServlet
             action = "login"; 
         }
 
-        InetAddress inetAddress = InetAddress.getByName( clientIp );
 
         if (action.equals("logout")) {
             logger.debug( "logout   user: " + username + " hostname: " + hostname + " clientIp: " + clientIp );
@@ -111,7 +145,7 @@ public class Registration extends HttpServlet
             
         } else if (action.equals("login")) {
             String eventAction;
-            
+
             logger.debug( "register user: " + username + " hostname: " + hostname + " clientIp: " + clientIp );
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( inetAddress, true );
 
@@ -126,30 +160,49 @@ public class Registration extends HttpServlet
             UvmContextFactory.context().logEvent( evt );
 
             /* If the hostname was specified and is not already known - set it */
-            if ( hostname != null && !entry.isHostnameKnown() )
+            if ( hostname != null )
                 entry.setHostnameDirectoryConnector( hostname );
+        } else if (action.equals("groupcache")) {
+            logger.debug( "refresh groupcache: " + username + " clientIp: " + clientIp );
+            directoryConnector.refreshGroupCache();
         }
         
     }
 
+    /**
+     * Generate installer script.
+     *
+     * @param request
+     *  HttpServelnetRequest object.
+     * @param response
+     *  HttpServletResponse object.
+     * @throws ServletException
+     *  If problem handling requeust.
+     */
     private void generateInstaller( HttpServletRequest request, HttpServletResponse response ) throws ServletException
     {
         logger.info( "Generating installer" );
+        BufferedReader br = null;
+        FileReader fr = null;
         try {
             File file = new File( AD_DOWNLOAD_NAME );
-            BufferedReader br = new BufferedReader( new FileReader( file ) );
+            fr = new FileReader( file );
+            br = new BufferedReader( fr );
 
             //long length = file.length();
             response.setContentType( AD_DOWNLOAD_TYPE );
             response.setHeader( "Content-Disposition", "attachment; filename=\""+AD_FILE_NAME+"\"" );
             //Since we substitute and other things the length of file != equal length outputted
             //response.setHeader( "Content-Length", "" + length );
+            DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().appManager().app("directory-connector");
 
             PrintWriter out = response.getWriter();
             String line = null;
             while( (line = br.readLine()) != null ) {
                 StringBuffer chunk = new StringBuffer( line );
+
                 int replaceLocation = chunk.indexOf(AD_REPLACE_ADDRESS);
+                int replaceSecret = chunk.indexOf(AD_REPLACE_SECRET);
                 if (replaceLocation != -1) {
                     // int port = request.getServerPort(); // this won't work because admin is often done via http
                     int port = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
@@ -164,6 +217,11 @@ public class Registration extends HttpServlet
                     chunk.replace( replaceLocation, replaceLocation+AD_REPLACE_ADDRESS.length(), url);
 
                     out.print( chunk.toString() );
+                } else if ( replaceSecret != -1 ) {
+                    String secretKey = directoryConnector.getSettings().getApiSecretKey();
+                    secretKey = secretKey == null ? "" : secretKey;
+                    chunk.replace( replaceSecret, replaceSecret+AD_REPLACE_SECRET.length(), secretKey);
+                    out.print( chunk.toString() );
                 } else {
                     out.print( line );
                 }
@@ -174,6 +232,21 @@ public class Registration extends HttpServlet
             logger.info( "The file " + AD_DOWNLOAD_NAME +  " does not exist" );
         } catch ( IOException e ) {
             logger.info( "IOError while reading from file " + AD_DOWNLOAD_NAME);
+        }finally{
+            if( fr != null ){
+                try{
+                    fr.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
+            }
+            if( br != null ){
+                try{
+                    br.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
+            }
         }
     }
 

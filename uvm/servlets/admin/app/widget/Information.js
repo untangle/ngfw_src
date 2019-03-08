@@ -4,13 +4,8 @@ Ext.define('Ung.widget.Information', {
 
     controller: 'widget',
 
-    hidden: true,
     border: false,
-    baseCls: 'widget small info-widget adding',
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
+    baseCls: 'widget small info-widget',
 
     layout: {
         type: 'vbox',
@@ -26,19 +21,21 @@ Ext.define('Ung.widget.Information', {
         cls: 'info-host',
         padding: 5,
         bind: {
-            html: '<p class="hostname">{stats.hostname}</p><p class="version">{stats.version}</p>'
+            html: '<p class="hostname">{stats.hostname}</p><p class="version">' + 'version'.t() + ': {stats.version}</p>'
         }
     }, {
         xtype: 'component',
         margin: '10 0',
         bind : {
-            html: '<span class="info-lbl">' + 'uptime'.t() + ':</span><span class="info-val">{stats.uptimeFormatted}</span><br/>' +
-                '<span class="info-lbl">' + 'Server'.t() + ':</span><span class="info-val">{stats.appliance}</span><br/>' +
-                '<span class="info-lbl">' + 'CPU Count'.t() + ':</span><span class="info-val">{stats.numCpus}</span><br/>' +
-                '<span class="info-lbl">' + 'CPU Type'.t() + ':</span><span class="info-val">{stats.cpuModel}</span><br/>' +
-                '<span class="info-lbl">' + 'Architecture'.t() + ':</span><span class="info-val">{stats.architecture}</span><br/>' +
-                '<span class="info-lbl">' + 'Memory'.t() + ':</span><span class="info-val">{stats.totalMemory}</span><br/>' +
-                '<span class="info-lbl">' + 'Disk'.t() + ':</span><span class="info-val">{stats.totalDisk}</span>'
+            html: '<table>' +
+                    '<tr><td>' + 'uptime'.t() + ':</td><td>{stats.uptimeFormatted}</td></tr>' +
+                    '<tr><td>' + 'Server'.t() + ':</td><td>{stats.appliance}</td></tr>' +
+                    '<tr><td>' + 'CPU Count'.t() + ':</td><td>{stats.numCpus}</td></tr>' +
+                    '<tr><td>' + 'CPU Type'.t() + ':</td><td>{stats.cpuModel}</td></tr>' +
+                    '<tr><td>' + 'Architecture'.t() + ':</td><td>{stats.architecture}</td></tr>' +
+                    '<tr><td>' + 'Memory'.t() + ':</td><td>{stats.totalMemory}</td></tr>' +
+                    '<tr><td>' + 'Disk'.t() + ':</td><td>{stats.totalDisk}</td></tr>' +
+                  '</table>'
         }
     }]
 });

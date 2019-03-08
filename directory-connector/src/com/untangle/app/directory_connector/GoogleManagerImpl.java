@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: GoogleManagerImpl.java 41234 2015-09-12 00:47:13Z dmorris $
  */
 package com.untangle.app.directory_connector;
@@ -10,15 +10,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collections;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
-
-import org.json.JSONObject;
-import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
 
@@ -49,12 +43,37 @@ public class GoogleManagerImpl
     private OutputStreamWriter driveProcOut = null;
     private BufferedReader     driveProcIn  = null;
     
+    /**
+     * Initialize Google authenticator.
+     *
+     * @param settings
+     *  GoogleSettings object.
+     * @param directoryConnector
+     *  Directory Connector application.
+     * @return
+     *  GoogleManagerImpl object.
+     */
     public GoogleManagerImpl( GoogleSettings settings, DirectoryConnectorApp directoryConnector )
     {
         this.directoryConnector = directoryConnector;
         setSettings(settings);
     }
 
+    /**
+     * Get Google Authenticator settings.
+     *
+     * @return Google autenticator settings
+     */
+    public GoogleSettings getSettings()
+    {
+        return this.settings;
+    }
+
+    /**
+     * Configure Google authenticator settings.
+     *
+     * @param settings  Google authenticator settings.
+     */
     public void setSettings( GoogleSettings settings )
     {
         this.settings = settings;
@@ -64,13 +83,31 @@ public class GoogleManagerImpl
             credentialsJson += settings.getDriveRefreshToken();
             credentialsJson += "\"}";
 
+            BufferedWriter bw = null;
+            FileWriter fw = null;
             try {
                 UvmContextFactory.context().execManager().execOutput("mkdir -p " + GOOGLE_DRIVE_PATH + ".gd/");
-                BufferedWriter bw = new BufferedWriter(new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json")));            
+                fw = new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json"));
+                bw = new BufferedWriter(fw);
                 bw.write(credentialsJson);
                 bw.close();
             } catch (Exception ex) {
                 logger.warn("Error writing credentials.json.", ex);
+            }finally{
+                if(fw != null){
+                    try{
+                        fw.close();
+                    }catch(IOException ex){
+                        logger.error("Unable to close file", ex);
+                    }
+                }
+                if(bw != null){
+                    try{
+                        bw.close();
+                    }catch(IOException ex){
+                        logger.error("Unable to close file", ex);
+                    }
+                }
             }
         } else {
             try {
@@ -84,24 +121,10 @@ public class GoogleManagerImpl
         }
     }
 
-    public GoogleSettings getSettings()
-    {
-        return this.settings;
-    }
-    
-    public boolean authenticate( String username, String pwd )
-    {
-        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
-            return false;
-        if (!this.settings.getAuthenticationEnabled())
-            return false;
-
-        return GoogleAuthenticator.authenticate( username, pwd );
-    }
-    
     /**
-     * This returns true if google drive is configured.
-     * False otherwise
+     * Determine if Google drive is connection.
+     *
+     * @return true if Google drive is configured, false otherwise.
      */
     public boolean isGoogleDriveConnected()
     {
@@ -121,6 +144,10 @@ public class GoogleManagerImpl
      * Once the user clicks the allow button, they will be redirected to Untangle with the redirect_url. The untangle redirect_url
      * will redirect them to their local server oauth servlet (the IP is passed in the state variable).
      * The servlet will later call provideDriveCode() with the token
+     *
+     * @param windowProtocol TCP/IP protocol to use.
+     * @param windowLocation domain/hostname
+     * @return Built URL
      */
     public String getAuthorizationUrl( String windowProtocol, String windowLocation )
     {
@@ -164,7 +191,8 @@ public class GoogleManagerImpl
      *
      * This also reads the refershToken and saves it in settings.
      *
-     * Returns null on success or the error string
+     * @param code the code to send.
+     * @return null on success or the error string
      */
     public String provideDriveCode( String code )
     {
@@ -215,6 +243,9 @@ public class GoogleManagerImpl
         return null;
     }
 
+    /**
+     * Disconnect Google drive
+     */
     public void disconnectGoogleDrive()
     {
         DirectoryConnectorSettings directoryConnectorSettings = directoryConnector.getSettings();
@@ -222,6 +253,11 @@ public class GoogleManagerImpl
         directoryConnector.setSettings( directoryConnectorSettings );
     }
     
+    /**
+     * Start Google authorization process
+     * 
+     * @param dir Directory to use
+     */
     private void startAuthorizationProcess( String dir )
     {
         if (driveProcIn != null || driveProcOut != null || driveProc != null) {
@@ -245,6 +281,9 @@ public class GoogleManagerImpl
         driveProcIn  = new BufferedReader(new InputStreamReader(driveProc.getInputStream()));
     }
 
+    /**
+     * Stop the authorization process.
+     */
     private void stopAuthorizationProcess()
     {
         try { driveProcIn.close(); } catch (Exception ex) { }
@@ -254,5 +293,5 @@ public class GoogleManagerImpl
         driveProcOut = null;
         driveProc = null;
     }
-    
+
 }

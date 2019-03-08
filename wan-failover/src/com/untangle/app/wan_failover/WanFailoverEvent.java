@@ -1,16 +1,19 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.wan_failover;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import java.io.Serializable;
+import org.json.JSONString;
 
 /**
  * Log event for a WAN state change (disconnect/reconnect)
  */
 @SuppressWarnings("serial")
-public class WanFailoverEvent extends LogEvent
+public class WanFailoverEvent extends LogEvent implements Serializable, JSONString
 {
     public static enum Action { CONNECTED, DISCONNECTED };
     private Action action;
@@ -29,27 +32,15 @@ public class WanFailoverEvent extends LogEvent
         this.osName = osName;
     }
     
-    /**
-     * Interface for this event
-     */
     public int getInterfaceId() { return this.interfaceId; }
     public void setInterfaceId( int interfaceId ) { this.interfaceId = interfaceId; }
 
-    /**
-     * Interface for this event
-     */
     public String getName() { return this.name; }
     public void setName( String newValue ) { this.name = newValue; }
 
-    /**
-     * Interface for this event
-     */
     public String getOsName() { return this.osName; }
     public void setOsName(String newValue) { this.osName = newValue; }
 
-    /**
-     * The action taken.
-     */
     public Action getAction() { return action; }
     public void setAction( Action action ) { this.action = action; }
 

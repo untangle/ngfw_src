@@ -1,0 +1,22 @@
+#! /bin/bash
+
+# set most recent settings file to current time, forcing suricata config rebuild when uvm is restarted
+SETTINGS_DIRECTORY=/usr/share/untangle/settings/intrusion-prevention/
+
+if [ -d $SETTINGS_DIRECTORY ] ; then
+    for filename in $(find ${SETTINGS_DIRECTORY} -type f) ; do
+        grep -q \"version\" ${filename}
+        if [[ $? -eq 1 ]]; then
+            rm -f $filename
+        fi
+    done
+    find ${SETTINGS_DIRECTORY} -xtype l -delete
+fi
+
+OLD_SNORT_PYTHON_LIBRARY=/usr/lib/python2.7/intrusion_prevention
+if [ -d $OLD_SNORT_PYTHON_LIBRARY ] ; then
+    rm -rf $OLD_SNORT_PYTHON_LIBRARY
+fi
+
+exit 0
+

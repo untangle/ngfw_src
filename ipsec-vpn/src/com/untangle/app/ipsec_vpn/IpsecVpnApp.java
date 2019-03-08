@@ -12,13 +12,12 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.Timer;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.jabsorb.JSONSerializer;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.SystemSettings;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.IPMaskedAddress;
@@ -27,15 +26,22 @@ import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.HostTableEntry;
+
+/**
+ * The IPsec application manages all IPsec tunnels and VPN configurations.
+ * 
+ * @author mahotz
+ * 
+ */
 
 public class IpsecVpnApp extends AppBase
 {
     private final static String GRAB_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-logfile";
-    private final static String GRAB_VIRTUALLOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
+    private final static String GRAB_VIRTUAL_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
     private final static String GRAB_POLICY_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-policy";
     private final static String GRAB_STATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-state";
-    private final static String GRAB_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-status";
-    private final static String GRAB_TRAFFIC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-stats";
+    private final static String GRAB_TUNNEL_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-status";
     private final static String APP_STARTUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-app-startup";
 
     private final static String STRONGSWAN_STROKE_CONFIG = "/etc/strongswan.d/charon/stroke.conf";
@@ -52,6 +58,7 @@ public class IpsecVpnApp extends AppBase
     private final PipelineConnector[] connectors = new PipelineConnector[0];
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
+    private final IpsecVpnHookCallback ipsecVpnHookCallback;
     protected static ExecManager execManager = null;
 
     private enum MatchMode
@@ -62,11 +69,24 @@ public class IpsecVpnApp extends AppBase
     protected IpsecVpnSettings settings;
     protected Timer timer;
 
+    private String activeCertificate = UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate();
+
+    /**
+     * Initializes the IPsec application by creating blingers and fixing low
+     * level configuration options.
+     * 
+     * @param appSettings
+     *        Application settings
+     * @param appProperties
+     *        Application properties
+     */
     public IpsecVpnApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
         super(appSettings, appProperties);
 
         logger.debug("IpsecVpnApp()");
+
+        this.ipsecVpnHookCallback = new IpsecVpnHookCallback();
 
         this.addMetric(new AppMetric(STAT_CONFIGURED, I18nUtil.marktr("Configured Tunnels")));
         this.addMetric(new AppMetric(STAT_DISABLED, I18nUtil.marktr("Disabled Tunnels")));
@@ -82,6 +102,9 @@ public class IpsecVpnApp extends AppBase
         }
     }
 
+    /**
+     * Initialize application settings when no previous settings found.
+     */
     @Override
     public void initializeSettings()
     {
@@ -133,12 +156,23 @@ public class IpsecVpnApp extends AppBase
         setSettings(settings);
     }
 
+    /**
+     * Returns the application settings
+     * 
+     * @return The application settings
+     */
     public IpsecVpnSettings getSettings()
     {
         logger.debug("getSettings()");
         return (settings);
     }
 
+    /**
+     * Set and apply new application settings.
+     * 
+     * @param newSettings
+     *        The new settings
+     */
     public void setSettings(IpsecVpnSettings newSettings)
     {
         int idx;
@@ -187,30 +221,56 @@ public class IpsecVpnApp extends AppBase
         reconfigure();
     }
 
+    /**
+     * Gets the contents of the IPsec log file
+     * 
+     * @return The contents of the IPsec log file
+     */
     public String getLogFile()
     {
         logger.debug("getLogFile()");
         return IpsecVpnApp.execManager().execOutput(GRAB_LOGFILE_SCRIPT);
     }
 
+    /**
+     * Gets the contents of the L2TP log file
+     * 
+     * @return The contents of the L2TP log file
+     */
     public String getVirtualLogFile()
     {
         logger.debug("getVirtualLogFile()");
-        return IpsecVpnApp.execManager().execOutput(GRAB_VIRTUALLOGFILE_SCRIPT);
+        return IpsecVpnApp.execManager().execOutput(GRAB_VIRTUAL_LOGFILE_SCRIPT);
     }
 
+    /**
+     * Gets the IPsec policy info returned by 'ip xfrm policy'
+     * 
+     * @return The IPsec policy info
+     */
     public String getPolicyInfo()
     {
         logger.debug("getPolicyInfo()");
         return IpsecVpnApp.execManager().execOutput(GRAB_POLICY_SCRIPT);
     }
 
+    /**
+     * Gets the IPsec state info returned by 'ip xfrm state'
+     * 
+     * @return The IPsec state info
+     */
     public String getStateInfo()
     {
         logger.debug("getStateInfo()");
         return IpsecVpnApp.execManager().execOutput(GRAB_STATE_SCRIPT);
     }
 
+    /**
+     * Returns our local execManager, or the global execManager if ours has not
+     * yet been instantiated.
+     * 
+     * @return A valid execManager
+     */
     protected static ExecManager execManager()
     {
         if (IpsecVpnApp.execManager != null) return IpsecVpnApp.execManager;
@@ -219,6 +279,12 @@ public class IpsecVpnApp extends AppBase
         return UvmContextFactory.context().execManager();
     }
 
+    /**
+     * Required by all UVM applications. We return an empty list of connectors
+     * since this application doesn't do any traffic processing.
+     * 
+     * @return Our list of pipeline connectors.
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -226,6 +292,10 @@ public class IpsecVpnApp extends AppBase
         return this.connectors;
     }
 
+    /**
+     * After initialization we load and apply our settings, or create new
+     * default settings if no saved settings are found.
+     */
     @Override
     protected void postInit()
     {
@@ -251,8 +321,14 @@ public class IpsecVpnApp extends AppBase
         }
     }
 
+    /**
+     * Before the app is started we make sure our license is valid. If so, we
+     * call our pre-start script and add xl2tpd and ipsec to the daemon manager.
+     * 
+     * @param isPermanentTransition
+     */
     @Override
-    protected void preStart( boolean isPermanentTransition )
+    protected void preStart(boolean isPermanentTransition)
     {
         logger.debug("preStart()");
 
@@ -264,14 +340,21 @@ public class IpsecVpnApp extends AppBase
 
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
 
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
+
         UvmContextFactory.context().daemonManager().incrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().incrementUsageCount("ipsec");
 
         reconfigure();
     }
 
+    /**
+     * After the app is started, we create our monitoring timer task.
+     * 
+     * @param isPermanentTransition
+     */
     @Override
-    protected void postStart( boolean isPermanentTransition )
+    protected void postStart(boolean isPermanentTransition)
     {
         logger.debug("postStart()");
 
@@ -280,12 +363,20 @@ public class IpsecVpnApp extends AppBase
         timer.schedule(new IpsecVpnTimer(this), 60000, 60000);
     }
 
+    /**
+     * Before the app is stopped we stop our monitoring timer task and
+     * disconnect all active users.
+     * 
+     * @param isPermanentTransition
+     */
     @Override
-    protected void preStop( boolean isPermanentTransition )
+    protected void preStop(boolean isPermanentTransition)
     {
         logger.debug("preStop()");
 
-        super.preStop( isPermanentTransition );
+        super.preStop(isPermanentTransition);
+
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
 
         timer.cancel();
 
@@ -307,8 +398,14 @@ public class IpsecVpnApp extends AppBase
         }
     }
 
+    /**
+     * After the app is stopped we remove xl2tpd and ipsec from the daemon
+     * manager.
+     * 
+     * @param isPermanentTransition
+     */
     @Override
-    protected void postStop( boolean isPermanentTransition )
+    protected void postStop(boolean isPermanentTransition)
     {
         logger.debug("postStop()");
 
@@ -321,47 +418,57 @@ public class IpsecVpnApp extends AppBase
         UvmContextFactory.context().daemonManager().decrementUsageCount("ipsec");
     }
 
+    /**
+     * Called to activate the node settings.
+     */
     private synchronized void reconfigure()
     {
         logger.debug("reconfigure()");
-        manager.generateConfig(this.settings);
+        manager.generateConfig(this.settings,activeCertificate);
         updateBlingers();
 
         ExecManagerResult result;
+        String script;
 
         /**
          * Need to run iptables rules, they may already be there, but they might
          * not be so this is safe to run anytime and it will insert the rules if
          * not present
          */
-        result = UvmContextFactory.context().execManager().exec("/etc/untangle-netd/iptables-rules.d/710-ipsec");
+        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/710-ipsec");
+        result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("/etc/untangle-netd/iptables-rules.d/710-ipsec" + ": " + result.getResult());
+            logger.info(script + ": " + result.getResult());
             for (String line : lines)
-                logger.info("/etc/untangle-netd/iptables-rules.d/710-ipsec" + ": " + line);
+                logger.info(script + ": " + line);
         } catch (Exception e) {
         }
 
-        result = UvmContextFactory.context().execManager().exec("/etc/untangle-netd/iptables-rules.d/711-xauth");
+        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/711-xauth");
+        result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("/etc/untangle-netd/iptables-rules.d/711-xauth" + ": " + result.getResult());
+            logger.info(script + ": " + result.getResult());
             for (String line : lines)
-                logger.info("/etc/untangle-netd/iptables-rules.d/711-xauth" + ": " + line);
+                logger.info(script + ": " + line);
         } catch (Exception e) {
         }
 
-        result = UvmContextFactory.context().execManager().exec("/etc/untangle-netd/iptables-rules.d/712-gre");
+        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/712-gre");
+        result = UvmContextFactory.context().execManager().exec(script);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("/etc/untangle-netd/iptables-rules.d/712-gre" + ": " + result.getResult());
+            logger.info(script + ": " + result.getResult());
             for (String line : lines)
-                logger.info("/etc/untangle-netd/iptables-rules.d/712-gre" + ": " + line);
+                logger.info(script + ": " + line);
         } catch (Exception e) {
         }
     }
 
+    /**
+     * Updates the blinger display.
+     */
     public void updateBlingers()
     {
         logger.debug("updateBlingers()");
@@ -375,8 +482,7 @@ public class IpsecVpnApp extends AppBase
 
         for (int x = 0; x < ttot; x++) {
             if (list.get(x).getActive() == true) etot++;
-            else
-                dtot++;
+            else dtot++;
         }
 
         this.setMetric(IpsecVpnApp.STAT_CONFIGURED, (long) ttot);
@@ -385,17 +491,60 @@ public class IpsecVpnApp extends AppBase
         this.setMetric(IpsecVpnApp.STAT_VIRTUAL, virtualUserTable.countVirtualUsers());
     }
 
+    /**
+     * Checks to see if we have a valid license.
+     * 
+     * @return True if we have a valid license, otherwise false
+     */
     public boolean isLicenseValid()
     {
         logger.debug("isLicenseValid()");
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN)) return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN_OLDNAME)) return true;
         return false;
     }
 
+    /**
+     * Called externally by ipsec-virtual-user-event python script and possibly
+     * others to register an active VPN user.
+     * 
+     * @param clientProtocol
+     *        The protocol used to connect (L2TP | Xauth | IKEv2)
+     * @param clientAddress
+     *        The IP address assigned to the client
+     * @param clientUsername
+     *        The client username
+     * @param netInterface
+     *        The protocol interface assigned to the client
+     * @param netProcess
+     *        The process identifier assigned to the client
+     * @return 0 for success
+     */
     public int virtualUserConnect(String clientProtocol, InetAddress clientAddress, String clientUsername, String netInterface, String netProcess)
     {
         logger.debug("virtualUserConnect PROTO:" + clientProtocol + " ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " IF:" + netInterface + " PROC:" + netProcess);
+
+        /**
+         * If concurrent logins are disabled we start by look for any existing
+         * host table entry for the user.
+         */
+        if (getSettings().getAllowConcurrentLogins() == false) {
+            HostTableEntry finder = UvmContextFactory.context().hostTable().findHostTableEntryByIpsecUsername(clientUsername);
+
+            /**
+             * If we found an entry and the IP address is different, we create a
+             * new entry with the info from the old entry, remove the old entry,
+             * and insert the new entry. It's the equivalent of updating the IP
+             * address of the old entry, which we can't do directly.
+             */
+            if ((finder != null) && (finder.getAddress().equals(clientAddress) == false)) {
+                logger.debug("Replacing host table entry for " + clientUsername + " OLD:" + finder.getAddress().getHostAddress().toString() + " NEW:" + clientAddress.getHostAddress().toString());
+                HostTableEntry pusher = new HostTableEntry();
+                pusher.copy(finder);
+                pusher.setAddress(clientAddress);
+                UvmContextFactory.context().hostTable().removeHostTableEntry(finder.getAddress());
+                UvmContextFactory.context().hostTable().setHostTableEntry(clientAddress, pusher);
+            }
+        }
 
         // put the client in the virtual user table
         VirtualUserEntry entry = virtualUserTable.insertVirtualUser(clientProtocol, clientAddress, clientUsername, netInterface, netProcess);
@@ -411,6 +560,22 @@ public class IpsecVpnApp extends AppBase
         return (0);
     }
 
+    /**
+     * Called externally by ipsec-virtual-user-event python script and possibly
+     * others when a VPN user disconnects.
+     * 
+     * @param clientProtocol
+     *        The protocol used to connect (L2TP | Xauth | IKEv2)
+     * @param clientAddress
+     *        The IP address assigned to the client
+     * @param clientUsername
+     *        The client username
+     * @param netRXcount
+     *        The total number of bytes received by the client
+     * @param netTXcount
+     *        The total number of bytes sent by the client
+     * @return
+     */
     public int virtualUserGoodbye(String clientProtocol, InetAddress clientAddress, String clientUsername, String netRXcount, String netTXcount)
     {
         logger.debug("virtualUserGoodbye PROTO:" + clientProtocol + " ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername + " RX:" + netRXcount + " TX:" + netTXcount);
@@ -441,12 +606,21 @@ public class IpsecVpnApp extends AppBase
         logEvent(event);
         logger.debug("virtualUserGoodbye(logEvent) " + event.toString());
 
-        virtualUserTable.removeVirtualUser(clientAddress);
+        virtualUserTable.removeVirtualUser(clientAddress, getSettings().getAllowConcurrentLogins());
 
         updateBlingers();
         return (0);
     }
 
+    /**
+     * Called by the UI to forcefully disconnect an active VPN user.
+     * 
+     * @param clientAddress
+     *        The IP address to of the client to disconnected
+     * @param clientUsername
+     *        The username of the client to be disconnected
+     * @return 0 if client was active and disconnected
+     */
     public int virtualUserDisconnect(InetAddress clientAddress, String clientUsername)
     {
         logger.debug("virtualUserDisconnect ADDR:" + clientAddress.getHostAddress() + " USER:" + clientUsername);
@@ -473,34 +647,25 @@ public class IpsecVpnApp extends AppBase
         return (0);
     }
 
+    /**
+     * Returns a list of active VPN users.
+     * 
+     * @return A list of active VPN users
+     */
     public LinkedList<VirtualUserEntry> getVirtualUsers()
     {
         logger.debug("getVirtualUsers()");
         return (virtualUserTable.buildUserList());
     }
 
+    /**
+     * Returns a list with the status of all enabled IPsec tunnels
+     * 
+     * @return A list with the status of all enabled IPsec tunnels
+     */
     public LinkedList<ConnectionStatusRecord> getTunnelStatus()
     {
         LinkedList<ConnectionStatusRecord> displayList = new LinkedList<ConnectionStatusRecord>();
-        LinkedList<ConnectionStatusRecord> statusList;
-
-        String output = IpsecVpnApp.execManager().execOutput(GRAB_STATUS_SCRIPT);
-
-        // call the ipsec-status script to get the state and policy info
-        try {
-            JSONSerializer serializer = new JSONSerializer();
-
-            serializer.setFixupDuplicates(false);
-            serializer.setMarshallNullAttributes(false);
-            serializer.registerDefaultSerializers();
-
-            @SuppressWarnings("unchecked")
-            LinkedList<ConnectionStatusRecord> fetchList = (LinkedList<ConnectionStatusRecord>) serializer.fromJSON(output);
-            statusList = fetchList;
-        } catch (Exception exn) {
-            logger.error("Invalid JSON returned from ipsec-status: " + output, exn);
-            return (displayList);
-        }
 
         // get the list of configured tunnels from the settings
         LinkedList<IpsecVpnTunnel> configList = settings.getTunnels();
@@ -510,20 +675,27 @@ public class IpsecVpnApp extends AppBase
         for (int x = 0; x < configList.size(); x++) {
             IpsecVpnTunnel tunnel = configList.get(x);
             if (tunnel.getActive() == false) continue;
-            ConnectionStatusRecord record = createDisplayRecord(tunnel, statusList);
+            ConnectionStatusRecord record = createDisplayRecord(tunnel);
             displayList.add(record);
         }
 
         return (displayList);
     }
 
-    private ConnectionStatusRecord createDisplayRecord(IpsecVpnTunnel tunnel, LinkedList<ConnectionStatusRecord> statusList)
+    /**
+     * Creates a UI status display record for an IpsecVpnTunnel
+     * 
+     * @param tunnel
+     *        The tunnel for which status is requested
+     * @return The status of the tunnel
+     */
+    private ConnectionStatusRecord createDisplayRecord(IpsecVpnTunnel tunnel)
     {
+        String string;
+        long value;
+        int top, wid, len;
+
         ConnectionStatusRecord record = new ConnectionStatusRecord();
-        ConnectionStatusRecord finder;
-        AddressCalculator srcCalc;
-        AddressCalculator dstCalc;
-        String remoteAddress;
 
         // start by creating an inactive record using the configured values
         record.setType("DISPLAY");
@@ -538,198 +710,222 @@ public class IpsecVpnApp extends AppBase
         record.setInBytes("0");
         record.setOutBytes("0");
 
-        // make sure we have the remote IP address in case they used the hostname
-        try {
-            InetAddress remote = InetAddress.getByName(tunnel.getRight());
-            remoteAddress = remote.getHostAddress().toString();
-        } catch (Exception exn) {
-            record.setMode("unknown");
+        /*
+         * Use the id and description to create a unique connection name that
+         * won't cause problems in the ipsec.conf file by replacing non-word
+         * characters with a hyphen. We also prefix this name with UT123_ to
+         * ensure no dupes in the config file.
+         */
+        String workname = ("UT" + tunnel.getId() + "_" + tunnel.getDescription().replaceAll("\\W", "-"));
+
+// THIS IS FOR ECLIPSE - @formatter:off
+
+        /*
+         * the script should return the tunnel status in the following format:
+         * | TUNNNEL:tunnel_name LOCAL:1.2.3.4 REMOTE:5.6.7.8 STATE:active IN:123 OUT:456 |
+         */
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
+        String result = IpsecVpnApp.execManager().execOutput(GRAB_TUNNEL_STATUS_SCRIPT + " " + workname);
+
+        /*
+         * If the tunnel is active, update the mode and continue parsing.
+         * Otherwise just return the inactive record.
+         */
+        top = result.indexOf("STATE:active");
+        if (top > 0) {
+            record.setMode("active");
+        } else {
             return (record);
         }
 
-        for (int x = 0; x < statusList.size(); x++) {
-            // walk through every status record until we find the STATE
-            // record that matches the argumented tunnel entry.
-            ConnectionStatusRecord status = statusList.get(x);
+        /*
+         * We use the IN: and OUT: tags to find the beginning of each value and
+         * the trailing space to isolate the numeric portions of the string to
+         * keep Long.valueOf happy. We use the LOCAL: and REMOTE: tags to find
+         * and display the actual left and right endpoints of active tunnels.
+         */
 
-            // start with the STATE record where src matches the local IP
-            // and dst matches the remote IP of the configured tunnel
-            if (!status.getType().equals("STATE")) continue;
-            if (!status.getMode().equals(tunnel.getConntype())) continue;
-            if (!status.getSrc().equals(tunnel.getLeft())) continue;
-            if (!status.getDst().equals(remoteAddress)) continue;
+        try {
 
-            // we found the correct STATE record so now we have make sure there
-            // is a matching STATE record for the reverse direction along with
-            // matching IN, OUT, and FWD policy records.  We do these searches by
-            // calling the findMatchingRecord function which searches through the
-            // entire list of status records for a match based on the status
-            // record we're currently evaluating.  Think double-nested for loop.
-
-            // look for the inverse STATE record where the src matches the
-            // remote IP and the dst matches the local IP and the requid
-            // matches the reqid in the record we found above
-            finder = findMatchingRecord(MatchMode.STATE, status.getReqid(), remoteAddress, tunnel.getLeft(), statusList);
-            if (finder == null) continue;
-
-            // because we allow, and ipsec seems to accept, subnets that are defined
-            // using the host/bits format (192.168.2.1/24) in addition to the
-            // network/bits format (192.168.2.0/24) we use the IpPalculator to
-            // convert the configured subnet values to the actual network/bits
-            // values needed to match the 'ip xfrm policy' output
-            srcCalc = new AddressCalculator(tunnel.getLeftSubnet());
-            dstCalc = new AddressCalculator(tunnel.getRightSubnet());
-
-            // look for a POLICY out record with matching reqid that also matches our src and dst networks
-            finder = findMatchingRecord(MatchMode.OUT, status.getReqid(), srcCalc.getBaseNetwork(), dstCalc.getBaseNetwork(), statusList);
-            if (finder == null) continue;
-
-            // look for a POLICY in record with matching reqid that also matches our dst and src networks
-            finder = findMatchingRecord(MatchMode.IN, status.getReqid(), dstCalc.getBaseNetwork(), srcCalc.getBaseNetwork(), statusList);
-            if (finder == null) continue;
-
-            // for transport mode there won't be a POLICY fwd record so we're done
-            // when we find the correct status record with matching in/out records
-            if (tunnel.getConntype().equals("transport")) {
-                record.setMode("active");
-                getTrafficStatistics(record);
-                break;
+            top = result.indexOf("IN:");
+            wid = 3;
+            if (top > 0) {
+                len = result.substring(top + wid).indexOf(" ");
+                if (len > 0) {
+                    value = Long.valueOf(result.substring(top + wid, top + wid + len));
+                    record.setInBytes(Long.toString(value));
+                }
             }
 
-            // look for a POLICY fwd record with matching reqid - we don't care about
-            // src or dst here since if we make it this far we know the reqid of the
-            // status record has matching in and out records
-            finder = findMatchingRecord(MatchMode.FWD, status.getReqid(), null, null, statusList);
-            if (finder == null) continue;
+            top = result.indexOf("OUT:");
+            wid = 4;
+            if (top > 0) {
+                len = result.substring(top + wid).indexOf(" ");
+                if (len > 0) {
+                    value = Long.valueOf(result.substring(top + wid, top + wid + len));
+                    record.setOutBytes(Long.toString(value));
+                }
+            }
 
-            // we found the correct status record with matching in/out/fwd records which means
-            // the tunnel is active so we update the DISPLAY record with fields from the
-            // POLICY fwd record inverting the src and dst to represent our perspective
-            record.setSrc(finder.getTmplDst());
-            record.setDst(finder.getTmplSrc());
-            record.setTmplSrc(finder.getDst());
-            record.setTmplDst(finder.getSrc());
-            record.setMode("active");
-            getTrafficStatistics(record);
-            break;
+            top = result.indexOf("LOCAL:");
+            wid = 6;
+            if (top > 0) {
+                len = result.substring(top + wid).indexOf(" ");
+                if (len > 0) {
+                    string = result.substring(top + wid, top + wid + len);
+                    if (!string.equals("unknown")) record.setSrc(string);
+                }
+            }
+
+            top = result.indexOf("REMOTE:");
+            wid = 7;
+            if (top > 0) {
+                len = result.substring(top + wid).indexOf(" ");
+                if (len > 0) {
+                    string = result.substring(top + wid, top + wid + len);
+                    if (!string.equals("unknown")) record.setDst(string);
+                }
+            }
+        }
+
+        /*
+         * If we can't parse the tunnel traffic stats just return
+         */
+        catch (Exception exn) {
+            logger.warn("Exception parsing IPsec status: " + result, exn);
         }
 
         return (record);
     }
 
-    private ConnectionStatusRecord findMatchingRecord(MatchMode matchMode, String reqid, String src, String dst, LinkedList<ConnectionStatusRecord> statusList)
-    {
-        for (int x = 0; x < statusList.size(); x++) {
-            ConnectionStatusRecord status = statusList.get(x);
-
-            switch (matchMode)
-            {
-            case STATE:
-                if (status.getType().equals("STATE") != true) break;
-                if (status.getReqid().equals(reqid) != true) break;
-                if (status.getSrc().equals(src) != true) break;
-                if (status.getDst().equals(dst) != true) break;
-                return (status);
-            case IN:
-                if (status.getType().equals("POLICY") != true) break;
-                if (status.getDir().equals("in") != true) break;
-                if (status.getReqid().equals(reqid) != true) break;
-                if (status.getSrc().equals(src) != true) break;
-                if (status.getDst().equals(dst) != true) break;
-                return (status);
-            case OUT:
-                if (status.getType().equals("POLICY") != true) break;
-                if (status.getDir().equals("out") != true) break;
-                if (status.getReqid().equals(reqid) != true) break;
-                if (status.getSrc().equals(src) != true) break;
-                if (status.getDst().equals(dst) != true) break;
-                return (status);
-            case FWD:
-                if (status.getType().equals("POLICY") != true) break;
-                if (status.getDir().equals("fwd") != true) break;
-                if (status.getReqid().equals(reqid) != true) break;
-                return (status);
-            }
-        }
-        return null;
-    }
-
-    private void getTrafficStatistics(ConnectionStatusRecord status)
-    {
-        long outValue = 0;
-        long inValue = 0;
-        int top, len;
-
-        // Use the id and description to create a unique connection name that won't cause
-        // problems in the ipsec.conf file by replacing non-word characters with a hyphen.
-        // We also prefix this name with UT123_ to ensure no dupes in the config file.
-        String workname = ("UT" + status.getId() + "_" + status.getDescription().replaceAll("\\W", "-"));
-
-        /*
-         * the script should return the tunnel stats in the following format |
-         * TUNNNEL:tunnel_name IN:123 OUT:456 |
-         */
-        String result = IpsecVpnApp.execManager().execOutput(GRAB_TRAFFIC_SCRIPT + " " + workname);
-
-        /*
-         * We use the IN: and OUT: tags to find the beginning of each value and
-         * the trailing space to isolate the numeric portions of the string to
-         * keep Long.valueOf happy.
-         */
-
-        try {
-            top = result.indexOf("IN:");
-            if (top > 0) {
-                len = result.substring(top + 3).indexOf(" ");
-                if (len > 0) {
-                    inValue = Long.valueOf(result.substring(top + 3, top + 3 + len));
-                    status.setInBytes(Long.toString(inValue));
-                }
-            }
-
-            top = result.indexOf("OUT:");
-            if (top > 0) {
-                len = result.substring(top + 4).indexOf(" ");
-                if (len > 0) {
-                    outValue = Long.valueOf(result.substring(top + 4, top + 4 + len));
-                    status.setOutBytes(Long.toString(outValue));
-                }
-            }
-        }
-
-        /*
-         * If we can't parse the tunnel stats just return
-         */
-        catch (Exception exn) {
-            return;
-        }
-    }
-
-    /*
-     * https://lists.strongswan.org/pipermail/users/2013-June/004802.html
+    /**
+     * This function makes changes to the underlying configuration of the IPsec
+     * applications and daemons critical for proper operation.
+     * 
+     * @throws Exception
      */
-
     private void fixStrongswanConfig() throws Exception
     {
+        /**
+         * We add a timeout for the IKE daemon so that commands like up and down
+         * don't hang forever, which is the default.
+         * 
+         * https://lists.strongswan.org/pipermail/users/2013-June/004802.html
+         */
         File cfgfile = new File(STRONGSWAN_STROKE_CONFIG);
         StringBuffer buffer = new StringBuffer(1024);
         String line;
 
         FileReader fileReader = new FileReader(cfgfile);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        BufferedReader bufferedReader = null;
+        try{
+            bufferedReader = new BufferedReader(fileReader);
 
-        while ((line = bufferedReader.readLine()) != null) {
-            if (line.contains("timeout =") == true) {
-                line = ("    timeout = " + STRONGSWAN_STROKE_TIMEOUT);
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains("timeout =") == true) {
+                    line = ("    timeout = " + STRONGSWAN_STROKE_TIMEOUT);
+                }
+                buffer.append(line);
+                buffer.append("\n");
             }
-            buffer.append(line);
-            buffer.append("\n");
+            fileReader.close();
+        } catch( Exception ex){
+            logger.error("Unable to write to file", ex);
+        } finally {
+            if( bufferedReader != null){
+                try{
+                    bufferedReader.close();
+                } catch( Exception ex){
+                    logger.error("Unable to close file", ex);
+                }
+            }
         }
 
-        fileReader.close();
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(STRONGSWAN_STROKE_CONFIG);
+            fileWriter.write(buffer.toString());
+        } catch ( Exception ex ){
+            logger.error("Unable to write file", ex);
+        } finally{
+            if ( fileWriter != null ){
+                try {
+                    fileWriter.close();
+                } catch (Exception ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
+        }
+    }
 
-        FileWriter fileWriter = new FileWriter(STRONGSWAN_STROKE_CONFIG);
-        fileWriter.write(buffer.toString());
-        fileWriter.close();
+    /**
+     * Callback hook for changes to UVM settings so we know when the
+     * certificate assigned to IPsec has been changed.
+     *
+     * @author mahotz
+     *
+     */
+    private class IpsecVpnHookCallback implements HookCallback
+    {
+
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "ipsecvpn-uvm-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         *
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            SystemSettings systemSettings = null;
+
+            Object o = args[0];
+            if (!(o instanceof String)) {
+                logger.warn("Invalid UVM settings filename: " + o);
+                return;
+            }
+
+            String fileName = (String) o;
+
+            // we're only interested in changes to the system settings 
+            if (!fileName.contains("system.js")) return;
+
+            // load the updated system settings from the argumented file
+            try {
+                SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+                systemSettings = settingsManager.load(SystemSettings.class, fileName);
+            } catch (Exception exn) {
+                logger.warn("Unable to read system settings from " + fileName, exn);
+                return;
+            }
+
+            // if we didn't get the settings just return
+            if (systemSettings == null) {
+                logger.warn("Invalid system settings file " + fileName);
+                return;
+            }
+
+            // get the IPsec certificate from the settings
+            String adminCertificate = systemSettings.getIpsecCertificate();
+
+            // if the IPsec certificate hasn't changed just return
+            if (activeCertificate.equals(adminCertificate)) return;
+
+            // certificate has changed so save the new one and reconfigure
+            logger.info("Reconfiguring due to certificate change from " + activeCertificate + " to " + adminCertificate);
+            activeCertificate = adminCertificate;
+            reconfigure();
+        }
     }
 }

@@ -50,6 +50,7 @@ public class AsciiStringBuilder {
     /**
      * Construct a new instance with the
      * given initial internal capacity.
+     * @param initCapacity integer of initial size.
      */
     public AsciiStringBuilder(int initCapacity) {
         m_bytes = new byte[initCapacity];
@@ -175,13 +176,16 @@ public class AsciiStringBuilder {
     /**
      * The current size of the internal array.  Will be the size
      * of any returned String
+     * @return integer of size.
      */
     public int size() {
         return m_pos;
     }
 
     /**
-     * ...same as {@link #size size()}.
+     * The current size of the internal array.  Will be the size
+     * of any returned String
+     * @return integer of size.
      */
     public int length() {
         return size();
@@ -214,6 +218,10 @@ public class AsciiStringBuilder {
         }
     }
 
+    /**
+     * Verify is of length and fit to size if not.
+     * @param len integer of length
+     */
     private void ensure(final int len) {
         if(m_pos + len > m_bytes.length) {
             int newLen = (m_bytes.length + 1)*2;

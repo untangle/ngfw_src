@@ -1,0 +1,20 @@
+{
+    "category": "Intrusion Prevention",
+    "readOnly": true,
+    "type": "EVENT_LIST",
+    "conditions": [
+        {
+            "column": "blocked",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "operator": "is",
+            "value": "false"
+        }
+    ],
+    "defaultColumns": ["time_stamp","rule_id", "sig_id","gen_id","class_id","source_addr","source_port","dest_addr","dest_port","protocol","category","classtype","msg"],
+    "description": "All sessions matching Intrusion Prevention signatures and logged.",
+    "displayOrder": 1020,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "table": "intrusion_prevention_events",
+    "title": "Logged Events",
+    "uniqueId": "intrusion-prevention-EY9OO1S61Y"
+}

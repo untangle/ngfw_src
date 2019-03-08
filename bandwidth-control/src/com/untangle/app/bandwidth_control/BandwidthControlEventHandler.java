@@ -8,10 +8,7 @@ import java.util.List;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
@@ -19,11 +16,14 @@ import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
+/**
+ * This is the traffic EventHandler responsible for Bandwidth Control
+ * It mainly evaluates the rules on traffic and takes the specified actions
+ */
 public class BandwidthControlEventHandler extends AbstractEventHandler
 {
-    private static final Logger logger = Logger.getLogger( BandwidthControlEventHandler.class );
+    private final Logger logger = Logger.getLogger( BandwidthControlEventHandler.class );
 
     private static final int TCP_HEADER_SIZE_ESTIMATE = 32;
     private static final int IP_HEADER_SIZE = 20;
@@ -33,6 +33,10 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
     
     private BandwidthControlApp app;
 
+    /**
+     * Create a BandWidthControlEventHandler instance
+     * @param app - the owning BandwidthControlApp
+     */
     public BandwidthControlEventHandler(BandwidthControlApp app)
     {
         super(app);
@@ -40,16 +44,28 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         this.app = app;
     }
 
+    /**
+     * Handle a new TCP session request event
+     * @param sessionRequest
+     */
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
         _handleNewSessionRequest( sessionRequest, Protocol.TCP );
     }
 
+    /**
+     * Handle a new UDP session request event
+     * @param sessionRequest
+     */
     public void handleUDPNewSessionRequest( TCPNewSessionRequest sessionRequest )
     {
         _handleNewSessionRequest( sessionRequest, Protocol.UDP );
     }
 
+    /**
+     * Handle a new TCP complete event
+     * @param session
+     */
     public void handleTCPComplete( AppTCPSession session )
     {
         try {
@@ -60,6 +76,10 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handle a new UDP complete/timeout event
+     * @param session
+     */
     public void handleUDPComplete( AppUDPSession session )
     {
         try {
@@ -70,18 +90,35 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Handle a new UDP client packet
+     * @param session
+     * @param data - the data (unused)
+     * @param header - the packet header
+     */
     public void handleUDPClientPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         _handleSession( data, session, Protocol.UDP );
         session.sendServerPacket( data, header );
     }
 
+    /**
+     * Handle a new UDP server packet
+     * @param session
+     * @param data - the data (unused)
+     * @param header - the packet header
+     */
     public void handleUDPServerPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         _handleSession( data, session, Protocol.UDP );
         session.sendClientPacket( data, header );
     }
 
+    /**
+     * Handle a new TCP client packet
+     * @param session
+     * @param data - the data (unused)
+     */
     public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
         _handleSession( data, session, Protocol.TCP );
@@ -89,6 +126,11 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         return;
     }
 
+    /**
+     * Handle a new TCP server packet
+     * @param session
+     * @param data - the data (unused)
+     */
     public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
         _handleSession( data, session, Protocol.TCP );
@@ -96,6 +138,15 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         return;
     }
 
+    /**
+     * Reprioritize all existing sessions for the specified address.
+     * This is used when state changes about hosts in the host table and we
+     * need to reprioritize existing sessions, like when a host's quota
+     * is exceeded.
+     *
+     * @param addr - the address of the host
+     * @param reason - just used for logging to debug logs
+     */
     protected void reprioritizeHostSessions(InetAddress addr, String reason)
     {
         if ( addr == null )
@@ -125,6 +176,15 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Reprioritize all existing sessions for the specified username.
+     * This is used when state changes about users in the user table and we
+     * need to reprioritize existing sessions, like when a user's quota
+     * is exceeded.
+     *
+     * @param username - the username
+     * @param reason - just used for logging to debug logs
+     */
     protected void reprioritizeUserSessions(String username, String reason)
     {
         if ( username == null )
@@ -154,6 +214,12 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * This handles both TCP and UDP session request
+     * It just creates bandwidth control session state and attaches it to the session
+     * @param request the session request
+     * @param protocol (UDP/TCP)
+     */
     private void _handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
         if ( logger.isDebugEnabled() ) {
@@ -166,6 +232,13 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         request.attach(sessInfo);
     }
 
+    /**
+     * This handles session data
+     * It will evaulate the rules and take the appropriate action
+     * @param data - the packet data
+     * @param sess - the session
+     * @param protocol (UDP/TCP)
+     */
     private void _handleSession( ByteBuffer data, AppSession sess, Protocol protocol )
     {
         BandwidthControlSessionState sessInfo = (BandwidthControlSessionState)sess.attachment();
@@ -202,11 +275,24 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
 
     }
     
+    /**
+     * Utility function to find the first matching rule of the current ruleset
+     * for the specified sessions
+     * @param sess - the session
+     * @return the matching rule or null if none
+     */
     private BandwidthControlRule _findFirstMatch(AppSession sess)
     {
         return _findFirstMatch(sess, false);
     }
     
+    /**
+     * Utility function to find the first matching rule of the current ruleset
+     * for the specified sessions
+     * @param sess - the session
+     * @param onlyPrioritizeRules - if true only look at prioritization rules
+     * @return the matching rule or null if none
+     */
     private BandwidthControlRule _findFirstMatch(AppSession sess, boolean onlyPrioritizeRules)
     {
         List<BandwidthControlRule> rules = this.app.getRules();

@@ -1,7 +1,9 @@
 Ext.define('Ung.config.network.view.DhcpServer', {
     extend: 'Ext.panel.Panel',
+    alias: 'widget.config-network-dhcp-server',
+    itemId: 'dhcp-server',
+    scrollable: true,
 
-    alias: 'widget.config.network.dhcpserver',
     viewModel: true,
 
     title: 'DHCP Server'.t(),
@@ -11,11 +13,13 @@ Ext.define('Ung.config.network.view.DhcpServer', {
     items: [{
         xtype: 'ungrid',
         region: 'center',
-
+        itemId: 'dhcpEntries',
         title: 'Static DHCP Entries'.t(),
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['delete'],
+
+        emptyText: 'No Static DHCP Entries defined'.t(),
 
         listProperty: 'settings.staticDhcpEntries.list',
 
@@ -65,51 +69,53 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             Field.description
         ]
     }, {
-        xtype: 'grid',
+        xtype: 'ungrid',
         itemId: 'dhcpLeases',
         title: 'Current DHCP Leases'.t(),
         region: 'south',
-        height: '50%',
         split: true,
+        enableColumnHide: false,
+        enableColumnMove: false,
 
-        viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
-        },
+        emptyText: 'No Current DHCP Leases defined'.t(),
 
         tbar: [{
             text: 'Refresh'.t(),
             iconCls: 'fa fa-refresh',
-            handler: 'refreshDhcpLeases'
+            handler: 'externalAction',
+            action: 'refreshDhcpLeases'
         }],
 
-        store: {
-            data: [] // todo: handle this store when available data
-        },
+        bind: '{dynamicDhcpEntries}',
 
         columns: [{
             header: 'MAC Address'.t(),
             dataIndex:'macAddress',
-            width: 150
+            width: Renderer.macWidth
         },{
             header: 'Address'.t(),
-            dataIndex:'address',
-            width: 200
+            dataIndex: 'address',
+            width: Renderer.ipWidth
         },{
             header: 'Hostname'.t(),
-            dataIndex:'hostname',
-            width: 200
+            dataIndex: 'hostname',
+            width: Renderer.hostnameWidth,
+            flex: 1
         },{
             header: 'Expiration Time'.t(),
-            dataIndex:'date',
-            width: 180,
-            // renderer: function(value) { return i18n.timestampFormat(value*1000); }
+            dataIndex: 'date',
+            width: Renderer.timestampWidth,
+            renderer: Renderer.timestamp
         }, {
             xtype: 'actioncolumn',
+            width: Renderer.actionColumn,
             header: 'Add Static'.t(),
+            align: 'center',
             iconCls: 'fa fa-plus',
-            handler: function () {
-                alert('to add');
-            }
+            sortable: false,
+            resizable: false,
+            handler: 'externalAction',
+            action: 'addStaticDhcpLease'
         }],
         plugins: 'responsive',
         responsiveConfig: {

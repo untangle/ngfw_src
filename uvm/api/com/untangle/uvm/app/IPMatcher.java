@@ -1,17 +1,13 @@
 /**
  * $HeadURL$
  */
+
 package com.untangle.uvm.app;
 
 import java.net.InetAddress;
-import java.util.List;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.NetworkManager;
 
 /**
  * An interface to test for an address.
@@ -32,6 +28,8 @@ public class IPMatcher
     /* Number of bytes in an IPv4 address */
     private static final int INADDRSZ = 4; /* XXX IPv6 */
 
+// THIS IS FOR ECLIPSE - @formatter:off
+    
     /* An array of the CIDR values */
     private static final String CIDR_STRINGS[] = 
     {
@@ -46,13 +44,18 @@ public class IPMatcher
         "255.255.255.255"
     };
 
+// THIS IS FOR ECLIPSE - @formatter:on
+
     /* Should be an unmodifiable list or vector */
     private static final InetAddress CIDR_CONVERTER[] = new InetAddress[CIDR_STRINGS.length];
 
-    public static enum IPMatcherType { ANY, NONE, SINGLE, RANGE, SUBNET, LIST };
+    public static enum IPMatcherType
+    {
+        ANY, NONE, SINGLE, RANGE, SUBNET, LIST
+    };
 
     private final Logger logger = Logger.getLogger(getClass());
-    
+
     /**
      * The string format of this matcher
      */
@@ -64,7 +67,8 @@ public class IPMatcher
     private IPMatcherType type = IPMatcherType.NONE;
 
     /**
-     * if this port matcher is a list of port matchers, this list stores the children
+     * if this port matcher is a list of port matchers, this list stores the
+     * children
      */
     private LinkedList<IPMatcher> children = null;
 
@@ -75,43 +79,55 @@ public class IPMatcher
     private long rangeMax = -1;
 
     /**
-     * if its a subnet matcher 
+     * if its a subnet matcher
      */
     private long subnetNetwork = -1;
     private long subnetNetmask = -1;
-    
+
     /**
      * if its just an int matcher this stores the number
      */
     private InetAddress single = null;
 
-
-    public IPMatcher( String matcher )
+    /**
+     * Make a subnet matcher
+     * 
+     * @param matcher
+     *        The init string
+     */
+    public IPMatcher(String matcher)
     {
         initialize(matcher);
     }
 
     /**
      * Make a subnet matcher
+     * 
+     * @param network
+     *        The network
+     * @param netmask
+     *        The netmask
      */
-    public IPMatcher( InetAddress network, InetAddress netmask )
+    public IPMatcher(InetAddress network, InetAddress netmask)
     {
         this.type = IPMatcherType.SUBNET;
-        this.subnetNetmask = addrToLong( netmask );
-        this.subnetNetwork = addrToLong( network );
+        this.subnetNetmask = addrToLong(netmask);
+        this.subnetNetwork = addrToLong(network);
     }
 
     /**
      * Return true if <param>address</param> matches this matcher.
-     *
-     * @param address The address to test
+     * 
+     * @param address
+     *        The address to test
      * @return True if the <param>address</param> matches.
      */
-    public boolean isMatch( InetAddress address )
+    public boolean isMatch(InetAddress address)
     {
         long tmp;
-        
-        switch (this.type) {
+
+        switch (this.type)
+        {
 
         case ANY:
             return true;
@@ -120,25 +136,23 @@ public class IPMatcher
             return false;
 
         case SINGLE:
-            if (this.single.equals(address))
-                return true;
+            if (this.single.equals(address)) return true;
             return false;
-            
+
         case RANGE:
-            tmp = addrToLong( address );
-            return (( this.rangeMin <= tmp ) && ( tmp <= this.rangeMax ));
+            tmp = addrToLong(address);
+            return ((this.rangeMin <= tmp) && (tmp <= this.rangeMax));
 
         case SUBNET:
             //logger.error("CHECK: " + address + " inside? " + Long.toHexString(this.subnetNetwork) + "/" + Long.toHexString(this.subnetNetmask) );
-            tmp = addrToLong( address );
-            boolean match = (( tmp & this.subnetNetmask ) == ( this.subnetNetwork & this.subnetNetmask ));
+            tmp = addrToLong(address);
+            boolean match = ((tmp & this.subnetNetmask) == (this.subnetNetwork & this.subnetNetmask));
             //logger.error("CHECK: " + address + " inside? " + Long.toHexString(this.subnetNetwork) + "/" + Long.toHexString(this.subnetNetmask) + " = " + match);
             return match;
-            
+
         case LIST:
             for (IPMatcher child : this.children) {
-                if (child.isMatch(address))
-                    return true;
+                if (child.isMatch(address)) return true;
             }
             return false;
 
@@ -147,12 +161,13 @@ public class IPMatcher
             return false;
         }
 
-
     }
 
     /**
-     * Returns the type of this matcher
-     * This is useful outside the class in a few select instances
+     * Returns the type of this matcher This is useful outside the class in a
+     * few select instances
+     * 
+     * @return The type
      */
     public IPMatcherType getType()
     {
@@ -160,39 +175,63 @@ public class IPMatcher
     }
 
     /**
-     * return string representation
+     * Return string representation
+     * 
+     * @return The string represenation
      */
     public String toString()
     {
         return matcher;
     }
-    
+
+    /**
+     * Get a matcher that will match any IPMatcher
+     * 
+     * @return The matcher
+     */
     public static IPMatcher getAnyMatcher()
     {
         return ANY_MATCHER;
     }
 
+    /**
+     * Get a matcher that will match nil
+     * 
+     * @return The matcher
+     */
     public static IPMatcher getNilMatcher()
     {
         return NIL_MATCHER;
     }
-    
-    public static IPMatcher makeSubnetMatcher( InetAddress network, InetAddress netmask )
+
+    /**
+     * Make a subnet matcher
+     * 
+     * @param network
+     *        The network
+     * @param netmask
+     *        The netmask
+     * @return The matcher
+     */
+    public static IPMatcher makeSubnetMatcher(InetAddress network, InetAddress netmask)
     {
-        return new IPMatcher( network, netmask );
+        return new IPMatcher(network, netmask);
     }
 
     /**
      * Initialize all the private variables
+     * 
+     * @param matcher
+     *        The init value
      */
-    private void initialize( String matcher )
+    private void initialize(String matcher)
     {
-        matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
+        matcher = matcher.toLowerCase().trim().replaceAll("\\s", "");
         this.matcher = matcher;
 
         /**
-         * If it contains a comma it must be a list of port matchers
-         * if so, go ahead and initialize the children
+         * If it contains a comma it must be a list of port matchers if so, go
+         * ahead and initialize the children
          */
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = IPMatcherType.LIST;
@@ -200,7 +239,7 @@ public class IPMatcher
             this.children = new LinkedList<IPMatcher>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
-            
+
             /* check each one */
             for (String childString : results) {
                 IPMatcher child = new IPMatcher(childString);
@@ -213,7 +252,7 @@ public class IPMatcher
         /**
          * Check the common constants
          */
-        if (MARKER_ANY.equals(matcher))  {
+        if (MARKER_ANY.equals(matcher)) {
             this.type = IPMatcherType.ANY;
             return;
         }
@@ -225,13 +264,13 @@ public class IPMatcher
             this.type = IPMatcherType.NONE;
             return;
         }
-        
+
         /**
          * If it contains a dash it must be a range
          */
         if (matcher.contains(MARKER_RANGE)) {
             this.type = IPMatcherType.RANGE;
-            
+
             String[] results = matcher.split(MARKER_RANGE);
 
             if (results.length != 2) {
@@ -240,11 +279,9 @@ public class IPMatcher
             }
 
             try {
-                if ( ! results[0].matches( IPADDR_REGEX ) )
-                    throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 0)");
-                if ( ! results[1].matches( IPADDR_REGEX ) )
-                    throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 1)");
-                    
+                if (!results[0].matches(IPADDR_REGEX)) throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 0)");
+                if (!results[1].matches(IPADDR_REGEX)) throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 1)");
+
                 InetAddress addrMin = InetAddress.getByName(results[0]);
                 InetAddress addrMax = InetAddress.getByName(results[1]);
 
@@ -257,7 +294,7 @@ public class IPMatcher
                 logger.warn("Unknown IPMatcher range format: \"" + matcher + "\"", e);
                 throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (exception)", e);
             }
- 
+
             return;
         }
 
@@ -266,7 +303,7 @@ public class IPMatcher
          */
         if (matcher.contains(MARKER_SUBNET)) {
             this.type = IPMatcherType.SUBNET;
-            
+
             String[] results = matcher.split(MARKER_SUBNET);
 
             if (results.length != 2) {
@@ -275,12 +312,11 @@ public class IPMatcher
             }
 
             try {
-                if ( ! results[0].matches( IPADDR_REGEX ) )
-                    throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 0)");
+                if (!results[0].matches(IPADDR_REGEX)) throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid addr 0)");
 
                 InetAddress addrNetwork = InetAddress.getByName(results[0]);
                 this.subnetNetwork = addrToLong(addrNetwork);
-                
+
                 /**
                  * The netmask can be a IP (255.255.0.0) or a number (16)
                  */
@@ -289,15 +325,13 @@ public class IPMatcher
                 /* First try to see if its a number */
                 try {
                     this.subnetNetmask = cidrToLong(Integer.parseInt(results[1]));
-                }
-                catch ( NumberFormatException e ) {
-                    /* It must be an IP address*/
+                } catch (NumberFormatException e) {
+                    /* It must be an IP address */
                 }
 
                 /* If that didnt work it must be a IP */
                 if (subnetNetmask == -1) {
-                    if ( ! results[1].matches( IPADDR_REGEX ) )
-                        throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid subnet)");
+                    if (!results[1].matches(IPADDR_REGEX)) throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid subnet)");
                     this.subnetNetmask = addrToLong(InetAddress.getByName(results[1]));
                 }
 
@@ -308,17 +342,16 @@ public class IPMatcher
                 logger.warn("Unknown IPMatcher subnet format: \"" + matcher + "\"", e);
                 throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (exception)", e);
             }
- 
+
             return;
         }
-        
+
         /**
          * if it isn't any of these it must be a basic SINGLE matcher
          */
         this.type = IPMatcherType.SINGLE;
         try {
-            if ( ! matcher.matches( IPADDR_REGEX ) )
-                throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid host)");
+            if (!matcher.matches(IPADDR_REGEX)) throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (invalid host)");
 
             this.single = InetAddress.getByName(matcher);
         } catch (java.net.UnknownHostException e) {
@@ -331,33 +364,38 @@ public class IPMatcher
 
         return;
     }
-    
+
     /**
      * Convert a 4-byte address to a long
+     * 
+     * @param address
+     *        The addres
+     * @return the long value
      */
-    private static long addrToLong( InetAddress address )
+    private static long addrToLong(InetAddress address)
     {
         long val = 0;
-        
+
         byte valArray[] = address.getAddress();
-        
-        for ( int c = 0 ; c < INADDRSZ ; c++ ) {
-            val += ((long)byteToInt(valArray[c])) << ( 8 * ( INADDRSZ - c - 1 ));
+
+        for (int c = 0; c < INADDRSZ; c++) {
+            val += ((long) byteToInt(valArray[c])) << (8 * (INADDRSZ - c - 1));
         }
-        
+
         return val;
     }
 
     /**
      * Convert a CIDR index to an InetAddress.
-     *
-     * @param cidr CIDR index to convert.
+     * 
+     * @param cidr
+     *        CIDR index to convert.
      * @return the InetAddress that corresponds to <param>cidr</param>.
      */
-    private static InetAddress cidrToInetAddress( int cidr )
+    private static InetAddress cidrToInetAddress(int cidr)
     {
-        if ( cidr < 0 || cidr > CIDR_CONVERTER.length ) {
-            throw new RuntimeException( "CIDR notation[" + cidr + "] should end with a number between 0 and " + CIDR_CONVERTER.length );
+        if (cidr < 0 || cidr > CIDR_CONVERTER.length) {
+            throw new RuntimeException("CIDR notation[" + cidr + "] should end with a number between 0 and " + CIDR_CONVERTER.length);
         }
 
         return CIDR_CONVERTER[cidr];
@@ -365,33 +403,37 @@ public class IPMatcher
 
     /**
      * Convert a CIDR index to a long.
-     *
-     * @param cidr CIDR index to convert.
+     * 
+     * @param cidr
+     *        CIDR index to convert.
      * @return the long that corresponds to <param>cidr</param>.
-     */    
-    private static long cidrToLong( int cidr )
+     */
+    private static long cidrToLong(int cidr)
     {
-        return addrToLong( cidrToInetAddress( cidr ));
+        return addrToLong(cidrToInetAddress(cidr));
     }
 
     /**
      * convert a byte (unsigned) to int
+     * 
+     * @param val
+     *        The byte value
+     * @return The int
      */
-    private static int byteToInt( byte val )
+    private static int byteToInt(byte val)
     {
         int num = val;
-        if ( num < 0 ) num = num & 0x7F + 0x80;
+        if (num < 0) num = num & 0x7F + 0x80;
         return num;
     }
 
-    static
-    {
+    static {
         int c = 0;
-        for ( String cidr : CIDR_STRINGS ) {
+        for (String cidr : CIDR_STRINGS) {
             try {
-                CIDR_CONVERTER[c++] = InetAddress.getByName( cidr );
-            } catch ( java.net.UnknownHostException e ) {
-                System.err.println( "Invalid CIDR String at index: " + c );
+                CIDR_CONVERTER[c++] = InetAddress.getByName(cidr);
+            } catch (java.net.UnknownHostException e) {
+                System.err.println("Invalid CIDR String at index: " + c);
             }
         }
     }

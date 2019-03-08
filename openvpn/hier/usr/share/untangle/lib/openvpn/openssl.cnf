@@ -64,7 +64,7 @@ dnQualifier             = optional
 ####################################################################
 [ req ]
 prompt              = no
-default_bits        = 2048
+default_bits        = 4096
 default_keyfile     = privkey.pem
 distinguished_name  = req_distinguished_name_no_prompt
 attributes          = req_attributes_no_prompt
@@ -95,11 +95,13 @@ nsCertType             = server
 nsComment              = "OpenSSL Generated Server Certificate"
 subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid,issuer:always
+keyUsage               = digitalSignature, keyEncipherment
+extendedKeyUsage       = serverAuth
 
 [ v3_req ]
 # Extensions to add to a certificate request
 basicConstraints       = CA:FALSE
-keyUsage               = nonRepudiation, digitalSignature, keyEncipherment
+keyUsage               = digitalSignature, keyEncipherment
 
 [ v3_ca ]
 basicConstraints       = CA:true

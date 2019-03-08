@@ -62,13 +62,11 @@ Ext.define('Ung.view.config.ConfigController', {
             if (configTab) {
                 view.down('#configCard').setActiveItem(configTab);
             }
-            // view.getViewModel().set('currentView', cfgName.toLowerCase());
-            // console.log(view.down('#subNav'));
         });
     },
 
     onDeactivate: function (view) {
-        console.log('here');
+        // console.log('here');
         // if (view.down('#configCard')) {
         //     view.setActiveItem(0);
         //     view.down('#configCard').destroy();

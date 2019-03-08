@@ -15,7 +15,7 @@ import com.untangle.uvm.app.GenericRule;
  * Settings for the Virus Blockers
  */
 @SuppressWarnings("serial")
-public class VirusSettings implements Serializable
+public class VirusSettings implements Serializable, JSONString
 {
     private boolean allowFtpResume = true;
     private boolean allowHttpResume = true;

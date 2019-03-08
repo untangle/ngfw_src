@@ -9,7 +9,16 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.util.I18nUtil;
+
+/**
+ * Class for recording the details for VPN clients that connect to the server.
+ * When a client connects, the status record is created. When the client
+ * disconnects, the status record is updated with the total connect time and the
+ * amount of data sent and received by the client.
+ * 
+ * @author mahotz
+ * 
+ */
 
 @SuppressWarnings("serial")
 public class VirtualUserEvent extends LogEvent
@@ -151,21 +160,17 @@ public class VirtualUserEvent extends LogEvent
     }
 
     @Override
-    public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
+    public void compileStatements(java.sql.Connection conn, java.util.Map<String, java.sql.PreparedStatement> statementCache) throws Exception
     {
-        String insert = "INSERT INTO " + schemaPrefix() + "ipsec_user_events" + getPartitionTablePostfix() + " " +
-            "(event_id, time_stamp, connect_stamp, client_address, client_protocol, client_username, net_interface, net_process) " +
-            "values ( ?, ?, ?, ?, ?, ?, ?, ? )";
+        String insert = "INSERT INTO " + schemaPrefix() + "ipsec_user_events" + getPartitionTablePostfix() + " " + "(event_id, time_stamp, connect_stamp, client_address, client_protocol, client_username, net_interface, net_process) " + "values ( ?, ?, ?, ?, ?, ?, ?, ? )";
 
-        String update = "UPDATE " + schemaPrefix() + "ipsec_user_events" + getPartitionTablePostfix() + " " +
-            "SET goodbye_stamp = ?, elapsed_time = ?, rx_bytes = ?, tx_bytes = ? " +
-            "WHERE event_id = ?";
+        String update = "UPDATE " + schemaPrefix() + "ipsec_user_events" + getPartitionTablePostfix() + " " + "SET goodbye_stamp = ?, elapsed_time = ?, rx_bytes = ?, tx_bytes = ? " + "WHERE event_id = ?";
 
         int i = 0;
 
         // when updateMode is false we prepare the insert statement
         if (updateMode == false) {
-            java.sql.PreparedStatement pstmt = getStatementFromCache( insert, statementCache, conn );        
+            java.sql.PreparedStatement pstmt = getStatementFromCache(insert, statementCache, conn);
 
             pstmt.setLong(++i, getEventId().longValue());
             pstmt.setTimestamp(++i, getTimeStamp());
@@ -180,7 +185,7 @@ public class VirtualUserEvent extends LogEvent
         }
 
         // the updateMode flag is set so we prepare the update statement
-        java.sql.PreparedStatement pstmt = getStatementFromCache( update, statementCache, conn );        
+        java.sql.PreparedStatement pstmt = getStatementFromCache(update, statementCache, conn);
 
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setString(++i, getElapsedTime());

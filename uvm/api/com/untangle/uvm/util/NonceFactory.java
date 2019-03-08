@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm.util;
 
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.TimerTask;
 /**
  * Factory for creating nonces associated with some data. A thread
  * cleans out nonces after 600000 milliseconds have elapsed.
- *
  */
 public class NonceFactory<T>
 {
@@ -21,12 +21,16 @@ public class NonceFactory<T>
 
     private Timer timer = null;
 
-    // constructors -----------------------------------------------------------
-
+    /**
+     * Constructor
+     */
     public NonceFactory() { }
 
-    // public methods ---------------------------------------------------------
-
+    /**
+     * Generate a nonce
+     * @param o Object
+     * @return The nonce
+     */
     public String generateNonce(T o)
     {
         String nonce;
@@ -45,6 +49,11 @@ public class NonceFactory<T>
         return nonce;
     }
 
+    /**
+     * Get the nonce data
+     * @param nonce The nonce
+     * @return The data
+     */
     public T getNonceData(String nonce)
     {
         synchronized (this) {
@@ -52,6 +61,11 @@ public class NonceFactory<T>
         }
     }
 
+    /**
+     * Remove a nonce
+     * @param nonce The nonce to remove
+     * @return The nonce data
+     */
     public T removeNonce(String nonce)
     {
         T data;
@@ -69,17 +83,25 @@ public class NonceFactory<T>
         return data;
     }
 
-    // private classes --------------------------------------------------------
-
+    /**
+     * Time task to purge empty nonces 
+     */
     private class PurgeTask extends TimerTask
     {
         private final String nonce;
 
+        /**
+         * Constructor
+         * @param nonce The nonce to be purged
+         */
         PurgeTask(String nonce)
         {
             this.nonce = nonce;
         }
 
+        /**
+         * Main thread run function
+         */
         public void run()
         {
             synchronized (NonceFactory.this) {

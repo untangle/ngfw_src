@@ -10,8 +10,15 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+/**
+ * InlineScriptTag
+ */
 public class InlineScriptTag extends SimpleTagSupport
 {
+    /**
+     * doTag
+     * @throws JspException
+     */
     public final void doTag() throws JspException
     {
         PageContext pageContext = (PageContext)getJspContext();

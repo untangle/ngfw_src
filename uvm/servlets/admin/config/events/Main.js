@@ -1,6 +1,7 @@
 Ext.define('Ung.config.events.Main', {
     extend: 'Ung.cmp.ConfigPanel',
-    alias: 'widget.config.events',
+    alias: 'widget.config-events',
+    name: 'events',
 
     /* requires-start */
     requires: [
@@ -9,18 +10,15 @@ Ext.define('Ung.config.events.Main', {
     ],
     /* requires-end */
 
-    controller: 'config.events',
+    controller: 'config-events',
 
     viewModel: {
-        type: 'config.events'
+        type: 'config-events',
     },
 
-    items: [{
-        xtype: 'config.events.alerts'
-    }, {
-        xtype: 'config.events.triggers'
-    }, {
-        xtype: 'config.events.syslog'
-    }]
-
+    items: [
+        { xtype: 'config-events-alerts' },
+        { xtype: 'config-events-triggers' },
+        { xtype: 'config-events-syslog' }
+    ]
 });

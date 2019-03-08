@@ -12,12 +12,14 @@ fi
 
 ## Use restart just in case there is one lingering around
 ## For some reason "restart" is different stop then start
-/etc/init.d/openvpn stop
-
-## Just in case, kill all openvpn instances
-killall openvpn > /dev/null 2>&1 
+systemctl stop openvpn
 
 sleep .5
+
+# In stretch openvpn doesn't autostart all configs by default so we
+# uncomment the AUTOSTART line and reload the updated configuration
+sed -i -e 's/#AUTOSTART="all"/AUTOSTART="all"/g' /etc/default/openvpn
+systemctl daemon-reload
 
 # Verify/set the links to the settings files from /etc/openvpn
 mkdir -p /etc/openvpn/data
@@ -32,7 +34,7 @@ echo "Starting the openvpn server"
 ## This is required or else openvpn won't restart properly (sometimes the UDP port is still bound)
 for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
 
-    /etc/init.d/openvpn start
+    systemctl start openvpn
     RET=$?
 
     if [ $RET -eq 0 ] ; then 
@@ -41,23 +43,21 @@ for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
     fi
 
     echo "Unable to start openvpn daemon, waiting ${RESTART_DELAY} seconds..."
-
-    ## Just in case, kill all openvpn instances
-    killall openvpn > /dev/null 2>&1 
+    systemctl stop openvpn
 
     sleep ${RESTART_DELAY}
 done
 
 # Write the status file for tun0
 # always use tun0 because that is the server (or the first client if the server isn't running)
-echo "Writing status file: /var/lib/untangle-netd/interface-250-status.js"
-/usr/share/untangle-netd/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/untangle-netd/interface-250-status.js
-if [ ! -f /var/lib/untangle-netd/interface-250-status.js ] ; then
+echo "Writing status file: /var/lib/interface-status/interface-250-status.js"
+/usr/share/untangle-sync-settings/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/interface-status/interface-250-status.js
+if [ ! -f /var/lib/interface-status/interface-250-status.js ] ; then
     echo "Missing status file!"
 fi
-echo "Writing status file: /var/lib/untangle-netd/interface-tun0-status.js"
-/usr/share/untangle-netd/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/untangle-netd/interface-tun0-status.js
-if [ ! -f /var/lib/untangle-netd/interface-tun0-status.js ] ; then
+echo "Writing status file: /var/lib/interface-status/interface-tun0-status.js"
+/usr/share/untangle-sync-settings/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/interface-status/interface-tun0-status.js
+if [ ! -f /var/lib/interface-status/interface-tun0-status.js ] ; then
     echo "Missing status file!"
 fi
 

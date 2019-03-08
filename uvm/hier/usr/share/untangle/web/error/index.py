@@ -137,7 +137,7 @@ def _write_error_page(req, msg):
         us = _("%s Server") % uvm_login.get_company_name()
     except:
         pass
-    
+
     if not type(us) is str:
         us = us.encode("utf-8")
     if not type(msg) is str:
@@ -161,7 +161,7 @@ def _write_error_page(req, msg):
     <div id="main" style="width: 500px; margin: 50px auto 0 auto;">
         <form class="form-signin">
             <center>
-                <img style="margin-bottom:10px;" src="/images/BrandingLogo.png"><br/>
+                <img style="margin-bottom:10px; max-width: 150px; max-height: 140px;" src="/images/BrandingLogo.png"><br/>
                 <span class="form-signin-heading"><strong>%s</strong></span>
              <br/>
                 <br/>
@@ -171,20 +171,20 @@ def _write_error_page(req, msg):
     </div>
     </body>
     </html>""" % (us,us, cgi.escape(msg))
-       
+
     req.write(html)
 
 def _write_loading_page(req):
     req.content_type = "text/html; charset=utf-8"
     req.send_http_header()
     msg = 'Server is starting. Please wait.'
-    
+
     us = _("Server")
     try:
         us = _("%s Server") % uvm_login.get_company_name()
     except:
         pass
-    
+
     if not type(us) is str:
         us = us.encode("utf-8")
     if not type(msg) is str:
@@ -244,7 +244,7 @@ def _write_loading_page(req):
     <div id="main" style="width: 500px; margin: 50px auto 0 auto;">
         <form class="form-signin">
             <center>
-                <img style="margin-bottom:10px;" src="/images/BrandingLogo.png"><br/>
+                <img style="margin-bottom:10px; max-width: 150px; max-height: 140px;" src="/images/BrandingLogo.png"><br/>
              <br/>
                 <br/>
                 <span class="form-signin-heading">
@@ -255,6 +255,6 @@ def _write_loading_page(req):
     </div>
     </body>
     </html>""" % (us, cgi.escape(msg), cgi.escape(msg));
-       
+
     req.write(html)
-    
+

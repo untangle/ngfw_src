@@ -30,9 +30,23 @@ public final class MailSummary implements Serializable
     private String quarantineDetail;
     private long quarantineSize;
 
+    /**
+     * Initialize instance of MailSummary.
+     * @return Instance of MailSummary.
+     */
     public MailSummary() {
     }
 
+    /**
+     * Initialize instance of MailSummary.
+     * @param  sender             Sender address.
+     * @param  subject            Message subject.
+     * @param  quarantineCategory Quarantine category.
+     * @param  quarantineDetail   Quarantine detail.
+     * @param  attachmentCount    Attachment count.
+     * @param  quarantineSize     Quarantine size.
+     * @return Instance of MailSummary.
+     */
     public MailSummary(String sender, String subject, String quarantineCategory, String quarantineDetail,
             int attachmentCount, long quarantineSize) {
 
@@ -46,61 +60,109 @@ public final class MailSummary implements Serializable
 
     /** Getters and Setters **/
 
+    /**
+     * Return attachment message count.
+     * @return attachment message count.
+     */
     public int getAttachmentCount()
     {
         return attachmentCount;
     }
 
+    /**
+     * Write attachment message count.
+     * @param attachmentCount attachment message count.
+     */
     public void setAttachmentCount(int attachmentCount)
     {
         this.attachmentCount = attachmentCount;
     }
 
+    /**
+     * Get quarantine sender address.
+     * @return String of address.
+     */
     public String getSender()
     {
         return sender;
     }
 
+    /**
+     * Write quarantine sender address.
+     * @param sender String of address.
+     */
     public void setSender(String sender)
     {
         this.sender = sender;
     }
 
+    /**
+     * Return message subject.
+     * @return String of subject.
+     */
     public String getSubject()
     {
         return subject;
     }
 
+    /**
+     * Write message subject.
+     * @param subject String of subject.
+     */
     public void setSubject(String subject)
     {
         this.subject = subject;
     }
 
+    /**
+     * Return quarantine category.
+     * @return String of quarantine category.
+     */
     public String getQuarantineCategory()
     {
         return quarantineCategory;
     }
 
+    /**
+     * Write quarantine category.
+     * @param cat String of quarantine category.
+     */
     public void setQuarantineCategory(String cat)
     {
         this.quarantineCategory = cat;
     }
 
+    /**
+     * Return quarantine detail.
+     * @return String of quarantine detail.
+     */
     public String getQuarantineDetail()
     {
         return quarantineDetail;
     }
 
+    /**
+     * Write quarantine detail.
+     * @param det String of quarantine detail.
+     */
     public void setQuarantineDetail(String det)
     {
         this.quarantineDetail = det;
     }
 
+    /**
+     * Return quarantine size.
+     * @return Length of quarantine.
+     */
     public long getQuarantineSize()
     {
         return quarantineSize;
     }
 
+    /**
+     * Write quarantine size.
+     * @param size Length of quarantine.
+     */
     public void setQuarantineSize(long size)
     {
         this.quarantineSize = size;
@@ -108,22 +170,35 @@ public final class MailSummary implements Serializable
 
     /**
      * Convienence method (needed for Velocity since "getAttachmentCount()>0" seems to have bugs)
+     * @return true if has attachments, false if not.
      */
     public boolean hasAttachments()
     {
         return getAttachmentCount() > 0;
     }
 
+    /**
+     * Return sender address truncated by length.
+     * @return Truncated sender address.
+     */
     public String getTruncatedSender()
     {
         return truncate(sender, SENDER_MAX_LENGTH);
     }
 
+    /**
+     * Return subject truncated by length.
+     * @return Truncated subject.
+     */
     public String getTruncatedSubject()
     {
         return truncate(subject, SUBJECT_MAX_LENGTH);
     }
 
+    /**
+     * Return quarantine detail.
+     * @return String of quarantine detail.
+     */
     public String getFormattedQuarantineDetail()
     {
         // Attempts to convert to a formatted float. If this fails (i.e.
@@ -144,11 +219,21 @@ public final class MailSummary implements Serializable
         }
     }
 
+    /**
+     * Write quarantine detail.
+     * @param detail String of quarantine detail.
+     */
     public void setFormattedQuarantineDetail(String detail)
     {
         this.quarantineDetail = detail;
     }
 
+    /**
+     * Elide string at length such as "maximu...""
+     * @param  source    Source string
+     * @param  maxLength Maximum length.
+     * @return           String of truncated source.
+     */
     private String truncate(String source, int maxLength)
     {
         if (source == null)
@@ -161,6 +246,10 @@ public final class MailSummary implements Serializable
         return truncateSource.toString();
     }
 
+    /**
+     * Return quarantine as string.
+     * @return Quarantine as string.
+     */
     @Override
     public String toString()
     {
@@ -174,6 +263,12 @@ public final class MailSummary implements Serializable
 
     /************** Tests ******************/
 
+    /**
+     * Run tests.
+     * @param  args      List of tests to run.
+     * @return           String of test results.
+     * @throws Exception On error.
+     */
     public static String runTest(String[] args) throws Exception
     {
 

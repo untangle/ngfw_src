@@ -13,10 +13,12 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import java.beans.Introspector;
-import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
+/**
+ * ExtensionImpl
+ */
 public class ExtensionImpl implements Runnable
 {
     private static final Logger logger = Logger.getLogger( ExtensionImpl.class );
@@ -25,8 +27,13 @@ public class ExtensionImpl implements Runnable
     private HashMap<String,String> classDescriptions = new HashMap<String,String>();
     private HashMap<String,HashMap<String,String>> classSpecificAttributeDescriptions = new HashMap<String,HashMap<String,String>>();
 
+    /**
+     * ExtensionImpl
+     */
     private ExtensionImpl()
     {
+        classDescriptions.put("AdminLoginEvent","These events are created by the base system and inserted to the [[Database_Schema#user_table_updates|admin_logins]] table when an administrator login is attempted or successful.");
+        classDescriptions.put("UserTableEvent","These events are created by the base system and inserted to the [[Database_Schema#user_table_updates|user_table_updates]] table when the user table is modified.");
         classDescriptions.put("HostTableEvent","These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.");
         classDescriptions.put("DeviceTableEvent","These events are created by the base system and inserted to the [[Database_Schema#device_table_updates|device_table_updates]] table when the device list is modified.");
         classDescriptions.put("SessionStatsEvent","These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table when a session ends with the updated stats.");
@@ -41,6 +48,9 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("StatisticEvent","These events are created by the base system and inserted to the the [[Database_Schema#settings_changes|interface_stat_events]] table periodically with interface stats.");
         classDescriptions.put("SystemStatEvent","These events are created by the base system and inserted to the [[Database_Schema#server_events|server_events]] table periodically.");
         classDescriptions.put("TunnelStatusEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_tunnel_stats|ipsec_tunnel_stats]] table periodically.");
+        classDescriptions.put("IpsecVpnEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_vpn_events|ipsec_vpn_events]] table when IPsec connection event occurs.");
+        classDescriptions.put("TunnelVpnEvent","These events are created by [[Tunnel VPN]] and inserted to the [[Database_Schema#tunnel_vpn_events|tunnel_vpn_events]] table when a tunnel connection event occurs.");
+        classDescriptions.put("TunnelVpnStatusEvent","These events are created by [[Tunnel VPN]] and inserted to the [[Database_Schema#tunnel_vpn_stats|tunnel_vpn_stats]] table periodically.");
         classDescriptions.put("VirtualUserEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_user_events|ipsec_user_events]] table when a user event occurs.");
         classDescriptions.put("AlertEvent","These events are created by [[Reports]] and inserted to the [[Database_Schema#alerts|alerts]] table when an alert fires.");
         classDescriptions.put("ConfigurationBackupEvent","These events are created by [[Configuration Backup]] and inserted to the [[Database_Schema#configuratio_backup_events|configuratio_backup_events]] table when a backup occurs.");
@@ -70,7 +80,7 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("SmtpMessageAddressEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_addrs|mail_addrs]] table for each address on each email.");
         classDescriptions.put("SmtpMessageEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_msgs|mail_msgs]] table for each email.");
         classDescriptions.put("LoginEvent","These events are created by [[Directory Connector]] and inserted to the [[Database_Schema#directory_connector_login_events|directory_connector_login_events]] table for each login.");
-        
+
         attributeDescriptions.put("partitionTablePostfix","");
         attributeDescriptions.put("tag","");
 
@@ -95,14 +105,14 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("s2pBytes","The number of bytes sent from the server to Untangle");
         attributeDescriptions.put("s2pChunks","The number of chunks/packets sent from the server to Untangle");
         attributeDescriptions.put("sessionId","The session ID");
-        attributeDescriptions.put("cClientAddr","The client-side (pre-NAT) client address");
-        attributeDescriptions.put("cClientPort","The client-side (pre-NAT) client port");
-        attributeDescriptions.put("cServerAddr","The client-side (pre-NAT) server address");
-        attributeDescriptions.put("cServerPort","The client-side (pre-NAT) server port");
-        attributeDescriptions.put("sClientAddr","The server-side (post-NAT) client address");
-        attributeDescriptions.put("sClientPort","The server-side (post-NAT) client port");
-        attributeDescriptions.put("sServerAddr","The server-side (post-NAT) server address");
-        attributeDescriptions.put("sServerPort","The server-side (post-NAT) server port");
+        attributeDescriptions.put("CClientAddr","The client-side (pre-NAT) client address");
+        attributeDescriptions.put("CClientPort","The client-side (pre-NAT) client port");
+        attributeDescriptions.put("CServerAddr","The client-side (pre-NAT) server address");
+        attributeDescriptions.put("CServerPort","The client-side (pre-NAT) server port");
+        attributeDescriptions.put("SClientAddr","The server-side (post-NAT) client address");
+        attributeDescriptions.put("SClientPort","The server-side (post-NAT) client port");
+        attributeDescriptions.put("SServerAddr","The server-side (post-NAT) server address");
+        attributeDescriptions.put("SServerPort","The server-side (post-NAT) server port");
         attributeDescriptions.put("bypassed","True if bypassed, false otherwise");
         attributeDescriptions.put("clientIntf","The client interface ID");
         attributeDescriptions.put("entitled","The entitled status");
@@ -187,7 +197,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("state","The state");
         attributeDescriptions.put("confidence","The confidence (0-100)");
         attributeDescriptions.put("status","The status");
-        attributeDescriptions.put("iPAddr","The IP address");
+        attributeDescriptions.put("IPAddr","The IP address");
         attributeDescriptions.put("vendorName","The application name");
         attributeDescriptions.put("clientAddr","The client address");
         attributeDescriptions.put("clientPort","The client port");
@@ -226,7 +236,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("sensorId","The sensor ID");
         attributeDescriptions.put("signatureId","The signature ID");
         attributeDescriptions.put("signatureRevision","The signature revision");
-        attributeDescriptions.put("sportItype","The sportItype"); // FIXME 
+        attributeDescriptions.put("sportItype","The sportItype"); // FIXME
         attributeDescriptions.put("vlanId","The VLAN Id"); // FIXME
         attributeDescriptions.put("method","The method");
         attributeDescriptions.put("term","The search term/phrase");
@@ -245,6 +255,8 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("type","The type");
         attributeDescriptions.put("bytesRxDelta","The delta number of RX (received) bytes from the previous event");
         attributeDescriptions.put("bytesRxTotal","The total number of RX (received) bytes");
+        attributeDescriptions.put("rxBytes","The total of received bytes");
+        attributeDescriptions.put("txBytes","The total of transmitted bytes");
         attributeDescriptions.put("bytesTxDelta","The delta number of TX (transmitted) bytes from the previous event");
         attributeDescriptions.put("bytesTxTotal","The total number of TX (transmitted) bytes");
         attributeDescriptions.put("end","The end");
@@ -261,9 +273,16 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("policyRuleId","The policy rule ID");
         attributeDescriptions.put("settingsFile","The settings file");
         attributeDescriptions.put("httpRequestEvent","The corresponding HTTP request event");
+        attributeDescriptions.put("tagsString","The string value of all tags");
+        attributeDescriptions.put("entity","The entity");
+        attributeDescriptions.put("causalRule","The causal rule");
+        attributeDescriptions.put("eventSent","True if the event was sent, false otherwise");
+        attributeDescriptions.put("oldValue","The old value");
+        attributeDescriptions.put("login","The login username");
+        attributeDescriptions.put("succeeded","1 if successful, 0 otherwise");
 
         HashMap<String,String> specificDescriptions;
-        
+
         specificDescriptions = new HashMap<String,String>();
         specificDescriptions.put("action","The action (1=Quota Given, 2=Quota Exceeded)");
         classSpecificAttributeDescriptions.put("QuotaEvent",specificDescriptions);
@@ -287,16 +306,26 @@ public class ExtensionImpl implements Runnable
         classSpecificAttributeDescriptions.put("SmtpMessageAddressEvent",specificDescriptions);
 
         specificDescriptions = new HashMap<String,String>();
-        specificDescriptions.put("blocked","1 if blocked, 0 otherwise");
+        specificDescriptions.put("blocked","True if blocked, false otherwise");
         classSpecificAttributeDescriptions.put("IntrusionPreventionLogEvent",specificDescriptions);
+
+        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions.put("local","1 if login is done via local console, 0 otherwise");
+        classSpecificAttributeDescriptions.put("AdminLoginEvent",specificDescriptions);
     }
 
-    
+    /**
+     * instance
+     * @return
+     */
     public static ExtensionImpl instance()
     {
         return new ExtensionImpl();
     }
-    
+
+    /**
+     * run
+     */
     public final void run()
     {
         String result = UvmContextFactory.context().execManager().execOutput("find " + System.getProperty("uvm.lib.dir") + " -name '*Event.class' | xargs grep -l 'logging.LogEvent' | sed -e 's|.*com/\\(.*\\)|com/\\1|' -e 's|/|.|g' -e 's/.class//'");
@@ -311,6 +340,10 @@ public class ExtensionImpl implements Runnable
         }
     }
 
+    /**
+     * printClassDescription
+     * @param fullName
+     */
     @SuppressWarnings("rawtypes")
     public void printClassDescription( String fullName )
     {
@@ -332,8 +365,8 @@ public class ExtensionImpl implements Runnable
         System.out.println("! Attribute Name");
         System.out.println("! Type");
         System.out.println("! Description");
-        
-        
+
+
         Class clazz;
         try {
             clazz = Class.forName(fullName);
@@ -352,13 +385,20 @@ public class ExtensionImpl implements Runnable
 
                 String methodName = method.getName();
                 methodName = methodName.replaceAll("^get","");
-                methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                if (methodName.length() > 1) {
+                    // if second char is upper case, leave first char
+                    if (!Character.isUpperCase(methodName.charAt(1))) {
+                        methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                    }
+                } else {
+                    methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+                }
 
                 String returnType = method.getReturnType().toString();
                 returnType = returnType.replaceAll(".*\\.","");
 
                 String description = null;
-                
+
                 HashMap<String, String> specificDescriptions = classSpecificAttributeDescriptions.get(shortName);
                 if ( specificDescriptions != null )
                     description = specificDescriptions.get( methodName );
@@ -370,7 +410,7 @@ public class ExtensionImpl implements Runnable
                 }
                 if ("".equals(description))
                     continue;
-                
+
                 System.out.println("|-");
                 System.out.println("|" + methodName);
                 System.out.println("|" + returnType);
@@ -385,4 +425,3 @@ public class ExtensionImpl implements Runnable
         System.out.println("");
     }
 }
-

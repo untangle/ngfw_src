@@ -34,12 +34,26 @@ public class ByteBufferBuilder {
     private static final int DEF_GROW_BY = 1024;
     private static final GrowthStrategy DEF_GROWTH_STRATEGY = GrowthStrategy.INCREMENTAL;
 
+    /**
+     * Initialize instance of ByteBufferBuilder.
+     * @return instance of ByteBufferBuilder.
+     */
     public ByteBufferBuilder() {
         this(DEF_GROW_BY, DEF_GROWTH_STRATEGY);
     }
+    /**
+     * Initialize instance of ByteBufferBuilder.
+     * @param growBy integer of bytes to increase.
+     * @return instance of ByteBufferBuilder.
+     */
     public ByteBufferBuilder(int growBy) {
         this(growBy, DEF_GROWTH_STRATEGY);
     }
+    /**
+     * Initialize instance of ByteBufferBuilder.
+     * @param strategy GrowthStrategy to use when incrementing.
+     * @return instance of ByteBufferBuilder.
+     */
     public ByteBufferBuilder(GrowthStrategy strategy) {
         this(DEF_GROW_BY, strategy);
     }
@@ -50,6 +64,9 @@ public class ByteBufferBuilder {
      * that <code>growBy</code> is the initial size,
      * so it should be provided even if the strategy
      * is to double.
+     * @param growBy integer of bytes to increase.
+     * @param strategy GrowthStrategy to use when incrementing.
+     * @return instance of ByteBufferBuilder.
      */
     public ByteBufferBuilder(int growBy,
                              GrowthStrategy strategy) {
@@ -61,16 +78,27 @@ public class ByteBufferBuilder {
 
     /**
      * Add one byte to the internal array
+     * @param b byte to add.
      */
     public void add(byte b) {
         ensure(b);
         m_bytes[m_pos++] = b;
     }
+    /**
+     * Add array of bytes to the internal array
+     * @param bytes Array of bytes to add.
+     * @param start integer of starting position within bytes to copy.
+     * @param len integer of length to copy from bytes.
+     */
     public void add(byte[] bytes, int start, int len) {
         ensure(len);
         System.arraycopy(bytes, start, m_bytes, m_pos, len);
         m_pos+=len;
     }
+    /**
+     * Add array of bytes to the internal array
+     * @param bytes Array of bytes to add.
+     */
     public void add(byte[] bytes) {
         add(bytes, 0, bytes.length);
     }
@@ -79,6 +107,7 @@ public class ByteBufferBuilder {
      * the given ByteBuffer.  Note that
      * this method does <b>not</b> alter
      * the position of the buffer.
+     * @param buf ByteBuffer to add.
      */
     public void add(ByteBuffer buf) {
         final int remaining = buf.remaining();
@@ -135,6 +164,10 @@ public class ByteBufferBuilder {
         return ret;
     }
 
+    /**
+     * Verify enough space exists and if not, increase.
+     * @param cap integer of capacity to verify.
+     */
     private void ensure(int cap) {
         if(m_pos+cap >= m_bytes.length) {
             //Increase.  Note we handle the boundary

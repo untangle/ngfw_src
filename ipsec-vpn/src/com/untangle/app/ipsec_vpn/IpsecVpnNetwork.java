@@ -9,6 +9,16 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * This class is used to hold the settings for GRE networks. Yes, it probably
+ * should have been called IpsecGreNetwork, but changing it now would require
+ * adding cruft to rename the class in existing settings, so I decided to just
+ * add this super helpful comment instead.
+ * 
+ * @author mahotz
+ * 
+ */
+
 @SuppressWarnings("serial")
 public class IpsecVpnNetwork implements JSONString, Serializable
 {
@@ -18,6 +28,8 @@ public class IpsecVpnNetwork implements JSONString, Serializable
     private String localAddress;
     private String remoteAddress;
     private String remoteNetworks;
+    private int ttl = 64;
+    private int mtu = 1476;
 
     public IpsecVpnNetwork()
     {
@@ -42,6 +54,12 @@ public class IpsecVpnNetwork implements JSONString, Serializable
 
     public String getRemoteNetworks() { return (remoteNetworks); }
     public void setRemoteNetworks(String remoteNetworks) { this.remoteNetworks = remoteNetworks; }
+
+    public int getTtl() { return (ttl); }
+    public void setTtl(int value) { this.ttl = value; }
+
+    public int getMtu() { return (mtu); }
+    public void setMtu(int value) { this.mtu = value; }
 
     // THIS IS FOR ECLIPSE - @formatter:on
 

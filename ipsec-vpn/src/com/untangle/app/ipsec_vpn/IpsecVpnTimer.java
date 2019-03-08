@@ -8,66 +8,106 @@ import java.util.LinkedList;
 import java.util.TimerTask;
 import java.util.Hashtable;
 import java.util.Iterator;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.ExecManagerResult;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-/*
- * Sometimes we see tunnels that have been connected for days suddenly just go
- * away, almost like ipsec just forgot about them.  The only solution we've come
- * up with is this awful code that periodically looks at the status of all
- * tunnels, and uses the ipsec down/up utility to force the tunnel to reconnect.
- *
- * Since we're already monitoring every minute, we're also using this code
- * to capture and record traffic statistics for reporting purposes.
+/**
+ * This is our timer class where we handle periodic tasks. Sometimes we see
+ * tunnels that have been connected for days suddenly just go away, almost like
+ * ipsec just forgot about them. The only solution we've come up with is this
+ * awful code that periodically looks at the status of all tunnels, and uses the
+ * ipsec down/up utility to force the tunnel to reconnect.
+ * 
+ * Since we're already monitoring every minute, we're also using this code to
+ * capture and record traffic statistics for reporting purposes.
+ * 
+ * We also added the ability to ping a host across the tunnel, so we use the
+ * timer to implement that functionality as well.
+ * 
+ * @author mahotz
+ * 
  */
 
 public class IpsecVpnTimer extends TimerTask
 {
+
+    /**
+     * Define an object we can use to keep track of each IPsec tunnel.
+     * 
+     * @author mahotz
+     * 
+     */
     class TunnelWatcher
     {
+        int tunnelId;
         String tunnelName;
+        boolean activeFlag;
         long activeCounter;
         long cycleMark;
         long outLast;
         long inLast;
+        int pingCounter;
 
-        public TunnelWatcher(String tunnelName)
+        /**
+         * Constructor
+         * 
+         * @param tunnelName
+         *        The name of the tunnel
+         * @param tunnelId
+         *        The ID of the tunnel
+         */
+        public TunnelWatcher(String tunnelName, int tunnelId)
         {
             this.tunnelName = tunnelName;
+            this.tunnelId = tunnelId;
+            activeFlag = false;
             activeCounter = 0;
             cycleMark = 0;
             outLast = 0;
             inLast = 0;
+            pingCounter = 0;
         }
     }
 
-    private final String TUNNEL_STATS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-stats";
+    private final String TUNNEL_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-status";
     private final Logger logger = Logger.getLogger(getClass());
     private final IpsecVpnApp app;
 
-    // the mininum number of minutes (assuming 600000 msec timer calling interval) for
+    // the mininum number of minutes (assuming 60000 msec timer calling interval) for
     // a tunnel to be detected active before we try to restart if detected down
     private final long RESTART_THRESHOLD = 5;
 
     private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<String, TunnelWatcher>();
     private long cycleCounter = 0;
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application instance that created us
+     */
     public IpsecVpnTimer(IpsecVpnApp app)
     {
         this.app = app;
     }
 
+    /**
+     * This is the timer run function
+     */
     public void run()
     {
         CheckAllTunnels();
     }
 
-    public void CheckAllTunnels()
+    /**
+     * Function to check the status of all IPsec tunnels, and restart any that
+     * seem to be down.
+     */
+    private void CheckAllTunnels()
     {
         LinkedList<ConnectionStatusRecord> statusList = app.getTunnelStatus();
+        IpsecVpnTunnel tunnel;
         TunnelWatcher watcher;
         cycleCounter += 1;
         String workname;
@@ -88,13 +128,15 @@ public class IpsecVpnTimer extends TimerTask
 
             if (watcher == null) {
                 logger.debug("Creating new watch table entry for " + workname);
-                watcher = new TunnelWatcher(workname);
+                watcher = new TunnelWatcher(workname, Integer.parseInt(status.getId()));
                 watchTable.put(workname, watcher);
             }
 
             else {
                 logger.debug("Found existing watch table entry for " + workname);
             }
+
+            tunnel = findTunnelById(watcher.tunnelId);
 
             // update the cycle mark for all watcher objects that match an enabled IPsec
             // tunnel.  we'll use this later to remove any stale watcher entries
@@ -104,10 +146,30 @@ public class IpsecVpnTimer extends TimerTask
             if (status.getMode().toLowerCase().equals("active")) {
                 watcher.activeCounter += 1;
                 GrabTunnelStatistics(watcher);
+
+                if (tunnel != null) {
+                    CheckTunnelPingTarget(watcher, tunnel);
+
+                    // if the active flag is false we need to log an up event 
+                    if (watcher.activeFlag == false) {
+                        watcher.activeFlag = true;
+                        IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.CONNECT);
+                        app.logEvent(event);
+                        logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+                    }
+                }
             }
 
             // ipsec screwed up again... or rather, the tunnel appears to be down
             else {
+
+                // if our active flag is true we need to log a down event
+                if (watcher.activeFlag == true) {
+                    watcher.activeFlag = false;
+                    IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.DISCONNECT);
+                    app.logEvent(event);
+                    logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+                }
 
                 // if the tunnel was detected as active for the minimum amount of time
                 // then we will attempt restart by calling ipsec down and ipsec up
@@ -116,6 +178,7 @@ public class IpsecVpnTimer extends TimerTask
                     long mval = (watcher.activeCounter % 60);
                     logger.warn("Attempting restart for inactive tunnel " + watcher.tunnelName + " (UPTIME = " + Long.toString(hval) + " hours " + Long.toString(mval) + " minutes)");
                     IpsecVpnApp.execManager().exec("ipsec down " + watcher.tunnelName);
+
                     // run the up command in the background as it can block if the other side is unreachable
                     IpsecVpnApp.execManager().exec("nohup ipsec up " + watcher.tunnelName + " >/dev/null 2>&1 &");
                 } else {
@@ -145,21 +208,31 @@ public class IpsecVpnTimer extends TimerTask
         }
     }
 
-    void GrabTunnelStatistics(TunnelWatcher watcher)
+    /**
+     * Function to capture and record the traffic statistics for each active
+     * tunnel.
+     * 
+     * @param watcher
+     *        The TunnelWatcher for the tunnel to be checked
+     */
+    private void GrabTunnelStatistics(TunnelWatcher watcher)
     {
         long outValue = 0;
         long inValue = 0;
         long outBytes = 0;
         long inBytes = 0;
-        int top, len;
+        int top, wid, len;
         String result;
 
-        /*
-         * the script should return the tunnel statis in the following format...
-         * | TUNNNEL:tunnel_name IN:123 OUT:456 |
-         */
+// THIS IS FOR ECLIPSE - @formatter:off
 
-        result = IpsecVpnApp.execManager().execOutput(TUNNEL_STATS_SCRIPT + " " + watcher.tunnelName);
+        /*
+         * the script should return the tunnel status in the following format:
+         * | TUNNNEL:tunnel_name LOCAL:1.2.3.4 REMOTE:5.6.7.8 STATE:active IN:123 OUT:456 |
+         */
+        result = IpsecVpnApp.execManager().execOutput(TUNNEL_STATUS_SCRIPT + " " + watcher.tunnelName);
+
+// THIS IS FOR ECLIPSE - @formatter:on
 
         /*
          * We use the IN: and OUT: tags to find the beginning of each value and
@@ -169,18 +242,20 @@ public class IpsecVpnTimer extends TimerTask
 
         try {
             top = result.indexOf("IN:");
+            wid = 3;
             if (top > 0) {
-                len = result.substring(top + 3).indexOf(" ");
+                len = result.substring(top + wid).indexOf(" ");
                 if (len > 0) {
-                    inValue = Long.valueOf(result.substring(top + 3, top + 3 + len));
+                    inValue = Long.valueOf(result.substring(top + wid, top + wid + len));
                 }
             }
 
             top = result.indexOf("OUT:");
+            wid = 4;
             if (top > 0) {
-                len = result.substring(top + 4).indexOf(" ");
+                len = result.substring(top + wid).indexOf(" ");
                 if (len > 0) {
-                    outValue = Long.valueOf(result.substring(top + 4, top + 4 + len));
+                    outValue = Long.valueOf(result.substring(top + wid, top + wid + len));
                 }
             }
         }
@@ -212,15 +287,11 @@ public class IpsecVpnTimer extends TimerTask
          * same as they were during the last check.
          */
 
-        if (inValue < watcher.inLast)
-            inBytes = inValue;
-        else
-            inBytes = (inValue - watcher.inLast);
+        if (inValue < watcher.inLast) inBytes = inValue;
+        else inBytes = (inValue - watcher.inLast);
 
-        if (outValue < watcher.outLast)
-            outBytes = outValue;
-        else
-            outBytes = (outValue - watcher.outLast);
+        if (outValue < watcher.outLast) outBytes = outValue;
+        else outBytes = (outValue - watcher.outLast);
 
         watcher.inLast = inValue;
         watcher.outLast = outValue;
@@ -234,5 +305,62 @@ public class IpsecVpnTimer extends TimerTask
         TunnelStatusEvent event = new TunnelStatusEvent(shortName, inBytes, outBytes);
         app.logEvent(event);
         logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
+    }
+
+    /**
+     * Function to ping a remote host across a tunnel. The main goal here is to
+     * give users a way to periodically generate traffic that goes across a
+     * tunnel, and generate alerts if the ping target does not respond.
+     * 
+     * @param watcher
+     *        The TunnelWatcher for the ping test
+     * 
+     * @param tunnel
+     *        The IpsecVpnTunnel for the ping test
+     */
+    private void CheckTunnelPingTarget(TunnelWatcher watcher, IpsecVpnTunnel tunnel)
+    {
+        if (tunnel == null) return;
+        if (tunnel.getPingInterval() == 0) return;
+        if (tunnel.getPingAddress() == null) return;
+        if (tunnel.getPingAddress().length() == 0) return;
+
+        // no ping if we haven't reached the configured interval threshold
+        watcher.pingCounter += 1;
+        if (watcher.pingCounter < tunnel.getPingInterval()) return;
+
+        try {
+            InetAddress target = InetAddress.getByName(tunnel.getPingAddress());
+            if (target.isReachable(2000)) {
+                logger.debug("PING SUCCESS: " + tunnel.getPingAddress());
+                return;
+            }
+        } catch (Exception exn) {
+            logger.debug("PING EXCEPTION: " + tunnel.getPingAddress(), exn);
+        }
+        IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.UNREACHABLE);
+        app.logEvent(event);
+        logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+    }
+
+    /**
+     * Function to find the IpsecVpnTunnel matching a given ID value.
+     * 
+     * @param idValue
+     *        The ID value of the tunnel to find
+     * 
+     * @return The IpsecVpnTunnel if found, otherwise null
+     */
+    private IpsecVpnTunnel findTunnelById(int idValue)
+    {
+        LinkedList<IpsecVpnTunnel> configList = app.getSettings().getTunnels();
+
+        // create a status display record for all enabled tunnels
+        for (int x = 0; x < configList.size(); x++) {
+            IpsecVpnTunnel tunnel = configList.get(x);
+            if (tunnel.getId() == idValue) return (tunnel);
+        }
+
+        return (null);
     }
 }

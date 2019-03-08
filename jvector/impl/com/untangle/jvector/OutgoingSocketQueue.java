@@ -6,6 +6,9 @@ package com.untangle.jvector;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * OutgoingSocketQueue
+ */
 public class OutgoingSocketQueue extends Source
 {
     /**
@@ -43,12 +46,21 @@ public class OutgoingSocketQueue extends Source
 
     private String debugString = "";
 
+    /**
+     * OutgoingSocketQueue
+     * @param debugString
+     */
     public OutgoingSocketQueue( String debugString )
     {
         this.pointer = create();
         this.debugString = debugString;
     }
 
+    /**
+     * get_event gets an event
+     * @param unused
+     * @return Crumb
+     */
     protected Crumb get_event( Sink unused )
     {
         if ( this.eventList.isEmpty()) {
@@ -79,9 +91,10 @@ public class OutgoingSocketQueue extends Source
     }
 
     /**
-     * Write a crumb to that is destined for the relay.</p>
+     * write
+     * Write a crumb to that is destined for the relay.
      * @param crumb - The crumb to write.
-     * @returns true if the crumb was written, false otherwise.
+     * @return true if the crumb was written, false otherwise.
      */
     public boolean write( Crumb crumb )
     {
@@ -105,6 +118,7 @@ public class OutgoingSocketQueue extends Source
      * Check to see if the listeners side of the Outgoing Socket Queue is closed.
      * This is true once the transform has written a shutdown crumb into the
      * outgoing socket queue.
+     * @return true if closed, false otherwise
      */
     public boolean isClosed()
     {
@@ -114,6 +128,7 @@ public class OutgoingSocketQueue extends Source
     /**
      * Check to see if writable events are enabled on this outgoing socket queue.  Write events
      * are edge triggered, so it doesn't make a lot of sense toe enable or disable them.
+     * @return true if enabled, false otherwise
      */
     public boolean isEnabled()
     {
@@ -154,6 +169,10 @@ public class OutgoingSocketQueue extends Source
         }
     }
 
+    /**
+     * shutdown
+     * @return
+     */
     protected int shutdown()
     {
         isRelaySideClosed     = true;
@@ -170,50 +189,92 @@ public class OutgoingSocketQueue extends Source
         return 0;
     }
 
+    /**
+     * isEmpty
+     * @return
+     */
     public boolean isEmpty()
     {
         return this.eventList.isEmpty();
     }
 
+    /**
+     * isFull
+     * @return
+     */
     public boolean isFull()
     {
         return ( this.eventList.size() >= maxEvents );
     }
 
+    /**
+     * containsReset
+     * @return
+     */
     public boolean containsReset()
     {
         return this.containsReset;
     }
 
+    /**
+     * containsShutdown
+     * @return
+     */
     public boolean containsShutdown()
     {
         return this.containsShutdown;
     }
 
+    /**
+     * numEvents
+     * @return
+     */
     public int  numEvents()
     {
         return eventList.size();
     }
 
+    /**
+     * numBytes
+     * @return
+     */
     public int numBytes()
     {
         return -1;
     }
 
+    /**
+     * maxEvents set the maximum events
+     * @param maxEvents
+     */
     public void maxEvents( int maxEvents )
     {
         this.maxEvents = maxEvents;
     }
 
+    /**
+     * attach an arbitrary object to this OutgoingSocketQueue
+     * @param o - the object
+     */
     public void attach( Object o )
     {
         this.attachment = o;
     }
 
-    public Object attachment() {
+    /**
+     * attachment - get the attachment
+     * @return attachment
+     */
+    public Object attachment()
+    {
         return this.attachment;
     }
 
+    /**
+     * add (send) a crumb
+     * @param crumb 
+     * @return true
+     */
     @SuppressWarnings("fallthrough")
     public boolean add( Crumb crumb )
     {
@@ -243,11 +304,20 @@ public class OutgoingSocketQueue extends Source
         return true;
     }
 
+    /**
+     * registerListener
+     * @param l
+     * @return
+     */
     public boolean registerListener( SocketQueueListener l )
     {
         return this.listenerList.add( l );
     }
 
+    /**
+     * poll
+     * @return
+     */
     public int poll()
     {
         /* If the relay side is closed, always return HUP */
@@ -274,13 +344,19 @@ public class OutgoingSocketQueue extends Source
         return 0;
     }
 
+    /**
+     * mvpollNotifyObservers
+     */
     private void mvpollNotifyObservers()
     {
         if ( this.pointer != 0L )
             mvpollNotifyObservers( this.pointer, poll());
     }
 
-    private void callListenersRemove() /* call Listeners Non Full (writable) Event */
+    /**
+     * callListenersRemove
+     */
+    private void callListenersRemove()
     {
         /**
          * if it is still full after removing, neither mvpoll nor
@@ -299,6 +375,16 @@ public class OutgoingSocketQueue extends Source
         }
     }
 
+    /**
+     * create
+     * @return
+     */
     private native long create();
+
+    /**
+     * mvpollNotifyObservers
+     * @param pointer
+     * @param eventMask
+     */
     private native void mvpollNotifyObservers( long pointer, int eventMask );
 }

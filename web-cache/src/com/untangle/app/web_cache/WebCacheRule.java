@@ -1,10 +1,21 @@
-package com.untangle.app.web_cache; // API
+/**
+ * $Id$
+ */
+
+package com.untangle.app.web_cache;
 
 import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * This is the implementation of a web cache rule which are used to specify
+ * hosts for which content should never be cached.
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class WebCacheRule implements JSONString, Serializable
 {
@@ -16,7 +27,7 @@ public class WebCacheRule implements JSONString, Serializable
     {
     }
 
-    public WebCacheRule(String hostname,boolean live)
+    public WebCacheRule(String hostname, boolean live)
     {
         this.hostname = hostname;
         this.live = live;
@@ -24,7 +35,7 @@ public class WebCacheRule implements JSONString, Serializable
 
     public int getId()
     {
-        return(id);
+        return (id);
     }
 
     public void setId(int id)
@@ -34,20 +45,20 @@ public class WebCacheRule implements JSONString, Serializable
 
     public boolean isLive()
     {
-        return(live);
+        return (live);
     }
 
-    public void setLive( boolean live )
+    public void setLive(boolean live)
     {
         this.live = live;
     }
 
     public String getHostname()
     {
-        return(hostname);
+        return (hostname);
     }
 
-    public void setHostname( String hostname )
+    public void setHostname(String hostname)
     {
         this.hostname = hostname;
     }

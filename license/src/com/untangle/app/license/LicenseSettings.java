@@ -1,18 +1,22 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.license;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import com.untangle.uvm.app.License;
 
+/**
+ * License setttings.
+ */
 @SuppressWarnings("serial")
-public class LicenseSettings implements java.io.Serializable
+public class LicenseSettings implements Serializable, JSONString
 {
     private Integer settingsVersion = new Integer(1);
 
@@ -46,5 +50,17 @@ public class LicenseSettings implements java.io.Serializable
     public void setLicenses(List<License> licenses)
     {
         this.licenses = licenses;
+    }
+    
+    /**
+     * Convert settings to JSON string.
+     *
+     * @return
+     *      JSON string.
+     */
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 }

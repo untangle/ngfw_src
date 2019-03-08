@@ -1,6 +1,7 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.uvm.app;
 
 import java.net.InetAddress;
@@ -19,7 +20,15 @@ public class SessionTuple
     private int clientPort = 0;
     private InetAddress serverAddr;
     private int serverPort = 0;
-    
+
+    /**
+     * Constructor
+     * @param protocol The protocol
+     * @param clientAddr The client address
+     * @param serverAddr The server address
+     * @param clientPort The client port
+     * @param serverPort The server port
+     */
     public SessionTuple( short protocol, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
     {
         this.protocol = protocol;
@@ -29,6 +38,10 @@ public class SessionTuple
         this.serverPort = serverPort;
     }
 
+    /**
+     * Constructor
+     * @param tuple The tuple to copy
+     */
     public SessionTuple( SessionTuple tuple )
     {
         this.protocol = tuple.getProtocol();
@@ -43,6 +56,11 @@ public class SessionTuple
      * @return a <code>short</code> giving one of the protocols (right now always TCP(6) or UDP(17))
      */
     public short getProtocol() { return this.protocol; }
+    
+    /**
+     * Set the protocol
+     * @param protocol The protocol
+     */
     public void setProtocol( short protocol ) { this.protocol = protocol; }
 
     /**
@@ -51,6 +69,11 @@ public class SessionTuple
      * @return  the client address
      */
     public InetAddress getClientAddr() { return this.clientAddr; }
+    
+    /**
+     * Set the client address
+     * @param clientAddr The client address
+     */
     public void setClientAddr( InetAddress clientAddr ) { this.clientAddr = clientAddr; }
 
     /**
@@ -58,6 +81,11 @@ public class SessionTuple
      * @return the client port.
      */
     public int getClientPort() { return this.clientPort; }
+    
+    /**
+     * Set the client port
+     * @param clientPort The client port
+     */
     public void setClientPort( int clientPort ) { this.clientPort = clientPort; }
 
     /**
@@ -66,6 +94,11 @@ public class SessionTuple
      * @return  the server addr.
      */
     public InetAddress getServerAddr() { return this.serverAddr; }
+    
+    /**
+     * Set the server address
+     * @param serverAddr The server address
+     */
     public void setServerAddr( InetAddress serverAddr ) { this.serverAddr = serverAddr; }
 
     /**
@@ -73,8 +106,17 @@ public class SessionTuple
      * @return the server port.
      */
     public int getServerPort() { return this.serverPort; }
+    
+    /**
+     * Set the server port
+     * @param serverPort The server port
+     */
     public void setServerPort( int serverPort ) { this.serverPort = serverPort; }
 
+    /**
+     * Get the hash code
+     * @return The hash code
+     */
     @Override
     public int hashCode()
     {
@@ -84,6 +126,11 @@ public class SessionTuple
             return protocol + clientAddr.hashCode() + clientPort + serverAddr.hashCode() + serverPort;
     }
 
+    /**
+     * Compare to another object
+     * @param o The object for comparison
+     * @return True if equal, otherwise false
+     */
     @Override
     public boolean equals(Object o)
     {
@@ -101,7 +148,10 @@ public class SessionTuple
         return true;
     }
 
-
+    /**
+     * Get the string representation
+     * @return The string representation
+     */
     @Override
     public String toString()
     {

@@ -30,11 +30,10 @@ import com.untangle.app.smtp.quarantine.store.InboxSummary;
 import com.untangle.app.smtp.quarantine.store.QuarantineStore;
 import com.untangle.uvm.util.Pair;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- *
+ * Quarantine.
  */
 public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView, QuarantineUserView
 {
@@ -55,6 +54,10 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     private SmtpImpl impl;
     private boolean opened = false;
 
+    /**
+     * Initialize instance of Quarantine.
+     * @return instance of quarantine.
+     */
     public Quarantine()
     {
         this.store = new QuarantineStore(new File(new File(System.getProperty("uvm.conf.dir")), "quarantine"));
@@ -66,6 +69,8 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
 
     /**
      * Properties are not maintained explicitly by the Quarantine (i.e. the UI does not talk to the Quarantine).
+     * @param impl SMTP implementation.
+     * @param settings   QuarantineSettings
      */
     public void setSettings(SmtpImpl impl, QuarantineSettings settings)
     {
@@ -91,6 +96,9 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         writeCronFile();
     }
 
+    /**
+     * Write cronjob file to run script that generate reports.
+     */
     private void writeCronFile()
     {
         // write the cron file for nightly runs
@@ -141,6 +149,9 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         }
     }
 
+    /**
+     * Prune Store Now.
+     */
     public void pruneStoreNow()
     {
         this.store.prune(this.settings.getMaxMailIntern(), this.settings.getMaxIdleInbox());
@@ -183,6 +194,13 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         }
     }
 
+    /**
+     * Create quarantine email.
+     * @param  file       File to create message from.
+     * @param  summary    Summary.
+     * @param  recipients InternetAddress variable arguments of recipients
+     * @return            true of message generated, false if not.
+     */
     @Override
     public boolean quarantineMail(File file, MailSummary summary, InternetAddress... recipients)
     {
@@ -267,6 +285,14 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
 
     }
 
+    /**
+     * Purge quarantine.
+     * @param  account                             Quarantine account.
+     * @param  doomedMails                         List of email ids to purge.
+     * @return                                     InboxIndex
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If purge action failed.
+     */
     // --QuarantineManipulation--
     @Override
     public InboxIndex purge(String account, String... doomedMails) throws NoSuchInboxException,
@@ -277,6 +303,14 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return result.b;
     }
 
+    /**
+     * Release message from quarantine
+     * @param  account                             Quarantine account.
+     * @param  rescuedMails                        List of email ids to release.
+     * @return                                     InboxIndex
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public InboxIndex rescue(String account, String... rescuedMails) throws NoSuchInboxException,
             QuarantineUserActionFailedException
@@ -286,6 +320,12 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return result.b;
     }
 
+    /**
+     * Release entire mailbox.
+     * @param  account                             Quarantine account.
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     // --QuarantineMaintenenceView --
     @Override
     public void rescueInbox(String account) throws NoSuchInboxException, QuarantineUserActionFailedException
@@ -300,6 +340,12 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         rescue(account, ids);
     }
 
+    /**
+     * Release multiple mailboxes
+     * @param  accounts                             Array of Quarantine account.
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public void rescueInboxes(String[] accounts) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
@@ -310,6 +356,13 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         }
     }
 
+    /**
+     * Retrieve currwent inbox indexes.
+     * @param  account                             Array of Quarantine account.
+     * @return InboxIndex
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     private InboxIndex getInboxIndex(String account) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
         Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.getIndex(account);
@@ -317,6 +370,13 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return result.b;
     }
 
+    /**
+     * Get inbox records.
+     * @param  account                             Array of Quarantine account.
+     * @return List of InboxRecord.
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public List<InboxRecord> getInboxRecords(String account) throws NoSuchInboxException,
             QuarantineUserActionFailedException
@@ -325,24 +385,45 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return Arrays.asList(index.allRecords());
     }
 
+    /**
+     * Get total size of all inboxes.
+     * @return Size in bytes of all mailboxes.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public long getInboxesTotalSize() throws QuarantineUserActionFailedException
     {
         return this.store.getTotalSize();
     }
 
+    /**
+     * Get total size of all formatted inboxes.
+     * @param  inMB If true, return value in MB, otherwise bytes.
+     * @return      Total size of formatted inboxes in either MB or B.
+     */
     @Override
     public String getFormattedInboxesTotalSize(boolean inMB)
     {
         return this.store.getFormattedTotalSize(inMB);
     }
 
+    /**
+     * Return inbox summaries
+     * @return List of InboxSummary for all mailboxes.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public List<InboxSummary> listInboxes() throws QuarantineUserActionFailedException
     {
         return this.store.listInboxes();
     }
 
+    /**
+     * Delete entire mailbox.
+     * @param  account                             Array of Quarantine account.
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public void deleteInbox(String account) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
@@ -356,6 +437,12 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         }
     }
 
+    /**
+     * Delete multiple mailboxes.
+     * @param  accounts                            Array of Quarantine account.
+     * @throws NoSuchInboxException                [description]
+     * @throws QuarantineUserActionFailedException [description]
+     */
     @Override
     public void deleteInboxes(String[] accounts) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
@@ -366,6 +453,12 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         }
     }
 
+    /**
+     * Retrive inbox account name from token.
+     * @param  token             Token to lookup.
+     * @return                   String of account name.
+     * @throws BadTokenException Invalid token.
+     */
     @Override
     public String getAccountFromToken(String token) throws BadTokenException
     {
@@ -378,12 +471,24 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return p.b;
     }
 
+    /**
+     * Generate authentication token for account.
+     * @param  account Account name.
+     * @return         Token associated with account name.
+     */
     @Override
     public String createAuthToken(String account)
     {
         return this.atm.createAuthToken(account.trim());
     }
 
+    /**
+     * Get digest email for account.
+     * @param  account                             Array of Quarantine account.
+     * @return true if successful, false if not.
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public boolean requestDigestEmail(String account) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
@@ -396,6 +501,13 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return true;
     }
 
+    /**
+     * Create account link from one account to anoher.
+     * @param  from                                Source account name.
+     * @param  to                                  Additional account name.
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public void remapSelfService(String from, String to) throws QuarantineUserActionFailedException,
             InboxAlreadyRemappedException
@@ -434,6 +546,13 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         this.impl.setSmtpSettings(settings);
     }
 
+    /**
+     * Remove mapping for an account name.
+     * @param  inboxName                           Source account name.
+     * @param  aliasToRemove                       Alias to remove.
+     * @return                                     true if removed, false if not.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public boolean unmapSelfService(String inboxName, String aliasToRemove) throws QuarantineUserActionFailedException
     {
@@ -467,6 +586,12 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return true;
     }
 
+    /**
+     * Return name  account is mapped to.
+     * @param  account                             Account to lookup.
+     * @return                                     String of alias.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public String getMappedTo(String account) throws QuarantineUserActionFailedException
     {
@@ -474,6 +599,12 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
 
     }
 
+    /**
+     * Return "master" recipient.
+     * @param  address                             Account address
+     * @return                                     "master" recipient.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     public String getUltimateRecipient(String address) throws QuarantineUserActionFailedException
     {
         String r = address.toLowerCase();
@@ -497,6 +628,12 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return r;
     }
 
+    /**
+     * Get address this account is mapped from.
+     * @param  account                             Account to lookup.
+     * @return                                     String of alias.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     @Override
     public String[] getMappedFrom(String account) throws QuarantineUserActionFailedException
     {
@@ -506,6 +643,9 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
 
     /**
      * Helper method which sends a digest email. Returns false if there was an error in sending of template merging
+     * @param account   Account to send for.
+     * @param index     index to send from.
+     * @return true if success, false if there was error in template merging.
      */
     private boolean sendDigestEmail(String account, InboxIndex index)
     {
@@ -528,6 +668,13 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return ret;
     }
 
+    /**
+     * Verify account.
+     * @param  status                              GenericStatuc to check.
+     * @param  account                             Account to check.
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
     private void checkAndThrowCommonErrors(QuarantineStore.GenericStatus status, String account)
             throws NoSuchInboxException, QuarantineUserActionFailedException
     {
@@ -539,12 +686,20 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         }
     }
 
+    /**
+     * Test
+     */
     @Override
     public void test()
     {
 
     }
 
+    /**
+     * To email address rule list.
+     * @param  typedList Map of to addresses.
+     * @return           List of EmailAddressPairRule
+     */
     private List<EmailAddressPairRule> toEmailAddressPairRuleList(List<Pair<String, String>> typedList)
     {
         ArrayList<EmailAddressPairRule> ret = new ArrayList<EmailAddressPairRule>();
@@ -555,6 +710,11 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return ret;
     }
 
+    /**
+     * From email address rule list.
+     * @param  list Map of to EmailAddressPairRule.
+     * @return           List addresses.
+     */
     private List<Pair<String, String>> fromEmailAddressRuleListPair(List<EmailAddressPairRule> list)
     {
         ArrayList<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
@@ -565,6 +725,11 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         return ret;
     }
     
+    /**
+     * From email address rule.
+     * @param  list List of EmailAddressRule.
+     * @return      List of addresses.
+     */
     private List<String> fromEmailAddressRule(List<EmailAddressRule> list) 
     {
         ArrayList<String> ret = new ArrayList<String>();

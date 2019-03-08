@@ -1,0 +1,19 @@
+{
+    "uniqueId": "network-kEOxIl3D",
+    "category": "Network",
+    "description": "The total received data usage by interface.",
+    "displayOrder": 13,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "bytes",
+    "pieGroupColumn": "interface_id",
+    "pieSumColumn": "coalesce(sum(tx_bytes),0)",
+    "readOnly": true,
+    "table": "interface_stat_events",
+    "seriesRenderer": "interface",
+    "title": "Data Tx-Usage (by interface)",
+    "pieStyle": "COLUMN",
+    "type": "PIE_GRAPH"
+}

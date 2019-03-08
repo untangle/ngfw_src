@@ -1,10 +1,9 @@
-/*
+/**
  * $Id: VirusCloudScanner.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
 package com.untangle.app.virus_blocker;
 
-import java.lang.StringBuilder;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.URL;
@@ -12,10 +11,12 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
 
+/**
+ * Implements a cloud based virus scanner
+ */
 public class VirusCloudScanner extends Thread
 {
     private final Logger logger = Logger.getLogger(VirusBlockerBaseApp.class);
@@ -27,21 +28,41 @@ public class VirusCloudScanner extends Thread
     VirusCloudResult cloudResult = null;
     VirusBlockerState virusState = null;
 
+    /**
+     * Constructor
+     * 
+     * @param virusState
+     *        The virus state
+     */
     public VirusCloudScanner(VirusBlockerState virusState)
     {
         this.virusState = virusState;
     }
 
+    /**
+     * Gets the cloud result
+     * 
+     * @return The result
+     */
     protected synchronized VirusCloudResult getCloudResult()
     {
         return cloudResult;
     }
 
+    /**
+     * Sets the cloud result
+     * 
+     * @param argResult
+     *        The result
+     */
     protected synchronized void setCloudResult(VirusCloudResult argResult)
     {
         this.cloudResult = argResult;
     }
 
+    /**
+     * The main thread function
+     */
     public void run()
     {
         StringBuilder builder = new StringBuilder(256);

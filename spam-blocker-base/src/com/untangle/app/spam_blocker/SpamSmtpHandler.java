@@ -1,6 +1,7 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.app.spam_blocker;
 
 import static com.untangle.uvm.util.Ascii.CRLF;
@@ -12,7 +13,6 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -22,13 +22,11 @@ import org.apache.log4j.Logger;
 
 import com.untangle.app.smtp.MailExport;
 import com.untangle.app.smtp.MailExportFactory;
-import com.untangle.app.smtp.SmtpSettings;
 import com.untangle.app.smtp.SmtpMessageEvent;
 import com.untangle.app.smtp.Response;
 import com.untangle.app.smtp.SmtpTransaction;
 import com.untangle.app.smtp.TemplateTranslator;
 import com.untangle.app.smtp.WrappedMessageGenerator;
-import com.untangle.app.smtp.AddressKind;
 import com.untangle.app.smtp.handler.ScannedMessageResult;
 import com.untangle.app.smtp.handler.SmtpEventHandler;
 import com.untangle.app.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;
@@ -63,6 +61,12 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
 
     private String receivedBy; // Now we also keep the salutation to help SpamAssassin evaluate.
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The base application
+     */
     public SpamSmtpHandler(SpamBlockerBaseApp app)
     {
         super();
@@ -77,6 +81,12 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, getTranslatedBodyTemplate(), this);
     }
 
+    /**
+     * Handle new TCP sessions requests
+     * 
+     * @param sessionRequest
+     *        The session request
+     */
     @Override
     public final void handleTCPNewSessionRequest(TCPNewSessionRequest sessionRequest)
     {
@@ -99,6 +109,11 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         super.handleTCPNewSessionRequest(sessionRequest);
     }
 
+    /**
+     * Get translated body template
+     * 
+     * @return The translated body template
+     */
     @Override
     public String getTranslatedBodyTemplate()
     {
@@ -108,6 +123,11 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         return bodyTemplate;
     }
 
+    /**
+     * Get translated subject template
+     * 
+     * @return The translated subject template
+     */
     @Override
     public String getTranslatedSubjectTemplate()
     {
@@ -118,6 +138,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
      * Method for subclasses (i.e. clamphish) to set the
      * {@link com.untangle.app.smtp.quarantine.MailSummary#getQuarantineCategory
      * category} for a Quarantine submission.
+     * 
+     * @return The quarantine category
      */
     protected String getQuarantineCategory()
     {
@@ -125,9 +147,14 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     /**
+     * 
      * Method for subclasses (i.e. clamphish) to set the
      * {@link com.untangle.app.smtp.quarantine.MailSummary#getQuarantineDetail
      * detail} for a Quarantine submission.
+     * 
+     * @param report
+     *        The spam report
+     * @return The quarantine detail
      */
     protected String getQuarantineDetail(SpamReport report)
     {
@@ -137,36 +164,79 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
 
     /**
      * Method for returning the generator used to mark messages
+     * 
+     * @return The generator
      */
     protected WrappedMessageGenerator getMsgGenerator()
     {
         return msgGenerator;
     }
 
+    /**
+     * Get scanning enabled state
+     * 
+     * @param session
+     *        The session
+     * @return The scan enabled state
+     */
     @Override
     public boolean getScanningEnabled(AppTCPSession session)
     {
         return app.getSettings().getSmtpConfig().getScan();
     }
 
+    /**
+     * Get the maximum server wait time
+     * 
+     * @param session
+     *        The session
+     * @return The maximum server wait time
+     */
     @Override
     public long getMaxServerWait(AppTCPSession session)
     {
         return this.timeout;
     }
 
+    /**
+     * Get the maximum client wait time
+     * 
+     * @param session
+     *        The session
+     * @return The maximum client wait time
+     */
     @Override
     public long getMaxClientWait(AppTCPSession session)
     {
         return this.timeout;
     }
 
+    /**
+     * get the give up size
+     * 
+     * @param session
+     *        The session
+     * @return The give up size
+     */
     @Override
     public int getGiveUpSz(AppTCPSession session)
     {
         return app.getSettings().getSmtpConfig().getMsgSizeLimit();
     }
 
+    /**
+     * Get the scanned message result
+     * 
+     * @param session
+     *        The session
+     * @param msg
+     *        The message
+     * @param tx
+     *        The transaction
+     * @param msgInfo
+     *        The message info
+     * @return The result
+     */
     @Override
     public ScannedMessageResult blockPassOrModify(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
@@ -306,10 +376,21 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
                 return new ScannedMessageResult(msg);
             }
         } finally {
-            try { if (f != null) f.delete(); } catch (Exception ignore) {}
+            try {
+                if (f != null) f.delete();
+            } catch (Exception ignore) {
+            }
         }
     }
 
+    /**
+     * Handle the opening response
+     * 
+     * @param session
+     *        The session
+     * @param resp
+     *        The response
+     */
     @Override
     public void handleOpeningResponse(AppTCPSession session, Response resp)
     {
@@ -323,6 +404,19 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         super.handleOpeningResponse(session, resp);
     }
 
+    /**
+     * Get the block or pass result
+     * 
+     * @param session
+     *        The session
+     * @param msg
+     *        The message
+     * @param tx
+     *        The transaction
+     * @param msgInfo
+     *        The message info
+     * @return The block or pass result
+     */
     @Override
     public BlockOrPassResult blockOrPass(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
@@ -451,6 +545,15 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         }
     }
 
+    /**
+     * See if an extension is allowed
+     * 
+     * @param extension
+     *        The extension
+     * @param session
+     *        The session
+     * @return True if allowed, otherwise false
+     */
     @Override
     protected boolean isAllowedExtension(String extension, AppTCPSession session)
     {
@@ -465,6 +568,15 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         }
     }
 
+    /**
+     * See if a command is allowed
+     * 
+     * @param command
+     *        The command
+     * @param session
+     *        The session
+     * @return True if allowed, otherwise false
+     */
     @Override
     protected boolean isAllowedCommand(String command, AppTCPSession session)
     {
@@ -478,6 +590,14 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         }
     }
 
+    /**
+     * Mark the message headers
+     * 
+     * @param msg
+     *        The message
+     * @param report
+     *        The spam report
+     */
     private void markHeaders(MimeMessage msg, SpamReport report)
     {
         if (app.getSettings().getSmtpConfig().getAddSpamHeaders()) {
@@ -489,23 +609,33 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         }
     }
 
+    /**
+     * Get a clean spam report
+     * 
+     * @return The spam report
+     */
     private SpamReport cleanReport()
     {
         return new SpamReport(new LinkedList<ReportItem>(), 0.0f, app.getSettings().getSmtpConfig().getStrength() / 10.0f);
     }
 
     /**
-     * ...name says it all...
+     * Log a spam event to the database
+     * 
+     * @param msgInfo
+     *        The message info
+     * @param report
+     *        The spam report
+     * @param action
+     *        The message action
      */
     private void postSpamEvent(SmtpMessageEvent msgInfo, SpamReport report, SpamMessageAction action)
     {
         String testsString = "";
         boolean first = true;
         for (ReportItem ri : report.getItems()) {
-            if (!first)
-                testsString += " ";
-            else
-                first = false;
+            if (!first) testsString += " ";
+            else first = false;
             testsString += ri.getCategory() + "[" + ri.getScore() + "]";
         }
 
@@ -514,7 +644,15 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     /**
-     * Wrapper that handles exceptions, and returns null if there is a problem
+     * Write a message to a file
+     * 
+     * @param session
+     *        The session
+     * @param msg
+     *        The message
+     * @param tx
+     *        The SMTP transaction
+     * @return The message file, or null if there is a problem
      */
     private File messageToFile(AppTCPSession session, MimeMessage msg, SmtpTransaction tx)
     {
@@ -562,6 +700,10 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     /**
      * Wrapper method around the real scanner, which swallows exceptions and
      * simply returns null
+     * 
+     * @param f
+     *        The file
+     * @return The spam report or null on failure
      */
     private SpamReport scanFile(File f)
     {
@@ -574,6 +716,13 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         }
     }
 
+    /**
+     * Get the from address
+     * 
+     * @param msg
+     *        The message
+     * @return The from address
+     */
     private InternetAddress getFromNoEx(MimeMessage msg)
     {
         try {
@@ -583,6 +732,13 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         }
     }
 
+    /**
+     * Get the subject
+     * 
+     * @param msg
+     *        The message
+     * @return The subject
+     */
     private String getSubjectNoEx(MimeMessage msg)
     {
         try {
@@ -592,6 +748,19 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         }
     }
 
+    /**
+     * Quarantine a message
+     * 
+     * @param msg
+     *        The message
+     * @param tx
+     *        The SMTP transaction
+     * @param report
+     *        The spam report
+     * @param file
+     *        The message file
+     * @return The result
+     */
     private boolean quarantineMail(MimeMessage msg, SmtpTransaction tx, SpamReport report, File file)
     {
         List<InternetAddress> addrList = tx.getRecipients(true);

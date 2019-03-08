@@ -28,93 +28,163 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
- * Blocks unwanted HTTP traffic - unwanted Ad URLs
+ * AD Blocker's HTTP Handler
+ * This blocks unwanted (ad) URLS and blocks/remove tracking cookies
  */
 public class AdBlockerHandler extends HttpEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
     private final AdBlockerApp app;
 
+    /**
+     * Create an AdBlockerHandler
+     * @param app The application containing this handler
+     */
     public AdBlockerHandler( AdBlockerApp app )
     {
         super();
         this.app = app;
     }
 
+    /**
+     * Handle a new TCP Session
+     *
+     * @param session The new TCP session
+     */
     @Override
     public void handleTCPNewSession( AppTCPSession session )
     {
         super.handleTCPNewSession( session );
-        Map<RequestLineToken, List<String>> killers = new HashMap<RequestLineToken, List<String>>();
+        Map<RequestLineToken, List<String>> killers = new HashMap<>();
         session.attach( killers );
     }
     
+    /**
+     * Handle a request body token
+     * This just passes the chunk, the body is unmodified
+     * @param session The TCP session
+     * @param token The token
+     * @return token The token
+     */
     @Override
-    protected ChunkToken doRequestBody( AppTCPSession session, ChunkToken c )
+    protected ChunkToken doRequestBody( AppTCPSession session, ChunkToken token )
     {
-        return c;
+        return token;
     }
 
+    /**
+     * Handle a request body end
+     * This method doesn't take any action
+     * @param session The TCP session
+     */
     @Override
     protected void doRequestBodyEnd( AppTCPSession session )
     {
     }
 
+    /**
+     * Handle a request header
+     * This check the URI and sees if the request should be blocked
+     * If the request should be blocked it sends a redirect to the block page
+     * If the request should not be blocked it is just passed
+     * @param session The TCP session
+     * @param requestHeader The request header
+     * @return the new HeaderToken to pass
+     */
     @Override
-    protected HeaderToken doRequestHeader( AppTCPSession sess, HeaderToken requestHeader )
+    protected HeaderToken doRequestHeader( AppTCPSession session, HeaderToken requestHeader )
     {
 
         app.incrementScanCount();
 
-        String nonce = checkRequest( sess, sess.getClientAddr(), 80, getRequestLine( sess ), requestHeader );
+        String nonce = checkRequest( session, session.getClientAddr(), getRequestLine( session ), requestHeader );
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
         }
 
         if ( nonce == null ) {
-            releaseRequest( sess );
+            releaseRequest( session );
         } else {
             app.incrementBlockCount();
-            String uri = getRequestLine( sess ).getRequestUri().toString();
-            Token[] response = app.generateResponse( nonce, sess, uri, requestHeader );
+            String uri = getRequestLine( session ).getRequestUri().toString();
+            Token[] response = app.generateResponse( nonce, session, uri, requestHeader );
 
-            blockRequest( sess, response );
+            blockRequest( session, response );
         }
 
         return requestHeader;
     }
 
+    /**
+     * Handle the RequestLineToken
+     * This method just passes the token and takes no action
+     * @param session The TCP session
+     * @param requestLine The RequestLineToken
+     * @return the RequestLineToken
+     */
     @Override
     protected RequestLineToken doRequestLine( AppTCPSession session, RequestLineToken requestLine )
     {
         return requestLine;
     }
 
+    /**
+     * Handle the request body token
+     * This method just passes the token and takes no action
+     * @param session The TCP session
+     * @param token The request body token
+     * @return the token
+     */
     @Override
-    protected ChunkToken doResponseBody( AppTCPSession session, ChunkToken c )
+    protected ChunkToken doResponseBody( AppTCPSession session, ChunkToken token )
     {
-        return c;
+        return token;
     }
 
+    /**
+     * Handle the request body end
+     * This method takes no action
+     * @param session The TCP session
+     */
     @Override
     protected void doResponseBodyEnd( AppTCPSession session )
     {
     }
 
+    /**
+     * Handle the response header
+     * This parses the header and looks for cookies that should be blocked
+     * It removes any cookies coming from the server that should be blocked
+     * And it also adds "cookie killers" (cookies with 0 timeouts) to remove
+     * cookies from the client that were detected in the request header that
+     * should not be on the client
+     *
+     * @param session
+     *            The TCP session
+     * @param responseHeader
+     *            The response header token
+     * @return the response header token to send to the client
+     */ 
     @Override
     protected HeaderToken doResponseHeader( AppTCPSession session, HeaderToken responseHeader )
     {
-        // releaseResponse();
-
-        logger.debug("got response header");
-
         RequestLineToken rl = getResponseRequest( session );
-        responseHeader = serverCookie( session, rl, responseHeader );
+        responseHeader = removeBadCookies( session, rl, responseHeader );
         responseHeader = addCookieKillers( session, rl, responseHeader );
 
         return responseHeader;
     }
 
+    /**
+     * Handle the status line
+     * This releases the session from all further processing
+     *
+     * @param session
+     *            The TCP session
+     * @param statusLine
+     *            The status line
+     * @return the status line to send to the client
+     */ 
     @Override
     protected StatusLine doStatusLine( AppTCPSession session, StatusLine statusLine )
     {
@@ -126,13 +196,17 @@ public class AdBlockerHandler extends HttpEventHandler
      * Checks if the request should be blocked, giving an appropriate response
      * if it should.
      * 
-     * @param host
-     *            the requested host.
-     * @param path
-     *            the requested path.
+     * @param session
+     *            The TCP session.
+     * @param clientIp
+     *            The client (source) IP.
+     * @param requestLine
+     *            The request line token.
+     * @param header
+     *            The header token
      * @return an HTML response.
      */
-    private String checkRequest( AppTCPSession session, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header )
+    private String checkRequest( AppTCPSession session, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header )
     {
         if (!app.getSettings().getScanAds()){
             clientCookie( session, requestLine, header );
@@ -189,6 +263,13 @@ public class AdBlockerHandler extends HttpEventHandler
         return null;
     }
 
+    /**
+     * Evaluate the rules against the provided uri
+     * It checks the pass rules first, if no pass rule is found
+     * it checks the block rules next.
+     * @param uri The URI
+     * @return the first matching rule or null if no matching rule
+     */
     @SuppressWarnings("unused")
     private GenericRule findMatch(String uri)
     {
@@ -209,6 +290,14 @@ public class AdBlockerHandler extends HttpEventHandler
         return result;
     }
 
+    /**
+     * Check the pass rules against the provided host and uri
+     * Logs a pass event if the request should be passed explicitly
+     * @param host the Host of the request
+     * @param requestLine the request line
+     * @param uri The URI
+     * @return true if passed according to rules, fales otherwise
+     */
     private boolean checkPassRules(String host, RequestLineToken requestLine, String uri)
     {
         if (host.contains("untangle")) {
@@ -229,22 +318,34 @@ public class AdBlockerHandler extends HttpEventHandler
         return false;
     }
 
-    // cookie stuff -----------------------------------------------------------
-
+    /**
+     * This parses the request header and looks for cookies on the clien that should not be present
+     * Any cookies provided by the client that should be blocked will be saved in killers hash
+     * table attached to the session.
+     * Later in the response we will insert a 0-timeout cookie that will force the client to remove
+     * these cookies
+     *
+     * @param session
+     *           The TCP session
+     * @param requestLine
+     *           The Request line token
+     * @param headerToken
+     *           The request header token
+     */
     @SuppressWarnings("unchecked")    
-    private void clientCookie( AppTCPSession session, RequestLineToken requestLine, HeaderToken h )
+    private void clientCookie( AppTCPSession session, RequestLineToken requestLine, HeaderToken headerToken )
     {
         if (!app.getSettings().getScanCookies())
             return;
         logger.debug("checking client cookie");
 
-        List<String> cookieKillers = new LinkedList<String>();
+        List<String> cookieKillers = new LinkedList<>();
 
         Map<RequestLineToken, List<String>> killers = (Map<RequestLineToken, List<String>>) session.attachment();
         killers.put(requestLine, cookieKillers);
 
-        String host = h.getValue("host");
-        List<String> cookies = h.getValues("cookie"); // XXX cookie2 ???
+        String host = headerToken.getValue("host");
+        List<String> cookies = headerToken.getValues("cookie"); // XXX cookie2 ???
 
         if (null == cookies) {
             return;
@@ -278,25 +379,35 @@ public class AdBlockerHandler extends HttpEventHandler
         }
     }
 
-    private List<String> makeCookieKillers(String c, String h)
+    /**
+     * Make a list of "cookie killers" for killing cookies on the client
+     * This adds a cookie killer the invididual cookie, but also subdomains
+     * 
+     * @param cookie
+     *           The cookie to kill
+     * @param host
+     *           The host that owns the cookie
+     * @return a list of cookie killers
+     */ 
+    private List<String> makeCookieKillers(String cookie, String host)
     {
         logger.debug("making cookie killers");
-        List<String> l = new LinkedList<String>();
+        List<String> l = new LinkedList<>();
 
-        String cookieKiller = makeCookieKiller(c, h);
+        String cookieKiller = makeCookieKiller(cookie, host);
         l.add(cookieKiller);
 
         while (true) {
-            cookieKiller = makeCookieKiller(c, "." + h);
+            cookieKiller = makeCookieKiller(cookie, "." + host);
             l.add(cookieKiller);
             if (logger.isDebugEnabled()) {
                 logger.debug("added cookieKiller: " + cookieKiller);
             }
 
-            int i = h.indexOf('.');
-            if (0 <= i && (i + 1) < h.length()) {
-                h = h.substring(i + 1);
-                i = h.indexOf('.');
+            int i = host.indexOf('.');
+            if (0 <= i && (i + 1) < host.length()) {
+                host = host.substring(i + 1);
+                i = host.indexOf('.');
                 if (0 > i) {
                     break;
                 }
@@ -308,38 +419,63 @@ public class AdBlockerHandler extends HttpEventHandler
         return l;
     }
 
-    private String makeCookieKiller(String c, String h)
+    /**
+     * Changes the provided cookie specification to a "cookie killer"
+     *
+     * @param cookie
+     *           The original cookie
+     * @param host
+     *           The host/domain that owns tho cookie
+     * @return the new cookie specification that kills the cookie
+     */
+    private String makeCookieKiller(String cookie, String host)
     {
-        c = stripMaxAge(c);
+        cookie = stripMaxAge(cookie);
 
-        int i = c.indexOf(';');
+        int i = cookie.indexOf(';');
         if (0 > i) {
-            return c + "; path=/; domain=" + h + "; max-age=0";
+            return cookie + "; path=/; domain=" + host + "; max-age=0";
         } else {
-            return c.substring(0, i) + "; path=/; domain=" + h + "; max-age=0;" + c.substring(i, c.length());
+            return cookie.substring(0, i) + "; path=/; domain=" + host + "; max-age=0;" + cookie.substring(i, cookie.length());
         }
     }
 
-    private String stripMaxAge(String c)
+    /**
+     * Remove the max age specification from the provided cookie
+     * @param cookie The original cookie string.
+     * @return the new cookie string without the max age
+     */
+    private String stripMaxAge(String cookie)
     {
-        String cl = c.toLowerCase();
+        String cl = cookie.toLowerCase();
         int i = cl.indexOf("max-age");
         if (-1 == i) {
-            return c;
+            return cookie;
         } else {
-            int j = c.indexOf(';', i);
-            return c.substring(0, i) + c.substring(j + 1, c.length());
+            int j = cookie.indexOf(';', i);
+            return cookie.substring(0, i) + cookie.substring(j + 1, cookie.length());
         }
     }
 
-    @SuppressWarnings("unchecked")    
-    private HeaderToken addCookieKillers( AppTCPSession session, RequestLineToken rl, HeaderToken h )
+    /**
+     * Add the cookie killers (attached to session) to the header 
+     *
+     * @param session
+     *           The TCP session
+     * @param requestLineToken
+     *           The Request line token
+     * @param headerToken
+     *           The request header token
+     * @return the new header token
+     */
+     @SuppressWarnings("unchecked")    
+    private HeaderToken addCookieKillers( AppTCPSession session, RequestLineToken requestLineToken, HeaderToken headerToken )
     {
         Map<RequestLineToken, List<String>> killers = (Map<RequestLineToken, List<String>>) session.attachment();
 
-        List<String> cookieKillers = killers.remove(rl);
+        List<String> cookieKillers = killers.remove(requestLineToken);
         if (cookieKillers == null) {
-            return h;
+            return headerToken;
         }
 
         for (Iterator<String> i = cookieKillers.iterator(); i.hasNext();) {
@@ -347,29 +483,40 @@ public class AdBlockerHandler extends HttpEventHandler
             if (logger.isDebugEnabled()) {
                 logger.debug("adding killer to header: " + killer);
             }
-            h.addField("Set-Cookie", killer);
+            headerToken.addField("Set-Cookie", killer);
         }
 
-        return h;
+        return headerToken;
     }
 
-    private HeaderToken serverCookie( AppTCPSession session, RequestLineToken rl, HeaderToken h )
+    /**
+     * Remove blocked cookies from the header
+     *
+     * @param session
+     *           The TCP session
+     * @param requestLineToken
+     *           The Request line token
+     * @param headerToken
+     *           The request header token
+     * @return the new header token
+     */
+    private HeaderToken removeBadCookies( AppTCPSession session, RequestLineToken requestLineToken, HeaderToken headerToken )
     {
         if (!app.getSettings().getScanCookies())
-            return h;
+            return headerToken;
         logger.debug("checking server cookie");
         // XXX if deferred 0ttl cookie, send it and nullify
 
         String reqDomain = getResponseHost( session );
 
-        if (null == reqDomain) {
-            return h;
+        if (reqDomain == null) {
+            return headerToken;
         }
 
-        List<String> setCookies = h.getValues("set-cookie");
+        List<String> setCookies = headerToken.getValues("set-cookie");
 
-        if (null == setCookies) {
-            return h;
+        if (setCookies == null) {
+            return headerToken;
         }
 
         for (Iterator<String> i = setCookies.iterator(); i.hasNext();) {
@@ -407,7 +554,7 @@ public class AdBlockerHandler extends HttpEventHandler
                     logger.debug("cookie deleted: " + domain);
                 }
                 app.incrementBlockCount();
-                app.logEvent(new CookieEvent(rl.getRequestLine(), domain));
+                app.logEvent(new CookieEvent(requestLineToken.getRequestLine(), domain));
                 i.remove();
             } else {
                 if (logger.isDebugEnabled()) {
@@ -417,6 +564,6 @@ public class AdBlockerHandler extends HttpEventHandler
             }
         }
 
-        return h;
+        return headerToken;
     }
 }

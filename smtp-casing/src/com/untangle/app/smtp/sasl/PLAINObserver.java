@@ -17,34 +17,65 @@ class PLAINObserver extends ClearObserver
 
     private String m_id;
 
+    /**
+     * Setup the PLAINObserver
+     */
     PLAINObserver() {
         super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
     }
 
+    /**
+     * Return if exchange of authentiation ID is found.
+     * 
+     * @return FeatureStatus of YES if m_id is specified.  UNKNOWN otherwise.
+     */
     @Override
     public FeatureStatus exchangeAuthIDFound()
     {
         return m_id == null ? FeatureStatus.UNKNOWN : FeatureStatus.YES;
     }
 
+    /**
+     * Return the authentication id.
+     * 
+     * @return String of the authentication id.  null if not specified.
+     */
     @Override
     public String getAuthID()
     {
         return m_id;
     }
 
+    /**
+     * Handle initial client data.
+     *
+     * @param  buf ByteBuffer of initial client data.
+     * @return     true if initial data was able to be handled, false otherwise.
+     */
     @Override
     public boolean initialClientData(ByteBuffer buf)
     {
         return clientMessage(buf);
     }
 
+    /**
+     * Handle client data.
+     *
+     * @param  buf ByteBuffer of client data.
+     * @return     true if data was able to be handled, false otherwise.
+     */
     @Override
     public boolean clientData(ByteBuffer buf)
     {
         return clientMessage(buf);
     }
 
+    /**
+     * Handle client message.
+     * 
+     * @param  buf ByteBuffer of message.
+     * @return     true of successfully handled, false otherwise.
+     */
     private boolean clientMessage(ByteBuffer buf)
     {
 

@@ -16,12 +16,29 @@ public class FakeDataCrumb extends Crumb
 {
     private final Source source;
 
+    /**
+     * FakeDataCrumb
+     * @param source
+     */
     public FakeDataCrumb( Source source )
     {
         this.source = source;
     }
 
+    /**
+     * getSource
+     * @return the source
+     */
     public Source getSource() { return this.source; }
+
+    /**
+     * type
+     * @return the type
+     */
     public int    type() { return TYPE_DATA; }
+
+    /**
+     * raze
+     */
     public void   raze() { }
 }

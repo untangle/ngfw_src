@@ -32,13 +32,24 @@ public class InboxMaintenenceServlet extends HttpServlet
     private static final String INBOX_VIEW = "/WEB-INF/jsp/inbox.jsp";
     private static final String REQUEST_FWD = "/request";
     private static final String SERVER_UNAVAILABLE_ERRO_VIEW = "/TryLater.jsp";
-    
+
+    /**
+     * Setup up the service for the user specified in the "tkn" request parameter.
+     * If the token is invlaid or we're unable to access the appropriate quarantine, the request
+     * will be redirected to handle the issue.
+     * 
+     * @param  req              HttpServletRequest object containing the action "tkn" parameter.
+     * @param  resp             HttpServletResponse object that will be used in any redirecion.
+     * @throws ServletException If there's an problem with the servlet.
+     * @throws IOException      General input/ooutput error.
+     */
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
 
-        String authTkn = req.getParameter(AUTH_TOKEN_RP);
-        if(authTkn == null) {
+        String authToken = req.getParameter(AUTH_TOKEN_RP);
+
+        if(authToken == null) {
             log("[MaintenenceControlerBase] Auth token null");
             req.getRequestDispatcher(REQUEST_FWD).forward(req, resp);
             return;
@@ -67,13 +78,13 @@ public class InboxMaintenenceServlet extends HttpServlet
 
         String account = null;
         try {
-            if("test".equals(authTkn)) { //Just for ui testing
+            if("test".equals(authToken)) { //Just for ui testing
                 account="test@untangle.com";
                 req.setAttribute( "forwardAddress", "remapped@unatangle.com");
                 req.setAttribute( "safelistData", buildJsonList(new String[] {"safeOne@test.com", "safeTwo@test.com"}));
                 req.setAttribute( "remapsData", "[]");
             } else {
-                account = quarantine.getAccountFromToken(authTkn);
+                account = quarantine.getAccountFromToken(authToken);
 
                 String remappedTo = quarantine.getMappedTo(account);
                 if(remappedTo != null) {
@@ -82,7 +93,7 @@ public class InboxMaintenenceServlet extends HttpServlet
 
                 String[] inboundRemappings = quarantine.getMappedFrom(account);
                 req.setAttribute( "remapsData", buildJsonList(inboundRemappings));
-                
+
                 String[] safelistData = safelistManipulation.getSafelistContents(account);
                 req.setAttribute( "safelistData", buildJsonList(safelistData));
             }
@@ -96,21 +107,27 @@ public class InboxMaintenenceServlet extends HttpServlet
             req.getRequestDispatcher(SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
             return;
         }
-        
+
         req.setAttribute( "currentAddress", account);
-        req.setAttribute( "currentAuthToken", authTkn);
+        req.setAttribute( "currentAuthToken", authToken);
         req.setAttribute( "quarantineDays", maxDaysToIntern);
-        
+
         /* Setup the cobranding settings. */
         UvmContext uvm = UvmContextFactory.context();
         req.setAttribute( "companyName", uvm.brandingManager().getCompanyName());
-        
+
         /* setup the skinning settings */
         req.setAttribute( "skinName", uvm.skinManager().getSettings().getSkinName());
         req.setAttribute( "extjsTheme", uvm.skinManager().getSkinInfo().getExtjsTheme());
         req.getRequestDispatcher(INBOX_VIEW).forward(req, resp);
     }
 
+    /**
+     * Build a JSON list from the array of values.
+     * 
+     * @param  values Array of Strings.
+     * @return        String representing a JSON list.
+     */
     private static final String buildJsonList( String[] values )
     {
         if ( values == null || values.length == 0 ) {
@@ -123,7 +140,7 @@ public class InboxMaintenenceServlet extends HttpServlet
             v.put( value );
             ja.put( v );
         }
-        
+
         return ja.toString();
     }
 }

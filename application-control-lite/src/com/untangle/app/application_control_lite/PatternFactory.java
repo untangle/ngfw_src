@@ -9,9 +9,12 @@ import java.util.regex.*;
 
 import org.apache.log4j.Logger;
 
-public class PatternFactory {
-
-    private static Map<String,Pattern> _cachedPatterns = new HashMap<String,Pattern>();
+/**
+ * A utility class to Pattern objects from regex strings
+ */
+public class PatternFactory
+{
+    private static Map<String,Pattern> _cachedPatterns = new HashMap<>();
     private static final Logger logger = Logger.getLogger(PatternFactory.class);
 
     /**
@@ -39,6 +42,11 @@ public class PatternFactory {
         new StringReplacer( "\uFFEE", "" )
     };
 
+    /**
+     * Create a pattern from the regex
+     * @param inputRegEx - the source regex string
+     * @return the pattern
+     */
     public static Pattern createRegExPattern (String inputRegEx)
     {
 
@@ -65,6 +73,11 @@ public class PatternFactory {
         return result;
     }
 
+    /**
+     * Translate a regex from perl to java
+     * @param regex - the source perl regex string
+     * @return the java regex string equivalent
+     */
     private static String _perlRegexTranslate (String regex)
     {
         /* Rules
@@ -89,6 +102,11 @@ public class PatternFactory {
         return fixFFPattern( regex );
     }
 
+    /**
+     * Fix the 0xFF java issue
+     * @param regex The original regex string
+     * @return the fixed regex string
+     */
     private static String fixFFPattern( String regex )
     {
         for ( int c = 0; c < FIX_XFF.length ; c++ ) {
@@ -97,19 +115,38 @@ public class PatternFactory {
 
         return regex;
     }
+
 }
 
-class StringReplacer {
+/**
+ * A class to store the pattern and its replacement for regex manipulations
+ */
+class StringReplacer
+{
     final Pattern pattern;
     final String replacement;
 
-    StringReplacer( String search, String replacement ) {
+    /**
+     * Create a StringReplacer
+     * @param search The search string
+     * @param replacement The replacement string
+     */
+    protected StringReplacer( String search, String replacement )
+    {
         pattern = Pattern.compile( search );
         this.replacement = replacement;
     }
 
-    String replaceAll( String input ) {
+    /**
+     * Perform the search/replace on the provided string
+     * and return the new string
+     * @param input - The input string
+     * @return the new string
+     */
+    protected String replaceAll( String input )
+    {
         return pattern.matcher( input ).replaceAll( replacement );
     }
 }
+
 

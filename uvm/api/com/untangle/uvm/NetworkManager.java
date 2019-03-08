@@ -55,4 +55,8 @@ public interface NetworkManager
     String getUpnpManager(String command, String arguments);
 
     String getPublicUrl();
+
+    String getFullyQualifiedHostname();
+
+    int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum);
 }

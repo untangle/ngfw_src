@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'application-control', 'application-control', [])
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-application-control', 'application-control', [])
 

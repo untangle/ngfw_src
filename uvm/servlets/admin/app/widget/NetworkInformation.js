@@ -4,29 +4,23 @@ Ext.define('Ung.widget.NetworkInformation', {
 
     controller: 'widget',
 
-    hidden: true,
     border: false,
-    baseCls: 'widget small adding',
-
+    baseCls: 'widget small',
     layout: {
         type: 'vbox',
         align: 'stretch'
     },
 
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
-
     viewModel: true,
 
-    refreshIntervalSec: 3,
+    refreshIntervalSec: 10,
 
     items: [{
         xtype: 'component',
         cls: 'header',
         itemId: 'header',
         html: '<h1>' + 'Network Information'.t() + '</h1>' +
-            '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+            '<div class="actions"><a class="action-btn"><i class="fa fa-rotate-left fa-lg" data-action="refresh"></i></a></div>'
     }, {
         xtype: 'container',
         //cls: 'wg-wrapper flex',
@@ -38,8 +32,8 @@ Ext.define('Ung.widget.NetworkInformation', {
                 '<div class="info-item">' + 'Maximum Active'.t() + '<br/><span>{stats.maxActiveHosts}</span></div>' +
                 '<div class="info-item">' + 'Known Devices'.t() + '<br/><span>{stats.knownDevices}</span></div>' +
                 '<div class="info-actions">' +
-                '<a class="wg-button" href="#hosts" style="flex: 1;">' + 'Hosts'.t() + '</a>' +
-                '<a class="wg-button" href="#devices" style="flex: 1;">' + 'Devices'.t() + '</a>' +
+                '<a class="wg-button" href="#hosts">' + 'Hosts'.t() + '</a>' +
+                '<a class="wg-button" href="#devices">' + 'Devices'.t() + '</a>' +
                 '</div>' +
                 '</div>'
             }
@@ -51,23 +45,23 @@ Ext.define('Ung.widget.NetworkInformation', {
                 '<div class="info-item">' + 'Scanned Sessions'.t() + '<br/><span>{sessions.scannedSessions}</span></div>' +
                 '<div class="info-item">' + 'Bypassed Sessions'.t() + '<br/><span>{sessions.bypassedSessions}</span></div>' +
                 '<div class="info-actions">' +
-                '<a class="wg-button" href="#sessions" style="flex: 1;">' + 'Sessions'.t() + '</a> ' +
+                '<a class="wg-button" href="#sessions">' + 'Sessions'.t() + '</a> ' +
                 '</div>' +
                 '</div>'
             }
         }]
     }],
 
-    fetchData: function () {
-        var me = this,
-            vm = this.getViewModel();
+    fetchData: function (cb) {
+        var me = this, vm = me.getViewModel();
 
         if (vm) {
+            me.setLoading({ useTargetEl: true });
             Rpc.asyncData('rpc.sessionMonitor.getSessionStats')
                 .then(function(result) {
                     vm.set('sessions', result);
-                    //console.log(result);
-                    me.fireEvent('afterdata');
+                    me.setLoading(false);
+                    cb();
                 });
         }
     }

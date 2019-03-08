@@ -1,9 +1,9 @@
 # -*-ruby-*-
 
-http = BuildEnv::SRC['http']
-web_filter = BuildEnv::SRC['web-filter-base']
+http = BuildEnv::SRC['untangle-app-http']
+web_filter = BuildEnv::SRC['untangle-base-web-filter']
 
-AppBuilder.makeBase(BuildEnv::SRC, 'web-filter-base', 'web-filter-base', [http['src']])
+AppBuilder.makeBase(BuildEnv::SRC, 'untangle-base-web-filter', 'web-filter-base', [http['src']])
 
 deps = [web_filter['src'], http['src']]
 

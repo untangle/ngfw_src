@@ -4,20 +4,14 @@
 package com.untangle.app.ftp;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
-import com.untangle.uvm.vnet.Token;
-import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -33,10 +27,17 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
 
     private final Logger logger = Logger.getLogger(FtpClientParserEventHandler.class);
 
+    /**
+     * Create a new FtpClientParserEventHandler
+     */
     public FtpClientParserEventHandler()
     {
     }
 
+    /**
+     * handleTCPNewSessionRequest
+     * @param request <doc>
+     */
     @Override
     public void handleTCPNewSessionRequest( TCPNewSessionRequest request )
     {
@@ -46,18 +47,32 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         }
     }
     
+    /**
+     * handleTCPNewSession
+     * @param session <doc>
+     */
     @Override
     public void handleTCPNewSession( AppTCPSession session )
     {
         session.clientLineBuffering( true );
     }
 
+    /**
+     * handleTCPClientChunk
+     * @param session <doc>
+     * @param data <doc>
+     */
     @Override
     public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
         parse( session, data, false, false );
     }
 
+    /**
+     * handleTCPServerChunk
+     * @param session <doc>
+     * @param data <doc>
+     */
     @Override
     public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
@@ -65,6 +80,11 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received data when expect object");
     }
 
+    /**
+     * handleTCPClientObject
+     * @param session <doc>
+     * @param obj <doc>
+     */
     @Override
     public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
@@ -72,6 +92,11 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received object but expected data.");
     }
     
+    /**
+     * handleTCPServerObject
+     * @param session <doc>
+     * @param obj <doc>
+     */
     @Override
     public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
@@ -79,12 +104,22 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received object but expected data.");
     }
     
+    /**
+     * handleTCPClientDataEnd
+     * @param session <doc>
+     * @param data <doc>
+     */
     @Override
     public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
         parse( session, data, false, true);
     }
 
+    /**
+     * handleTCPServerDataEnd
+     * @param session <doc>
+     * @param data <doc>
+     */
     @Override
     public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
@@ -94,12 +129,20 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * handleTCPClientFIN
+     * @param session <doc>
+     */
     @Override
     public void handleTCPClientFIN( AppTCPSession session )
     {
         endSession( session );
     }
 
+    /**
+     * handleTCPServerFIN
+     * @param session <doc>
+     */
     @Override
     public void handleTCPServerFIN( AppTCPSession session )
     {
@@ -107,6 +150,13 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         throw new RuntimeException("Received unexpected event.");
     }
 
+    /**
+     * parse - Parse the ByteBuffer and send the objects/tokens
+     * @param session
+     * @param data
+     * @param s2c
+     * @param last
+     */
     private void parse( AppTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
         ByteBuffer buf = data;
@@ -137,6 +187,11 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         return;
     }
     
+    /**
+     * parse the buffer and send the tokens
+     * @param session
+     * @param buf
+     */
     public void parse( AppTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getInputFitting();
@@ -150,6 +205,11 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * parseEnd the final string
+     * @param session
+     * @param buf
+     */
     public void parseEnd( AppTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getInputFitting();
@@ -163,12 +223,21 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * endSession ends the session
+     * @param session
+     */
     public void endSession( AppTCPSession session )
     {
         session.shutdownServer();
         return;
     }
 
+    /**
+     * parseCtl parse the control session
+     * @param session
+     * @param buf
+     */
     private void parseCtl( AppTCPSession session, ByteBuffer buf )
     {
         if (completeLine(buf)) {

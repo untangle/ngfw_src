@@ -22,43 +22,47 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.util.Pulse;
 
+/**
+ * Host Cache Implementation
+ */
 @SuppressWarnings("serial")
 public class HostCache
 {
     /**
-     * The cache size will be reduced to this size when cleaned
-     * Note: this is not actually enforced in real-time
+     * The cache size will be reduced to this size when cleaned Note: this is
+     * not actually enforced in real-time
      */
     private final static int DOMAIN_CACHE_MAX_ENTRIES = 20000;
 
     /**
-     * This is how long entries in the cache will be stored
-     * This is the default value
+     * This is how long entries in the cache will be stored This is the default
+     * value
      */
-    private final static long CACHE_TTL = 1000*60*60*24; // 24 hours
+    private final static long CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 
     /**
-     * This is how long entries in the cache will be stored
-     * This value is used for very busy domains to avoid overcrowding
+     * This is how long entries in the cache will be stored This value is used
+     * for very busy domains to avoid overcrowding
      */
-    private final static long CACHE_TTL_SHORT = 1000*60*60*2; // 2 hours
+    private final static long CACHE_TTL_SHORT = 1000 * 60 * 60 * 2; // 2 hours
 
     /**
-     * If a domain has more than this many cached URLs
-     * It will be considered "Large" and get the short TTL
+     * If a domain has more than this many cached URLs It will be considered
+     * "Large" and get the short TTL
      */
     private final static long CACHE_LARGE_SIZE = 1000;
-    
-    /**
-     * The cache will be cleaned every this many milliseconds
-     * during cleaned all expired (according to CACHE_TTL entries are removed)
-     */
-    private final static long CACHE_CLEAN_FREQUENCY = 30*60*1000L; // 30 minutes
 
     /**
-     * This is a map of of all domains mapped to their associated URI and categories
+     * The cache will be cleaned every this many milliseconds during cleaned all
+     * expired (according to CACHE_TTL entries are removed)
      */
-    private final static Map<String,DomainCacheRecord> domainCache;
+    private final static long CACHE_CLEAN_FREQUENCY = 30 * 60 * 1000L; // 30 minutes
+
+    /**
+     * This is a map of of all domains mapped to their associated URI and
+     * categories
+     */
+    private final static Map<String, DomainCacheRecord> domainCache;
 
     /**
      * The cache cleaner thread
@@ -70,31 +74,43 @@ public class HostCache
      */
     private final static Logger logger = Logger.getLogger(HostCache.class);
 
-    static
-    {
-        domainCache = new ConcurrentHashMap<String,DomainCacheRecord>();
+    static {
+        domainCache = new ConcurrentHashMap<String, DomainCacheRecord>();
         cacheCleaner = new Pulse("HostCacheCleaner", new HostCacheCleaner(), CACHE_CLEAN_FREQUENCY);
         cacheCleaner.start();
 
         logger.info("Initializing HostCache");
     }
-    
-    private HostCache() {}
 
+    /**
+     * Constructor
+     */
+    private HostCache()
+    {
+    }
+
+    /**
+     * Return the cached categories for a host
+     * 
+     * @param domain
+     *        The domain
+     * @param uri
+     *        The uri
+     * @return The category
+     */
     public static String getCachedCategories(String domain, String uri)
     {
         uri = uri.toLowerCase(); //match is case insensitive
         logger.debug("getCachedCategories( domain=" + domain + ", uri=" + uri + " )");
-        
+
         /**
          * Iterate through all subdomains looking for cache hits
          */
-        for ( String dom = domain; null != dom ; dom = UrlMatchingUtil.nextHost(dom) ) {
+        for (String dom = domain; null != dom; dom = UrlMatchingUtil.nextHost(dom)) {
 
             DomainCacheRecord domainCacheRecord = domainCache.get(dom);
-            if (domainCacheRecord == null)
-                continue;
-            
+            if (domainCacheRecord == null) continue;
+
             /**
              * Check non-exact matches first - most likely to live there
              */
@@ -108,7 +124,7 @@ public class HostCache
             }
 
             /**
-             * Check exact matches next 
+             * Check exact matches next
              */
             if (domainCacheRecord.exactMatches != null) {
                 for (CacheRecord r : domainCacheRecord.exactMatches) {
@@ -124,6 +140,18 @@ public class HostCache
         return null;
     }
 
+    /**
+     * Holds a list of categories
+     * 
+     * @param url
+     *        The url
+     * @param categories
+     *        The categories
+     * @param origDomain
+     *        The original domain
+     * @param origUri
+     *        The original URI
+     */
     public static void cacheCategories(String url, String categories, String origDomain, String origUri)
     {
         logger.debug("cacheCategories( url=" + url + ", categories=" + categories + ", origDomain=" + origDomain + ", origUri=" + origUri + " )");
@@ -155,20 +183,41 @@ public class HostCache
         }
     }
 
+    /**
+     * Called to clean expired cache entries
+     */
     public static void cleanCache()
     {
         clean(false);
     }
-    
+
+    /**
+     * Called to clean cache entries
+     * 
+     * @param expireAll
+     *        True to clean all, false to clean expired
+     */
     public static void cleanCache(boolean expireAll)
     {
         clean(expireAll);
     }
 
+    /**
+     * Add a record to the cache
+     * 
+     * @param domain
+     *        The domain
+     * @param categories
+     *        The categories
+     * @param exact
+     *        Exact match flag
+     * @param uri
+     *        The uri
+     */
     private static void addRecord(String domain, String categories, boolean exact, String uri)
     {
         int domainCacheSize = 0;
-        
+
         logger.debug("addRecord( domain=" + domain + ", categories=" + categories + ", exact=" + exact + ", uri=" + uri + " )");
 
         DomainCacheRecord domainCacheRecord = domainCache.get(domain);
@@ -176,24 +225,21 @@ public class HostCache
 
         if (domainCacheRecord == null) {
             domainCacheRecord = new DomainCacheRecord();
-            domainCache.put(domain,domainCacheRecord);
+            domainCache.put(domain, domainCacheRecord);
         }
-        
+
         if (exact) {
-            if (domainCacheRecord.exactMatches == null)
-                domainCacheRecord.exactMatches = new ConcurrentLinkedQueue<CacheRecord>();
+            if (domainCacheRecord.exactMatches == null) domainCacheRecord.exactMatches = new ConcurrentLinkedQueue<CacheRecord>();
             cacheRecords = domainCacheRecord.exactMatches;
-        }
-        else {
-            if (domainCacheRecord.nonExactMatches == null)
-                domainCacheRecord.nonExactMatches = new ConcurrentLinkedQueue<CacheRecord>();
+        } else {
+            if (domainCacheRecord.nonExactMatches == null) domainCacheRecord.nonExactMatches = new ConcurrentLinkedQueue<CacheRecord>();
             cacheRecords = domainCacheRecord.nonExactMatches;
         }
 
         /**
          * If one already exists for the same URI - remove it
          */
-        for (Iterator<CacheRecord> i = cacheRecords.iterator(); i.hasNext(); ) {
+        for (Iterator<CacheRecord> i = cacheRecords.iterator(); i.hasNext();) {
             CacheRecord cr = i.next();
             if (uri.equals(cr.getUri())) {
                 i.remove();
@@ -209,13 +255,19 @@ public class HostCache
         if (domainCacheSize > CACHE_LARGE_SIZE) {
             domainCacheRecord.cacheTTL = CACHE_TTL_SHORT;
         }
-        
+
         if (logger.isDebugEnabled()) {
             logger.debug("domainCache.put( domain=" + domain + ", records=" + cacheRecords + " )");
         }
     }
-    
-    private static void clean( boolean expireAll )
+
+    /**
+     * Private cache cleaner function
+     * 
+     * @param expireAll
+     *        True to clean all, false to clean expired
+     */
+    private static void clean(boolean expireAll)
     {
         int domainsRemoved = 0;
         int domainsKept = 0;
@@ -224,7 +276,7 @@ public class HostCache
 
         logger.info("Cleaning HostCache... (Current Size: " + domainCache.size() + ")");
 
-        for (Iterator<String> itr = domainCache.keySet().iterator() ; itr.hasNext(); ) {
+        for (Iterator<String> itr = domainCache.keySet().iterator(); itr.hasNext();) {
             String key = itr.next();
             logger.debug("Checking: " + key);
 
@@ -236,39 +288,36 @@ public class HostCache
             }
 
             DomainCacheRecord domainCacheRecord = domainCache.get(key);
-            if (domainCacheRecord == null)
-                continue;
-            
+            if (domainCacheRecord == null) continue;
+
             ConcurrentLinkedQueue<CacheRecord> nonExactCacheRecords = domainCacheRecord.nonExactMatches;
             ConcurrentLinkedQueue<CacheRecord> exactCacheRecords = domainCacheRecord.exactMatches;
             long cutoff = System.currentTimeMillis() - domainCacheRecord.cacheTTL;
-            if ( expireAll ) {
+            if (expireAll) {
                 cutoff = Long.MAX_VALUE;
             }
 
             int domainUrisKept = 0;
 
             if (nonExactCacheRecords != null) {
-                for (Iterator<CacheRecord> i = nonExactCacheRecords.iterator(); i.hasNext(); ) {
+                for (Iterator<CacheRecord> i = nonExactCacheRecords.iterator(); i.hasNext();) {
                     CacheRecord cr = i.next();
                     if (cr.getCreationTime() < cutoff) {
                         i.remove();
                         uriRemoved++;
-                    }
-                    else {
+                    } else {
                         uriKept++;
                         domainUrisKept++;
                     }
                 }
             }
             if (exactCacheRecords != null) {
-                for (Iterator<CacheRecord> i = exactCacheRecords.iterator(); i.hasNext(); ) {
+                for (Iterator<CacheRecord> i = exactCacheRecords.iterator(); i.hasNext();) {
                     CacheRecord cr = i.next();
                     if (cr.getCreationTime() < cutoff) {
                         i.remove();
                         uriRemoved++;
-                    }
-                    else {
+                    } else {
                         uriKept++;
                         domainUrisKept++;
                     }
@@ -280,7 +329,7 @@ public class HostCache
                 logger.debug("Keeping : " + key);
             } else {
                 itr.remove();
-                domainsRemoved++; 
+                domainsRemoved++;
                 logger.debug("Removing: " + key + " (expired)");
             }
         }
@@ -290,12 +339,15 @@ public class HostCache
         printStats();
     }
 
+    /**
+     * Print cache statistics
+     */
     private static void printStats()
     {
         logger.info("HostCache Stats: #Domains:" + domainCache.size());
 
         if (logger.isDebugEnabled()) {
-            for (Iterator<String> itr = domainCache.keySet().iterator() ; itr.hasNext(); ) {
+            for (Iterator<String> itr = domainCache.keySet().iterator(); itr.hasNext();) {
                 String key = itr.next();
                 ConcurrentLinkedQueue<CacheRecord> cacheRecords;
                 cacheRecords = domainCache.get(key).nonExactMatches;
@@ -313,19 +365,28 @@ public class HostCache
                         logger.debug("HostCache Stats: Domain:" + key + "     Exact URI:" + cr.getUri() + " Category: " + cr.getCategoryString());
                     }
                 }
-                
+
             }
         }
     }
-    
+
+    /**
+     * Host Cache Cleaner
+     */
     private static class HostCacheCleaner implements Runnable
     {
+        /**
+         * Main thread run function
+         */
         public void run()
         {
             clean(false);
         }
     }
 
+    /**
+     * Domain Cache Record
+     */
     private static class DomainCacheRecord
     {
         ConcurrentLinkedQueue<CacheRecord> nonExactMatches;
@@ -333,6 +394,9 @@ public class HostCache
 
         long cacheTTL;
 
+        /**
+         * Constructor
+         */
         DomainCacheRecord()
         {
             nonExactMatches = null;
@@ -341,6 +405,9 @@ public class HostCache
         }
     }
 
+    /**
+     * Cache Record
+     */
     private static class CacheRecord
     {
         private long creationTime;
@@ -348,6 +415,18 @@ public class HostCache
         private boolean exact;
         private String uri;
 
+        /**
+         * Constructor
+         * 
+         * @param domain
+         *        The domain
+         * @param categoryStr
+         *        The category
+         * @param exact
+         *        Exact flag
+         * @param uri
+         *        The URI
+         */
         CacheRecord(String domain, String categoryStr, boolean exact, String uri)
         {
             this.creationTime = System.currentTimeMillis();
@@ -357,26 +436,51 @@ public class HostCache
             this.uri = uri.toLowerCase();
         }
 
+        /**
+         * Get the creation time
+         * 
+         * @return The creation time
+         */
         public long getCreationTime()
         {
-                return this.creationTime;
+            return this.creationTime;
         }
 
+        /**
+         * Get the URI
+         * 
+         * @return The URI
+         */
         public String getUri()
         {
             return uri;
         }
 
+        /**
+         * Get the category
+         * 
+         * @return The category
+         */
         public String getCategoryString()
         {
             return categoryStr;
         }
 
+        /**
+         * Get the exact match flag
+         * 
+         * @return The exact match flag
+         */
         public boolean isExact()
         {
             return exact;
         }
 
+        /**
+         * Get the string representation of cache record
+         * 
+         * @return The string representation
+         */
         @Override
         public String toString()
         {

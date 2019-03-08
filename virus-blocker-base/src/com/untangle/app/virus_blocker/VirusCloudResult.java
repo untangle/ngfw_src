@@ -1,4 +1,4 @@
-/*
+/**
  * $Id: VirusCloudResult.java 37269 2014-02-26 23:46:16Z dmorris $
  */
 
@@ -8,6 +8,9 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * Stores results returned from the cloud scanner
+ */
 @SuppressWarnings("serial")
 public class VirusCloudResult implements Serializable, JSONString
 {

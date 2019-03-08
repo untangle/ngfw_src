@@ -1,12 +1,22 @@
 #! /bin/bash
 
-UPGRADE_LOGS="/var/log/uvm/apt.log /var/log/uvm/uvm.log /var/log/uvm/wrapper.log"
-CONSOLIDATED_UPGRADE_LOG="/usr/share/untangle/web/upgrade/upgrade.log"
+UPGRADE_LOGS="/var/log/uvm/upgrade.log /var/log/uvm/uvm.log"
+CONSOLIDATED_UPGRADE_LOG="@PREFIX@/usr/share/untangle/web/upgrade/upgrade.log"
+MESSAGE_FILE="@PREFIX@/usr/share/untangle/web/upgrade/message.js"
 
 # The PID file stores the pid of the tail process dumping to the log
 # It is also the indicator the untangle-vm checks to see if the upgrade screen is being displayed
 PIDFILE=/var/run/upgrade.pid
 
+if [ ! -z "$2" ] ; then
+    rm -f $MESSAGE_FILE
+    echo -n "document.write('" >> $MESSAGE_FILE
+    echo -n "$2" >> $MESSAGE_FILE
+    echo -n "');" >> $MESSAGE_FILE
+else
+    echo "document.write('Upgrade in progress. Do not reboot or power off the server!');" >> $MESSAGE_FILE
+fi
+    
 case "$1" in
   start)
     a2enmod -q rewrite
@@ -19,14 +29,14 @@ case "$1" in
     nohup tail -f --retry $UPGRADE_LOGS >> $CONSOLIDATED_UPGRADE_LOG 2>/dev/null &
     echo $! >| $PIDFILE
 
-    /etc/init.d/apache2 reload
+    systemctl reload apache2
     ;;
 
   stop)
     a2ensite -q uvm
     a2dissite -q upgrade
 
-    /etc/init.d/apache2 reload
+    systemctl reload apache2
     if [ -f $PIDFILE ] ; then
         kill $(cat $PIDFILE)
         rm -f $PIDFILE

@@ -17,19 +17,30 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.I18nUtil;
 
+/**
+ * Utility class for black pages
+ */
 public class BlockPageUtil
 {
     private static final BlockPageUtil INSTANCE = new BlockPageUtil();
     
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    private BlockPageUtil()
-    {
-    }
+    /**
+     * Can not be instantiated. Use getInstance to get the global singleton
+     */
+    private BlockPageUtil() {}
 
+    /**
+     * Handle the servlet request
+     * @param request - the request
+     * @param response - the HttpServletResponse
+     * @param servlet - the HttpServlet
+     * @param params - the BlockpageParameters
+     * @throws ServletException
+     */
     public void handle(HttpServletRequest request, HttpServletResponse response, HttpServlet servlet, BlockPageParameters params)
         throws ServletException
     {
@@ -73,7 +84,7 @@ public class BlockPageUtil
         request.setAttribute( "companyUrl", bm.getCompanyUrl());
         String mode = (params.getUnblockMode() == null ? "" : params.getUnblockMode()).trim().toLowerCase();
 
-        if ((!BlockPageParameters.UNBLOCK_MODE_NONE.equals(mode)) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
+        if ((!BlockPageParameters.UNBLOCK_MODE_NONE.equals(mode)) && ( null != bd ) && ( null != bd.getUnblockHost())) {
             request.setAttribute( "showUnblockNow", true );
             if (BlockPageParameters.UNBLOCK_MODE_GLOBAL.equals(mode)) {
                 request.setAttribute( "showUnblockGlobal", true );
@@ -88,33 +99,78 @@ public class BlockPageUtil
         }
     }
 
+    /**
+     * BlockPageParameters interface provides an interface to fetch all the parameters related to the block page
+     * for the jspx
+     */
     public interface BlockPageParameters
     {
-        /* Retrieve the page title (in the window bar) of the page */
+        /**
+         * Get the page title
+         * @param bm - Branding Manager reference
+         * @param i18n_map - the localization string map
+         * @return the page title
+         */
         public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map );
 
-        /* Retrieve the title (top of the pae) of the page */
+        /**
+         * Get the title
+         * @param bm - Branding Manager reference
+         * @param i18n_map - the localization string map
+         * @return the title
+         */
         public String getTitle( BrandingManager bm, Map<String,String> i18n_map );
 
+        /**
+         * Get the footer
+         * @param bm - Branding Manager reference
+         * @param i18n_map - the localization string map
+         * @return the page footer
+         */
         public String getFooter( BrandingManager bm, Map<String,String> i18n_map );
 
-        /* Return the name of the script file to load, or null if there is not a script. */
+        /**
+         * Get the name of the script file to load, or null if there is no script
+         * @return the string
+         */
         public String getScriptFile();
 
-        /* Return any additional fields that should go on the page. */
+        /**
+         * Return any additional fields that should go on the page.
+         * @param i18n_map - the localization string map
+         * @return the string
+         */
         public String getAdditionalFields( Map<String,String> i18n_map );
 
-        /* Retrieve the description of why this page was blocked. */
+        /** 
+         * Retrieve the description of why this page was blocked.
+         * @param bm - Branding Manager reference
+         * @param i18n_map - the localization string map
+         * @return the description
+         */
         public String getDescription( BrandingManager bm, Map<String,String> i18n_map );
 
+        /**
+         * Get the BlockDetails for this block page
+         * @return the BlockDetails
+         */
         public BlockDetails getBlockDetails();
 
         public static final String UNBLOCK_MODE_NONE   = "none";
         public static final String UNBLOCK_MODE_HOST   = "host";
         public static final String UNBLOCK_MODE_GLOBAL = "global";
+
+        /**
+         * Get the UnblockMode for this block page
+         * @return the unblock mode (none/host/global)
+         */
         public String getUnblockMode();
     }
 
+    /**
+     * Get the global BlockPageUtil singleton
+     * @return the BlockPageUtil
+     */
     public static BlockPageUtil getInstance()
     {
         return INSTANCE;

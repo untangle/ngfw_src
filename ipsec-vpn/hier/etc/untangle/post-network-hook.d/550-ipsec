@@ -1,0 +1,21 @@
+#!/bin/dash
+
+## Restart ipsec if already running
+restart_ipsec()
+{
+    local t_pid
+    t_pid=`cat /var/run/pluto/pluto.pid`
+    grep -q pluto /proc/${t_pid}/cmdline && {
+        echo "[`date`] Restarting ipsec"
+        systemctl stop xl2tpd
+        systemctl stop ipsec
+        systemctl start ipsec
+        systemctl start xl2tpd
+        /usr/share/untangle/bin/ipsec-create-statfile
+        break
+    }
+}
+
+restart_ipsec 2> /dev/null
+
+exit 0

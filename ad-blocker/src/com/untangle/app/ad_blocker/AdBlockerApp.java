@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.ad_blocker;
@@ -27,6 +27,9 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.BlockDetails;
 import com.untangle.app.http.HeaderToken;
 
+/**
+ * The Main Ad Blocker Application class
+ */
 public class AdBlockerApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -48,13 +51,17 @@ public class AdBlockerApp extends AppBase
     // maybe use cache? not for now
     public static final boolean USE_CACHE = false;
     public static final int MAX_CACHED_ENTRIES = 1000;
-    protected Map<String, GenericRule> cache = new ConcurrentHashMap<String, GenericRule>();
+    protected Map<String, GenericRule> cache = new ConcurrentHashMap<>();
 
     public static final String LIST_URL = "https://easylist-downloads.adblockplus.org/easylist.txt";
 
     private volatile Map<String, GenericRule> cookieDomainMap;
 
-    // constructor ------------------------------------------------------------
+    /**
+     * Instantiate an ad blocker app with the provided appSettings and appProperties
+     * @param appSettings the application settings
+     * @param appProperties the applicaiton properties
+     */
     public AdBlockerApp( AppSettings appSettings, AppProperties appProperties )
     {
         super(appSettings, appProperties);
@@ -69,6 +76,9 @@ public class AdBlockerApp extends AppBase
         this.connectors = new PipelineConnector[] { connector };
     }
 
+    /**
+     * Initialize new settings and save the new settings
+     */
     @Override
     public void initializeSettings()
     {
@@ -80,104 +90,202 @@ public class AdBlockerApp extends AppBase
         logger.info(settings._getBlockingRules().size() + " url blocking rules loaded");
         logger.info(settings._getPassingRules().size() + " url passing rules loaded");
 
-        this._setSettings(settings);
+        this.setSettings(settings);
     }
 
-    // AdBlockerApp methods --------------------------------------------------
-
+    /**
+     * Get the current settings
+     * @return the settings
+     */
     public AdBlockerSettings getSettings()
     {
         return this.settings;
     }
 
-    public void setSettings(AdBlockerSettings settings)
+    /**
+     * Set the settings
+     * @param newSettings The new settings
+     */
+    public void setSettings(AdBlockerSettings newSettings)
     {
-        this._setSettings(settings);
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String appID = this.getAppSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "ad-blocker/" + "settings_" + appID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.", e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {
+            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
+        } catch (Exception e) {
+        }
+
+        this.reconfigure();
     }
 
-    public List<GenericRule> getPassedClients()
-    {
-        return settings.getPassedClients();
-    }
-
-    public void setPassedClients(List<GenericRule> passedClients)
-    {
-        this.settings.setPassedClients(passedClients);
-
-        _setSettings(this.settings);
-    }
-
-    public List<GenericRule> getPassedUrls()
-    {
-        return settings.getPassedUrls();
-    }
-
-    public void setPassedUrls(List<GenericRule> passedUrls)
-    {
-        this.settings.setPassedUrls(passedUrls);
-
-        _setSettings(this.settings);
-    }
-
-    public List<GenericRule> getCookies()
-    {
-        return settings.getCookies();
-    }
-
-    public void setCookies(List<GenericRule> newCookies)
-    {
-        this.settings.setCookies(newCookies);
-        _setSettings(this.settings);
-    }
-
+    /**
+     * Get the current blocking URL matcher for the current settings
+     * @return the current blocking UrlMatcher
+     */
     public UrlMatcher getBlockingUrlMatcher()
     {
         return blockingUrlMatcher;
     }
 
+    /**
+     * Set the current passing URL matcher for the current settings
+     * @return the current passing UrlMatcher
+     */
     public UrlMatcher getPassingUrlMatcher()
     {
         return passingUrlMatcher;
     }
 
+    /**
+     * This downloads a new list from the cloud and loads it into the rules and saves the new settings
+     * This is called from the administration interface
+     */
+    public void updateList()
+    {
+        int exitCode = 0;
+        File rulesFile = new File(RulesLoader.RULE_FILE);
+        File tmpFile = new File(RulesLoader.RULE_FILE_BACKUP);
+        try {
+            renameListFile(rulesFile, tmpFile);
+            exitCode = UvmContextFactory.context().execManager().execResult("wget --no-check-certificate " + LIST_URL + " -O " + RulesLoader.RULE_FILE);
+        } catch (Exception e) {
+            renameListFile(tmpFile, rulesFile);
+            throw new RuntimeException(e);
+        }
+        if (exitCode != 0) {
+            renameListFile(tmpFile, rulesFile);
+            throw new RuntimeException("Could not update the rules list! (Exit code: " + exitCode + ")");
+        }
+        logger.info("Reloading Filters...");
+        RulesLoader.loadRules(settings);
+        logger.info(settings._getBlockingRules().size() + " url blocking rules loaded");
+        logger.info(settings._getPassingRules().size() + " url passing rules loaded");
+
+        this.setSettings(settings);
+    }
+
+    /**
+     * Get the current cache
+     * @return the cache
+     */
     public Map<String, GenericRule> getCache()
     {
         return cache;
     }
 
-    // package protected methods ----------------------------------------------
+    /**
+     * Get the last update time as a string
+     * @return the last update time
+     */
+    public String getListLastUpdate()
+    {
+        return settings.getLastUpdate();
+    }
 
-    String generateNonce(BlockDetails details)
+    /**
+     * Generate a nonce for the block page
+     * @param details The BlockDetails
+     * @return the nonce string
+     */
+    protected String generateNonce(BlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
     }
 
-    Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
+    /**
+     * Generate a response for a block
+     * @param nonce The nonce
+     * @param session The session
+     * @param uri The URI being blocked
+     * @param header The HeaderToken of the request being blocked
+     * @return the token response array
+     */
+    protected Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
     {
         return replacementGenerator.generateSimpleResponse(nonce, session, uri, header);
     }
 
-    void incrementScanCount()
+    /**
+     * Increment the scan count metric
+     */
+    protected void incrementScanCount()
     {
         this.incrementMetric(STAT_SCAN);
     }
 
-    void incrementBlockCount()
+    /**
+     * Increment the block count metric
+     */
+    protected void incrementBlockCount()
     {
         this.incrementMetric(STAT_BLOCK);
     }
 
-    void incrementPassCount()
+    /**
+     * Increment the pass count metric
+     */
+    protected void incrementPassCount()
     {
         this.incrementMetric(STAT_PASS);
     }
 
+    /**
+     * Get the pipeline connectors for this ad blocker
+     * @return the pipelineconnectors array
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
+    /**
+     * Checks if a cookie for the specified domain is blocked according to settings
+     * @param domain The domain to lookup
+     * @return true if blocked, false otherwise
+     */
+    protected boolean isCookieBlocked(String domain)
+    {
+        if (null == domain) {
+            logger.warn("null domain for cookie");
+            return false;
+        }
+
+        domain = domain.startsWith(".") && 1 < domain.length() ? domain.substring(1) : domain;
+
+        if (null == cookieDomainMap || !settings.getScanCookies()) {
+            return false;
+        }
+
+        for ( String d = domain ; d != null ; d = UrlMatchingUtil.nextHost(d) ) {
+            GenericRule sr = cookieDomainMap.get(d);
+            if (sr != null) {
+                /* if rule is in cookieDomainMap it is enabled and blocked */
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * The postInit() hook
+     * This loads the settings from file or initializes them if necessary
+     */
     @Override
     protected void postInit()
     {
@@ -211,6 +319,10 @@ public class AdBlockerApp extends AppBase
         this.reconfigure();
     }
 
+    /**
+     * This initalizes all the in-memory data structures for the current settings.
+     * It should be called after changing and/or saving settings.
+     */
     private void reconfigure()
     {
         if (settings == null) {
@@ -221,7 +333,7 @@ public class AdBlockerApp extends AppBase
         List<GenericRule> cookieList = settings.getCookies();
         List<GenericRule> userCookieList = settings.getUserCookies();
         if (cookieList != null || userCookieList != null) {
-            Map<String, GenericRule> newCookieMap = new ConcurrentHashMap<String, GenericRule>();
+            Map<String, GenericRule> newCookieMap = new ConcurrentHashMap<>();
             for (GenericRule sr : cookieList) {
                 if ( sr.getEnabled() != null && sr.getEnabled() )
                     newCookieMap.put(sr.getString(), sr);
@@ -257,91 +369,17 @@ public class AdBlockerApp extends AppBase
         }
     }
 
-    private void _setSettings(AdBlockerSettings newSettings)
+    /**
+     * Utility to rename a src file to dest
+     * This will delete the existing destination if it exists
+     * @param src The source file
+     * @param dst The destination file
+     */
+    private void renameListFile(File src, File dst)
     {
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = this.getAppSettings().getId().toString();
-        try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "ad-blocker/" + "settings_" + appID + ".js", newSettings );
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.", e);
-            return;
+        if (dst.exists()){
+            dst.delete();
         }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {
-            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
-        } catch (Exception e) {
-        }
-
-        this.reconfigure();
-    }
-
-    boolean isCookieBlocked(String domain)
-    {
-        if (null == domain) {
-            logger.warn("null domain for cookie");
-            return false;
-        }
-
-        domain = domain.startsWith(".") && 1 < domain.length() ? domain.substring(1) : domain;
-
-        if (null == cookieDomainMap || !settings.getScanCookies()) {
-            return false;
-        }
-
-        for ( String d = domain ; d != null ; d = UrlMatchingUtil.nextHost(d) ) {
-            GenericRule sr = cookieDomainMap.get(d);
-            if (sr != null) {
-                /* if rule is in cookieDomainMap it is enabled and blocked */
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void updateList()
-    {
-        int exitCode = 0;
-        File rulesFile = new File(RulesLoader.RULE_FILE);
-        File tmpFile = new File(RulesLoader.RULE_FILE_BACKUP);
-        try {
-            renameListFile(rulesFile, tmpFile);
-            exitCode = UvmContextFactory.context().execManager().execResult("wget --no-check-certificate " + LIST_URL + " -O " + RulesLoader.RULE_FILE);
-        } catch (Exception e) {
-            renameListFile(tmpFile, rulesFile);
-            throw new RuntimeException(e);
-        }
-        if (exitCode != 0) {
-            renameListFile(tmpFile, rulesFile);
-            throw new RuntimeException("Could not update the rules list! (Exit code: " + exitCode + ")");
-        }
-        logger.info("Reloading Filters...");
-        RulesLoader.loadRules(settings);
-        logger.info(settings._getBlockingRules().size() + " url blocking rules loaded");
-        logger.info(settings._getPassingRules().size() + " url passing rules loaded");
-
-        this._setSettings(settings);
-
-    }
-
-    private void renameListFile(File src, File dest)
-    {
-        if (dest.exists()){
-            dest.delete();
-        }
-        src.renameTo(dest);
-    }
-    
-    public String getListLastUpdate()
-    {
-        return settings.getLastUpdate();
+        src.renameTo(dst);
     }
 }

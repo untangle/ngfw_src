@@ -8,6 +8,12 @@ import java.util.LinkedList;
 import org.json.JSONString;
 import org.json.JSONObject;
 
+/**
+ * This class represents all of the settings for the IPsec application.
+ * 
+ * @author mahotz
+ * 
+ */
 @SuppressWarnings("serial")
 public class IpsecVpnSettings implements java.io.Serializable, JSONString
 {
@@ -21,15 +27,20 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private boolean bypassflag = false;
     private boolean debugflag = false;
     private boolean vpnflag = false;
+    private boolean neverWriteConfig = false;
+    private boolean allowConcurrentLogins = true;
     private LinkedList<VirtualListen> virtualListenList = new LinkedList<VirtualListen>();
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
-    private String virtualNetworkPool = "198.51.100.0/24";   // used for GRE
-    private String virtualAddressPool = "198.18.0.0/16";    // used for L2TP
-    private String virtualXauthPool = "198.19.0.0/16";      // used for XAUTH
+    private String virtualNetworkPool = "198.51.100.0/24"; // used for GRE
+    private String virtualAddressPool = "198.18.0.0/16"; // used for L2TP
+    private String virtualXauthPool = "198.19.0.0/16"; // used for XAUTH
     private String virtualSecret = "Please_Change_Me";
     private String virtualDnsOne = "";
     private String virtualDnsTwo = "";
     private String charonDebug = "";
+    private String uniqueIds = "yes";
+    private String phase1DefaultLifetime = "8h";
+    private String phase2DefaultLifetime = "1h";
 
     public IpsecVpnSettings()
     {
@@ -45,6 +56,12 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
 
     public boolean getVpnflag() { return (vpnflag); }
     public void setVpnflag(boolean vpnflag) { this.vpnflag = vpnflag; }
+
+    public boolean getNeverWriteConfig() { return(neverWriteConfig); }
+    public void setNeverWriteConfig(boolean neverWriteConfig) { this.neverWriteConfig = neverWriteConfig; }
+
+    public boolean getAllowConcurrentLogins() { return(allowConcurrentLogins); }
+    public void setAllowConcurrentLogins(boolean allowConcurrentLogins) { this.allowConcurrentLogins = allowConcurrentLogins; }
 
     public LinkedList<IpsecVpnTunnel> getTunnels() { return (tunnelList); }
     public void setTunnels(LinkedList<IpsecVpnTunnel> tunnelList) { this.tunnelList = tunnelList; }
@@ -78,6 +95,15 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
 
     public String getCharonDebug() { return (charonDebug); }
     public void setCharonDebug(String charonDebug) { this.charonDebug = charonDebug; }
+
+    public String getUniqueIds() { return(uniqueIds); }
+    public void setUniqueIds(String uniqueIds) { this.uniqueIds = uniqueIds; }
+
+    public String getPhase1DefaultLifetime() { return(phase1DefaultLifetime); }
+    public void setPhase1DefaultLifetime(String argString) { this.phase1DefaultLifetime = argString; }
+
+    public String getPhase2DefaultLifetime() { return(phase2DefaultLifetime); }
+    public void setPhase2DefaultLifetime(String argString) { this.phase2DefaultLifetime = argString; }
 
 // THIS IS FOR ECLIPSE - @formatter:on
 

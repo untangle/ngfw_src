@@ -19,6 +19,11 @@
     <url-pattern>/index.do</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>SetupServlet</servlet-name>
+    <url-pattern>/setup.do</url-pattern>
+  </servlet-mapping>
+
   <servlet>
     <servlet-name>LanguageServlet</servlet-name>
     <servlet-class>com.untangle.uvm.setup.servlet.Language</servlet-class>

@@ -1,15 +1,18 @@
 /**
  * $Id: GreyListKey.java,v 1.00 2014/12/06 16:20:33 dmorris Exp $
  */
+
 package com.untangle.app.spam_blocker;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import org.json.JSONString;
 
+/**
+ * Grey List Key Implementation
+ */
 @SuppressWarnings("serial")
-public class GreyListKey implements Serializable
+public class GreyListKey implements Serializable, JSONString
 {
     public InetAddress client;
     public String envelopeFrom;
@@ -56,5 +59,11 @@ public class GreyListKey implements Serializable
             return false;
         }
         return true;
+    }
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }

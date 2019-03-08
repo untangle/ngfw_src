@@ -20,17 +20,31 @@ fi
 
 echo $$ >$pidfile
 
-# Wait for apt-get to complete
+# Wait for upgrade to complete
 while true; do
-    if ps -C apt-get,aptitude,synaptic >/dev/null 2>&1; then
-        echo "`date -Iseconds` $0: waiting for apt-get to complete..."
+    if ps -C apt-get,dpkg,aptitude,synaptic >/dev/null 2>&1; then
+        echo "`date -Iseconds` $0: waiting for upgrade to complete..."
         sleep 1
-    else
-        /bin/rm -f $pidfile
-        echo "`date -Iseconds` $0: starting untangle-vm"
-        /etc/init.d/untangle-vm start
-        exit
+        continue
     fi
+
+    # Occasionally ps -C seems to return incorrect results - check again
+    echo "`date -Iseconds` $0: upgrade appears complete - double checking..."
+    sleep 1
+    if ps -C apt-get,dpkg,aptitude,synaptic >/dev/null 2>&1; then
+        echo "`date -Iseconds` $0: waiting for upgrade to complete..."
+        sleep 1
+        continue
+    fi
+
+    echo "`date -Iseconds` $0: upgrade appears complete"
+    /bin/rm -f $pidfile
+    echo "`date -Iseconds` $0: starting untangle-vm"
+    systemctl restart untangle-vm
+    if [ -f /var/run/pyconnector.pid ] ; then
+        systemctl restart pyconnector
+    fi
+    exit
 done
 
 exit

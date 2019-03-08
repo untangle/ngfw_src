@@ -1,9 +1,8 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.util;
 
-import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -15,6 +14,11 @@ public class GlobUtil
 {
     private static final Logger logger = Logger.getLogger(GlobUtil.class);
 
+    /**
+     * Return regular expression from glob.
+     * @param  glob String of glob.
+     * @return      String converted to regular expression.
+     */
     public static String globToRegex(String glob)
     {
         if (glob == null)
@@ -36,6 +40,11 @@ public class GlobUtil
         return re;
     }
 
+    /**
+     * Return regular expression from URL glob.
+     * @param  glob String of URL glob.
+     * @return      String converted to regular expression.
+     */
     public static String urlGlobToRegex(String glob)
     {
         if (glob == null)

@@ -1,2 +1,2 @@
-INCLUDE /etc/radiusclient/dictionary
+INCLUDE /etc/radiusclient/dictionary.standard
 INCLUDE /etc/radiusclient/dictionary.microsoft

@@ -67,11 +67,11 @@ public class ReportEntry implements Serializable, JSONString
         COLUMN,
         COLUMN_3D
     };
-    
+
     private String uniqueId = null;
     private boolean enabled = true; /* If the report entry is "enabled" (shown) */
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
-    
+
     private ReportEntryType type;
 
     private String title; /* title of the entry/graph */
@@ -79,21 +79,21 @@ public class ReportEntry implements Serializable, JSONString
     private String description; /* A text description */
     private int displayOrder = 9999; /* The order to display this report entry (relative to others) */
     private String seriesRenderer; /* The renderer that can be used to display the column/series name */
-    
+
     private String units;
     private String[] colors; /* The colors of the columns/lines/pie slices */
-    
+
     private String table; /* table to query data from */
     private SqlCondition[] conditions;
-    
+
     private String pieGroupColumn; /* the column to group by in top X charts (usually user, host, etc) */
     private String pieSumColumn; /* the column to sum in the top X charts */
     private Integer pieNumSlices; /* the default number of pie slices shown (the excess will be groupde into "others") */
     private PieStyle pieStyle;
-    
+
     private String textString; /* The string representation of the text */
     private String[] textColumns; /* The data to graph by time */
-    
+
     private TimeDataInterval timeDataInterval; /* The time interval to be used in time-based graphs */
     private TimeStyle timeStyle; /* The time chart type (line/bar/etc) */
     private String[] timeDataColumns; /* The column/data to graph by time */
@@ -103,7 +103,7 @@ public class ReportEntry implements Serializable, JSONString
     private Integer timeDataDynamicLimit;  /* The columns to create the dynamic column based on (the distinct values) */
     private String timeDataDynamicAggregationFunction; /* The way to aggregate multiple values per date_trun (max, avg, etc) */
     private Boolean timeDataDynamicAllowNull;  /* Allow Null/None as one of the distinct valuestimeD */
-    
+
     private String orderByColumn = null; /* The column to order by */
     private Boolean orderDesc = null; /* The direction to order, True is DESC, False is regular, null is neither */
 
@@ -111,7 +111,7 @@ public class ReportEntry implements Serializable, JSONString
 
     /* http://api.highcharts.com/highstock/plotOptions.area.dataGrouping */
     private String approximation; /* The data-approximation technique: average, open, high, low, close, sum */
-    
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
@@ -144,7 +144,7 @@ public class ReportEntry implements Serializable, JSONString
 
     public Boolean getReadOnly() { return this.readOnly; }
     public void setReadOnly( Boolean newValue ) { this.readOnly = newValue; }
-    
+
     public String getCategory() { return this.category; }
     public void setCategory( String newValue ) { this.category = newValue; }
 
@@ -159,16 +159,16 @@ public class ReportEntry implements Serializable, JSONString
 
     public String getSeriesRenderer() { return this.seriesRenderer; }
     public void setSeriesRenderer( String newValue ) { this.seriesRenderer = newValue; }
-    
+
     public String getUnits() { return this.units; }
     public void setUnits( String newValue ) { this.units = newValue; }
-    
+
     public String getTable() { return this.table; }
     public void setTable( String newValue ) { this.table = newValue; }
 
     public SqlCondition[] getConditions() { return this.conditions; }
     public void setConditions( SqlCondition[] newValue ) { this.conditions = newValue; }
-    
+
     public String getPieGroupColumn() { return this.pieGroupColumn; }
     public void setPieGroupColumn( String newValue ) { this.pieGroupColumn = newValue; }
 
@@ -180,13 +180,13 @@ public class ReportEntry implements Serializable, JSONString
 
     public PieStyle getPieStyle() { return this.pieStyle; }
     public void setPieStyle( PieStyle newValue ) { this.pieStyle = newValue; }
-    
+
     public String getTextString() { return this.textString; }
     public void setTextString( String newValue ) { this.textString = newValue; }
 
     public String[] getTextColumns() { return this.textColumns; }
     public void setTextColumns( String[] newValue ) { this.textColumns = newValue; }
-    
+
     public String getOrderByColumn() { return this.orderByColumn; }
     public void setOrderByColumn( String newValue ) { this.orderByColumn = newValue; }
 
@@ -209,7 +209,7 @@ public class ReportEntry implements Serializable, JSONString
         return this.timeStyle;
     }
     public void setTimeStyle( TimeStyle newValue ) { this.timeStyle = newValue; }
-    
+
     public String[] getTimeDataColumns() { return this.timeDataColumns; }
     public void setTimeDataColumns( String[] newValue ) { this.timeDataColumns = newValue; }
 
@@ -224,19 +224,19 @@ public class ReportEntry implements Serializable, JSONString
 
     public Boolean getTimeDataDynamicAllowNull() { return this.timeDataDynamicAllowNull; }
     public void setTimeDataDynamicAllowNull( Boolean newValue ) { this.timeDataDynamicAllowNull = newValue; }
-    
+
     public String getTimeDataDynamicAggregationFunction() { return this.timeDataDynamicAggregationFunction; }
     public void setTimeDataDynamicAggregationFunction( String newValue ) { this.timeDataDynamicAggregationFunction = newValue; }
-    
+
     public String[] getColors() { return this.colors; }
     public void setColors( String[] newValue ) { this.colors = newValue; }
-    
+
     public String[] getDefaultColumns() { return this.defaultColumns; }
     public void setDefaultColumns( String[] newValue ) { this.defaultColumns = newValue; }
 
     public String getApproximation() { return this.approximation; }
     public void setApproximation( String newValue ) { this.approximation = newValue; }
-    
+
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {
         return toSql( conn, startDate, endDate, null, null );
@@ -263,7 +263,7 @@ public class ReportEntry implements Serializable, JSONString
             allConditions.addAll( Arrays.asList(getConditions()) );
         if ( extraConditions != null )
             allConditions.addAll( Arrays.asList(extraConditions) );
-        
+
         switch ( this.type ) {
 
         case PIE_GRAPH:
@@ -274,7 +274,7 @@ public class ReportEntry implements Serializable, JSONString
 
         case TIME_GRAPH_DYNAMIC:
             return toSqlTimeGraphDynamic( conn, startDate, endDate, allConditions );
-            
+
         case TEXT:
             return toSqlText( conn, startDate, endDate, allConditions );
 
@@ -284,7 +284,7 @@ public class ReportEntry implements Serializable, JSONString
 
         throw new RuntimeException("Unknown Graph type: " + this.type);
     }
-    
+
     private TimeDataInterval calculateTimeDataInterval( Date startDate, Date endDate )
     {
         if ( this.timeDataInterval != TimeDataInterval.AUTO )
@@ -294,7 +294,7 @@ public class ReportEntry implements Serializable, JSONString
         // as such we can return as granular of data as possible and the UI
         // will handle combining the data into a manageable chunks
         return TimeDataInterval.MINUTE;
-        
+
         // /* otherwise its auto, calculate a good interval based on the data */
         // long timeDiffSec = ((endDate.getTime() - startDate.getTime())/1000);
 
@@ -308,14 +308,14 @@ public class ReportEntry implements Serializable, JSONString
 
     private PreparedStatement toSqlEventList( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions, Integer limit )
     {
-        String query = ""; 
+        String query = "";
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         query +=  "SELECT * FROM " + LogEvent.schemaPrefix() + this.table + " WHERE " + dateCondition;
         query += conditionsToString( allConditions );
         query += " ORDER BY time_stamp DESC";
         if ( limit != null && limit > 0 )
         query += " LIMIT " + limit;
-        
+
         return sqlToStatement( conn, query, allConditions );
     }
 
@@ -330,7 +330,7 @@ public class ReportEntry implements Serializable, JSONString
 
         pieQuery += conditionsToString( allConditions );
 
-        pieQuery += " GROUP BY " + getPieGroupColumn() + 
+        pieQuery += " GROUP BY " + getPieGroupColumn() +
             ( getOrderByColumn() == null ? "" : " ORDER BY " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
         return sqlToStatement( conn, pieQuery, allConditions );
     }
@@ -352,7 +352,7 @@ public class ReportEntry implements Serializable, JSONString
         textQuery += " FROM " +
             LogEvent.schemaPrefix() + getTable() +
             " WHERE " + dateCondition;
-            
+
         textQuery += conditionsToString( allConditions );
 
         return sqlToStatement( conn, textQuery, allConditions );
@@ -375,7 +375,7 @@ public class ReportEntry implements Serializable, JSONString
             " WHERE " + dateCondition;
 
         timeQuery += conditionsToString( allConditions );
-                
+
         timeQuery += " GROUP BY time_trunc ";
 
         String finalQuery = "SELECT * FROM " +
@@ -396,7 +396,7 @@ public class ReportEntry implements Serializable, JSONString
         if ( endDate.getTime() > System.currentTimeMillis() ) {
             /**
              * when endDate = null, we assume now+1minute.
-             * if the endDate is effectively "now" or later, then chop off the last minute from the generateSeriesQuery 
+             * if the endDate is effectively "now" or later, then chop off the last minute from the generateSeriesQuery
              * we do this because otherwise it adds an extra minute onto the range. usually you want that, but in this case it ends up adding a datapoint to the series
              * which when joined with the actual data just results in a null point at the end which looks poor in the graph
              */
@@ -411,12 +411,12 @@ public class ReportEntry implements Serializable, JSONString
         String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
             " FROM " + LogEvent.schemaPrefix() + getTable() +
             " WHERE " + dateCondition +
-            conditionsToString( allConditions ) + 
+            conditionsToString( allConditions ) +
             ( getTimeDataDynamicAllowNull() == null || getTimeDataDynamicAllowNull() == Boolean.FALSE ? (" AND " + getTimeDataDynamicColumn() + " IS NOT NULL") : "" ) +
-            " GROUP BY " + getTimeDataDynamicColumn() + 
-            " ORDER BY 2 DESC " + 
+            " GROUP BY " + getTimeDataDynamicColumn() +
+            " ORDER BY 2 DESC " +
             ( getTimeDataDynamicLimit() != null ? " LIMIT " + getTimeDataDynamicLimit() : "" );
-        
+
         /**
          * Fetch the distinct values (with conditions and all)
          */
@@ -428,26 +428,30 @@ public class ReportEntry implements Serializable, JSONString
          * If there are no distinct values, nothing to show
          * Just return
          */
-        if ( distinctValues.length == 0 ) {
-            return sqlToStatement( conn, "select null", null);
-        }
-        
+        // we actually just want to return a normal query with the normal timerange in this case
+        // it just won't have any data series because there are no "top" data series to show
+        // NGFW-11438
+        // if ( distinctValues.length == 0 ) {
+        //     return sqlToStatement( conn, "select null", null);
+        //     return sqlToStatement( conn, "select 1 where 1 = 2", null);
+        // }
+
         String timeQuery;
         timeQuery = "SELECT " +
             " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
 
         for ( String distinctValue : distinctValues ) {
             if ( distinctValue == null ) {
-                timeQuery += ", COALESCE(" +
-                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " IS NULL THEN " + getTimeDataDynamicValue() + " END), null) " + 
+                timeQuery += ", " +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " IS NULL THEN " + getTimeDataDynamicValue() + " END) " +
                     "AS \"None\"";
             } else if ( distinctValue.trim().equals("") ) {
-                timeQuery += ", COALESCE(" +
-                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END), null) " + 
+                timeQuery += ", " +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END) " +
                     "AS \" \"";
             } else {
-                timeQuery += ", COALESCE(" +
-                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END), null) " + 
+                timeQuery += ", " +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END) " +
                     "AS \"" + distinctValue.replaceAll("\"","") + "\"";
             }
         }
@@ -468,9 +472,18 @@ public class ReportEntry implements Serializable, JSONString
             " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
         return sqlToStatement( conn, finalQuery, allConditions );
     }
-    
+
     /**
      * takes a sql string and substitutes the condition arguments into and returns a prepared statement
+     *
+     * @param conn
+     *  Database connection.
+     * @param sql
+     *  String of SQL to add.
+     * @param conditions
+     *  List of SqlConditions ot process.
+     * @return
+     *  PreparedStatement with updated SQL.
      */
     private PreparedStatement sqlToStatement( Connection conn, String sql, LinkedList<SqlCondition> conditions )
     {
@@ -539,7 +552,7 @@ public class ReportEntry implements Serializable, JSONString
                 itr.remove();
                 continue;
             }
-            
+
             str += " and " + condition.toSqlString();
         }
 
@@ -549,27 +562,37 @@ public class ReportEntry implements Serializable, JSONString
     private String[] getDistinctValues( Connection conn, String table, String querySql, List<SqlCondition> conditions )
     {
         EventReaderImpl.checkConnection( conn );
-            
+
+        String[] results = null;
+
+        java.sql.ResultSet resultSet = null;
         try {
             java.sql.PreparedStatement statement = conn.prepareStatement( querySql );
             SqlCondition.setPreparedStatementValues( statement, conditions, table );
 
             logger.info("Getting distinct values: " + statement);
-            java.sql.ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
 
             LinkedList<String> values = new LinkedList<String>();
             while (resultSet.next()) {
                 values.add( resultSet.getString(1) );
             }
 
-            String[] array = new String[values.size()];
-            array = values.toArray(array);
-        
-            return array;
+            results = new String[values.size()];
+            results = values.toArray(results);
         } catch (Exception e) {
             logger.warn("Exception:",e);
-            return null;
+        } finally {
+            if (resultSet != null){
+                try{
+                    resultSet.close();
+                }catch( Exception e ){
+                    logger.warn("Exception:",e);
+                }
+            }
         }
+
+        return results;
     }
 
     private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -593,7 +616,7 @@ public class ReportEntry implements Serializable, JSONString
             }
 
             // FIXME only covers maximum 90000 datapoints currently (86400 is enough for a day)
-            String generateSeriesQuery = "SELECT DISTINCT(((" + dateFormat(startDate) + "/" +divisor+")+e+d*10+c*100+b*1000+a*10000)*" + divisor + ") AS time_trunc FROM" + 
+            String generateSeriesQuery = "SELECT DISTINCT(((" + dateFormat(startDate) + "/" +divisor+")+e+d*10+c*100+b*1000+a*10000)*" + divisor + ") AS time_trunc FROM" +
                 "(select 0 as a union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8), " +
                 "(select 0 as b union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9), " +
                 "(select 0 as c union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9), " +
@@ -603,7 +626,7 @@ public class ReportEntry implements Serializable, JSONString
             return generateSeriesQuery;
         } else {
             String generateSeriesQuery = " SELECT generate_series( " +
-                " date_trunc( '" + dataInterval + "', " + dateFormat(startDate) + "::timestamp), " + 
+                " date_trunc( '" + dataInterval + "', " + dateFormat(startDate) + "::timestamp), " +
                 " " + dateFormat(endDate)   + "::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
             return generateSeriesQuery;

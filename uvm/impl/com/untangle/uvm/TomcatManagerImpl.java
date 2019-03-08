@@ -3,24 +3,19 @@
  */
 package com.untangle.uvm;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.JarURLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Map;
 
 import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -46,13 +41,10 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.ValveBase;
 import org.apache.log4j.Logger;
 
-import org.apache.tomcat.JarScanner;
-import org.apache.tomcat.JarScannerCallback;
-import org.apache.tomcat.util.scan.StandardJarScanner; 
-
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.app.IPMatcher;
 
 /**
  * Wrapper around the Tomcat server embedded within the UVM.
@@ -66,7 +58,7 @@ public class TomcatManagerImpl implements TomcatManager
     private static final String WELCOME_URI = "/setup/welcome.do";
     private static final String WELCOME_FILE = System.getProperty("uvm.conf.dir") + "/apache2/conf.d/homepage.conf";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final Logger logger = Logger.getLogger(TomcatManagerImpl.class);
 
     private final Tomcat tomcat;
     private final StandardHost baseHost;
@@ -74,6 +66,14 @@ public class TomcatManagerImpl implements TomcatManager
     
     private static final String[] tldScanTargets = {"untangle-libuvm-taglib.jar","standard.jar","smtp-servlet-quarantine.jar"};
 
+    /**
+     * constructor
+     * @param uvmContext
+     * @param threadRequest
+     * @param catalinaHome
+     * @param webAppRoot
+     * @param logDir
+     */
     protected TomcatManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
     {
         this.webAppRoot = webAppRoot;
@@ -110,9 +110,6 @@ public class TomcatManagerImpl implements TomcatManager
 
         ServletContext ctx;
         
-        ctx = loadServlet("/webui", "webui", true );
-        ctx.setAttribute("threadRequest", threadRequest);
-
         ctx = loadServlet("/admin", "admin", true );
         ctx.setAttribute("threadRequest", threadRequest);
 
@@ -122,16 +119,34 @@ public class TomcatManagerImpl implements TomcatManager
         ctx = loadServlet("/blockpage", "blockpage");
     }
 
+    /**
+     * loadServlet loads a servlet
+     * @param urlBase 
+     * @param rootDir
+     * @return ServletContext
+     */
     public ServletContext loadServlet(String urlBase, String rootDir)
     {
         return loadServlet(urlBase, rootDir, null, null);
     }
 
+    /**
+     * loadServlet loads a servlet
+     * @param urlBase
+     * @param rootDir
+     * @param requireAdminPrivs - true if servlet is an admin-privilege servlet
+     * @return ServletContext
+     */
     public ServletContext loadServlet(String urlBase, String rootDir, boolean requireAdminPrivs)
     {
         return loadServlet(urlBase, rootDir, null, null, new AdministrationValve());
     }
 
+    /**
+     * unloadServlet unloads a servlet
+     * @param contextRoot 
+     * @return true if success, false otherwise
+     */
     public boolean unloadServlet(String contextRoot)
     {
         try {
@@ -177,6 +192,9 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
+    /**
+     * writeWelcomeFile writes an apache rewrite conf file to redirect / to the welcome URL
+     */
     protected void writeWelcomeFile()
     {
         FileWriter w = null;
@@ -205,13 +223,20 @@ public class TomcatManagerImpl implements TomcatManager
 
     }
 
+    /**
+     * apacheReload reloads apache
+     */
     protected void apacheReload()
     {
         writeIncludes();
+        writeModPythonConf();
 
-        UvmContextFactory.context().execManager().exec("/usr/sbin/service apache2 reload");
+        UvmContextFactory.context().execManager().exec("systemctl reload apache2");
     }
     
+    /**
+     * startTomcat starts tomcat server
+     */
     protected void startTomcat()
     {
         logger.info("Tomcat starting...");
@@ -247,11 +272,28 @@ public class TomcatManagerImpl implements TomcatManager
         logger.info("Tomcat started");
     }
 
+    /**
+     * loadServlet loads a servlet
+     * @param urlBase
+     * @param rootDir
+     * @param realm
+     * @param auth
+     * @return ServletContext
+     */
     private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth)
     {
         return loadServlet(urlBase, rootDir, realm, auth, null);
     }
 
+    /**
+     * loadServlet loads a servlet
+     * @param urlBase 
+     * @param rootDir
+     * @param realm
+     * @param auth
+     * @param valve
+     * @return ServletContext
+     */
     private ServletContext loadServlet(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, Valve valve)
     {
         return loadServletImpl(urlBase, rootDir, realm, auth, valve);
@@ -265,6 +307,7 @@ public class TomcatManagerImpl implements TomcatManager
      * @param rootDir a <code>String</code> value
      * @param realm a <code>Realm</code> value
      * @param auth an <code>AuthenticatorBase</code> value
+     * @param valve 
      * @return a <code>boolean</code> value
      */
     private synchronized ServletContext loadServletImpl(String urlBase, String rootDir, Realm realm, AuthenticatorBase auth, Valve valve)
@@ -279,6 +322,8 @@ public class TomcatManagerImpl implements TomcatManager
 
             ctx.setCrossContext(true);
             ctx.setSessionTimeout(30); // 30 minutes
+            ctx.setSessionCookieName("session-"+getCookieSuffix());
+            ctx.setSessionCookiePath("/");
             if ( realm != null ) {
                 ctx.setRealm(realm);
             }
@@ -300,6 +345,13 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
+    /**
+     * writeIncludes writes the apache includes conf files
+     * Default is /etc/apache2/uvm.conf
+     * If this is devel its /etc/apache2/uvm-dev.conf
+     * That file will tell it to load all the
+     * PREFIX/usr/share/untangle/apache2/conf.d/*.conf
+     */
     private void writeIncludes()
     {
         String confDir = System.getProperty("uvm.conf.dir");
@@ -327,6 +379,33 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
+    /**
+     * writeModPythonConf writes the mod_python apache2 conf file
+     */
+    private void writeModPythonConf()
+    {
+        try {
+            Path path = Paths.get("/etc/apache2/mods-available/python.load");
+            Charset charset = StandardCharsets.UTF_8;
+
+            /**
+             * Change the standard cookie name to something unique per server
+             */
+            String content = new String(Files.readAllBytes(path), charset);
+            String newContent = content.replaceAll("authsession", "auth-"+getCookieSuffix());
+            if (content.hashCode() != newContent.hashCode()) {
+                logger.info("Writing new /etc/apache2/mods-available/python.load");
+                Files.write(path, newContent.getBytes(charset));
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to set python cookie name",e);
+        }
+    }
+
+    /**
+     * getSecret gets the AJP secret from /etc/apache2/workers.properties
+     * @return the secret
+     */
     private String getSecret()
     {
         Properties p = new Properties();
@@ -350,12 +429,64 @@ public class TomcatManagerImpl implements TomcatManager
         return p.getProperty("worker.uvmWorker.secret");
     }
 
+    /**
+     * In an effort to keep cookie names unique we speficy our own cookie name
+     * Tomcat uses "JSESSIONID" by default to store the session state.
+     *
+     * Since cookies are stored per domain name, if you proxy several Untangle
+     * admin connections through a centrail domain, they conflict because they
+     * all use the "JSESSIONID" state to store session.
+     *
+     * This takes a unique identifier (the UID) and md5s it and takes the first
+     * 8 characters of that md5 and returns "session-"+md5
+     * So the cookie for this machine will be stored in "session-3e9f381d", for
+     * example.
+     * @return String
+     */
+    private static String getCookieSuffix()
+    {
+        java.security.MessageDigest md;
+        try {
+            md = java.security.MessageDigest.getInstance("MD5");
+        } catch (java.security.NoSuchAlgorithmException e) {
+            logger.warn( "Unknown Algorith MD5", e);
+            return "session";
+        }
+
+        String uid = UvmContextImpl.context().getServerUID().trim();
+        if ( uid == null ) {
+            logger.warn( "Missing UID!");
+            return "session";
+        }
+        byte[] digest = md.digest(uid.getBytes());
+        String cookieName = "";
+        for (byte b : digest) {
+            int c = b;
+            if (c < 0) c = c + 0x100;
+            cookieName += String.format("%02x", c);
+        }
+        return cookieName.substring(0,8);
+    }
+
+    /**
+     * AdministrationValve is a valve that protects admin-priv servlets
+     */
     private class AdministrationValve extends ValveBase
     {
         private final Logger logger = Logger.getLogger(getClass());
 
+        /**
+         * constructor
+         */
         public AdministrationValve() { }
 
+        /**
+         * invoke invokes the request
+         * @param request
+         * @param response
+         * @throws IOException
+         * @throws ServletException
+         */
         public void invoke( Request request, Response response ) throws IOException, ServletException
         {
             if ( !isAccessAllowed( request )) {
@@ -375,39 +506,68 @@ public class TomcatManagerImpl implements TomcatManager
             if ( nextValve != null ) nextValve.invoke( request, response );
         }
 
+        /**
+         * administrationDenied returns the admin denied message
+         * @return String
+         */
         private String administrationDenied()
         {
             Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations("untangle");
             return I18nUtil.tr("HTTP administration is disabled.", i18n_map);
         }
 
+        /**
+         * isAccessAllowed checks to see if access to this admin servlet should be allowed
+         * via the specified request. This checks If HTTP is allowed and if its coming from an allowed subnet.
+         * @param request
+         * @return true if allowed, false otherwise
+         */
         private boolean isAccessAllowed( ServletRequest request )
         {
-            String address = request.getRemoteAddr();
-            boolean isHttpAllowed = UvmContextFactory.context().systemManager().getSettings().getHttpAdministrationAllowed();
-
-            logger.debug("isAccessAllowed( " + request + " ) [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
-
-            /**
-             * Always allow HTTP from 127.0.0.1
-             */
             try {
-                if (address != null && InetAddress.getByName( address ).isLoopbackAddress())
+                InetAddress address = null;
+                boolean isHttpAllowed = UvmContextFactory.context().systemManager().getSettings().getHttpAdministrationAllowed();
+                String administrationSubnets = UvmContextFactory.context().systemManager().getSettings().getAdministrationSubnets();
+
+                try {
+                    address = InetAddress.getByName(request.getRemoteAddr());
+                } catch (Exception e) {
+                    logger.warn( "Unable to parse the internet address: " + address );
                     return true;
-            } catch (UnknownHostException e) {
-                logger.warn( "Unable to parse the internet address: " + address );
-            }
-        
-            /**
-             * Otherwise only allow HTTP if enabled
-             */
-            if (request.getScheme().equals("http")) {
-                if (!isHttpAllowed)
+                }
+
+                logger.debug("isAccessAllowed( " + request + " ) [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
+
+                /**
+                 * Always allow from 127.0.0.1
+                 */
+                if (address.isLoopbackAddress())
+                    return true;
+
+                /**
+                 * Otherwise only allow HTTP if enabled
+                 */
+                if (request.getScheme().equals("http") && !isHttpAllowed) {
                     logger.warn("isAccessAllowed( " + request + " ) denied. [scheme: " + request.getScheme() + " HTTP allowed: " + isHttpAllowed + "]"); 
-                return isHttpAllowed;
+                    return false;
+                }
+
+                /**
+                 * Always allow from admin subnets
+                 */
+                if (administrationSubnets != null) {
+                    IPMatcher subnets = new IPMatcher(administrationSubnets);
+                    if (!subnets.isMatch( address )) {
+                        logger.warn("isAccessAllowed( " + request + " ) denied for " + address + ". [scheme: " + request.getScheme() + " subnet allowed: " + administrationSubnets + "]");
+                        return false;
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Exception", e);
+                return true;
             }
-            else
-                return true; /* https always allowed */
+
+            return true;
         }
     }
 }

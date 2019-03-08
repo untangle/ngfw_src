@@ -7,6 +7,8 @@ rescue LoadError
   require 'gettext/tools'
 end
 
+require 'open3'
+
 class Target
   attr_reader :package, :dependencies, :task
 
@@ -337,7 +339,7 @@ class JsBuilder < Target
   end
 
   def all
-    info "[jsbuild ] #{@name}: #{@path} -> #{@destPath}"
+    info "[jsbuild ] #{@name}: #{@path} -> #{@relativeDestPath}"
     # read all deps into memory, as an array of content
     data = @deps.map { |d| File.open(d).read() }
 
@@ -372,6 +374,51 @@ class JsBuilder < Target
     FileUtils.mkdir_p(File.dirname(@destPath))
     File.open(@destPath, 'w') do |f|
       data.each { |d| f.write(d) }
+    end
+  end
+
+  def make_dependencies
+    file @destPath => @deps do 
+      all
+    end
+    stamptask self => @destPath
+  end
+
+  def to_s
+    @targetName
+  end
+end
+
+class ScssBuilder < Target
+  include Rake::DSL if defined?(Rake::DSL)
+
+  @@WEB_DEST = "usr/share/untangle/web"
+  @@SASS_ARGS = "--sourcemap=none --no-cache --scss --style compressed --stdin"
+
+  def initialize(package, name, sourcePath, webDestDir)
+    @name = name
+    @path = sourcePath
+    @webDestDir = webDestDir
+    @targetName = "scss-builder:#{package.name}-#{@name}"
+
+    @relativeDestPath = "#{@@WEB_DEST}/#{@webDestDir}/#{@name}.css"
+
+    @deps = FileList["#{@path}/**/*.scss"]
+
+    @destPath = "#{package.distDirectory}/#{@relativeDestPath}"
+
+    super(package, @deps, @targetName)
+  end
+
+  def all
+    info "[cssbuild] #{@name}: #{@path} -> #{@relativeDestPath}"
+    dir = File.dirname(@destPath)
+    FileUtils.mkdir_p(dir) unless File::directory?(dir)
+    cmd = "cat #{@deps.join(' ')} | sass --load-path #{@path} #{@@SASS_ARGS} #{@destPath}"
+    if not Kernel.system(cmd) then
+      # even if sass errors out, it creates the dest file
+      FileUtils.rm(@destPath, :force => true)
+      raise "cssbuild failed while running #{cmd}"
     end
   end
 
@@ -507,6 +554,7 @@ class JavaCompilerTarget < Target
     ## The com directory is like our source directory.
     ## we don't do any .net or .org stuff here.
     @javaFiles = FileList[@basepaths.map { |basepath| "#{basepath}/com/**/*.java"}]
+    @javaModifiedFiles = FileList[]
 
     @isEmpty = false
 
@@ -526,6 +574,7 @@ class JavaCompilerTarget < Target
 
       ## Make the classfile depend on the source itself
       file classFile => f do
+        @javaModifiedFiles.add(f)
         directory = File.dirname classFile
         ## XXX Hokey way to update the timestamp XXX
         FileUtils.mkdir_p directory if !File.exist?(directory)
@@ -549,6 +598,20 @@ class JavaCompilerTarget < Target
     debug jars
     debug cp
     JavaCompiler.compile(@destination, cp, @javaFiles)
+
+    missing_javadoc = 0
+    @javaModifiedFiles.each do |f|
+      directory = File.dirname f
+      filename = File.basename f
+      stdout, stderr, status = Open3.capture3('./buildtools/javadoc-analyzer.py --path=' + directory + " --filename=" + filename + " --detail_only")
+      if status != 0
+        puts "missing documentation"
+        missing_javadoc = 1
+        puts stdout
+      end
+    end
+
+    raise "missing documentation " unless missing_javadoc == 0
   end
 
   def jars

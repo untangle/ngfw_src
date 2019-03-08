@@ -6,6 +6,9 @@ package com.untangle.jvector;
 import com.untangle.jnetcap.*;
 import java.util.EmptyStackException;
 
+/**
+ * UDPSource is a source for UDP packets
+ */
 public class UDPSource extends Source
 {
     protected SourceEndpointListener listener = null;
@@ -17,23 +20,41 @@ public class UDPSource extends Source
 
     protected final UDPPacketMailbox mailbox;
 
+    /**
+     * UDPSource
+     * @param mailbox
+     */
     public UDPSource( UDPPacketMailbox mailbox )
     {
         this.mailbox = mailbox;
         pointer = create( mailbox.pointer() );
     }
 
+    /**
+     * UDPSource
+     * @param mailbox
+     * @param listener
+     */
     public UDPSource( UDPPacketMailbox mailbox, SourceEndpointListener listener )
     {
         this( mailbox );
         registerListener( listener );
     }   
 
+    /**
+     * registerListener - register a listener for this Source
+     * @param listener
+     */
     public void registerListener( SourceEndpointListener listener )
     {
         this.listener = listener;
     }
     
+    /**
+     * get_event - gets an event (packet/crumb) from this UDPSource
+     * @param unused
+     * @return the crumb
+     */
     protected Crumb get_event( Sink unused )
     {
         PacketCrumb crumb;
@@ -66,6 +87,10 @@ public class UDPSource extends Source
         return crumb;
     }
 
+    /**
+     * shutdown - shutdown (close) this UDPSource
+     * @return
+     */
     protected int shutdown()
     {
         /* Notify the listeners that source is shutting down */
@@ -75,10 +100,18 @@ public class UDPSource extends Source
     }
 
     /**
-     * Create the C component of a UDPSource.</p>
+     * Create the C component of a UDPSource.
      *
      * @param pointer - Pointer to the UDP mailbox.
+     * @return long (ptr)
      */
     protected native long create( long pointer );
+
+    /**
+     * shutdown - shutdown (close) this UDPSource
+     * @param pointer
+     * @param mailboxPointer
+     * @return
+     */
     protected static native int shutdown( long pointer, long mailboxPointer );
 }

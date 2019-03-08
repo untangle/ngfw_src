@@ -13,30 +13,20 @@
 package com.untangle.app.license;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileReader;
-import java.io.FileInputStream;
 import java.io.BufferedReader;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Iterator;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
-import org.apache.http.HttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.HttpGet;
@@ -52,6 +42,9 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.LicenseManager;
 
+/**
+ * License manager
+ */
 public class LicenseManagerImpl extends AppBase implements LicenseManager
 {
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
@@ -62,6 +55,22 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private static final String LIENENCY_GIFT_FILE = System.getProperty("uvm.conf.dir") + "/gift"; /* the file that defines the gift value */
     private static final int    LIENENCY_GIFT = getLienencyGift(); /* and extra lienency constant */
     
+    public static final String DIRECTORY_CONNECTOR_OLDNAME = "adconnector";
+    public static final String BANDWIDTH_CONTROL_OLDNAME = "bandwidth";
+    public static final String CONFIGURATION_BACKUP_OLDNAME = "boxbackup";
+    public static final String BRANDING_MANAGER_OLDNAME = "branding";
+    public static final String VIRUS_BLOCKER_OLDNAME = "virusblocker";
+    public static final String SPAM_BLOCKER_OLDNAME = "spamblocker";
+    public static final String WAN_FAILOVER_OLDNAME = "faild";
+    public static final String IPSEC_VPN_OLDNAME = "ipsec";
+    public static final String POLICY_MANAGER_OLDNAME = "policy";
+    public static final String WEB_FILTER_OLDNAME = "sitefilter";
+    public static final String WAN_BALANCER_OLDNAME = "splitd";
+    public static final String WEB_CACHE_OLDNAME = "webcache";
+    public static final String APPLICATION_CONTROL_OLDNAME = "classd";
+    public static final String SSL_INSPECTOR_OLDNAME = "https";
+    public static final String LIVE_SUPPORT_OLDNAME = "support";
+
     private static final String EXPIRED = "expired";
 
     /**
@@ -78,7 +87,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      * This is where the fully evaluated license are stored
      * This map stores the evaluated (validated) licenses
      */
-    private Map<String, License> licenseMap = new ConcurrentHashMap<String, License>();
+    private ConcurrentHashMap<String, License> licenseMap = new ConcurrentHashMap<String, License>();
 
     /**
      * A list of all known licenses
@@ -103,6 +112,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private Pulse pulse = null;
 
+    /**
+     * Setup license manager application.
+     * 
+     * * Launch the synchronization task.
+     *
+     * @param appSettings       License manager application settings.
+     * @param appProperties     Licese manager application properties
+     */
     public LicenseManagerImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
@@ -114,12 +131,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         this.pulse.start();
     }
 
-    @Override
-    protected void preStop( boolean isPermanentTransition )
-    {
-        logger.debug("preStop()");
-    }
-
+    /**
+     * Pre license manager start.
+     * Reload the licenses.
+     *
+     * @param isPermanentTransition
+     *  If true, the app is permenant
+     */
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
@@ -129,6 +147,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         UvmContextFactory.context().licenseManager().reloadLicenses( false );
     }
 
+    /**
+     * Get the pineliene connector(???)
+     *
+     * @return PipelineConector
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -137,6 +160,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     
     /**
      * Reload all of the licenses from the file system.
+     *
+     * @param
+     *     blocking If true, block the current context until we're finished.  Otherwise, launch a new non-blocking thread.
      */
     @Override
     public final void reloadLicenses( boolean blocking )
@@ -149,6 +175,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             }
         } else {
             Thread t = new Thread(new Runnable() {
+                    /**
+                     * Launch the license synchronize routine.
+                     */
                     public void run()
                     {
                         try {
@@ -162,8 +191,16 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
     }
 
+    /**
+     * From the existing license map, return the first matching string identifier (e.g.,"virus")
+     * 
+     * @param  identifier Identifier to find.
+     * @param  exactMatch If true, identifier must match license name excactly.  Otherwise, return the first license that begins with the identifier.
+     * @return
+     *     Matching license.  Return an invalid license if not found.
+     */
     @Override
-    public final License getLicense(String identifier)
+    public final License getLicense(String identifier, boolean exactMatch)
     {
         if (isGPLApp(identifier))
             return null;
@@ -173,52 +210,29 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * If the license exists and is valid use that one
          */
         License license = null;
-        License oldLicense = null;
-        License longLicense = null;
-        License oldLongLicense = null;
 
-        license = this.licenseMap.get(identifier);
-        logger.debug("getLicense(" + identifier + ") = " + license );
-
-        String oldIdentifier = getOldIdentifier(identifier);
-        if ( oldIdentifier != null ) {
-            oldLicense = this.licenseMap.get(oldIdentifier);
-            logger.debug("getLicense(" + oldIdentifier + ") = " + oldLicense );
-
-            String oldLongIdentifier = getLongIdentifier(identifier);
-            if ( oldLongIdentifier != null ) {
-                oldLongLicense = this.licenseMap.get(oldLongIdentifier);
-                logger.debug("getLicense(" + oldLongIdentifier + ") = " + oldLongLicense );
+        /**
+         * If there is no perfect match,
+         * Look for one that the prefix matches
+         * example: identifer "virus-blocker" should accept "virus-blocker-cloud"
+         */
+        if (!exactMatch) {
+            for (String name : this.licenseMap.keySet()) {
+                if (name.startsWith(identifier)) {
+                    logger.debug("getLicense(" + identifier + ") = " + license );
+                    license = this.licenseMap.get(name);
+                    if (license != null && license.getValid())
+                        return license;
+                }
             }
-
-        }
-        String longIdentifier = getLongIdentifier(identifier);
-        if ( longIdentifier != null ) {
-            longLicense = this.licenseMap.get(longIdentifier);
-            logger.debug("getLicense(" + longIdentifier + ") = " + longLicense );
         }
 
         /**
-         * Ranked in order of preference
+         * Look for an existing perfect match
          */
-        if (license != null && license.getValid())
-            return license;
-        if (longLicense != null && longLicense.getValid())
-            return longLicense;
-        if (oldLicense != null && oldLicense.getValid())
-            return oldLicense;
-        if (oldLongLicense != null && oldLongLicense.getValid())
-            return oldLongLicense;
-
+        license = this.licenseMap.get(identifier);
         if (license != null)
             return license;
-        if (longLicense != null)
-            return longLicense;
-        if (oldLicense != null)
-            return oldLicense;
-        if (oldLongLicense != null)
-            return oldLongLicense;
-
 
         /**
          * Special for development environment
@@ -244,6 +258,24 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return license;
     }
 
+    /**
+     * Return the license for the exactly matching identifier.
+     * 
+     * @param  identifier Application name to find.
+     * @return            License of matching identifier or an invalid license if not found.
+     */
+    @Override
+    public final License getLicense(String identifier)
+    {
+        return getLicense(identifier, true);
+    }
+
+    /**
+     * For the specify identifier, determine if license is valid.
+     * 
+     * @param  identifier Application name to find.
+     * @return            true if license is valid, false otherwise.
+     */
     @Override
     public final boolean isLicenseValid(String identifier)
     {
@@ -260,18 +292,33 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             return isValid;
     }
 
+    /**
+     * Get list of all licenses.
+     * 
+     * @return License List.
+     */
     @Override
     public final List<License> getLicenses()
     {
         return this.licenseList;
     }
     
+    /**
+     * Determine if product has premium license.
+     * 
+     * @return true if at least one license is valid.
+     */
     @Override
     public final boolean hasPremiumLicense()
     {
         return validLicenseCount() > 0;
     }
 
+    /**
+     * Determine number of valid licenses.
+     * 
+     * @return count of valid licenses.
+     */
     @Override
     public int validLicenseCount()
     {
@@ -287,12 +334,23 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return validCount;
     }
     
+    /**
+     * Return the lowest valid license seat.
+     * 
+     * @return Number of seats.
+     */
     @Override
     public int getSeatLimit( )
     {
         return getSeatLimit( true );
     }
 
+    /**
+     * Calculate the lowest license seat for valid subscriptions.
+     * 
+     * @param  lienency If non-zero seats, calculate seats based on a value higher than actual.  Otherwise, use strict seat value. 
+     * @return          Calculated seat number.
+     */
     @Override
     public int getSeatLimit( boolean lienency )
     {
@@ -318,6 +376,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return seats;
     }
 
+    /**
+     * For the specified applicaton, attempt to get a trial license.
+     * 
+     * @param  appName   Application name to request.
+     * @throws Exception Throw excepton based on inability or general errors conecting license server.
+     */
     @Override
     public void requestTrialLicense( String appName ) throws Exception
     {
@@ -342,10 +406,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * Then we try with the old app name (if it has an old name), then we try with the old libitem name
          * We do all these different calls so that the product supports any version of the license server
          */
-
         String libitemName = "untangle-libitem-" + appName;
-        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + appName + "&appliance=" + UvmContextFactory.context().isAppliance();
-        String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + libitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
+        String urlStr  = licenseUrl + "?action=startTrial" + "&node=" + appName + "&" + getServerParams();
+        String urlStr2 = licenseUrl + "?action=startTrial" + "&libitem=" + libitemName + "&" + getServerParams();
 
         String oldName = null;
         String urlStr3 = null;
@@ -353,40 +416,40 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         
         switch ( appName ) {
         case License.DIRECTORY_CONNECTOR:
-            oldName = License.DIRECTORY_CONNECTOR_OLDNAME; break;
+            oldName = DIRECTORY_CONNECTOR_OLDNAME; break;
         case License.BANDWIDTH_CONTROL:
-            oldName = License.BANDWIDTH_CONTROL_OLDNAME; break;
+            oldName = BANDWIDTH_CONTROL_OLDNAME; break;
         case License.CONFIGURATION_BACKUP:
-            oldName = License.CONFIGURATION_BACKUP_OLDNAME; break;
+            oldName = CONFIGURATION_BACKUP_OLDNAME; break;
         case License.BRANDING_MANAGER:
-            oldName = License.BRANDING_MANAGER_OLDNAME; break;
+            oldName = BRANDING_MANAGER_OLDNAME; break;
         case License.VIRUS_BLOCKER:
-            oldName = License.VIRUS_BLOCKER_OLDNAME; break;
+            oldName = VIRUS_BLOCKER_OLDNAME; break;
         case License.SPAM_BLOCKER:
-            oldName = License.SPAM_BLOCKER_OLDNAME; break;
+            oldName = SPAM_BLOCKER_OLDNAME; break;
         case License.WAN_FAILOVER:
-            oldName = License.WAN_FAILOVER_OLDNAME; break;
+            oldName = WAN_FAILOVER_OLDNAME; break;
         case License.IPSEC_VPN:
-            oldName = License.IPSEC_VPN_OLDNAME; break;
+            oldName = IPSEC_VPN_OLDNAME; break;
         case License.POLICY_MANAGER:
-            oldName = License.POLICY_MANAGER_OLDNAME; break;
+            oldName = POLICY_MANAGER_OLDNAME; break;
         case License.WEB_FILTER:
-            oldName = License.WEB_FILTER_OLDNAME; break;
+            oldName = WEB_FILTER_OLDNAME; break;
         case License.WAN_BALANCER:
-            oldName = License.WAN_BALANCER_OLDNAME; break;
+            oldName = WAN_BALANCER_OLDNAME; break;
         case License.WEB_CACHE:
-            oldName = License.WEB_CACHE_OLDNAME; break;
+            oldName = WEB_CACHE_OLDNAME; break;
         case License.APPLICATION_CONTROL:
-            oldName = License.APPLICATION_CONTROL_OLDNAME; break;
+            oldName = APPLICATION_CONTROL_OLDNAME; break;
         case License.SSL_INSPECTOR:
-            oldName = License.SSL_INSPECTOR_OLDNAME; break;
+            oldName = SSL_INSPECTOR_OLDNAME; break;
         case License.LIVE_SUPPORT:
-            oldName = License.LIVE_SUPPORT_OLDNAME; break;
+            oldName = LIVE_SUPPORT_OLDNAME; break;
         }
         if ( oldName != null ) {
             String oldLibitemName = "untangle-libitem-" + oldName;
-            urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance();
-            urlStr4 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldLibitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
+            urlStr3 = licenseUrl + "?action=startTrial" + "&node=" + oldName + "&" + getServerParams();
+            urlStr4 = licenseUrl + "?action=startTrial" + "&libitem=" + oldLibitemName + "&" + getServerParams();
         }
         
         CloseableHttpClient httpClient = HttpClients.custom().build();
@@ -442,12 +505,21 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         UvmContextFactory.context().licenseManager().reloadLicenses( true );
     }
 
+    /**
+     * Not used.  Use methods in uvm class.
+     * 
+     * @return null
+     */
     public Object getSettings()
     {
         /* These are controlled using the methods in the uvm class */
         return null;
     }
 
+    /**
+     * Not used.  Use methods in uvm class.
+     * @param settings null
+     */
     public void setSettings(Object settings)
     {
         /* These are controlled using the methods in the uvm class */
@@ -512,13 +584,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         LinkedList<LicenseRevocation> revocations;
         boolean changed = false;
 
-        int numDevices = _getEstimatedNumDevices();
-        String uvmVersion = UvmContextFactory.context().version();
-        
         logger.info("REFRESH: Checking Revocations...");
         
         try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + "uid=" + UvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices + "&" + "version=" + uvmVersion;
+            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -545,7 +614,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /** 
      * This remove a license from the list of current licenses
-     * Returns true if a license was removed, false otherwise
+     *
+     * @param revoke LicenseRevocation object to revoke in licenses.
+     * @return true if a license was removed, false otherwise
      */
     private synchronized boolean _revokeLicense(LicenseRevocation revoke)
     {
@@ -591,13 +662,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         LinkedList<License> licenses;
         boolean changed = false;
 
-        int numDevices = _getEstimatedNumDevices();
-        String uvmVersion = UvmContextFactory.context().version();
-        
         logger.info("REFRESH: Downloading new Licenses...");
         
         try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + "uid=" + UvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices + "&" + "version=" + uvmVersion;
+            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -627,7 +695,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * This takes the passed argument and inserts it into the current licenses
      * If there is currently an existing license for that product it will be removed
-     * Returns true if a license was added or modified, false otherwise
+     *
+     * @param license License object to add.
+     * @return true if a license was added or modified, false otherwise
      */
     private synchronized boolean _insertOrUpdate(License license)
     {
@@ -728,7 +798,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private synchronized void _mapLicenses()
     {
         /* Create a new map of all of the valid licenses */
-        Map<String, License> newMap = new ConcurrentHashMap<String, License>();
+        ConcurrentHashMap<String, License> newMap = new ConcurrentHashMap<String, License>();
         LinkedList<License> newList = new LinkedList<License>();
         License license = null;
         
@@ -746,7 +816,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                      */
                     _setValidAndStatus(license);
             
-                    String identifier = license.getName();
+                    String identifier = license.getCurrentName();
                     if ( identifier == null ) {
                         logger.warn("Ignoring license with no name: " + license );
                         continue;
@@ -758,7 +828,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     if ((current != null) && (current.getEnd() > license.getEnd()))
                         continue;
 
-                    logger.info("Adding License: " + license.getName() + " to Map. (valid: " + license.getValid() + ")");
+                    logger.info("Adding License: " + license.getCurrentName() + " to Map. (valid: " + license.getValid() + ")");
             
                     newMap.put(identifier, license);
                     newList.add(license);
@@ -774,6 +844,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * Verify the validity of a license
+     *
+     * @param license License object for a subscription.
+     * @return true if license is valid, false otherwise.
      */
     private boolean _isLicenseValid(License license)
     {
@@ -839,6 +912,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * Convert the bytes to a hex string
+     *
+     * @param data Array of bytes to convert to a hext string.
+     * @return String of hex values for the passed byte array.
      */
     private String _toHex(byte data[])
     {
@@ -856,6 +932,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * Set the current settings to new Settings
      * Also save the settings to disk if save is true
+     *
+     * @param newSettings LicenseSetttings to save.
      */
     private void _saveSettings(LicenseSettings newSettings)
     {
@@ -892,12 +970,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         /**
          * Licenses are only saved when changed - call license changed hook
          */
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, null );
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, 1 );
     }
     
     /**
      * Returns an estimate of # devices on the network
      * This is not meant to be very accurate - it is just an estimate
+     *
+     * @return Number of estimated devices on the network.
      */
     private int _getEstimatedNumDevices()
     {
@@ -906,6 +986,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * Returns the url for the license server API
+     *
+     * @return license agreement.
      */
     private String _getLicenseUrl()
     {
@@ -938,14 +1020,26 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses... done" );
     }
     
+    /**
+     * Task to run the synchronoization routine. 
+     */
     private class LicenseSyncTask implements Runnable
     {
+        /**
+         * Launch the license synchronize routine.
+         */
         public void run()
         {
             _syncLicensesWithServer();    
         }
     }
     
+    /**
+     * Determine if application is GPL-based.
+     * 
+     * @param  identifier Application name.
+     * @return            true if GPL, false otherwise.
+     */
     private boolean isGPLApp(String identifier)
     {
         switch ( identifier ) {
@@ -983,10 +1077,17 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         case "ftp": return true;
         case "untangle-casing-smtp": return true;
         case "smtp": return true;
+        case "tunnel-vpn": return true;
         default: return false;
         }
     }
 
+    /**
+     * Determine if application is obsolete.
+     * 
+     * @param  identifier Application name.
+     * @return            true if applicatio is obsolete, false otherwise.
+     */
     private boolean isObsoleteApp(String identifier)
     {
         if ("untangle-node-kav".equals(identifier)) return true;
@@ -1000,52 +1101,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return false;
     }
     
-    private String getOldIdentifier(String identifier)
-    {
-        switch (identifier) {
-        case License.DIRECTORY_CONNECTOR:
-            return License.DIRECTORY_CONNECTOR_OLDNAME;
-        case License.BANDWIDTH_CONTROL:
-            return License.BANDWIDTH_CONTROL_OLDNAME;
-        case License.CONFIGURATION_BACKUP:
-            return License.CONFIGURATION_BACKUP_OLDNAME;
-        case License.BRANDING_MANAGER:
-            return License.BRANDING_MANAGER_OLDNAME;
-        case License.VIRUS_BLOCKER:
-            return License.VIRUS_BLOCKER_OLDNAME;
-        case License.SPAM_BLOCKER:
-            return License.SPAM_BLOCKER_OLDNAME;
-        case License.WAN_FAILOVER:
-            return License.WAN_FAILOVER_OLDNAME;
-        case License.IPSEC_VPN:
-            return License.IPSEC_VPN_OLDNAME;
-        case License.POLICY_MANAGER:
-            return License.POLICY_MANAGER_OLDNAME;
-        case License.WEB_FILTER:
-            return License.WEB_FILTER_OLDNAME;
-        case License.WAN_BALANCER:
-            return License.WAN_BALANCER_OLDNAME;
-        case License.WEB_CACHE:
-            return License.WEB_CACHE_OLDNAME;
-        case License.APPLICATION_CONTROL:
-            return License.APPLICATION_CONTROL_OLDNAME;
-        case License.SSL_INSPECTOR:
-            return License.SSL_INSPECTOR_OLDNAME;
-        case License.LIVE_SUPPORT:
-            return License.LIVE_SUPPORT_OLDNAME;
-        }            
-
-        return null;
-    }
-
-    private String getLongIdentifier(String identifier)
-    {
-        if ( identifier.contains("untangle-node-"))
-            return identifier;
-        else
-            return identifier.replaceAll("untangle-node-","");
-    }
-    
+    /**
+     * Set a license to valid.
+     * 
+     * @param license License object to set.
+     */
     private void _setValidAndStatus(License license)
     {
         if (_isLicenseValid(license)) {
@@ -1056,6 +1116,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
     }
 
+    /**
+     * If passed value is null, return an empty string.  Otherwise return the object's string value.
+     * 
+     * @param  foo Passed value.
+     * @return     String of the value.
+     */
     private static String nullToEmptyStr( Object foo )
     {
         if ( foo == null )
@@ -1064,23 +1130,64 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             return foo.toString();
     }
 
+    /**
+     * Get the lienency gift value.
+     * 
+     * @return Number of lienency seats.
+     */
     private static int getLienencyGift()
     {
+        BufferedReader reader = null;
+        int returnValue = 0;
         try {
             File giftFile = new File(LIENENCY_GIFT_FILE);
             if (!giftFile.exists())
                 return 0;
             
-            BufferedReader reader = new BufferedReader(new FileReader(giftFile));
+            reader = new BufferedReader(new FileReader(giftFile));
             Integer i = Integer.parseInt(reader.readLine());
-            if ( i == null )
-                return 0;
+            if ( i != null )
+                returnValue = 0;
             else
-                return i;
+                returnValue = i;
 
         } catch (Exception x) {
             logger.warn("Exception",x);
-            return 0;
+            returnValue = 0;
+        }finally{
+            if(reader != null){
+                try {
+                    reader.close();
+                } catch( Exception x ){
+                    logger.warn("Exception",x);
+                }
+            }
         }
+
+        return returnValue;
+    }
+
+    /**
+     * Get the URL encoded parameters to describe this server
+     * @return string
+     */
+    private String getServerParams()
+    {
+        int numDevices = _getEstimatedNumDevices();
+        String model = UvmContextFactory.context().getApplianceModel();
+        String uvmVersion = UvmContextFactory.context().version();
+        if (model != null) {
+            try {
+                model = URLEncoder.encode(model,"UTF-8");
+            } catch (Exception e) {
+                logger.warn("Failed to encode",e);
+                model = null;
+            }
+        }
+        return "uid=" + UvmContextFactory.context().getServerUID() +
+            "&appliance=" + UvmContextFactory.context().isAppliance() +
+            (model != null ? "&appliance-model=" + model : "") + 
+            "&numDevices=" + numDevices +
+            "&version=" + uvmVersion;
     }
 }

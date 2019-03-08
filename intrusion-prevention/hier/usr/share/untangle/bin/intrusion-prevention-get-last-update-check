@@ -1,7 +1,7 @@
 #!/bin/dash
 
-if [ "$1" = "rules" ] ; then
-    @PREFIX@/usr/share/untangle/bin/ut-get-last-update /usr/share/untangle-snort-config/
+if [ "$1" = "signatures" ] ; then
+    @PREFIX@/usr/share/untangle/bin/ut-get-last-update /usr/share/untangle-suricata-config/
 else
     @PREFIX@/usr/share/untangle/bin/ut-get-last-update /tmp/intrusion-prevention-update.ran
 fi

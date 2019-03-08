@@ -1,12 +1,12 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -18,15 +18,11 @@ import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 import static com.untangle.uvm.Dispatcher.SESSION_ID_MDC_KEY;
 
 import com.untangle.uvm.Tag;
-import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.app.SessionEvent;
-import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.IPStreamer;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.ObjectCrumb;
@@ -35,9 +31,6 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.SocketQueueListener;
 import com.untangle.jvector.Vector;
-import com.untangle.jvector.Relay;
-
-import org.apache.log4j.Logger;
 
 /**
  * Abstract base class for all live sessions
@@ -68,13 +61,15 @@ public abstract class AppSessionImpl implements AppSession
     protected final Dispatcher dispatcher;
 
     /**
-     * writeQueue is two queues that represent the items stored to be written to each side (server and client)
-     * currently you can put Crumbs and Streamers only in the write queue
+     * writeQueue is two queues that represent the items stored to be written to
+     * each side (server and client) currently you can put Crumbs and Streamers
+     * only in the write queue
      */
-    @SuppressWarnings({"unchecked","rawtypes"}) //generics array creation not supported java6 || java7
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    //generics array creation not supported java6 || java7
     protected final List<Object>[] writeQueue = new ArrayList[] { null, null };
 
-    protected int maxInputSize  = 0;
+    protected int maxInputSize = 0;
     protected int maxOutputSize = 0;
 
     protected final IncomingSocketQueue clientIncomingSocketQueue;
@@ -94,29 +89,39 @@ public abstract class AppSessionImpl implements AppSession
 
     protected final SessionEvent sessionEvent;
 
-    protected HashMap<String,Object> stringAttachments = new HashMap<String,Object>();
+    protected HashMap<String, Object> stringAttachments = new HashMap<String, Object>();
     private static final String NO_KEY_VALUE = "NOKEY";
-    
-    protected AppSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, IPNewSessionRequestImpl request )
+
+    /**
+     * Constructor
+     * 
+     * @param dispatcher
+     *        The dispatcher event
+     * @param sessionEvent
+     *        The session event
+     * @param request
+     *        The IP session request
+     */
+    protected AppSessionImpl(Dispatcher dispatcher, SessionEvent sessionEvent, IPNewSessionRequestImpl request)
     {
         this.dispatcher = dispatcher;
         this.pipelineConnector = dispatcher.pipelineConnector();
         this.sessionEvent = sessionEvent;
         boolean isVectored = (request.state() == IPNewSessionRequestImpl.REQUESTED || request.state() == IPNewSessionRequestImpl.ENDPOINTED);
 
-        sessionGlobalState        = request.sessionGlobalState();
-        pipelineConnector         = request.pipelineConnector();
+        sessionGlobalState = request.sessionGlobalState();
+        pipelineConnector = request.pipelineConnector();
 
-        if ( isVectored ) {
-            this.isVectored           = true;
+        if (isVectored) {
+            this.isVectored = true;
 
-            clientIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().app().getAppSettings().getAppName() + " client side");
-            clientOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().app().getAppSettings().getAppName() + " client side");
+            clientIncomingSocketQueue = new IncomingSocketQueue(pipelineConnector().app().getAppSettings().getAppName() + " client side");
+            clientOutgoingSocketQueue = new OutgoingSocketQueue(pipelineConnector().app().getAppSettings().getAppName() + " client side");
 
-            serverIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().app().getAppSettings().getAppName() + " server side");
-            serverOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().app().getAppSettings().getAppName() + " server side");
+            serverIncomingSocketQueue = new IncomingSocketQueue(pipelineConnector().app().getAppSettings().getAppName() + " server side");
+            serverOutgoingSocketQueue = new OutgoingSocketQueue(pipelineConnector().app().getAppSettings().getAppName() + " server side");
         } else {
-            this.isVectored           = false;
+            this.isVectored = false;
 
             clientIncomingSocketQueue = null;
             clientOutgoingSocketQueue = null;
@@ -125,101 +130,190 @@ public abstract class AppSessionImpl implements AppSession
             serverOutgoingSocketQueue = null;
         }
 
-        this.protocol      = request.getProtocol();
+        this.protocol = request.getProtocol();
 
-        this.clientIntf    = request.getClientIntf();
-        this.serverIntf    = request.getServerIntf();
+        this.clientIntf = request.getClientIntf();
+        this.serverIntf = request.getServerIntf();
 
-        this.origClientAddr    = request.getOrigClientAddr();
-        this.origClientPort    = request.getOrigClientPort();
-        this.newClientAddr    = request.getNewClientAddr();
-        this.newClientPort    = request.getNewClientPort();
+        this.origClientAddr = request.getOrigClientAddr();
+        this.origClientPort = request.getOrigClientPort();
+        this.newClientAddr = request.getNewClientAddr();
+        this.newClientPort = request.getNewClientPort();
 
-        this.origServerPort    = request.getOrigServerPort();
-        this.origServerAddr    = request.getOrigServerAddr();
-        this.newServerPort    = request.getNewServerPort();
-        this.newServerAddr    = request.getNewServerAddr();
+        this.origServerPort = request.getOrigServerPort();
+        this.origServerAddr = request.getOrigServerAddr();
+        this.newServerPort = request.getNewServerPort();
+        this.newServerAddr = request.getNewServerAddr();
 
-        if ( isVectored ) {
+        if (isVectored) {
             SocketQueueListener sqListener = new SessionSocketQueueListener();
 
-            clientIncomingSocketQueue.registerListener( sqListener );
-            clientOutgoingSocketQueue.registerListener( sqListener );
-            serverIncomingSocketQueue.registerListener( sqListener );
-            serverOutgoingSocketQueue.registerListener( sqListener );
+            clientIncomingSocketQueue.registerListener(sqListener);
+            clientOutgoingSocketQueue.registerListener(sqListener);
+            serverIncomingSocketQueue.registerListener(sqListener);
+            serverOutgoingSocketQueue.registerListener(sqListener);
         }
     }
 
+    /**
+     * Get the pipline connectors
+     * 
+     * @return The pipeline connectors
+     */
     public PipelineConnectorImpl pipelineConnector()
     {
         return pipelineConnector;
     }
 
+    /**
+     * Attach an unnamed object to the session
+     * 
+     * @param ob
+     *        The object to attach
+     * @return The object
+     */
     public Object attach(Object ob)
     {
-        return attach( NO_KEY_VALUE, ob );
+        return attach(NO_KEY_VALUE, ob);
     }
 
+    /**
+     * Get the unnamed object attached to the session
+     * 
+     * @return The object
+     */
     public Object attachment()
     {
-        return attachment( NO_KEY_VALUE );
+        return attachment(NO_KEY_VALUE);
     }
 
-    public Object attach( String key, Object ob )
+    /**
+     * Attach a named object to the session
+     * 
+     * @param key
+     *        The name
+     * @param ob
+     *        The object
+     * @return The object
+     */
+    public Object attach(String key, Object ob)
     {
-        return this.stringAttachments.put( key, ob );
+        return this.stringAttachments.put(key, ob);
     }
 
-    public Object attachment( String key )
+    /**
+     * Get a named object attached to the session
+     * 
+     * @param key
+     *        The name
+     * @return The object
+     */
+    public Object attachment(String key)
     {
         return this.stringAttachments.get(key);
     }
-    
-    public Object globalAttach( String key, Object ob )
+
+    /**
+     * Attach a named object to the global session
+     * 
+     * @param key
+     *        The name
+     * @param ob
+     *        The object
+     * @return The object
+     */
+    public Object globalAttach(String key, Object ob)
     {
-        return this.sessionGlobalState().attach(key,ob);
+        return this.sessionGlobalState().attach(key, ob);
     }
 
-    public Object globalAttachment( String key )
+    /**
+     * Get a named object attached to the global session
+     * 
+     * @param key
+     *        The name
+     * @return The object
+     */
+    public Object globalAttachment(String key)
     {
         return this.sessionGlobalState().attachment(key);
     }
 
-    public Map<String,Object> getAttachments()
+    /**
+     * Get all of the global attachments
+     * 
+     * @return The map of attachments
+     */
+    public Map<String, Object> getAttachments()
     {
         return this.sessionGlobalState().getAttachments();
     }
 
+    /**
+     * Get the session global state
+     * 
+     * @return The state
+     */
     public SessionGlobalState sessionGlobalState()
     {
         return sessionGlobalState;
     }
 
+    /**
+     * Get the pipeline description
+     * 
+     * @return The pipeline description
+     */
     public String getPipelineDescription()
     {
         return this.sessionGlobalState().getPipelineDescription();
     }
-    
+
+    /**
+     * Get the global state ID
+     * 
+     * @return The global state ID
+     */
     public long id()
     {
         return sessionGlobalState.id();
     }
 
+    /**
+     * Get the global state ID
+     * 
+     * @return The global state ID
+     */
     public long getSessionId()
     {
         return sessionGlobalState.id();
     }
 
+    /**
+     * Get the netcap session
+     * 
+     * @return The netcap session
+     */
     public NetcapSession netcapSession()
     {
         return sessionGlobalState.netcapSession();
     }
 
+    /**
+     * Get the isVectored flag
+     * 
+     * @return The isVectored flag
+     */
     public boolean isVectored()
     {
         return isVectored;
     }
 
+    /**
+     * Get the user
+     * 
+     * @return The user
+     */
     public String user()
     {
         return sessionGlobalState.user();
@@ -227,6 +321,8 @@ public abstract class AppSessionImpl implements AppSession
 
     /**
      * Number of bytes received from the client.
+     * 
+     * @return The value
      */
     public long c2tBytes()
     {
@@ -235,6 +331,8 @@ public abstract class AppSessionImpl implements AppSession
 
     /**
      * Number of bytes transmitted to the server.
+     * 
+     * @return The value
      */
     public long t2sBytes()
     {
@@ -243,6 +341,8 @@ public abstract class AppSessionImpl implements AppSession
 
     /**
      * Number of bytes received from the server.
+     * 
+     * @return The value
      */
     public long s2tBytes()
     {
@@ -251,6 +351,8 @@ public abstract class AppSessionImpl implements AppSession
 
     /**
      * Number of bytes transmitted to the client.
+     * 
+     * @return The value
      */
     public long t2cBytes()
     {
@@ -259,6 +361,8 @@ public abstract class AppSessionImpl implements AppSession
 
     /**
      * Number of chunks received from the client.
+     * 
+     * @return The value
      */
     public long c2tChunks()
     {
@@ -267,6 +371,8 @@ public abstract class AppSessionImpl implements AppSession
 
     /**
      * Number of chunks transmitted to the server.
+     * 
+     * @return The value
      */
     public long t2sChunks()
     {
@@ -275,6 +381,8 @@ public abstract class AppSessionImpl implements AppSession
 
     /**
      * Number of chunks received from the server.
+     * 
+     * @return The value
      */
     public long s2tChunks()
     {
@@ -283,30 +391,58 @@ public abstract class AppSessionImpl implements AppSession
 
     /**
      * Number of chunks transmitted to the client.
+     * 
+     * @return The value
      */
     public long t2cChunks()
     {
         return sessionGlobalState.clientSideListener().getTxChunks();
     }
 
-    /* These are not really useable without a little bit of tweaking to the vector machine */
+    /*
+     * These are not really useable without a little bit of tweaking to the
+     * vector machine
+     */
+
+    /**
+     * Get the maximum input size.
+     * 
+     * @return The value
+     */
     public int maxInputSize()
     {
         return maxInputSize;
     }
 
-    public void maxInputSize( int size )
+    /**
+     * Set the maximum input size.
+     * 
+     * @param size
+     *        The new size
+     */
+    public void maxInputSize(int size)
     {
         /* Possibly throw an error on an invalid size */
         maxInputSize = size;
     }
 
+    /**
+     * Get the maximum output size
+     * 
+     * @return The value
+     */
     public int maxOutputSize()
     {
         return maxOutputSize;
     }
 
-    public void maxOutputSize( int size )
+    /**
+     * Set the maximum output size
+     * 
+     * @param size
+     *        The new size
+     */
+    public void maxOutputSize(int size)
     {
         /* Possibly throw an error on an invalid size */
         maxOutputSize = size;
@@ -317,8 +453,8 @@ public abstract class AppSessionImpl implements AppSession
      */
     public void shutdownClient()
     {
-        if ( !clientOutgoingSocketQueue.isClosed()) {
-            clientOutgoingSocketQueue.write( ShutdownCrumb.getInstance());
+        if (!clientOutgoingSocketQueue.isClosed()) {
+            clientOutgoingSocketQueue.write(ShutdownCrumb.getInstance());
         }
     }
 
@@ -327,8 +463,8 @@ public abstract class AppSessionImpl implements AppSession
      */
     public void shutdownServer()
     {
-        if ( !serverOutgoingSocketQueue.isClosed()) {
-            serverOutgoingSocketQueue.write( ShutdownCrumb.getInstance());
+        if (!serverOutgoingSocketQueue.isClosed()) {
+            serverOutgoingSocketQueue.write(ShutdownCrumb.getInstance());
         }
     }
 
@@ -339,22 +475,22 @@ public abstract class AppSessionImpl implements AppSession
     public void killSession()
     {
         try {
-            if ( clientIncomingSocketQueue != null ) clientIncomingSocketQueue.kill();
-            if ( clientOutgoingSocketQueue != null ) clientOutgoingSocketQueue.kill();
-            if ( serverIncomingSocketQueue != null ) serverIncomingSocketQueue.kill();
-            if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.kill();
-        } catch ( Exception ex ) {
-            logger.warn( "Error while killing a session", ex );
+            if (clientIncomingSocketQueue != null) clientIncomingSocketQueue.kill();
+            if (clientOutgoingSocketQueue != null) clientOutgoingSocketQueue.kill();
+            if (serverIncomingSocketQueue != null) serverIncomingSocketQueue.kill();
+            if (serverOutgoingSocketQueue != null) serverOutgoingSocketQueue.kill();
+        } catch (Exception ex) {
+            logger.warn("Error while killing a session", ex);
         }
 
         try {
             Vector vector = sessionGlobalState.netcapHook().getVector();
 
             /* Last send the kill signal to the vectoring machine */
-            if ( vector != null ) vector.shutdown();
-            else logger.info( "kill session called before vectoring started, ignoring vectoring." );
-        } catch ( Exception ex ) {
-            logger.warn( "Error while killing a session", ex );
+            if (vector != null) vector.shutdown();
+            else logger.info("kill session called before vectoring started, ignoring vectoring.");
+        } catch (Exception ex) {
+            logger.warn("Error while killing a session", ex);
         }
     }
 
@@ -364,17 +500,13 @@ public abstract class AppSessionImpl implements AppSession
     public void raze()
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingApp( pipelineConnector().app().getAppSettings().getId() );
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            if ( this.clientIncomingSocketQueue != null )
-                this.clientIncomingSocketQueue.raze();
-            if ( this.serverIncomingSocketQueue != null )
-                this.serverIncomingSocketQueue.raze();
-            if ( this.clientOutgoingSocketQueue != null )
-                this.clientOutgoingSocketQueue.raze();
-            if ( this.serverOutgoingSocketQueue != null )
-                this.serverOutgoingSocketQueue.raze();
+            if (this.clientIncomingSocketQueue != null) this.clientIncomingSocketQueue.raze();
+            if (this.serverIncomingSocketQueue != null) this.serverIncomingSocketQueue.raze();
+            if (this.clientOutgoingSocketQueue != null) this.clientOutgoingSocketQueue.raze();
+            if (this.serverOutgoingSocketQueue != null) this.serverOutgoingSocketQueue.raze();
 
             if (released) {
                 logger.debug("raze released");
@@ -384,13 +516,7 @@ public abstract class AppSessionImpl implements AppSession
                     IncomingSocketQueue oursin = serverIncomingSocketQueue();
                     OutgoingSocketQueue ourcout = clientOutgoingSocketQueue();
                     OutgoingSocketQueue oursout = serverOutgoingSocketQueue();
-                    logger.debug("raze " +
-                                 " ourcin: " + ourcin +
-                                 " ourcout: " + ourcout +
-                                 " ourcsin: " + oursin +
-                                 " oursout: " + oursout +
-                                 " writeQueue[CLIENT]: " + writeQueue[CLIENT] +
-                                 " writeQueue[SERVER]: " + writeQueue[SERVER]);
+                    logger.debug("raze " + " ourcin: " + ourcin + " ourcout: " + ourcout + " ourcsin: " + oursin + " oursout: " + oursout + " writeQueue[CLIENT]: " + writeQueue[CLIENT] + " writeQueue[SERVER]: " + writeQueue[SERVER]);
                 }
             }
             closeFinal();
@@ -405,155 +531,280 @@ public abstract class AppSessionImpl implements AppSession
         }
     }
 
-    public boolean getServerShutdown() { return this.isServerShutdown; }
-    public void setServerShutdown( boolean newValue ) { this.isServerShutdown = newValue; }
-
-    public boolean getClientShutdown() { return this.isClientShutdown; }
-    public void setClientShutdown( boolean newValue ) { this.isClientShutdown = newValue; }
-
-    public void shutdownEvent( IncomingSocketQueue isq )
+    /**
+     * Get the server shutdown flag
+     * 
+     * @return The flag
+     */
+    public boolean getServerShutdown()
     {
-        logger.debug( "Incoming socket queue shutdown event: " + isq );
+        return this.isServerShutdown;
     }
 
+    /**
+     * Set the server shutdown flag
+     * 
+     * @param newValue
+     *        The new flag value
+     */
+    public void setServerShutdown(boolean newValue)
+    {
+        this.isServerShutdown = newValue;
+    }
+
+    /**
+     * Get the client shutdown flag
+     * 
+     * @return The flag
+     */
+    public boolean getClientShutdown()
+    {
+        return this.isClientShutdown;
+    }
+
+    /**
+     * Set the client shutdown flag
+     * 
+     * @param newValue
+     *        The new flag value
+     */
+    public void setClientShutdown(boolean newValue)
+    {
+        this.isClientShutdown = newValue;
+    }
+
+    /**
+     * Handle shutdown event
+     * 
+     * @param isq
+     *        The incoming socket queue
+     */
+    public void shutdownEvent(IncomingSocketQueue isq)
+    {
+        logger.debug("Incoming socket queue shutdown event: " + isq);
+    }
+
+    /**
+     * Get the client incoming socket queue
+     * 
+     * @return The queue
+     */
     public IncomingSocketQueue clientIncomingSocketQueue()
     {
-        if ( clientIncomingSocketQueue == null || clientIncomingSocketQueue.isClosed()) return null;
+        if (clientIncomingSocketQueue == null || clientIncomingSocketQueue.isClosed()) return null;
         return clientIncomingSocketQueue;
     }
 
+    /**
+     * Get the client outgoing socket queue
+     * 
+     * @return The queue
+     */
     public OutgoingSocketQueue clientOutgoingSocketQueue()
     {
-        if ( clientOutgoingSocketQueue == null || clientOutgoingSocketQueue.isClosed()) return null;
+        if (clientOutgoingSocketQueue == null || clientOutgoingSocketQueue.isClosed()) return null;
         return clientOutgoingSocketQueue;
     }
 
+    /**
+     * Get the server incoming socket queue
+     * 
+     * @return The queue
+     */
     public IncomingSocketQueue serverIncomingSocketQueue()
     {
-        if ( serverIncomingSocketQueue == null || serverIncomingSocketQueue.isClosed()) return null;
+        if (serverIncomingSocketQueue == null || serverIncomingSocketQueue.isClosed()) return null;
         return serverIncomingSocketQueue;
     }
 
+    /**
+     * Get the server outgoing socket queue
+     * 
+     * @return The queue
+     */
     public OutgoingSocketQueue serverOutgoingSocketQueue()
     {
-        if ( serverOutgoingSocketQueue == null || serverOutgoingSocketQueue.isClosed()) return null;
+        if (serverOutgoingSocketQueue == null || serverOutgoingSocketQueue.isClosed()) return null;
         return serverOutgoingSocketQueue;
     }
 
+    /**
+     * Get the policy ID
+     * 
+     * @return The policy ID
+     */
     public long getPolicyId()
     {
         return sessionEvent.getPolicyId();
     }
 
+    /**
+     * Get the session event
+     * 
+     * @return The event
+     */
     public SessionEvent sessionEvent()
     {
         return sessionEvent;
     }
 
+    /**
+     * Release the sesssion
+     */
     public void release()
     {
         cancelTimer();
 
         released = true;
-        
+
         Vector vector = sessionGlobalState.netcapHook().getVector();
-        if ( vector == null || vector.isRazed() )
-            return;
-        
+        if (vector == null || vector.isRazed()) return;
+
         int length = vector.length();
 
-        if ( clientIncomingSocketQueue != null &&
-             serverOutgoingSocketQueue != null && 
-             !clientIncomingSocketQueue.isRazed() &&
-             !serverOutgoingSocketQueue.isRazed() ) {
+        if (clientIncomingSocketQueue != null && serverOutgoingSocketQueue != null && !clientIncomingSocketQueue.isRazed() && !serverOutgoingSocketQueue.isRazed()) {
 
-            vector.compress( clientIncomingSocketQueue, serverOutgoingSocketQueue );
+            vector.compress(clientIncomingSocketQueue, serverOutgoingSocketQueue);
             length--;
         }
 
-        if ( serverIncomingSocketQueue != null &&
-             clientOutgoingSocketQueue != null &&
-             !serverIncomingSocketQueue.isRazed() &&
-             !clientOutgoingSocketQueue.isRazed() ) {
+        if (serverIncomingSocketQueue != null && clientOutgoingSocketQueue != null && !serverIncomingSocketQueue.isRazed() && !clientOutgoingSocketQueue.isRazed()) {
 
-            vector.compress( serverIncomingSocketQueue, clientOutgoingSocketQueue );
+            vector.compress(serverIncomingSocketQueue, clientOutgoingSocketQueue);
             length--;
         }
 
         /**
-         * If we have reduced the chain to just two relays, there are no more apps looking at this session
-         * just bypass the rest of the session
+         * If we have reduced the chain to just two relays, there are no more
+         * apps looking at this session just bypass the rest of the session
          */
-        if ( length == 2 && this.netcapSession() != null && this.netcapSession() instanceof NetcapUDPSession ) {
+        if (length == 2 && this.netcapSession() != null && this.netcapSession() instanceof NetcapUDPSession) {
             sessionGlobalState.netcapHook().releaseToBypass();
         }
     }
 
+    /**
+     * Get the session released flag
+     * 
+     * @return The flag
+     */
     public boolean released()
     {
         return released;
     }
 
+    /**
+     * Schedule a timer
+     * 
+     * @param delay
+     *        The timer delay
+     */
     public void scheduleTimer(long delay)
     {
-        if (delay < 0)
-            throw new IllegalArgumentException("Delay must be non-negative");
+        if (delay < 0) throw new IllegalArgumentException("Delay must be non-negative");
         // mpipe.scheduleTimer(this, delay);
     }
 
+    /**
+     * Cancel the timer
+     */
     public void cancelTimer()
     {
         // mpipe.cancelTimer(this);
     }
 
-    public void sendObjectToClient( Object obj )
+    /**
+     * Send an object to the client
+     * 
+     * @param obj
+     *        The object to send
+     */
+    public void sendObjectToClient(Object obj)
     {
-        sendObject( CLIENT, obj );
+        sendObject(CLIENT, obj);
     }
 
-    public void sendObjectToServer( Object obj )
+    /**
+     * Send an object to the server
+     * 
+     * @param obj
+     *        The object
+     */
+    public void sendObjectToServer(Object obj)
     {
-        sendObject( SERVER, obj );
+        sendObject(SERVER, obj);
     }
 
-    public void sendObject( int side, Object obj )
+    /**
+     * Send an object
+     * 
+     * @param side
+     *        The side to which the object should be sent
+     * @param obj
+     *        The object to send
+     */
+    public void sendObject(int side, Object obj)
     {
-        if ( obj.getClass().isArray() ) {
+        if (obj.getClass().isArray()) {
             logger.warn("sendObject() called with array. Did you mean sendObjects() instead?", new Exception());
         }
 
-        ObjectCrumb crumb = new ObjectCrumb( obj );
+        ObjectCrumb crumb = new ObjectCrumb(obj);
         addToWriteQueue(side, crumb);
     }
 
-    public void sendObjectsToClient( Object[] objs )
+    /**
+     * Send objects to the client
+     * 
+     * @param objs
+     *        The objects to send
+     */
+    public void sendObjectsToClient(Object[] objs)
     {
-        sendObjects( CLIENT, objs );
+        sendObjects(CLIENT, objs);
     }
 
-    public void sendObjectsToServer( Object[] objs )
+    /**
+     * Send objects to the server
+     * 
+     * @param objs
+     *        The objects to send
+     */
+    public void sendObjectsToServer(Object[] objs)
     {
-        sendObjects( SERVER, objs );
+        sendObjects(SERVER, objs);
     }
-    
-    public void sendObjects( int side, Object[] objs )
+
+    /**
+     * Send objects
+     * 
+     * @param side
+     *        The side to which the objects should be sent
+     * @param objs
+     *        The objects to send
+     */
+    public void sendObjects(int side, Object[] objs)
     {
-        if ( objs == null || objs.length == 0 )
-            return;
+        if (objs == null || objs.length == 0) return;
         for (int i = 0; i < objs.length; i++)
             sendObject(side, objs[i]);
     }
-    
+
+    /**
+     * Add an object to the write queue
+     * 
+     * @param side
+     *        The side for which the object should be queued
+     * @param obj
+     *        The object to queue
+     */
     protected void addToWriteQueue(int side, Object obj)
     {
-        if ( obj == null )
-            return;
+        if (obj == null) return;
 
         OutgoingSocketQueue out;
-        if (side == CLIENT)
-            out = clientOutgoingSocketQueue();
-        else
-            out = serverOutgoingSocketQueue();
+        if (side == CLIENT) out = clientOutgoingSocketQueue();
+        else out = serverOutgoingSocketQueue();
 
         if (out == null || out.isClosed()) {
             String sideName = side == CLIENT ? "client" : "server";
@@ -563,18 +814,26 @@ public abstract class AppSessionImpl implements AppSession
 
         List<Object> queue = writeQueue[side];
 
-        if ( queue == null ) {
+        if (queue == null) {
             queue = new ArrayList<Object>();
             writeQueue[side] = queue;
         }
-        queue.add( obj );
+        queue.add(obj);
     }
 
+    /**
+     * Send a crumb to an outgoing socket queue
+     * 
+     * @param crumb
+     *        The crumb
+     * @param out
+     *        The queue
+     * @return The size sent
+     */
     protected int sendCrumb(Crumb crumb, OutgoingSocketQueue out)
     {
         int size = 0;
-        if (crumb instanceof DataCrumb)
-            size = ((DataCrumb)crumb).limit();
+        if (crumb instanceof DataCrumb) size = ((DataCrumb) crumb).limit();
         boolean success = out.write(crumb);
         if (logger.isDebugEnabled()) {
             logger.debug("writing " + crumb.type() + " crumb to " + out + ", size: " + size);
@@ -583,46 +842,48 @@ public abstract class AppSessionImpl implements AppSession
         return size;
     }
 
+    /**
+     * Get the next crumb to sent
+     * 
+     * @param side
+     *        The side for which to get the crumb
+     * @return The crumb
+     */
     protected Crumb getNextCrumb2Send(int side)
     {
         List<Object> queue = writeQueue[side];
-        if ( queue == null ) {
+        if (queue == null) {
             logger.warn("write queue is null");
             return null;
         }
         Object result = queue.get(0);
-        if ( result == null ) {
+        if (result == null) {
             logger.warn("Invalid entry in write queue: " + result);
             return null;
         }
 
-        if ( result instanceof Crumb ) {
+        if (result instanceof Crumb) {
             Crumb crumb = (Crumb) result;
             queue.remove(0);
-            if ( queue.size() == 0 )
-                writeQueue[side] = null;
+            if (queue.size() == 0) writeQueue[side] = null;
 
             return crumb;
-        } else if ( result instanceof IPStreamer ) {
+        } else if (result instanceof IPStreamer) {
             IPStreamer streamer = (IPStreamer) result;
-            Crumb crumb = readStreamer( streamer );
-            if ( crumb != null )
-                return crumb;
-            
+            Crumb crumb = readStreamer(streamer);
+            if (crumb != null) return crumb;
+
             // null means its done streaming
 
             // if "closeWhenDone" then close the side
             if (streamer.closeWhenDone()) {
-                if (side == CLIENT)
-                    shutdownClient();
-                else
-                    shutdownServer();
+                if (side == CLIENT) shutdownClient();
+                else shutdownServer();
             }
 
             // remove the streamer from the write queue
             queue.remove(0);
-            if ( queue.size() == 0 )
-                writeQueue[side] = null;
+            if (queue.size() == 0) writeQueue[side] = null;
 
             return null;
         } else {
@@ -632,7 +893,10 @@ public abstract class AppSessionImpl implements AppSession
 
         return null;
     }
-    
+
+    /**
+     * Send complete event
+     */
     public void complete()
     {
         try {
@@ -652,6 +916,12 @@ public abstract class AppSessionImpl implements AppSession
         }
     }
 
+    /**
+     * Handle a client incoming event
+     * 
+     * @param in
+     *        The incoming socket queue
+     */
     public void clientEvent(IncomingSocketQueue in)
     {
         try {
@@ -662,6 +932,12 @@ public abstract class AppSessionImpl implements AppSession
         }
     }
 
+    /**
+     * Handle a server incoming event
+     * 
+     * @param in
+     *        The incoming socket queue
+     */
     public void serverEvent(IncomingSocketQueue in)
     {
         try {
@@ -672,6 +948,12 @@ public abstract class AppSessionImpl implements AppSession
         }
     }
 
+    /**
+     * Handle a client outgoing event
+     * 
+     * @param out
+     *        The outgoing socket queue
+     */
     public void clientEvent(OutgoingSocketQueue out)
     {
         try {
@@ -682,6 +964,12 @@ public abstract class AppSessionImpl implements AppSession
         }
     }
 
+    /**
+     * Handle a server outgoing event
+     * 
+     * @param out
+     *        The outgoing socket queue
+     */
     public void serverEvent(OutgoingSocketQueue out)
     {
         try {
@@ -692,9 +980,13 @@ public abstract class AppSessionImpl implements AppSession
         }
     }
 
-    /** The write side of the client has been closed from underneath
-     * the app, this is the same as an EPIPE, but is delivered
-     * as an event */
+    /**
+     * The write side of the client has been closed from underneath the app,
+     * this is the same as an EPIPE, but is delivered as an event
+     * 
+     * @param out
+     *        The outgoing socket queue
+     */
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
         try {
@@ -702,8 +994,7 @@ public abstract class AppSessionImpl implements AppSession
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = clientIncomingSocketQueue();
-            if (in != null)
-                in.reset();
+            if (in != null) in.reset();
             sideDieing(CLIENT);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while output resetting";
@@ -717,9 +1008,13 @@ public abstract class AppSessionImpl implements AppSession
         }
     }
 
-    /** The write side of the server has been closed from underneath
-     * the app, this is the same as an EPIPE, but is delivered
-     * as an event */
+    /**
+     * The write side of the server has been closed from underneath the app,
+     * this is the same as an EPIPE, but is delivered as an event
+     * 
+     * @param out
+     *        The outgoing socket queue
+     */
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
         try {
@@ -727,8 +1022,7 @@ public abstract class AppSessionImpl implements AppSession
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = serverIncomingSocketQueue();
-            if (in != null)
-                in.reset();
+            if (in != null) in.reset();
             sideDieing(SERVER);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while output resetting";
@@ -743,15 +1037,21 @@ public abstract class AppSessionImpl implements AppSession
     }
 
     /**
-     * <code>clientMark</code> returns the server-side socket mark for this session
+     * <code>clientMark</code> returns the server-side socket mark for this
+     * session
+     * 
+     * @return The mark
      */
-    public int  clientMark()
+    public int clientMark()
     {
         return this.sessionGlobalState().netcapSession().clientMark();
     }
 
     /**
      * <code>clientMark</code> sets the server-side socket mark for this session
+     * 
+     * @param newmark
+     *        The new mark
      */
     public void clientMark(int newmark)
     {
@@ -759,7 +1059,11 @@ public abstract class AppSessionImpl implements AppSession
     }
 
     /**
-     * <code>orClientMark</code> bitwise ORs the provided bitmask with the current client-side conn-mark
+     * <code>orClientMark</code> bitwise ORs the provided bitmask with the
+     * current client-side conn-mark
+     * 
+     * @param bitmask
+     *        The bitmask
      */
     public void orClientMark(int bitmask)
     {
@@ -771,7 +1075,11 @@ public abstract class AppSessionImpl implements AppSession
     }
 
     /**
-     * <code>setClientQosMark</code> sets the connmark so this session' client-side packets get the provided QoS priority
+     * <code>setClientQosMark</code> sets the connmark so this session'
+     * client-side packets get the provided QoS priority
+     * 
+     * @param priority
+     *        The priority
      */
     public void setClientQosMark(int priority)
     {
@@ -780,15 +1088,21 @@ public abstract class AppSessionImpl implements AppSession
     }
 
     /**
-     * <code>serverMark</code> returns the server-side socket mark for this session
+     * <code>serverMark</code> returns the server-side socket mark for this
+     * session
+     * 
+     * @return The mark
      */
-    public int  serverMark()
+    public int serverMark()
     {
         return this.sessionGlobalState().netcapSession().serverMark();
     }
 
     /**
      * <code>serverMark</code> sets the server-side socket mark for this session
+     * 
+     * @param newmark
+     *        The new mark
      */
     public void serverMark(int newmark)
     {
@@ -796,7 +1110,11 @@ public abstract class AppSessionImpl implements AppSession
     }
 
     /**
-     * <code>orServerMark</code> bitwise ORs the provided bitmask with the current server-side conn-mark
+     * <code>orServerMark</code> bitwise ORs the provided bitmask with the
+     * current server-side conn-mark
+     * 
+     * @param bitmask
+     *        The bitmask
      */
     public void orServerMark(int bitmask)
     {
@@ -808,7 +1126,11 @@ public abstract class AppSessionImpl implements AppSession
     }
 
     /**
-     * <code>setServerQosMark</code> sets the connmark so this session' server-side packets get the provided QoS priority
+     * <code>setServerQosMark</code> sets the connmark so this session'
+     * server-side packets get the provided QoS priority
+     * 
+     * @param priority
+     *        The priority
      */
     public void setServerQosMark(int priority)
     {
@@ -816,7 +1138,14 @@ public abstract class AppSessionImpl implements AppSession
         this.sessionGlobalState().netcapSession().serverQosMark(priority);
     }
 
-    // This is the main write hook called by the Vectoring machine
+    /**
+     * This is the main write hook called by the Vectoring machine
+     * 
+     * @param side
+     *        The side for the event
+     * @param out
+     *        The outgoing socket queue
+     */
     public void writeEvent(int side, OutgoingSocketQueue out)
     {
         String sideName = side == CLIENT ? "client" : "server";
@@ -839,10 +1168,7 @@ public abstract class AppSessionImpl implements AppSession
             assert out == ourout;
 
             if (logger.isDebugEnabled()) {
-                logger.debug("write(" + sideName + ") out: " + out +
-                             " out.numEvents(): " + out.numEvents() + 
-                             " out.numBytes(): " + out.numBytes() + 
-                             " write-queue: " +  writeQueue[side]);
+                logger.debug("write(" + sideName + ") out: " + out + " out.numEvents(): " + out.numEvents() + " out.numBytes(): " + out.numBytes() + " write-queue: " + writeQueue[side]);
             }
 
             if (!doWrite(side, ourout)) {
@@ -863,9 +1189,16 @@ public abstract class AppSessionImpl implements AppSession
         } finally {
             MDC.remove(SESSION_ID_MDC_KEY);
         }
-
     }
 
+    /**
+     * This is the main read hook called by the Vectoring machine
+     * 
+     * @param side
+     *        The side for the event
+     * @param in
+     *        The incoming socket queue
+     */
     public void readEvent(int side, IncomingSocketQueue in)
     {
         String sideName = side == CLIENT ? "client" : "server";
@@ -903,22 +1236,19 @@ public abstract class AppSessionImpl implements AppSession
             assert in == ourin;
 
             if (logger.isDebugEnabled()) {
-                logger.debug("read(" + sideName + ") in: " + in );
+                logger.debug("read(" + sideName + ") in: " + in);
             }
 
-            if ( ourout == null || (writeQueue[1 - side] == null && ourout.isEmpty()) ) {
-                handleRead( side, in );
-                doWrite( side, otherout );
-                doWrite( 1 - side, ourout );
+            if (ourout == null || (writeQueue[1 - side] == null && ourout.isEmpty())) {
+                handleRead(side, in);
+                doWrite(side, otherout);
+                doWrite(1 - side, ourout);
             } else {
-                logger.error("Illegal State: read(" + sideName + ") in: " + in +
-                             " ourout: " + ourout +
-                             " writequeue: " + writeQueue[1-side] +
-                             " empty:" + ( ourout == null ? null : ourout.isEmpty() ) );
+                logger.error("Illegal State: read(" + sideName + ") in: " + in + " ourout: " + ourout + " writequeue: " + writeQueue[1 - side] + " empty:" + ourout.isEmpty());
             }
 
             refreshSocketQueueState();
-            
+
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while reading from " + sideName;
             logger.error(message, x);
@@ -930,89 +1260,259 @@ public abstract class AppSessionImpl implements AppSession
         }
     }
 
-    /*
-     * the simulateClientData and simulateServerData functions
-     * allow injecting data directly at the client and server
-     * session endpoints.  They do this by adding the argumented data to the
-     * incoming socket queue so that it can be processed exactly as if the data
-     * had been received across the network directly from the client or server.
-     * These functions were added specifically to allow the client and server
-     * sides of the https-casing to pass messages back and forth without the data
-     * passing through all the other apps subscribed to HTTP tokens.
+    /**
+     * The simulateClientData and simulateServerData functions allow injecting
+     * data directly at the client and server session endpoints. They do this by
+     * adding the argumented data to the incoming socket queue so that it can be
+     * processed exactly as if the data had been received across the network
+     * directly from the client or server. These functions were added
+     * specifically to allow the client and server sides of the https-casing to
+     * pass messages back and forth without the data passing through all the
+     * other apps subscribed to HTTP tokens.
+     * 
+     * @param data
+     *        The data
      */
     public void simulateClientData(ByteBuffer data)
     {
         byte local[] = new byte[data.limit()];
-        data.get(local,0,data.limit());
+        data.get(local, 0, data.limit());
         DataCrumb crumb = new DataCrumb(local);
         IncomingSocketQueue isq = clientIncomingSocketQueue();
-        if ( isq != null ) {
+        if (isq != null) {
             isq.send_event(crumb);
         } else {
             logger.warn("simulateClientData() failed: null socket queue");
         }
     }
 
+    /**
+     * Simulate server data. See the simulateClientData comment for details
+     * 
+     * @param data
+     *        The data
+     */
     public void simulateServerData(ByteBuffer data)
     {
         byte local[] = new byte[data.limit()];
-        data.get(local,0,data.limit());
-        DataCrumb crumb = new DataCrumb(data.array(),data.limit());
+        data.get(local, 0, data.limit());
+        DataCrumb crumb = new DataCrumb(data.array(), data.limit());
         IncomingSocketQueue isq = serverIncomingSocketQueue();
-        if ( isq != null ) {
+        if (isq != null) {
             isq.send_event(crumb);
         } else {
             logger.warn("simulateServerData() failed: null socket queue");
         }
     }
 
-    public short getProtocol() { return protocol; }
-    public int getClientIntf() { return clientIntf; }
-    public int getServerIntf() { return serverIntf; }
-
-    public InetAddress getOrigClientAddr() { return origClientAddr; }
-    public int getOrigClientPort() { return origClientPort; }
-    public InetAddress getNewClientAddr() { return newClientAddr; }
-    public int getNewClientPort() { return newClientPort; }
-
-    public InetAddress getOrigServerAddr() { return origServerAddr; }
-    public int getOrigServerPort() { return origServerPort; }
-    public InetAddress getNewServerAddr() { return newServerAddr; }
-    public int getNewServerPort() { return newServerPort; }
-
-    public InetAddress getClientAddr() { return origClientAddr; }
-    public int getClientPort() { return origClientPort; }
-    public InetAddress getServerAddr() { return newServerAddr; }
-    public int getServerPort() { return newServerPort; }
-
-    public boolean hasTag( String name ) { return sessionGlobalState.hasTag( name ); }
-    public void addTag( Tag tag ) { sessionGlobalState.addTag( tag ); }
-    public List<Tag> getTags() { return sessionGlobalState.getTags(); }
-    
-    public String toString()
+    /**
+     * Get the protocol
+     * 
+     * @return The protocol
+     */
+    public short getProtocol()
     {
-        String origClientAddr = ( getOrigClientAddr() != null ? getOrigClientAddr().getHostAddress() : "null" );
-        String newServerAddr = ( getNewServerAddr() != null ? getNewServerAddr().getHostAddress() : "null" );
-        return "" +
-            "[AppSession-" + System.identityHashCode(this) + "]" +
-            "[Session-" + getSessionId() + "] " +
-            getProtocol() + " " +
-            origClientAddr + ":" +
-            getOrigClientPort() + "->" +
-            newServerAddr + ":" +
-            getNewServerPort();
+        return protocol;
     }
 
+    /**
+     * Get the client interface
+     * 
+     * @return The interface
+     */
+    public int getClientIntf()
+    {
+        return clientIntf;
+    }
+
+    /**
+     * Get the server interface
+     * 
+     * @return The interface
+     */
+    public int getServerIntf()
+    {
+        return serverIntf;
+    }
+
+    /**
+     * Get the original client address
+     * 
+     * @return The address
+     */
+    public InetAddress getOrigClientAddr()
+    {
+        return origClientAddr;
+    }
+
+    /**
+     * Get the original client port
+     * 
+     * @return The port
+     */
+    public int getOrigClientPort()
+    {
+        return origClientPort;
+    }
+
+    /**
+     * Get the new client address
+     * 
+     * @return The address
+     */
+    public InetAddress getNewClientAddr()
+    {
+        return newClientAddr;
+    }
+
+    /**
+     * Get the new client port
+     * 
+     * @return The port
+     */
+    public int getNewClientPort()
+    {
+        return newClientPort;
+    }
+
+    /**
+     * Get the original server address
+     * 
+     * @return The address
+     */
+    public InetAddress getOrigServerAddr()
+    {
+        return origServerAddr;
+    }
+
+    /**
+     * Get the original server port
+     * 
+     * @return The port
+     */
+    public int getOrigServerPort()
+    {
+        return origServerPort;
+    }
+
+    /**
+     * Get the new server address
+     * 
+     * @return The address
+     */
+    public InetAddress getNewServerAddr()
+    {
+        return newServerAddr;
+    }
+
+    /**
+     * Get the new server port
+     * 
+     * @return The port
+     */
+    public int getNewServerPort()
+    {
+        return newServerPort;
+    }
+
+    /**
+     * Get the client address
+     * 
+     * @return The client address
+     */
+    public InetAddress getClientAddr()
+    {
+        return origClientAddr;
+    }
+
+    /**
+     * Get the client port
+     * 
+     * @return The port
+     */
+    public int getClientPort()
+    {
+        return origClientPort;
+    }
+
+    /**
+     * Get the server address
+     * 
+     * @return The address
+     */
+    public InetAddress getServerAddr()
+    {
+        return newServerAddr;
+    }
+
+    /**
+     * Get the server port
+     * 
+     * @return The port
+     */
+    public int getServerPort()
+    {
+        return newServerPort;
+    }
+
+    /**
+     * See if the session has a tag
+     * 
+     * @param name
+     *        The tag name
+     * @return True if the tag is found, otherwise false
+     */
+    public boolean hasTag(String name)
+    {
+        return sessionGlobalState.hasTag(name);
+    }
+
+    /**
+     * Add a tag to the session
+     * 
+     * @param tag
+     *        The tag
+     */
+    public void addTag(Tag tag)
+    {
+        sessionGlobalState.addTag(tag);
+    }
+
+    /**
+     * Get the session tags
+     * 
+     * @return The tags
+     */
+    public List<Tag> getTags()
+    {
+        return sessionGlobalState.getTags();
+    }
+
+    /**
+     * Get a string representation of the session
+     * 
+     * @return The string
+     */
+    public String toString()
+    {
+        String origClientAddr = (getOrigClientAddr() != null ? getOrigClientAddr().getHostAddress() : "null");
+        String newServerAddr = (getNewServerAddr() != null ? getNewServerAddr().getHostAddress() : "null");
+        return "" + "[AppSession-" + System.identityHashCode(this) + "]" + "[Session-" + getSessionId() + "] " + getProtocol() + " " + origClientAddr + ":" + getOrigClientPort() + "->" + newServerAddr + ":" + getNewServerPort();
+    }
+
+    /**
+     * Close cleanup
+     */
     protected void closeFinal()
     {
         cancelTimer();
 
-        dispatcher.removeSession( this );
+        dispatcher.removeSession(this);
     }
 
     /**
-     * This one sets up the socket queues for normal operation; used
-     * when streaming ends.
+     * This one sets up the socket queues for normal operation; used when
+     * streaming ends.
      */
     private void refreshSocketQueueState()
     {
@@ -1024,31 +1524,27 @@ public abstract class AppSessionImpl implements AppSession
         // We take care not to change the state unless it's really
         // changing, as changing the state calls notifymvpoll() every
         // time.
-        if (sout != null && !sout.isEnabled())
-            sout.enable();
+        if (sout != null && !sout.isEnabled()) sout.enable();
         if (sout == null || (sout.isEmpty() && writeQueue[SERVER] == null)) {
-            if (cin != null && !cin.isEnabled())
-                cin.enable();
+            if (cin != null && !cin.isEnabled()) cin.enable();
         } else {
-            if (cin != null && cin.isEnabled())
-                cin.disable();
+            if (cin != null && cin.isEnabled()) cin.disable();
         }
-        if (cout != null && !cout.isEnabled())
-            cout.enable();
+        if (cout != null && !cout.isEnabled()) cout.enable();
         if (cout == null || (cout.isEmpty() && writeQueue[CLIENT] == null)) {
-            if (sin != null && !sin.isEnabled())
-                sin.enable();
+            if (sin != null && !sin.isEnabled()) sin.enable();
         } else {
-            if (sin != null && sin.isEnabled())
-                sin.disable();
+            if (sin != null && sin.isEnabled()) sin.disable();
         }
     }
 
     /**
      * Returns true if we did something.
-     *
-     * @param side an <code>int</code> value
-     * @param out an <code>OutgoingSocketQueue</code> value
+     * 
+     * @param side
+     *        an <code>int</code> value
+     * @param out
+     *        an <code>OutgoingSocketQueue</code> value
      * @return a <code>boolean</code> value
      */
     private boolean doWrite(int side, OutgoingSocketQueue out)
@@ -1057,135 +1553,209 @@ public abstract class AppSessionImpl implements AppSession
             return false;
 
         if (writeQueue[side] == null) // nothing to write
-            return false; 
+            return false;
 
-        return tryWrite( side, out );
+        return tryWrite(side, out);
     }
 
     /**
      * <code>isSideDieing</code> returns true if the incoming socket queue
      * contains an event that will cause the end of the session (at least on
      * that side). These are RST for TCP and EXPIRE for UDP.
-     *
-     * @param in an <code>IncomingSocketQueue</code> value
+     * 
+     * @param side
+     *        The side to check
+     * @param in
+     *        an <code>IncomingSocketQueue</code> value
      * @return a <code>boolean</code> value
      */
-    abstract protected boolean isSideDieing( int side, IncomingSocketQueue in );
+    abstract protected boolean isSideDieing(int side, IncomingSocketQueue in);
 
-    abstract protected void sideDieing( int side ) ;
+    /**
+     * Set the side dieing flag
+     * 
+     * @param side
+     *        The side
+     */
+    abstract protected void sideDieing(int side);
 
-    abstract protected void sendWritableEvent( int side ) ;
+    /**
+     * Send a writable event
+     * 
+     * @param side
+     *        The side
+     */
+    abstract protected void sendWritableEvent(int side);
 
-    abstract protected void sendCompleteEvent() ;
+    /**
+     * Send a complete event
+     */
+    abstract protected void sendCompleteEvent();
 
-    abstract protected boolean tryWrite( int side, OutgoingSocketQueue out );
+    /**
+     * Try writing
+     * 
+     * @param side
+     *        The side
+     * @param out
+     *        The outgoing socket queue
+     * @return The result
+     */
+    abstract protected boolean tryWrite(int side, OutgoingSocketQueue out);
 
-    abstract protected Crumb readStreamer( IPStreamer streamer );
+    /**
+     * Read a crumb from a streamer
+     * 
+     * @param streamer
+     *        The streamer
+     * @return The crumb
+     */
+    abstract protected Crumb readStreamer(IPStreamer streamer);
 
-    abstract protected void handleRead( int side, IncomingSocketQueue in );
+    /**
+     * Handle read
+     * 
+     * @param side
+     *        The side
+     * @param in
+     *        The incoming socket queue
+     */
+    abstract protected void handleRead(int side, IncomingSocketQueue in);
 
+    /**
+     * Get the id for MDC
+     * 
+     * @return The string
+     */
     abstract protected String idForMDC();
 
+    /**
+     * Class to represent a session socket queue listener
+     */
     private class SessionSocketQueueListener implements SocketQueueListener
     {
-        SessionSocketQueueListener() { }
-
-        public void event( IncomingSocketQueue in )
+        /**
+         * Constructor
+         */
+        SessionSocketQueueListener()
         {
-            if ( in == serverIncomingSocketQueue ) {
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "IncomingSocketQueueEvent: server - " + in + " " + sessionGlobalState );
+        }
+
+        /**
+         * Handle an event
+         * 
+         * @param in
+         *        The incoming socket queue
+         */
+        public void event(IncomingSocketQueue in)
+        {
+            if (in == serverIncomingSocketQueue) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("IncomingSocketQueueEvent: server - " + in + " " + sessionGlobalState);
                 }
 
-                serverEvent( in );
-            } else if ( in == clientIncomingSocketQueue ) {
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "IncomingSocketQueueEvent: client - " + in + " " + sessionGlobalState );
+                serverEvent(in);
+            } else if (in == clientIncomingSocketQueue) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("IncomingSocketQueueEvent: client - " + in + " " + sessionGlobalState);
                 }
 
-                clientEvent( in );
+                clientEvent(in);
             } else {
                 /* This should never happen */
-                throw new IllegalStateException( "Invalid socket queue: " + in );
+                throw new IllegalStateException("Invalid socket queue: " + in);
             }
         }
 
-        public void event( OutgoingSocketQueue out )
+        /**
+         * Handle ana event
+         * 
+         * @param out
+         *        The outgoing socket queue
+         */
+        public void event(OutgoingSocketQueue out)
         {
             /**
-             * This is called every time a crumb is removed from the
-             * outgoing socket queue (what it considers 'writable',
-             * but the TAPI defines writable as empty) So, we drop all
-             * these writable events unless it is empty. That converts
-             * the socketqueue's definition of writable to the TAPI's
-             * You are at no risk of spinning because this is only
-             * called when something is actually removed from the
+             * This is called every time a crumb is removed from the outgoing
+             * socket queue (what it considers 'writable', but the TAPI defines
+             * writable as empty) So, we drop all these writable events unless
+             * it is empty. That converts the socketqueue's definition of
+             * writable to the TAPI's You are at no risk of spinning because
+             * this is only called when something is actually removed from the
              * SocketQueue
              **/
-            if (!out.isEmpty())
-                return;
+            if (!out.isEmpty()) return;
 
-            if ( out == serverOutgoingSocketQueue ) {
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "OutgoingSocketQueueEvent: server - " + out + " " + sessionGlobalState);
+            if (out == serverOutgoingSocketQueue) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("OutgoingSocketQueueEvent: server - " + out + " " + sessionGlobalState);
                 }
 
-                serverEvent( out );
-            } else if ( out == clientOutgoingSocketQueue ) {
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "OutgoingSocketQueueEvent: client - " + out + " " + sessionGlobalState);
+                serverEvent(out);
+            } else if (out == clientOutgoingSocketQueue) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("OutgoingSocketQueueEvent: client - " + out + " " + sessionGlobalState);
                 }
 
-                clientEvent( out );
+                clientEvent(out);
             } else {
                 /* This should never happen */
-                throw new IllegalStateException( "Invalid socket queue: " + out );
+                throw new IllegalStateException("Invalid socket queue: " + out);
             }
         }
 
-        public void shutdownEvent( IncomingSocketQueue in )
+        /**
+         * Handle a shutdown event
+         * 
+         * @param in
+         *        The incoming socket queue
+         */
+        public void shutdownEvent(IncomingSocketQueue in)
         {
-            if ( in == serverIncomingSocketQueue ) {
-                if ( logger.isDebugEnabled())
-                    logger.debug( "ShutdownEvent: server - " + in );
-            } else if ( in == clientIncomingSocketQueue ) {
-                if ( logger.isDebugEnabled())
-                    logger.debug( "ShutdownEvent: client - " + in );
+            if (in == serverIncomingSocketQueue) {
+                if (logger.isDebugEnabled()) logger.debug("ShutdownEvent: server - " + in);
+            } else if (in == clientIncomingSocketQueue) {
+                if (logger.isDebugEnabled()) logger.debug("ShutdownEvent: client - " + in);
             } else {
                 /* This should never happen */
-                throw new IllegalStateException( "Invalid socket queue: " + in );
+                throw new IllegalStateException("Invalid socket queue: " + in);
             }
         }
 
-        /** This occurs when the outgoing socket queue is shutdown */
-        public void shutdownEvent( OutgoingSocketQueue out )
+        /**
+         * This occurs when the outgoing socket queue is shutdown
+         * 
+         * @param out
+         *        The outgoing socket queue
+         */
+        public void shutdownEvent(OutgoingSocketQueue out)
         {
             boolean isDebugEnabled = logger.isDebugEnabled();
-            if ( out == serverOutgoingSocketQueue ) {
-                if ( isDebugEnabled ) {
-                    logger.debug( "ShutdownEvent: server - " + out + " closed: " + out.isClosed());
+            if (out == serverOutgoingSocketQueue) {
+                if (isDebugEnabled) {
+                    logger.debug("ShutdownEvent: server - " + out + " closed: " + out.isClosed());
                 }
                 /* If the app hasn't closed the socket queue yet, send the even */
-                if ( !out.isClosed()) {
+                if (!out.isClosed()) {
                     /* This is equivalent to an EPIPE */
-                    serverOutputResetEvent( out );
+                    serverOutputResetEvent(out);
                 } else {
-                    if ( isDebugEnabled ) logger.debug( "shutdown event for closed sink" );
+                    if (isDebugEnabled) logger.debug("shutdown event for closed sink");
                 }
-            } else if ( out == clientOutgoingSocketQueue ) {
-                if ( isDebugEnabled ) {
-                    logger.debug( "ShutdownEvent: client - " + out + " closed: " + out.isClosed());
+            } else if (out == clientOutgoingSocketQueue) {
+                if (isDebugEnabled) {
+                    logger.debug("ShutdownEvent: client - " + out + " closed: " + out.isClosed());
                 }
 
-                if ( !out.isClosed()) {
+                if (!out.isClosed()) {
                     /* This is equivalent to an EPIPE */
-                    clientOutputResetEvent( out );
+                    clientOutputResetEvent(out);
                 } else {
-                    if ( isDebugEnabled ) logger.debug( "shutdown event for closed sink" );
+                    if (isDebugEnabled) logger.debug("shutdown event for closed sink");
                 }
             } else {
                 /* This should never happen */
-                throw new IllegalStateException( "Invalid socket queue: " + out );
+                throw new IllegalStateException("Invalid socket queue: " + out);
             }
         }
     }

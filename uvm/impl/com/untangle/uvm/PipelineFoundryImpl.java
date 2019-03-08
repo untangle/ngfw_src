@@ -3,17 +3,14 @@
  */
 package com.untangle.uvm;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Comparator;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -34,12 +31,15 @@ import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
  * Implements PipelineFoundry.
- * PipelineFoundry is responsible for building a list of processing apps for each session
+ * PipelineFoundry is responsible for building a list of processing
+ * apps for each session
  *
- * When new sessions are created weld() is called to create the list of <code>PipelineConnectors</code>
- * weld() first finds a list of all PipelineConnectors for the given policyId and fitting type (stream, http, etc)
- * From there it removes the uninterested PipelineConnectors.
- * What is left is a list of all the PipelineConnectors that participate in a given session.
+ * When new sessions are created weld() is called to create the list
+ * of <code>PipelineConnectors</code> weld() first finds a list of all
+ * PipelineConnectors for the given policyId and fitting type (stream,
+ * http, etc) From there it removes the uninterested
+ * PipelineConnectors. What is left is a list of all the
+ * PipelineConnectors that participate in a given session.
  */
 public class PipelineFoundryImpl implements PipelineFoundry
 {
@@ -75,6 +75,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     /**
      * Return the singleton instance of the PipelineFoundry
+     * @return singleton
      */
     public static PipelineFoundryImpl foundry()
     {
@@ -84,6 +85,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * "weld" is builds a list of all the interested pipelineAgents for a given session
      * It does so based on the given policyId and all the apps/apps given subscriptions.
+     * @param sessionId
+     * @param sessionTuple
+     * @param policyId
+     * @param includePremium
+     * @return list
      */
     public List<PipelineConnectorImpl> weld( Long sessionId, SessionTuple sessionTuple, Integer policyId, boolean includePremium )
     {
@@ -173,11 +179,38 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return pipelineConnectorList;
     }
 
+    /**
+     * Create a PipelineConnector
+     * @param name
+     * @param app
+     * @param subscription
+     * @param listener
+     * @param inputFitting
+     * @param outputFitting
+     * @param affinity
+     * @param affinityStrength
+     * @param premium
+     * @return PipelineConnector
+     */
     public PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium )
     {
         return new PipelineConnectorImpl( name, app, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, null );
     }
 
+    /**
+     * Create a PipelineConnector
+     * @param name
+     * @param app
+     * @param subscription
+     * @param listener
+     * @param inputFitting
+     * @param outputFitting
+     * @param affinity
+     * @param affinityStrength
+     * @param premium
+     * @param buddy
+     * @return PipelineConnector
+     */
     public PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy )
     {
         return new PipelineConnectorImpl( name, app, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, buddy );
@@ -185,6 +218,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     
     /**
      * Register an PipelineConnector
+     * @param pipelineConnector
      */
     public synchronized void registerPipelineConnector(PipelineConnector pipelineConnector)
     {
@@ -198,6 +232,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     /**
      * Unregister an PipelineConnector
+     * @param pipelineConnector
      */
     public void deregisterPipelineConnector(PipelineConnector pipelineConnector)
     {
@@ -212,6 +247,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * registerConnection tells PipelineFoundry that connections from the socketAddress address/port pair
      * is the following type of fitting.
      * It is used only by the FTP-casing currently to tell use which connections are FTP_DATA_STREAM connections
+     * @param socketAddress
+     * @param fitting
      */
     public void addConnectionFittingHint( InetSocketAddress socketAddress, Fitting fitting )
     {
@@ -231,6 +268,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * This creates a full pipeline for the given policyId and fitting.
      * It also maintains a cache to memoize results
+     * @param sessionTuple
+     * @param policyId
+     * @param fitting
+     * @param includePremium
+     * @return list
      */
     private List<PipelineConnectorImpl> weldPipeline( SessionTuple sessionTuple, Integer policyId, Fitting fitting, boolean includePremium )
     {
@@ -294,6 +336,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     /**
      * Add all netcap connectors to the list that match this policy and fitting type
+     * @param pipelineConnectorList
+     * @param availableConnectors
+     * @param fitting
+     * @param policyId
      */
     private void addPipelineConnectors( List<PipelineConnectorImpl> pipelineConnectorList,
                                         List<PipelineConnectorImpl> availableConnectors,
@@ -379,6 +425,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * Remove "duplicate" apps from a given pipeline of pipelineConnectors
      * For example, if there are two Web Filters in a given list, it will remove the one from the parent rack.
+     * @param policyId
+     * @param acList
+     * @param includePremium
      */
     private void removeUnnecessaryPipelineConnectors( Integer policyId, List<PipelineConnectorImpl> acList, boolean includePremium )
     {
@@ -501,6 +550,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * 1 if childId is the direct child of parentId
      * 2 if childId is the grandchild of parentId
      * etc
+     * @param childId
+     * @param parentId
+     * @return diff
      */
     public int getPolicyGenerationDiff(Integer childId, Integer parentId)
     {
@@ -525,6 +577,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
      * This is true if appPolicy == null (its a service app and thus processes all sessions)
      * This is true if policyId == appPolicy (its a filtering app and lives in the policyId rack)
      * or if one of policyId's parents' policyId == appPolicy. (its a filtering app and lives one of policyId rack's parents, grandparents, etc)
+     * @param appPolicy
+     * @param policyId
+     * @return true if match, false otherwise
      */
     private boolean policyMatch( Integer appPolicy, Integer policyId )
     {
@@ -574,6 +629,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     /**
      * Utility function to print any list of pipelineConnectors
+     * @param prefix
+     * @param pipelineConnectors
      */
     private void printPipelineConnectorList( String prefix, java.util.Collection<PipelineConnectorImpl> pipelineConnectors )
     {
@@ -594,12 +651,25 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
     }
 
+    /**
+     * PipelineConnectorComparator sorts the PipelienConnectors into the correct order
+     * to process a session
+     */
     private static class PipelineConnectorComparator implements Comparator<PipelineConnectorImpl>
     {
         static final PipelineConnectorComparator COMPARATOR = new PipelineConnectorComparator();
 
+        /**
+         * Private construcotor - use singleton
+         */
         private PipelineConnectorComparator() { }
 
+        /**
+         * compareStrength - used to sort by strength
+         * @param strength1
+         * @param strength2
+         * @return -1 if strength1 < strength2, 0 if equal, 1 if strength1 > strength2
+         */
         public int compareStrength( int strength1, int strength2 )
         {
             if ( strength1 == strength2 )
@@ -610,6 +680,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 return 1;
         }
         
+        /**
+         * Compare to pipeline connectors - used to sort by affinity/strength
+         * @param connector1
+         * @param connector2
+         * @return -1 if connector1 < connector2, 0 if equal, 1 if connector1 > connector2
+         */
         public int compare(PipelineConnectorImpl connector1, PipelineConnectorImpl connector2)
         {
             Affinity affinity1 = connector1.getAffinity();

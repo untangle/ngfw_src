@@ -4,6 +4,9 @@
 
 package com.untangle.app.virus_blocker;
 
+/**
+ * Represents virus blocker state
+ */
 @SuppressWarnings("serial")
 public class VirusBlockerState
 {

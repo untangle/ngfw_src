@@ -11,7 +11,7 @@ WORKING_DIR=""
 TARBALL_FILE=""
 VERSION_FILE=""
 #ACCEPTED_PREVIOUS_VERSION="10.1|10.2"
-ACCEPTED_PREVIOUS_VERSION="12.1"
+ACCEPTED_PREVIOUS_VERSION="14.1"
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
@@ -44,6 +44,8 @@ function doRestore()
     cp -rL @PREFIX@/usr/share/untangle/settings/* $temp/
     rm -rf @PREFIX@/usr/share/untangle/settings/*
 
+    @PREFIX@/usr/share/untangle/bin/ut-show-upgrade-splash start 'Restore in progress. Do not reboot or power off the server!'
+
     # stop the untangle-vm
     if [ -x @PREFIX@/etc/init.d/untangle-vm ] ; then
         @PREFIX@/etc/init.d/untangle-vm stop
@@ -70,7 +72,7 @@ function doRestore()
         pushd > /dev/null 2>&1
         cd $temp
         find . -regextype sed -regex "$MAINTAIN_REGEX" -exec echo Keeping original @PREFIX@/usr/share/untangle/settings/{} \;
-        find . -regextype sed -regex "$MAINTAIN_REGEX" -exec cp -f --parents {} @PREFIX@/usr/share/untangle/settings/ \;
+        find . -regextype sed -regex "$MAINTAIN_REGEX" -exec cp -f --parents --remove-destination {} @PREFIX@/usr/share/untangle/settings/ \;
         popd > /dev/null 2>&1
 
         echo "Maintaining files... done"

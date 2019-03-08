@@ -6,18 +6,20 @@ Ext.define('Ung.overrides.form.CheckboxGroup', {
             boxes = me.getBoxes(),
             b,
             bLen  = boxes.length,
-            box, name,
+            box,
             cbValue;
 
         me.batchChanges(function() {
             Ext.suspendLayouts();
             for (b = 0; b < bLen; b++) {
                 box = boxes[b];
-                name = box.getName();
                 cbValue = false;
 
                 if (value) {
-                    var arr_val = value.split(',');
+                    var arr_val = value;
+                    if(!Ext.isArray(value)){
+                        arr_val = value.split(',');
+                    }
                     if (Ext.isArray(arr_val)) {
                         cbValue = Ext.Array.contains(arr_val, box.inputValue);
                     } else {

@@ -3,13 +3,15 @@
  */
 package com.untangle.app.policy_manager;
 
-import java.util.List;
-import java.util.LinkedList;
+import java.io.Serializable;
+import org.json.JSONString;
+import org.json.JSONObject;
 
 /**
  * Policy Settings
  */
-public class PolicySettings 
+@SuppressWarnings("serial")
+public class PolicySettings implements Serializable, JSONString
 {
     private Integer policyId;
     private String name;
@@ -37,4 +39,10 @@ public class PolicySettings
 
     public Integer getParentId() { return this.parentId; }
     public void setParentId( Integer parentId ) { this.parentId = parentId; }
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
 }

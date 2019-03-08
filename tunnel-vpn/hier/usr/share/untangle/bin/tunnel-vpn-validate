@@ -1,0 +1,97 @@
+#! /bin/bash
+
+# 
+# This script imports a config file containing the necessary configuration to connect to a remote server
+# It stores the files in settings
+#
+
+filename="${1}"
+provider="${2}"
+tunnel_id="${3}"
+destination=`mktemp || -3`
+
+cleanup()
+{
+    if [ -d ${TMPDIR} ] ; then
+        rm -rf ${TMPDIR};  
+    fi
+    exit $1
+}
+
+setOption()
+{
+    if [ -z "`/bin/egrep \"^$1\" $3`" ] ; then
+        echo "$1 $2" >> $3
+    else
+        sed -e "s/^$1[[:space:]]*.*/$1 $2/" -i $3
+    fi
+}
+
+importZip()
+{
+    TMPDIR=`mktemp -d || exit -3`
+
+    if [[ ! "${filename}" == *zip ]]; then
+        echo "Incorrect file extension for provider"
+        cleanup 1
+    fi
+
+    unzip -q ${filename} -d ${TMPDIR} || { rm -rf ${TMPDIR};  exit -1 ; }
+
+    CONF_FILE=""
+    if [ ! -f "$CONF_FILE" ] ; then
+        CONF_FILE="`find ${TMPDIR} -type f -name '*.conf'`"
+    fi
+    if [ ! -f "$CONF_FILE" ] ; then
+        CONF_FILE="`find ${TMPDIR} -type f -name '*.ovpn'`"
+    fi
+    if [ ! -f "$CONF_FILE" ] ; then
+        echo "Unknown format: Missing conf/ovpn file"
+        cleanup 1
+    fi
+}
+
+importOvpn()
+{
+    if [[ ! "${filename}" == *ovpn ]] && [[ ! "${filename}" == *conf ]]; then
+        echo "Incorrect file extension for provider"
+        cleanup 1
+    fi
+}
+
+if [ ! -f "${filename}" ]; then
+    echo "Unable to find the file: ${filename}"
+    cleanup 1
+fi
+
+if [ "$provider" == "Untangle" ] ; then
+    # Untangle provides both zip files and ovpn files
+    if [[ "$filename" == *zip ]] ; then
+        importZip
+    else
+        importOvpn
+    fi
+elif [ "$provider" == "NordVPN" ] ; then
+    importOvpn
+elif [ "$provider" == "ExpressVPN" ] ; then
+    importOvpn
+elif [ "$provider" == "PrivateInternetAccess" ] ; then
+    importOvpn
+elif [ "$provider" == "CustomZip" ] ; then
+    importZip
+elif [ "$provider" == "CustomZipPass" ] ; then
+    importZip
+elif [ "$provider" == "CustomOvpn" ] ; then
+    importOvpn
+elif [ "$provider" == "CustomOvpnPass" ] ; then
+    importOvpn
+elif [ "$provider" == "CustomConf" ] ; then
+    importOvpn
+elif [ "$provider" == "CustomConfPass" ] ; then
+    importOvpn
+else     
+    echo "Unknown provider: $provider"
+    cleanup 1
+fi
+
+cleanup 0

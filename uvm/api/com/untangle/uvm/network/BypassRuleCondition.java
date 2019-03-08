@@ -13,7 +13,7 @@ import com.untangle.uvm.app.RuleCondition;
  * A BypassRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class BypassRuleCondition extends RuleCondition
+public class BypassRuleCondition extends RuleCondition implements java.io.Serializable, org.json.JSONString
 {
     public BypassRuleCondition( )
     {
@@ -28,5 +28,10 @@ public class BypassRuleCondition extends RuleCondition
     public BypassRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
+    }
+
+    public String toJSONString()
+    {
+        return (new org.json.JSONObject(this)).toString();
     }
 }

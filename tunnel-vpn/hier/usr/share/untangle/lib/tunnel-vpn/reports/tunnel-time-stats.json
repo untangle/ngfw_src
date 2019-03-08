@@ -1,0 +1,24 @@
+{
+    "uniqueId": "tunnel-vpn-OGSB6ZGw18",
+    "category": "Tunnel VPN",
+    "description": "The amount of Tunnel VPN traffic over time.",
+    "displayOrder": 80,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes",
+    "readOnly": true,
+    "table": "tunnel_vpn_stats",
+    "timeDataColumns": [
+        "sum(in_bytes) as recv",
+        "sum(out_bytes) as xmit"
+    ],
+    "colors": [
+        "#396c2b",
+        "#e5e500"
+    ],
+    "timeDataInterval": "AUTO",
+    "timeStyle": "BAR_OVERLAPPED",
+    "title": "Hourly Tunnel Traffic",
+    "type": "TIME_GRAPH"
+}

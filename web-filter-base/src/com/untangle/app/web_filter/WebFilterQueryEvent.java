@@ -4,14 +4,11 @@
 package com.untangle.app.web_filter;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import com.untangle.app.http.RequestLine;
-import com.untangle.app.http.HttpRequestEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.app.http.HttpMethod;
-import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -133,7 +130,7 @@ public class WebFilterQueryEvent extends LogEvent
     @Override
     public String toSummaryString()
     {
-        String summary = getSessionEvent().getCClientAddr().getHostAddress() + I18nUtil.marktr("searched for") + " \"" + getTerm() + "\" " + I18nUtil.marktr("on") + getHost();
+        String summary = getSessionEvent().getCClientAddr().getHostAddress() + " " + I18nUtil.marktr("searched for") + " \"" + getTerm() + "\" " + I18nUtil.marktr("on") + " " + getHost();
         return summary;
     }
 }

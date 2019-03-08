@@ -9,18 +9,18 @@ if [ ! -f /usr/share/zoneinfo/$ZONE ]; then
     exit 1
 fi
 
+if [ "`cat /etc/timezone`" == "$ZONE" ] ; then
+    echo "Timezone already set to $ZONE"
+    exit 0
+fi
+
 echo "$ZONE" > /etc/timezone
 
 rm -f /etc/localtime
 ln -s "/usr/share/zoneinfo/$ZONE" /etc/localtime
 
 # Restart system daemons that depend on timezone
-[ -x /etc/init.d/rsyslog ] && /etc/init.d/rsyslog restart
-[ -x /etc/init.d/sysklogd ] && /etc/init.d/sysklogd restart
-
-# Must restart spamd whenever syslogd restarts, bug in perl...
-[ -x /etc/init.d/spamassassin ] && /etc/init.d/spamassassin restart || true
-
-/etc/init.d/cron restart
+systemctl restart rsyslog || true
+systemctl restart cron || true
 
 exit 0

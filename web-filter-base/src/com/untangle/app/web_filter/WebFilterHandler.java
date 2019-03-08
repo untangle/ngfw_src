@@ -1,6 +1,7 @@
 /**
  * $Id: WebFilterHandler.java 42622 2016-03-08 23:00:30Z dmorris $
  */
+
 package com.untangle.app.web_filter;
 
 import java.net.URI;
@@ -16,45 +17,58 @@ import com.untangle.uvm.vnet.AppTCPSession;
  */
 public class WebFilterHandler extends WebFilterBaseHandler
 {
-    // constructors -----------------------------------------------------------
 
-    public WebFilterHandler( WebFilterBase app )
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The web filter base application
+     */
+    public WebFilterHandler(WebFilterBase app)
     {
-        super( app );
+        super(app);
     }
 
+    /**
+     * Handle the request header
+     * 
+     * @param session
+     *        The session
+     * @param requestHeader
+     *        The request header
+     * @return The request header
+     */
     @Override
-    protected HeaderToken doRequestHeader( AppTCPSession session, HeaderToken requestHeader )
+    protected HeaderToken doRequestHeader(AppTCPSession session, HeaderToken requestHeader)
     {
         app.incrementScanCount();
 
-        String nonce = app.getDecisionEngine().checkRequest( session, session.getClientAddr(), 80, getRequestLine( session ), requestHeader );
+        String nonce = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
         }
 
         if (nonce == null) {
             String host = requestHeader.getValue("Host");
-            URI uri = getRequestLine( session ).getRequestUri();
+            URI uri = getRequestLine(session).getRequestUri();
 
             if (app.getSettings().getEnforceSafeSearch()) {
                 logger.debug("doRequestHeader: host = '" + host + "', uri = '" + uri + "'");
 
                 URI safeSearchUri = UrlRewriter.getSafeSearchUri(host, uri);
 
-                if (safeSearchUri != null)
-                    getRequestLine( session ).setRequestUri(safeSearchUri);
+                if (safeSearchUri != null) getRequestLine(session).setRequestUri(safeSearchUri);
 
-                logger.debug("doRequestHeader: host = '" + host + "', uri = '" + getRequestLine( session ).getRequestUri() + "'");
+                logger.debug("doRequestHeader: host = '" + host + "', uri = '" + getRequestLine(session).getRequestUri() + "'");
             }
 
-            releaseRequest( session );
+            releaseRequest(session);
         } else {
             app.incrementBlockCount();
-            String uri = getRequestLine( session ).getRequestUri().toString();
-            Token[] response = app.generateResponse( nonce, session, uri, requestHeader );
+            String uri = getRequestLine(session).getRequestUri().toString();
+            Token[] response = app.generateResponse(nonce, session, uri, requestHeader);
 
-            blockRequest( session, response );
+            blockRequest(session, response);
         }
 
         return requestHeader;

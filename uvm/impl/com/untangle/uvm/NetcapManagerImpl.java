@@ -13,6 +13,9 @@ import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.vnet.PipelineConnector;
 
+/**
+ * Manager for netcap
+ */
 public class NetcapManagerImpl implements NetcapManager
 {
     /* Number of times to try and shutdown all vectoring machines cleanly before giving up */
@@ -38,7 +41,9 @@ public class NetcapManagerImpl implements NetcapManager
     /* Debugging */
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    /* Singleton */
+    /**
+     * Singleton
+     */
     private NetcapManagerImpl()
     {
         /* Parse all of the properties */
@@ -52,6 +57,9 @@ public class NetcapManagerImpl implements NetcapManager
         }
     }
 
+    /**
+     * run (start netcap)
+     */
     public void run()
     {
         registerHooks();
@@ -113,6 +121,7 @@ public class NetcapManagerImpl implements NetcapManager
 
     /**
      * Initialize Netcap and any other supporting libraries.
+     * @throws Exception
      */
     private void init() throws Exception
     {
@@ -131,6 +140,9 @@ public class NetcapManagerImpl implements NetcapManager
         Netcap.donateThreads( numThreads );
     }
 
+    /**
+     * destroy - shutdown netcap
+     */
     public void destroy()
     {
         logger.debug( "Shutting down" );
@@ -161,6 +173,10 @@ public class NetcapManagerImpl implements NetcapManager
         Netcap.cleanup();
     }
 
+    /**
+     * getInstance - get the singleton
+     * @return NetcapManagerImpl
+     */
     public static NetcapManagerImpl getInstance()
     {
         if ( INSTANCE == null )
@@ -169,45 +185,78 @@ public class NetcapManagerImpl implements NetcapManager
         return INSTANCE;
     }
 
+    /**
+     * arpLookup - call arp lookup in netcap
+     * @param ipAddress
+     * @return macAddress
+     */
     public String arpLookup( String ipAddress )
     {
         return Netcap.arpLookup( ipAddress );
     }
 
-    /** Get the number of sessions from the SessionTable */
+    /**
+     * Get the number of sessions from the SessionTable
+     * @return int
+     */
     public int getSessionCount()
     {
         return SessionTableImpl.getInstance().count();
     }
 
+    /**
+     * Get the number of sessions from the SessionTable with the specified protocol
+     * @param protocol
+     * @return int
+     */
     public int getSessionCount(short protocol)
     {
         return SessionTableImpl.getInstance().count(protocol);
     }
     
-    /** Shutdown all of the sessions that match <code>matcher</code> */
+    /**
+     * Shutdown all of the sessions that match <code>matcher</code>
+     * @param matcher
+     */
     public void shutdownMatches( SessionMatcher matcher )
     {
         SessionTableImpl.getInstance().shutdownMatches( matcher );
     }
 
-    /** Shutdown all of the sessions that have been touch by the PipelineConnector that match <code>matcher</code> */
+    /**
+     * Shutdown all of the sessions that have been touch by the PipelineConnector that match <code>matcher</code>
+     * @param matcher
+     * @param connector
+     */
     public void shutdownMatches( SessionMatcher matcher, PipelineConnector connector )
     {
         SessionTableImpl.getInstance().shutdownMatches( matcher, connector );
     }
 
-    /** See if a addr:port binding is already in use by an existing session */
+    /**
+     * See if a addr:port binding is already in use by an existing session
+     * @param addr
+     * @param port
+     * @return bool
+     */
     public boolean isTcpPortUsed( InetAddress addr, int port )
     {
         return SessionTableImpl.getInstance().isTcpPortUsed( addr, port );
     }
 
+    /**
+     * setNetcapDebugLevel - sets the netcap debug level
+     * @param level
+     */
     public void setNetcapDebugLevel( int level )
     {
         Netcap.setNetcapDebugLevel( level );
     }
 
+    /**
+     * setJNetcapDebugLevel - set the jnetcap debug level
+     * @param level
+     */
     public void setJNetcapDebugLevel( int level )
     {
         Netcap.setJnetcapDebugLevel( level );

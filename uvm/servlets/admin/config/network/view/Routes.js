@@ -1,6 +1,8 @@
 Ext.define('Ung.config.network.view.Routes', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.network.routes',
+    alias: 'widget.config-network-routes',
+    itemId: 'routes',
+    scrollable: true,
 
     viewModel: true,
 
@@ -20,8 +22,10 @@ Ext.define('Ung.config.network.view.Routes', {
         region: 'center',
         title: 'Static Routes'.t(),
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
+
+        emptyText: 'No Static Routes defined'.t(),
 
         listProperty: 'settings.staticRoutes.list',
 
@@ -34,28 +38,26 @@ Ext.define('Ung.config.network.view.Routes', {
             description: ''
         },
 
-
         bind: '{staticRoutes}',
 
         columns: [{
             header: 'Description'.t(),
+            width: Renderer.messageWidth,
             dataIndex: 'description',
             flex: 1
         }, {
             header: 'Network'.t(),
-            width: 170,
+            width: Renderer.networkWidth,
             dataIndex: 'network'
         }, {
             header: 'Netmask/Prefix'.t(),
-            width: 170,
+            width: Renderer.ipWidth,
             dataIndex: 'prefix'
         }, {
             header: 'Next Hop'.t(),
-            width: 170,
+            width: Renderer.ipWidth,
             dataIndex: 'nextHop',
-            renderer: function (value) {
-                return value || '<em>no description<em>';
-            }
+            renderer: Ung.config.network.MainController.routesNextHopRenderer
         }],
         editorFields: [
             Field.description,
@@ -63,8 +65,12 @@ Ext.define('Ung.config.network.view.Routes', {
             Field.netMask, {
                 xtype: 'combo',
                 fieldLabel: 'Next Hop'.t(),
-                bind: '{record.nextHop}',
-                // store: Util.getV4NetmaskList(false),
+                bind:{
+                    value: '{record.nextHop}',
+                    store: '{nextHopDevices}'
+                },
+                displayField: 'value',
+                valueField: 'key',
                 queryMode: 'local',
                 allowBlank: false,
                 editable: true

@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -27,8 +28,12 @@ import com.untangle.uvm.WebBrowser;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.PolicyManager;
 
+/**
+ * Reports manager implementation for reports manager API
+ */
 public class ReportsManagerImpl implements ReportsManager
 {
     private static final Logger logger = Logger.getLogger(ReportsManagerImpl.class);
@@ -36,7 +41,7 @@ public class ReportsManagerImpl implements ReportsManager
     private static ReportsManagerImpl instance = null;
 
     private static ReportsApp app = null;
-    
+
     /**
      * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
      * which is slow
@@ -48,18 +53,31 @@ public class ReportsManagerImpl implements ReportsManager
      * which is slow
      */
     private static ResultSet cacheTablesResults = null;
-    
+
     /**
      * This stores all the app properties. It is used to reference information about the different apps/categories
      */
     private List<AppProperties> appPropertiesList = null;
 
+    /** 
+     * Initialize reports manager
+     */
     protected ReportsManagerImpl()
     {
         this.appPropertiesList = UvmContextFactory.context().appManager().getAllAppProperties();
 
         // sort by view position
         Collections.sort(this.appPropertiesList, new Comparator<AppProperties>() {
+            /**
+             * Based on view position and name, determine proper comparision order.
+             * 
+             * @param np1
+             *  Application 1
+             * @param np2
+             *  Application 2
+             * @return
+             *  -1 if app 1 comes before app 2, 1 otherwise.
+             */
             public int compare(AppProperties np1, AppProperties np2) {
                 int vp1 = np1.getViewPosition();
                 int vp2 = np2.getViewPosition();
@@ -75,6 +93,12 @@ public class ReportsManagerImpl implements ReportsManager
 
     }
 
+    /** 
+     * Return the existing reports manager instance
+     *
+     * @return
+     *  ReportManager instance.
+     */
     public static ReportsManagerImpl getInstance()
     {
         synchronized ( ReportsManagerImpl.class ) {
@@ -86,22 +110,40 @@ public class ReportsManagerImpl implements ReportsManager
         return instance;
     }
 
+    /** 
+     * Set the reports application
+     *
+     * @param app
+     *   Reports application.
+     */
     public void setReportsApp( ReportsApp app )
     {
         ReportsManagerImpl.app = app;
     }
-    
+
+    /** 
+     * Check if reports applicaton is enabled
+     *
+     * @return
+     *  true if reports application is enabled, false if not.
+     */
     public boolean isReportsEnabled()
     {
         return app != null && AppSettings.AppState.RUNNING.equals(app.getRunState());
     }
 
+    /** 
+     * Get all report entries.
+     *
+     * @return
+     *  List of all ReportEntry objects.
+     */
     public List<ReportEntry> getReportEntries()
     {
         if ( app == null ) {
             throw new RuntimeException("Reports app not found");
         }
-        
+
         LinkedList<ReportEntry> allReportEntries = new LinkedList<ReportEntry>( app.getSettings().getReportEntries() );
 
         Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
@@ -109,6 +151,14 @@ public class ReportsManagerImpl implements ReportsManager
         return allReportEntries;
     }
 
+    /** 
+     * Get all report entries for a specified category.
+     *
+     * @param category
+     *  Category to search for
+     * @return
+     *  List of all ReportEntry objects containing the category.
+     */
     public List<ReportEntry> getReportEntries( String category )
     {
         List<ReportEntry> allReportEntries = getReportEntries();
@@ -121,26 +171,33 @@ public class ReportsManagerImpl implements ReportsManager
          */
         AppProperties appProperties = findAppProperties( category );
         if ( appProperties != null ) {
-            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
-                logger.warn("Not showing report entries for \"" + category + "\" because of invalid license."); 
+            App app = UvmContextFactory.context().appManager().app( appProperties.getName() );
+            if ( app == null ) {
+                logger.warn("Not showing report entries for \"" + category + "\" because it isnt installed.");
                 return entries;
             }
-            if ( UvmContextFactory.context().appManager().app( appProperties.getName() ) == null ) {
-                logger.warn("Not showing report entries for \"" + category + "\" because it isnt installed."); 
+            if ( !app.isLicenseValid() ) {
+                logger.warn("Not showing report entries for \"" + category + "\" because of invalid license.");
                 return entries;
             }
         }
-        
+
         for ( ReportEntry entry: allReportEntries ) {
             if ( category == null || category.equals( entry.getCategory() ) )
                  entries.add( entry );
             else if ( "Summary".equals( category ) && entry.getType() == ReportEntry.ReportEntryType.TEXT )
                  entries.add( entry );
-                
+
         }
         return entries;
     }
 
+    /** 
+     * Get all installed and license-active NGFW applications
+     *
+     * @return
+     *  List of JSON object for each application containing fields for application displayName, name, viewPosition.
+     */
     public List<JSONObject> getCurrentApplications()
     {
         ArrayList<JSONObject> currentApplications = new ArrayList<JSONObject>();
@@ -149,10 +206,11 @@ public class ReportsManagerImpl implements ReportsManager
             if ( appProperties.getInvisible()) {
                 continue;
             }
-            if ( UvmContextFactory.context().appManager().app( appProperties.getName() ) == null ) {
+            App app = UvmContextFactory.context().appManager().app( appProperties.getName() );
+            if ( app == null ) {
                 continue;
             }
-            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
+            if ( ! app.isLicenseValid() ) {
                 continue;
             }
             org.json.JSONObject json = new org.json.JSONObject();
@@ -160,6 +218,7 @@ public class ReportsManagerImpl implements ReportsManager
             try {
                 json.put("displayName", appProperties.getDisplayName());
                 json.put("name", appProperties.getName());
+                json.put("viewPosition", appProperties.getViewPosition());
             } catch (Exception e) {
                 logger.error( "Error generating Current Applications list", e );
             }
@@ -169,6 +228,12 @@ public class ReportsManagerImpl implements ReportsManager
         return currentApplications;
     }
 
+    /** 
+     * Get all installed but not license-active NGFW applications
+     *
+     * @return
+     *  Map of unavailable applications using the application fields displayName and name.
+     */
     public Map<String, String> getUnavailableApplicationsMap()
     {
         Map<String, String> unavailableApplicationsMap = new HashMap<String, String>();
@@ -177,7 +242,7 @@ public class ReportsManagerImpl implements ReportsManager
             if("shield".equals(appProperties.getName())){
                 continue;
             }
-            if ( appProperties.getInvisible() || 
+            if ( appProperties.getInvisible() ||
                     UvmContextFactory.context().appManager().app( appProperties.getName() ) == null ||
                     !UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
                 unavailableApplicationsMap.put(appProperties.getDisplayName(), appProperties.getName());
@@ -187,6 +252,12 @@ public class ReportsManagerImpl implements ReportsManager
         return unavailableApplicationsMap;
     }
 
+    /**
+     * Write new set of report entries, overwriting existing.
+     *
+     * @param newEntries
+     *  List of ReportEntry objectss.
+     */
     public void setReportEntries( List<ReportEntry> newEntries )
     {
         if ( app == null ) {
@@ -198,16 +269,26 @@ public class ReportsManagerImpl implements ReportsManager
 
         ReportsSettings settings = app.getSettings();
         settings.setReportEntries( newReportEntries );
-        app.setSettings( settings );
+        app.setSettings( settings, true );
     }
 
+    /**
+     * Get report entry by category and title.
+     *
+     * @param category
+     *  String of category to match.
+     * @param title
+     *  Strng of title to match.
+     * @return
+     *  Matching ReportEntry object.
+     */
     public ReportEntry getReportEntry( String category, String title )
     {
         LinkedList<ReportEntry> entries = app.getSettings().getReportEntries();
 
         if ( category == null || title == null )
             return null;
-        
+
         for ( ReportEntry entry : entries ) {
             if ( category.equals(entry.getCategory()) && title.equals(entry.getTitle()) )
                 return entry;
@@ -216,6 +297,14 @@ public class ReportsManagerImpl implements ReportsManager
         return null;
     }
 
+    /**
+     * Get report entry by its unique id.
+     *
+     * @param uniqueId
+     *  String of uniqueId
+     * @return
+     *  Matching ReportEntry object.
+     */
     public ReportEntry getReportEntry( String uniqueId )
     {
         LinkedList<ReportEntry> entries = app.getSettings().getReportEntries();
@@ -230,7 +319,15 @@ public class ReportsManagerImpl implements ReportsManager
 
         return null;
     }
-    
+
+    /**
+     * Write a single report entry to to entries set.  
+     * An existing entry will be replaced if the uniqueId fields match.
+     * Otherwise, the entry will be consdered new and added.
+     *
+     * @param entry
+     *  ReportEntry to write.
+     */
     public void saveReportEntry( ReportEntry entry )
     {
         String uniqueId = entry.getUniqueId();
@@ -241,7 +338,7 @@ public class ReportsManagerImpl implements ReportsManager
         if ( uniqueId == null ) {
             throw new RuntimeException("Invalid Entry unique ID: " + uniqueId );
         }
-        
+
         for ( ReportEntry e : reportEntries ) {
             if ( uniqueId.equals( e.getUniqueId() ) ) {
                 found = true;
@@ -258,6 +355,12 @@ public class ReportsManagerImpl implements ReportsManager
         return;
     }
 
+    /** 
+     * Remove the specific report entry from the entries set.
+     * 
+     * @param entry
+     *  Entry to remove.
+     */
     public void removeReportEntry( ReportEntry entry )
     {
         String uniqueId = entry.getUniqueId();
@@ -295,6 +398,22 @@ public class ReportsManagerImpl implements ReportsManager
         return;
     }
 
+    /**
+     * Query report data.
+     *
+     * @param entry
+     *  ReportEntry to use.
+     * @param startDate
+     *  Beginning date.
+     * @param endDate
+     *  Ending date.
+     * @param extraConditions
+     *  Additional SQL query options.
+     * @param limit
+     *  Restrict number of results to this number.
+     * @return
+     *  Results of query as a List of JSONObjects.
+     */
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
         Connection conn = app.getDbConnection();
@@ -319,15 +438,41 @@ public class ReportsManagerImpl implements ReportsManager
 
         return results;
     }
-    
+
+    /**
+     * Query report data.
+     *
+     * @param entry
+     *  ReportEntry to use.
+     * @param startDate
+     *  Beginning date.
+     * @param endDate
+     *  Ending date.
+     * @param limit
+     *  Restrict number of results to this number.
+     * @return
+     *  Results of query as a List of JSONObjects.
+     */
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
     {
         return getDataForReportEntry( entry, startDate, endDate, null, limit );
     }
-    
+
+    /**
+     * Query report data.
+     *
+     * @param entry
+     *  ReportEntry to use.
+     * @param timeframeSec
+     *  Last seconds to query (e.g.,300 to pull last 5 minutes)
+     * @param limit
+     *  Restrict number of results to this number.
+     * @return
+     *  Results of query as a List of JSONObjects.
+     */
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final int timeframeSec, final int limit )
     {
-        Date startDate = null; 
+        Date startDate = null;
         if(timeframeSec > 0) {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, -timeframeSec);
@@ -336,6 +481,14 @@ public class ReportsManagerImpl implements ReportsManager
         return getDataForReportEntry( entry, startDate, null, null, limit );
     }
 
+    /**
+     * Get column table names for the specified table.
+     *
+     * @param tableName
+     *  Name of table.
+     * @return
+     *  Array of table's column names.
+     */
     public String[] getColumnsForTable( String tableName )
     {
         ArrayList<String> columnNames = new ArrayList<String>();
@@ -347,6 +500,16 @@ public class ReportsManagerImpl implements ReportsManager
         return array;
     }
 
+    /**
+     * Get column type.
+     *
+     * @param tableName
+     *  Name of table.
+     * @param columnName
+     *  Name of column.
+     * @return
+     *  String of the column type.
+     */
     public String getColumnType( String tableName, String columnName )
     {
         HashMap<String,String> metadata = getColumnMetaData( tableName );
@@ -354,6 +517,16 @@ public class ReportsManagerImpl implements ReportsManager
         return metadata.get( columnName );
     }
 
+    /**
+     * Check to see if table has the named column.
+     *
+     * @param tableName
+     *  Name of table.
+     * @param columnName
+     *  Name of column.
+     * @return
+     *  true if table contains column, false otherwise.
+     */
     public boolean tableHasColumn( String tableName, String columnName )
     {
         String type = getColumnType( tableName, columnName );
@@ -361,19 +534,28 @@ public class ReportsManagerImpl implements ReportsManager
             return false;
         return true;
     }
-    
+
+    /**
+     * Get names of all tables.
+     *
+     * @return
+     *  Array of all table names.
+     */
     public String[] getTables()
     {
-        ArrayList<String> tableNames = new ArrayList<String>();        
+        ArrayList<String> tableNames = new ArrayList<String>();
         Connection conn = app.getDbConnection();
         try {
             ResultSet rs = cacheTablesResults;
             if ( rs == null ) {
-                if (ReportsApp.dbDriver.equals("sqlite"))
-                    cacheTablesResults = conn.getMetaData().getTables( null, null, null, null );
-                else
+                if (ReportsApp.dbDriver.equals("sqlite")) {
+                    // don't cache sqlite results
+                    // the result is FORWARD_ONLY
+                    rs = conn.getMetaData().getTables( null, null, null, null );
+                } else {
                     cacheTablesResults = conn.getMetaData().getTables( null, "reports", null, null );
-                rs = cacheTablesResults;
+                    rs = cacheTablesResults;
+                }
             } else {
                 rs.beforeFirst();
             }
@@ -406,6 +588,18 @@ public class ReportsManagerImpl implements ReportsManager
         return array;
     }
 
+    /**
+     * Return events for an EVENT_LIST report.
+     *
+     * @param entry
+     *  ReportEntry object.
+     * @param extraConditions
+     *  Additional SQL conditions.
+     * @param limit
+     *  Maximum number of records to return.
+     * @return
+     *  ArrayList containing JSONObject of event result.
+     */
     public ArrayList<org.json.JSONObject> getEvents(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
         if (entry == null) {
@@ -437,22 +631,48 @@ public class ReportsManagerImpl implements ReportsManager
         return results;
     }
 
+    /**
+     * Return result set reader for an EVENT_LIST report.
+     *
+     * @param entry
+     *  ReportEntry object.
+     * @param extraConditions
+     *  Additional SQL conditions.
+     * @param limit
+     *  Maximum number of records to return.
+     * @return
+     *  ResultSetReader for the query.
+     */
     public ResultSetReader getEventsResultSet(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
         if (entry == null) {
-            logger.warn("Invalid arguments"); 
+            logger.warn("Invalid arguments");
             return null;
         }
         return getEventsForDateRangeResultSet( entry, extraConditions, limit, null, null );
     }
 
+    /**
+     * Return result set reader for report based on most recent seconds from current time.
+     *
+     * @param entry
+     *  ReportEntry object.
+     * @param extraConditions
+     *  Additional SQL conditions.
+     * @param timeframeSec
+     *  Number of seconds "revent" to query.
+     * @param limit
+     *  Maximum number of records to return.
+     * @return
+     *  ResultSetReader for the query.
+     */
     public ResultSetReader getEventsForTimeframeResultSet(final ReportEntry entry, final SqlCondition[] extraConditions, final int timeframeSec, final int limit)
     {
         if (entry == null) {
-            logger.warn("Invalid arguments"); 
+            logger.warn("Invalid arguments");
             return null;
         }
-        Date startDate = null; 
+        Date startDate = null;
         if(timeframeSec > 0) {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, -timeframeSec);
@@ -461,6 +681,22 @@ public class ReportsManagerImpl implements ReportsManager
         return getEventsForDateRangeResultSet( entry, extraConditions, limit, startDate, null );
     }
 
+    /**
+     * Return result set reader for report based on date range.
+     *
+     * @param entry
+     *  ReportEntry object.
+     * @param extraConditions
+     *  Additional SQL conditions.
+     * @param limit
+     *  Maximum number of records to return.
+     * @param start
+     *  Beginning date.
+     * @param endDate
+     *  Beginning endDate.
+     * @return
+     *  ResultSetReader for the query.
+     */
     public ResultSetReader getEventsForDateRangeResultSet(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit, final Date start, final Date endDate)
     {
         if (entry == null) {
@@ -482,7 +718,7 @@ public class ReportsManagerImpl implements ReportsManager
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
             logger.info("startDate not specified, using 1 day ago: " + startDate);
         }
-        
+
         Connection conn = app.getDbConnection();
         PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraConditions, limit );
 
@@ -494,30 +730,27 @@ public class ReportsManagerImpl implements ReportsManager
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");
-        
+
         return result;
     }
 
-    public org.json.JSONObject getConditionQuickAddHints()
-    {
-        return UvmContextFactory.context().getConditionQuickAddHints();
-    }
-
+    /**
+     * Return system timezone offset.
+     *
+     * @return
+     *  Timezone offset in seconds.
+     */
     public Integer getTimeZoneOffset()
     {
         return UvmContextFactory.context().systemManager().getTimeZoneOffset();
     }
 
-    public List<JSONObject> getPoliciesInfo()
-    {
-        ArrayList<JSONObject> policiesInfo = new ArrayList<JSONObject>();
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
-        if ( policyManager != null ) {
-            policiesInfo = policyManager.getPoliciesInfo();
-        }
-        return policiesInfo;
-    }
-    
+    /**
+     * Return all interface information.
+     *
+     * @return
+     *  List of JSONObjects containing interfaceId and name fields.
+     */
     public List<JSONObject> getInterfacesInfo()
     {
         ArrayList<JSONObject> interfacesInfo = new ArrayList<JSONObject>();
@@ -531,14 +764,36 @@ public class ReportsManagerImpl implements ReportsManager
                 logger.warn("Error generating interfaces list",e);
             }
         }
+        for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getVirtualInterfaces() ){
+            try {
+                JSONObject json = new org.json.JSONObject();
+                json.put("interfaceId", interfaceSettings.getInterfaceId());
+                json.put("name", interfaceSettings.getName() );
+                interfacesInfo.add(json);
+            } catch (Exception e) {
+                logger.warn("Error generating interfaces list",e);
+            }
+        }
         return interfacesInfo;
     }
 
+    /** 
+     * Check if system allows graphs for fixed reports.
+     *
+     * @return
+     *  true if system can generate reports via browser, false otherwise.
+     */
     public Boolean fixedReportsAllowGraphs()
     {
         return WebBrowser.exists();
     }
 
+    /**
+     * Return administrator email addresses.
+     *
+     * @return
+     *  List of administrator email addresses.
+     */
     public List<String> getAdminEmailAddresses()
     {
         LinkedList<String> adminEmailAddresses = new LinkedList<String>();
@@ -549,7 +804,7 @@ public class ReportsManagerImpl implements ReportsManager
         if((reportsUsers != null) && (adminUsers != null)){
             for(AdminUserSettings adminUser : adminUsers ){
                 if( (adminUser == null) ||
-                    (adminUser.getEmailAddress() == null) || 
+                    (adminUser.getEmailAddress() == null) ||
                     (adminUser.getEmailAddress().isEmpty()) ){
                     // Ignore if admin email address is empty.
                     continue;
@@ -571,18 +826,45 @@ public class ReportsManagerImpl implements ReportsManager
         return adminEmailAddresses;
     }
 
+    /**
+     * Return list of recommended report identifiers.
+     *
+     * @return
+     *  List of report identifiers.
+     */
     public List<String> getRecommendedReportIds()
     {
         return FixedReports.ReservedReports;
     }
 
+    /**
+     * Return list of policies if defined.
+     * @return List of polciies
+     */
+    public ArrayList<JSONObject> getPoliciesInfo(){
+        ArrayList<JSONObject> policies = null;
+        PolicyManager policyManager = (PolicyManager)UvmContextFactory.context().appManager().app( "policy-manager");
+        if (policyManager != null) {
+            return policyManager.getPoliciesInfo();
+        }
+        return policies;
+    }
+
+    /** 
+     * Synchronize system report enrtries.
+     *
+     * @param existingEntries
+     *  List of entries to update.
+     * @param saveIfChanged
+     *  If true, save the updated entries.
+     */
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {
         boolean updates = false;
         if ( existingEntries == null )
             existingEntries = new LinkedList<ReportEntry>();
-        
-        String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/lib/*/reports/*.js' -print";
+
+        String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/lib/*/reports/*.json' -print";
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
         if (result.getResult() != 0) {
             logger.warn("Failed to find report entries: \"" + cmd + "\" -> "  + result.getResult());
@@ -606,7 +888,7 @@ public class ReportsManagerImpl implements ReportsManager
                     } else {
                         seenUniqueIds.add( newEntry.getUniqueId() );
                     }
-                    
+
                     ReportEntry oldEntry = findReportEntry( existingEntries, newEntry.getUniqueId() );
                     if ( oldEntry == null ) {
                         logger.info( "Report Entries Update: Adding  \"" + newEntry.getTitle() + "\" [" + line + "]");
@@ -623,6 +905,26 @@ public class ReportsManagerImpl implements ReportsManager
                     logger.warn( "Failed to read report entry from: " + line, e );
                 }
             }
+
+            /**
+             * Remove any obsolete entries
+             */
+            for (Iterator<ReportEntry> i = existingEntries.iterator(); i.hasNext(); ) {
+                ReportEntry entry = i.next();
+                if ( entry.getUniqueId().startsWith("reporting-") ) {
+                    i.remove();
+                    updates = true;
+                }
+                if ( entry.getUniqueId().startsWith("syslog-") ) {
+                    i.remove();
+                    updates = true;
+                }
+                if ( "Web Filter Lite".equals(entry.getCategory()) ) {
+                    i.remove();
+                    updates = true;
+                }
+            }
+
         } catch (Exception e) {
             logger.warn( "Failed to check for new entries.", e );
         }
@@ -630,17 +932,27 @@ public class ReportsManagerImpl implements ReportsManager
         if ( updates && saveIfChanged ) {
             setReportEntries( existingEntries );
         }
-        
+
         return;
     }
 
+    /** 
+     * Search a list of reports by uniqueId.
+     *
+     * @param entries
+     *  List of report entries.
+     * @param uniqueId
+     *  Id o report to find.
+     * @return
+     *  ReportEntry if found, null otherwise.
+     */
     private ReportEntry findReportEntry( List<ReportEntry> entries, String uniqueId )
     {
         if ( entries == null || uniqueId == null ) {
             logger.warn("Invalid arguments: " + uniqueId, new Exception());
             return null;
         }
-        
+
         for ( ReportEntry entry : entries ) {
             if (uniqueId.equals( entry.getUniqueId() ) )
                 return entry;
@@ -648,6 +960,18 @@ public class ReportsManagerImpl implements ReportsManager
         return null;
     }
 
+    /** 
+     * Update a report entry from a list.
+     *
+     * @param entries
+     *  List of report entries.
+     * @param newEntry
+     *  New report entry.
+     * @param oldEntry
+     *  Entry to replace.
+     * @return
+     *  true if report entry was changed.
+     */
     private boolean updateReportEntry( List<ReportEntry> entries, ReportEntry newEntry, ReportEntry oldEntry )
     {
         String newEntryStr = newEntry.toJSONString();
@@ -670,6 +994,14 @@ public class ReportsManagerImpl implements ReportsManager
         return true;
     }
 
+    /**
+    * Return hash of column metadata.
+    *
+    * @param tableName
+    *   Name of table to retrive columsnfrom.
+    * @return
+    *   Hash of column name and type.
+     */
     private HashMap<String,String> getColumnMetaData( String tableName )
     {
         Connection conn = app.getDbConnection();
@@ -711,9 +1043,22 @@ public class ReportsManagerImpl implements ReportsManager
         }
     }
 
+    /**
+     * Report Entry order display.
+     */
     private class ReportEntryDisplayOrderComparator implements Comparator<ReportEntry>
     {
-        public int compare( ReportEntry entry1, ReportEntry entry2 ) 
+        /**
+         * Compare based on report entry display order or title.
+         *
+         * @param entry1
+         *  First report entry to compare.
+         * @param entry2
+         *  Second report entry to compare.
+         * @return
+         *  Comparision indicating which should be displayed first.
+         */
+        public int compare( ReportEntry entry1, ReportEntry entry2 )
         {
             int num = entry1.getDisplayOrder() - entry2.getDisplayOrder();
             if ( num != 0 )
@@ -724,18 +1069,26 @@ public class ReportsManagerImpl implements ReportsManager
                 return entry1.getTitle().compareTo( entry2.getTitle() );
             }
         }
-    }    
+    }
 
+    /**
+     * Find an application by its displayName.
+     *
+     * @param displayName
+     *  Application name to find.
+     * @return
+     *  AppProperties of matching application.
+     */
     private AppProperties findAppProperties( String displayName )
     {
         if ( displayName == null )
             return null;
-        
+
         for ( AppProperties props : this.appPropertiesList ) {
             if ( displayName.equals( props.getDisplayName() ) )
                 return props;
         }
-        
+
         return null;
     }
 }

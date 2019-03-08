@@ -3,15 +3,12 @@
  */
 package com.untangle.uvm.event;
 
-import java.util.List;
 import java.util.LinkedList;
 import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
 
@@ -24,14 +21,13 @@ public class EventSettings implements Serializable, JSONString
     private Integer version = 1;
 
     private LinkedList<AlertRule> alertRules = null;
+    private LinkedList<SyslogRule> syslogRules = null;
+    private LinkedList<TriggerRule> triggerRules = null;
 
     private boolean syslogEnabled = false;
     private String syslogHost;
     private int syslogPort = 514;
     private String syslogProtocol = "UDP";
-    private LinkedList<SyslogRule> syslogRules = null;
-
-    private LinkedList<TriggerRule> triggerRules = null;
 
     public EventSettings() { }
 

@@ -48,7 +48,7 @@ def main(argv):
             pootle_directory = arg
 
     if os.path.isfile(pot_file_name) is False:
-        print "Missing template file %s" % (pot_file_name)
+        print("Missing template file %s" % (pot_file_name))
         sys.exit(1)
 
     pot.load()
@@ -56,7 +56,7 @@ def main(argv):
     ##
     ## Update with templates
     ##
-    print "Synchronizing pootle languages with templates..."
+    print("Synchronizing pootle languages with templates...")
     total_character_count = 0
     total_word_count = 0
     for path in glob.glob(pootle_directory + "/*"):
@@ -64,7 +64,7 @@ def main(argv):
         language = languages.get_by_id(language_id)
         if language == None:
             continue
-        print language_id
+        print(language_id)
         for po_file in glob.glob(path + "/*.po"):
             po = i18n.PoFile(language_id, po_file )
             po.load()
@@ -73,7 +73,7 @@ def main(argv):
                 "add": [x for x in pot.records if not po.get_record_by_msgid(x.msg_id)],
                 "remove": [x for x in po.records if not pot.get_record_by_msgid(x.msg_id)]
             }
-            print "  Synchronizing: %s, %s," % (language["name"], po.file_name),
+            print("  Synchronizing: %s, %s," % (language["name"], po.file_name),)
 
             for diff_record in diff["remove"]:
                 po.remove_record(diff_record)
@@ -82,7 +82,7 @@ def main(argv):
             for record in pot.records:
                 po.add_record(record, replace_comments=True)
 
-            print "%d added, %d removed" % (len(diff["add"]), len(diff["remove"])),
+            print("%d added, %d removed" % (len(diff["add"]), len(diff["remove"])),)
 
             character_count = 0
             word_count = 0
@@ -94,18 +94,18 @@ def main(argv):
                 if len("".join(record.msg_str)) == 0:
                     character_count = character_count + len(record.msg_id)
                     word_count = word_count + len(re.findall(r'\w+', record.msg_id))
-            print ", %d/%d chars/words to translate" % (character_count, word_count)
+            print(", %d/%d chars/words to translate" % (character_count, word_count))
             total_character_count = total_character_count + character_count
             total_word_count = total_word_count + word_count
 
-            print " total records=%d, updated_records=%d, completed=%2.2f%%" % ((po.total_record_count(), po.updated_record_count(), (float(po.updated_record_count()) / po.total_record_count()) * 100))
+            print(" total records=%d, updated_records=%d, completed=%2.2f%%" % ((po.total_record_count(), po.updated_record_count(), (float(po.updated_record_count()) / po.total_record_count()) * 100)))
 
             po.save()
 
     ##
     ## Synchronize with official translations
     ##
-    print "Synchronzing pootle languages with official translations..."
+    print("Synchronzing pootle languages with official translations...")
     language_ids = languages.get_enabled_ids()
     for language in languages.get_enabled():
         if language["id"] == "en" or language["id"] == "xx":
@@ -115,7 +115,7 @@ def main(argv):
         official_po.load()
 
         diff = { "add": [], "remove": [] }
-        print language["id"]
+        print(language["id"])
         pootle_po_file_names = glob.glob(pootle_directory + "/"+language["id"]+"/*.po")
         pootle_file_name = pootle_po_file_names[0]
         pootle_po = i18n.PoFile(language["id"], pootle_file_name )
@@ -127,13 +127,13 @@ def main(argv):
             if p_record != None and len("".join(p_record.msg_str)) != 0 and p_record.arguments_match() == True:
                continue
             diff["add"].append(o_record)
-        print "  Synchronizing: %s, %s," % (language["name"], pootle_file_name),
+        print("  Synchronizing: %s, %s," % (language["name"], pootle_file_name),)
 
         ## Add non-empty 
         for a_record in diff["add"]:
             pootle_po.add_record(a_record, replace_comments=True)
 
-        print "%d added/modified" % (len(diff["add"]))
+        print("%d added/modified" % (len(diff["add"])))
         
         pootle_po.save()
 

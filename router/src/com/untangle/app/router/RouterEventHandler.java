@@ -9,14 +9,13 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
-import com.untangle.uvm.vnet.Protocol;
 
+/**
+ * RouterEventHandler
+ */
 class RouterEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(RouterEventHandler.class);
@@ -28,7 +27,10 @@ class RouterEventHandler extends AbstractEventHandler
     
     public static final short PROTO_TCP = 6;
 
-    /* Setup  */
+    /**
+     * RouterEventHandler
+     * @param app
+     */
     RouterEventHandler( RouterImpl app )
     {
         super(app);
@@ -36,6 +38,27 @@ class RouterEventHandler extends AbstractEventHandler
         this.app = app;
     }
 
+    /**
+     * handleTCPNewSessionRequest
+     * The sole purpose of the router event handler is to rewrite the source port of
+     * TCP connections
+     *
+     * The masquerading is handled by the kernel, however the kernel considers the
+     * following two connections to be unique:
+     *
+     * 1.2.3.4:1234 -> 10.0.0.1:1234
+     * 1.2.3.4:1234 -> 192.168.1.100:1234
+     *
+     * Because the kernel can differentiate the two even while both sessions
+     * use the same port on 1.2.3.4.
+     *
+     * However, because we will be non-local binding we cant have both sessions
+     * bind sockets to 1.2.3.4:1234
+     *
+     * As such, we must use or own port assignment scheme for TCP.
+     * (UDP doesn't matter since we don't bind to sockets)
+     * @param request
+     */
     public void handleTCPNewSessionRequest( TCPNewSessionRequest request )
     {
         InetAddress origClientAddr = request.getOrigClientAddr();
@@ -52,26 +75,6 @@ class RouterEventHandler extends AbstractEventHandler
             logger.debug( "post-translation: " + newClientAddr + ":" + newClientPort +  " -> " + newServerAddr + ":" + newServerPort );
         }
 
-        /**
-         * The sole purpose of the router event handler is to rewrite the source port of
-         * TCP connections
-         *
-         * The masquerading is handled by the kernel, however the kernel considers the
-         * following two connections to be unique:
-         *
-         * 1.2.3.4:1234 -> 10.0.0.1:1234
-         * 1.2.3.4:1234 -> 192.168.1.100:1234
-         *
-         * Because the kernel can differentiate the two even while both sessions
-         * use the same port on 1.2.3.4.
-         *
-         * However, because we will be non-local binding we cant have both sessions
-         * bind sockets to 1.2.3.4:1234
-         *
-         * As such, we must use or own port assignment scheme for TCP.
-         * (UDP doesn't matter since we don't bind to sockets)
-         */
-        
         // if doing NAT, then rewrite the source port
         if ( !origClientAddr.equals(newClientAddr) ||
              !origServerAddr.equals(newServerAddr) ||
@@ -91,12 +94,21 @@ class RouterEventHandler extends AbstractEventHandler
         request.release();
     }
 
+    /**
+     * handleUDPNewSessionRequest - do nothing with UDP
+     * @param request
+     */
     public void handleUDPNewSessionRequest( UDPNewSessionRequest request )
     {
         request.release();
         return;
     }
 
+    /**
+     * getFreePort - get the next available free port
+     * @param addr
+     * @return int
+     */
     private int getFreePort( InetAddress addr )
     {
         int port = rand.nextInt(40000) + 10000;

@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.policy_manager;
@@ -14,16 +14,13 @@ import org.json.JSONObject;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.PolicyManager.PolicyManagerResult;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-/**
- * Implementation of the Policy Manager app
- */
+/** Implementation of the Policy Manager app */
 public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.PolicyManager
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -33,16 +30,29 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
 
     private PolicyManagerSettings settings = new PolicyManagerSettings();
     
+    /**
+     * PolicyManagerApp
+     * @param appSettings
+     * @param appProperties
+     */
     public PolicyManagerApp( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
     }
 
+    /**
+     * getSettings gets the current settings
+     * @return PolicyManagerSettings
+     */
     public PolicyManagerSettings getSettings()
     {
         return this.settings;
     }
 
+    /**
+     * setSettings sets the current settings
+     * @param newSettings
+     */
     public void setSettings( PolicyManagerSettings newSettings )
     {
         /**
@@ -93,6 +103,11 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         UvmContextFactory.context().pipelineFoundry().clearCache();
     }
 
+    /**
+     * getPolicyName gets the policy name for the speficied policy
+     * @param policyId
+     * @return the policy name
+     */
     public String getPolicyName( Integer policyId )
     {
         if ( policyId == null)
@@ -106,6 +121,11 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         
     }
 
+    /**
+     * getParentPolicyId gets the parent policy of the specified policy
+     * @param policyId 
+     * @return the parent policyId or null without a parent
+     */ 
     public Integer getParentPolicyId( Integer policyId )
     {
         PolicySettings pSettings = getPolicySettings( policyId );
@@ -116,6 +136,17 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         return null;
     }
 
+    /**
+     * findPolicyId finds the policy that should handle the specified session attributes
+     * @param protocol
+     * @param clientIntf
+     * @param serverIntf
+     * @param clientAddr
+     * @param serverAddr
+     * @param clientPort
+     * @param serverPort
+     * @return the result
+     */
     public PolicyManagerResult findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
     {
         if ( !isLicenseValid() )
@@ -135,6 +166,10 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         return new PolicyManagerResult(1,0);
     }
 
+    /**
+     * getPoliciesInfo gets the policy information (for the UI)
+     * @return a list of the policies
+     */
     public ArrayList<JSONObject> getPoliciesInfo()
     {
         ArrayList<JSONObject> policyList = new ArrayList<JSONObject>();
@@ -153,6 +188,9 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         return policyList;
     }
 
+    /**
+     * initializeSettings initializes new PolicySettings
+     */
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
@@ -161,6 +199,14 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         this.setSettings(settings);
     }
 
+    /**
+     * getPolicyGenerationDiff gets the difference of generations of policies
+     * if the child is the child of the parent, then 1 is returned
+     * if child is the grandchild of the parent, then 2 is returned etc
+     * @param childId
+     * @param parentId
+     * @return the difference
+     */
     public int getPolicyGenerationDiff(Integer childId, Integer parentId)
     {
         if (null == childId) {
@@ -189,6 +235,10 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         return -1;
     }
 
+    /**
+     * getPolicyIds get a list of policyIds
+     * @return int[]
+     */
     public int[] getPolicyIds()
     {
         int size = settings.getPolicies().size();
@@ -203,6 +253,9 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         return policyIds;
     }
 
+    /**
+     * postInit hook
+     */
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -238,18 +291,29 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         }
     }
 
+    /**
+     * preStop hook
+     * @param isPermanentTransition
+     */
     @Override
     protected void preStop( boolean isPermanentTransition )
     {
         cleanerPulse.stop();
     }
 
+    /**
+     * postStart hook
+     * @param isPermanentTransition
+     */
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
         cleanerPulse.start();
     }
 
+    /**
+     * preDestroy hook
+     */
     @Override
     protected void preDestroy()
     {
@@ -260,26 +324,32 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         }
     }
 
+    /**
+     * getConnectors returns the PipelineConnectors for policy
+     * @return PipelineConnector[]
+     */
     @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
     }
 
-    private boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.POLICY_MANAGER))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.POLICY_MANAGER_OLDNAME))
-            return true;
-        return false;
-    }
-    
+    /**
+     * getPolicySettings for the specified policyId
+     * @param policyId
+     * @return PolicySettings
+     */
     private PolicySettings getPolicySettings( Integer policyId )
     {
         return getPolicySettings( policyId, this.settings );
     }
 
+    /**
+     * getPolicySettings for the specified policyId, in the specified settings
+     * @param policyId
+     * @param settings
+     * @return PolicySettings
+     */
     private PolicySettings getPolicySettings( Integer policyId, PolicyManagerSettings settings )
     {
         for (PolicySettings policy : settings.getPolicies()) {
@@ -289,6 +359,11 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         return null;
     }
 
+    /**
+     * sanityCheck the PolicyManagerSettings
+     * throws a RuntimeException if something bad is found
+     * @param settings
+     */
     private void sanityCheck( PolicyManagerSettings settings )
     {
         if (settings == null)
@@ -353,27 +428,54 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
         return;
     }
 
-    
+    /**
+     * SessionExpirationWorker periodically checks existing sessions
+     * If a session belongs on another policy - it resets the session
+     */
     private static class SessionExpirationWorker implements Runnable
     {
         ExpiredPolicyMatcher matcher = new ExpiredPolicyMatcher();
         PolicyManagerApp app;
 
+        /**
+         * SessionExpirationWorker
+         * @param app
+         */
         public SessionExpirationWorker( PolicyManagerApp app)
         {
             this.app = app;
         }
         
+        /**
+         * run
+         */
         public void run()
         {
             app.killMatchingSessionsGlobal(matcher);
         }
     }
 
+    /**
+     * ExpiredPolicyMatcher periodically checks existing sessions
+     * If a session belongs on another policy - it resets the session
+     */
     private static class ExpiredPolicyMatcher implements SessionMatcher
     {
         private static final Logger logger = Logger.getLogger(ExpiredPolicyMatcher.class);
 
+        /**
+         * isMatch
+         * @param oldPolicyId
+         * @param protocol
+         * @param clientIntf
+         * @param serverIntf
+         * @param clientAddr
+         * @param serverAddr
+         * @param clientPort
+         * @param serverPort
+         * @param attachments
+         * @return true if the session should be a different policy
+         */
         public boolean isMatch( Integer oldPolicyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
         {
             PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().appManager().app("policy-manager");
@@ -414,8 +516,9 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
     }
 
     /**
-     * Check to make sure nextPolicyId is bigger than any existisng policy ID
-     * This was somehow messed up in 9.3 or prior
+     * Check to make sure nextPolicyId is bigger than any existisng
+     * policy ID This was somehow messed up in 9.3 or prior
+     * @param settings
      */
     private void updateNextPolicyIDIfNecessary( PolicyManagerSettings settings )
     {

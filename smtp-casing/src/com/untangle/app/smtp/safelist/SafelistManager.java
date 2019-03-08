@@ -38,12 +38,20 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
     private Map<String, Map<String, Pattern>> m_allSndrs = new HashMap<String, Map<String, Pattern>>();
     private Object allSndrsLock = new Object();
 
+    /**
+     * Initialize safelist with quarantine.
+     * 
+     * @param  quarantine Quarantine to use in this safelist.
+     */
     public SafelistManager(Quarantine quarantine) {
         this.quarantine = quarantine;
     }
 
     /**
      * The Safelist manager "cheats" and lets the MailTranformImpl maintain the persistence for settings
+     *
+     * @param mlImpl SMTP implementaton object.
+     * @param mlSettings Smtp settings. 
      */
     public void setSettings(SmtpImpl mlImpl, SmtpSettings mlSettings)
     {
@@ -55,7 +63,15 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
 
     // -------------------- SafelistAppView ------------------------
 
-    // See doc on SafelistAppView.java
+    /**
+     * Determine of this email address is safelisted.
+     * See doc on SafelistAppView.java
+     * 
+     * @param  envelopeSender Email address from envelope.
+     * @param  mimeFrom       Email address from mime.
+     * @param  recipients     List of recipients.
+     * @return                true if addresses are in safelist, false otherwise.
+     */
     @Override
     public boolean isSafelisted(InternetAddress envelopeSender, InternetAddress mimeFrom, List<InternetAddress> recipients)
     {
@@ -101,7 +117,16 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
 
     // --------------------- SafelistManipulation -----------------------
 
-    // See doc on SafelistManipulation.java
+    /**
+     * Add sender/recipient addresses to safelist.
+     * 
+     * See doc on SafelistManipulation.java
+     * @param  rcpnt                         Recipient.
+     * @param  newSndr                       Sender address.
+     * @return                               Array of senders.
+     * @throws NoSuchSafelistException       If no safelist exists.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public String[] addToSafelist(String rcpnt, String newSndr) throws NoSuchSafelistException,
             SafelistActionFailedException
@@ -129,7 +154,16 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return toStringArray(sndrs);
     }
 
-    // See doc on SafelistManipulation.java
+    /**
+     * Remove sender/recipient addresses from safelist.
+     * See doc on SafelistManipulation.java
+     *
+     * @param  rcpnt                         Recipient.
+     * @param  obsSndr                       Sender address.
+     * @return                               Array of senders.
+     * @throws NoSuchSafelistException       If no safelist exists.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public String[] removeFromSafelist(String rcpnt, String obsSndr) throws NoSuchSafelistException,
             SafelistActionFailedException
@@ -158,6 +192,16 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return toStringArray(sndrs);
     }
 
+    /**
+     * Remove sender/recipient addresses from safelist.
+     * See doc on SafelistManipulation.java
+     *
+     * @param  rcpnt                         Recipient.
+     * @param  obsSndrs                      Array of sender addresses.
+     * @return                               Array of senders.
+     * @throws NoSuchSafelistException       If no safelist exists.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public String[] removeFromSafelists(String rcpnt, String[] obsSndrs) throws NoSuchSafelistException,
             SafelistActionFailedException
@@ -191,7 +235,16 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return toStringArray(sndrs);
     }
 
-    // See doc on SafelistManipulation.java
+    /**
+     * Replace  sender/recipient addresses from safelist.
+     * See doc on SafelistManipulation.java
+     *
+     * @param  rcpnt                         Recipient.
+     * @param  newSndrs                      Array of sender addresses.
+     * @return                               Array of senders.
+     * @throws NoSuchSafelistException       If no safelist exists.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public String[] replaceSafelist(String rcpnt, String... newSndrs) throws NoSuchSafelistException,
             SafelistActionFailedException
@@ -220,7 +273,15 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return toStringArray(sndrs);
     }
 
-    // See doc on SafelistManipulation.java
+    /**
+     * Get string of safelist addresses.
+     * See doc on SafelistManipulation.java
+     * 
+     * @param  rcpnt                         Safelist owner address.
+     * @return                               Array of safelisted email addresses.
+     * @throws NoSuchSafelistException       If no safelist exists.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public String[] getSafelistContents(String rcpnt) throws NoSuchSafelistException, SafelistActionFailedException
     {
@@ -233,7 +294,15 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return toStringArray(sndrs);
     }
 
-    // See doc on SafelistManipulation.java
+    /**
+     * Get size of safelist for this address.
+     * See doc on SafelistManipulation.java
+     * 
+     * @param  rcpnt                         Safelist owner address.
+     * @return                               Number of safelist addresses.
+     * @throws NoSuchSafelistException       If no safelist exists.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public int getSafelistCnt(String rcpnt) throws NoSuchSafelistException, SafelistActionFailedException
     {
@@ -246,7 +315,12 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return sndrs.size();
     }
 
-    // See doc on SafelistManipulation.java
+    /**
+     * Determine of this recipient address can have a safelist.
+     * 
+     * @param  rcpnt Email address of recipient.
+     * @return       Always true.
+     */
     @Override
     public boolean hasOrCanHaveSafelist(String rcpnt)
     {
@@ -254,7 +328,9 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return true;
     }
 
-    // See doc on SafelistManipulation.java
+    /**
+     * Test method.
+     */
     @Override
     public void test()
     {
@@ -263,7 +339,12 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
 
     // --------------------- SafelistAdminView -----------------------
 
-    // See doc on SafelistAdminView.java
+    /**
+     * List of addresses with safelists.
+     * 
+     * @return String list of email addresses.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public List<String> listSafelists() throws SafelistActionFailedException
     {
@@ -271,7 +352,12 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return new ArrayList<String>(m_sndrsByRcpnt.keySet());
     }
 
-    // See doc on SafelistAdminView.java
+    /**
+     * Delete safelist for the recipient.
+     *
+     * @param rcpnt Owner of safelist.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public void deleteSafelist(String rcpnt) throws SafelistActionFailedException
     {
@@ -283,6 +369,12 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return;
     }
 
+    /**
+     * Delete safelists for the list of recipients.
+     *
+     * @param rcpnts Array of strings of the safelist owners.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public void deleteSafelists(String[] rcpnts) throws SafelistActionFailedException
     {
@@ -293,7 +385,12 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         }
     }
 
-    // See doc on SafelistAdminView.java
+    /**
+     * Create safelist for recipient.
+     *
+     * @param rcpnt Safelist owner.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public void createSafelist(String rcpnt) throws SafelistActionFailedException
     {
@@ -301,7 +398,13 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return;
     }
 
-    // See doc on SafelistAdminView.java
+    /**
+     * Determine of safelist exists for this recipient.
+     *
+     * @param rcpnt Safelist owner.
+     * @return true if safelist exist, false otherwise.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public boolean safelistExists(String rcpnt) throws SafelistActionFailedException
     {
@@ -310,7 +413,13 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return bReturn;
     }
 
-    // See doc on SafelistAdminView.java
+    /**
+     * Get safelist counts for all avalable safelists.
+     *
+     * @return List of SafeListAccount for all availabel safelists.
+     * @throws NoSuchSafelistException if no such safelist exists.
+     * @throws SafelistActionFailedException If safelist action failed.
+     */
     @Override
     public List<SafelistCount> getUserSafelistCounts() throws NoSuchSafelistException, SafelistActionFailedException
     {
@@ -328,6 +437,13 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return safelistCounts;
     }
 
+    /**
+     * See if this address exists within list of strings.
+     * 
+     * @param  urs     Set of addresses.
+     * @param  addrStr Address to check
+     * @return         true of address exists, false otherwise.
+     */
     private boolean checkAddr(Set<String> urs, String addrStr)
     {
         if (null != addrStr) {
@@ -361,7 +477,12 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return false;
     }
 
-    // refresh (add/delete/update) safelists for this recipient
+    /**
+     * Refresh (add/delete/update) safelists for this recipient
+     *
+     * @param rcpnt Recipient address.
+     * @param sndrs List of sender email address strings to replace.
+     */
     private synchronized void setSndrs(String rcpnt, List<String> sndrs)
     {
         if (null == rcpnt) {
@@ -504,6 +625,13 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return;
     }
 
+    /**
+     * Get first safelist this uer belongs to.
+     *
+     * @param  sndr      Sender to check.
+     * @param  safelists Safelists to check.
+     * @return           First SafeListSettings the sender address belongs to.
+     */
     private SafelistSettings getSndrSafelist(String sndr, List<SafelistSettings> safelists)
     {
         if (null == safelists) {
@@ -519,6 +647,11 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return null;
     }
 
+    /**
+     * Set safelists.
+     *
+     * @param safelists List of safelists to set in settings.
+     */
     private void setHMSafelists(List<SafelistSettings> safelists)
     {
         m_logger.debug("setting safelists, size: " + safelists.size());
@@ -530,23 +663,45 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return;
     }
 
-    // get (refresh) safelists for this recipient
+    /**
+     * Get (refresh) safelists for this recipient
+     *
+     * @param  rcpnt Email address to lookup.
+     * @return       List of strings of safelists.
+     */
     private List<String> getSndrs(String rcpnt)
     {
         return getSndrs(getHMSafelists(), rcpnt);
     }
 
+    /**
+     * Return senders in specified safelsits for the named recipient.
+     *
+     * @param  safelists Safelists to search.
+     * @param  rcpnt     Recipient address to mathch.
+     * @return           List of senders.
+     */
     private List<String> getSndrs(List<SafelistSettings> safelists, String rcpnt)
     {
         return renewGetSndrs(safelists, rcpnt);
     }
 
+    /**
+     * Return safelists.
+     * 
+     * @return Safelists from smtp settings.
+     */
     private List<SafelistSettings> getHMSafelists()
     {
         // cast list because xdoclet does not support java 1.5
         return mlSettings.getSafelistSettings();
     }
 
+    /**
+     * Renew safelists.
+     * 
+     * @param safelists safelists to add.
+     */
     private void renew(List<SafelistSettings> safelists)
     {
         m_logger.debug("reading all safelists");
@@ -600,7 +755,13 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return;
     }
 
-    // add/replace sndr - assumes sndr is already in lower-case format
+    /**
+     * add/replace sndr - assumes sndr is already in lower-case format
+     *
+     * @param sndrs Map of safelists.
+     * @param rcpnt Recipient.
+     * @param sndr  Sender.
+     */
     private void addSndr(Map<String, Map<String, Pattern>> sndrs, String rcpnt, String sndr)
     {
         String sndrTmp = GlobEmailAddressMapper.fixupWildcardAddress(sndr);
@@ -616,7 +777,14 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         m.put(sndr, sndrPattern);
     }
 
-    // remove sndr - assumes sndr is already in lower-case format
+    /**
+     * Remove sender from safelists.  assumes sndr is already in lower-case format
+     *
+     * @param sndrs Map of safelists.
+     * @param rcpnt Recipient.
+     * @param sndr  Sender.
+     * @return sender address if found, null otherwise.
+     */
     private Pattern removeSndr(Map<String, Map<String, Pattern>> sndrs, String rcpnt, String sndr)
     {
         Map<String, Pattern> m = sndrs.get(rcpnt);
@@ -627,6 +795,13 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         }
     }
 
+    /**
+     * Renew get senders.
+     *
+     * @param  safelists Safelists.
+     * @param  rcpnt     Safelist owner.
+     * @return           List of string of senders.
+     */
     private List<String> renewGetSndrs(List<SafelistSettings> safelists, String rcpnt)
     {
         renew(safelists);
@@ -634,6 +809,12 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return (m_sndrsByRcpnt.get(rcpnt.toLowerCase()));
     }
 
+    /**
+     * Create safelist.
+     * @param  rcpnt                         Safelist owner.
+     * @return                               Senders in safelist.
+     * @throws SafelistActionFailedException If safelist cannot be created.
+     */
     private List<String> createSL(String rcpnt) throws SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", created safelist");
@@ -648,7 +829,12 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         return sndrs;
     }
 
-    // return references to list contents for private use
+    /**
+     * Convert a list of strings as an array.
+     *
+     * @param  strs List of strings.
+     * @return      Array of strings.
+     */
     private String[] toStringArray(List<String> strs)
     {
         return strs.toArray(new String[strs.size()]);

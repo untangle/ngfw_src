@@ -35,6 +35,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     
     // HttpServlet methods ----------------------------------------------------
 
+    /**
+     * init
+     */
     @SuppressWarnings("unchecked") //getAttribute
     public void init()
     {
@@ -57,6 +60,12 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         bridge.registerObject("SetupContext", sc, SetupContext.class);
     }
 
+    /**
+     * service
+     * @param req
+     * @param resp
+     * @throws IOException
+     */
     public void service(HttpServletRequest req, HttpServletResponse resp)
         throws IOException
     {
@@ -104,7 +113,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     {
         public void setLanguage( String language, String source );
 
-        public void setAdminPassword( String password, String email ) throws TransactionRolledbackException;
+        public void setAdminPassword( String password, String email, String installType ) throws TransactionRolledbackException;
 
         public void setTimeZone( TimeZone timeZone ) throws TransactionRolledbackException;
 

@@ -12,7 +12,7 @@ import com.untangle.uvm.app.RuleCondition;
  * A UpnpRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class UpnpRuleCondition extends RuleCondition
+public class UpnpRuleCondition extends RuleCondition implements java.io.Serializable, org.json.JSONString
 {
     public UpnpRuleCondition( )
     {
@@ -27,5 +27,10 @@ public class UpnpRuleCondition extends RuleCondition
     public UpnpRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
+    }
+
+    public String toJSONString()
+    {
+        return (new org.json.JSONObject(this)).toString();
     }
 }

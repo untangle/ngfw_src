@@ -6,7 +6,6 @@ package com.untangle.uvm.network;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;

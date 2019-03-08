@@ -1,16 +1,11 @@
 /**
  * $Id: ApplicationControlEventHandler.java 38041 2014-07-08 06:57:29Z dmorris $
  */
+
 package com.untangle.app.application_control;
 
-import java.util.Arrays;
 import java.util.List;
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ConnectException;
-import java.nio.channels.SocketChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.AppSession;
@@ -18,42 +13,27 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.AppSession;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
+/**
+ * This is the main event handler where we pass traffic to the daemon for
+ * classification and allow or block the traffic as required.
+ * 
+ * @author mahotz
+ * 
+ */
 public class ApplicationControlEventHandler extends AbstractEventHandler
 {
     private static final int MAX_CHUNK_COUNT = 15;
 
-    public static final int NAVL_STATE_TERMINATED = 0; /*
-                                                        * Indicates the
-                                                        * connection has been
-                                                        * terminated
-                                                        */
+    public static final int NAVL_STATE_TERMINATED = 0; // Indicates the connection has been terminated
+    public static final int NAVL_STATE_INSPECTING = 1; // Indicates the connection is under inspection
+    public static final int NAVL_STATE_MONITORING = 2; // Indicates the connection is under monitoring
+    public static final int NAVL_STATE_CLASSIFIED = 3; // Indicates the connection is fully classified
 
-    public static final int NAVL_STATE_INSPECTING = 1; /*
-                                                        * Indicates the
-                                                        * connection is under
-                                                        * inspection
-                                                        */
-
-    public static final int NAVL_STATE_MONITORING = 2; /*
-                                                        * Indicates the
-                                                        * connection is under
-                                                        * monitoring
-                                                        */
-
-    public static final int NAVL_STATE_CLASSIFIED = 3; /*
-                                                        * Indicates the
-                                                        * connection is fully
-                                                        * classified
-                                                        */
     public static final int SELECT_TIMEOUT = 100;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -65,6 +45,14 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         ALLOW, BLOCK, RELEASE, TARPIT
     }
 
+    /**
+     * Constructor
+     * 
+     * @param app
+     *        The application that created us
+     * @param networkPort
+     *        The specific network port to match, or zero for all
+     */
     public ApplicationControlEventHandler(ApplicationControlApp app, int networkPort)
     {
         super(app);
@@ -72,8 +60,13 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         this.networkPort = networkPort;
     }
 
-    // TCP stuff -------------------------------------------------------------
-
+    /**
+     * This is the handler for all new TCP session requests. We use this
+     * function to setup everything we need to analyze the traffic.
+     * 
+     * @param sessionRequest
+     *        The session request
+     */
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequest sessionRequest)
     {
@@ -91,6 +84,13 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         processNewSession(sessionRequest);
     }
 
+    /**
+     * This is the handler for finished TCP sessions. We use this function to
+     * cleanup everything we created when the session was created.
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     public void handleTCPFinalized(AppTCPSession session)
     {
@@ -98,6 +98,14 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         super.handleTCPFinalized(session);
     }
 
+    /**
+     * This function handles processing raw session traffic from the client
+     * 
+     * @param sess
+     *        The session
+     * @param data
+     *        The raw client data
+     */
     @Override
     public void handleTCPClientChunk(AppTCPSession sess, ByteBuffer data)
     {
@@ -105,8 +113,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         // before we do anything else see if this session is already set
         // for tarpit and if so drop the traffic on the floor
-        if (status.tarpit == true)
-            return;
+        if (status.tarpit == true) return;
 
         TrafficAction action = processTraffic(true, status, sess, data);
 
@@ -132,6 +139,14 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         super.handleTCPClientChunk(sess, data);
     }
 
+    /**
+     * This function handles processing raw session data from the server
+     * 
+     * @param sess
+     *        The session
+     * @param data
+     *        The raw server data
+     */
     @Override
     public void handleTCPServerChunk(AppTCPSession sess, ByteBuffer data)
     {
@@ -139,8 +154,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         // before we do anything else see if this session is already set
         // for tarpit and if so drop the traffic on the floor
-        if (status.tarpit == true)
-            return;
+        if (status.tarpit == true) return;
 
         TrafficAction action = processTraffic(false, status, sess, data);
 
@@ -166,8 +180,13 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         super.handleTCPServerChunk(sess, data);
     }
 
-    // UDP stuff -------------------------------------------------------------
-
+    /**
+     * This is the handler for all new UDP session requests. We use this
+     * function to setup everything we need to analyze the traffic.
+     * 
+     * @param sessionRequest
+     *        The session request
+     */
     @Override
     public void handleUDPNewSessionRequest(UDPNewSessionRequest sessionRequest)
     {
@@ -176,6 +195,13 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         processNewSession(sessionRequest);
     }
 
+    /**
+     * This is the handler for finished UDP sessions. We use this function to
+     * cleanup everything we created when the session was created.
+     * 
+     * @param session
+     *        The session
+     */
     @Override
     public void handleUDPFinalized(AppUDPSession session)
     {
@@ -183,6 +209,16 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         super.handleUDPFinalized(session);
     }
 
+    /**
+     * This function handles processing raw session traffic from the client
+     * 
+     * @param sess
+     *        The session
+     * @param data
+     *        The raw client data
+     * @param header
+     *        theh IP packet header
+     */
     @Override
     public void handleUDPClientPacket(AppUDPSession sess, ByteBuffer data, IPPacketHeader header)
     {
@@ -190,8 +226,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         // before we do anything else see if this session is already set
         // for tarpit and if so drop the traffic on the floor
-        if (status.tarpit == true)
-            return;
+        if (status.tarpit == true) return;
 
         TrafficAction action = processTraffic(true, status, sess, data);
 
@@ -217,6 +252,16 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         super.handleUDPClientPacket(sess, data, header);
     }
 
+    /**
+     * This function handles processing raw session traffic from the server
+     * 
+     * @param sess
+     *        The session
+     * @param data
+     *        The raw client data
+     * @param header
+     *        theh IP packet header
+     */
     @Override
     public void handleUDPServerPacket(AppUDPSession sess, ByteBuffer data, IPPacketHeader header)
     {
@@ -224,8 +269,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         // before we do anything else see if this session is already set
         // for tarpit and if so drop the traffic on the floor
-        if (status.tarpit == true)
-            return;
+        if (status.tarpit == true) return;
 
         TrafficAction action = processTraffic(false, status, sess, data);
 
@@ -251,8 +295,12 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         super.handleUDPServerPacket(sess, data, header);
     }
 
-    // request processing ----------------------------------------------------
-
+    /**
+     * This common function handles all new TCP and UDP sessions
+     * 
+     * @param ipr
+     *        The IP session request
+     */
     public void processNewSession(IPNewSessionRequest ipr)
     {
         // if the license is not valid we ignore all traffic
@@ -262,18 +310,16 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         }
 
         // create string to allocate the session in the daemon
-        // string format = CMD:ID:PROTOCOL:C_ADDR:C_PORT:S_ADDR:S_PORT
-        // string sample = CREATE:123456789:TCP:192.168.1.1:55555:4.3.2.1:80
+        // string format = CMD|ID|PROTOCOL|C_ADDR|C_PORT|S_ADDR|S_PORT
+        // string sample = CREATE|123456789|TCP|192.168.1.1|55555|4.3.2.1|80
         String sessionInfo = getIdString(ipr.id());
-        if (ipr instanceof TCPNewSessionRequest)
-            sessionInfo = (sessionInfo + ":TCP");
-        if (ipr instanceof UDPNewSessionRequest)
-            sessionInfo = (sessionInfo + ":UDP");
-        sessionInfo = (sessionInfo + ":" + ipr.getOrigClientAddr().getHostAddress() + ":" + ipr.getOrigClientPort());
-        sessionInfo = (sessionInfo + ":" + ipr.getNewServerAddr().getHostAddress() + ":" + ipr.getNewServerPort());
+        if (ipr instanceof TCPNewSessionRequest) sessionInfo = (sessionInfo + "|TCP");
+        if (ipr instanceof UDPNewSessionRequest) sessionInfo = (sessionInfo + "|UDP");
+        sessionInfo = (sessionInfo + "|" + ipr.getOrigClientAddr().getHostAddress() + "|" + ipr.getOrigClientPort());
+        sessionInfo = (sessionInfo + "|" + ipr.getNewServerAddr().getHostAddress() + "|" + ipr.getNewServerPort());
 
         // create new status object and attach to session
-        String message = "CREATE:" + sessionInfo + "\r\n";
+        String message = "CREATE|" + sessionInfo + "\r\n";
         ApplicationControlStatus status = new ApplicationControlStatus(sessionInfo, ipr);
         ipr.attach(status);
 
@@ -282,37 +328,48 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         return;
     }
 
+    /**
+     * This function passes the raw traffic to the classd daemon, tracks the
+     * classification for the session, looks at rules and settings, and returns
+     * an appropriate action code.
+     * 
+     * @param isClient
+     *        True for client data, false for server data
+     * @param status
+     *        Our status object attached to the session
+     * @param sess
+     *        The session object
+     * @param data
+     *        The raw traffic
+     * @return The action to be taken for the traffic
+     */
     private TrafficAction processTraffic(boolean isClient, ApplicationControlStatus status, AppSession sess, ByteBuffer data)
     {
         // create string to pass session data to the classd daemon
-        // string format = CMD:ID:DATALEN
-        // string sample = CLIENT:123456789:437
-        String message = (isClient ? "CLIENT:" : "SERVER:") + 
-            getIdString(status.sessionId) + ":" + 
-            Integer.toString(data.limit()) + "\r\n";
+        // string format = CMD|ID|DATALEN
+        // string sample = CLIENT|123456789|437
+        String message = (isClient ? "CLIENT|" : "SERVER|") + getIdString(status.sessionId) + "|" + Integer.toString(data.limit()) + "\r\n";
 
         // add 1 to the chunk count
         // if we've scanned more chunks than allowed, just give up on categorization
         // go ahead and evaluate the logic rules with what we have
         status.chunkCount++;
-        if ( status.chunkCount >= MAX_CHUNK_COUNT ) {
+        if (status.chunkCount >= MAX_CHUNK_COUNT) {
             logger.debug("Max chunk count reached. Giving up and releasing session. " + status.toString());
             return processLogicRules(isClient, status, sess, data);
         }
-                 
+
         // pass the session data to the daemon and get the status in return
         // null response means the daemon is still scanning so we must allow
         String traffic = daemonCommand(message, data.duplicate());
-        if (traffic == null)
-            return (TrafficAction.ALLOW);
+        if (traffic == null) return (TrafficAction.ALLOW);
 
         // update the status object with the daemon result
         ApplicationControlStatus.StatusCode check = status.updateStatus(traffic);
 
         // this call gets and clears the number of status members that were
         // just updated which we use to make the debug log less noisy
-        if (status.getChangeCount() != 0)
-            logger.debug("STATUS = " + status.toString());
+        if (status.getChangeCount() != 0) logger.debug("STATUS = " + status.toString());
 
         // if we detect a failure parsing the daemon response then
         // something is really screwed up so log an event and release
@@ -394,6 +451,19 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         return processLogicRules(isClient, status, sess, data);
     }
 
+    /**
+     * This function applies our logic rules to fully classified sessions
+     * 
+     * @param isClient
+     *        True for client data, false for server data
+     * @param status
+     *        Our status object attached to the session
+     * @param sess
+     *        The session object
+     * @param data
+     *        The raw traffic
+     * @return The action to be taken for the traffic
+     */
     private TrafficAction processLogicRules(boolean isClient, ApplicationControlStatus status, AppSession sess, ByteBuffer data)
     {
         ApplicationControlLogicRule logicRule = findLogicRule(sess);
@@ -432,8 +502,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // use the application to grab the category from the protocol rules
         String category = null;
         ApplicationControlProtoRule categoryRule = app.settings.searchProtoRules(status.application);
-        if (categoryRule != null)
-            category = categoryRule.getCategory();
+        if (categoryRule != null) category = categoryRule.getCategory();
 
         switch (action)
         {
@@ -465,22 +534,30 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Called to clean up sessions that have been blocked, released, or
+     * finalized
+     * 
+     * @param sess
+     *        The session object
+     * @param isFinalized
+     *        True if were called from the TCP or UDP finalize handler
+     */
     public void cleanupActiveSession(AppSession sess, boolean isFinalized)
     {
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
         // if status object is empty we can bail out now
-        if (status == null)
-            return;
+        if (status == null) return;
 
         // status object is valid so we have to do cleanup
         sess.attach(null);
         sess.release();
 
         // create string to remove the session in the daemon
-        // string format = CMD:ID
-        // string sample = REMOVE:123456789
-        String message = "REMOVE:" + getIdString(sess.id()) + "\r\n";
+        // string format = CMD|ID
+        // string sample = REMOVE|123456789
+        String message = "REMOVE|" + getIdString(sess.id()) + "\r\n";
 
         // pass the session remove string to the daemon
         daemonCommand(message, null);
@@ -500,14 +577,24 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         }
     }
 
+    /**
+     * Public function to send commands to the classd daemon. It takes care of
+     * logging and syncronization, and will reconnect to the daemon if the
+     * socket is disconnected.
+     * 
+     * @param message
+     *        The message to transmit to the daemon
+     * @param buffer
+     *        The raw network data if command is to classify traffic
+     * @return The response from the daemon
+     */
     public String daemonCommand(String message, ByteBuffer buffer)
     {
         String result = null;
 
         if (app.settings.getDaemonDebug()) {
             logger.debug("DAEMON COMMAND = " + message);
-            if (buffer != null)
-                logger.debug("DAEMON BUFFER = " + buffer.toString());
+            if (buffer != null) logger.debug("DAEMON BUFFER = " + buffer.toString());
         }
 
         /*
@@ -524,25 +611,33 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
              * a previous call to socketStartup, and it should never happen but
              * we check and handle just in case.
              */
-            if (app.daemonSocket == null)
-                app.socketStartup();
+            if (app.daemonSocket == null) app.socketStartup();
 
             // if we have a good daemon socket object we handle the command
-            if (app.daemonSocket != null)
-                result = privateCommand(message, buffer);
+            if (app.daemonSocket != null) result = privateCommand(message, buffer);
         }
 
         return (result);
     }
 
+    /**
+     * Private function to actually transmit commands to the classd daemon and
+     * receive the response. For session CREATE and REMOVE commands, we send a
+     * single command string. When passing client or server data, we first send
+     * the CLIENT or SERVER command, which includes the length of the data,
+     * followed by the actual data for classification. The daemon looks for the
+     * trailing <CR><LF> and extracts the raw data starting from that location.
+     * The daemon reply to all of these commands will be terminated with
+     * <CR><LF><CR><LF> so we know to keep reading until we get the entire
+     * response.
+     * 
+     * @param message
+     *        The message to transmit to the daemon
+     * @param buffer
+     *        The raw network data if command is to classify traffic
+     * @return The response from the daemon
+     */
     /*
-     * For session CREATE and REMOVE commands, we send a single command string.
-     * When passing client or server data, we first send the CLIENT or SERVER
-     * command, which includes the length of the data, followed by the actual
-     * data for classification. The daemon looks for the trailing <CR><LF> and
-     * extracts the raw data starting from that location. The daemon reply to
-     * all of these commands will be terminated with <CR><LF><CR><LF> so we know
-     * to keep reading until we get the entire response.
      */
     private String privateCommand(String message, ByteBuffer buffer)
     {
@@ -635,28 +730,32 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // check the that string contains only ascii
         // NGFW-9482
         String result2 = result.replaceAll("[^\\x01-\\x7F]", "");
-        if ( !result.equals(result2) ) {
+        if (!result.equals(result2)) {
             logger.warn("classd daemon return non-ascii bytes[" + rxbuffer.position() + "]: " + result);
         }
 
         return result;
     }
 
-    // find the first matching classification rule
+    /**
+     * Locates the first matching logic rule for a session
+     * 
+     * @param sess
+     *        The session to use for matching
+     * @return The first matching rule or null if no match is found
+     */
     private ApplicationControlLogicRule findLogicRule(AppSession sess)
     {
         List<ApplicationControlLogicRule> logicList = this.app.getSettings().getLogicRules();
 
         logger.debug("Checking Rules against AppSession : " + sess.getProtocol() + " " + sess.getOrigClientAddr().getHostAddress() + ":" + sess.getOrigClientPort() + " -> " + sess.getNewServerAddr().getHostAddress() + ":" + sess.getNewServerPort());
 
-        if (logicList == null)
-            return null;
+        if (logicList == null) return null;
 
         for (ApplicationControlLogicRule logicRule : logicList) {
             Boolean result;
 
-            if (!logicRule.isLive())
-                continue;
+            if (!logicRule.getEnabled()) continue;
             result = logicRule.matches(sess);
 
             if (result == true) {
@@ -672,21 +771,37 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         return null;
     }
 
+    /**
+     * Function to get a session ID string for a session ID value. If no network
+     * port value was passed when we were created, we simply use the argumented
+     * value. If a specific port was set when we were created, we're likely
+     * scanning another stream of session traffic such as HTTP that has been
+     * decrypted by the https casing so we add a value in the highest 16 bits of
+     * the session id so the daemon can track the flow separately.
+     * 
+     * @param argValue
+     *        The session ID value for the traffic
+     * @return A String with the session ID to be passed to the classd daemon
+     */
     private String getIdString(long argValue)
     {
         long marker = 2222200000000000000L;
 
         // if not targeting a specific port then use session id as is
-        if (networkPort == 0)
-            return (Long.toString(argValue));
+        if (networkPort == 0) return (Long.toString(argValue));
 
-        // specific port is set which means we're likely scanning another
-        // stream of session traffic such as HTTP that has been decrypted
-        // by the https casing so we add a value in the highest 16 bits
-        // of the session id so the daemon can track the flow separately
+        // specific port is set so add a magic value in the highest 16 bits 
         return (Long.toString(argValue + marker));
     }
 
+    /**
+     * Search a buffer for the <CR><LF><CR><LF> marker used to indicating the
+     * end of a classd daemon response
+     * 
+     * @param buffer
+     *        The buffer to search
+     * @return True if the marker is found in the buffer, otherwise false
+     */
     private boolean markerSearch(ByteBuffer buffer)
     {
         byte rawdata[] = buffer.array();
@@ -694,34 +809,35 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         int x;
 
         for (x = 0; x < buffer.position(); x++) {
-            if (rawdata[x + 0] != '\r')
-                continue;
+            if (rawdata[x + 0] != '\r') continue;
 
-            if ((x + 1) >= max)
-                return (false);
-            if (rawdata[x + 1] != '\n')
-                continue;
+            if ((x + 1) >= max) return (false);
+            if (rawdata[x + 1] != '\n') continue;
 
-            if ((x + 2) >= max)
-                return (false);
-            if (rawdata[x + 2] != '\r')
-                continue;
+            if ((x + 2) >= max) return (false);
+            if (rawdata[x + 2] != '\r') continue;
 
-            if ((x + 3) >= max)
-                return (false);
-            if (rawdata[x + 3] != '\n')
-                continue;
+            if ((x + 3) >= max) return (false);
+            if (rawdata[x + 3] != '\n') continue;
             return (true);
         }
 
         return (false);
     }
 
+    /**
+     * Recycles our socket connection to the classd daemon
+     * 
+     * @param message
+     *        The message to be logged
+     * @param force
+     *        True if we should ignore a pending connection and force the socket
+     *        to be recycled
+     */
     private void socketRecycle(String message, boolean force)
     {
         // if connection is already pending we just return
-        if ((app.daemonSocket.isConnectionPending() == true) && (force == false))
-            return;
+        if ((app.daemonSocket.isConnectionPending() == true) && (force == false)) return;
 
         // not connecting so destroy the socket and start it back up
         logger.warn("Recycling daemon socket connection: " + message);

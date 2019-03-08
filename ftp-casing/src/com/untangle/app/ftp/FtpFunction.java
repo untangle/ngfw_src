@@ -58,6 +58,12 @@ public class FtpFunction
 
     private final String fnStr;
 
+    /**
+     * FtpFunction creates a new FtpFunction
+     * use valueOf to get create FtpFunction
+     * @param fnStr
+     * @param official
+     */
     private FtpFunction(String fnStr, boolean official)
     {
         this.fnStr = fnStr;
@@ -67,6 +73,11 @@ public class FtpFunction
         }
     }
 
+    /**
+     * valueOf to get the FtpFunction for a specified function string
+     * @param fnStr
+     * @return the FtpFunction
+     */
     public static FtpFunction valueOf(String fnStr)
     {
         FtpFunction function = FUNCTIONS.get(fnStr);
@@ -74,14 +85,14 @@ public class FtpFunction
         return null == function ? new FtpFunction(fnStr, false) : function;
     }
 
-    // Object methods ---------------------------------------------------------
-
+    /**
+     * toString returns the string equivalent of the command
+     * @return the command string
+     */
     public String toString()
     {
         return fnStr;
     }
-
-    // initialization ---------------------------------------------------------
 
     static {
         FUNCTIONS = new ConcurrentHashMap<String, FtpFunction>();

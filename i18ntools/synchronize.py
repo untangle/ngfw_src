@@ -47,12 +47,12 @@ def main(argv):
             language_ids = arg.split(",")
 
     if os.path.isfile(pot_file_name) is False:
-        print "Missing template file %s" % (pot_file_name)
+        print("Missing template file %s" % (pot_file_name))
         sys.exit(1)
 
     pot.load()
 
-    print "Synchronizing po languages..."
+    print("Synchronizing po languages...")
     total_character_count = 0
     total_word_count = 0
     for language in languages.get_enabled():
@@ -66,7 +66,7 @@ def main(argv):
             "add": [x for x in pot.records if not po.get_record_by_msgid(x.msg_id)],
             "remove": [x for x in po.records if not pot.get_record_by_msgid(x.msg_id)]
         }
-        print "  Synchronizing: %s, %s," % (language["name"], po.file_name),
+        print("  Synchronizing: %s, %s," % (language["name"], po.file_name),)
 
         for diff_record in diff["remove"]:
             po.remove_record(diff_record)
@@ -75,7 +75,7 @@ def main(argv):
         for record in pot.records:
             po.add_record(record, replace_comments=True)
 
-        print "%d added, %d removed" % (len(diff["add"]), len(diff["remove"])),
+        print("%d added, %d removed" % (len(diff["add"]), len(diff["remove"])),)
 
         character_count = 0
         word_count = 0
@@ -87,14 +87,13 @@ def main(argv):
             if len("".join(record.msg_str)) == 0:
                 character_count = character_count + len(record.msg_id)
                 word_count = word_count + len(re.findall(r'\w+', record.msg_id))
-        print ", %d/%d chars/words to translate" % (character_count, word_count)
+        print(", %d/%d chars/words to translate" % (character_count, word_count))
         total_character_count = total_character_count + character_count
         total_word_count = total_word_count + word_count
 
         po.save()
 
-    print 
-    print "%d/%d chars/words total to translate" % (total_character_count, total_word_count)
+    print("%d/%d chars/words total to translate" % (total_character_count, total_word_count))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

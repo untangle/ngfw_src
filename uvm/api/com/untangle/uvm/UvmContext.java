@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm;
@@ -6,6 +6,7 @@ package com.untangle.uvm;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jabsorb.JSONSerializer;
+import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingManager;
@@ -89,6 +90,13 @@ public interface UvmContext
      * @return the singleton
      */
     DaemonManager daemonManager();
+
+    /**
+     * Get the HostsFileManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    HostsFileManager hostsFileManager();
 
     /**
      * The LocalDirectory for managing/authenticating users
@@ -318,6 +326,12 @@ public interface UvmContext
      * Example: aaaa-bbbb-cccc-dddd
      */
     String getServerUID();
+
+    /**
+     * Returns the serial number of the server
+     * Example: MMYYTWRSSSSSSS
+     */
+    String getServerSerialNumber();
     
     /**
      * mark the wizard as complete
@@ -429,16 +443,16 @@ public interface UvmContext
     void logEvent(LogEvent evt);
 
     /**
+     * Appeand a javascript excception to uvm.log
+     */
+    void logJavascriptException(JSONObject o);
+
+    /**
      * Convenience method to load all the object the webUI needs in one object to avoid
      * multiple calls
      */
     org.json.JSONObject getWebuiStartupInfo();
 
-    /**
-     * Get the quick add hints for conditions in reports/events viewer
-     */
-    org.json.JSONObject getConditionQuickAddHints();
-    
     /**
      * Convenience method to load all the object the webUI needs in one object to avoid
      * multiple calls

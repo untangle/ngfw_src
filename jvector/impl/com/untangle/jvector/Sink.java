@@ -3,16 +3,33 @@
  */
 package com.untangle.jvector;
 
+/**
+ * Sink
+ */
 public abstract class Sink
 {
     protected long pointer;
 
+    /**
+     * snk_ptr gets the sink pointer
+     * @return 
+     */
     protected long snk_ptr() 
     { 
         return pointer;
     }
 
+    /**
+     * send_event
+     * @param o
+     * @return
+     */
     protected abstract int send_event(Crumb o);
+
+    /**
+     * shutdown
+     * @return
+     */
     protected abstract int shutdown();
 
     /**
@@ -31,6 +48,10 @@ public abstract class Sink
         pointer = 0L;
     }
 
+    /**
+     * isRazed - true if razed, false otherwise
+     * @return bool
+     */
     public boolean isRazed()
     {
         if ( pointer == 0L )
@@ -49,6 +70,10 @@ public abstract class Sink
         pointer = 0L;        
     }
 
+    /**
+     * raze - raze the sink
+     * @param pointer
+     */
     protected native void raze( long pointer );
 
     static

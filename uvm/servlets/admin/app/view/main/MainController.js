@@ -9,132 +9,161 @@ Ext.define('Ung.view.main.MainController', {
         }
     },
 
+    listen: {
+        global: {
+            afterlaunch: 'afterLaunch',
+            openregister: 'openRegister'
+        }
+    },
+
+    afterLaunch: function () {
+        this.checkRegister();
+        this.checkNotifications();
+    },
+
+    checkRegister: function () {
+        var me = this;
+        if(!Rpc.directData('rpc.isRegistered')) {
+            Rpc.asyncData('rpc.UvmContext.isStoreAvailable')
+            .then( function(result){
+                if(Util.isDestroyed(me)){
+                    return;
+                }
+                if (!result) {
+                    me.openOffline();
+                } else {
+                    me.openRegister();
+                }
+            },function(ex){
+                Util.handleException(ex);
+            });
+        }
+    },
+
+    openRegister: function () {
+        var regView = Ext.create('Ung.view.main.Registration', {});
+        regView.show();
+    },
+
+    openOffline: function () {
+        var offView = Ext.create('Ung.view.main.Offline', {});
+        offView.show();
+    },
+
+    checkNotifications: function () {
+        var me = this;
+        Rpc.asyncData('rpc.notificationManager.getNotifications')
+        .then(function (result) {
+            if(Util.isDestroyed(me)){
+                return;
+            }
+            var btn = me.getView().down('#notificationBtn'), notificationArr = '', i;
+
+            if (result != null && result.list.length > 0) {
+                btn.show();
+                notificationArr += '<h3>' + 'Notifications:'.t() + '</h3><ul>';
+                for (i = 0; i < result.list.length; i += 1) {
+                    notificationArr += '<li>' + result.list[i] + '</li>';
+                }
+                notificationArr += '</ul>';
+                btn.setText(result.list.length);
+            } else {
+                btn.hide();
+                return;
+            }
+
+            btn.setMenu({
+                cls: 'notification-menu',
+                plain: true,
+                shadow: false,
+                width: 300,
+                items: [{
+                    xtype: 'component',
+                    padding: '20',
+                    style: {
+                        color: '#CCC'
+                    },
+                    autoEl: {
+                        html: notificationArr
+                    }
+                }, {
+                    xtype: 'button',
+                    iconCls: 'fa fa-question-circle',
+                    text: 'Help with Administration Notifications'.t(),
+                    margin: '0 20 20 20',
+                    href: Rpc.directData('rpc.helpUrl') + '?source=admin_notifications' + '&' + Util.getAbout(),
+                    hrefTarget: '_blank'
+                }]
+            });
+        }, function (ex) {
+            Util.handleException(ex);
+        });
+    },
+
+
+
+
     init: function (view) {
         var vm = view.getViewModel();
-        //view.getViewModel().set('widgets', Ext.getStore('widgets'));
-        vm.set('reports', Ext.getStore('reports'));
+        // //view.getViewModel().set('widgets', Ext.getStore('widgets'));
+        // vm.set('reports', Ext.getStore('reports'));
         vm.set('policyId', 1);
     },
 
-    // routes: {
-    //     '': 'onDashboard',
-    //     'apps': 'onApps',
-    //     'apps/:policyId': 'onApps',
-    //     'apps/:policyId/:app': 'onApps',
-    //     'config': 'onConfig',
-    //     'config/:configName': 'onConfig',
-    //     'reports': 'onReports',
-    //     'sessions': 'onSessions',
-    //     'hosts': 'onHosts',
-    //     'devices': 'onDevices'
-    // },
-
     onBeforeRender: function(view) {
-        var vm = view.getViewModel();
-
-        // vm.bind('{reportsEnabled}', function(enabled) {
-        //     if (enabled) {
-        //         view.down('#main').insert(3, {
-        //             xtype: 'ung.reports',
-        //             itemId: 'reports'
-        //         });
-        //     } else {
-        //         view.down('#main').remove('reports');
-        //     }
-        // });
-
-        vm.set('reportsInstalled', rpc.appManager.app('reports') !== null);
-        if (rpc.appManager.app('reports')) {
-            vm.set('reportsRunning', rpc.appManager.app('reports').getRunState() === 'RUNNING');
-        }
-        vm.notify();
-        /*
-        setTimeout(function () {
-            vm.set('reportsInstalled', false);
-        }, 5000);
-        */
-
-        view.getViewModel().set('policies', Ext.getStore('policies'));
-        view.getViewModel().set('policy', Ext.getStore('policies').findRecord('policyId', 1));
-        //this.getViewModel().set('activeItem', Ext.util.History.getHash());
+        this.setLiveSupport();
     },
 
-    // afterRender: function () {
-    //     this.redirectTo(Ext.util.History.getHash(), true);
-    // },
+    setLiveSupport: function() {
+        this.getViewModel().set('liveSupport', Rpc.directData('rpc.appManager.app', 'live-support') !== null);
+    },
+
+    helpHandler: function (btn) {
+        var helpUrl = Rpc.directData('rpc.helpUrl') + '?fragment=' + window.location.hash.substr(1) + '&' + Util.getAbout();
+        window.open(helpUrl);
+    },
+
+    suggestHandler: function (btn) {
+        var suggestUrl = Rpc.directData('rpc.helpUrl') + '?fragment=feedback&' + Util.getAbout();
+        window.open(suggestUrl);
+    },
+
+    supportHandler: function (btn) {
+        var me = this;
+        // check here if support is enabled and show modal only if not, otherwise open support window
+        var systemSettings = Rpc.directData('rpc.systemManager.getSettings');
+        if (systemSettings.cloudEnabled && systemSettings.supportEnabled) {
+            me.supportLaunch();
+        } else {
+            me.getView().add({ xtype: 'support' }).show();
+        }
+    },
+
+    supportLaunch: function () {
+        var supportUrl = Util.getStoreUrl() + '?action=support&' + Util.getAbout() + '&fragment=' + window.location.hash.substr(1) + '&line=ngfw';
+        var user = Rpc.directData('rpc.adminManager.getSettings').users.list[0];
+        if (user) {
+            supportUrl += '&email=' + user.emailAddress;
+        }
+        window.open(supportUrl);
+    },
 
     onDashboard: function () {
-        console.log('on dashboard');
-        this.getViewModel().set('activeItem', 'dashboard');
-    },
-
-    onApps: function (policyId, app) {
-        console.log('on apps');
-        var vm = this.getViewModel();
-        // var _policyId = policyId || 1,
-        //     _currentPolicy = vm.get('policyId'),
-        //     _newPolicy;
-
-        //if (!_currentPolicy || _currentPolicy.get('policyId') !== policyId) {
-            //_newPolicy = Ext.getStore('policies').findRecord('policyId', _policyId) || Ext.getStore('policies').findRecord('policyId', 1);
-
-        vm.set('policyId', policyId);
-        //}
-        // var view = 'Ung.view.apps.Apps';
-        // var ctrl = Ung.app.getController('Ung.view.apps.AppsController');
-
-        if (app) {
-            if (app === 'install') {
-                vm.set('activeItem', 'appsinstall');
-            } else {
-                vm.set('appName', app);
-                vm.set('activeItem', 'settings');
-            }
-        } else {
-            vm.set('activeItem', 'apps');
+        var me = this, route = 'dashboard',
+            vm = me.getView().down('#dashboardMain').getViewModel();
+        if (vm.get('query.string')) {
+            route += vm.get('query.string').replace('&', '?');
         }
-    },
-
-    onConfig: function (configName) {
-        this.getViewModel().set('activeItem', 'config');
-        var view = this.getView();
-        this.getViewModel().set('activeItem', 'config');
-        if (configName) {
-            Ext.require('Ung.view.config.network.Network', function () {
-                view.down('#config').add({
-                    xtype: 'ung.config.network'
-                });
-                view.down('#config').setActiveItem(1);
-            });
-        } else {
-            view.down('#config').setActiveItem(0);
-        }
+        Ung.app.redirectTo(route);
     },
 
     onReports: function () {
-        this.getViewModel().set('activeItem', 'reports');
-    },
-
-
-    // sessions, hosts, devices
-
-    onSessions: function () {
-        // this.setShd('sessions');
-        this.getViewModel().set('activeItem', 'sessions');
-    },
-
-    onHosts: function () {
-        this.setShd('hosts');
-    },
-
-    onDevices: function () {
-        this.setShd('devices');
-    },
-
-    setShd: function (viewName) {
-        this.getViewModel().set('activeItem', 'shd');
-        this.getViewModel().set('shdActiveItem', viewName);
-        this.getView().down('#shdcenter').setActiveItem(viewName);
+        var me = this, route = 'reports',
+            vm = me.getView().down('#reports').getViewModel();
+        if (vm.get('query.string')) {
+            route += vm.get('query.string').replace('&', '?');
+        }
+        Ung.app.redirectTo(route);
     }
 
 });

@@ -98,7 +98,7 @@ class PoFile:
                 elif record_mode == "msgid":
                     record.add_msg_id(continue_match.group(1))
                 else:
-                    print "Unknown continue mode for match: " + continue_match.group(1)
+                    print("Unknown continue mode for match: " + continue_match.group(1))
 
         record.set_source_record(source_record)
         self.add_record(record)
@@ -113,8 +113,8 @@ class PoFile:
 
         # Perform argument check
         if new_record.arguments_match() == False:
-            print "WARNING: Arguments do not match; clearing msgstr"
-            print new_record
+            print("WARNING: Arguments do not match; clearing msgstr")
+            print(new_record)
             new_record.msg_str = []
 
         add_record = True
@@ -171,20 +171,20 @@ class PoFile:
                     break
 
                 # Debug here foe more conflicts
-                print "*msgid conflict"
-                print "record="
-                print record.source_file_name
-                print record
-                print "source record="
-                print record.source_record.source_file_name
-                print record.source_record
-                print ""
-                print "\nnew record="
-                print new_record.source_file_name
-                print new_record
-                print "source record="
-                print new_record.source_record.source_file_name
-                print new_record.source_record
+                print("*msgid conflict")
+                print("record=")
+                print(record.source_file_name)
+                print(record)
+                print("source record=")
+                print(record.source_record.source_file_name)
+                print(record.source_record)
+                print("")
+                print("\nnew record=")
+                print(new_record.source_file_name)
+                print(new_record)
+                print("source record=")
+                print(new_record.source_record.source_file_name)
+                print(new_record.source_record)
                 sys.exit()
 
         if replace_index is not False:

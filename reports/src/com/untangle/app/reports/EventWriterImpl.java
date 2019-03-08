@@ -3,22 +3,15 @@
  */
 package com.untangle.app.reports;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Collections;
-import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,7 +19,6 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HookManager;
 import com.untangle.uvm.logging.LogEvent;
 
 
@@ -41,7 +33,7 @@ public class EventWriterImpl implements Runnable
      * The amount of time for the event write to sleep
      * if there is not a lot of work to be done
      */
-    private static int SYNC_TIME = 30*1000; /* 30 seconds */
+    private static int SYNC_TIME = 10*1000; /* 10 seconds */
 
     /**
      * If the event queue length reaches the high water mark
@@ -56,6 +48,11 @@ public class EventWriterImpl implements Runnable
      */
     private static int LOW_WATER_MARK = 100000;
 
+    /**
+     * Maximum number of events to write per work cycle
+     */
+    private static int MAX_EVENTS_PER_CYCLE = 50000;
+
     private static boolean forceFlush = false;
 
     private volatile Thread thread;
@@ -65,11 +62,6 @@ public class EventWriterImpl implements Runnable
     private Connection dbConnection;
 
     private long lastLoggedWarningTime = System.currentTimeMillis();
-
-    /**
-     * Maximum number of events to write per work cycle
-     */
-    private int maxEventsPerCycle; 
 
     /**
      * If true then the eventWriter is considered "overloaded" and can not keep up with demand
@@ -107,34 +99,50 @@ public class EventWriterImpl implements Runnable
 
     static {
         String temp;
-        if (( temp = System.getProperty( "reports.max_queue_len" )) != null ) {
+        if ((temp = System.getProperty("reports.max_queue_len")) != null) {
             try {
-                HIGH_WATER_MARK = Integer.parseInt( temp );
+                HIGH_WATER_MARK = Integer.parseInt(temp);
             } catch (Exception e) {
-                HIGH_WATER_MARK = 1000000;
+                logger.warn("Invalid value: " + System.getProperty( "reports.max_queue_len" ),e);
             }
-        } else {
-            HIGH_WATER_MARK = 1000000;
+        }
+        if ((temp = System.getProperty("reports.events_per_cycle")) != null) {
+            try {
+                MAX_EVENTS_PER_CYCLE = Integer.parseInt(temp);
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "reports.events_per_cycle" ),e);
+            }
+        }
+        if ((temp = System.getProperty("reports.sync_time")) != null) {
+            try {
+                SYNC_TIME = Integer.parseInt( temp );
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "reports.sync_time" ),e);
+            }
         }
     }
 
+    /**
+     * Initialize event writer.
+     *
+     * @param app
+     *  Reports application.
+     */
     public EventWriterImpl( ReportsApp app )
     {
         this.app = app;
         this.dbConnection = null;
     }
 
+    /**
+     * Run main loop of writer.
+     */
     public void run()
     {
         thread = Thread.currentThread();
 
         LinkedList<LogEvent> logQueue = new LinkedList<LogEvent>();
         LogEvent event = null;
-
-        if ( "sqlite".equals( ReportsApp.dbDriver ) )
-            this.maxEventsPerCycle = 500;
-        else
-            this.maxEventsPerCycle = 20000;
 
         /**
          * Loop indefinitely and continue logging events
@@ -147,7 +155,7 @@ public class EventWriterImpl implements Runnable
              * If events are significantly delayed (more than 2x SYNC_TIME), don't sleep
              */
             if ( forceFlush ||
-                 (inputQueue.size() > maxEventsPerCycle) ||
+                 (inputQueue.size() > MAX_EVENTS_PER_CYCLE) ||
                  (writeDelaySec*1000 >  SYNC_TIME*2) ) {
                 logger.debug("persist(): skipping sleep");
                 // minor sleep to let other threads that my want to synchronize on this run
@@ -170,7 +178,7 @@ public class EventWriterImpl implements Runnable
                     /**
                      * Copy all events out of the queue
                      */
-                    while ((event = inputQueue.poll()) != null && logQueue.size() < maxEventsPerCycle) {
+                    while ((event = inputQueue.poll()) != null && logQueue.size() < MAX_EVENTS_PER_CYCLE) {
                         logQueue.add(event);
                     }
 
@@ -243,6 +251,12 @@ public class EventWriterImpl implements Runnable
         }
     }
     
+    /**
+     * Send log event to queue.
+     *
+     * @param event
+     *  Event to log.
+     */
     public void logEvent(LogEvent event)
     {
         if ( this.thread == null ) {
@@ -269,6 +283,12 @@ public class EventWriterImpl implements Runnable
 
     }
 
+    /**
+     * Get the average write time per event.
+     *
+     * @return
+     *  Return timing value.
+     */
     public double getAvgWriteTimePerEvent()
     {
         /**
@@ -280,6 +300,12 @@ public class EventWriterImpl implements Runnable
         return this.avgWriteTimePerEvent;
     }
 
+    /**
+     * Get the write delay in seconds.
+     *
+     * @return
+     *  Return write delay values in seconds.
+     */
     public long getWriteDelaySec()
     {
         /**
@@ -292,7 +318,10 @@ public class EventWriterImpl implements Runnable
     }
     
     /**
-     * write the logQueue to the database
+     * Write the logQueue to the database
+     *
+     * @param logQueue
+     *  Log queue to push to database.
      */
     private void persist( LinkedList<LogEvent> logQueue )
     {
@@ -483,7 +512,7 @@ public class EventWriterImpl implements Runnable
                 if (totalTimeMs == null)
                     mapOutput += " " + item.name + "[" + item.count + "]";
                 else
-                    mapOutput += " " + item.name + "[" + item.count + "," + totalTimeMs + "ms" + "," + String.format("%.1f",((float)totalTimeMs/((float)(item.count)))) + "avg]";
+                    mapOutput += " " + item.name + "[" + item.count + "," + totalTimeMs + "ms" + "," + String.format("%.2f",((float)totalTimeMs/((float)(item.count)))) + "avg]";
             }
 
             long t1 = System.currentTimeMillis();
@@ -495,7 +524,7 @@ public class EventWriterImpl implements Runnable
                         String.format("%5d",statementCount) + " statements " +
                         "[" + String.format("%5d",elapsedTime) + " ms] " +
                         "[" + String.format("%5.0f",ratePerSec) + " event/s] " + 
-                        "[" + String.format("%4.1f",avgTime) + " avg] " +
+                        "[" + String.format("%5.2f",avgTime) + " avg] " +
                         "[" + String.format("%5d",writeDelaySec) + "s delay] " + 
                         "[" + String.format("%5d",inputQueue.size()) + " pending]");
             logger.info("persist(): EventMap   " + mapOutput);
@@ -512,17 +541,32 @@ public class EventWriterImpl implements Runnable
         }
     }
 
+    /**
+     * Return the number of events that are pending in the queue.
+     *
+     * @return
+     *  Number of events in queue.
+     */
     protected int getEventsPendingCount()
     {
         return inputQueue.size();
     }
 
+    /**
+     * Start the writer.
+     *
+     * @param app
+     *  Reports application.
+     */
     protected void start( ReportsApp app )
     {
         this.app = app;
         UvmContextFactory.context().newThread(this).start();
     }
 
+    /**
+     * Stop the writer.
+     */
     protected void stop()
     {
         // this is disabled because it causes boxes to hang on stopping the uvm
@@ -535,11 +579,22 @@ public class EventWriterImpl implements Runnable
         }
     }
 
+    /**
+     * Event type map.
+     */
     class EventTypeMap
     {
         public String name;
         public int count;
         
+        /**
+         * Initialize EventTypeMap.
+         *
+         * @param name
+         *  Name
+         * @param count
+         *  Count
+         */
         public EventTypeMap(String name, int count)
         {
             this.name = name;
@@ -547,8 +602,21 @@ public class EventWriterImpl implements Runnable
         }
     }
     
+    /**
+     * Event type comparator.
+     */
     class EventTypeMapComparator implements Comparator<EventTypeMap>
     {
+        /**
+         * Compare two event maps based on counts.
+         *
+         * @param a
+         *  First EventTypeMap to compare.
+         * @param b
+         *  Second EventTypeMap to compare.
+         * @return
+         *  Results of compare.
+         */
         public int compare( EventTypeMap a, EventTypeMap b )
         {
             if (a.count < b.count) {

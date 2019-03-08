@@ -1,9 +1,9 @@
 Ext.define('Ung.config.network.view.BypassRules', {
     extend: 'Ext.panel.Panel',
-    // xtype: 'ung.config.network.bypassrules',
-    alias: 'widget.config.network.bypassrules',
-
+    alias: 'widget.config-network-bypass-rules',
+    itemId: 'bypass-rules',
     viewModel: true,
+    scrollable: true,
 
     title: 'Bypass Rules'.t(),
 
@@ -19,19 +19,13 @@ Ext.define('Ung.config.network.view.BypassRules', {
     items: [{
         xtype: 'ungrid',
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
+
+        emptyText: 'No Bypass Rules defined'.t(),
+
         listProperty: 'settings.bypassRules.list',
-        ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
-        conditions: [
-            Condition.dstAddr,
-            Condition.dstPort,
-            Condition.dstIntf,
-            Condition.srcAddr,
-            Condition.srcPort,
-            Condition.srcIntf,
-            Condition.protocol([['TCP','TCP'],['UDP','UDP']])
-        ],
+
         emptyRow: {
             ruleId: -1,
             enabled: true,
@@ -51,13 +45,28 @@ Ext.define('Ung.config.network.view.BypassRules', {
             Column.enabled,
             Column.description,
             Column.conditions,
-            Column.bypass
-        ],
+        {
+            header: 'Bypass'.t(),
+            xtype: 'checkcolumn',
+            dataIndex: 'bypass',
+            width: Renderer.booleanWidth
+        }],
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions,
-            Field.bypass
+            Field.conditions(
+                'com.untangle.uvm.network.BypassRuleCondition',[
+                "DST_ADDR",
+                "DST_PORT",
+                "DST_INTF",
+                "SRC_ADDR",
+                "SRC_PORT",
+                "SRC_INTF",
+                "PROTOCOL",
+                "CLIENT_TAGGED",
+                "SERVER_TAGGED"
+            ]),
+           Field.bypass
         ]
     }]
 });

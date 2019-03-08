@@ -1,9 +1,9 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import com.untangle.jvector.Crumb;
@@ -12,7 +12,6 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.PacketCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.UDPPacketCrumb;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.SessionEvent;
 
 import com.untangle.uvm.vnet.IPPacketHeader;
@@ -29,51 +28,88 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
 
     protected final byte ttl;
     protected final byte tos;
-    
+
     private final String logPrefix;
-    
-    protected AppUDPSessionImpl(Dispatcher disp, SessionEvent sessionEvent, int clientMaxPacketSize, int serverMaxPacketSize, UDPNewSessionRequestImpl request )
+
+    /**
+     * Constructor
+     * 
+     * @param disp
+     *        The dispatcher
+     * @param sessionEvent
+     *        The session event
+     * @param clientMaxPacketSize
+     *        Maximum client packet size
+     * @param serverMaxPacketSize
+     *        Maximum server packet size
+     * @param request
+     *        The request
+     */
+    protected AppUDPSessionImpl(Dispatcher disp, SessionEvent sessionEvent, int clientMaxPacketSize, int serverMaxPacketSize, UDPNewSessionRequestImpl request)
     {
-        super(disp, sessionEvent, request );
+        super(disp, sessionEvent, request);
 
         logPrefix = "UDP" + id();
-        
-        if (clientMaxPacketSize < 2 || clientMaxPacketSize > UDP_MAX_MESG_SIZE)
-            throw new IllegalArgumentException("Illegal maximum client packet bufferSize: " + clientMaxPacketSize);
-        if (serverMaxPacketSize < 2 || serverMaxPacketSize > UDP_MAX_MESG_SIZE)
-            throw new IllegalArgumentException("Illegal maximum server packet bufferSize: " + serverMaxPacketSize);
+
+        if (clientMaxPacketSize < 2 || clientMaxPacketSize > UDP_MAX_MESG_SIZE) throw new IllegalArgumentException("Illegal maximum client packet bufferSize: " + clientMaxPacketSize);
+        if (serverMaxPacketSize < 2 || serverMaxPacketSize > UDP_MAX_MESG_SIZE) throw new IllegalArgumentException("Illegal maximum server packet bufferSize: " + serverMaxPacketSize);
         this.maxPacketSize = new int[] { clientMaxPacketSize, serverMaxPacketSize };
 
         PipelineConnectorImpl pipelineConnector = disp.pipelineConnector();
 
-        this.ttl     = request.ttl();
-        this.tos     = request.tos();
+        this.ttl = request.ttl();
+        this.tos = request.tos();
     }
 
+    /**
+     * Get the server max packet size
+     * 
+     * @return The size
+     */
     public int serverMaxPacketSize()
     {
         return maxPacketSize[SERVER];
     }
 
+    /**
+     * Set the server max packet size
+     * 
+     * @param numBytes
+     *        The size
+     */
     public void serverMaxPacketSize(int numBytes)
     {
-        if (numBytes < 2 || numBytes > UDP_MAX_MESG_SIZE)
-            throw new IllegalArgumentException("Illegal maximum packet bufferSize: " + numBytes);
+        if (numBytes < 2 || numBytes > UDP_MAX_MESG_SIZE) throw new IllegalArgumentException("Illegal maximum packet bufferSize: " + numBytes);
         maxPacketSize[SERVER] = numBytes;
     }
 
+    /**
+     * Get the client max packet size
+     * 
+     * @return The size
+     */
     public int clientMaxPacketSize()
     {
         return maxPacketSize[CLIENT];
     }
 
+    /**
+     * Set the client max packet size
+     * 
+     * @param numBytes
+     *        The size
+     */
     public void clientMaxPacketSize(int numBytes)
     {
-        if (numBytes < 2 || numBytes > UDP_MAX_MESG_SIZE)
-            throw new IllegalArgumentException("Illegal maximum packet bufferSize: " + numBytes);
+        if (numBytes < 2 || numBytes > UDP_MAX_MESG_SIZE) throw new IllegalArgumentException("Illegal maximum packet bufferSize: " + numBytes);
         maxPacketSize[CLIENT] = numBytes;
     }
 
+    /**
+     * Get the client state
+     * 
+     * @return The state
+     */
     public byte clientState()
     {
         if (clientIncomingSocketQueue() == null) {
@@ -85,6 +121,11 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         }
     }
 
+    /**
+     * Get the server state
+     * 
+     * @return The state
+     */
     public byte serverState()
     {
         if (serverIncomingSocketQueue() == null) {
@@ -96,6 +137,9 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         }
     }
 
+    /**
+     * Expire the server
+     */
     public void expireServer()
     {
         OutgoingSocketQueue out = serverOutgoingSocketQueue();
@@ -112,6 +156,9 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         }
     }
 
+    /**
+     * Expire the client
+     */
     public void expireClient()
     {
         OutgoingSocketQueue out = clientOutgoingSocketQueue();
@@ -129,8 +176,11 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
     }
 
     /**
-     * Retrieve the TTL for a session, this only has an impact for the last session in the chain
-     * when passing data crumbs (UDPPacketCrumbs have TTL value inside of them)
+     * Retrieve the TTL for a session, this only has an impact for the last
+     * session in the chain when passing data crumbs (UDPPacketCrumbs have TTL
+     * value inside of them)
+     * 
+     * @return The TTL
      */
     public byte ttl()
     {
@@ -138,34 +188,78 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
     }
 
     /**
-     * Retrieve the TOS for a session, this only has an impact for the last session in the chain
-     * when passing data crumbs (UDPPacketCrumbs have TOS value inside of them).
+     * Retrieve the TOS for a session, this only has an impact for the last
+     * session in the chain when passing data crumbs (UDPPacketCrumbs have TOS
+     * value inside of them).
+     * 
+     * @return The TOS
      */
     public byte tos()
     {
         return tos;
     }
 
+    /**
+     * Check if the side is dieing
+     * 
+     * @param side
+     *        The side
+     * @param in
+     *        The incoming socket queue
+     * @return The result
+     */
     protected boolean isSideDieing(int side, IncomingSocketQueue in)
     {
         return (in.containsReset() || in.containsShutdown());
     }
 
+    /**
+     * Signal side is dieing
+     * 
+     * @param side
+     *        The side
+     */
     protected void sideDieing(int side)
     {
         sendExpiredEvent(side);
     }
 
+    /**
+     * Send a client packet
+     * 
+     * @param packet
+     *        The packet
+     * @param header
+     *        The header
+     */
     public void sendClientPacket(ByteBuffer packet, IPPacketHeader header)
     {
         sendPacket(CLIENT, packet, header);
     }
 
+    /**
+     * Send a server packet
+     * 
+     * @param packet
+     *        The packet
+     * @param header
+     *        The header
+     */
     public void sendServerPacket(ByteBuffer packet, IPPacketHeader header)
     {
         sendPacket(SERVER, packet, header);
     }
 
+    /**
+     * Send a packet
+     * 
+     * @param side
+     *        The side
+     * @param packet
+     *        The packet
+     * @param header
+     *        The header
+     */
     private void sendPacket(int side, ByteBuffer packet, IPPacketHeader header)
     {
         byte[] array;
@@ -187,17 +281,26 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         addToWriteQueue(side, crumb);
     }
 
-    protected boolean tryWrite(int side, OutgoingSocketQueue out )
+    /**
+     * Try writing
+     * 
+     * @param side
+     *        The side
+     * @param out
+     *        The outgoing socket queue
+     * @return The result
+     */
+    protected boolean tryWrite(int side, OutgoingSocketQueue out)
     {
-        if ( out == null ) {
+        if (out == null) {
             logger.error("Invalid arguments.");
             return false;
         }
-        
+
         if (out.isFull()) {
             logger.warn("tryWrite to full outgoing queue");
             return false;
-        } 
+        }
 
         Crumb nc = getNextCrumb2Send(side);
         PacketCrumb packet2send = (PacketCrumb) nc;
@@ -210,35 +313,60 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         return true;
     }
 
-    protected Crumb readStreamer( IPStreamer streamer )
+    /**
+     * Read a crumb from a streamer
+     * 
+     * @param streamer
+     *        The streamer
+     * @return The crumb
+     */
+    protected Crumb readStreamer(IPStreamer streamer)
     {
         logger.error("Streaming not implemented for UDP", new Exception());
         return null;
     }
 
+    /**
+     * Send a writable event
+     * 
+     * @param side
+     *        The side
+     */
     protected void sendWritableEvent(int side)
     {
-        if (side == CLIENT)
-            dispatcher.dispatchUDPClientWritable( this );
-        else
-            dispatcher.dispatchUDPServerWritable( this );
+        if (side == CLIENT) dispatcher.dispatchUDPClientWritable(this);
+        else dispatcher.dispatchUDPServerWritable(this);
     }
 
+    /**
+     * Send a complete event
+     */
     protected void sendCompleteEvent()
     {
-        dispatcher.dispatchUDPComplete( this );
+        dispatcher.dispatchUDPComplete(this);
     }
 
+    /**
+     * Send expired event
+     * 
+     * @param side
+     *        The side
+     */
     protected void sendExpiredEvent(int side)
     {
-        if (side == CLIENT)
-            dispatcher.dispatchUDPClientExpired( this );
-        else
-            dispatcher.dispatchUDPServerExpired( this );
+        if (side == CLIENT) dispatcher.dispatchUDPClientExpired(this);
+        else dispatcher.dispatchUDPServerExpired(this);
     }
 
-    // Handles the actual reading from the client
-    protected void handleRead(int side, IncomingSocketQueue in )
+    /**
+     * Handles the actual reading from the client or server
+     * 
+     * @param side
+     *        The side
+     * @param in
+     *        The incoming socket queue
+     */
+    protected void handleRead(int side, IncomingSocketQueue in)
     {
         int numRead = 0;
 
@@ -250,7 +378,8 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
 
         Crumb crumb = in.read();
 
-        switch (crumb.type()) {
+        switch (crumb.type())
+        {
         case Crumb.TYPE_SHUTDOWN:
         case Crumb.TYPE_RESET:
         case Crumb.TYPE_DATA:
@@ -262,7 +391,7 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
             // Now we know this is a UDP.
         }
 
-        PacketCrumb pc = (PacketCrumb)crumb;
+        PacketCrumb pc = (PacketCrumb) crumb;
         IPPacketHeader pheader = new IPPacketHeader(pc.ttl(), pc.tos(), pc.options());
         byte[] pcdata = pc.data();
         int pclimit = pc.limit();
@@ -288,8 +417,7 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         // Right now just always do DataCrumbs, since a UDPPacketCrumb coming in just gets
         // converted to a DataCrumb on the other side (hence, the next app will fail)
 
-        if (logger.isDebugEnabled())
-            logger.debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
+        if (logger.isDebugEnabled()) logger.debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
 
         // We have received bytes.  Give them to the user.
 
@@ -298,27 +426,33 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         // a buffer manually -- the position and limit must already be correct when sent, so
         // there's no need for us to duplicate here.
 
-        if (side == CLIENT)
-            dispatcher.dispatchUDPClientPacket( this, pbuf, pheader );
-        else
-            dispatcher.dispatchUDPServerPacket( this, pbuf, pheader );
+        if (side == CLIENT) dispatcher.dispatchUDPClientPacket(this, pbuf, pheader);
+        else dispatcher.dispatchUDPServerPacket(this, pbuf, pheader);
 
         // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc,
         // from app's packet handler.
         return;
     }
 
+    /**
+     * Get the id for MDC
+     * 
+     * @return The string
+     */
     @Override
     protected String idForMDC()
     {
         return logPrefix;
     }
 
+    /**
+     * Final close
+     */
     @Override
     protected void closeFinal()
     {
         try {
-            dispatcher.dispatchUDPFinalized( this );
+            dispatcher.dispatchUDPFinalized(this);
         } catch (Exception x) {
             logger.warn("Exception in Finalized", x);
         }
@@ -326,9 +460,3 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         super.closeFinal();
     }
 }
-
-
-
-
-
-

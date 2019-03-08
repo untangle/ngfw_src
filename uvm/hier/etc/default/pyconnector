@@ -1,7 +1,0 @@
-
-# Log file location
-LOG_FILE="/var/log/uvm/pyconnector.log"
-
-# Pyconnector options
-# OPTIONS="-l ${LOG_FILE} -d 2"
-OPTIONS="-l ${LOG_FILE} -d 1"

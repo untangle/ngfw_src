@@ -8,6 +8,7 @@ import threading
 import signal
 import datetime
 import getopt
+import re
 import subprocess
 import syslog
 import platform
@@ -137,7 +138,6 @@ def devEnvSetup():
 # Undo the dev environment changes made earlier
 #
 def devEnvRestoreSystem():
-    os.system('if [ -L /usr/share/untangle/settings ] && [ -d /usr/share/untangle/settings.backup ] ; then rm -f /usr/share/untangle/settings && mv /usr/share/untangle/settings.backup /usr/share/untangle/settings ; fi');
     os.system('if [ -L /usr/share/untangle/bin ] && [ -d /usr/share/untangle/bin.backup ] ; then rm -f /usr/share/untangle/bin && mv /usr/share/untangle/bin.backup /usr/share/untangle/bin ; fi');
     os.system('rm -f /etc/apache2/uvm-dev.conf');
 
@@ -159,8 +159,13 @@ def prepareSystem():
     # Not Optional proc settings
     procset('/proc/sys/net/ipv4/ip_forward',"1",False);
     procset('/proc/sys/net/ipv4/ip_nonlocal_bind',"1",False);
-    procset('/proc/sys/net/ipv4/ip_local_port_range',"3200   9000",False);
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False);
+    procset('/proc/sys/net/ipv4/ip_local_port_range',"3200   8999",False);
+    procset('/proc/sys/net/ipv4/ip_local_reserved_ports',"4500,8009,8123",False); # charon, tomcat, classd
+    # Check for old location, if its not there assume new location (4.9+)
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False);
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_tcp_loose',"0",False);
     procset('/proc/sys/vm/max_map_count',"262144",False);
     # procset('/proc/sys/kernel/threads-max',"1048576",False); # default is pages/4 which is ideal - do not override
     # procset('/proc/sys/fs/file-max',"1642108",False); # default is 10% of memory which is ideal - do not override
@@ -169,14 +174,9 @@ def prepareSystem():
     if platform.machine() == 'x86_64':
         procset('/proc/sys/kernel/pid_max',"131072",True);
     procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream',"180",True)
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_max',"131072",True)
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream',"180",True)
     procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout',"70",True);
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout',"70",True);
     procset('/proc/sys/net/ipv4/tcp_synack_retries',"0",True);
     procset('/proc/sys/net/ipv4/tcp_syncookies',"1",True);
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait',"60",True); # need to stay around for at least 60 seconds for conntrack monitor
-    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_close',"60",True); # need to stay around for at least 60 seconds for conntrack monitor
     procset('/proc/sys/net/core/rmem_max','1048576',True); # needed for larger buffers for classd 
     procset('/proc/sys/net/core/wmem_max','1048576',True); # needed for larger buffers for classd 
     procset('/proc/sys/net/ipv4/neigh/default/gc_thresh1','4096',True); # adjust max arp entry (bug #10327)
@@ -185,6 +185,34 @@ def prepareSystem():
     procset('/proc/sys/net/core/xfrm_larval_drop','1',True); # make sure nonblock-sockets do not block on IPsec  (bug #10890)
     procset('/proc/sys/net/netfilter/nf_conntrack_acct','1',True); # enable nfconntrack accounting for bypassed byte accounting
     procset('/proc/sys/net/netfilter/nf_conntrack_timestamp','1',True); # enable nfconntrack timestamping tracking (start and end session times)
+
+    # The following settings check for the old location, if the old location does not exist, assume new location
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_max'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_max',"131072",True)
+    else:
+        # DO NOT set  /proc/sys/net/netfilter/nf_conntrack_max
+        # instead set /proc/sys/net/nf_conntrack_max
+        # in the 4.9 kernel the former seems to cause major problems
+        # and sets the max size of the conntrack table at 0
+        procset('/proc/sys/net/nf_conntrack_max',"131072",True)
+    # need to stay around for at least 60 seconds for conntrack monitor
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait',"60",True);
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_tcp_timeout_time_wait',"60",True);
+    # need to stay around for at least 60 seconds for conntrack monitor
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_close'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_close',"60",True);
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_tcp_timeout_close',"60",True);
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout',"70",True);
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout',"70",True);
+    if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream'):
+        procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream',"180",True)
+    else:
+        procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream',"180",True)
 
     # setup environment variables
 
@@ -225,7 +253,7 @@ def checkSystem():
     #debug("checkSystem()")
 
     # check tune is loaded
-    ret = os.system('/sbin/modprobe -q iptable_tune');
+    ret = os.system('/sbin/modprobe -q iptable_tune || /bin/lsmod | grep -q iptable_tune');
     if ret != 0:
         debug("ERROR: Incompatible kernel detected (no tune)");
         sys.exit(1);
@@ -255,6 +283,8 @@ def procset(procfile, value, optional):
     #debug("procset(%s,%s,%s)" % (procfile, value, optional));
     if not os.path.exists(procfile):
         debug("ERROR: procfile %s not found" % procfile);
+        if not optional:
+            sys.exit(1);
         return;
 
     try:
@@ -262,8 +292,8 @@ def procset(procfile, value, optional):
         file.write(value);
         file.close();
     except IOError:
+        debug("ERROR: setting procfile %s to %s" % (procfile, value));
         if not optional:
-            debug("ERROR: setting procfile %s to %s" % (procfile, value));
             sys.exit(1);
 
 # 
@@ -428,14 +458,18 @@ while True:
             # valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --suppressions=@PREFIX@/usr/share/untangle/conf/valgrind.supp "
             if use_leakdetect:
                 valgrind_cmd = valgrind_cmd + "--leak-check=full "
-            args = (valgrind_cmd + 
-                    "/usr/bin/java " + java_opts + " " + uvm_args + " -XX:UseSSE=0 " + " -Djava.compiler=NONE " + 
-                    " com.untangle.uvm.Main").split();
+            args = re.findall("(?:\'.*?\'|\S)+",
+                    valgrind_cmd +
+                    "/usr/bin/java " +
+                    java_opts + " " + uvm_args +
+                    " -XX:UseSSE=0 " + " -Djava.compiler=NONE "
+                    " com.untangle.uvm.Main")
             os.execv("/usr/bin/valgrind", args);
         else:
-            args = ("/usr/bin/java " + 
-                    java_opts + " " + uvm_args + 
-                    " com.untangle.uvm.Main").split();
+            args = re.findall("(?:\'.*?\'|\S)+",
+                    "/usr/bin/java " +
+                    java_opts + " " + uvm_args +
+                    " com.untangle.uvm.Main")
             os.execv("/usr/bin/java", args);
 
         debug("ERROR: execv returned");

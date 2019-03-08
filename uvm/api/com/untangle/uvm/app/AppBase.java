@@ -1,10 +1,11 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.uvm.app;
 
 import java.util.HashSet;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.LinkedList;
 import java.util.ArrayList;
@@ -14,29 +15,26 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.MetricManager;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.app.AppSettings.AppState;
-import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
 
 /**
  * A base class for app instances, both normal and casing.
- *
+ * 
  */
 public abstract class AppBase implements App
 {
     private static final Logger staticLogger = Logger.getLogger(AppBase.class);
-    private        final Logger logger       = Logger.getLogger(AppBase.class);
+    private final Logger logger = Logger.getLogger(AppBase.class);
 
     /**
-     * These are the (generic) settings for this app
-     * The app usually stores more app-specific settings in "settings"
-     * This holds the generic AppSettings that all apps have.
+     * These are the (generic) settings for this app The app usually stores more
+     * app-specific settings in "settings" This holds the generic AppSettings
+     * that all apps have.
      */
     private AppSettings appSettings;
 
@@ -46,33 +44,43 @@ public abstract class AppBase implements App
     private AppProperties appProperties;
 
     /**
-     * This stores a set of parents of this app
-     * Parents are any apps that this app depends on to operate properly
+     * This stores a set of parents of this app Parents are any apps that this
+     * app depends on to operate properly
      */
     private Set<AppBase> parents = new HashSet<AppBase>();
 
     /**
-     * This stores a set of children to this app
-     * Children are any apps that depend on this app to operate properly
+     * This stores a set of children to this app Children are any apps that
+     * depend on this app to operate properly
      */
     private Set<App> children = new HashSet<App>();
 
     /**
-     * These store this app's metrics (for display in the UI)
-     * The hash map is for fast lookups
-     * The list is to maintain order for the UI
+     * These store this app's metrics (for display in the UI) The hash map is
+     * for fast lookups The list is to maintain order for the UI
      */
-    private Map<String, AppMetric> metrics = new HashMap<String, AppMetric>();
+    private Map<String, AppMetric> metrics = new ConcurrentHashMap<String, AppMetric>();
     private List<AppMetric> metricList = new ArrayList<AppMetric>();
-        
+
     private AppSettings.AppState currentState;
 
-    protected AppBase( )
+    /**
+     * Constructor
+     */
+    protected AppBase()
     {
         currentState = AppState.LOADED;
     }
 
-    protected AppBase( AppSettings appSettings, AppProperties appProperties )
+    /**
+     * Constructor
+     * 
+     * @param appSettings
+     *        The application settings
+     * @param appProperties
+     *        The application properties
+     */
+    protected AppBase(AppSettings appSettings, AppProperties appProperties)
     {
         this.appSettings = appSettings;
         this.appProperties = appProperties;
@@ -80,82 +88,144 @@ public abstract class AppBase implements App
         currentState = AppState.LOADED;
     }
 
+    /**
+     * Get the pipeline connectors
+     * 
+     * @return The pipeline connectors
+     */
     protected abstract PipelineConnector[] getConnectors();
 
+    /**
+     * Register the pipeline connectors
+     */
     protected void connectPipelineConnectors()
     {
-        if ( getConnectors() != null ) {
-            for ( PipelineConnector connector : getConnectors() ) {
-                UvmContextFactory.context().pipelineFoundry().registerPipelineConnector( connector );
+        if (getConnectors() != null) {
+            for (PipelineConnector connector : getConnectors()) {
+                UvmContextFactory.context().pipelineFoundry().registerPipelineConnector(connector);
             }
         }
     }
 
+    /**
+     * Unregister the pipeline connectors
+     */
     protected void disconnectPipelineConnectors()
     {
-        if ( getConnectors() != null ) {
-            for ( PipelineConnector connector : getConnectors() ) {
-                UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector( connector );
+        if (getConnectors() != null) {
+            for (PipelineConnector connector : getConnectors()) {
+                UvmContextFactory.context().pipelineFoundry().deregisterPipelineConnector(connector);
                 connector.destroy();
             }
         }
     }
-    
+
+    /**
+     * The the application run state
+     * 
+     * @return The run state
+     */
     public final AppState getRunState()
     {
         return currentState;
     }
 
+    /**
+     * Initialization the application
+     */
     public final void init()
     {
         init(true);
     }
-    
-    public final void start() 
+
+    /**
+     * Start the application
+     */
+    public final void start()
     {
         start(true);
     }
 
-    public final void stop() 
+    /**
+     * Stop the application
+     */
+    public final void stop()
     {
         stop(true);
     }
 
+    /**
+     * Get the application settings
+     * 
+     * @return The application settings
+     */
     public AppSettings getAppSettings()
     {
         return appSettings;
     }
 
-    public void setAppSettings( AppSettings appSettings )
+    /**
+     * Set the application settings
+     * 
+     * @param appSettings
+     *        The new settings
+     */
+    public void setAppSettings(AppSettings appSettings)
     {
         this.appSettings = appSettings;
     }
 
+    /**
+     * Get the application properties
+     * 
+     * @return The application properties
+     */
     public AppProperties getAppProperties()
     {
         return appProperties;
     }
 
-    public void setAppProperties( AppProperties appProperties )
+    /**
+     * Set the application properties
+     * 
+     * @param appProperties
+     *        The new properties
+     */
+    public void setAppProperties(AppProperties appProperties)
     {
         this.appProperties = appProperties;
     }
 
-    public void addParent( AppBase parent )
+    /**
+     * Add a parent
+     * 
+     * @param parent
+     *        The parent
+     */
+    public void addParent(AppBase parent)
     {
         parents.add(parent);
         parent.addChild(this);
     }
 
     /**
-     * Called when the app is new, initial settings should be
-     * created and saved in this method.
+     * Called when the app is new, initial settings should be created and saved
+     * in this method.
      */
-    public void initializeSettings() { }
-
-    public void resumeState( AppState appState ) 
+    public void initializeSettings()
     {
-        switch ( appState ) {
+    }
+
+    /**
+     * Resume the application state
+     * 
+     * @param appState
+     *        The state
+     */
+    public void resumeState(AppState appState)
+    {
+        switch (appState)
+        {
         case LOADED:
             logger.debug("leaving app in LOADED state");
             break;
@@ -177,6 +247,9 @@ public abstract class AppBase implements App
         }
     }
 
+    /**
+     * Destroy the application
+     */
     public void destroy()
     {
         uninstall();
@@ -184,11 +257,15 @@ public abstract class AppBase implements App
         destroy(true);
     }
 
+    /**
+     * Stop the application if it's running
+     */
     public void stopIfRunning()
     {
         UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
 
-        switch ( currentState ) {
+        switch (currentState)
+        {
         case RUNNING:
             stop(false);
             break;
@@ -203,9 +280,13 @@ public abstract class AppBase implements App
         UvmContextFactory.context().loggingManager().setLoggingUvm();
     }
 
+    /**
+     * Enable the application
+     */
     public void enable()
     {
-        switch ( currentState ) {
+        switch (currentState)
+        {
         case LOADED:
             logger.warn("enabling in: " + currentState);
             break;
@@ -218,22 +299,39 @@ public abstract class AppBase implements App
             break; /* do nothing */
         default:
             changeState(AppState.INITIALIZED, true);
-        }            
+        }
     }
 
-    public void logEvent( LogEvent evt )
+    /**
+     * Log an event
+     * 
+     * @param evt
+     *        The event to log
+     */
+    public void logEvent(LogEvent evt)
     {
-        String tag = appProperties.getDisplayName().replaceAll("\\s+","_") + " [" + appSettings.getId() + "]:";
+        String tag = appProperties.getDisplayName().replaceAll("\\s+", "_") + " [" + appSettings.getId() + "]:";
         evt.setTag(tag);
-        
+
         UvmContextFactory.context().logEvent(evt);
     }
 
+    /**
+     * Load the class
+     * 
+     * @param appProperties
+     *        The applicatin properties
+     * @param appSettings
+     *        The application settings
+     * @param isNew
+     *        True for new, false for existing
+     * @return The application
+     * @throws Exception
+     */
     @SuppressWarnings("rawtypes")
-    public static final App loadClass( AppProperties appProperties, AppSettings appSettings, boolean isNew ) throws Exception
+    public static final App loadClass(AppProperties appProperties, AppSettings appSettings, boolean isNew) throws Exception
     {
-        if ( appProperties == null || appSettings == null )
-            throw new Exception("Invalid Arguments: null");
+        if (appProperties == null || appSettings == null) throw new Exception("Invalid Arguments: null");
 
         try {
             AppBase app;
@@ -251,43 +349,45 @@ public abstract class AppBase implements App
             staticLogger.debug("setting app " + appSettingsName + " log4j repository");
 
             String className = appProperties.getClassName();
-            java.lang.reflect.Constructor constructor = Class.forName(className).getConstructor(new Class<?>[]{AppSettings.class, AppProperties.class});
-            app = (AppBase)constructor.newInstance( appSettings, appProperties );
+            java.lang.reflect.Constructor constructor = Class.forName(className).getConstructor(new Class<?>[] { AppSettings.class, AppProperties.class });
+            app = (AppBase) constructor.newInstance(appSettings, appProperties);
 
-            app.setAppProperties( appProperties );
-            app.setAppSettings( appSettings );
-                
+            app.setAppProperties(appProperties);
+            app.setAppSettings(appSettings);
+
             for (App parentApp : parentApps) {
-                app.addParent((AppBase)parentApp);
+                app.addParent((AppBase) parentApp);
             }
 
             if (isNew) {
-                app.initializeSettings( );
+                app.initializeSettings();
                 app.init();
             } else {
                 try {
                     app.resumeState(appSettings.getTargetState());
-                }
-                catch (Exception exn) {
+                } catch (Exception exn) {
                     staticLogger.error("Exception during app resumeState", exn);
-                    if ( exn.getCause() != null )
-                        staticLogger.error("Cause", exn.getCause() );
+                    if (exn.getCause() != null) staticLogger.error("Cause", exn.getCause());
                     // still return the initialized app
                 }
             }
-            
+
             return app;
 
         } catch (Exception exn) {
             staticLogger.error("Exception during app initialization", exn);
-            if ( exn.getCause() != null )
-                staticLogger.error("Cause", exn.getCause() );
+            if (exn.getCause() != null) staticLogger.error("Cause", exn.getCause());
             throw exn;
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
     }
 
+    /**
+     * Destroy the class
+     * 
+     * @throws Exception
+     */
     public final void destroyClass() throws Exception
     {
         try {
@@ -303,29 +403,40 @@ public abstract class AppBase implements App
         }
     }
 
+    /**
+     * Get a list of live sessions
+     * 
+     * @return The list
+     */
     public List<SessionTuple> liveSessions()
     {
         List<SessionTuple> sessions = new LinkedList<SessionTuple>();
 
         for (AppSession sess : liveAppSessions()) {
-            SessionTuple tuple = new SessionTuple( sess.getProtocol(),
-                                                   sess.getClientAddr(), sess.getServerAddr(),
-                                                   sess.getClientPort(), sess.getServerPort() );
-            sessions.add( tuple );
+            SessionTuple tuple = new SessionTuple(sess.getProtocol(), sess.getClientAddr(), sess.getServerAddr(), sess.getClientPort(), sess.getServerPort());
+            sessions.add(tuple);
         }
 
         return sessions;
     }
 
+    /**
+     * Get a list of live app sessions
+     * 
+     * @return The list
+     */
     public List<AppSession> liveAppSessions()
     {
         List<AppSession> sessions = new LinkedList<AppSession>();
 
-        if ( getConnectors() != null ) {
-            for ( PipelineConnector connector : getConnectors() ) {
-                for ( AppSession sess : connector.liveSessions() ) {
-                    /* create a new sessiontupleimpl so the list will be serialized properly */
-                    sessions.add( sess );
+        if (getConnectors() != null) {
+            for (PipelineConnector connector : getConnectors()) {
+                for (AppSession sess : connector.liveSessions()) {
+                    /*
+                     * create a new sessiontupleimpl so the list will be
+                     * serialized properly
+                     */
+                    sessions.add(sess);
                 }
             }
         }
@@ -333,51 +444,90 @@ public abstract class AppBase implements App
         return sessions;
     }
 
+    /**
+     * Get the application metrics
+     * 
+     * @return The metrics
+     */
     public List<AppMetric> getMetrics()
     {
         return metricList;
     }
 
-    public AppMetric getMetric( String name )
+    /**
+     * Get a specific application metric
+     * 
+     * @param name
+     *        The metric name
+     * @return The metric
+     */
+    public AppMetric getMetric(String name)
     {
-        AppMetric metric = metrics.get( name );
-        if ( metric == null )
-            logger.warn("Metric not found: " + name);
+        AppMetric metric = metrics.get(name);
+        if (metric == null) logger.warn("Metric not found: " + name);
         return metric;
     }
-    
-    public void decrementMetric( String name )
+
+    /**
+     * Decrement a metric
+     * 
+     * @param name
+     *        The metric name
+     */
+    public void decrementMetric(String name)
     {
-        adjustMetric( name, -1L );
+        adjustMetric(name, -1L);
     }
 
-    public void incrementMetric( String name )
+    /**
+     * Increment a metric
+     * 
+     * @param name
+     *        The metric name
+     */
+    public void incrementMetric(String name)
     {
-        adjustMetric( name, 1L );
+        adjustMetric(name, 1L);
     }
 
-    public synchronized void setMetric( String name, Long newValue )
+    /**
+     * Set a metric
+     * 
+     * @param name
+     *        The metric name
+     * @param newValue
+     *        The new value
+     */
+    public void setMetric(String name, Long newValue)
     {
-        if ( name == null ) {
-            logger.warn( "Invalid stat: " + name );
+        if (name == null) {
+            logger.warn("Invalid stat: " + name);
             return;
         }
-        
+
         AppMetric metric = metrics.get(name);
         if (metric == null) {
             logger.warn("AppMetric not found: " + name);
             return;
         }
-        metric.setValue( newValue );
+        metric.setValue(newValue);
     }
 
-    public synchronized void adjustMetric( String name, Long adjustmentValue )
+    /**
+     * Adjust a metric
+     * 
+     * @param name
+     *        The metric name
+     * @param adjustmentValue
+     *        The adjustment value
+     */
+    public void adjustMetric(String name, Long adjustmentValue)
     {
-        if ( name == null ) {
-            logger.warn( "Invalid stat: " + name );
+        if (name == null) {
+            logger.warn("Invalid stat: " + name);
             return;
         }
-        
+
         AppMetric metric = metrics.get(name);
         if (metric == null) {
             logger.warn("AppMetric not found: " + name);
@@ -385,159 +535,266 @@ public abstract class AppBase implements App
         }
 
         Long value = metric.getValue();
-        if (value == null)
-            value = 0L;
+        if (value == null) value = 0L;
         value = value + adjustmentValue;
-        metric.setValue( value );
+        metric.setValue(value);
     }
 
-    public synchronized void addMetric( AppMetric metric )
+    /**
+     * Add a metric
+     * 
+     * @param metric
+     *        The metric
+     */
+    public void addMetric(AppMetric metric)
     {
         if (metrics.get(metric.getName()) != null) {
             //logger.warn("addMetric(): Metric already exists: \"" + metric.getName() + "\" - ignoring");
             return;
         }
-        this.metrics.put( metric.getName(), metric );
-        this.metricList.add( metric );
+        this.metrics.put(metric.getName(), metric);
+        this.metricList.add(metric);
     }
 
-    public synchronized void removeMetric( AppMetric metric )
+    /**
+     * Remove a metric
+     * 
+     * @param metric
+     *        The metric
+     */
+    public void removeMetric(AppMetric metric)
     {
-        if ( metric == null ) {
+        if (metric == null) {
             logger.warn("Invalid argument: null");
             return;
         }
         if (metrics.get(metric.getName()) == null) {
             logger.warn("Invalid argument: metric not found");
             return;
-        }        
+        }
 
-        this.metrics.remove( metric.getName() );
-        this.metricList.remove( metric );
+        this.metrics.remove(metric.getName());
+        this.metricList.remove(metric);
     }
-    
+
+    /**
+     * Get the status
+     * 
+     * @return The status
+     */
+    public String getStatus()
+    {
+        return "";
+    }
+
+    /**
+     * Generate a string representation
+     * 
+     * @return The string
+     */
     public String toString()
     {
         return "App[" + getAppSettings().getId() + "," + getAppSettings().getAppName() + "]";
     }
-    
+
+    /**
+     * See if the license if valid
+     * 
+     * @return True if valid, otherwise false
+     */
+    public boolean isLicenseValid()
+    {
+        return UvmContextFactory.context().licenseManager().isLicenseValid(appProperties.getName());
+    }
+
     // protected methods -------------------------------------------------
 
     /**
-     * Called when the app is being uninstalled, rather than
-     * just being taken down with the UVM.
+     * Called when the app is being uninstalled, rather than just being taken
+     * down with the UVM.
      */
-    protected void uninstall() { }
+    protected void uninstall()
+    {
+    }
 
     /**
      * Called before initialization
-     *
+     * 
      * initialization occurs when an app is instantiated or on startup
      */
-    protected void preInit() { } 
+    protected void preInit()
+    {
+    }
 
     /**
      * Called after initialization
-     *
+     * 
      * initialization occurs when an app is instantiated or on startup
      */
-    protected void postInit() { } 
+    protected void postInit()
+    {
+    }
 
     /**
      * Called just after connecting to PipelineConnector, but before starting.
-     *
-     * isPermanentTransition is true if this is the permanent (saved)
-     * This can be used to determine if this app is being started permanently
+     * 
+     * isPermanentTransition is true if this is the permanent (saved) This can
+     * be used to determine if this app is being started permanently
+     * 
+     * @param isPermanentTransition
      */
-    protected void preStart( boolean isPermanentTransition ) { } 
+    protected void preStart(boolean isPermanentTransition)
+    {
+    }
 
     /**
      * Called just after starting PipelineConnector and making subscriptions.
-     *
-     * isPermanentTransition is true if this is the permanent (saved)
-     * This can be used to determine if this app is being started permanently
+     * 
+     * isPermanentTransition is true if this is the permanent (saved) This can
+     * be used to determine if this app is being started permanently
+     * 
+     * @param isPermanentTransition
+     * 
      */
-    protected void postStart( boolean isPermanentTransition ) { } 
+    protected void postStart(boolean isPermanentTransition)
+    {
+    }
 
     /**
      * Called just before stopping PipelineConnector and disconnecting.
-     *
-     * isPermanentTransition is true if this is the permanent (saved)
-     * This can be used to determine if this app is being stopped permanently
+     * 
+     * isPermanentTransition is true if this is the permanent (saved) This can
+     * be used to determine if this app is being stopped permanently
+     * 
+     * @param isPermanentTransition
      */
-    protected void preStop( boolean isPermanentTransition ) { } 
+    protected void preStop(boolean isPermanentTransition)
+    {
+    }
 
     /**
      * Called after stopping PipelineConnector and disconnecting.
-     *
-     * isPermanentTransition is true if this is the permanent (saved)
-     * This can be used to determine if this app is being stopped permanently
+     * 
+     * isPermanentTransition is true if this is the permanent (saved) This can
+     * be used to determine if this app is being stopped permanently
+     * 
+     * @param isPermanentTransition
      */
-    protected void postStop( boolean isPermanentTransition ) { }
+    protected void postStop(boolean isPermanentTransition)
+    {
+    }
 
     /**
      * Called just before this instance becomes invalid.
-     *
+     * 
      */
-    protected void preDestroy()  { }
+    protected void preDestroy()
+    {
+    }
 
     /**
      * Same as <code>postDestroy</code>, except now officially in the
      * {@link AppState#DESTROYED} state.
      */
-    protected void postDestroy() { }
+    protected void postDestroy()
+    {
+    }
 
     /**
-     * This kills/resets all of the matching sessions (runs against all sessions globally)
+     * This kills/resets all of the matching sessions (runs against all sessions
+     * globally)
+     * 
+     * @param matcher
+     *        The matcher
      */
-    protected void killMatchingSessionsGlobal( SessionMatcher matcher )
+    protected void killMatchingSessionsGlobal(SessionMatcher matcher)
     {
-        if (matcher == null)
-            return;
+        if (matcher == null) return;
 
-        UvmContextFactory.context().netcapManager().shutdownMatches( matcher );
+        UvmContextFactory.context().netcapManager().shutdownMatches(matcher);
     }
 
     /**
      * This kills/resets all of the matching sessions for this app's sessions
-     * This includes "released" sessions that we processed previously by one of this app's pipespecs
+     * This includes "released" sessions that we processed previously by one of
+     * this app's pipespecs
+     * 
+     * @param matcher
+     *        The matcher
      */
-    protected void killMatchingSessions( SessionMatcher matcher )
+    protected void killMatchingSessions(SessionMatcher matcher)
     {
         logger.info("killMatchingSessions()");
-        if ( matcher == null )
-            return;
-        if ( getConnectors() == null )
-            return;
-        
-        for ( PipelineConnector connector : getConnectors() )
-            UvmContextFactory.context().netcapManager().shutdownMatches( matcher, connector );
+        if (matcher == null) return;
+        if (getConnectors() == null) return;
+
+        for (PipelineConnector connector : getConnectors())
+            UvmContextFactory.context().netcapManager().shutdownMatches(matcher, connector);
     }
-    
+
     /**
      * This kills all this app's sessions (for all its pipespecs)
      */
     public void killAllSessions()
     {
-        killMatchingSessions(new SessionMatcher() {
-                public boolean isMatch( Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments ) { return true; }
-            });
+        killMatchingSessions(new SessionMatcher()
+        {
+            /**
+             * Session matcher for all sessions
+             * 
+             * @param policyId
+             * @param protocol
+             * @param clientIntf
+             * @param serverIntf
+             * @param clientAddr
+             * @param serverAddr
+             * @param clientPort
+             * @param serverPort
+             * @param attachments
+             * @return Always true to match everything
+             */
+            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
+            {
+                return true;
+            }
+        });
     }
 
-    private void addChild( App child )
+    /**
+     * Add a child
+     * 
+     * @param child
+     *        The child
+     */
+    private void addChild(App child)
     {
         children.add(child);
     }
 
-    private boolean removeChild( App child )
+    /**
+     * Remove a child
+     * 
+     * @param child
+     *        The child
+     * @return True if found and removed, otherwise false
+     */
+    private boolean removeChild(App child)
     {
         return children.remove(child);
     }
 
-    private void changeState( AppState appState, boolean saveNewTargetState )
+    /**
+     * Change the application state
+     * 
+     * @param appState
+     *        The new state
+     * @param saveNewTargetState
+     *        True to save the state, otherwise false
+     */
+    private void changeState(AppState appState, boolean saveNewTargetState)
     {
-        if ( saveNewTargetState ) {
-            UvmContextFactory.context().appManager().saveTargetState( this, appState );
+        if (saveNewTargetState) {
+            UvmContextFactory.context().appManager().saveTargetState(this, appState);
 
             UvmContextFactory.context().pipelineFoundry().clearCache();
         }
@@ -545,29 +802,35 @@ public abstract class AppBase implements App
         this.currentState = appState;
     }
 
-    private void init( boolean saveNewTargetState ) 
+    /**
+     * Initialize the application
+     * 
+     * @param saveNewTargetState
+     *        True to save the state, otherwise false
+     */
+    private void init(boolean saveNewTargetState)
     {
-        if ( currentState != AppState.LOADED ) {
+        if (currentState != AppState.LOADED) {
             logger.warn("Init called in state: " + currentState);
             return;
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId()) ;
+            UvmContextFactory.context().loggingManager().setLoggingApp(this.appSettings.getId());
 
             // if no valid license exists, request a trial license
             try {
-                if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
+                if (!UvmContextFactory.context().licenseManager().isLicenseValid(appProperties.getName())) {
                     logger.info("No valid license for: " + appProperties.getName());
                     logger.info("Requesting trial for: " + appProperties.getName());
-                    UvmContextFactory.context().licenseManager().requestTrialLicense( appProperties.getName() );
+                    UvmContextFactory.context().licenseManager().requestTrialLicense(appProperties.getName());
                 }
             } catch (Exception e) {
-                logger.warn( "Exception fetching trial license. Ignoring...", e );
+                logger.warn("Exception fetching trial license. Ignoring...", e);
             }
-            
+
             preInit();
-            changeState( AppState.INITIALIZED, saveNewTargetState );
+            changeState(AppState.INITIALIZED, saveNewTargetState);
             postInit();
 
         } finally {
@@ -575,7 +838,13 @@ public abstract class AppBase implements App
         }
     }
 
-    private void start( boolean saveNewTargetState ) 
+    /**
+     * Start the application
+     * 
+     * @param saveNewTargetState
+     *        True to save the state, otherwise false
+     */
+    private void start(boolean saveNewTargetState)
     {
         if (AppState.INITIALIZED != getRunState()) {
             logger.warn("Start called in state: " + getRunState());
@@ -585,11 +854,10 @@ public abstract class AppBase implements App
         for (AppBase parent : parents) {
             if (AppState.INITIALIZED == parent.getRunState()) {
                 try {
-                    UvmContextFactory.context().loggingManager().setLoggingApp( parent.getAppSettings().getId() );
-                    if (parent.getRunState() == AppState.INITIALIZED) 
-                        parent.start( false );
+                    UvmContextFactory.context().loggingManager().setLoggingApp(parent.getAppSettings().getId());
+                    if (parent.getRunState() == AppState.INITIALIZED) parent.start(false);
                 } finally {
-                    UvmContextFactory.context().loggingManager().setLoggingApp( appSettings.getId() );
+                    UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
                 }
             }
         }
@@ -598,16 +866,16 @@ public abstract class AppBase implements App
         try {
             changeState(AppState.RUNNING, saveNewTargetState);
         } catch (Exception e) {
-            logger.warn("Failed to start app",e);
+            logger.warn("Failed to start app", e);
             return;
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId() );
+            UvmContextFactory.context().loggingManager().setLoggingApp(this.appSettings.getId());
             logger.info("Starting   " + this.getAppProperties().getName() + " [" + this.getAppSettings().getId() + "]" + " ...");
 
             try {
-                preStart( saveNewTargetState );
+                preStart(saveNewTargetState);
             } catch (Exception e) {
                 logger.warn("Exception in preStart(). Reverting to INITIALIZED state.", e);
                 changeState(AppState.INITIALIZED, saveNewTargetState);
@@ -617,7 +885,7 @@ public abstract class AppBase implements App
             connectPipelineConnectors();
 
             try {
-                postStart( saveNewTargetState ); 
+                postStart(saveNewTargetState);
             } catch (Exception e) {
                 logger.warn("Exception in postStart().", e);
             }
@@ -628,7 +896,13 @@ public abstract class AppBase implements App
         }
     }
 
-    private void stop( boolean saveNewTargetState ) 
+    /**
+     * Stop the application
+     * 
+     * @param saveNewTargetState
+     *        True to save the state, otherwise false
+     */
+    private void stop(boolean saveNewTargetState)
     {
         if (AppState.RUNNING != getRunState()) {
             logger.warn("Stop called in state: " + getRunState());
@@ -639,14 +913,14 @@ public abstract class AppBase implements App
         try {
             changeState(AppState.INITIALIZED, saveNewTargetState);
         } catch (Exception e) {
-            logger.warn("Failed to stop app",e);
+            logger.warn("Failed to stop app", e);
             return;
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId() );
+            UvmContextFactory.context().loggingManager().setLoggingApp(this.appSettings.getId());
             logger.info("Stopping   " + this.getAppProperties().getName() + " [" + this.getAppSettings().getId() + "]" + " ...");
-            preStop( saveNewTargetState );
+            preStop(saveNewTargetState);
             disconnectPipelineConnectors();
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
@@ -655,24 +929,30 @@ public abstract class AppBase implements App
         for (AppBase parent : parents) {
             if (AppState.RUNNING == parent.getRunState()) {
                 try {
-                    UvmContextFactory.context().loggingManager().setLoggingApp( parent.getAppSettings().getId() );
+                    UvmContextFactory.context().loggingManager().setLoggingApp(parent.getAppSettings().getId());
                     parent.stopIfNotRequiredByChildren();
                 } finally {
-                    UvmContextFactory.context().loggingManager().setLoggingApp( appSettings.getId() );
+                    UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
                 }
             }
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId() );
-            postStop( saveNewTargetState ); 
+            UvmContextFactory.context().loggingManager().setLoggingApp(this.appSettings.getId());
+            postStop(saveNewTargetState);
             logger.info("Stopped    " + this.getAppProperties().getName() + " [" + this.getAppSettings().getId() + "]" + " ...");
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
     }
 
-    private void destroy( boolean saveNewTargetState )  
+    /**
+     * Destroy the application
+     * 
+     * @param saveNewTargetState
+     *        True to save the state, otherwise false
+     */
+    private void destroy(boolean saveNewTargetState)
     {
         if (currentState == AppState.DESTROYED) {
             logger.warn("Ignoring destroy(): Already in state DESTROYED");
@@ -680,7 +960,7 @@ public abstract class AppBase implements App
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId() );
+            UvmContextFactory.context().loggingManager().setLoggingApp(this.appSettings.getId());
             logger.info("Destroying " + this.getAppProperties().getName() + " [" + this.getAppSettings().getId() + "]" + " ...");
             preDestroy();
             for (AppBase p : parents) {
@@ -696,54 +976,72 @@ public abstract class AppBase implements App
         }
     }
 
-    private final void stopIfNotRequiredByChildren() 
+    /**
+     * Stop the application if not required by any children
+     */
+    private final void stopIfNotRequiredByChildren()
     {
-        if (getRunState() != AppState.RUNNING)
-            return;
+        if (getRunState() != AppState.RUNNING) return;
 
         /**
          * Return if any children are still running
          */
         for (App app : children) {
-            if (app.getRunState() == AppState.RUNNING) 
-                return;
-        } 
+            if (app.getRunState() == AppState.RUNNING) return;
+        }
 
-        stop( false );
+        stop(false);
     }
-    
-    private final static App startParent( String parent, Integer policyId ) throws Exception
+
+    /**
+     * Start the parent
+     * 
+     * @param parent
+     *        The parent name
+     * @param policyId
+     *        The policy ID
+     * @return The parent or null if there is no parent
+     * @throws Exception
+     */
+    private final static App startParent(String parent, Integer policyId) throws Exception
     {
         if (null == parent) {
             return null;
         }
 
-        staticLogger.debug( "Starting required parent: " + parent );
+        staticLogger.debug("Starting required parent: " + parent);
 
-        App parentApp = getParentApp( parent, policyId );
+        App parentApp = getParentApp(parent, policyId);
 
-        if ( parentApp == null ) {
+        if (parentApp == null) {
             staticLogger.debug("Parent does not exist, instantiating");
 
             parentApp = UvmContextFactory.context().appManager().instantiate(parent, policyId);
         }
 
-        if ( parentApp == null ) {
+        if (parentApp == null) {
             throw new Exception("could not create parent: " + parent);
         } else {
             return parentApp;
         }
     }
 
-    private final static App getParentApp( String parent, Integer childPolicyId )
+    /**
+     * Get the parent
+     * 
+     * @param parent
+     *        The parent name
+     * @param childPolicyId
+     *        The child policy ID
+     * @return The parent appor null if there is no parent
+     */
+    private final static App getParentApp(String parent, Integer childPolicyId)
     {
         for (App app : UvmContextFactory.context().appManager().appInstances(parent)) {
             Integer policyId = app.getAppSettings().getPolicyId();
-            if ( policyId == null || policyId.equals( childPolicyId ) )
-                return app;
+            if (policyId == null || policyId.equals(childPolicyId)) return app;
         }
 
         return null;
     }
-    
 }

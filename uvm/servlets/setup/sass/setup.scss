@@ -1,0 +1,86 @@
+$custom-font: 'Source Sans Pro', sans-serif;
+$custom-font-condensed: 'Roboto Condensed', sans-serif;
+
+.fa-red { color: red; }
+.fa-green { color: #64D242; }
+.fa-orange { color: orange; }
+.fa-yellow { color: yellow; }
+.fa-gray { color: #999; }
+
+.intro {
+    opacity: 0;
+    -webkit-transition: opacity 5s cubic-bezier(0.23, 1, 0.32, 1);
+    &.fadein {
+        opacity: 1;
+    }
+}
+.step {
+    .x-panel-header {
+        background: transparent;
+    }
+}
+
+.step-title {
+    font-family: $custom-font-condensed;
+    font-weight: 100;
+    color: #999;
+    font-size: 36px;
+    background: #FFF;
+    // text-align: center;
+}
+
+.sectionheader {
+    font-family: $custom-font-condensed;
+    font-size: 20px;
+    // font-weight: bold;
+    color: #555;
+}
+
+.inline-warning {
+    background: #e2e2e2;
+    border-radius: 5px;
+}
+
+.steps {
+    position: absolute !important;
+    left: 50% !important;
+    margin-left: -100px !important;
+    text-align: center;
+    i {
+        width: 8px;
+        height: 8px;
+        display: inline-block;
+        margin: 5px 3px;
+        // background: #333;
+        border-radius: 50%;
+        border: 1px #999 solid;
+        background: #999;
+        vertical-align: middle;
+        &.done {
+            border: 1px #333 solid;
+            background: #333;
+        }
+        &.active {
+            width: 10px;
+            height: 10px;
+            background: none;
+            border: 2px #333 solid;
+        }
+    }
+}
+
+// fix for Mac Safari buttons issue
+.x-btn-icon-right > .x-btn-inner-default-small,
+.x-btn-icon-left > .x-btn-inner-default-small,
+.x-btn-icon-right > .x-btn-inner-default-toolbar-small,
+.x-btn-icon-left > .x-btn-inner-default-toolbar-small {
+    // max-width: calc(100% - 15px);
+    max-width: none;
+}
+
+.x-btn-icon-right > .x-btn-inner-default-medium,
+.x-btn-icon-left > .x-btn-inner-default-medium,
+.x-btn-icon-right > .x-btn-inner-default-toolbar-medium,
+.x-btn-icon-left > .x-btn-inner-default-toolbar-medium {
+    max-width: none;
+}

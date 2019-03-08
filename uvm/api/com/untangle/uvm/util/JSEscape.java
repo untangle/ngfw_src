@@ -12,6 +12,8 @@ public class JSEscape {
 
     /**
      * Neuter any JavaScript found in the given String
+     * @param str Javascrpt to convert.
+     * @return String with escaped characters.
      */
     public static String escapeJS(String str) {
 

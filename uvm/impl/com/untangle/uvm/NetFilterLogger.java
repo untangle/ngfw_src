@@ -7,7 +7,6 @@ package com.untangle.uvm;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ConnectException;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.SelectionKey;
@@ -20,18 +19,17 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.UvmContextFactory;
 
-/*
+/**
  * This process connects to the untangle-nflogd daemon to log network packets
  * that can't or aren't otherwise logged in some other way or place.
  * 
- * The untangle-nflogd receives raw packets from iptables using the -j NFLOG target.
- * It extracts the relevant details from the packet and creates a simple text format
- * message that is passed to his process on a TCP socket.  We receive those message
- * and parse each of the fields, and use them to create a LogEvent that is then
- * written to the database.
+ * The untangle-nflogd receives raw packets from iptables using the -j NFLOG
+ * target. It extracts the relevant details from the packet and creates a simple
+ * text format message that is passed to his process on a TCP socket. We receive
+ * those message and parse each of the fields, and use them to create a LogEvent
+ * that is then written to the database.
  * 
  */
-
 public class NetFilterLogger
 {
     private final Logger logger = Logger.getLogger(getClass());
@@ -50,13 +48,23 @@ public class NetFilterLogger
 
     public static final long SELECT_TIMEOUT = 1000;
 
+    /**
+     * Constructor
+     */
     protected NetFilterLogger()
     {
         UvmContextFactory.context().newThread(this.capture).start();
     }
 
+    /**
+     * The Runnable class for the main thread function
+     * 
+     */
     private class NetFilterCapture implements Runnable
     {
+        /**
+         * The main run function
+         */
         public void run()
         {
             logger.info("The capture thread is starting.");
@@ -117,8 +125,7 @@ public class NetFilterLogger
                             if (size == -1) {
                                 socketReset = true;
                                 logger.warn("Lost connection to daemon socket.");
-                            } else
-                                HandleLoggerMessage(rxbuffer);
+                            } else HandleLoggerMessage(rxbuffer);
                         }
 
                         keyIterator.remove();
@@ -136,6 +143,9 @@ public class NetFilterLogger
         }
     }
 
+    /**
+     * Called to open the socket and connect to the netfilter log daemon
+     */
     protected void socketStartup()
     {
         try {
@@ -159,6 +169,9 @@ public class NetFilterLogger
         }
     }
 
+    /**
+     * Closes our socket connection to the daemon
+     */
     protected void socketDestroy()
     {
         try {
@@ -183,6 +196,13 @@ public class NetFilterLogger
         daemonSocket = null;
     }
 
+    /**
+     * Called to handle messages received from the netfilter log daemon
+     * 
+     * @param logMessage
+     *        The message
+     * @throws Exception
+     */
     protected void HandleLoggerMessage(ByteBuffer logMessage) throws Exception
     {
         if (!UvmContextFactory.context().networkManager().getNetworkSettings().getLogBlockedSessions()) return;
@@ -226,8 +246,8 @@ public class NetFilterLogger
                     hostname = entry.getHostname();
                 }
 
-                if ( hostname == null || hostname.length() == 0 ) {
-                    hostname = SessionEvent.determineBestHostname( srcAddress, srcIntf, dstAddress, dstIntf );
+                if (hostname == null || hostname.length() == 0) {
+                    hostname = SessionEvent.determineBestHostname(srcAddress, srcIntf, dstAddress, dstIntf);
                 }
 
                 // Since zero is a valid ICMP type, both the untangle-nflogd daemon as well
@@ -255,12 +275,12 @@ public class NetFilterLogger
                 event.setClientIntf(new Integer(srcIntf));
                 event.setServerIntf(new Integer(dstIntf));
 
-                if ( srcIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( srcIntf ) ) {
-                    event.setLocalAddr( dstAddress );
-                    event.setRemoteAddr( srcAddress );
+                if (srcIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface(srcIntf)) {
+                    event.setLocalAddr(dstAddress);
+                    event.setRemoteAddr(srcAddress);
                 } else {
-                    event.setLocalAddr( srcAddress );
-                    event.setRemoteAddr( dstAddress );
+                    event.setLocalAddr(srcAddress);
+                    event.setRemoteAddr(dstAddress);
                 }
 
                 event.setFilterPrefix(logPrefix);
@@ -276,7 +296,7 @@ public class NetFilterLogger
 
     // THIS IS FOR ECLIPSE - @formatter:off
 
-/*
+/**
  * The daemon sends netfilter log messages in a format something like this:
  * 
  * |PROTO:17|SINTF:1|SADDR:192.168.222.1|SPORT:137|DINTF:0|DADDR:192.168.222.255|DPORT:137|PREFIX:filter-rules-input|
@@ -287,6 +307,17 @@ public class NetFilterLogger
 
     // THIS IS FOR ECLIPSE - @formatter:on
 
+    /**
+     * Finds and extracts a delimited field value from a buffer
+     * 
+     * @param buffer
+     *        The buffer to search
+     * @param findstr
+     *        The field to locate
+     * @param missing
+     *        The default value to return if the field is not found
+     * @return The value if found, or the missing argument
+     */
     protected String extractField(String buffer, String findstr, String missing)
     {
         int findlen = findstr.length();

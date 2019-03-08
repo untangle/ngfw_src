@@ -1,0 +1,54 @@
+#! /bin/bash
+
+# TODO
+# This file should be rewritten as a run-parts script on a /etc/untangle/restore.d directory
+# This would allow us to create plugins for other packages in the restore.d directory
+
+systemctl stop untangle-vm
+
+echo "Removing settings and configuration..."
+
+# drop settings and other state
+rm -f /usr/share/untangle/conf/wizard-complete-flag
+rm -f /usr/share/untangle/conf/wizard.js
+rm -rf /usr/share/untangle/settings/*
+rm -rf /usr/share/untangle/quarantine
+rm -rf /etc/openvpn/*
+
+# drop database
+if [ -f /usr/bin/psql ] ; then
+    psql -U postgres -c "DROP SCHEMA reports CASCADE" uvm >/dev/null 2>&1
+    psql -U postgres -c "DROP DATABASE IF EXISTS uvm" >/dev/null 2>&1
+fi
+if [ -f /var/lib/sqlite/reports.db ] ; then
+    rm -f /var/lib/sqlite/reports.db
+fi
+
+echo "Removing settings and configuration...done"
+
+echo "Restoring File System State..."
+
+# restore canonical files
+tar -C / -zxf /usr/share/untangle/conf/canonical.tar.gz
+
+# restore logo
+cp -f /var/www/images/DefaultLogo.png /var/www/images/BrandingLogo.png
+
+# restore OEM settings if they exist
+if [ -f /usr/share/untangle/bin/oem-apply.sh ] ; then
+    /usr/share/untangle/bin/oem-apply.sh
+fi
+
+# rerun all the hardware default scripts
+/usr/sbin/invoke-rc.d --query untangle-vm start
+if [ $? != 101 ] ; then # action is allowed, we're not in a chroot
+    systemctl list-units | awk '/untangle-(hard|firm)ware/ {print $1}' | while read s ; do
+        echo "systemctl restart $s"
+	systemctl restart $s
+    done
+fi
+echo "Restoring File System State...done"
+
+systemctl start untangle-vm
+
+exit 0

@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.vnet;
@@ -112,9 +112,6 @@ public interface AppSession
      * The following are attachment keys used by various apps to
      * share information with other apps.
      */
-    public final String KEY_PLATFORM_USERNAME = "platform-username"; /* String */
-    public final String KEY_PLATFORM_HOSTNAME = "platform-hostname"; /* String */
-
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE = "application-control-lite-protocol"; /* String */
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY = "application-control-lite-category"; /* String */
     public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION = "application-control-lite-description"; /* String */
@@ -124,11 +121,12 @@ public interface AppSession
     public final String KEY_HTTP_REFERER = "http-referer";  /* String */
     public final String KEY_HTTP_URI = "http-uri";  /* String */
     public final String KEY_HTTP_URL = "http-url";  /* String */
+    public final String KEY_HTTP_USER_AGENT = "http-user-agent";  /* String */
     public final String KEY_HTTP_CONTENT_TYPE = "http-content-type"; /* String */
     public final String KEY_HTTP_CONTENT_LENGTH = "http-content-length"; /* Long */
     public final String KEY_HTTP_REQUEST_METHOD = "http-request-method"; /* String */
     public final String KEY_HTTP_REQUEST_FILE_PATH = "http-request-file-path"; /* String */
-    public final String KEY_HTTP_REQUEST_FILE_NAME = "htpp-request-file-name"; /* String */
+    public final String KEY_HTTP_REQUEST_FILE_NAME = "http-request-file-name"; /* String */
     public final String KEY_HTTP_REQUEST_FILE_EXTENSION = "http-request-file-extension"; /* String */
     public final String KEY_HTTP_RESPONSE_FILE_NAME = "http-response-file-name"; /* String */
     public final String KEY_HTTP_RESPONSE_FILE_EXTENSION = "http-response-file-extension"; /* String */
@@ -162,6 +160,7 @@ public interface AppSession
     public final String KEY_WEB_FILTER_SSL_ENGINE = "web-filter-ssl-engine"; /* WebFilterSSLEngine */
     public final String KEY_CAPTIVE_PORTAL_REDIRECT = "captive-portal-redirect-client"; /* InetAddress */
     public final String KEY_CAPTIVE_PORTAL_SSL_ENGINE = "captive-portal-ssl-engine"; /* CaptureSSLEngine */
+    public final String KEY_CAPTIVE_PORTAL_SESSION_CAPTURE = "captive-portal-session-capture"; /* Boolean */
 
     /**
      * Returns the protocol for the session.</p>

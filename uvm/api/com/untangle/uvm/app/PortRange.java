@@ -1,13 +1,13 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.uvm.app;
 
 import java.io.Serializable;
 
 /**
  * Port ranges are immutable.
- *
  */
 @SuppressWarnings("serial")
 public class PortRange implements Serializable
@@ -18,27 +18,36 @@ public class PortRange implements Serializable
     private final int low;
     private final int high;
 
-    // Constructors -----------------------------------------------------------
-
+    /**
+     * Constructor
+     * @param port Single port value
+     */
     public PortRange(int port)
     {
         low = high = port;
     }
 
+    /**
+     * Constructor
+     * @param low Low value for range
+     * @param high High value for range
+     */
     public PortRange(int low, int high)
     {
         this.low = low;
         this.high = high;
     }
 
-    // business methods -------------------------------------------------------
 
+    /**
+     * See if the range contains the specified port
+     * @param port The port to check
+     * @return True if contained in our range, otherwise false
+     */
     public boolean contains(int port)
     {
         return low <= port && port <= high;
     }
-
-    // accessors --------------------------------------------------------------
 
     /**
      * The low port, inclusive.
@@ -60,8 +69,11 @@ public class PortRange implements Serializable
         return high;
     }
 
-    // Object methods ---------------------------------------------------------
-
+    /**
+     * Compare to an object
+     *  @param o The object for comparison
+     *  @return True if equal, otherwise false
+     */
     public boolean equals(Object o)
     {
         if (!(o instanceof PortRange)) {
@@ -72,6 +84,10 @@ public class PortRange implements Serializable
         return low == pr.low && high == pr.high;
     }
 
+    /**
+     * Get the hash code
+     * @return The hash code
+     */
     public int hashCode()
     {
         int result = 17;
@@ -81,6 +97,10 @@ public class PortRange implements Serializable
         return result;
     }
 
+    /**
+     * Get the string representation
+     * @return The string representation
+     */
     public String toString() {
         return low +"-"+ high;
     }

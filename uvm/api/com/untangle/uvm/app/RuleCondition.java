@@ -6,33 +6,27 @@ package com.untangle.uvm.app;
 import java.util.List;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.UserTable;
 import com.untangle.uvm.UserTableEntry;
-import com.untangle.uvm.DeviceTable;
 import com.untangle.uvm.DeviceTableEntry;
-import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.Tag;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.app.IntMatcher;
 import com.untangle.uvm.app.IntfMatcher;
 import com.untangle.uvm.app.UserMatcher;
 import com.untangle.uvm.app.GroupMatcher;
+import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.app.ProtocolMatcher;
 import com.untangle.uvm.app.UrlMatcher;
 import com.untangle.uvm.app.DirectoryConnector;
-import com.untangle.uvm.util.GlobUtil;
+import com.untangle.uvm.app.AppBase;
 
 /**
  * This is a matching criteria for a generic Rule
@@ -60,6 +54,10 @@ public class RuleCondition implements JSONString, Serializable
         PROTOCOL, /* "TCP" "UDP" "TCP,UDP" "any" */
         USERNAME, /* "dmorris" or "none" or "*" */
         TAGGED, /* glob */
+        HOST_TAGGED, /* glob */
+        CLIENT_TAGGED, /* glob */
+        SERVER_TAGGED, /* glob */
+        HOST_ENTITLED, /* none */
         HOST_HOSTNAME, /* glob */
         CLIENT_HOSTNAME, /* glob */
         SERVER_HOSTNAME, /* glob */
@@ -126,6 +124,7 @@ public class RuleCondition implements JSONString, Serializable
         APPLICATION_CONTROL_PRODUCTIVITY, /* productivity index */
         APPLICATION_CONTROL_RISK, /* risk index */
         DIRECTORY_CONNECTOR_GROUP, /* "teachers" or "none" or "*" */
+        DIRECTORY_CONNECTOR_DOMAIN, /* server.ad.domain.com or "*" */
         WEB_FILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
         WEB_FILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
         WEB_FILTER_FLAGGED, /* boolean */
@@ -150,11 +149,14 @@ public class RuleCondition implements JSONString, Serializable
     private IntfMatcher      intfMatcher      = null;
     private UserMatcher      userMatcher      = null;
     private GroupMatcher     groupMatcher     = null;
+    private DomainMatcher    domainMatcher    = null;
     private GlobMatcher      globMatcher      = null;
     private ProtocolMatcher  protocolMatcher  = null;
     private TimeOfDayMatcher timeOfDayMatcher = null;
     private DayOfWeekMatcher dayOfWeekMatcher = null;
     private UrlMatcher       urlMatcher       = null;
+
+    private static DirectoryConnector directoryConnector = null;
     
     public RuleCondition( )
     {
@@ -264,186 +266,162 @@ public class RuleCondition implements JSONString, Serializable
     /**
      * This pre-computes any information necessary for fast matching
      */
-    protected void computeMatchers()
+    protected synchronized void computeMatchers()
     {
-        this.initialized = true;
+        if (initialized)
+            return;
         
-        /**
-         * Convert old style conditions
-         */
-        switch (this.matcherType) {
-        case HOST_IN_PENALTY_BOX:
-        case CLIENT_IN_PENALTY_BOX:
-        case SERVER_IN_PENALTY_BOX:
+        try {
             /**
-             * These explicit conditions have been replaced by a condition
-             * to just check if the host is tagged with "penalty box"
+             * Convert old style conditions
              */
-            this.matcherType = ConditionType.TAGGED;
-            this.value = "penalty-box";
-            break;
-        default:
-            break;
-        }
+            switch (this.matcherType) {
+            case HOST_IN_PENALTY_BOX:
+            case CLIENT_IN_PENALTY_BOX:
+            case SERVER_IN_PENALTY_BOX:
+                /**
+                 * These explicit conditions have been replaced by a condition
+                 * to just check if the host is tagged with "penalty box"
+                 */
+                this.matcherType = ConditionType.TAGGED;
+                this.value = "penalty-box";
+                break;
+            default:
+                break;
+            }
         
-        /**
-         * Update cache for quick computation
-         */
-        switch (this.matcherType) {
-        case DST_ADDR:
-        case SRC_ADDR: 
-            try {
+            /**
+             * Update cache for quick computation
+             */
+            switch (this.matcherType) {
+            case DST_ADDR:
+            case SRC_ADDR: 
                 this.ipMatcher = new IPMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid IP Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case DST_PORT:
-        case SRC_PORT: 
-            try {
+            case DST_PORT:
+            case SRC_PORT: 
                 this.intMatcher = new IntMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Port Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case DST_INTF:
-        case SRC_INTF: 
-            try {
+            case DST_INTF:
+            case SRC_INTF: 
                 this.intfMatcher = new IntfMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Intf Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case PROTOCOL:
-            try {
+            case PROTOCOL:
                 this.protocolMatcher = new ProtocolMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Intf Matcher: " + value, e);
-            }
-            break;
+                break;
             
-        case USERNAME:
-            try {
-                this.userMatcher = new UserMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid User Matcher: " + value, e);
-            }
-            break;
+            case USERNAME:
+                this.userMatcher = UserMatcher.getMatcher(this.value);
+                break;
 
-        case DIRECTORY_CONNECTOR_GROUP:
-            try {
-                this.groupMatcher = new GroupMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Group Matcher: " + value, e);
-            }
-            break;
+            case DIRECTORY_CONNECTOR_GROUP:
+                this.groupMatcher = GroupMatcher.isMatchable(this.value) ? GroupMatcher.getMatcher(this.value) : null;
+                break;
+
+            case DIRECTORY_CONNECTOR_DOMAIN:
+                this.domainMatcher = DomainMatcher.isMatchable(this.value) ? DomainMatcher.getMatcher(this.value) : null;
+                break;
             
-        case TIME_OF_DAY:
-            try {
+            case TIME_OF_DAY:
                 this.timeOfDayMatcher = new TimeOfDayMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Time Of Day Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case DAY_OF_WEEK:
-            try {
+            case DAY_OF_WEEK:
                 this.dayOfWeekMatcher = new DayOfWeekMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Day Of Week Matcher: " + value, e);
-            }
-            break;
+                break;
 
-        case WEB_FILTER_FLAGGED:
-        case HOST_HAS_NO_QUOTA:
-        case CLIENT_HAS_NO_QUOTA:
-        case SERVER_HAS_NO_QUOTA:
-        case USER_HAS_NO_QUOTA:
-        case HOST_QUOTA_EXCEEDED:
-        case CLIENT_QUOTA_EXCEEDED:
-        case SERVER_QUOTA_EXCEEDED:
-        case USER_QUOTA_EXCEEDED:
-            // nothing necessary
-            break;
+            case HOST_ENTITLED:
+            case WEB_FILTER_FLAGGED:
+            case HOST_HAS_NO_QUOTA:
+            case CLIENT_HAS_NO_QUOTA:
+            case SERVER_HAS_NO_QUOTA:
+            case USER_HAS_NO_QUOTA:
+            case HOST_QUOTA_EXCEEDED:
+            case CLIENT_QUOTA_EXCEEDED:
+            case SERVER_QUOTA_EXCEEDED:
+            case USER_QUOTA_EXCEEDED:
+                // nothing necessary
+                break;
             
-        case HTTP_URL: 
-            try {
-                this.urlMatcher = new UrlMatcher( this.value );
-            } catch (Exception e) {
-                logger.warn("Invalid Url Matcher: " + value, e);
-            }
-            break;
+            case HTTP_URL: 
+                this.urlMatcher = UrlMatcher.getMatcher(this.value);
+                break;
             
-        case TAGGED:
-        case HOST_MAC:
-        case SRC_MAC:
-        case DST_MAC:
-        case HOST_HOSTNAME:
-        case CLIENT_HOSTNAME:
-        case SERVER_HOSTNAME:
-        case HOST_MAC_VENDOR:
-        case CLIENT_MAC_VENDOR:
-        case SERVER_MAC_VENDOR:
-        case REMOTE_HOST_COUNTRY:
-        case CLIENT_COUNTRY:
-        case SERVER_COUNTRY:
-        case HTTP_HOST:
-        case HTTP_REFERER:
-        case HTTP_CONTENT_TYPE:
-        case WEB_FILTER_RESPONSE_CONTENT_TYPE:
-        case HTTP_REQUEST_METHOD:
-        case WEB_FILTER_REQUEST_METHOD:
-        case HTTP_REQUEST_FILE_PATH:
-        case WEB_FILTER_REQUEST_FILE_PATH:
-        case HTTP_REQUEST_FILE_NAME:
-        case WEB_FILTER_REQUEST_FILE_NAME:
-        case HTTP_REQUEST_FILE_EXTENSION:
-        case WEB_FILTER_REQUEST_FILE_EXTENSION:
-        case HTTP_RESPONSE_FILE_NAME:
-        case WEB_FILTER_RESPONSE_FILE_NAME:
-        case HTTP_RESPONSE_FILE_EXTENSION:
-        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
-        case HTTP_USER_AGENT:
-        case HTTP_USER_AGENT_OS:
-        case PROTOCOL_CONTROL_SIGNATURE:
-        case PROTOCOL_CONTROL_CATEGORY:
-        case PROTOCOL_CONTROL_DESCRIPTION:
-        case WEB_FILTER_CATEGORY:
-        case WEB_FILTER_CATEGORY_DESCRIPTION:
-        case APPLICATION_CONTROL_APPLICATION:
-        case APPLICATION_CONTROL_CATEGORY:
-        case APPLICATION_CONTROL_PROTOCHAIN:
-        case APPLICATION_CONTROL_DETAIL:
-        case SSL_INSPECTOR_SNI_HOSTNAME:
-        case SSL_INSPECTOR_SUBJECT_DN:
-        case SSL_INSPECTOR_ISSUER_DN:
-        case HTTP_URI:
-            this.globMatcher = new GlobMatcher(value);
-            break;
+            case TAGGED:
+            case HOST_TAGGED:
+            case CLIENT_TAGGED:
+            case SERVER_TAGGED:
+            case HOST_MAC:
+            case SRC_MAC:
+            case DST_MAC:
+            case HOST_HOSTNAME:
+            case CLIENT_HOSTNAME:
+            case SERVER_HOSTNAME:
+            case HOST_MAC_VENDOR:
+            case CLIENT_MAC_VENDOR:
+            case SERVER_MAC_VENDOR:
+            case REMOTE_HOST_COUNTRY:
+            case CLIENT_COUNTRY:
+            case SERVER_COUNTRY:
+            case HTTP_HOST:
+            case HTTP_REFERER:
+            case HTTP_CONTENT_TYPE:
+            case WEB_FILTER_RESPONSE_CONTENT_TYPE:
+            case HTTP_REQUEST_METHOD:
+            case WEB_FILTER_REQUEST_METHOD:
+            case HTTP_REQUEST_FILE_PATH:
+            case WEB_FILTER_REQUEST_FILE_PATH:
+            case HTTP_REQUEST_FILE_NAME:
+            case WEB_FILTER_REQUEST_FILE_NAME:
+            case HTTP_REQUEST_FILE_EXTENSION:
+            case WEB_FILTER_REQUEST_FILE_EXTENSION:
+            case HTTP_RESPONSE_FILE_NAME:
+            case WEB_FILTER_RESPONSE_FILE_NAME:
+            case HTTP_RESPONSE_FILE_EXTENSION:
+            case WEB_FILTER_RESPONSE_FILE_EXTENSION:
+            case HTTP_USER_AGENT:
+            case HTTP_USER_AGENT_OS:
+            case PROTOCOL_CONTROL_SIGNATURE:
+            case PROTOCOL_CONTROL_CATEGORY:
+            case PROTOCOL_CONTROL_DESCRIPTION:
+            case WEB_FILTER_CATEGORY:
+            case WEB_FILTER_CATEGORY_DESCRIPTION:
+            case APPLICATION_CONTROL_APPLICATION:
+            case APPLICATION_CONTROL_CATEGORY:
+            case APPLICATION_CONTROL_PROTOCHAIN:
+            case APPLICATION_CONTROL_DETAIL:
+            case SSL_INSPECTOR_SNI_HOSTNAME:
+            case SSL_INSPECTOR_SUBJECT_DN:
+            case SSL_INSPECTOR_ISSUER_DN:
+            case HTTP_URI:
+                this.globMatcher = GlobMatcher.getMatcher(this.value);
+                break;
 
-        case APPLICATION_CONTROL_CONFIDENCE:
-        case APPLICATION_CONTROL_PRODUCTIVITY:
-        case APPLICATION_CONTROL_RISK:
-        case HTTP_CONTENT_LENGTH:
-        case HOST_QUOTA_ATTAINMENT:
-        case CLIENT_QUOTA_ATTAINMENT:
-        case SERVER_QUOTA_ATTAINMENT:
-        case USER_QUOTA_ATTAINMENT:
-            try {
+            case APPLICATION_CONTROL_CONFIDENCE:
+            case APPLICATION_CONTROL_PRODUCTIVITY:
+            case APPLICATION_CONTROL_RISK:
+            case HTTP_CONTENT_LENGTH:
+            case HOST_QUOTA_ATTAINMENT:
+            case CLIENT_QUOTA_ATTAINMENT:
+            case SERVER_QUOTA_ATTAINMENT:
+            case USER_QUOTA_ATTAINMENT:
                 this.intMatcher = new IntMatcher(this.value);
-            } catch (Exception e) {
-                logger.warn("Invalid Int Matcher: " + value, e);
+                break;
+            
+            case DST_LOCAL:
+                break;
+            
+            default:
+                logger.warn("Unknown Matcher type: " + this.matcherType + " - ignoring precomputing");
             }
-            break;
-            
-        case DST_LOCAL:
-            break;
-            
-        default:
-            logger.warn("Unknown Matcher type: " + this.matcherType + " - ignoring precomputing");
+
+        } catch (Exception e) {
+            logger.warn("Exception computing matcher: " + this.matcherType + " " + value, e);
+        } finally {
+            this.initialized = true;
         }
     }
 
@@ -729,6 +707,12 @@ public class RuleCondition implements JSONString, Serializable
 
         case HTTP_USER_AGENT_OS:
         case HTTP_USER_AGENT:
+            // first check the session
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_USER_AGENT);
+            if ( tmpStr != null ) {
+                return globMatcher.isMatch( tmpStr );
+            }
+            // if no session attachment, check the host
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (hostEntry == null)
                 return false;
@@ -778,34 +762,89 @@ public class RuleCondition implements JSONString, Serializable
             }
             return false;
 
+        case HOST_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.sessionEvent().getLocalAddr() );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case CLIENT_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case SERVER_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case HOST_ENTITLED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
+            if (hostEntry == null)
+                return true;
+            return hostEntry.getEntitled();
+            
         case USERNAME:
-            tmpStr = (String) sess.globalAttachment(AppSession.KEY_PLATFORM_USERNAME);
+            tmpStr = sess.user();
             if (this.userMatcher.isMatch(tmpStr))
                 return true;
             return false;
 
         case DIRECTORY_CONNECTOR_GROUP:
-            String username = (String) sess.globalAttachment(AppSession.KEY_PLATFORM_USERNAME);
+        case DIRECTORY_CONNECTOR_DOMAIN:
+            String username = sess.user();
             if (username == null)
                 return false;
 
-            DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
-            boolean isMemberOf = false;
-
-            if (directoryConnector.isMemberOf( username, value )) 
-                isMemberOf = true;
-
-            if (!isMemberOf) {
-                List<String> groupNames = directoryConnector.memberOf( username );
-                for (String groupName : groupNames) {
-                    if ( this.groupMatcher.isMatch( groupName ) ) {
-                        isMemberOf = true;
-                        break;
-                    }
+            try{
+                ((AppBase) directoryConnector).getRunState();
+            }catch(Exception e){
+                directoryConnector = null;
+            }finally{
+                if(directoryConnector == null){
+                    directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
                 }
             }
-            
-            logger.debug("Checking if " + username + " is in group \"" + value + "\" : " + isMemberOf);
+
+            if(directoryConnector == null){
+                return false;
+            }
+
+            boolean isMemberOf = false;
+            switch(this.matcherType){
+                case DIRECTORY_CONNECTOR_GROUP:
+                    if(this.groupMatcher != null){
+                        isMemberOf = directoryConnector.isMemberOfGroup( username, this.groupMatcher );
+                    }else{
+                        isMemberOf = directoryConnector.isMemberOfGroup( username, value );
+                    }
+                    logger.debug("Checking if " + username + " is in group \"" + value + "\" : " + isMemberOf);
+                    break;
+
+                case DIRECTORY_CONNECTOR_DOMAIN:
+                    if(this.domainMatcher != null){
+                        isMemberOf = directoryConnector.isMemberOfDomain( username, this.domainMatcher );
+                    }else{
+                        isMemberOf = directoryConnector.isMemberOfDomain( username, value );
+                    }
+
+                    logger.debug("Checking if " + username + " is in domain \"" + value + "\" : " + isMemberOf);
+                    break;
+            }
             return isMemberOf;
 
         case APPLICATION_CONTROL_APPLICATION:
@@ -997,6 +1036,45 @@ public class RuleCondition implements JSONString, Serializable
                 }
             }
             return false;
+
+        case HOST_TAGGED:
+            tmpAddress = getLocalAddress( srcAddress, srcIntf, dstAddress, dstIntf );
+            if (tmpAddress == null)
+                return false;
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( tmpAddress );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case CLIENT_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case SERVER_TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
+            if (hostEntry == null)
+                return false;
+            for( Tag t : hostEntry.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
+        case HOST_ENTITLED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (hostEntry == null)
+                return true;
+            return hostEntry.getEntitled();
 
         case USERNAME:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
@@ -1204,6 +1282,7 @@ public class RuleCondition implements JSONString, Serializable
             return dayOfWeekMatcher.isMatch();
 
         case DIRECTORY_CONNECTOR_GROUP:
+        case DIRECTORY_CONNECTOR_DOMAIN:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if ( hostEntry == null )
                 return false;
@@ -1211,23 +1290,41 @@ public class RuleCondition implements JSONString, Serializable
             if ( tmpStr == null )
                 return false;
 
-            DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
-            boolean isMemberOf = false;
-
-            if (directoryConnector.isMemberOf( tmpStr, value )) 
-                isMemberOf = true;
-
-            if (!isMemberOf) {
-                List<String> groupNames = directoryConnector.memberOf( tmpStr );
-                for (String groupName : groupNames) {
-                    if ( this.groupMatcher.isMatch(groupName) ) {
-                        isMemberOf = true;
-                        break;
-                    }
+            try{
+                ((AppBase) directoryConnector).getRunState();
+            }catch(Exception e){
+                directoryConnector = null;
+            }finally{
+                if(directoryConnector == null){
+                    directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
                 }
             }
-            
-            logger.debug("Checking if " + tmpStr + " is in group \"" + value + "\" : " + isMemberOf);
+
+            if(directoryConnector == null){
+                return false;
+            }
+
+            boolean isMemberOf = false;
+            switch(this.matcherType){
+                case DIRECTORY_CONNECTOR_GROUP:
+                    if(this.groupMatcher != null){
+                        isMemberOf = directoryConnector.isMemberOfGroup( tmpStr, this.groupMatcher );
+                    }else{
+                        isMemberOf = directoryConnector.isMemberOfGroup( tmpStr, value );
+                    }
+                    logger.debug("Checking if " + tmpStr + " is in group \"" + value + "\" : " + isMemberOf);
+                    break;
+
+                case DIRECTORY_CONNECTOR_DOMAIN:
+                    if(this.domainMatcher != null){
+                        isMemberOf = directoryConnector.isMemberOfDomain( tmpStr, this.domainMatcher );
+                    }else{
+                        isMemberOf = directoryConnector.isMemberOfDomain( tmpStr, value );
+                    }
+
+                    logger.debug("Checking if " + tmpStr + " is in domain \"" + value + "\" : " + isMemberOf);
+                    break;
+            }
             return isMemberOf;
 
         case HTTP_USER_AGENT_OS:

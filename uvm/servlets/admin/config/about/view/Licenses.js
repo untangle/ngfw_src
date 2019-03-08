@@ -1,6 +1,8 @@
 Ext.define('Ung.config.about.view.Licenses', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.about.licenses',
+    alias: 'widget.config-about-licenses',
+    itemId: 'licenses',
+    scrollable: true,
 
     title: 'Licenses'.t(),
     layout: 'fit',
@@ -12,49 +14,59 @@ Ext.define('Ung.config.about.view.Licenses', {
     }],
 
     items: [{
-        xtype: 'grid',
-        forceFit: true,
+        xtype: 'ungrid',
+        itemId: 'licenses',
+
+        emptyText: 'No Licenses defined'.t(),
+
+        bind: {
+            store: {
+                data: '{licenses}'
+            }
+        },
         columns: [{
             header: 'Name'.t(),
             dataIndex: 'displayName',
-            width: 150
+            width: Renderer.messageWidth
         }, {
             header: 'App'.t(),
-            dataIndex: 'name',
+            dataIndex: 'currentName',
+            width: Renderer.messageWidth,
             flex: 1
         }, {
             header: 'UID'.t(),
             dataIndex: 'UID',
-            width: 150
+            width: Renderer.messageWidth
         }, {
             header: 'Start Date'.t(),
             dataIndex: 'start',
-            width: 240,
-            // renderer: function (value) { return i18n.timestampFormat(value*1000);}
+            width: Renderer.dateWidth,
+            renderer: Renderer.timestamp
         }, {
             header: 'End Date'.t(),
             dataIndex: 'end',
-            width: 240,
-            // renderer: Ext.bind(function(value) { return i18n.timestampFormat(value*1000); }, this)
+            width: Renderer.dateWidth,
+            renderer: Renderer.timestamp
         }, {
             header: 'Seats'.t(),
-            dataIndex: 'seats',
-            width: 50
+            dataIndex: 'seatsDisplay',
+            width: Renderer.idWidth
         }, {
             header: 'Valid'.t(),
             dataIndex: 'valid',
-            width: 50
+            width: Renderer.booleanWidth
         }, {
             header: 'Status',
             dataIndex: 'status',
-            width: 150
+            width: Renderer.messageWidth
         }],
 
-        bbar: [{
-            text: 'Refresh'.t(),
-            iconCls: 'fa fa-refresh',
-            handler: 'reloadLicenses'
-        }]
+    }],
+
+    bbar: [{
+        text: 'Refresh'.t(),
+        iconCls: 'fa fa-refresh',
+        handler: 'reloadLicenses'
     }]
 
 });

@@ -1,15 +1,15 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.spam_blocker;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
 import java.net.InetAddress;
+import java.io.Serializable;
+import org.json.JSONString;
 
 import com.untangle.uvm.app.SessionEvent;
-import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.app.smtp.AddressKind;
 import com.untangle.app.smtp.SmtpMessageEvent;
@@ -20,7 +20,7 @@ import com.untangle.uvm.util.I18nUtil;
  * Event for Spam events.
  */
 @SuppressWarnings("serial")
-public class SpamLogEvent extends LogEvent
+public class SpamLogEvent extends LogEvent implements Serializable, JSONString
 {
     private Long messageId;
     private SmtpMessageEvent messageInfo;
@@ -102,43 +102,43 @@ public class SpamLogEvent extends LogEvent
 
     // accessors --------------------------------------------------------------
 
-    /**
+    /*
      * The message id
      */
     public Long getMessageId() { return messageId; }
     public void setMessageId( Long newValue ) { this.messageId = newValue; }
 
-    /**
+    /*
      * Associate e-mail message info with event.
      */
     public SmtpMessageEvent getSmtpMessageEvent() { return messageInfo; }
     public void setSmtpMessageEvent( SmtpMessageEvent newValue ) { this.messageInfo = newValue; }
     
-    /**
+    /*
      * Spam scan score.
      */
     public float getScore() { return score; }
     public void setScore( float newValue ) { this.score = newValue; }
 
-    /**
+    /*
      * Was it declared spam?
      */
     public boolean isSpam() { return isSpam; }
     public void setSpam( boolean newValue ) { this.isSpam = newValue; }
 
-    /**
+    /*
      * The action taken
      */
     public SpamMessageAction getAction() { return action; }
     public void setAction( SpamMessageAction newValue ) { this.action = newValue; }
 
-    /**
+    /*
      * Spam scanner vendor.
      */
     public String getVendorName() { return vendorName; }
     public void setVendorName( String newValue ) { this.vendorName = newValue; }
 
-    /**
+    /*
      * The list of tests hit (represented in a single string)
      */
     public String getTestsString() { return testsString; }
@@ -237,5 +237,10 @@ public class SpamLogEvent extends LogEvent
         String summary = appName + " " + I18nUtil.marktr("scored") + " "  + messageInfo.toSummaryString() + " " + I18nUtil.marktr("as") + " " + getScore() + " " + ( isSpam() ? "(spam)" : "(ham)" );
         return summary;
     }
-    
+
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
+    }
 }

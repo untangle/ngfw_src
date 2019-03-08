@@ -1,10 +1,14 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm.app;
 
+/**
+ * Class to manage a base rule
+ */
 @SuppressWarnings("serial")
-public class BaseRule implements java.io.Serializable
+public class BaseRule implements java.io.Serializable, org.json.JSONString
 {
     private Integer id = null;
     private String name = null; 
@@ -96,5 +100,11 @@ public class BaseRule implements java.io.Serializable
     public Object attachment()
     {
         return attachment;
+    }
+    
+    public String toJSONString()
+    {
+        org.json.JSONObject jO = new org.json.JSONObject(this);
+        return jO.toString();
     }
 }

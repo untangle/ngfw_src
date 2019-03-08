@@ -4,13 +4,14 @@
 
 package com.untangle.app.ipsec_vpn;
 
-import java.util.List;
 import java.io.*;
 
-/*
- * Found on the interwebs and modified slightly to meet our needs and
- * to remove unused stuff.  From the original source it seems to have
- * been written by Methias Talamantes for CS56, Winter 12, UCSB
+/**
+ * This class is used to do IP address calculations.
+ * 
+ * Found on the interwebs and modified slightly to meet our needs and to remove
+ * unused stuff. From the original source it seems to have been written by
+ * Methias Talamantes for CS56, Winter 12, UCSB
  */
 
 public class AddressCalculator
@@ -22,6 +23,15 @@ public class AddressCalculator
     private String secondIP;
     private String lastIP;
 
+    /**
+     * Creates an instance of the address calculator using a network defined
+     * with CIDR notation. (e.g. 192.168.0.0/16)
+     * 
+     * @param IPinCIDRFormat
+     *        The network to be used for calculations.
+     * 
+     * @throws NumberFormatException
+     */
     public AddressCalculator(String IPinCIDRFormat) throws NumberFormatException
     {
         String[] st = IPinCIDRFormat.split("\\/");
@@ -74,6 +84,13 @@ public class AddressCalculator
         lastIP = convertNumericIpToSymbolic(baseIP + numberOfIPs - 1);
     }
 
+    /**
+     * Converts IP address from numeric (3232235777) to string (192.168.1.1)
+     * 
+     * @param ip
+     *        The IP address in numeric form
+     * @return The IP address in string form
+     */
     private String convertNumericIpToSymbolic(Integer ip)
     {
         StringBuffer sb = new StringBuffer(15);
@@ -85,6 +102,11 @@ public class AddressCalculator
         return sb.toString();
     }
 
+    /**
+     * Gets the netmask of our network (e.g. 255.255.0.0)
+     * 
+     * @return
+     */
     public String getNetmask()
     {
         StringBuffer sb = new StringBuffer(15);
@@ -96,6 +118,11 @@ public class AddressCalculator
         return sb.toString();
     }
 
+    /**
+     * Returns the number of host addresses in our network
+     * 
+     * @return The number of host addresses in our network
+     */
     public Long getNumberOfHosts()
     {
         int numberOfBits;
@@ -109,6 +136,11 @@ public class AddressCalculator
         return x.longValue();
     }
 
+    /**
+     * Returns the wildcard mask for our network
+     * 
+     * @return The wildcard mask for our network
+     */
     public String getWildcardMask()
     {
         Integer wildcardMask = netmaskNumeric ^ 0xffffffff;
@@ -121,6 +153,11 @@ public class AddressCalculator
         return sb.toString();
     }
 
+    /**
+     * Gets the broadcast address for our network
+     * 
+     * @return The broadast address for our network
+     */
     public String getBroadcastAddress()
     {
         if (netmaskNumeric == 0xffffffff) {
@@ -141,30 +178,58 @@ public class AddressCalculator
         return ip;
     }
 
+    /**
+     * Get the base network
+     * 
+     * @return The base network
+     */
     public String getBaseNetwork()
     {
         return (baseNetwork);
     }
 
+    /**
+     * Get the first host IP address of our network
+     * 
+     * @return The first host IP address of our network
+     */
     public String getFirstIP()
     {
         return (firstIP);
     }
 
+    /**
+     * Get the second host IP address of our network
+     * 
+     * @return The second host IP address of our network
+     */
     public String getSecondIP()
     {
         return (secondIP);
     }
 
+    /**
+     * Get the last host IP address of our network
+     * 
+     * @return The last host IP address of our network
+     */
     public String getLastIP()
     {
         return (lastIP);
     }
 
+    /**
+     * Get an IP address from our network based on a numeric offset
+     * 
+     * @param offset
+     *        The offset
+     * 
+     * @return The IP address
+     */
     public String getOffsetIP(int offset)
     {
         Integer baseIP = baseIPnumeric & netmaskNumeric;
-        String address = convertNumericIpToSymbolic(baseIP + offset);
+        String address = convertNumericIpToSymbolic(baseIP + ( offset * 4 ) - 3);
         return (address);
     }
 }

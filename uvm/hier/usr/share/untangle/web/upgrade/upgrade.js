@@ -12,7 +12,7 @@ function doIt()
             document.getElementById("upgrade").innerHTML = lastLog;
             return;
         } else {
-            location.href = "/webui";
+            location.href = "/admin";
         }
     }
 }

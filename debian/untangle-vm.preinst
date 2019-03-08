@@ -1,28 +1,21 @@
 #! /bin/bash
 
-ourInit() {
-  if [ -x /usr/sbin/invoke-rc.d ] && [ ! "`readlink /usr/sbin/invoke-rc.d`" = /bin/true ] ; then
-    invoke-rc.d $1 $2
-  else
-    /etc/init.d/$1 $2
-  fi
-}
-
 # If untangle-vm PID file exist and the process exists
 # stop the untangle-vm, launch the splash screen, and
 # launch uvm-restart to restart it after apt-get is done
 if [ -f /var/run/uvm.pid ] ; then
     if ps p $(cat /var/run/uvm.pid) >/dev/null 2>&1; then
 
-        if [ -x /etc/init.d/untangle-vm ] ; then
-            /usr/share/untangle/bin/ut-show-upgrade-splash start
-            ourInit untangle-vm stop || true
-        fi
+        /usr/share/untangle/bin/ut-show-upgrade-splash start
+
+        echo "Stopping untangle-vm..."
+        deb-systemd-invoke stop untangle-vm
+        /etc/init.d/untangle-vm stop
+        echo "Stopped  untangle-vm  $?"
 
         echo "Restarting untangle-vm after apt-get completes..."
         rm -f /var/log/uvm/restart.log
         nohup /usr/bin/uvm-restart >> /var/log/uvm/restart.log 2>&1 &
-        exit 0
     fi
 fi
 

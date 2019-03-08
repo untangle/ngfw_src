@@ -12,7 +12,7 @@ import com.untangle.uvm.app.RuleCondition;
  * A QosRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class QosRuleCondition extends RuleCondition
+public class QosRuleCondition extends RuleCondition implements java.io.Serializable, org.json.JSONString
 {
     public QosRuleCondition( )
     {
@@ -26,6 +26,12 @@ public class QosRuleCondition extends RuleCondition
 
     public QosRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
+        
         super( matcherType, value, invert );
+    }
+
+    public String toJSONString()
+    {
+        return (new org.json.JSONObject(this)).toString();
     }
 }

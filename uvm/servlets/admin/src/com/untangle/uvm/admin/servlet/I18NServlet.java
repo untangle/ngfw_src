@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.webui.servlet;
+package com.untangle.uvm.admin.servlet;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,6 +31,13 @@ public class I18NServlet extends HttpServlet {
     /** character encoding */
     private static final String CHARACTER_ENCODING = "utf-8";
 
+    /**
+     * doGet - handle GET requests
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
@@ -55,7 +62,11 @@ public class I18NServlet extends HttpServlet {
     }
 
     /**
+     * createJSON
      * Creates a JSONObject [JSONObject,JSONArray,JSONNUll] from the map values.
+     * @param map
+     * @throws JSONException
+     * @return the JSONObject
      */
     protected JSONObject createJSON(Map<String,String> map) throws JSONException
     {

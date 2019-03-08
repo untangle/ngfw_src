@@ -5,7 +5,6 @@ package com.untangle.uvm.network;
 
 import java.util.List;
 import java.io.Serializable;
-import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -14,15 +13,15 @@ import org.apache.log4j.Logger;
 /**
  * This in the implementation of a Filter Rule
  *
- * A rule is basically a collection of FilterRuleConditions (matchers)
- * and what to do if the matchers match (block, log, etc)
+ * A rule is basically a collection of FilterRuleConditions (conditions)
+ * and what to do if the conditions match (block, log, etc)
  */
 @SuppressWarnings("serial")
 public class FilterRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<FilterRuleCondition> matchers;
+    private List<FilterRuleCondition> conditions;
 
     private Integer ruleId;
     private boolean enabled = true;
@@ -33,24 +32,25 @@ public class FilterRule implements JSONString, Serializable
     
     public FilterRule() { }
 
-    public FilterRule(boolean enabled, boolean ipv6Enabled, List<FilterRuleCondition> matchers, boolean blocked, String description)
+    public FilterRule(boolean enabled, boolean ipv6Enabled, List<FilterRuleCondition> conditions, boolean blocked, String description)
     {
-        this.setConditions(matchers);
+        this.setConditions(conditions);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setIpv6Enabled(Boolean.valueOf(ipv6Enabled));
         this.setBlocked(blocked);
         this.setDescription(description);
     }
     
-    public List<FilterRuleCondition> getConditions() { return this.matchers; }
-    public void setConditions( List<FilterRuleCondition> matchers ) { this.matchers = matchers; }
+    public List<FilterRuleCondition> getConditions() { return this.conditions; }
+    public void setConditions( List<FilterRuleCondition> conditions ) { this.conditions = conditions; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId(Integer ruleId) { this.ruleId = ruleId; }
 
     public boolean getEnabled() { return enabled; }
-    public boolean getIpv6Enabled() { return ipv6Enabled; }
     public void setEnabled( boolean enabled ) { this.enabled = enabled; }
+
+    public boolean getIpv6Enabled() { return ipv6Enabled; }
     public void setIpv6Enabled( boolean ipv6Enabled ) { this.ipv6Enabled = ipv6Enabled; }
 
     public String getDescription() { return description; }

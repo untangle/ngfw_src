@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.webui.jabsorb;
+package com.untangle.uvm.admin.jabsorb;
 
 import java.io.IOException;
 
@@ -32,6 +32,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     private JSONRPCBridge bridge;
     private UtCallbackController callback;
     
+    /**
+     * init
+     */
     @SuppressWarnings("unchecked") //getAttribute
     public void init()
     {
@@ -95,6 +98,12 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         }
     }
 
+    /**
+     * service
+     * @param req
+     * @param resp
+     * @throws IOException
+     */
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         if (null != threadRequest) {

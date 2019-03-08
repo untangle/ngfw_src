@@ -1,6 +1,7 @@
-/*
+/**
  * $Id$
  */
+
 package com.untangle.app.spam_blocker_lite;
 
 import java.io.File;
@@ -10,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.lang.InterruptedException;
 import java.net.SocketException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.LinkedList;
@@ -23,6 +23,9 @@ import com.untangle.app.spam_blocker.ReportItem;
 import com.untangle.app.spam_blocker.SpamReport;
 import org.apache.log4j.Logger;
 
+/**
+ * Implementation of a spam asssasin client
+ */
 public final class SpamAssassinClient implements Runnable
 {
     private final File msgFile;
@@ -77,18 +80,38 @@ public final class SpamAssassinClient implements Runnable
     private String dbgName; // thread name and socket host
     private volatile boolean stop = false;
 
+    /**
+     * Constructor
+     * 
+     * @param msgFile
+     *        The message file
+     * @param host
+     *        The host
+     * @param port
+     *        The port
+     * @param threshold
+     *        The spam threshold
+     * @param userName
+     *        The username
+     */
     public SpamAssassinClient(File msgFile, String host, int port, float threshold, String userName)
     {
         this.msgFile = msgFile;
         this.host = host;
         this.port = port;
         this.threshold = threshold;
-        
+
         this.userNameCHdr = new StringBuilder(REQ_USERNAME_TAG).append(userName).append(CRLF).toString();
         // add extra CRLF in case message doesn't end with CRLF
         this.contentLenCHdr = new StringBuilder(REQ_CONTENTLEN_TAG).append(Long.toString(msgFile.length() + CRLF.length())).append(CRLF).toString();
     }
 
+    /**
+     * Set the thread
+     * 
+     * @param cThread
+     *        The thread
+     */
     public void setThread(Thread cThread)
     {
         this.cThread = cThread;
@@ -96,6 +119,9 @@ public final class SpamAssassinClient implements Runnable
         return;
     }
 
+    /**
+     * Start the scanner thread
+     */
     public void startScan()
     {
         //logger.debug("start, thread: " + cThread + ", this: " + this);
@@ -103,11 +129,22 @@ public final class SpamAssassinClient implements Runnable
         return;
     }
 
+    /**
+     * Get the scan result
+     * 
+     * @return The result
+     */
     public SpamReport getResult()
     {
         return spamReport;
     }
 
+    /**
+     * Check the scan progress
+     * 
+     * @param timeout
+     *        The timeout
+     */
     public void checkProgress(long timeout)
     {
         //logger.debug("check, thread: " + cThread + ", this: " + this);
@@ -133,16 +170,17 @@ public final class SpamAssassinClient implements Runnable
         }
 
         if (null == this.spamReport) {
-            if (elapsedTime >= timeout)
-                logger.warn(dbgName + ", spamc timer expired (timeout:" + (timeout/1000) + "s) (elapsed: " + (elapsedTime/1000) + "s)");
-            else
-                logger.warn(dbgName + ", spamc returned no result (timeout:" + (timeout/1000) + "s) (elapsed: " + (elapsedTime/1000) + "s)");
+            if (elapsedTime >= timeout) logger.warn(dbgName + ", spamc timer expired (timeout:" + (timeout / 1000) + "s) (elapsed: " + (elapsedTime / 1000) + "s)");
+            else logger.warn(dbgName + ", spamc returned no result (timeout:" + (timeout / 1000) + "s) (elapsed: " + (elapsedTime / 1000) + "s)");
             stopScan();
         }
 
         return;
     }
 
+    /**
+     * Stop the scanner thread
+     */
     public void stopScan()
     {
         //logger.debug("stop, thread: " + cThread + ", this: " + this);
@@ -156,11 +194,20 @@ public final class SpamAssassinClient implements Runnable
         return;
     }
 
-    public String toString() {
+    /**
+     * Get the string representation
+     * 
+     * @return The string representation
+     */
+    public String toString()
+    {
         return dbgName;
     }
 
-    public void run() 
+    /**
+     * The main thread function
+     */
+    public void run()
     {
         Socket socket;
         BufferedOutputStream bufOutputStream;
@@ -178,7 +225,7 @@ public final class SpamAssassinClient implements Runnable
         }
 
         try {
-            if ( this.stop ) {
+            if (this.stop) {
                 logger.warn(dbgName + ", spamc interrupted post socket streams");
                 return; // return after finally
             }
@@ -216,7 +263,7 @@ public final class SpamAssassinClient implements Runnable
             fInputStream = null;
             rBuf = null;
 
-            if ( this.stop ) {
+            if (this.stop) {
                 logger.warn(dbgName + ", spamc interrupted post spamc header");
                 return; // return after finally
             }
@@ -227,18 +274,16 @@ public final class SpamAssassinClient implements Runnable
             // Spam: True ; 9.5 / 5.0
             // <blank line>
             String line;
-            if (null == (line = bufReader.readLine()))
-                throw new Exception(dbgName + ", spamd/spamc terminated connection early");
+            if (null == (line = bufReader.readLine())) throw new Exception(dbgName + ", spamd/spamc terminated connection early");
 
             logger.debug(dbgName + ", " + line); // SPAMD/<ver> <retcode> <description>
-            if ( this.stop ) {
-                logger.warn(dbgName + ", spamc interrupted post spamd header response (elapsed time: " + ((System.currentTimeMillis() - startTime)/1000) + "s)" );
+            if (this.stop) {
+                logger.warn(dbgName + ", spamc interrupted post spamd header response (elapsed time: " + ((System.currentTimeMillis() - startTime) / 1000) + "s)");
                 return; // return after finally
             }
 
             Matcher spamdMatcher = REPLY_DHDRP.matcher(line);
-            if (false == spamdMatcher.find())
-                throw new Exception(dbgName + ", spamd response is invalid: " + line);
+            if (false == spamdMatcher.find()) throw new Exception(dbgName + ", spamd response is invalid: " + line);
 
             boolean isOK = parseSpamdResponse(line);
 
@@ -246,21 +291,21 @@ public final class SpamAssassinClient implements Runnable
             List<String> spamdHdrList = new LinkedList<String>();
             List<String> spamdDtlList = new LinkedList<String>();
             boolean addDetail = false;
-            while ( !this.stop && (line = bufReader.readLine()) != null ) {
+            while (!this.stop && (line = bufReader.readLine()) != null) {
                 //logger.debug(dbgName + ", " + line);
-                if ( line.length() == 0 ) {
+                if (line.length() == 0) {
                     addDetail = true; // end of spamd hdr (details follow)
                     continue;
                 }
 
-                if ( addDetail ) {
+                if (addDetail) {
                     spamdDtlList.add(line);
                 } else {
                     spamdHdrList.add(line);
                 }
             }
 
-            if ( this.stop ) {
+            if (this.stop) {
                 logger.warn(dbgName + ", spamc interrupted post spamd header and reply");
                 return; // return after finally
             }
@@ -337,15 +382,27 @@ public final class SpamAssassinClient implements Runnable
         } finally {
             logger.debug(dbgName + ", finish");
 
-            try {bufReader.close();} catch (java.io.IOException e) {}
-            try {bufOutputStream.close();} catch (java.io.IOException e) {}
-            try {socket.close();} catch (java.io.IOException e) {}
+            try {
+                bufReader.close();
+            } catch (java.io.IOException e) {
+            }
+            try {
+                bufOutputStream.close();
+            } catch (java.io.IOException e) {
+            }
+            try {
+                socket.close();
+            } catch (java.io.IOException e) {
+            }
 
             cleanExit();
         }
         return;
     }
 
+    /**
+     * Clean exit
+     */
     private void cleanExit()
     {
         synchronized (this) {
@@ -355,6 +412,14 @@ public final class SpamAssassinClient implements Runnable
         }
     }
 
+    /**
+     * Parse the response from the spam scanner
+     * 
+     * @param response
+     *        The response to parse
+     * @return True if parsing was successful, otherwise false
+     * @throws Exception
+     */
     private boolean parseSpamdResponse(String response) throws Exception
     {
         StringTokenizer sTokenizer = new StringTokenizer(response, " \t\n\r\f/");
@@ -362,16 +427,15 @@ public final class SpamAssassinClient implements Runnable
         int tIdx = 0;
         boolean dumpRest = false;
         boolean isOK = true;
-        while (false == dumpRest &&
-               true == sTokenizer.hasMoreTokens()) {
+        while (false == dumpRest && true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
-            switch(tIdx) {
+            switch (tIdx)
+            {
             case 0:
                 break; // skip SPAMD tag
             case 1:
                 float version = Float.parseFloat(tStr);
-                if (1.0 > version)
-                    throw new Exception(dbgName + ", spamd response has unsupported version: " + version);
+                if (1.0 > version) throw new Exception(dbgName + ", spamd response has unsupported version: " + version);
 
                 break;
             case 2:
@@ -392,9 +456,7 @@ public final class SpamAssassinClient implements Runnable
             tIdx++;
         }
 
-        if (true == dumpRest &&
-            (false == isOK ||
-             true == logger.isDebugEnabled())) {
+        if (true == dumpRest && (false == isOK || true == logger.isDebugEnabled())) {
             StringBuilder remaining = new StringBuilder(tStr);
 
             while (true == sTokenizer.hasMoreTokens()) {
@@ -412,12 +474,19 @@ public final class SpamAssassinClient implements Runnable
 
         sTokenizer = null;
 
-        if (SPAMD_RESPONSE_PARAM_CNT > tIdx)
-            throw new Exception(dbgName + ", spamd response has less than " + SPAMD_RESPONSE_PARAM_CNT + " parameters");
+        if (SPAMD_RESPONSE_PARAM_CNT > tIdx) throw new Exception(dbgName + ", spamd response has less than " + SPAMD_RESPONSE_PARAM_CNT + " parameters");
 
         return isOK;
     }
 
+    /**
+     * Parse the content length
+     * 
+     * @param contentLength
+     *        The content information
+     * @return The numeric content length
+     * @throws Exception
+     */
     private long parseSpamdContentLength(String contentLength) throws Exception
     {
         StringTokenizer sTokenizer = new StringTokenizer(contentLength);
@@ -428,7 +497,8 @@ public final class SpamAssassinClient implements Runnable
 
         while (true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
-            switch(tIdx) {
+            switch (tIdx)
+            {
             case 0:
                 break; // skip Content-Length tag
             case 1:
@@ -444,12 +514,19 @@ public final class SpamAssassinClient implements Runnable
 
         sTokenizer = null;
 
-        if (SPAMD_CONTENTLEN_PARAM_CNT > tIdx)
-            throw new Exception(dbgName + ", spamd content-length has less than " + SPAMD_CONTENTLEN_PARAM_CNT + " parameters");
+        if (SPAMD_CONTENTLEN_PARAM_CNT > tIdx) throw new Exception(dbgName + ", spamd content-length has less than " + SPAMD_CONTENTLEN_PARAM_CNT + " parameters");
 
         return len;
     }
 
+    /**
+     * Parse the spam score from the scanner reply
+     * 
+     * @param reply
+     *        The scanner reply
+     * @return The spam score
+     * @throws Exception
+     */
     private float parseSpamdReply(String reply) throws Exception
     {
         StringTokenizer sTokenizer = new StringTokenizer(reply, " \t\n\r\f;/");
@@ -460,7 +537,8 @@ public final class SpamAssassinClient implements Runnable
 
         while (true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
-            switch(tIdx) {
+            switch (tIdx)
+            {
             case 0:
                 break; // skip Spam tag
             case 1:
@@ -478,8 +556,7 @@ public final class SpamAssassinClient implements Runnable
             tIdx++;
         }
 
-        if (SPAMD_RESULT_PARAM_CNT > tIdx)
-            throw new Exception(dbgName + ", spamd reply has less than " + SPAMD_RESULT_PARAM_CNT + " parameters");
+        if (SPAMD_RESULT_PARAM_CNT > tIdx) throw new Exception(dbgName + ", spamd reply has less than " + SPAMD_RESULT_PARAM_CNT + " parameters");
 
         return score;
     }
@@ -497,6 +574,18 @@ public final class SpamAssassinClient implements Runnable
     //  1.9 RCVD_IN_NJABL_DUL      RBL: NJABL: dialup sender did non-local SMTP
     //                             [61.73.86.111 listed in combined.njabl.org]
     // -1.8 AWL                    AWL: From: address is in the auto white-list
+
+    /**
+     * Parse the result from the scanner
+     * 
+     * @param detailList
+     *        The list of details from the scanner
+     * @param len
+     *        The length
+     * @param score
+     *        The score
+     * @throws Exception
+     */
     private void parseSpamdResult(List<String> detailList, long len, float score) throws Exception
     {
         List<ReportItem> reportItemList = new LinkedList<ReportItem>();
@@ -511,8 +600,7 @@ public final class SpamAssassinClient implements Runnable
 
         for (String detail : detailList) {
 
-            if (firstLine == null)
-                firstLine = detail;
+            if (firstLine == null) firstLine = detail;
 
             Matcher reportMatcher = REPORT_PATTERN.matcher(detail);
             if (reportMatcher.lookingAt()) {
@@ -520,8 +608,7 @@ public final class SpamAssassinClient implements Runnable
                 j = detail.indexOf(' ');
                 riScore = detail.substring(0, j);
                 k = detail.indexOf(' ', j + 1);
-                if (k < 0)
-                    k = detail.length();
+                if (k < 0) k = detail.length();
                 riCateg = detail.substring(j + 1, k);
 
                 if (logger.isDebugEnabled()) logger.debug(dbgName + ", add item: " + riScore + ", " + riCateg);

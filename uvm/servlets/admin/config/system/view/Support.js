@@ -1,6 +1,7 @@
 Ext.define('Ung.config.system.view.Support', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.system.support',
+    alias: 'widget.config-system-support',
+    itemId: 'support',
 
     viewModel: true,
 
@@ -18,12 +19,16 @@ Ext.define('Ung.config.system.view.Support', {
         title: 'Support'.t(),
         items: [{
             xtype: 'checkbox',
-            boxLabel: Ext.String.format('Connect to {0} cloud'.t(), this.oemName),
+            boxLabel: 'Connect to Command Center'.t(),
             bind: '{systemSettings.cloudEnabled}'
         }, {
             xtype: 'checkbox',
+            disabled: true,
             boxLabel: Ext.String.format('Allow secure remote access to {0} support team'.t(), this.oemName),
-            bind: '{systemSettings.supportEnabled}'
+            bind: {
+                value: '{systemSettings.supportEnabled}',
+                disabled: '{!systemSettings.cloudEnabled}'
+            }
         }]
     }, {
         title: 'Logs'.t(),
@@ -60,7 +65,7 @@ Ext.define('Ung.config.system.view.Support', {
             },
             items: [{
                 xtype: 'displayfield',
-                value: 'Power off the server.'.t(),
+                value: 'Power off the server.'.t()
             }, {
                 xtype: 'button',
                 margin: '0 0 0 10',
@@ -84,7 +89,9 @@ Ext.define('Ung.config.system.view.Support', {
                 margin: '0 0 0 10',
                 text: 'Setup Wizard'.t(),
                 iconCls: 'fa fa-magic',
-                handler: 'setupWizard'
+                handler: function() {
+                    location.assign('/setup');
+                }
             }]
         }]
     }, {
@@ -101,7 +108,7 @@ Ext.define('Ung.config.system.view.Support', {
                 xtype: 'button',
                 margin: '0 0 0 10',
                 text: 'Reset to Factory Defaults'.t(),
-                iconCls: 'fa fa-industry',
+                iconCls: 'fa fa-exclamation-circle',
                 handler: 'factoryDefaults'
             }]
         }]

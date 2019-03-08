@@ -1,9 +1,9 @@
 /**
  * $Id$
  */
+
 package com.untangle.app.wan_failover;
 
-import java.util.List;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
@@ -14,24 +14,24 @@ import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * The WanFailoverTester is a thread that handles the execution of a single test
- * It wakes every getDelayMilliseconds milliseconds and runs the test
- * If the WAN status changes it notifies the monitor
+ * It wakes every getDelayMilliseconds milliseconds and runs the test If the WAN
+ * status changes it notifies the monitor
  */
 public class WanFailoverTester implements Runnable
 {
     private static final int SLEEP_DELAY_MS = 5000;
 
-    private static final String ARP_TEST  = System.getProperty( "uvm.bin.dir" ) + "/wan-failover-arp-test.sh";
-    private static final String PING_TEST = System.getProperty( "uvm.bin.dir" ) + "/wan-failover-ping-test.sh";
-    private static final String HTTP_TEST = System.getProperty( "uvm.bin.dir" ) + "/wan-failover-http-test.sh";
-    private static final String DNS_TEST  = System.getProperty( "uvm.bin.dir" ) + "/wan-failover-dns-test.sh";
+    private static final String ARP_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-arp-test.sh";
+    private static final String PING_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-ping-test.sh";
+    private static final String HTTP_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-http-test.sh";
+    private static final String DNS_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-dns-test.sh";
 
     private static final Logger logger = Logger.getLogger(WanFailoverTester.class);
 
     private WanFailoverTesterMonitor monitor;
     private WanFailoverApp app;
     private WanTestSettings testSettings;
-    
+
     private boolean exitFlag = false;
     private LinkedList<Boolean> resultList = new LinkedList<Boolean>();
     private Boolean lastWanStatus = null;
@@ -39,28 +39,41 @@ public class WanFailoverTester implements Runnable
     private int totalTestsRun = 0;
     private int totalTestsFailed = 0;
     private int totalTestsPassed = 0;
-    
-    public WanFailoverTester( WanTestSettings settings, WanFailoverTesterMonitor monitor, WanFailoverApp app )
+
+    /**
+     * Constructor
+     * 
+     * @param settings
+     *        Application settings
+     * @param monitor
+     *        Wan Failover test monitor
+     * @param app
+     *        Wan Failover application
+     */
+    public WanFailoverTester(WanTestSettings settings, WanFailoverTesterMonitor monitor, WanFailoverApp app)
     {
         this.testSettings = settings;
         this.monitor = monitor;
         this.app = app;
     }
-    
+
+    /**
+     * Main Runnable function
+     */
     public void run()
     {
         long lastWakeTimeMillis;
-        
-        if ( this.testSettings.getDelayMilliseconds() == null ) {
+
+        if (this.testSettings.getDelayMilliseconds() == null) {
             this.warn("Invalid delay - thread exiting");
             return;
         }
-        if ( this.testSettings.getTestHistorySize() == null ) {
+        if (this.testSettings.getTestHistorySize() == null) {
             this.warn("Invalid test history size - thread exiting");
             return;
         }
-        
-        InterfaceSettings intfConf = UvmContextFactory.context().networkManager().findInterfaceId( testSettings.getInterfaceId() );
+
+        InterfaceSettings intfConf = UvmContextFactory.context().networkManager().findInterfaceId(testSettings.getInterfaceId());
         if (intfConf == null) {
             this.warn("Unable to locate Interface: " + testSettings.getInterfaceId());
             return;
@@ -75,18 +88,21 @@ public class WanFailoverTester implements Runnable
             long sleepTime = (lastWakeTimeMillis + this.testSettings.getDelayMilliseconds()) - System.currentTimeMillis();
             if (sleepTime <= 0) sleepTime = 0;
 
-            try { Thread.sleep( sleepTime ); } catch (java.lang.InterruptedException e) {}
+            try {
+                Thread.sleep(sleepTime);
+            } catch (java.lang.InterruptedException e) {
+            }
             lastWakeTimeMillis = System.currentTimeMillis();
 
             if (exitFlag) {
                 this.info("stop()");
                 // set WAN status back to true if test is shutting down
-                this.monitor.wanStateChange( testSettings.getInterfaceId(), true );
+                this.monitor.wanStateChange(testSettings.getInterfaceId(), true);
                 return;
             }
 
             // run the test
-            TestResult results = _runTest( this.testSettings );
+            TestResult results = _runTest(this.testSettings);
             this.debug(results.toString());
 
             // append the test results to the end of the list and prune as necessary
@@ -96,20 +112,16 @@ public class WanFailoverTester implements Runnable
 
             // update statistics
             totalTestsRun++;
-            if (results.success)
-                totalTestsPassed++;
-            else
-                totalTestsFailed++;
-            
+            if (results.success) totalTestsPassed++;
+            else totalTestsFailed++;
+
             // check to determine the status of the WAN
             int failureTestCount = 0;
             boolean wanStatus = true;
-            for ( Boolean result : resultList ) {
-                if (!result)
-                    failureTestCount++;
+            for (Boolean result : resultList) {
+                if (!result) failureTestCount++;
             }
-            if (failureTestCount >= testSettings.getFailureThreshold())
-                wanStatus = false;
+            if (failureTestCount >= testSettings.getFailureThreshold()) wanStatus = false;
 
             // check if the new status is different than the last run
             // if so, alert the monitor thread
@@ -117,70 +129,121 @@ public class WanFailoverTester implements Runnable
             if (lastWanStatus == null || wanStatus != lastWanStatus) {
                 if (wanStatus) {
                     this.warn("WAN CHANGE: active.");
-                }
-                else {
+                } else {
                     this.warn("WAN CHANGE: down.");
                 }
-                this.monitor.wanStateChange( testSettings.getInterfaceId(), wanStatus );
+                this.monitor.wanStateChange(testSettings.getInterfaceId(), wanStatus);
             }
-            
+
             // log a test event
-            this.app.logEvent( new WanFailoverTestEvent( testSettings.getInterfaceId(), intfConf.getName(), intfConf.getSystemDev(), testSettings.getDescription(), results.success));
+            this.app.logEvent(new WanFailoverTestEvent(testSettings.getInterfaceId(), intfConf.getName(), intfConf.getSystemDev(), testSettings.getDescription(), results.success));
 
             lastWanStatus = wanStatus;
         }
     }
 
+    /**
+     * Called to stop the wan failover tester
+     */
     public void stop()
     {
         exitFlag = true;
     }
 
-    public static String runTest( WanTestSettings test )
+    /**
+     * Caleld to run a WAN test
+     * 
+     * @param test
+     *        The test to run
+     * @return The test result
+     */
+    public static String runTest(WanTestSettings test)
     {
-        TestResult result = _runTest( test );
+        TestResult result = _runTest(test);
         return result.message;
     }
 
+    /**
+     * Get the interface ID
+     * 
+     * @return The interface ID
+     */
     protected Integer getInterfaceId()
     {
         return this.testSettings.getInterfaceId();
     }
-    
+
+    /**
+     * Get the number of tests to run
+     * 
+     * @return The number of tests to run
+     */
     protected int getTotalTestsRun()
     {
         return this.totalTestsRun;
     }
 
+    /**
+     * Get the number of tests that have passed
+     * 
+     * @return The number of tests that have passed
+     */
     protected int getTotalTestsPassed()
     {
         return this.totalTestsPassed;
     }
 
+    /**
+     * Get the number of tests that have failed
+     * 
+     * @return The number of tests that have failed
+     */
     protected int getTotalTestsFailed()
     {
         return this.totalTestsFailed;
     }
-    
-    private static TestResult _runTest( WanTestSettings test )
+
+    /**
+     * Run a WAN test
+     * 
+     * @param test
+     *        The test to run
+     * @return The test result
+     */
+    private static TestResult _runTest(WanTestSettings test)
     {
-        return _runTest( test.getType(), test.getInterfaceId(), test.getTimeoutMilliseconds(), test.getPingHostname(), test.getHttpUrl() );
+        return _runTest(test.getType(), test.getInterfaceId(), test.getTimeoutMilliseconds(), test.getPingHostname(), test.getHttpUrl());
     }
 
-    private static TestResult _runTest( String testType, Integer interfaceId, Integer timeoutMs, String pingHost, String httpUrl )
+    /**
+     * Run a WAN test
+     * 
+     * @param testType
+     *        The type of test
+     * @param interfaceId
+     *        The interface ID
+     * @param timeoutMs
+     *        The timeout
+     * @param pingHost
+     *        The ping host
+     * @param httpUrl
+     *        The URL target
+     * @return The test result
+     */
+    private static TestResult _runTest(String testType, Integer interfaceId, Integer timeoutMs, String pingHost, String httpUrl)
     {
         TestResult result = new TestResult();
         result.success = false;
-        result.message = I18nUtil.marktr( "Test Failed" );
-        result.output  = "";
+        result.message = I18nUtil.marktr("Test Failed");
+        result.output = "";
         String osName;
 
-        if (testType == null  || interfaceId == null || timeoutMs == null) {
+        if (testType == null || interfaceId == null || timeoutMs == null) {
             result.message = "Invalid arguments";
             return result;
         }
 
-        InterfaceSettings ic = UvmContextFactory.context().networkManager().findInterfaceId( interfaceId );
+        InterfaceSettings ic = UvmContextFactory.context().networkManager().findInterfaceId(interfaceId);
         if (ic == null) {
             result.message = "Invalid Interface: " + interfaceId;
             return result;
@@ -189,84 +252,115 @@ public class WanFailoverTester implements Runnable
 
         try {
             if ("arp".equals(testType)) {
-                result.output = WanFailoverApp.execManager.execOutput( ARP_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs) );
+                result.output = WanFailoverApp.execManager.execOutput(ARP_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs));
             }
 
             else if ("ping".equals(testType)) {
-                if ( pingHost == null ) {
+                if (pingHost == null) {
                     result.message = "Error: Missing ping hostname";
                     return result;
                 }
                 pingHost = pingHost.trim();
-                if ( pingHost.length() == 0 ) {
-                    result.message =  "Error: Empty ping hostname";
+                if (pingHost.length() == 0) {
+                    result.message = "Error: Empty ping hostname";
                     return result;
                 }
-                result.output = WanFailoverApp.execManager.execOutput( PING_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs) + " " + pingHost );
+                result.output = WanFailoverApp.execManager.execOutput(PING_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs) + " " + pingHost);
             }
 
             else if ("dns".equals(testType)) {
-                result.output = WanFailoverApp.execManager.execOutput( DNS_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs) );
+                result.output = WanFailoverApp.execManager.execOutput(DNS_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs));
             }
 
             else if ("http".equals(testType)) {
-                if ( httpUrl == null ) {
+                if (httpUrl == null) {
                     result.message = "Error: Missing URL";
                     return result;
                 }
                 httpUrl = httpUrl.trim();
-                if ( httpUrl.length() == 0 ) {
+                if (httpUrl.length() == 0) {
                     result.message = "Error: Empty URL";
                     return result;
                 }
-                result.output = WanFailoverApp.execManager.execOutput( HTTP_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs) + " " + httpUrl );
+                result.output = WanFailoverApp.execManager.execOutput(HTTP_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs) + " " + httpUrl);
             }
 
             else {
                 logger.warn("Unknown test type: " + testType);
             }
 
-            if ( result.output.length() > 0 ) {
-                logger.debug( "Test failed with message: " + result.output );
+            if (result.output.length() > 0) {
+                logger.debug("Test failed with message: " + result.output);
                 result.message = result.output;
                 result.success = false;
             } else {
-                result.message = I18nUtil.marktr( "Test Successful." );
+                result.message = I18nUtil.marktr("Test Successful.");
                 result.success = true;
             }
 
-        } catch ( Exception e ) {
-            logger.warn( "Unable to run test script.", e );
+        } catch (Exception e) {
+            logger.warn("Unable to run test script.", e);
             result.success = false;
             result.message = I18nUtil.marktr("Unexpected error while running test.");
         }
 
         return result;
     }
- 
-    private void warn( String text )
+
+    /**
+     * Log a test warning message
+     * 
+     * @param text
+     *        The message text
+     */
+    private void warn(String text)
     {
         logger.warn("Tester( " + this.testSettings.getInterfaceId() + ", " + this.testSettings.getType() + " ): " + text);
     }
 
-    private void info( String text )
+    /**
+     * Log a test information message
+     * 
+     * @param text
+     *        The message text
+     */
+    private void info(String text)
     {
-        logger.info("Tester("  + this.testSettings.getInterfaceId() + ", " + this.testSettings.getType() + "): " + text);
+        logger.info("Tester(" + this.testSettings.getInterfaceId() + ", " + this.testSettings.getType() + "): " + text);
     }
 
-    private void debug( String text )
+    /**
+     * Log a test debug message
+     * 
+     * @param text
+     *        The message text
+     */
+    private void debug(String text)
     {
         logger.debug("Tester(" + this.testSettings.getInterfaceId() + ", " + this.testSettings.getType() + "): " + text);
     }
 
+    /**
+     * Used to store the results of a WAN test
+     */
     protected static class TestResult
     {
-        public TestResult() {}
+        /**
+         * Constructor
+         */
+        public TestResult()
+        {
+        }
 
         public String message;
         public String output;
         public Boolean success;
 
+        /**
+         * Return a test result as a string
+         * 
+         * @return Result in string format
+         */
         public String toString()
         {
             return "Results ( Success: " + success + " Message: \"" + message + "\" Output: \"" + output + "\" )";

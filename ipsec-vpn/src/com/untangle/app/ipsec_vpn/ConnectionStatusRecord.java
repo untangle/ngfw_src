@@ -8,16 +8,25 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+/**
+ * This record is used in several different ways, and for each use only some of
+ * the fields are populated. The ipsec-status script returns ip xfrm state and
+ * policy records. The Java code previously parsed that data to build the list
+ * of tunnel status records displayed in the interface. The code has since been
+ * updated to use the new ipsec-tunnel-status script which parses the output of
+ * "ipsec statusall tunnel_name" to return the tunnel state, traffic counts, and
+ * local and remote endpoints.
+ */
+
+// THIS IS FOR ECLIPSE - @formatter:off
+
 /*
- * This record is used in several different ways, and for each use only
- * some of the fields are populated.  The ipsec-status script returns
- * ip xfrm state and policy records.  The Java code uses that data to
- * build the list of tunnel status records displayed in the interface.
- * 
  * type:"STATE" = src, dst, proto, mode, reqid, auth, spi, enc, flag, replayWindow, authKey, encKey, selSrc, selDst
  * type:"POLICY" = src, dst, proto, mode, reqid, ptype, dir, priority, tmplSrc, tmplDst
  * type:"DISPLAY" = src (local ip), dst (remote host), tmplSrc (local network), tmplDst (remote network), proto (description), mode (active / inactive) 
  */
+
+// THIS IS FOR ECLIPSE - @formatter:onn
 
 @SuppressWarnings("serial")
 public class ConnectionStatusRecord implements JSONString, Serializable

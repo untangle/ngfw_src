@@ -1,0 +1,5 @@
+# This allows OpenVPN to do username/password authentication
+# by calling the openvpn-auth-user-pass script as root so it
+# can use the Uvm Python library to connect to the Uvm.
+
+nobody ALL=(ALL) NOPASSWD:SETENV: /usr/share/untangle/bin/openvpn-auth-user-pass

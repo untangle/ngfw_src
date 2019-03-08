@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.app.directory_connector;
@@ -30,15 +30,14 @@ import javax.naming.directory.SearchResult;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.SSLContext;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.util.Pair;
 import com.untangle.app.directory_connector.GroupEntry;
-import com.untangle.app.directory_connector.ActiveDirectorySettings;
+import com.untangle.app.directory_connector.ActiveDirectoryServer;
 import com.untangle.app.directory_connector.UserEntry;
-
-
 
 /**
  * Abstract base class for "Adapters" which call LDAP
@@ -47,6 +46,7 @@ import com.untangle.app.directory_connector.UserEntry;
  */
 abstract class LdapAdapter
 {
+    private TrustManager[] trustAllCerts = null;
 
     private final Logger logger = Logger.getLogger(LdapAdapter.class);
 
@@ -55,40 +55,74 @@ abstract class LdapAdapter
      *
      * @return the settings
      */
-    protected abstract ActiveDirectorySettings getSettings();
+    protected abstract ActiveDirectoryServer getSettings();
 
     /**
      * Get the type of object used to describe "people"
      * in this directory (e.g. "user" or "inetOrgPerson").
+     *
+     * @return
+     *  Primary user class tyype attribute field name.
      */
     protected abstract String[] getUserClassType();
 
+    /**
+     * Get the type of object used to describe "people"
+     * in this directory (e.g. "user" or "inetOrgPerson").
+     *
+     * @return
+     *  Primary group class tyype attribute field name.
+     */
     protected abstract String[] getGroupClassType();
 
     /**
      * Get the attribute used to hold the mail (e.g. "mail").
+     *
+     * @return
+     *  Primary email field name.
      */
     protected abstract String getMailAttributeName();
     
+    /**
+     * Get primary group id name field.
+     *
+     * @return
+     *  Primary group attribute field name.
+     */
     protected abstract String getPrimaryGroupIDAttribute();
 
     /**
      * Get the name of the attribute used to hold
      * the full name (i.e. "CN")
+     *
+     * @return
+     *  Full name attribute field name.
      */
     protected abstract String getFullNameAttributeName();
 
     /**
      * Get the name of the attribute describing the unique id
      * (i.e. "uid" or "sAMAccountName").
+     *
+     * @return
+     *  UID attribtue field name.
      */
     protected abstract String getUIDAttributeName();
 
     /**
      * Gets search base from repository settings in dependent way.
+     *
+     * @return
+     *  List of search base strings.
      */
-    protected abstract String getSearchBase();
+    protected abstract List<String> getSearchBases();
 
+    /**
+     * Return query user name
+     *
+     * @return
+     *  String of query user name.
+     */
     protected abstract String getSuperuserDN();
 
     /**
@@ -119,11 +153,11 @@ abstract class LdapAdapter
     {
 
         try {
-            List<Map<String, String[]>> list = queryAsSuperuser(getSearchBase(),
+            List<Map<String, String[]>> list = queryAsSuperuser(getSearchBases(),
                                                                 getListAllUsersSearchString(),
                                                                 getUserEntrySearchControls());
 
-            List<UserEntry> ret = new ArrayList<UserEntry>();
+            List<UserEntry> ret = new ArrayList<>();
 
             if(list == null || list.size() == 0) {
                 return ret;
@@ -131,7 +165,7 @@ abstract class LdapAdapter
 
             for(Map<String, String[]> map : list) {
                 UserEntry entry = toUserEntry(map);
-                if(entry != null) {
+                if(entry != null && !ret.contains(entry)) {
                     ret.add(entry);
                 }
             }
@@ -139,7 +173,6 @@ abstract class LdapAdapter
             Collections.sort(ret);
             return ret;
         }catch(NamingException ex) {
-            logger.warn("Exception listing entries", ex);
             throw new ServiceUnavailableException(ex.getMessage());
         }
     }
@@ -151,6 +184,9 @@ abstract class LdapAdapter
      *            Set to true to indicate that the entries should include the
      *            list of groups that the group is a member of.
      * @return
+     *  List of GroupEntry objects.
+     * @throws ServiceUnavailableException
+     *  Unable to access server.
      */
     public abstract List<GroupEntry> listAllGroups( boolean fetchMembersOf )
         throws ServiceUnavailableException;
@@ -159,6 +195,8 @@ abstract class LdapAdapter
      * Get all of the groups that a user belongs to.
      * @param user The username to query.
      * @return A List of all of the groups that a user belongs to.
+     * @throws ServiceUnavailableException
+     *  Unable to access server.
      */
     public abstract List<GroupEntry> listUserGroups( String user ) throws ServiceUnavailableException;
     
@@ -166,6 +204,8 @@ abstract class LdapAdapter
      * Get all of the users that belong to a group.
      * @param group Name of the group to query.
      * @return A list of all of the users that belong to a group.
+     * @throws ServiceUnavailableException
+     *  Unable to access server.
      */
     public abstract List<UserEntry> listGroupUsers( String group ) throws ServiceUnavailableException;
 
@@ -236,11 +276,36 @@ abstract class LdapAdapter
         return getEntryWithSearchString(sb.toString());
     }
 
+    /**
+     * Return string of ors
+     *
+     * @param prefix
+     *  Prefix of string
+     * @param values
+     *  Array of strings to join in or context.
+     * @return or query string.
+     */
     public static String orStrings( String prefix, String[] values )
     {
         return queryStrings(prefix, values, "|", "(", ")");
     }
 
+    /**
+     * Return query string
+     *
+     * @param prefix
+     *  Prefix to use.
+     * @param values
+     *  Array of values
+     * @param operator
+     *  Operator to use.
+     * @param open
+     *  Open to use
+     * @param close
+     *  close to use.
+     * @return
+     *  String of query.
+     */
     public static String queryStrings( String prefix, String[] values, String operator, String open, String close )
     {
         StringBuilder results = new StringBuilder();
@@ -352,12 +417,14 @@ abstract class LdapAdapter
      *
      *
      * @return null if no connection can be established.
+     * @throws Exception
+     *  General exception on error.
      */
     protected final DirContext checkoutSuperuserContext()
         throws Exception
     {
 
-        ActiveDirectorySettings settings = getSettings();
+        ActiveDirectoryServer settings = getSettings();
 
         try {
             return createSuperuserContext();
@@ -418,6 +485,11 @@ abstract class LdapAdapter
     /**
      * Convienence methods to convert the communication and authentication excpetions
      * to the more generic "ServiceUnavailableException".
+     * 
+     * @param ex
+     *  Naming convention exception.
+     * @return
+     *  Clearer NamingException exception.
      */
     protected final NamingException convertToServiceUnavailableException(NamingException ex)
     {
@@ -433,6 +505,11 @@ abstract class LdapAdapter
     /**
      * Convienence method which creates SearchControls with the given
      * attributes to be returned and subtree scope
+     *
+     * @param filter
+     *  Argument list of filter strings.
+     * @return
+     *  SearchControls object.
      */
     protected SearchControls createSimpleSearchControls(String...filter)
     {
@@ -445,12 +522,17 @@ abstract class LdapAdapter
     /**
      * Name says it all.  Will never throw an
      * exception
+     *
+     * @param ctx
+     *  Context to close
      */
     protected final void closeContext(DirContext ctx) {
         try {
             ctx.close();
         }
-        catch(Exception ignore) {}
+        catch(Exception ignore) {
+            logger.warn("closeContext:", ignore);
+        }
     }
 
     /**
@@ -458,41 +540,72 @@ abstract class LdapAdapter
      *
      * @param host the host
      * @param port the port
+     * @param secure
+     *  If true, use secure, otherwise not.
      * @param dn the DistinguishedName
      * @param pass the password
+     * @return
+     *  Returns a DirContext object.
+     * @throws NamingException
+     *  Naming exception
      */
     protected final DirContext createContext(String host, int port, boolean secure, String dn, String pass)
         throws NamingException
     {
-        Hashtable<String, String> ldapEnv = new Hashtable<String, String>(5);
+        SSLContext sslCtx = null;
+        Hashtable<String, String> ldapEnv = new Hashtable<>(11);
+
         if( secure ){
             /**
              * Override certificate authentication to allow any certificate.
              * Yes, to be 100% security minded we should only allow specified certificates.
-            */
-            TrustManager[] trustAllCerts = new TrustManager[] { 
-                new X509TrustManager() {     
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() { 
-                        return new X509Certificate[0];
-                    } 
-                    public void checkClientTrusted( 
-                        java.security.cert.X509Certificate[] certs, String authType) {
-                    } 
-                    public void checkServerTrusted( 
-                        java.security.cert.X509Certificate[] certs, String authType) {
+             */
+            if(this.trustAllCerts == null){
+                this.trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        /**
+                         * Get accepted cert issuers.
+                         * @return
+                         *  Array of X509 certificates
+                         */
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[0];
+                        }
+                        /**
+                         * Verify that client has a trusted certificate
+                         *
+                         * @param certs
+                         *  Array of x509 certs
+                         * @param authType
+                         *  Ahthentication type
+                         */
+                        public void checkClientTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                        /**
+                         * Verify that server has a trusted certificate
+                         *
+                         * @param certs
+                         *  Array of x509 certs
+                         * @param authType
+                         *  Ahthentication type
+                         */
+                        public void checkServerTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                        }
                     }
-                }    
-            }; 
-            javax.net.ssl.SSLContext sslCtx = null;
+                };
+            }
             try{
                 sslCtx = javax.net.ssl.SSLContext.getInstance("SSL");
-                sslCtx.init(null, trustAllCerts, null);
+                sslCtx.init(null, this.trustAllCerts, null);
+
+                ldapEnv.put( "java.naming.ldap.factory.socket", LdapAdapterSocketFactory.class.getName() );
+                LdapAdapterSocketFactory.set( sslCtx.getSocketFactory() );
+                ldapEnv.put(Context.SECURITY_PROTOCOL, "ssl");
             }catch( Exception e ){
-                 e.printStackTrace();
+                e.printStackTrace();
             }
-            ldapEnv.put( "java.naming.ldap.factory.socket", LdapAdapterSocketFactory.class.getName() );
-            LdapAdapterSocketFactory.set( sslCtx.getSocketFactory() );
-            ldapEnv.put(Context.SECURITY_PROTOCOL, "ssl");
         }
 
         ldapEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -500,6 +613,10 @@ abstract class LdapAdapter
         ldapEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
         ldapEnv.put(Context.SECURITY_PRINCIPAL, dn);
         ldapEnv.put(Context.SECURITY_CREDENTIALS, pass);
+        ldapEnv.put("com.sun.jndi.ldap.connect.pool", "true");
+        ldapEnv.put("com.sun.jndi.ldap.connect.timeout", "30000");
+        ldapEnv.put("com.sun.jndi.ldap.read.timeout", "30000");
+
         return new InitialDirContext(ldapEnv);
     }
 
@@ -509,11 +626,17 @@ abstract class LdapAdapter
      *
      *
      * @return a DirContext as the superuser.
+     * @throws CommunicationException
+     *  Unable to communicate with server.
+     * @throws AuthenticationException
+     *  Unable to authenticate with server.
+     * @throws NamingException
+     *  Naming exception
      */
     protected final DirContext createSuperuserContext()
         throws CommunicationException, AuthenticationException, NamingException
     {
-        ActiveDirectorySettings settings = getSettings();
+        ActiveDirectoryServer settings = getSettings();
         return createContext(settings.getLDAPHost(),
                              settings.getLDAPPort(),
                              settings.getLDAPSecure(),
@@ -523,12 +646,21 @@ abstract class LdapAdapter
 
     /**
      * Intended to be overidden by Active Directory
+     *
+     * @return
+     *  Search string of user type.
      */
     protected String getListAllUsersSearchString()
     {
         return orStrings("objectClass=", getUserClassType());
     }
 
+    /**
+     * Get list of all groups search string.
+     *
+     * @return
+     *  Search string of group type.
+     */
     protected String getListAllGroupsSearchString()
     {
         return orStrings("objectClass=", getGroupClassType());
@@ -548,17 +680,53 @@ abstract class LdapAdapter
      * method will try "twice" to make sure it is not
      * trying to reuse a dead connection.
      *
+     * @param searchBases the base of the search
+     * @param searchFilter the query string
+     * @param ctls the search controls
+     *
+     * @return all returned data
+     * @throws ServiceUnavailableException
+     *  If cannot access server.
+     * @throws NamingException
+     *  A naming exception occurs.
+     */
+    protected final List<Map<String, String[]>> queryAsSuperuser(List<String> searchBases, String searchFilter, SearchControls ctls)
+        throws NamingException, ServiceUnavailableException
+    {
+        List<Map<String, String[]>> results = new ArrayList<>();
+
+        for( String searchBase : searchBases){
+            results.addAll(queryAsSuperuserImpl(searchBase, searchFilter, ctls, true));
+        }
+
+        return results;
+    }
+
+    /**
+     * Perform the given query as a superuser.  This
+     * method will try "twice" to make sure it is not
+     * trying to reuse a dead connection.
+     *
      * @param searchBase the base of the search
      * @param searchFilter the query string
      * @param ctls the search controls
      *
      * @return all returned data
+     * @throws ServiceUnavailableException
+     *  If cannot access server.
+     * @throws NamingException
+     *  A naming exception occurs.
      */
     protected final List<Map<String, String[]>> queryAsSuperuser(String searchBase, String searchFilter, SearchControls ctls)
         throws NamingException, ServiceUnavailableException
     {
-        return queryAsSuperuserImpl(searchBase, searchFilter, ctls, true);
+        List<Map<String, String[]>> results = new ArrayList<>();
+
+        results.addAll(queryAsSuperuserImpl(searchBase, searchFilter, ctls, true));
+
+        return results;
     }
+
 
     /**
      * Perform the given query (only attempts once as
@@ -570,29 +738,38 @@ abstract class LdapAdapter
      * @param ctx the context to use for the query.
      *
      * @return all returned data
+     * @throws ServiceUnavailableException
+     *  If cannot access server.
+     * @throws NamingException
+     *  A naming exception occurs.
      */
     protected final List<Map<String, String[]>> query(String searchBase, String searchFilter, SearchControls ctls, DirContext ctx)
         throws ServiceUnavailableException, NamingException
     {
-
         try {
             NamingEnumeration<SearchResult> answer = ctx.search(searchBase, searchFilter, ctls);
-            List<Map<String, String[]>> ret = new ArrayList<Map<String, String[]>>();
+            List<Map<String, String[]>> ret = new ArrayList<>();
             while (answer.hasMoreElements()) {
                 SearchResult sr = answer.next();
-                
+
                 Attributes attrs = sr.getAttributes();
                 if (attrs != null) {
-                    Map<String, String[]> map = new HashMap<String, String[]>();
-                    for (NamingEnumeration<?> ae = attrs.getAll();ae.hasMore();) {
+                    Map<String, String[]> map = new HashMap<>();
+
+                    NamingEnumeration<?> ae = null;
+                    for (ae = attrs.getAll(); ae.hasMore(); ) {
                         Attribute attr = (Attribute)ae.next();
                         String attrName = attr.getID();
-                        ArrayList<String> values = new ArrayList<String>();
+                        ArrayList<String> values = new ArrayList<>();
                         NamingEnumeration<?> e = attr.getAll();
                         while(e.hasMore()) {
                             values.add(e.next().toString());
                         }
+                        e.close();
                         map.put(attrName, values.toArray(new String[values.size()]));
+                    }
+                    if(ae != null){
+                        ae.close();
                     }
                     
                     try {
@@ -603,9 +780,9 @@ abstract class LdapAdapter
                     ret.add(map);
                 }
             }
+            answer.close();
             return ret;
-        }
-        catch(NamingException ex) {
+        }catch(NamingException ex) {
             throw convertToServiceUnavailableException(ex);
         }
     }
@@ -613,6 +790,17 @@ abstract class LdapAdapter
     /**
      * ...name says it all.  Note that this tries "twice" in case
      * the superuser connection was dead
+     *
+     * @param dn
+     *  Dn to search.
+     * @param attribs
+     *  BasicAttributes object.
+     * @throws NameAlreadyBoundException
+     *  If name is already bound
+     * @throws ServiceUnavailableException
+     *  If cannot access server.
+     * @throws NamingException
+     *  A naming exception occurs.
      */
     protected final void createSubcontextAsSuperuser(String dn, BasicAttributes attribs)
         throws NamingException, NameAlreadyBoundException, ServiceUnavailableException
@@ -627,6 +815,13 @@ abstract class LdapAdapter
     /**
      * Returns null if not found.  If more than one found (!),
      * first is returned.
+     * 
+     * @param searchStr
+     *  Search for user with this string.
+     * @return
+     *  UserEntry object.
+     * @throws ServiceUnavailableException
+     *  If cannot access server.
      */
     private UserEntry getEntryWithSearchString(String searchStr)
         throws ServiceUnavailableException
@@ -635,7 +830,7 @@ abstract class LdapAdapter
         try {
 
             List<Map<String, String[]>> list =
-                queryAsSuperuser(getSearchBase(),
+                queryAsSuperuser(getSearchBases(),
                                  searchStr,
                                  getUserEntrySearchControls());
 
@@ -654,6 +849,21 @@ abstract class LdapAdapter
     /**
      * Perform the superuser query, repeating again in case a dead
      * connection was used.
+     *
+     * @param searchBase
+     *  Search base to use
+     * @param searchFilter
+     *  Filter to use in search.
+     * @param ctls
+     *  SearchControls object.
+     * @param tryAgain
+     *  If true, try to create again if fails.
+     * @return 
+     *  List of results in a map.
+     * @throws ServiceUnavailableException
+     *  If cannot access server.
+     * @throws NamingException
+     *  A naming exception occurs.
      */
     private List<Map<String, String[]>> queryAsSuperuserImpl( String searchBase, String searchFilter, SearchControls ctls, boolean tryAgain)
         throws NamingException, ServiceUnavailableException
@@ -687,6 +897,19 @@ abstract class LdapAdapter
     /**
      * Used to repeat the creating subcontext thing twice
      * should a connection be stale
+     *
+     * @param dn
+     *  dn string
+     * @param attribs
+     *  BasicAttributes object.
+     * @param tryAgain
+     *  If true, try creating again if fails.
+     * @throws NameAlreadyBoundException
+     *  If name is already bound
+     * @throws ServiceUnavailableException
+     *  If cannot access server.
+     * @throws NamingException
+     *  A naming exception occurs.
      */
     private void createSubcontextAsSuperuserImpl(String dn, BasicAttributes attribs, boolean tryAgain)
         throws NameAlreadyBoundException, ServiceUnavailableException, NamingException
@@ -725,7 +948,12 @@ abstract class LdapAdapter
 
     /**
      * Helper to convert (based on our "standard" returned controls)
-     * the USerEntry.
+     * the UserEntry.
+     * 
+     * @param map
+     *  String map of fields
+     * @return
+     *  UserEntry object.
      */
     protected UserEntry toUserEntry(Map<String, String[]> map)
     {
@@ -742,13 +970,18 @@ abstract class LdapAdapter
     /**
      * Helper to convert (based on our "standard" returned controls)
      * the GroupEntry.
+     *
+     * @param map
+     *  String map of fields.
+     * @return
+     *  Group entry object
      */
     protected GroupEntry toGroupEntry(Map<String, String[]> map)
     {
         String[] memberOf = map.get("memberOf");
         Set<String> memberOfSet = null;
         if ( memberOf != null ) {
-            memberOfSet = new HashSet<String>(memberOf.length);
+            memberOfSet = new HashSet<>(memberOf.length);
             for ( String groupName : memberOf ) {
                 memberOfSet.add(groupName);
             }
@@ -760,32 +993,63 @@ abstract class LdapAdapter
                                          getFirstEntryOrNull(map.get(getGroupTypeName())),
                                          getFirstEntryOrNull(map.get(getGroupDescriptionName())),
                                          getFirstEntryOrNull(map.get("dn=")),
-                                         memberOfSet);
+                                         memberOfSet,
+                                         getSettings().getDomain());
         
         entry.setPrimaryGroupToken(getFirstEntryOrNull(map.get("primaryGroupToken")));
         return entry;
     }
 
+    /**
+     * Get cn field name
+     * 
+     * @return
+     *  Always return the string "cn"
+     */
     protected String getCNName()
     {
         return "cn";
     }
 
+    /**
+     * Get group name field
+     * 
+     * @return
+     *  Always return the string "sAMAccountName"
+     */
     protected String getGroupName()
     {
         return "sAMAccountName";
     }
 
+    /**
+     * Get group type field
+     * 
+     * @return
+     *  Always return the string "samaccounttype"
+     */
     protected String getGroupTypeName()
     {
         return "samaccounttype";
     }
 
+    /**
+     * Get name of group description field
+     * 
+     * @return
+     *  Always return the string "description"
+     */
     protected String getGroupDescriptionName()
     {
         return "description";
     }
 
+    /**
+     * Get name of group field.
+     *
+     * @return
+     *  Always return the string "members"
+     */
     protected String getGroupMembersName()
     {
         return "members";
@@ -793,6 +1057,11 @@ abstract class LdapAdapter
     
     /**
      * Gets the first entry in the String[], or null
+     * 
+     * @param str
+     *  Array of strings.
+     * @return
+     *  First string from the passed array or null if the array is null or length 0.
      */
     protected String getFirstEntryOrNull(String[] str)
     {
@@ -802,6 +1071,9 @@ abstract class LdapAdapter
 
     /**
      * Helper to create the search controls used when fetching a UserEntry
+     *
+     * @return
+     *  SearchControls for the user credentials.
      */
     protected SearchControls getUserEntrySearchControls()
     {
@@ -813,6 +1085,11 @@ abstract class LdapAdapter
 
     /**
      * Helper to create the search controls used when fetching a GroupEntry
+     *
+     * @param fetchMembersOf
+     *  If true, fetch members of the group.  Otherwise, just the group entry.
+     * @return
+     *  SearchControls for the group credentials.
      */
     protected SearchControls getGroupEntrySearchControls(boolean fetchMembersOf)
     {
@@ -835,28 +1112,40 @@ abstract class LdapAdapter
     }
     
     /**
+     * Parse a string into first and last names.
+     * 
      * If input is null, members of pair are null.  If no space,
      * then only firrst name is returned (e.g. "Bono" or "Sting")
      * and last name is "".  If entire String is "", then
      * the pair is "", ""
+     * 
+     * @param str
+     *  Name to parse.
+     * @return
+     *  Pair of strings with first and last name.
      */
     private final Pair<String, String> parseFullName(String str)
     {
         if(str == null) {
-            return new Pair<String, String>(null, null);
+            return new Pair<>(null, null);
         }
         str = str.trim();
 
         int index = str.indexOf(' ');
 
         if(index == -1) {
-            return new Pair<String, String>(str, "");
+            return new Pair<>(str, "");
         }
-        return new Pair<String, String>(str.substring(0, index).trim(), str.substring(index).trim());
+        return new Pair<>(str.substring(0, index).trim(), str.substring(index).trim());
     }
 
     /**
-     * Helper function
+     * Domain Helper function
+     *
+     * @param dom
+     *  String of domain.
+     * @return
+     *  String of domain in LDIF format.
      */
     protected String domainComponents(String dom)
     {

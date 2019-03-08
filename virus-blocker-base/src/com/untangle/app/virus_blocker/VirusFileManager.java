@@ -1,3 +1,7 @@
+/**
+ * $Id$
+ */
+
 package com.untangle.app.virus_blocker;
 
 import java.io.ByteArrayOutputStream;
@@ -12,10 +16,13 @@ import java.nio.channels.FileChannel;
 import java.nio.ByteBuffer;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
+/**
+ * File Manager for Virus Blocker. It creates a temporary file on disk or in
+ * memory so the content can be scanned for viruses.
+ */
 public class VirusFileManager extends OutputStream
 {
     private final Logger logger = Logger.getLogger(VirusFileManager.class);
@@ -31,6 +38,15 @@ public class VirusFileManager extends OutputStream
     private LinkedList<ByteBuffer> memoryBuffer = null;
     private ByteBuffer byteWriter = null;
 
+    /**
+     * Constructor
+     * 
+     * @param argMemory
+     *        Memory mode flag
+     * @param filePrefix
+     *        File prefix
+     * @throws Exception
+     */
     VirusFileManager(boolean argMemory, String filePrefix) throws Exception
     {
         memoryMode = argMemory;
@@ -56,6 +72,13 @@ public class VirusFileManager extends OutputStream
         }
     }
 
+    /**
+     * Read data from the file
+     * 
+     * @param bb
+     *        The destination for the data
+     * @return The number of bytes stored in the destination
+     */
     public int read(ByteBuffer bb)
     {
         // in file mode we read from the disk and return
@@ -92,6 +115,13 @@ public class VirusFileManager extends OutputStream
         return (total);
     }
 
+    /**
+     * Fill a buffer with data from the file
+     * 
+     * @param bb
+     *        The destination for the data
+     * @return The number of bytes stored in the destination
+     */
     private int filler(ByteBuffer bb)
     {
         // grab the first buffer from the list
@@ -125,6 +155,12 @@ public class VirusFileManager extends OutputStream
         return (arg);
     }
 
+    /**
+     * Write a byte to the file
+     * 
+     * @param b
+     *        The byte to write
+     */
     public void write(int b)
     {
         /*
@@ -152,6 +188,12 @@ public class VirusFileManager extends OutputStream
         byteWriter.put((byte) b);
     }
 
+    /**
+     * Write a buffer to the file
+     * 
+     * @param bb
+     *        The buffer to write
+     */
     public void write(ByteBuffer bb)
     {
         /*
@@ -202,6 +244,9 @@ public class VirusFileManager extends OutputStream
         bb.position(pos + rem);
     }
 
+    /**
+     * Flush the file
+     */
     private void localFlush()
     {
         // if the byte writer is null or empty just return
@@ -229,14 +274,16 @@ public class VirusFileManager extends OutputStream
         byteWriter.clear();
     }
 
+    /**
+     * This is only called when the HTTP handler switches to trickle mode to
+     * position the input stream at the end of the file. In memory mode we clear
+     * our buffer since it has already been streamed to the client.
+     * 
+     * @param location
+     *        The position
+     */
     public void position(int location)
     {
-        /*
-         * This is only called when the HTTP handler switches to trickle mode to
-         * position the input stream at the end of the file. In memory mode we
-         * clear our buffer since it has already been streamed to the client.
-         */
-
         if (memoryMode == true) {
             memoryBuffer.clear();
             return;
@@ -249,6 +296,9 @@ public class VirusFileManager extends OutputStream
         }
     }
 
+    /**
+     * Flush the file
+     */
     public void flush()
     {
         // handle any data hanging around in the byte writer
@@ -266,6 +316,9 @@ public class VirusFileManager extends OutputStream
         }
     }
 
+    /**
+     * Close the file
+     */
     public void close()
     {
         // handle any data hanging around in the byte writer
@@ -282,6 +335,11 @@ public class VirusFileManager extends OutputStream
         }
     }
 
+    /**
+     * Delete the file
+     * 
+     * @return True if deleted, otherwise false
+     */
     public boolean delete()
     {
         // nothing to delete in memory mode
@@ -298,11 +356,15 @@ public class VirusFileManager extends OutputStream
         return (retstat);
     }
 
+    /**
+     * Calculate the total amount of data stored in our linked list
+     * 
+     * @return The memory consumed
+     */
     protected int getMemoryCounter()
     {
         int total = 0;
 
-        // calculate the total amount of data stored in our linked list
         for (int i = 0; i < memoryBuffer.size(); i++) {
             ByteBuffer local = memoryBuffer.get(i);
             total += local.remaining();
@@ -311,24 +373,44 @@ public class VirusFileManager extends OutputStream
         return (total);
     }
 
+    /**
+     * Get the actual file object we are using which could be null for memory
+     * mode
+     * 
+     * @return The disk file
+     */
     protected File getFileObject()
     {
-        // return the actual file object we are using which could be null for memory mode
         return (diskFile);
     }
 
+    /**
+     * Get the absolute path to the file
+     * 
+     * @return The absolute bath
+     */
     protected String getTempFileAbsolutePath()
     {
         if (memoryMode == true) return (null);
         return (diskFile.getAbsolutePath());
     }
 
+    /**
+     * Get the file name for display
+     * 
+     * @return The file name for display
+     */
     protected String getFileDisplayName()
     {
         if (memoryMode == true) return ("Memory_Hashcode_Only");
         return (diskFile.getName());
     }
 
+    /**
+     * Get the hash for the file
+     * 
+     * @return The file hash
+     */
     protected String getFileHash()
     {
         String fileHash = "00000000000000000000000000000000";

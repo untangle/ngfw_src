@@ -5,6 +5,9 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
+/**
+ * Conntrack is a conntrack entry
+ */
 public class Conntrack
 {
     protected final CPointer pointer;
@@ -83,18 +86,95 @@ public class Conntrack
     private final static int FLAG_CONNLABELS_MASK = 67;			/* variable length */
     private final static int FLAG_MAX = 68;
     
+    /**
+     * getLongValue
+     * @param conntrack_ptr
+     * @param id
+     * @return
+     */
     protected static native long   getLongValue  ( long conntrack_ptr, int id );
+
+    /**
+     * setLongValue
+     * @param conntrack_ptr
+     * @param id
+     * @param value
+     */
     protected static native void   setLongValue  ( long conntrack_ptr, int id, long value );
+
+    /**
+     * getIntValue
+     * @param conntrack_ptr
+     * @param id
+     * @return
+     */
     protected static native int    getIntValue   ( long conntrack_ptr, int id );
+
+    /**
+     * setIntValue
+     * @param conntrack_ptr
+     * @param id
+     * @param value
+     */
     protected static native void   setIntValue   ( long conntrack_ptr, int id, int value );
+
+    /**
+     * getShortValue
+     * @param conntrack_ptr
+     * @param id
+     * @return
+     */
     protected static native short  getShortValue ( long conntrack_ptr, int id );
+
+    /**
+     * setShortValue
+     * @param conntrack_ptr
+     * @param id
+     * @param value
+     */
     protected static native void   setShortValue ( long conntrack_ptr, int id, short value );
+
+    /**
+     * getByteValue
+     * @param conntrack_ptr
+     * @param id
+     * @return
+     */
     protected static native byte   getByteValue  ( long conntrack_ptr, int id );
+
+    /**
+     * setByteValue
+     * @param conntrack_ptr
+     * @param id
+     * @param value
+     */
     protected static native void   setByteValue  ( long conntrack_ptr, int id, byte value );
+
+    /**
+     * getShortValueAsIntReversedByteOrder
+     * @param conntrack_ptr
+     * @param id
+     * @return
+     */
     protected static native int    getShortValueAsIntReversedByteOrder   ( long conntrack_ptr, int id );
+
+    /**
+     * toString
+     * @param conntrack_ptr
+     * @return
+     */
     protected static native String toString( long conntrack_ptr );
+
+    /**
+     * destroy
+     * @param conntrack_ptr
+     */
     protected static native void   destroy( long conntrack_ptr );
     
+    /**
+     * Conntrack
+     * @param pointer
+     */
     public Conntrack( long pointer )
     {
         if ( pointer == 0 )
@@ -102,6 +182,10 @@ public class Conntrack
         this.pointer = new CPointer( pointer );
     }
 
+    /**
+     * Conntrack
+     * @param pointer
+     */
     public Conntrack( CPointer pointer )
     {
         if ( pointer == null )
@@ -109,115 +193,203 @@ public class Conntrack
         this.pointer = pointer;
     }
     
+    /**
+     * getConntrackId
+     * @return
+     */
     public int getConntrackId()
     {
         return getIntValue( pointer.value(), FLAG_ID );
     }
 
+    /**
+     * getMark
+     * @return
+     */
     public int getMark()
     {
         return getIntValue( pointer.value(), FLAG_MARK );
     }
     
+    /**
+     * getProtocol
+     * @return
+     */
     public short getProtocol()
     {
         return getByteValue( pointer.value(), FLAG_ORIG_L4PROTO );
     }
     
+    /**
+     * getOriginalSourceAddress
+     * @return
+     */
     public InetAddress getOriginalSourceAddress()
     {
         long addr = getLongValue(  pointer.value(), FLAG_ORIG_IPV4_SRC );
         return Inet4AddressConverter.toAddress( addr );
     }
 
+    /**
+     * getOriginalDestinationAddress
+     * @return
+     */
     public InetAddress getOriginalDestinationAddress()
     {
         long addr = getLongValue(  pointer.value(), FLAG_ORIG_IPV4_DST );
         return Inet4AddressConverter.toAddress( addr );
     }
 
+    /**
+     * getReplySourceAddress
+     * @return
+     */
     public InetAddress getReplySourceAddress()
     {
         long addr = getLongValue(  pointer.value(), FLAG_REPL_IPV4_SRC );
         return Inet4AddressConverter.toAddress( addr );
     }
 
+    /**
+     * getReplyDestinationAddress
+     * @return
+     */
     public InetAddress getReplyDestinationAddress()
     {
         long addr = getLongValue( pointer.value(), FLAG_REPL_IPV4_DST );
         return Inet4AddressConverter.toAddress( addr );
     }
 
+    /**
+     * getOriginalSourcePort
+     * @return
+     */
     public int getOriginalSourcePort()
     {
         return getShortValueAsIntReversedByteOrder( pointer.value(), FLAG_ORIG_PORT_SRC );
     }
 
+    /**
+     * getOriginalDestinationPort
+     * @return
+     */
     public int getOriginalDestinationPort()
     {
         return getShortValueAsIntReversedByteOrder( pointer.value(), FLAG_ORIG_PORT_DST );
     }
 
+    /**
+     * getReplySourcePort
+     * @return
+     */
     public int getReplySourcePort()
     {
         return getShortValueAsIntReversedByteOrder( pointer.value(), FLAG_REPL_PORT_SRC );
     }
 
+    /**
+     * getReplyDestinationPort
+     * @return
+     */
     public int getReplyDestinationPort()
     {
         return getShortValueAsIntReversedByteOrder( pointer.value(), FLAG_REPL_PORT_DST );
     }
 
+    /**
+     * getOriginalCounterPackets
+     * @return
+     */
     public long getOriginalCounterPackets()
     {
         return getLongValue( pointer.value(), FLAG_ORIG_COUNTER_PACKETS );
     }
 
+    /**
+     * getReplyCounterPackets
+     * @return
+     */
     public long getReplyCounterPackets()
     {
         return getLongValue( pointer.value(), FLAG_REPL_COUNTER_PACKETS );
     }
     
+    /**
+     * getOriginalCounterBytes
+     * @return
+     */
     public long getOriginalCounterBytes()
     {
         return getLongValue( pointer.value(), FLAG_ORIG_COUNTER_BYTES );
     }
 
+    /**
+     * getReplyCounterBytes
+     * @return
+     */
     public long getReplyCounterBytes()
     {
         return getLongValue( pointer.value(), FLAG_REPL_COUNTER_BYTES );
     }
 
+    /**
+     * getIcmpType
+     * @return
+     */
     public byte getIcmpType()
     {
         return getByteValue( pointer.value(), FLAG_ICMP_TYPE );
     }
 
+    /**
+     * getTimeStampStart
+     * @return
+     */
     public long getTimeStampStart()
     {
         return getLongValue( pointer.value(), FLAG_TIMESTAMP_START );
     }
 
+    /**
+     * getTimeStampStartMillis
+     * @return
+     */
     public long getTimeStampStartMillis()
     {
         return (getLongValue( pointer.value(), FLAG_TIMESTAMP_START ) / 1000000);
     }
     
+    /**
+     * getTimeStampStop
+     * @return
+     */
     public long getTimeStampStop()
     {
         return getLongValue( pointer.value(), FLAG_TIMESTAMP_STOP );
     }
 
+    /**
+     * getTimeStampStopMillis
+     * @return
+     */
     public long getTimeStampStopMillis()
     {
         return (getLongValue( pointer.value(), FLAG_TIMESTAMP_STOP ) / 1000000);
     }
     
+    /**
+     * toString - returns a string summary 
+     * @return string
+     */
     public String toString()
     {
         return toString( pointer.value() );
     }
 
+    /**
+     * toSummaryString - returns a string summary of this conntrack entry
+     * @return a string summary
+     */
     public String toSummaryString()
     {
         String summary = "";
@@ -239,28 +411,114 @@ public class Conntrack
         return summary;
     }
     
-    /******************************************************/
-    /****************  computed values ********************/
-    /******************************************************/
+    /**
+     * getBypassed
+     * @return
+     */
+    public boolean getBypassed()
+    {
+        return ((getMark() & 0x01000000) != 0);
+    }
 
-    public boolean getBypassed() { return ((getMark() & 0x01000000) != 0); }
-    public int getPriority() { return ((getMark() & 0x000F0000) >> 16); }
+    /**
+     * getPriority
+     * @return
+     */
+    public int getPriority()
+    {
+        return ((getMark() & 0x000F0000) >> 16);
+    }
 
-    public int getClientIntf() { return ((getMark() & 0x000000FF) >> 0 ); }
-    public int getServerIntf() { return ((getMark() & 0x0000FF00) >> 8 ); }
+    /**
+     * getClientIntf
+     * @return
+     */
+    public int getClientIntf()
+    {
+        return ((getMark() & 0x000000FF) >> 0 );
+    }
 
-    public InetAddress getPreNatClient() {return getOriginalSourceAddress();}
-    public InetAddress getPreNatServer() {return getOriginalDestinationAddress();}
+    /**
+     * getServerIntf
+     * @return
+     */
+    public int getServerIntf()
+    {
+        return ((getMark() & 0x0000FF00) >> 8 );
+    }
 
-    public Integer  getPreNatClientPort() {return getOriginalSourcePort();}
-    public Integer  getPreNatServerPort() {return getOriginalDestinationPort();}
+    /**
+     * getPreNatClient
+     * @return
+     */
+    public InetAddress getPreNatClient()
+    {
+        return getOriginalSourceAddress();
+    }
 
-    public InetAddress getPostNatClient() {return getReplyDestinationAddress();}
-    public InetAddress getPostNatServer() {return getReplySourceAddress();}
+    /**
+     * getPreNatServer
+     * @return
+     */
+    public InetAddress getPreNatServer()
+    {
+        return getOriginalDestinationAddress();
+    }
 
-    public Integer  getPostNatClientPort() {return getReplyDestinationPort();}
+    /**
+     * getPreNatClientPort
+     * @return
+     */
+    public Integer  getPreNatClientPort()
+    {
+        return getOriginalSourcePort();
+    }
+
+    /**
+     * getPreNatServerPort
+     * @return
+     */
+    public Integer  getPreNatServerPort()
+    {
+        return getOriginalDestinationPort();
+    }
+
+    /**
+     * getPostNatClient
+     * @return
+     */
+    public InetAddress getPostNatClient()
+    {
+        return getReplyDestinationAddress();
+    }
+
+    /**
+     * getPostNatServer
+     * @return
+     */
+    public InetAddress getPostNatServer()
+    {
+        return getReplySourceAddress();
+    }
+
+    /**
+     * getPostNatClientPort
+     * @return
+     */
+    public Integer  getPostNatClientPort()
+    {
+        return getReplyDestinationPort();
+    }
+
+    /**
+     * getPostNatServerPort
+     * @return
+     */
     public Integer  getPostNatServerPort() {return getReplySourcePort();}
     
+    /**
+     * raze - razes/frees the pointer 
+     */
     public void raze()
     {
         if ( pointer != null && pointer.value() != 0 ) {
@@ -269,6 +527,10 @@ public class Conntrack
         }
     }
 
+    /**
+     * finalize
+     * @throws Throwable
+     */
     @Override
     protected void finalize() throws Throwable
     {

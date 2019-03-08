@@ -6,13 +6,14 @@ package com.untangle.app.branding_manager;
 import java.io.Serializable;
 
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.app.AppSettings;
+import org.json.JSONObject;
+import org.json.JSONString;
 
 /**
  * Contains properties that a vendor may use to rebrand the product.
  */
 @SuppressWarnings("serial")
-public class BrandingManagerSettings implements Serializable
+public class BrandingManagerSettings implements Serializable, JSONString
 {
     private byte[] logo = null;
     private String companyName = "MyCompany";
@@ -38,84 +39,68 @@ public class BrandingManagerSettings implements Serializable
         this.setBannerMessage(copy.getBannerMessage());
     }
 
-    /**
-     * Get the vendor name.
-     */
     public String getCompanyName() { return null == companyName ? "Untangle" : companyName; }
     public void setCompanyName( String companyName ) { this.companyName = companyName; }
 
-    /**
-     * Get the vendor URL.
-     */
     public String getCompanyUrl() { return null == companyUrl ? "http://www.untangle.com" : companyUrl; }
     public void setCompanyUrl( String companyUrl ) { this.companyUrl = companyUrl; }
 
-    /**
-     * Get the vendor contact name.
-     */
     public String getContactName() { return null == contactName ? I18nUtil.marktr("your network administrator") : contactName; }
     public void setContactName( String name ) { this.contactName = name; }
 
-    /**
-     * Get the vendor contact email.
-     */
     public String getContactEmail() { return contactEmail; }
     public void setContactEmail( String contactEmail ) { this.contactEmail = contactEmail; }
 
-    /**
-     * Get the vendor contact email.
-     */
     public String getBannerMessage() { return bannerMessage; }
     public void setBannerMessage( String bannerMessage ) { this.bannerMessage = bannerMessage; }
 
     /**
-     * The vendor logo to use, null means use the default Untangle
+     * The vendor logo to use.
      * logo.
+     * @return
+     *  Vendor logo as a byte stream.  If null, default Untangle.
      */
     public byte[] binary_getLogo() { return logo; }
     public void binary_setLogo( byte[] logo ) { this.logo = logo; setDefaultLogo(null == logo); }
 
     public void setLogo(String str)
     {
-        if ((str == null) || (str.length() == 0))
-        {
+        if ((str == null) || (str.length() == 0)){
             logo = null;
             setDefaultLogo(true);
             return;
         }
 
-    // generate the binary logo from the argumented nibble string
-    int len = (str.length() / 2);
-    logo = new byte[len];
+        // generate the binary logo from the argumented nibble string
+        int len = (str.length() / 2);
+        logo = new byte[len];
 
-        for(int x = 0;x < len;x++)
-        {
-        int lo_nib = (str.charAt((x * 2) + 0) - 'A');
-        int hi_nib = (str.charAt((x * 2) + 1) - 'A');
-        int value = (((hi_nib << 4) & 0xF0) | lo_nib);
-        logo[x] = (byte)value;
+        for(int x = 0;x < len;x++){
+            int lowNibble = (str.charAt((x * 2) + 0) - 'A');
+            int highNibble = (str.charAt((x * 2) + 1) - 'A');
+            int value = (((highNibble << 4) & 0xF0) | lowNibble);
+            logo[x] = (byte)value;
         }
 
-    setDefaultLogo(false);
+        setDefaultLogo(false);
     }
 
     public String getLogo()
     {
-    if (logo == null) return(null);
-    if (logo.length == 0) return(null);
+        if (logo == null) return(null);
+        if (logo.length == 0) return(null);
 
-    // generate the nibble string version from binary
-    StringBuilder local = new StringBuilder();
+        // generate the nibble string version from binary
+        StringBuilder local = new StringBuilder();
 
-        for(int x = 0;x < logo.length;x++)
-        {
-        char lo_nib = (char)((logo[x] & 0x0F) + 'A');
-        char hi_nib = (char)(((logo[x] >> 4) & 0x0F) + 'A');
-        local.append(lo_nib);
-        local.append(hi_nib);
+        for(int x = 0;x < logo.length;x++){
+            char lowNibble = (char)((logo[x] & 0x0F) + 'A');
+            char highNibble = (char)(((logo[x] >> 4) & 0x0F) + 'A');
+            local.append(lowNibble);
+            local.append(highNibble);
         }
 
-    return(local.toString());
+        return(local.toString());
     }
 
     public boolean getDefaultLogo()
@@ -138,5 +123,17 @@ public class BrandingManagerSettings implements Serializable
         } else {
             return contactName;
         }
+    }
+
+    /**
+     * Convert settings to JSON string.
+     *
+     * @return
+     *      JSON string.
+     */
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 }

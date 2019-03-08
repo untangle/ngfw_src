@@ -86,6 +86,12 @@ public class ByteStuffingOutputStream extends FilterOutputStream
     private int m_state = HDR_INIT;
     private long m_count;
 
+    /**
+     * Initialzie ByteStuffingOutputStream.
+     * 
+     * @param  out OutputStream to initialize with.
+     * @return     Instance of ByteStuffingOutputStream.
+     */
     public ByteStuffingOutputStream(OutputStream out) {
         super(out);
     }
@@ -93,6 +99,8 @@ public class ByteStuffingOutputStream extends FilterOutputStream
     /**
      * Get the current number of bytes written. This may be more than the bytes read, as we escape dotted lines. Note
      * also that the {@link #terminateBody termination} is not part of this count.
+     *
+     * @return Long of bytes written.
      */
     public long count()
     {
@@ -102,6 +110,7 @@ public class ByteStuffingOutputStream extends FilterOutputStream
     /**
      * Cause a CRLF.CRLF to be written to the wrapped stream. Note that this is <b>not</b> counted in the overall
      * {@link #count byte count}.
+     * @throws IOException
      */
     public void terminateBody() throws IOException
     {
@@ -112,6 +121,12 @@ public class ByteStuffingOutputStream extends FilterOutputStream
         out.write(CRLF_DOT_CRLF);
     }
 
+    /**
+     * Write to buffer.
+     *
+     * @param  b           Integer value to write.
+     * @throws IOException If IO problem occurs.
+     */
     @Override
     public void write(final int b) throws IOException
     {
@@ -185,6 +200,13 @@ public class ByteStuffingOutputStream extends FilterOutputStream
 
     /************** Tests ******************/
 
+    /**
+     * Run tests
+     * 
+     * @param  args      String to run with.
+     * @return           String of result of test.
+     * @throws Exception If unable to pass.
+     */
     public static String runTest(String[] args) throws Exception
     {
         String result = "";
@@ -306,6 +328,15 @@ public class ByteStuffingOutputStream extends FilterOutputStream
 
     }
 
+    /**
+     * Perform the test.
+     *
+     * @param  name           String of name of test.
+     * @param  inputPattern   Array of byte to test.
+     * @param  expectedOutput Array of expected bytes.
+     * @return                String result
+     * @throws IOException    If IO error occurs.
+     */
     private static String doTest(String name, byte[] inputPattern, byte[] expectedOutput) throws IOException
     {
         String result = "\n\n===============================================\n";
@@ -330,7 +361,13 @@ public class ByteStuffingOutputStream extends FilterOutputStream
         return result;
     }
 
- // Prints to arrays side-by-side for comparison
+    /**
+     * Prints to arrays side-by-side for comparison
+     *
+     * @param  expected Array of expected bytes.
+     * @param  found    Array of found bytes
+     * @return          String of expected output.
+     */
     public static String printArraysSBS(byte[] expected, byte[] found)
     {
         int len = Math.max(expected.length, found.length);
@@ -366,7 +403,12 @@ public class ByteStuffingOutputStream extends FilterOutputStream
         return result;
     }
     
-    // Pads a byte to 4 characters
+    /**
+     * Pads a byte to 4 characters
+     *
+     * @param  b Byte to padd
+     * @return   Padded String length of 4.
+     */
     private static String btoiPad(byte b)
     {
         String ret = "" + (int) b;
@@ -376,6 +418,13 @@ public class ByteStuffingOutputStream extends FilterOutputStream
         return ret;
     }
     
+    /**
+     * Compare two arrays of bytes.
+     *
+     * @param  a  Byte array to compare.
+     * @param  b  Byte array to compare.
+     * @return   true if match, false otherwise.
+     */
     private static boolean arrayCompare(byte[] a, byte[] b)
     {
         if (a.length != b.length) {

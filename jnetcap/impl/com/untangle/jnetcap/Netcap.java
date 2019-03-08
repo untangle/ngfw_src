@@ -1,16 +1,16 @@
-/* $HeadURL$ */
+/**
+ * $Id: Netcap.java,v 1.00 2018/06/21 17:00:24 dmorris Exp $
+ */
 package com.untangle.jnetcap;
 
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.util.regex.Pattern;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Collections;
-import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Netcap ss the main JNetcap interface
+ */
 public final class Netcap
 {
     private static final Logger logger = Logger.getLogger( Netcap.class );
@@ -26,7 +26,10 @@ public final class Netcap
     private static final int longArrayLength = 1024*256;
     private final long[] longArray = new long[longArrayLength];
     
-    /* Singleton */
+    /**
+     * Netcap is a Singleton
+     * so this is private
+     */
     private Netcap()
     {
         /* Zero out array so valgrind won't complain */
@@ -36,47 +39,62 @@ public final class Netcap
     }
 
     /**
-     * Initialzie the JNetcap and Netcap library. </p>
-     *
+     * init
+     * Initialzie the JNetcap and Netcap library.
      * @param netcapLevel Netcap debugging level.
      * @param jnetcapLevel JNetcap debugging level.
+     * @return 0 if success
      */
     public static native int init( int netcapLevel, int jnetcapLevel );
 
     /**
+     * nextSessionId
      * Return the next available session ID
+     * @return - the next session ID
      */
     public static native long nextSessionId();
 
-    /** 
-     * Initialize the JNetcap and Netcap library with the same debugging level for
-     * JNetcap and Netcap.</p>
+    /**
+     * init
+     * Initialize the JNetcap and Netcap library with the same
+     * debugging level for JNetcap and Netcap.
      * @param level - The debugging level for jnetcap and libnetcap.
+     * @return 0 if success
      */
-    public static int init( int level )
+    public static int init(int level)
     {
         return init( level, level );
     }
     
     /**
      * Set the hardlimit on the number of sessions to process at a time
+     * @param limit
      */
-    public native void setSessionLimit( int limit );
+    public native void setSessionLimit(int limit);
 
-    public static void setJnetcapDebugLevel( int level )
+    /**
+     * setJnetcapDebugLevel - sets the jnetcap debug level
+     * @param level
+     */
+    public static void setJnetcapDebugLevel(int level)
     {
         debugLevel( JNETCAP_DEBUG, level );
     }
 
-    public static void setNetcapDebugLevel( int level )
+    /**
+     * setNetcapDebugLevel - sets the netcap debug level
+     * @param level
+     */
+    public static void setNetcapDebugLevel(int level)
     {
         debugLevel( NETCAP_DEBUG, level );
     }
 
     /**
      * Set both the jnetcap and Netcap debug level to the same level
+     * @param level
      */
-    public static void setDebugLevel( int level )
+    public static void setDebugLevel(int level)
     {
         setJnetcapDebugLevel( level );
         setNetcapDebugLevel( level );
@@ -85,6 +103,7 @@ public final class Netcap
     /**
      * Return a list of conntrack entries that represent the current
      * conntrack table
+     * @return the list of conntrack entries
      */
     public synchronized List<Conntrack> getConntrackDump()
     {
@@ -106,58 +125,91 @@ public final class Netcap
     public static native void cleanup();
 
     /**
+     * donateThreads
      * Donate some threads to the netcap server.</p>
      * @param numThreads - The number of threads to donate.
+     * @return
      */
     public static native int donateThreads( int numThreads );
     
     /**
+     * startScheduler
      * Start the netcap scheduler.
+     * @return
      */
     public static native int startScheduler();
 
     /**
-     * Setup a UDP hook 
+     * registerUDPHook
+     * Setup a UDP hook
+     * @param udpHook
+     * @return
      */
     public static native int registerUDPHook( NetcapCallback udpHook );
     
     /**
-     * Setup a TCP hook 
+     * registerTCPHook
+     * Setup a TCP hook
+     * @param tcpHook
+     * @return
      */
     public static native int registerTCPHook( NetcapCallback tcpHook );
 
     /**
-     * Setup a Conntrack hook 
+     * registerConntrackHook
+     * Setup a Conntrack hook
+     * @param udpHook
+     * @return
      */
     public static native int registerConntrackHook( NetcapCallback udpHook );
     
     /**
-     * Clear out the UDP hook 
+     * unregisterUDPHook
+     * Clear out the UDP hook
+     * @return
      */
     public static native int unregisterUDPHook();
     
     /**
-     * Clear out the TCP hook 
+     * unregisterTCPHook
+     * Clear out the TCP hook
+     * @return
      */
     public static native int unregisterTCPHook();
 
     /**
-     * Clear out the Conntrack hook 
+     * unregisterConntrackHook
+     * Clear out the Conntrack hook
+     * @return
      */
     public static native int unregisterConntrackHook( );
     
     /**
+     * arpLookup
      * Lookup MAC address for IP in ARP table
+     * @param ipAddress
+     * @return
      */
     public static native String arpLookup( String ipAddress );
 
     /**
+     * conntrackDestroy
      * Destroy a conntrack entry
+     * @param protocol
+     * @param cClientAddr
+     * @param cClientPort
+     * @param cServerAddr
+     * @param cServerPort
+     * @return
      */
     public static native int conntrackDestroy( int protocol, String cClientAddr, int cClientPort, String cServerAddr, int cServerPort );
     
     /**
+     * conntrackDump
      * Get a dump of the conntrack
+     * @param arr
+     * @param arrLength
+     * @return
      */
     public static native int conntrackDump( long[] arr, int arrLength );
     
@@ -174,6 +226,10 @@ public final class Netcap
         System.loadLibrary( "uvmcore" );
     }
 
+    /**
+     * getInstance - gets the main singleton Netcap instance
+     * @return Netcap
+     */
     public static Netcap getInstance()
     {
         return INSTANCE;

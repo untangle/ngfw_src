@@ -13,5 +13,9 @@ public class PassThruToken extends MetadataToken
 {
     public static final PassThruToken PASSTHRU = new PassThruToken();
 
+    /**
+     * Initialize PassThruToken instance.
+     * @return PassThruToken instance
+     */
     private PassThruToken() {}
 }

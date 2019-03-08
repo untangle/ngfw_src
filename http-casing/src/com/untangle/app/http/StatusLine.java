@@ -7,10 +7,8 @@ import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.Token;
 
-
 /**
  * Holds a RFC 2616 status-line.
- *
  */
 public class StatusLine implements Token
 {
@@ -18,6 +16,12 @@ public class StatusLine implements Token
     private final int statusCode;
     private final String reasonPhrase;
 
+    /**
+     * Create a StatusLine
+     * @param httpVersion
+     * @param statusCode
+     * @param reasonPhrase
+     */
     public StatusLine(String httpVersion, int statusCode, String reasonPhrase)
     {
         this.httpVersion = httpVersion;
@@ -25,21 +29,37 @@ public class StatusLine implements Token
         this.reasonPhrase = reasonPhrase;
     }
 
+    /**
+     * Get the HTTP version
+     * @return string of http version
+     */
     public String getHttpVersion()
     {
         return httpVersion;
     }
 
+    /**
+     * Get the HTTP status code
+     * @return status code
+     */
     public int getStatusCode()
     {
         return statusCode;
     }
 
+    /**
+     * Get the reason
+     * @return string reason
+     */
     public String getReasonPhrase()
     {
         return reasonPhrase;
     }
 
+    /**
+     * Get the ByteBuffer equivalent of this StatusLine
+     * @return the ByteBuffer
+     */
     @Override
     public ByteBuffer getBytes()
     {

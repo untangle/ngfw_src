@@ -22,8 +22,6 @@ task :uvm_clean do
   Kernel.system("if [ -f /var/run/uvm.pid ] && [ -f /proc/`cat /var/run/uvm.pid`/cmdline ] && grep -q #{SRC_HOME} /proc/`cat /var/run/uvm.pid`/cmdline ; then #{SRC_HOME}/dist/etc/init.d/untangle-vm stop ; fi")
   # change symlinks back to original
   Kernel.system('if [ -L /usr/share/untangle/bin ] && [ -d /usr/share/untangle/bin.backup ] ; then sudo rm -f /usr/share/untangle/bin && sudo mv /usr/share/untangle/bin.backup /usr/share/untangle/bin ; fi')
-  # we no longer relink settings, but lets keep this here until 13.0 so developers don't have issues
-  Kernel.system('if [ -L /usr/share/untangle/settings ] && [ -d /usr/share/untangle/settings.backup ] ; then sudo rm -f /usr/share/untangle/settings && sudo mv /usr/share/untangle/settings.backup /usr/share/untangle/settings ; fi')
   # remove apache file
   if File.exist?("/etc/apache2/uvm-dev.conf")
     info "[rm -rf  ] /etc/apache2/uvm-dev.conf"
@@ -37,11 +35,9 @@ task :kindaclean do
   info "[rm -rf  ] #{BuildEnv::SRC.staging}"
   FileUtils.rm_rf(BuildEnv::SRC.staging) if File.exist?(BuildEnv::SRC.staging)
   info "[rm -rf  ] debian/dirs"
-  FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
-  if File.exist?("graphviz.dot")
-    info "[rm -rf  ] graphviz.dot"
-    FileUtils.rm_rf("graphviz.dot")
-  end
+  FileUtils.rm_rf(FileList['debian/*'].select { |f| f != 'debian/source' and File.directory?(f) })
+  info "[rm -rf  ] debian/*init"
+  FileUtils.rm_rf(FileList['debian/*init'])
   ## Clear the stamp hashes
   Rake::StampHash.instance.clear
 end
@@ -79,7 +75,6 @@ task :targets => :download do
   require "#{SRC_HOME}/router/package.rb"
   require "#{SRC_HOME}/shield/package.rb"
   require "#{SRC_HOME}/firewall/package.rb"
-  require "#{SRC_HOME}/openvpn/package.rb"
   require "#{SRC_HOME}/application-control-lite/package.rb"
   require "#{SRC_HOME}/intrusion-prevention/package.rb"
   require "#{SRC_HOME}/spam-blocker-base/package.rb"
@@ -98,6 +93,8 @@ task :targets => :download do
   require "#{SRC_HOME}/branding-manager/package.rb"
   require "#{SRC_HOME}/configuration-backup/package.rb"
   require "#{SRC_HOME}/directory-connector/package.rb"
+  require "#{SRC_HOME}/openvpn/package.rb"
+  require "#{SRC_HOME}/tunnel-vpn/package.rb"
   require "#{SRC_HOME}/ipsec-vpn/package.rb"
   require "#{SRC_HOME}/live-support/package.rb"
   require "#{SRC_HOME}/policy-manager/package.rb"
@@ -108,6 +105,9 @@ task :targets => :download do
   require "#{SRC_HOME}/wan-failover/package.rb"
   require "#{SRC_HOME}/web-cache/package.rb"
   require "#{SRC_HOME}/license/package.rb"
+  if File.exists?("#{SRC_HOME}/plugins/package.rb")
+    require "#{SRC_HOME}/plugins/package.rb"
+  end
 end
 
 task :build => [:builduvmcore, :targets] do
@@ -122,12 +122,20 @@ end
 task :devel => [:build, :hier, :installuvmcore] do
   Rake::Task[BuildEnv::SRC['install']].invoke
   Rake::Task[BuildEnv::SRC.installTarget].invoke
+  ## Ad Blocker hack to rename ad-blocker.js to ab.js NGFW-10728
+  ## Make this copy target and put it in the first servlet after admin
+  if File.exists?("#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ad-blocker.js")
+    FileUtils.cp("#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ad-blocker.js", "#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ab.js")
+  end
+  if File.exists?("#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ad-blocker.js")
+    FileUtils.cp("#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ad-blocker.js", "#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ab.js")
+  end
 end
 
-task :i18n => [:builduvmcore, :targets ] do
+task :i18n => [:builduvmcore, :targets] do
   ## Generate and update po files
-#  raise "generate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/generate.py")
-#  raise "translate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/translate.py", "--languages=xx")
+  #  raise "generate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/generate.py")
+  #  raise "translate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/translate.py", "--languages=xx")
   Rake::Task[BuildEnv::SRC.i18nTarget].invoke
 end
 
@@ -139,12 +147,28 @@ end
 
 task :install => [:devel, :i18n, :debian_init_files]
 
-task :javadoc do
-  dirs = 'uvm/api'
-  cpath = FileList['staging/*'].map { |e| "#{e}/" }.join(':') + ":" + FileList['downloads/output/**/*jar'].join(':')
+task :javadocanalyzer do
+  javaDirs = FileList["./**/*.java"].exclude(%r{downloads/})
+  sourcepath = javaDirs.map { |d| d.split('/')[1..2].join('/') }.uniq.join(',')
+  puts sourcepath
+
+  Kernel.exec('./buildtools/javadoc-analyzer.py',
+              '--path='+sourcepath)
+end
+
+task :javadoc => [:download] do
+  javaDirs = FileList["./**/*.java"].exclude(%r{downloads/})
+  sourcepath = javaDirs.map { |d| d.split('/')[1..2].join('/') }.uniq.join(':')
+  puts sourcepath
+
+  subpackages = 'com.untangle'
+  cpath = FileList["#{BuildEnv::SRC.devel}/*","#{BuildEnv::downloads}/**/*jar"].join(':')
   css = "./buildtools/javadoc.css"
 
-  Kernel.exec('javadoc', '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', dirs, '-classpath', cpath,
-              '-d', "#{BuildEnv::SRC.staging}/javadoc",
-              '-subpackages', 'com.untangle', '-J-Xmx512m')
+  Kernel.exec(JavaCompiler.JavadocCommand,
+            '-docletpath', './downloads/wikidoclet.1.0.4.jar',
+            '-doclet', 'wikidoclet.WikiDoclet',
+            '-splitindex','-docencoding','UTF-8','-use','-docfilessubdirs', '-stylesheetfile', css, '-sourcepath', sourcepath, '-classpath', cpath,
+            '-d', "#{BuildEnv::SRC.staging}/javadoc",
+            '-subpackages', subpackages, '-J-Xmx512m')
 end

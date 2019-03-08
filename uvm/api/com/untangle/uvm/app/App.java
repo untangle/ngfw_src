@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.uvm.app;
@@ -75,4 +75,11 @@ public interface App
      * Return statistics tracked for this app (if any)
      */
     List<AppMetric> getMetrics();
+
+    /**
+     * Returns the validity of the license for this app
+     * Override to implement custom license logic
+     * @return True if license is valid, false otherwise
+     */
+    boolean isLicenseValid();
 }

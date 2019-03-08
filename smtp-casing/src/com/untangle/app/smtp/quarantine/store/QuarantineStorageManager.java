@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.app.smtp.quarantine.store;
 
 import java.io.File;
@@ -21,8 +24,8 @@ public class QuarantineStorageManager
     /**
      * reads InboxIndex from a given file
      * 
-     * @param quarantineFile
-     * @return
+     * @param quarantineFile Quarantinefile.
+     * @return InboxIndex for quarantine.
      */
     public static InboxIndex readQuarantineFromFile(String quarantineFile)
     {
@@ -49,8 +52,9 @@ public class QuarantineStorageManager
     /**
      * reads the InboxIndex for a given email address
      * 
-     * @param emailAddress
-     * @return
+     * @param emailAddress of inbox.
+     * @param baseDir String of base directory.
+     * @return InboxIndex for quarantine.
      */
     public static InboxIndex readQuarantine(String emailAddress, String baseDir)
     {
@@ -60,9 +64,10 @@ public class QuarantineStorageManager
     /**
      * write a new record in the InboxIndex file of the give email address
      * 
-     * @param emailAddress
-     * @param newRecord
-     * @return
+     * @param emailAddress String of inbox.
+     * @param newRecord InboxRecord to add.
+     * @param baseDir String of base directory to add.
+     * @return true if write was successful, otherwise false.
      */
     public static boolean writeQuarantineRecord(String emailAddress, InboxRecord newRecord, String baseDir)
     {
@@ -86,9 +91,10 @@ public class QuarantineStorageManager
     /**
      * write the entire inboxIndex for the given email address
      * 
-     * @param emailAddress
-     * @param inboxIndex
-     * @return
+     * @param emailAddress String of quarantine inbox.
+     * @param inboxIndex Quarantine index.
+     * @param baseDir String of quarantine.
+     * @return true if index was written, false othewise.
      */
     public static boolean writeQuarantineIndex(String emailAddress, InboxIndex inboxIndex, String baseDir)
     {
@@ -104,6 +110,11 @@ public class QuarantineStorageManager
         return true;
     }
 
+    /**
+     * Return quarantine summary.
+     * @param  baseDir String of base directory.
+     * @return         StoreSummary of quarantine.
+     */
     public static StoreSummary readSummary(String baseDir)
     {
 
@@ -126,6 +137,12 @@ public class QuarantineStorageManager
         return storeSummary;
     }
 
+    /**
+     * Set summary.
+     * @param  summary StoreSummary to write.
+     * @param  baseDir String of base directory.
+     * @return         true if set was successful, false otherwise.
+     */
     public static boolean writeSummary(StoreSummary summary, String baseDir)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
