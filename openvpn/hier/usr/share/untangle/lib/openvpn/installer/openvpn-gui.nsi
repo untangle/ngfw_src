@@ -7,7 +7,7 @@
 ; ****************************************************************************
 
 ; OpenVPN install script for Windows, using NSIS
-; WebFooL whas here ;-)
+; WebFooL was here ;-)
 ; mahotz was here too!
 
 SetCompressor lzma
