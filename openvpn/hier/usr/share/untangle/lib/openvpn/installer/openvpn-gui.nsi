@@ -23,6 +23,8 @@ SetCompressor lzma
 !include "x64.nsh"
 !include "DotNetChecker.nsh"
 !include "nsProcess.nsh"
+; WinMessages.nsh is needed to send WM_CLOSE to the GUI if it is still running
+!include "WinMessages.nsh"
 
 ; EnvVarUpdate.nsh is needed to update the PATH environment variable
 !include "EnvVarUpdate.nsh"
