@@ -4,7 +4,7 @@ Content-type: text/html; charset=UTF-8
 <HTML><HEAD><TITLE>Man page of openvpn</TITLE>
 </HEAD><BODY>
 <H1>openvpn</H1>
-Section: Maintenance Commands (8)<BR>Updated: 25 August 2016<BR><A HREF="#index">Index</A>
+Section: Maintenance Commands (8)<BR>Updated: 28 February 2018<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 
@@ -71,7 +71,7 @@ public key security
 
 using client &amp; server certificates.
 OpenVPN also
-supports non-encrypted TCP/UDP tunnels.  
+supports non-encrypted TCP/UDP tunnels.
 <P>
 OpenVPN is designed to work with the
 <B>TUN/TAP</B>
@@ -928,7 +928,8 @@ when none of the connecting clients are Windows systems.  This mode
 is functionally equivalent to the
 <B>--ifconfig-pool-linear</B>
 
-directive which is available in OpenVPN 2.0 and is now deprecated.
+directive which is available in OpenVPN 2.0, is deprecated and will be
+removed in OpenVPN 2.5
 <P>
 <B>subnet --</B>
 
@@ -1438,7 +1439,7 @@ Option flags:
 Add the
 <B>local</B>
 
-flag if both OpenVPN servers are directly connected via a common subnet,
+flag if both OpenVPN peers are directly connected via a common subnet,
 such as with wireless.  The
 <B>local</B>
 
@@ -1995,7 +1996,7 @@ and
 
 <P>
 This option can be used on both client and server side, but it is
-in enough to add this on the server side as it will push appropriate
+enough to add this on the server side as it will push appropriate
 <B>--ping</B>
 
 and
@@ -2464,7 +2465,7 @@ could be either
 or 
 <B>system. </B>
 
-As of OpenVPN v2.3, this flag is no longer accepted.  In most *nix environments the execve()
+As of OpenVPN 2.3, this flag is no longer accepted.  In most *nix environments the execve()
 approach has been used without any issues.
 <P>
 Some directives such as --up allow options to be passed to the external
@@ -2477,7 +2478,7 @@ versions you needed to either add a full path to the script interpreter which ca
 script or use the
 <B>system</B>
 
-flag to run these scripts.  As of OpenVPN v2.3 it is now a strict requirement to have
+flag to run these scripts.  As of OpenVPN 2.3 it is now a strict requirement to have
 full path to the script interpreter when running non-executables files.
 This is not needed for executable files, such as .exe, .com, .bat or .cmd files.  For
 example, if you have a Visual Basic script, you must use this syntax now:
@@ -2707,7 +2708,7 @@ namely that using a password-protected private key will fail unless the
 <B>--askpass</B>
 
 option is used to tell OpenVPN to ask for the pass phrase (this
-requirement is new in 2.3.7, and is a consequence of calling daemon()
+requirement is new in v2.3.7, and is a consequence of calling daemon()
 before initializing the crypto layer).
 <P>
 Further, using
@@ -3022,14 +3023,45 @@ Status can also be written to the syslog by sending a
 <B>SIGUSR2</B>
 
 signal.
+<P>
+With multi-client capability enabled on a server, the status file includes a
+list of clients and a routing table. The output format can be controlled by the
+<B>--status-version</B>
+
+option in that case.
+<P>
+For clients or instances running in point-to-point mode, it will contain the
+traffic statistics.
 
 <DT><B>--status-version [n]</B>
 
 <DD>
-Choose the status file format version number.  Currently
-<B>n</B>
+Set the status file format version number to
+<B>n</B>.
 
-can be 1, 2, or 3 and defaults to 1.
+<P>
+This only affects the status file on servers with multi-client capability
+enabled.
+<P>
+<B>1</B>
+
+-- traditional format (default). The client list contains the following
+fields comma-separated: Common Name, Real Address, Bytes Received, Bytes Sent,
+Connected Since.
+<BR>
+
+<B>2</B>
+
+-- a more reliable format for external processing. Compared to version 1, the
+client list contains some additional fields: Virtual Address, Virtual IPv6
+Address, Username, Client ID, Peer ID.
+Future versions may extend the number of fields.
+<BR>
+
+<B>3</B>
+
+-- identical to 2, but fields are tab-separated.
+<P>
 
 <DT><B>--mute n</B>
 
@@ -3051,7 +3083,7 @@ The
 parameter may be &quot;lzo&quot;, &quot;lz4&quot;, or empty.  LZO and LZ4
 are different compression algorithms, with LZ4 generally
 offering the best performance with least CPU usage.
-For backwards compatibility with OpenVPN versions before 2.4, use &quot;lzo&quot;
+For backwards compatibility with OpenVPN versions before v2.4, use &quot;lzo&quot;
 (which is identical to the older option &quot;--comp-lzo yes&quot;).
 <P>
 If the
@@ -3060,20 +3092,34 @@ If the
 parameter is empty, compression will be turned off, but the packet
 framing for compression will still be enabled, allowing a different
 setting to be pushed later.
+<P>
+<B>Security Considerations</B>
+
+<P>
+Compression and encryption is a tricky combination.  If an attacker knows or is
+able to control (parts of) the plaintext of packets that contain secrets, the
+attacker might be able to extract the secret if compression is enabled.  See
+e.g. the CRIME and BREACH attacks on TLS which also leverage compression to
+break encryption.  If you are not entirely sure that the above does not apply
+to your traffic, you are advised to *not* enable compression.
+<P>
 
 <DT><B>--comp-lzo [mode]</B>
 
 <DD>
+<B>DEPRECATED</B>
+
+This option will be removed in a future OpenVPN release.  Use the
+newer
+<B>--compress</B>
+
+instead.
+<P>
 Use LZO compression -- may add up to 1 byte per
 packet for incompressible data.
 <B>mode</B>
 
 may be &quot;yes&quot;, &quot;no&quot;, or &quot;adaptive&quot; (default).
-<P>
-This option is deprecated in favor of the newer
-<B>--compress</B>
-
-option.
 <P>
 In a server mode setup, it is possible to selectively turn
 compression on or off for individual clients.
@@ -3128,65 +3174,70 @@ efficiency.  If the data being sent over the tunnel is already compressed,
 the compression efficiency will be very low, triggering openvpn to disable
 compression for a period of time until the next re-sample test.
 
-<DT><B>--management IP port [pw-file]</B>
+<DT><B>--management socket-name unix [pw-file] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(recommended)</B>
 
 <DD>
-Enable a TCP server on
-<B>IP:port</B>
 
-to handle daemon management functions.
-<B>pw-file,</B>
+<BR>
 
-if specified,
-is a password file (password on first line)
-or &quot;stdin&quot; to prompt from standard input.  The password
-provided will set the password which TCP clients will need
-to provide in order to access management functions.
+
+<DT>
+
+<B>--management IP port [pw-file]</B>
+
+<DD>Enable a management server on a
+<B>socket-name</B>
+
+Unix socket on those platforms supporting it, or on
+a designated TCP port.
 <P>
-The management interface can also listen on a unix domain socket,
-for those platforms that support it.  To use a unix domain socket, specify
-the unix socket pathname in place of
-<B>IP</B>
+<B>pw-file</B>
 
-and set
-<B>port</B>
-
-to 'unix'.  While the default behavior is to create a unix domain socket
-that may be connected to by any process, the
+, if specified, is a password file where the password must be on first line.
+Instead of a filename it can use the keyword stdin which will prompt the user
+for a password to use when OpenVPN is starting.
+<P>
+For unix sockets, the  default  behaviour  is to create a unix domain socket
+that may be connected to by any process.  Use the
 <B>--management-client-user</B>
 
 and
 <B>--management-client-group</B>
 
-directives can be used to restrict access.
+directives to restrict access.
 <P>
-The management interface provides a special mode where the TCP
-management link can operate over the tunnel itself.  To enable this mode,
-set
-<B>IP</B>
+The management interface provides a special mode where the TCP management link
+can operate over the tunnel itself.  To enable this mode, set IP to
+<B>tunnel.</B>
 
-= &quot;tunnel&quot;.  Tunnel mode will cause the management interface
-to listen for a TCP connection on the local VPN address of the
-TUN/TAP interface.
+Tunnel mode will cause the  management interface to listen for a
+TCP connection on the local VPN address of the TUN/TAP interface.
 <P>
-While the management port is designed for programmatic control
-of OpenVPN by other applications, it is possible to telnet
-to the port, using a telnet client in &quot;raw&quot; mode.  Once connected,
-type &quot;help&quot; for a list of commands.
-<P>
-For detailed documentation on the management interface, see
-the management-notes.txt file in the
-<B>management</B>
+<B>BEWARE</B>
 
-folder of
-the OpenVPN source distribution.
-<P>
-It is strongly recommended that
-<B>IP</B>
+of enabling the management interface over TCP.  In  these cases you should
+<I>ALWAYS</I>
 
-be set to 127.0.0.1
-(localhost) to restrict accessibility of the management
-server to local clients. 
+make use of
+<B>pw-file</B>
+
+to password protect the management interface.  Any user who can connect to this
+TCP
+<B>IP:port</B>
+
+will be able to manage and control (and interfere with) the OpenVPN process.
+It is also strongly recommended to set IP to 127.0.0.1 (localhost) to restrict
+accessibility of the management server to local clients.
+<P>
+While the management port is designed for  programmatic control of OpenVPN by
+other applications, it is possible to telnet to the port, using a telnet client
+in &quot;raw&quot; mode.  Once  connected, type &quot;help&quot; for a list of commands.
+<P>
+For detailed documentation on the management interface, see the
+<I>management-notes.txt</I>
+
+file in the management folder of the OpenVPN source distribution.
+<P>
 <DT><B>--management-client</B>
 
 <DD>
@@ -3695,7 +3746,7 @@ IV_NCP=2 -- negotiable ciphers, client supports
 pushed by the server, a value of 2 or greater indicates client
 supports AES-GCM-128 and AES-GCM-256.
 <P>
-IV_UI_VER=&lt;gui_id&gt; &lt;version&gt; -- the UI version of a UI if one is
+IV_GUI_VER=&lt;gui_id&gt; &lt;version&gt; -- the UI version of a UI if one is
 running, for example &quot;de.blinkt.openvpn 0.5.47&quot; for the
 Android app.
 <P>
@@ -3795,10 +3846,15 @@ name will always receive the given IP address.  If you want guaranteed
 assignment, use
 <B>--ifconfig-push</B>
 
+<P>
 
 <DT><B>--ifconfig-pool-linear</B>
 
 <DD>
+<B>DEPRECATED</B>
+
+This option will be removed in OpenVPN 2.5
+<P>
 Modifies the
 <B>--ifconfig-pool</B>
 
@@ -4480,18 +4536,20 @@ authentication module/script will see the username and password as being set
 to empty strings (&quot;&quot;).  The authentication module/script MUST have logic
 to detect this condition and respond accordingly.
 
-<DT><B>--client-cert-not-required (DEPRECATED)</B>
+<DT><B>--client-cert-not-required</B>
 
 <DD>
+<B>DEPRECATED</B>
+
+This option will be removed in OpenVPN 2.5
+<P>
 Don't require client certificate, client will authenticate
 using username/password only.  Be aware that using this directive
 is less secure than requiring certificates from all clients.
 <P>
-<P>
 <B>Please note:</B>
 
-This option is now deprecated and will be removed in OpenVPN v2.5.
-It is replaced by
+This is replaced by
 <B>--verify-client-cert</B>
 
 which allows for more flexibility. The option
@@ -4571,9 +4629,13 @@ authentication, use
 the authenticated username as the common name,
 rather than the common name from the client cert.
 
-<DT><B>--compat-names [no-remapping] (DEPRECATED)</B>
+<DT><B>--compat-names [no-remapping]</B>
 
 <DD>
+<B>DEPRECATED</B>
+
+This option will be removed in OpenVPN 2.5
+<P>
 Until OpenVPN v2.3 the format of the X.509 Subject fields was formatted
 like this:
 <DT><DD>
@@ -4594,13 +4656,13 @@ option, this old formatting and remapping will be re-enabled again.  This is
 purely implemented for compatibility reasons when using older plug-ins or
 scripts which does not handle the new formatting or UTF-8 characters.
 <DT><DD>
-In OpenVPN v2.3 the formatting of these fields changed into a more
+In OpenVPN 2.3 the formatting of these fields changed into a more
 standardised format.  It now looks like:
 <DT><DD>
 <B>C=US, L=Somewhere, CN=John Doe, emailAddress=<A HREF="mailto:john@example.com">john@example.com</A></B>
 
 <DT><DD>
-The new default format in OpenVPN v2.3 also does not do the character remapping
+The new default format in OpenVPN 2.3 also does not do the character remapping
 which happened earlier.  This new format enables proper support for UTF-8
 characters in the usernames, X.509 Subject fields and Common Name variables and
 it complies to the RFC 2253, UTF-8 String Representation of Distinguished
@@ -4622,11 +4684,15 @@ carriage-return. no-remapping is only available on the server side.
 
 This option is immediately deprecated.  It is only implemented
 to make the transition to the new formatting less intrusive.  It will be
-removed in OpenVPN v2.5.  So please update your scripts/plug-ins where necessary.
+removed in OpenVPN 2.5.  So please update your scripts/plug-ins where necessary.
 
-<DT><B>--no-name-remapping (DEPRECATED)</B>
+<DT><B>--no-name-remapping</B>
 
 <DD>
+<B>DEPRECATED</B>
+
+This option will be removed in OpenVPN 2.5
+<P>
 The
 <B>--no-name-remapping</B>
 
@@ -4640,7 +4706,7 @@ option.
 <P>
 <B>Please note:</B>
 
-This option is now deprecated.  It will be removed in OpenVPN v2.5.
+This option is now deprecated.  It will be removed in OpenVPN 2.5.
 So please make sure you support the new X.509 name formatting
 described with the
 <B>--compat-names</B>
@@ -4984,7 +5050,7 @@ was able to steal your private key, he would gain no information to help
 him decrypt past sessions.
 <P>
 Another advantageous aspect of Static Key encryption mode is that
-it is a handshake-free protocol 
+it is a handshake-free protocol
 without any distinguishing signature or feature
 (such as a header or protocol handshake sequence) 
 that would mark the ciphertext packets as being
@@ -5058,14 +5124,36 @@ For more information on HMAC see
 Encrypt data channel packets with cipher algorithm
 <B>alg.</B>
 
+<P>
 The default is
 <B>BF-CBC,</B>
 
-an abbreviation for Blowfish in Cipher Block Chaining mode.
+an abbreviation for Blowfish in Cipher Block Chaining mode.  When cipher
+negotiation (NCP) is allowed, OpenVPN 2.4 and newer on both client and server
+side will automatically upgrade to
+<B>AES-256-GCM.</B>
+
+See
+<B>--ncp-ciphers</B>
+
+and
+<B>--ncp-disable</B>
+
+for more details on NCP.
 <P>
-Using BF-CBC is no longer recommended, because of it's 64-bit block size.  This
+Using
+<B>BF-CBC</B>
+
+is no longer recommended, because of its 64-bit block size.  This
 small block size allows attacks based on collisions, as demonstrated by SWEET32.
-See <A HREF="https://community.openvpn.net/openvpn/wiki/SWEET32">https://community.openvpn.net/openvpn/wiki/SWEET32</A> for details.
+See <A HREF="https://community.openvpn.net/openvpn/wiki/SWEET32">https://community.openvpn.net/openvpn/wiki/SWEET32</A> for details.  Due to
+this, support for
+<B>BF-CBC, DES, CAST5, IDEA</B>
+
+and
+<B>RC2</B>
+
+ciphers will be removed in OpenVPN 2.6.
 <P>
 To see other ciphers that are available with OpenVPN, use the
 <B>--show-ciphers</B>
@@ -5076,17 +5164,6 @@ Set
 <B>alg=none</B>
 
 to disable encryption.
-<P>
-As of OpenVPN 2.4, cipher negotiation (NCP) can override the cipher specified by
-<B>--cipher</B>.
-
-See
-<B>--ncp-ciphers</B>
-
-and
-<B>--ncp-disable</B>
-
-for more on NCP.
 <P>
 
 <DT><B>--ncp-ciphers cipher_list</B>
@@ -5128,8 +5205,8 @@ will inherit the cipher of the peer if that cipher is different from the local
 setting, but the peer cipher is one of the ciphers specified in
 <B>--ncp-ciphers</B>.
 
-E.g. a non-NCP client (&lt;=2.3, or with --ncp-disabled set) connecting to a
-NCP server (2.4+) with &quot;--cipher BF-CBC&quot; and &quot;--ncp-ciphers
+E.g. a non-NCP client (&lt;=v2.3, or with --ncp-disabled set) connecting to a
+NCP server (v2.4+) with &quot;--cipher BF-CBC&quot; and &quot;--ncp-ciphers
 AES-256-GCM:AES-256-CBC&quot; set can either specify &quot;--cipher BF-CBC&quot; or
 &quot;--cipher AES-256-CBC&quot; and both will work.
 <P>
@@ -5143,6 +5220,10 @@ negotiation.
 <DT><B>--keysize n</B>
 
 <DD>
+<B>DEPRECATED</B>
+
+This option will be removed in OpenVPN 2.6.
+<P>
 Size of cipher key in bits (optional).
 If unspecified, defaults to cipher-specific default.  The
 <B>--show-ciphers</B>
@@ -5192,6 +5273,10 @@ supported by OpenSSL.
 <DT><B>--no-replay</B>
 
 <DD>
+<B>DEPRECATED</B>
+
+This option will be removed in OpenVPN 2.5.
+<P>
 (Advanced) Disable OpenVPN's protection against replay attacks.
 Don't use this option unless you are prepared to make
 a tradeoff of greater efficiency in exchange for less
@@ -5379,7 +5464,6 @@ This option only makes sense when replay protection is enabled
 <DT><B>--no-iv</B>
 
 <DD>
-<P>
 <B>DEPRECATED</B>
 
 This option will be removed in OpenVPN 2.5.
@@ -5406,7 +5490,7 @@ datagram replay protection as the IV.
 <DT><B>--use-prediction-resistance</B>
 
 <DD>
-Enable prediction resistance on PolarSSL's RNG.
+Enable prediction resistance on mbed TLS's RNG.
 <P>
 Enabling prediction resistance causes the RNG to reseed in each
 call for random. Reseeding this often can quickly deplete the kernel
@@ -5415,8 +5499,6 @@ entropy pool.
 If you need this option, please consider running a daemon that adds
 entropy to the kernel pool.
 <P>
-Note that this option only works with PolarSSL versions greater
-than 1.1.
 
 <DT><B>--test-crypto</B>
 
@@ -5540,7 +5622,7 @@ they are distributed with OpenVPN, they are totally insecure.
 
 <DD>
 Directory containing trusted certificates (CAs and CRLs).
-Not available with PolarSSL.
+Not available with mbed TLS.
 <P>
 When using the
 <B>--capath</B>
@@ -5578,7 +5660,7 @@ Set
 
 to disable Diffie Hellman key exchange (and use ECDH only). Note that this
 requires peers to be using an SSL library that supports ECDH TLS cipher suites
-(e.g. OpenSSL 1.0.1+, or PolarSSL 1.3+).
+(e.g. OpenSSL 1.0.1+, or mbed TLS 2.0+).
 <P>
 Use
 <B>openssl dhparam -out dh2048.pem 2048</B>
@@ -5705,7 +5787,7 @@ This option can be used instead of
 and
 <B>--key.</B>
 
-Not available with PolarSSL.
+Not available with mbed TLS.
 
 <DT><B>--verify-hash hash [algo]</B>
 
@@ -5865,6 +5947,10 @@ Certificate Store GUI.
 <DT><B>--key-method m</B>
 
 <DD>
+<B>DEPRECATED</B>
+
+This option will be removed in OpenVPN 2.5
+<P>
 Use data channel key negotiation method
 <B>m.</B>
 
@@ -5911,19 +5997,38 @@ determines the derivation of the tunnel session keys.
 <DT><B>--tls-cipher l</B>
 
 <DD>
-A list
+
+<BR>
+
+
+<DT>
+
+<B>--tls-ciphersuites l</B>
+
+<DD>A list
 <B>l</B>
 
 of allowable TLS ciphers delimited by a colon (&quot;:&quot;).
 <P>
-This setting can be used to ensure that certain cipher suites are used (or
+These setting can be used to ensure that certain cipher suites are used (or
 not used) for the TLS connection.  OpenVPN uses TLS to secure the control
 channel, over which the keys that are used to protect the actual VPN traffic
 are exchanged.
 <P>
 The supplied list of ciphers is (after potential OpenSSL/IANA name translation)
-simply supplied to the crypto library.  Please see the OpenSSL and/or PolarSSL
+simply supplied to the crypto library.  Please see the OpenSSL and/or mbed TLS
 documentation for details on the cipher list interpretation.
+<P>
+For OpenSSL, the
+<B>--tls-cipher</B>
+
+is used for TLS 1.2 and below. For TLS 1.3 and up, the
+<B>--tls-ciphersuites</B>
+
+setting is used. mbed TLS has no TLS 1.3 support yet and only the
+<B>--tls-cipher</B>
+
+setting is used.
 <P>
 Use
 <B>--show-tls</B>
@@ -5933,14 +6038,58 @@ to see a list of TLS ciphers supported by your crypto library.
 Warning!
 <B>--tls-cipher</B>
 
-is an expert feature, which - if used correcly - can improve the security of
-your VPN connection.  But it is also easy to unwittingly use it to carefully
+and
+<B>--tls-ciphersuites</B>
+
+are expert features, which - if used correcly - can improve the security of
+your VPN connection.  But it is also easy to unwittingly use them to carefully
 align a gun with your foot, or just break your connection.  Use with care!
 <P>
-The default for --tls-cipher is to use PolarSSL's default cipher list
-when using PolarSSL or
+The default for --tls-cipher is to use mbed TLS's default cipher list
+when using mbed TLS or
 &quot;DEFAULT:!EXP:!LOW:!MEDIUM:!kDH:!kECDH:!DSS:!PSK:!SRP:!kRSA&quot; when using
 OpenSSL.
+<P>
+The default for --tls-ciphersuites is to use the crypto library's default.
+
+<DT><B>--tls-cert-profile profile</B>
+
+<DD>
+Set the allowed cryptographic algorithms for certificates according to
+<B>profile</B>.
+
+<P>
+The following profiles are supported:
+<P>
+<B>legacy</B>
+
+(default): SHA1 and newer, RSA 2048-bit+, any elliptic curve.
+<P>
+<B>preferred</B>
+
+: SHA2 and newer, RSA 2048-bit+, any elliptic curve.
+<P>
+<B>suiteb</B>
+
+: SHA256/SHA384, ECDSA with P-256 or P-384.
+<P>
+This option is only fully supported for mbed TLS builds.  OpenSSL builds use
+the following approximation:
+<P>
+<B>legacy</B>
+
+(default): sets &quot;security level 1&quot;
+<P>
+<B>preferred</B>
+
+: sets &quot;security level 2&quot;
+<P>
+<B>suiteb</B>
+
+: sets &quot;security level 3&quot; and --tls-cipher &quot;SUITEB128&quot;.
+<P>
+OpenVPN will migrate to 'preferred' as default in the future.  Please ensure
+that your keys already comply.
 
 <DT><B>--tls-timeout n</B>
 
@@ -6086,8 +6235,8 @@ response.
 <B>--genkey</B>
 
 <P>
-Older versions (up to 2.3) supported a freeform passphrase file.
-This is no longer supported in newer versions (2.4+).
+Older versions (up to OpenVPN 2.3) supported a freeform passphrase file.
+This is no longer supported in newer versions (v2.4+).
 <P>
 See the
 <B>--secret</B>
@@ -6341,6 +6490,12 @@ into the file/buffer for dynamic configuration data.  This
 will then make the OpenVPN server to push this value to the
 client, which replaces the local password with the
 UNIQUE_TOKEN_VALUE.
+<P>
+Newer clients (2.4.7+) will fall back to the original password method
+after a failed auth. Older clients will keep using the token value
+and react acording to
+<B>--auth-retry</B>
+
 
 <DT><B>--tls-verify cmd</B>
 
@@ -6490,7 +6645,7 @@ and
 <B>--verify-x509-name Server-1 name</B>
 
 or you could use
-<B>--verify-x509-name Server -name-prefix</B>
+<B>--verify-x509-name Server- name-prefix</B>
 
 if you want a client to only accept connections to &quot;Server-1&quot;, &quot;Server-2&quot;, etc.
 <P>
@@ -6535,10 +6690,12 @@ as X509_&lt;depth&gt;_&lt;attribute&gt;=&lt;value&gt;.  Multiple
 
 options can be defined to track multiple attributes.
 
-<DT><B>--ns-cert-type client|server (DEPRECATED)</B>
+<DT><B>--ns-cert-type client|server</B>
 
 <DD>
-This option is deprecated.  Use the more modern equivalent
+<B>DEPRECATED</B>
+
+This option will be removed in OpenVPN 2.5.  Use the more modern equivalent
 <B>--remote-cert-tls</B>
 
 instead.  This option will be removed in OpenVPN 2.5.
@@ -6775,7 +6932,7 @@ Write key to
 <A NAME="lbAN">&nbsp;</A>
 <H3>TUN/TAP persistent tunnel config mode:</H3>
 
-Available with linux 2.4.7+.  These options comprise a standalone mode
+Available with Linux 2.4.7+.  These options comprise a standalone mode
 of OpenVPN which can be used to create and delete persistent tunnels.
 
 <DL COMPACT>
@@ -7042,18 +7199,13 @@ Set Connection-specific DNS Suffix.
 <P>
 <B>DNS addr --</B>
 
-Set primary domain name server IPv4 address.  Repeat
+Set primary domain name server IPv4 or IPv6 address.  Repeat
 this option to set secondary DNS server addresses.
 <P>
-<B>DNS6 addr --</B>
-
-Set primary domain name server IPv6 address.  Repeat
-this option to set secondary DNS server IPv6 addresses.
-<P>
-Note: currently this is handled using netsh (the
-existing DHCP code can only do IPv4 DHCP, and that protocol only
-permits IPv4 addresses anywhere).  The option will be put into the
-environment, so an
+Note: DNS IPv6 servers are currently set using netsh (the existing
+DHCP code can only do IPv4 DHCP, and that protocol only permits IPv4
+addresses anywhere).  The option will be put into the environment, so
+an
 <B>--up</B>
 
 script could act upon it if needed.
@@ -7182,7 +7334,7 @@ flag.
 
 <DD>
 Ask Windows to release the TAP adapter lease on shutdown.
-This option has no effect now, as it is enabled by default starting with version 2.4.1.
+This option has no effect now, as it is enabled by default starting with OpenVPN 2.4.1.
 
 <DT><B>--register-dns</B>
 
@@ -7529,14 +7681,14 @@ permitted character class for each string:
 <P>
 <B>X509 Names:</B>
 
-Alphanumeric, underbar ('_'), dash ('-'), dot ('.'), at 
+Alphanumeric, underbar ('_'), dash ('-'), dot ('.'), at
 ('@'), colon (':'), slash ('/'), and equal ('=').  Alphanumeric is defined 
 as a character which will cause the C library isalnum() function to return 
 true.
 <P>
 <B>Common Names:</B>
 
-Alphanumeric, underbar ('_'), dash ('-'), dot ('.'), and at                
+Alphanumeric, underbar ('_'), dash ('-'), dot ('.'), and at
 ('@').
 <P>
 <B>--auth-user-pass username:</B>
@@ -7553,8 +7705,8 @@ isprint() function to return true.
 <P>
 <B>--client-config-dir filename as derived from common name or username:</B>
 
-Alphanumeric, underbar ('_'), dash ('-'), and dot ('.') except for &quot;.&quot; or 
-&quot;..&quot; as standalone strings.  As of 2.0.1-rc6, the at ('@') character has
+Alphanumeric, underbar ('_'), dash ('-'), and dot ('.') except for &quot;.&quot; or
+&quot;..&quot; as standalone strings.  As of v2.0.1-rc6, the at ('@') character has
 been added as well for compatibility with the common name character class.
 <P>
 <B>Environmental variable names:</B>
@@ -8978,7 +9130,7 @@ For more information on the LZO real-time compression library see
 <A NAME="lbBP">&nbsp;</A>
 <H2>COPYRIGHT</H2>
 
-Copyright (C) 2002-2010 OpenVPN Technologies, Inc. This program is free software;
+Copyright (C) 2002-2018 OpenVPN Inc This program is free software;
 you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 2
 as published by the Free Software Foundation.
@@ -9045,6 +9197,6 @@ James Yonan &lt;<A HREF="mailto:jim@yonan.net">jim@yonan.net</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 13:22:54 GMT, July 14, 2017
+Time: 20:32:50 GMT, February 21, 2019
 </BODY>
 </HTML>
