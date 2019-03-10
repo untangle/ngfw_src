@@ -11,9 +11,10 @@
 ; mahotz was here too!
 
 SetCompressor lzma
+!addplugindir .
 
 ; Modern user interface
-!include "MUI.nsh"
+!include "MUI2.nsh"
 !include "LogicLib.nsh"
 
 ; Install for all users. MultiUser.nsh also calls SetShellVarContext to point
