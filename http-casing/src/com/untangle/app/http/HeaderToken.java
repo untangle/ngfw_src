@@ -126,6 +126,21 @@ public class HeaderToken implements Token
     }
 
     /**
+     * Get the values for the specified key or null if not found
+     * @param key - the key
+     * @param values - list of values to set
+     * @return nothing
+     */
+    public void setValues(String key, List<String> values)
+    {
+        Field f = new Field(key.toUpperCase());
+        for ( String value: values) {
+            f.addValue(value);
+        }
+        header.put(key.toUpperCase(), f);
+    }
+
+    /**
      * Get a iterator for the keySet
      * @return an iterator
      */
