@@ -151,7 +151,12 @@ public class CommandWithEmailAddress extends Command
             // No ESMTP junk
             return new EmailAddressAndExtra(parseAddress(str), null);
         }
-        String addrString = str.substring(0, addrEnd + 1);
+        String addrString;
+        try {
+            addrString = str.substring(0, addrEnd + 1);
+        } catch (Exception e) {
+            return new EmailAddressAndExtra(parseAddress(str), null);
+        }
         String esmtpString = str.substring(addrEnd + 1, str.length());
 
         return new EmailAddressAndExtra(parseAddress(addrString), esmtpString);
