@@ -45,6 +45,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static final int[] CRC_TABLE;
     private static final long DIA_TIMEOUT = 604800000; // 1 week
     private static final long DIA_TRY_LIMIT = 300000; // 5 min
+    private static final String QUIC_COOKIE_FIELD_NAME = "alt-svc";
+    private static final String QUIC_COOKIE_FIELD_START = "quic=";
+
     private static Pattern trailingDotsPattern = Pattern.compile("\\.*$");
     private static Pattern trailingDotsSlashesPattern = Pattern.compile("[.\\/]+$");
 
@@ -141,8 +144,14 @@ public class WebFilterDecisionEngine extends DecisionEngine
         if (!isLicenseValid()) {
             return null;
         } else {
-            return super.checkResponse(sess, clientIp, requestLine, header);
-        }
+            String result = super.checkResponse(sess, clientIp, requestLine, header);
+            if(result == null){
+                if(ourApp.getSettings().getBlockQuic()){
+                    removeQuicCookie(header);
+                }
+            }
+            return result;
+       }
     }
 
     /**
@@ -739,4 +748,27 @@ public class WebFilterDecisionEngine extends DecisionEngine
         else if (c == '-') return true;
         return false;
     }
+
+    /**
+     * Look for presence of quic cookie and if found remove.
+     *
+     * @param  header HeadetToken to parse.
+     */
+    private void removeQuicCookie(HeaderToken header){
+        List<String> altSvcs = header.getValues(QUIC_COOKIE_FIELD_NAME);
+        if(altSvcs != null){
+            List<String> newAltSvcs = new ArrayList<>();
+            for(String altSvc : altSvcs){
+                if(!altSvc.toLowerCase().startsWith(QUIC_COOKIE_FIELD_START)){
+                    newAltSvcs.add(altSvc);
+                }
+            }
+            header.removeField(QUIC_COOKIE_FIELD_NAME);
+            if(newAltSvcs.size() > 0){
+                header.setValues(QUIC_COOKIE_FIELD_NAME, newAltSvcs);
+            }
+        }
+
+    }
+
 }
