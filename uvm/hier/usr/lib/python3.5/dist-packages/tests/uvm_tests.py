@@ -447,5 +447,22 @@ class UvmTests(unittest.TestCase):
         
         assert(result)
 
+    def test_150_synchronize_Language(self):
+        """Check synchronizeLanguage returns OK"""
+        synchronized = uvmContext.languageManager().synchronizeLanguage()
+
+    def test_160_change_community_language(self):
+        """Check if changing community language converts the GUI"""
+        #set language to Russian
+        language_settings_community = uvmContext.languageManager.getLanguageSettings()
+        language_settings_community_orig = copy.deepcopy(language_settings_community)
+        language_settings_community['language'] = "ru"
+        uvmContext.languageManager().setLanguageSettings(language_settings_community)
+        result = subprocess.call('"wget -q -0 - -t 2 --timeout 10 --content-on-error http://localhost/admin/download" 2>&1 | grep -q "ne polozheno"', shell=True)
+
+        #Revert language
+        uvmContext.languageManager().setLanguageSettings(language_settings_community_orig)
+
+        assert(result)
 
 test_registry.register_module("uvm", UvmTests)
