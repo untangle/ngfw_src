@@ -133,8 +133,8 @@ Ext.define('Ung.apps.webfilter.MainController', {
             var categoryList = [];
             var firstSuggest = null;
             for(var i = 0 ; i < result.list.length ; i++) {
-                for(j = 0 ; j < masterList.length ; j++) {
-                    category = masterList[j];
+                for(var j = 0 ; j < masterList.length ; j++) {
+                    var category = masterList[j];
                     if (result.list[i] == category.string) {
                         categoryList.push(category.name);
                         if (firstSuggest == null) {

@@ -56,7 +56,7 @@ Ext.define('Ung.util.Rpc', {
                 // Handle this context with arguments, such as finding an app by its name.
 
                 // Extract argument list from within parens.
-                cargsList=node.substring(node.indexOf('(') + 1, node.indexOf(')') ).split(',');
+                var cargsList=node.substring(node.indexOf('(') + 1, node.indexOf(')') ).split(',');
                 var cargs = [];
                 cargsList.forEach(function(carg){
                     if(carg[0] == '"' && carg[carg.length-1] == '"'){

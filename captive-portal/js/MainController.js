@@ -128,7 +128,7 @@ Ext.define('Ung.apps.captive-portal.MainController', {
 
             // Default to local directory
             var checkDirectoryConnector = false;
-            url = '#config/local-directory';
+            var url = '#config/local-directory';
             switch (authType) {
                 case 'RADIUS':
                     checkDirectoryConnector = true;

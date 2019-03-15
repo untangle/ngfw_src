@@ -3974,10 +3974,10 @@ Ext.define('TableConfig', {
                                         var diffLines = result.split("\n");
                                         var action;
                                         for( var i = 0; i < diffLines.length; i++) {
-                                            previousAction = diffLines[i].substr(0,1);
-                                            previousLine = diffLines[i].substr(1,510);
-                                            currentAction = diffLines[i].substr(511,1);
-                                            currentLine = diffLines[i].substr(512);
+                                            var previousAction = diffLines[i].substr(0,1);
+                                            var previousLine = diffLines[i].substr(1,510);
+                                            var currentAction = diffLines[i].substr(511,1);
+                                            var currentLine = diffLines[i].substr(512);
 
                                             if( previousAction != "<" && previousAction != ">") {
                                                 previousLine = previousAction + previousLine;

@@ -192,8 +192,8 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                     return;
                 }
 
-                comparatorRender = '';
-                valueRenderer = [];
+                var comparatorRender = '';
+                var valueRenderer = [];
 
                 switch (type) {
                     case 'SRC_INTF':
