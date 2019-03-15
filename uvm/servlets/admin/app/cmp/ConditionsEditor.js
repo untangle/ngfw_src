@@ -199,9 +199,9 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                     case 'SRC_INTF':
                     case 'DST_INTF':
                         value.toString().split(',').forEach(function (intfff) {
-                                Util.getInterfaceList(true, true).forEach(function(interface){
-                                if(interface[0] == intfff){
-                                    valueRenderer.push(interface[1]);
+                                Util.getInterfaceList(true, true).forEach(function(intf){
+                                if(intf[0] == intfff){
+                                    valueRenderer.push(intf[1]);
                                 }
                             });
                         });
