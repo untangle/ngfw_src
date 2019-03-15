@@ -177,22 +177,35 @@ public class RadiusLdapAdapter
         RadiusClient client = null;
 
         synchronized ( this ) {
-            DatagramSocket socket = new DatagramSocket();
-            InetAddress address = InetAddress.getByName(radiusSettings.getServer());
-            int port = radiusSettings.getAuthPort();
-            int timeout = Integer.getInteger("com.untangle.app.directory_connector.radius.timeout-ms", 4000);
-            timeout = timeout / 1000;
-            socket.connect(address, port);
-            socket.setSoTimeout(timeout);
-            client = new RadiusClient(socket,address,radiusSettings.getSharedSecret(), port, port +1, timeout);
+            DatagramSocket socket = null;
+            try{
+                socket = new DatagramSocket();
+                InetAddress address = InetAddress.getByName(radiusSettings.getServer());
+                int port = radiusSettings.getAuthPort();
+                int timeout = Integer.getInteger("com.untangle.app.directory_connector.radius.timeout-ms", 4000);
+                timeout = timeout / 1000;
+                socket.connect(address, port);
+                socket.setSoTimeout(timeout);
+                client = new RadiusClient(socket,address,radiusSettings.getSharedSecret(), port, port +1, timeout);
 
-            if( client != null ){
-                failCount = 0;
-            }else{
-                failCount++;
-                if ( failCount > MAX_FAIL_COUNT ) {
-                    logger.warn( "Attempted to create the radius client with over " + MAX_FAIL_COUNT + " attempts");
+                if( client != null ){
                     failCount = 0;
+                }else{
+                    failCount++;
+                    if ( failCount > MAX_FAIL_COUNT ) {
+                        logger.warn( "Attempted to create the radius client with over " + MAX_FAIL_COUNT + " attempts");
+                        failCount = 0;
+                    }
+                }
+            }catch(Exception e){
+                logger.warn("getNewClient: Unable to open socket", e);
+            }finally{
+                if(socket != null){
+                    try{
+                        socket.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
                 }
             }
 

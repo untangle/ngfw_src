@@ -137,6 +137,7 @@ public class SkinManagerImpl implements SkinManager
     {
         try {
             BufferedOutputStream dest = null;
+            FileOutputStream fos = null;
             ZipEntry entry = null;
             File defaultSkinDir = new File(SKINS_DIR + File.separator + DEFAULT_ADMIN_SKIN);
             File skinDir = new File(SKINS_DIR);
@@ -177,7 +178,8 @@ public class SkinManagerImpl implements SkinManager
                     int bufferSize = 2048;
                     byte data[] = new byte[bufferSize];
                     // write the files to the disk
-                    FileOutputStream fos = null;
+                    fos = null;
+                    dest = null;
                     try {
                         fos = new FileOutputStream(SKINS_DIR + File.separator + entry.getName());
                         dest = new BufferedOutputStream(fos, bufferSize);
@@ -201,15 +203,19 @@ public class SkinManagerImpl implements SkinManager
                     } catch (Exception e) {
                         logger.warn("Failed to copy skins", e);
                     } finally {
-                        try {
-                            if (fos != null) {
+                        if (fos != null) {
+                            try{
                                 fos.close();
+                            }catch(Exception e){
+                                logger.warn(e);
                             }
-                            if (dest != null) {
+                        }
+                        if (dest != null) {
+                            try{
                                 dest.close();
+                            }catch(Exception e){
+                                logger.warn(e);
                             }
-                        } catch (IOException ex) {
-                            logger.error("Unable to close file", ex);
                         }
                     }
                 }

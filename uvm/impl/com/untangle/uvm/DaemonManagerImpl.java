@@ -470,10 +470,8 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
                 txstream.writeBytes(object.transmitString);
                 txcount = txstream.size();
                 rxcount = rxstream.read(buffer);
-            }
-
-            // catch and log any exceptions and set the restart flag
-            catch (Exception exn) {
+            }catch (Exception exn) {
+                // catch and log any exceptions and set the restart flag
                 String reason = exn.getMessage();
                 if (reason == null && exn.getCause() != null) reason = exn.getCause().toString();
                 if (reason == null && exn.getClass() != null) reason = exn.getClass().toString();
@@ -483,11 +481,26 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
                 restart = true;
             } finally {
                 // make sure the streams and socket all get closed ignoring exceptions
-                try {
-                    if (txstream != null) txstream.close();
-                    if (rxstream != null) rxstream.close();
-                    if (socket != null) socket.close();
-                } catch (Exception exn) {
+                if(socket != null){
+                    try{
+                        socket.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
+                }
+                if(txstream != null){
+                    try{
+                        txstream.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
+                }
+                if(rxstream != null){
+                    try{
+                        rxstream.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
                 }
             }
 

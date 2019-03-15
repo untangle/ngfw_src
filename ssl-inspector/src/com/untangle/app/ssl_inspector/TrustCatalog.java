@@ -141,6 +141,8 @@ class TrustCatalog
         String certString = new String(certBytes);
         if ((certString.contains("BEGIN CERTIFICATE") == false) || (certString.contains("END CERTIFICATE") == false)) return new ExecManagerResult(2, "Certificates should be DER-encoded text files in Base64 format and must start with -----BEGIN CERTIFICATE----- and end with -----END CERTIFICATE-----");
 
+        FileInputStream trustStoreFileInputStream = null;
+        FileOutputStream trustStoreFileOutputStream = null;
         try {
             // convert the uploaded certificate file to an actual cert object
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
@@ -155,7 +157,8 @@ class TrustCatalog
 
             // found the file so load the existing certificates
             if (tester.exists() == true) {
-                localStore.load(new FileInputStream(trustStoreFile), trustStorePass.toCharArray());
+                trustStoreFileInputStream = new FileInputStream(trustStoreFile);
+                localStore.load(trustStoreFileInputStream, trustStorePass.toCharArray());
 
                 // make sure they don't attempt to overwrite an existing cert
                 if (localStore.containsAlias(certAlias) == true) return new ExecManagerResult(3, "The alias specified is already assigned to an existing certificate.");
@@ -170,7 +173,8 @@ class TrustCatalog
             localStore.setCertificateEntry(certAlias, certObject);
 
             // write the updated KeyStore to the trustStore file
-            localStore.store(new FileOutputStream(trustStoreFile), trustStorePass.toCharArray());
+            trustStoreFileOutputStream = new FileOutputStream(trustStoreFile);
+            localStore.store(trustStoreFileOutputStream, trustStorePass.toCharArray());
 
             // return success code and the cert subject
             return new ExecManagerResult(0, certObject.getSubjectDN().toString());
@@ -178,6 +182,21 @@ class TrustCatalog
 
         catch (Exception exn) {
             return new ExecManagerResult(100, "Exception processing certificate: " + exn.getMessage());
+        }finally{
+            if(trustStoreFileOutputStream != null){
+                try{
+                    trustStoreFileOutputStream.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
+            }
+            if(trustStoreFileInputStream != null){
+                try{
+                    trustStoreFileInputStream.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
+            }
         }
     }
 
@@ -194,12 +213,15 @@ class TrustCatalog
         File tester = new File(trustStoreFile);
         if (tester.exists() == false) return (false);
 
+        FileInputStream trustStoreFileInputStream = null;
+        FileOutputStream trustStoreFileOutputStream = null;
         try {
             // get a new KeyStore instance
             KeyStore localStore = KeyStore.getInstance("JKS");
 
             // load the trust store file
-            localStore.load(new FileInputStream(trustStoreFile), trustStorePass.toCharArray());
+            trustStoreFileInputStream = new FileInputStream(trustStoreFile);
+            localStore.load(trustStoreFileInputStream, trustStorePass.toCharArray());
 
             // make sure the alias to delete exists
             if (localStore.containsAlias(certAlias) == false) return (false);
@@ -208,14 +230,28 @@ class TrustCatalog
             localStore.deleteEntry(certAlias);
 
             // write the updated KeyStore to the trustStore file
-            localStore.store(new FileOutputStream(trustStoreFile), trustStorePass.toCharArray());
+            trustStoreFileOutputStream = new FileOutputStream(trustStoreFile);
+            localStore.store(trustStoreFileOutputStream, trustStorePass.toCharArray());
 
             // return success code and the cert subject
             return (true);
-        }
-
-        catch (Exception exn) {
+        }catch (Exception exn) {
             logger.debug("Exception removing certificate: " + exn);
+        }finally{
+            if(trustStoreFileOutputStream != null){
+                try{
+                    trustStoreFileOutputStream.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
+            }
+            if(trustStoreFileInputStream != null){
+                try{
+                    trustStoreFileInputStream.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
+            }
         }
 
         return (false);
