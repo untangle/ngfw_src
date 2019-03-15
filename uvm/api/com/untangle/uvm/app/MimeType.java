@@ -68,6 +68,9 @@ public class MimeType implements Serializable
         }
 
         val = getType(val);
+        if(val == null){
+            return false;
+        }
 
         if (isWildcard()) {
             int length = mimeTypeNoWildcard.length();

@@ -491,11 +491,16 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public String[] getColumnsForTable( String tableName )
     {
+        String[] array = null;
         ArrayList<String> columnNames = new ArrayList<String>();
         HashMap<String,String> metadata = getColumnMetaData( tableName );
 
+        if(metadata == null){
+            return array;
+        }
+        
         Set<String> keys = metadata.keySet();
-        String[] array = new String[keys.size()];
+        array = new String[keys.size()];
         array = keys.toArray(array);
         return array;
     }
@@ -514,7 +519,7 @@ public class ReportsManagerImpl implements ReportsManager
     {
         HashMap<String,String> metadata = getColumnMetaData( tableName );
 
-        return metadata.get( columnName );
+        return (metadata == null ? null : metadata.get( columnName ));
     }
 
     /**
@@ -602,17 +607,20 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public ArrayList<org.json.JSONObject> getEvents(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
+        ArrayList<org.json.JSONObject> results = null;
         if (entry == null) {
             logger.warn("Invalid arguments");
-            return null;
+            return results;
         }
         if ( entry.getType() != ReportEntry.ReportEntryType.EVENT_LIST )
             throw new RuntimeException("Can only retrieve events for an EVENT_LIST type report entry");
-        if ( app != null ) {
-            // only flush if there are less than 10k events pending
-            // if there are more than 10k then events are currently being flushed and the queue can be quite long
-            // as such, just return the results for the events already in the DB instead of waiting up to several minutes
-            if (app.getEventsPendingCount() < 10000)
+        if ( app == null ) {
+            return results;
+        }
+        // only flush if there are less than 10k events pending
+        // if there are more than 10k then events are currently being flushed and the queue can be quite long
+        // as such, just return the results for the events already in the DB instead of waiting up to several minutes
+        if (app.getEventsPendingCount() < 10000) {
                 app.flushEvents();
         }
 
@@ -623,7 +631,7 @@ public class ReportsManagerImpl implements ReportsManager
         logger.info("Statement          : " + statement);
 
         long t0 = System.currentTimeMillis();
-        ArrayList<org.json.JSONObject> results =  ReportsApp.eventReader.getEvents( conn, statement, entry.getTable(), limit );
+        results =  ReportsApp.eventReader.getEvents( conn, statement, entry.getTable(), limit );
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");
@@ -699,18 +707,21 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public ResultSetReader getEventsForDateRangeResultSet(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit, final Date start, final Date endDate)
     {
+        ResultSetReader result = null;
         if (entry == null) {
             logger.warn("Invalid arguments");
-            return null;
+            return result;
         }
         if ( entry.getType() != ReportEntry.ReportEntryType.EVENT_LIST )
             throw new RuntimeException("Can only retrieve events for an EVENT_LIST type report entry");
-        if ( app != null ) {
-            // only flush if there are less than 10k events pending
-            // if there are more than 10k then events are currently being flushed and the queue can be quite long
-            // as such, just return the results for the events already in the DB instead of waiting up to several minutes
-            if (app.getEventsPendingCount() < 10000)
-                app.flushEvents();
+        if ( app == null ) {
+            return result;
+        }
+        // only flush if there are less than 10k events pending
+        // if there are more than 10k then events are currently being flushed and the queue can be quite long
+        // as such, just return the results for the events already in the DB instead of waiting up to several minutes
+        if (app.getEventsPendingCount() < 10000) {
+            app.flushEvents();
         }
 
         Date startDate = start;
@@ -726,7 +737,7 @@ public class ReportsManagerImpl implements ReportsManager
         logger.info("Statement          : " + statement);
 
         long t0 = System.currentTimeMillis();
-        ResultSetReader result = ReportsApp.eventReader.getEventsResultSet( conn, statement, limit);
+        result = ReportsApp.eventReader.getEventsResultSet( conn, statement, limit);
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");

@@ -255,9 +255,12 @@ public class ActiveDirectoryManagerImpl
             if (testServerSettings == null ){
                 statusResult = STATUS_RESULTS.FAIL_EMPTY_SETTINGS;
             }
+            List<String> ouFilters = testServerSettings.getOUFilters();
             String ouFiltersString = "";
-            for(String ouFilter : testServerSettings.getOUFilters()){
-                ouFiltersString += (ouFiltersString.length() > 0 ? "," : "") + ouFilter;
+            if(ouFilters != null){                
+                for(String ouFilter : ouFilters){
+                    ouFiltersString += (ouFiltersString.length() > 0 ? "," : "") + ouFilter;
+                }
             }
             logger.info("Testing Active Directory settings for (" +
                         "server='" + testServerSettings.getLDAPHost() + "', " +

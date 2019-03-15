@@ -66,7 +66,9 @@ public class MIMETCPStreamer implements TCPStreamer
             writeToFile();
             if (file != null && disposeWhenComplete)
                 session.attachTempFile(file.getAbsolutePath());
-            m_logger.debug("File is of length: " + file.length());
+            if(file != null){
+                m_logger.debug("File is of length: " + file.length());
+            }
             m_fos = new FileInputStream(file);
             m_channel = m_fos.getChannel();
             m_fileLength = file.length();
@@ -99,18 +101,10 @@ public class MIMETCPStreamer implements TCPStreamer
             bufOut.flush();
             fOut.flush();
         } catch (MessagingException ex) {
-            try {
-                fOut.close();
-            } catch (Exception ignore) {
-            }
             IOException ex2 = new IOException();
             ex2.initCause(ex);
             throw ex2;
         } catch (IOException ex) {
-            try {
-                fOut.close();
-            } catch (Exception ignore) {
-            }
             IOException ex2 = new IOException();
             ex2.initCause(ex);
             throw ex;

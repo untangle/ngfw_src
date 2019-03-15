@@ -452,7 +452,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
         // Call VirusScanner
         try {
-            logger.debug("Scanning the SMTP file: " + state.fileManager.getFileDisplayName());
+            logger.debug("Scanning the SMTP file: " + (state != null ? state.fileManager.getFileDisplayName() : "null"));
             VirusScannerResult result = this.app.getScanner().scanFile(state.fileManager.getFileObject(), session);
             if (result == null || result == VirusScannerResult.ERROR) {
                 logger.warn("Received an error scan report.  Assume local error" + " and report file clean");
@@ -540,11 +540,13 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                     }
                     sr.attach(p);
                 }
-                if (p.matcher(host.getHostName()).matches()) {
-                    return true;
-                }
-                if (p.matcher(host.getHostAddress()).matches()) {
-                    return true;
+                if(p != null){
+                    if (p.matcher(host.getHostName()).matches()) {
+                        return true;
+                    }
+                    if (p.matcher(host.getHostAddress()).matches()) {
+                        return true;
+                    }
                 }
             }
         }

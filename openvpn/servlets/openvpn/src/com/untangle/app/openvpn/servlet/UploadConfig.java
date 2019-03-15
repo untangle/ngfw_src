@@ -146,7 +146,9 @@ public class UploadConfig extends HttpServlet
         }
 
         try {
-            app.importClientConfig(temp.getPath());
+            if(temp != null){
+                app.importClientConfig(temp.getPath());
+            }
         } catch (Exception e) {
             logger.warn("Unable to install the client configuration", e);
             writer.write("{ \"success\" : false, \"code\" : \"" + e.toString() + "\" }");

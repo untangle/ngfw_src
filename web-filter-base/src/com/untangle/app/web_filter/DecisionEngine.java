@@ -511,16 +511,20 @@ public abstract class DecisionEngine
 
         if (catStr == null) catStr = rule.getDescription();
 
-        if (rule.getBlocked()) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, catStr, app.getName());
-            app.logEvent(hbe);
-            app.incrementFlagCount();
-            return rule;
-        } else if (rule.getFlagged()) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, catStr, app.getName());
-            app.logEvent(hbe);
-            app.incrementFlagCount();
-            return rule;
+        if(sess.sessionEvent() == null){
+            logger.info("Unable to get sessionEvent() for " + requestLine.getRequestLine());
+        }else{
+            if (rule.getBlocked()) {
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, catStr, app.getName());
+                app.logEvent(hbe);
+                app.incrementFlagCount();
+                return rule;
+            } else if (rule.getFlagged()) {
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, catStr, app.getName());
+                app.logEvent(hbe);
+                app.incrementFlagCount();
+                return rule;
+            }
         }
 
         return null;

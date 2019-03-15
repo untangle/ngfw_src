@@ -683,13 +683,11 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             fOut.flush();
             return ret;
         } catch (Exception ex) {
-            try {
-                fOut.close();
-            } catch (Exception ignore) {
-            }
-            try {
-                ret.delete();
-            } catch (Exception ignore) {
+            if(ret != null){
+                try {
+                    ret.delete();
+                } catch (Exception ignore) {
+                }
             }
             logger.error("Exception writing MIME Message to file", ex);
             return null;

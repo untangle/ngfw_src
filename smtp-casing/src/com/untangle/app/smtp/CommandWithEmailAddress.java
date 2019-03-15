@@ -36,22 +36,23 @@ public class CommandWithEmailAddress extends Command
 
         if (argStr == null) {
             setAddress(NULL_ADDRESS);
-        }
-        argStr = argStr.trim();
+        }else{
+            argStr = argStr.trim();
 
-        if (argStr.length() == 0 || "<>".equals(argStr)) {
-            setAddress(NULL_ADDRESS);
-        } else {
-            String prefix = getArgStrPrefix();
+            if (argStr.length() == 0 || "<>".equals(argStr)) {
+                setAddress(NULL_ADDRESS);
+            } else {
+                String prefix = getArgStrPrefix();
 
-            // Strip-off the prefix if found
-            String argStrLower = argStr.toLowerCase();
-            if (argStrLower.startsWith(prefix)) {
-                argStr = argStr.substring(prefix.length());
-            } else if (argStrLower.startsWith(prefix.substring(0, prefix.length() - 1))) {
-                argStr = argStr.substring(prefix.length() - 1);
+                // Strip-off the prefix if found
+                String argStrLower = argStr.toLowerCase();
+                if (argStrLower.startsWith(prefix)) {
+                    argStr = argStr.substring(prefix.length());
+                } else if (argStrLower.startsWith(prefix.substring(0, prefix.length() - 1))) {
+                    argStr = argStr.substring(prefix.length() - 1);
+                }
+                assignFromWire(argStr);
             }
-            assignFromWire(argStr);
         }
     }
 

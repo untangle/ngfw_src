@@ -452,13 +452,20 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
                 fos = new FileOutputStream(tmp);
                 fos.write(parsed.toString().getBytes());
                 fos.flush();
-                fos.close();
                 IOUtil.copyFile(tmp, new File(filename));
-                tmp.delete();
             }catch(Exception ex) {
-                IOUtil.close(fos);
-                tmp.delete();
                 logger.error("Unable to create installer file:" + filename + ":", ex);
+            }finally{
+                if(tmp != null){
+                    tmp.delete();
+                }
+                if(fos != null){
+                    try{
+                        fos.close();
+                    }catch(Exception e){
+                        logger.error(e);
+                    }
+                }
             }
         }
 
