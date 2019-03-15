@@ -880,7 +880,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignaturesRecordEditorController', 
             sidValue = sidComponent.getValue(),
             match = false;
 
-        compareRecord = view.record;
+        var compareRecord = view.record;
         vm.get('signatures').each( function( record ) {
             if( record.get('_id') != compareRecord.get('_id') ){
                 if( gidValue == record.get('gid') &&
@@ -2089,7 +2089,7 @@ Ext.define('Ung.model.intrusionprevention.rule',{
                 network = network.substr(network.indexOf('[') + 1, network.lastIndexOf(']') -1);
             }
 
-            addNetwork = this.get(sourceType+"Networks");
+            var addNetwork = this.get(sourceType+"Networks");
             if(negate == true){
                 addNetwork = '!' + addNetwork;
             }

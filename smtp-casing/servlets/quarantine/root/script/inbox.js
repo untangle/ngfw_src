@@ -170,7 +170,7 @@ Ext.define('Ung.view.MainController', {
     },
 
     releaseAndSafeList: function (btn) {
-        var me = this, vm = me.getViewModel(), grid = btn.up('grid'), addresses = []
+        var me = this, vm = me.getViewModel(), grid = btn.up('grid'), addresses = [],
             selectedRecords = grid.getSelection();
         Ext.Array.each(selectedRecords, function (rec) {
             addresses.push(rec.get('sender'));

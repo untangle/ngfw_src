@@ -522,9 +522,9 @@ Ext.define('Ung.config.administration.MainController', {
                     text: 'Upload Certificate'.t(),
                     formBind: false,
                     handler: function() {
-                        cd = Ext.get('cert_data');
-                        kd = Ext.get('key_data');
-                        ed = Ext.get('extra_data');
+                        var cd = Ext.get('cert_data');
+                        var kd = Ext.get('key_data');
+                        var ed = Ext.get('extra_data');
                         Rpc.asyncData('rpc.UvmContext.certificateManager.uploadServerCertificate', cd.component.getValue(), kd.component.getValue(), ed.component.getValue())
                         .then(function(status){
                             if (status.result === 0) {
@@ -706,10 +706,10 @@ Ext.define('Ung.config.administration.MainController', {
         form.submit({
             url: "upload",
             success: Ext.bind(function( form, action ) {
-                detail = JSON.parse(action.result.msg);
-                cptr = Ext.get('cert_data');
-                kptr = Ext.get('key_data');
-                eptr = Ext.get('extra_data');
+                var detail = JSON.parse(action.result.msg);
+                var cptr = Ext.get('cert_data');
+                var kptr = Ext.get('key_data');
+                var eptr = Ext.get('extra_data');
                 if (detail.certData) {
                     if (cptr) {
                         cptr.component.setValue(detail.certData);
@@ -722,7 +722,7 @@ Ext.define('Ung.config.administration.MainController', {
                 }
                 if (detail.extraData) {
                     if (eptr) {
-                        work = eptr.component.getValue();
+                        var work = eptr.component.getValue();
                         eptr.component.setValue(work + detail.extraData);
                     }
                 }

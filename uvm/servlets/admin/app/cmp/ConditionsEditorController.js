@@ -178,6 +178,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
             me.resizeColumn.setWidth(availableWidth);
         }
         var addedComparatorWidget = this.addComparatorWidget();
+        var addedValueWidget = null;
         if(!addedComparatorWidget){
             addedValueWidget = this.addValueWidget();
         }
@@ -303,7 +304,7 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                         });
                     });
                 }else{
-                    for (i = 0; i < condition.values.length; i += 1) {
+                    for (var i = 0; i < condition.values.length; i += 1) {
                         ckItems.push({
                             // name: 'ck',
                             inputValue: condition.values[i][0],

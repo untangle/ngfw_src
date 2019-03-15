@@ -344,7 +344,7 @@ Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {
     serverTest: function( element, rowIndex, columnIndex, column, pos, record){
         var v = this.getView();
 
-        settings = Ext.clone(record.data);
+        var settings = Ext.clone(record.data);
         var ouFilterGrid = v.query('[itemId=unoufiltergrid]');
         if(ouFilterGrid.length){
             ouFilterGrid.forEach( function( grid ){
@@ -547,6 +547,7 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTestController
             vm.set('statusIcon', statusIcon);
             vm.set('statusIconColor', statusIconColor);
 
+            var statusText = "";
             switch(status['status']){
                 case 'WARN_QUERY_NO_USERS':
                     statusText = 'Successfully queried but no users found.'.t();

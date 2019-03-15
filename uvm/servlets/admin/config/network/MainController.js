@@ -575,7 +575,7 @@ Ext.define('Ung.config.network.MainController', {
             if(Util.isDestroyed(v)){
                 return;
             }
-            list = eval(result);
+            var list = eval(result);
             list.forEach(function(entry){
                 entry['sent'] = parseInt(entry['sent'],10);
             });
@@ -638,7 +638,7 @@ Ext.define('Ung.config.network.MainController', {
 
     },
     addStaticDhcpLease: function (view, rowIndex, colIndex, item, e, record) {
-        var me = this; staticDhcpGrid = me.getView().down('#dhcpEntries');
+        var me = this, staticDhcpGrid = me.getView().down('#dhcpEntries');
         var newDhcpEntry = {
             macAddress: record.get('macAddress'),
             address: record.get('address'),
@@ -732,9 +732,8 @@ Ext.define('Ung.config.network.MainController', {
                     return;
                 }
                 var columns = line.split(" ");
-                if(columns[8] == 'never'){
-                    uptime = 0;
-                }else{
+                var uptime = 0;
+                if(columns[8] != 'never'){
                     var uptimes = columns[8].trim().split(/[dhm]/);
                     if(uptimes.length > 1){
                         uptime = (parseInt(uptimes[0],10) * 3600 * 24) + (parseInt(uptimes[1],10) * 3600) + (parseInt(uptimes[2],10) * 60);
@@ -766,10 +765,10 @@ Ext.define('Ung.config.network.MainController', {
                 }
                 var columns = line.split(" ");
 
-                devs = columns[5].split(':');
-                dev = devs[0];
+                var devs = columns[5].split(':');
+                var dev = devs[0];
                 var interfaceRecord = vm.get('interfaces').findRecord('symbolicDev', dev);
-                interfaceId = interfaceRecord ? interfaceRecord.get('interfaceId') : dev;
+                var interfaceId = interfaceRecord ? interfaceRecord.get('interfaceId') : dev;
                 storeData.push({
                     neighbor: columns[0],
                     address: columns[4],
@@ -811,7 +810,7 @@ Ext.define('Ung.config.network.MainController', {
 
         view.setLoading(true);
 
-        runInterfaceTaskDelay = 100;
+        var runInterfaceTaskDelay = 100;
         var runInterfaceTask = new Ext.util.DelayedTask( Ext.bind(function(){
             // !!! look for destroyed objects in 14.0
             var networkInterfaces = vm.get('settings.interfaces');
