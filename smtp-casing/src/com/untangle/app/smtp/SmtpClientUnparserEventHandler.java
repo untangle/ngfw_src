@@ -251,7 +251,9 @@ public class SmtpClientUnparserEventHandler extends AbstractEventHandler
             logger.debug("Unparse token of type " + (token == null ? "null" : token.getClass().getName()));
         }
 
-        session.sendDataToClient( token.getBytes() );
+        if(token != null){
+            session.sendDataToClient( token.getBytes() );
+        }
         return;
     }
 

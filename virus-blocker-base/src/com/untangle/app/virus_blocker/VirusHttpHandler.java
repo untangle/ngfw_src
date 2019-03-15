@@ -634,7 +634,7 @@ class VirusHttpHandler extends HttpEventHandler
                     }
                     sr.attach(p);
                 }
-                if (p.matcher(host).matches()) {
+                if ( (p != null) && p.matcher(host).matches()) {
                     return true;
                 }
             }

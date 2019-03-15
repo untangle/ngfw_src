@@ -228,7 +228,8 @@ public class Line
                             if (eatWhitespace()) {
                                 return SP;
                             } else {
-                                return getBuffer() == null ? -1 : getBuffer().get();
+                                ByteBuffer gb = getBuffer();
+                                return (gb == null ? -1 : gb.get());
                             }
                         } else {
                             // Odd. CRX where "X" is not

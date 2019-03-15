@@ -60,7 +60,8 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
 
     public void addAddress( AddressKind kind, String rawAddress, String rawPersonal )
     {
-        String address = decodeText(rawAddress).toLowerCase();
+        String address = decodeText(rawAddress);
+        address = (address != null ? address.toLowerCase() : null);
         String personal = decodeText(rawPersonal);
         
         SmtpMessageAddressEvent newAddr = new SmtpMessageAddressEvent(this, kind, address, personal);

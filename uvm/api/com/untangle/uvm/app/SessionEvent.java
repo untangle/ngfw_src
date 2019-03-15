@@ -255,9 +255,9 @@ public class SessionEvent extends LogEvent
              * 3) If neither is known just use the address if fallbackToIp otherwise null
              */
             if ( clientIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
-                return serverAddr.getHostAddress();
+                return (serverAddr != null ? serverAddr.getHostAddress() : "");
             } else {
-                return clientAddr.getHostAddress();
+                return (clientAddr != null ? clientAddr.getHostAddress() : "");
             }
         } catch (Exception e) {
             logger.warn( "Exception determing hostname", e );

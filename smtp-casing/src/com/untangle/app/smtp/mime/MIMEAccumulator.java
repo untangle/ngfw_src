@@ -223,9 +223,11 @@ public class MIMEAccumulator
                 this.fileOut.close();
             } catch (Exception ignore) {
             }
-            try {
-                this.file.delete();
-            } catch (Exception ignore) {
+            if(this.file != null){
+                try {
+                    this.file.delete();
+                } catch (Exception ignore) {
+                }
             }
             IOException ex2 = new IOException("Exception creating a temp file for MIME message");
             ex2.initCause(ex);
@@ -355,16 +357,18 @@ public class MIMEAccumulator
             in = this.fileMIMESource.getInputStream();
             this.headers = new InternetHeaders(in);
             this.headersLen = (int) in.position();
-            in.close();
             return this.headers;
         } catch (Exception ex) {
             this.logger.error("Error parsing MIME body", ex);
-            try {
-                in.close();
-            } catch (Exception ignore) {
-            }
             this.fileMIMESource = null;
             return null;
+        }finally{
+            if(in != null){
+                try {
+                    in.close();
+                } catch (Exception ignore) {
+                }
+            }
         }
     }
 
@@ -402,16 +406,18 @@ public class MIMEAccumulator
             while (buf.hasRemaining()) {
                 fc.read(buf);
             }
-            fIn.close();
             buf.flip();
             return buf;
         } catch (Exception ex) {
-            try {
-                fIn.close();
-            } catch (Exception ignore) {
-            }
             this.logger.error("Error draining headers trapped in file to buffer");
             return null;
+        }finally{
+            if( fIn != null){
+                try {
+                    fIn.close();
+                } catch (Exception ignore) {
+                }
+            }
         }
     }
 
@@ -469,16 +475,18 @@ public class MIMEAccumulator
 
             if (messageInfo != null)
                 messageInfo.setTmpFile(this.file);
-            mimeIn.close();
             closeInput();
             return this.mimeMessage;
         } catch (Exception ex) {
-            try {
-                mimeIn.close();
-            } catch (Exception ignore) {
-            }
             this.logger.error("Error parsing MIME body", ex);
             return null;
+        }finally{
+            if(mimeIn != null){
+                try {
+                    mimeIn.close();
+                } catch (Exception ignore) {
+                }
+            }
         }
     }
 

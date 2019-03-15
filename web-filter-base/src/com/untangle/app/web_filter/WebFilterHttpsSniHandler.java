@@ -198,11 +198,13 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
                     logger.warn("Exception extracting host name from server certificate ", exn);
                 }
 
-                // we only want the CN from the certificate
-                for (Rdn rdn : ldapName.getRdns()) {
-                    if (rdn.getType().equals("CN") == false) continue;
-                    domain = rdn.getValue().toString().toLowerCase();
-                    break;
+                if(ldapName != null){
+                    // we only want the CN from the certificate
+                    for (Rdn rdn : ldapName.getRdns()) {
+                        if (rdn.getType().equals("CN") == false) continue;
+                        domain = rdn.getValue().toString().toLowerCase();
+                        break;
+                    }
                 }
             }
 

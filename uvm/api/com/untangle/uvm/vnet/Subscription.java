@@ -150,6 +150,9 @@ public class Subscription
     public boolean equals(Object o)
     {
         Subscription s = (Subscription)o;
+        if(s == null){
+            return false;
+        }
         return s.protocol == protocol
             && s.clientAddress.equals(clientAddress)
             && s.serverAddress.equals(serverAddress)

@@ -415,10 +415,12 @@ public class LocalDirectoryImpl implements LocalDirectory
         } catch (Exception exn) {
             logger.error("Exception creating IPsec xauth.secrets file", exn);
         } finally {
-            try {
-                auth.close();
-            } catch (IOException ex) {
-                logger.error("Exception closing IPsec xauth.secrets file", ex);
+            if(auth != null){
+                try {
+                    auth.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing IPsec xauth.secrets file", ex);
+                }
             }
         }
     }
@@ -531,10 +533,12 @@ public class LocalDirectoryImpl implements LocalDirectory
         } catch (Exception e) {
             logger.warn("Unable to access formatter", e);
         } finally {
-            try {
-                secform.close();
-            } catch (FormatterClosedException ex) {
-                logger.error("Unable to close formatter", ex);
+            if(secform != null){
+                try {
+                    secform.close();
+                } catch (FormatterClosedException ex) {
+                    logger.error("Unable to close formatter", ex);
+                }
             }
         }
 

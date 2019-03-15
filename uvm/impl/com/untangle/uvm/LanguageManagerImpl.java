@@ -438,11 +438,13 @@ public class LanguageManagerImpl implements LanguageManager
             logger.warn("copyZipEntryToDisk: Unable to write file", e);
             success = false;
         }finally{
-            try{
-                dest.close();
-            }catch(IOException ex){
-                logger.error("Unable to close file", ex);
-            }            
+            if(dest != null){
+                try{
+                    dest.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
+            }
         }
         return success;
     }
@@ -492,10 +494,12 @@ public class LanguageManagerImpl implements LanguageManager
         } catch (IOException e) {
             logger.warn("Failed getting all languages!", e);
         } finally {
-            try{
-                in.close();
-            }catch(IOException ex){
-                logger.error("Unable to close file", ex);
+            if(in != null){
+                try{
+                    in.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
             }
         }
 
@@ -528,10 +532,12 @@ public class LanguageManagerImpl implements LanguageManager
         } catch (IOException e) {
             logger.warn("Failed getting all countries!", e);
         } finally {
-            try{
-                in.close();
-            }catch(IOException ex){
-                logger.error("Unable to close file", ex);
+            if(in != null ){
+                try{
+                    in.close();
+                }catch(IOException ex){
+                    logger.error("Unable to close file", ex);
+                }
             }
         }
 

@@ -268,6 +268,9 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     public boolean equals(Object obj)
     {
         LocalDirectoryUser other = (LocalDirectoryUser) obj;
+        if(other == null){
+            return false;
+        }
         return makeNotNull(other.getUsername()).equals(makeNotNull(this.username));
     }
 

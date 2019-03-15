@@ -157,18 +157,21 @@ public class PluginManagerImpl implements PluginManager
 
         try {
             logger.info("Loading   plugin: " + className);
-            Class clazz = createClassLoader().loadClass(className);
-            if (clazz == null) {
-                logger.warn("Failed to find ExamplePluginImpl");
-            } else {
-                Plugin plugin = (Plugin) clazz.getMethod("instance").invoke(null);
-                logger.info("Loaded    plugin: " + className);
-                logger.info("Starting  plugin: " + className);
-                Thread thread = new Thread(plugin);
-                thread.start();
-                logger.info("Started   plugin: " + className + " " + thread);
+            URLClassLoader urlClassLoader = createClassLoader();
+            if(urlClassLoader != null){    
+                Class clazz = urlClassLoader.loadClass(className);
+                if (clazz == null) {
+                    logger.warn("Failed to find ExamplePluginImpl");
+                } else {
+                    Plugin plugin = (Plugin) clazz.getMethod("instance").invoke(null);
+                    logger.info("Loaded    plugin: " + className);
+                    logger.info("Starting  plugin: " + className);
+                    Thread thread = new Thread(plugin);
+                    thread.start();
+                    logger.info("Started   plugin: " + className + " " + thread);
 
-                loadedPlugins.put(className, plugin);
+                    loadedPlugins.put(className, plugin);
+                }
             }
         } catch (Throwable t) {
             logger.warn("Extension exception: ", t);

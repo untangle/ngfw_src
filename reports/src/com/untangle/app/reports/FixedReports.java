@@ -1585,6 +1585,9 @@ public class FixedReports
                 /*
                  * Get the method's argument type list
                  */
+                if(object == null){
+                    continue;
+                }
                 for(Method m: object.getClass().getMethods()){
                     if(variableSelector.fields.get(fieldIndex).equals(m.getName()) &&
                         (m.getParameterTypes().length == variableSelector.arguments.size())){
