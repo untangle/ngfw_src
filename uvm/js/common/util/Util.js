@@ -422,11 +422,11 @@ Ext.define('Ung.util.Util', {
                 data = [];
 
             // Note: using strings as keys instead of numbers, needed for the checkboxgroup column widget component to function
-            networkSettings.interfaces.list.forEach( function(interface){
-                data.push([interface.interfaceId.toString(), interface.name]);
+            networkSettings.interfaces.list.forEach( function(intf){
+                data.push([intf.interfaceId.toString(), intf.name]);
             });
-            networkSettings.virtualInterfaces.list.forEach( function(interface){
-                data.push([interface.interfaceId.toString(), interface.name]);
+            networkSettings.virtualInterfaces.list.forEach( function(intf){
+                data.push([intf.interfaceId.toString(), intf.name]);
             });
             this.interfaceList = data;
         }

@@ -353,8 +353,8 @@ Ext.define('Ung.config.network.MainController', {
         var me = this,
             vm = this.getViewModel();
 
-        vm.bind('{interfacesGrid.selection}', function(interface) {
-            if (interface) {
+        vm.bind('{interfacesGrid.selection}', function(intf) {
+            if (intf) {
                 me.getInterfaceStatus();
                 me.getInterfaceArp();
             }
@@ -800,11 +800,11 @@ Ext.define('Ung.config.network.MainController', {
         var interfacesInUse = [];
         if(cmp.isXType('combo')){
             var currentValue = cmp.getBind().value.getRawValue();
-            cmp.up('#interfaces').getStore().getData().each(function(interface){
-                if(interface.get('dev') == currentValue){
+            cmp.up('#interfaces').getStore().getData().each(function(intf){
+                if(intf.get('dev') == currentValue){
                     return;
                 }
-                interfacesInUse.push(interface.get('dev'));
+                interfacesInUse.push(intf.get('dev'));
             });
         }
 
@@ -821,17 +821,17 @@ Ext.define('Ung.config.network.MainController', {
 
             var interfaceData = [];
             var dev;
-            networkInterfaces.list.forEach( function(interface){
-                if( interface["configType"] != "ADDRESSED" || interface["v4ConfigType"] != "STATIC"){
+            networkInterfaces.list.forEach( function(intf){
+                if( intf["configType"] != "ADDRESSED" || intf["v4ConfigType"] != "STATIC"){
                     return;
                 }
-                dev = interface['symbolicDev'];
+                dev = intf['symbolicDev'];
                 if(interfacesInUse.indexOf(dev) > -1){
                     return;
                 }
                 interfaceData.push({
                     'dev': dev,
-                    'interface': interface['name'],
+                    'interface': intf['name'],
                 });
             });
 
@@ -1207,14 +1207,14 @@ Ext.define('Ung.config.network.MainController', {
         var record = combo.up('window').getViewModel().get('intf');
 
         var fields = [];
-        vm.get('settings').interfaces.list.forEach( function(interface){
-            if( ( interface.interfaceId == record.get('interfaceId') ) ||
-                ( interface.bridged !== false ) ||
-                ( interface.disabled !== false ) ||
-                ( interface.configType != 'ADDRESSED') ){
+        vm.get('settings').interfaces.list.forEach( function(intf){
+            if( ( intf.interfaceId == record.get('interfaceId') ) ||
+                ( intf.bridged !== false ) ||
+                ( intf.disabled !== false ) ||
+                ( intf.configType != 'ADDRESSED') ){
                 return;
             }
-            fields.push([interface.interfaceId, interface.name]);
+            fields.push([intf.interfaceId, intf.name]);
         });
 
         combo.setStore(Ext.create('Ext.data.ArrayStore', {
