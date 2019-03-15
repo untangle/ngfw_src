@@ -351,6 +351,7 @@ public class ApplicationControlApp extends AppBase
     protected boolean daemonCheck()
     {
         Socket sock = null;
+        boolean result = true;
         try {
             sock = new Socket();
             sock.connect(daemonAddress, 1000);
@@ -362,12 +363,12 @@ public class ApplicationControlApp extends AppBase
                 try{
                     sock.close();
                 }catch (Exception exn) {
-                    return (false);
+                    result = false;
                 }
             }
         }
 
-        return (true);
+        return result;
     }
 
     /**
