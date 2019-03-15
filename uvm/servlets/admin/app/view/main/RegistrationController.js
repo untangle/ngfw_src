@@ -44,7 +44,6 @@ Ext.define('Ung.view.main.RegistrationController', {
     },
 
     finishReg: function() {
-        var me = this;
         rpc.UvmContext.setRegistered(function(result, ex) {
             if (ex) { Util.handleException(ex); return; }
             rpc.isRegistered = true;

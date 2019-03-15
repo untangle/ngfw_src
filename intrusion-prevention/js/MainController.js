@@ -14,9 +14,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         v.setLoading(true);
 
         var getSignatures = function(){};
-        var buildAllSignatures = false;
         if(vm.get('signaturesList') == null){
-            buildAllSignatures = true;
             getSignatures = function(){
                 return Ext.Ajax.request({
                     url: "/admin/download",
@@ -77,7 +75,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     buildVariables: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this, vm = this.getViewModel();
 
         var networkVariablesList = [{
             value: 'recommended', 
@@ -98,11 +96,11 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     buildSignatures: function(reserved){
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
 
-        var t0 = performance.now();
-        var t1 = performance.now();
-        var t2 = performance.now();
+        // var t0 = performance.now();
+        // var t1 = performance.now();
+        // var t2 = performance.now();
 
         var signatures = [];
         if(typeof(reserved) == 'undefined'){
@@ -121,7 +119,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
              * Build from default signature database.
              */
             var filenameRegex = new RegExp("^# filename: (emerging\-|)(.+)\.rules$");
-            var filenameStrips = ['emerging-'];
+            // var filenameStrips = ['emerging-'];
             var matches;
             var category;
             reserved.responseText.split("\n").forEach(function(line){
@@ -183,8 +181,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
 
     buildErrors: function(errors){
-        var me = this,
-            parsedErrors = [],
+        var parsedErrors = [],
             vm = this.getViewModel();
 
         errors.split("\n").forEach( function(error){
@@ -266,7 +263,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     isVariableUsed: function(variable) {
-        var me = this, vm = this.getViewModel();
+        var vm = this.getViewModel();
 
         if(Ext.isEmpty(variable)) {
             return false;
@@ -344,8 +341,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
     signaturesChanged: function(store){
         // console.log('signaturesChanged');
-        var me = this,
-            vm = this.getViewModel();
+        var me = this;
 
         me.watchSignatureStoreTask = new Ext.util.DelayedTask( Ext.bind(function(){
             var me = this,
@@ -392,7 +388,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 block: {},
                 disable: {}
             };
-        var t0 = performance.now();
+        // var t0 = performance.now();
 
         if(signatures == null){
             return status;
@@ -500,7 +496,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         },
 
         classtypeRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-            var vm = this.getViewModel();
             var classtypeRecord = Ung.apps.intrusionprevention.Main.classtypes.findRecord('value', value, 0, false, false, true);
             var description = value;
             if( classtypeRecord != null ){
@@ -511,7 +506,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         },
 
         categoryRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-            var vm = this.getViewModel();
             var description = value;
             var categoryRecord = Ung.apps.intrusionprevention.Main.categories.findRecord('value', value, 0, false, false, true);
             if( categoryRecord != null ){
@@ -569,7 +563,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         },
 
         recommendedActionRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-            var vm = this.getViewModel();
             var description = value;
             var actionRecord = Ung.apps.intrusionprevention.Main.signatureActions.findRecord('value', value, 0, false, false, true);
             if( actionRecord != null ){
@@ -579,9 +572,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             return Ext.String.htmlEncode( description );
         },
         signatureRuleActionRenderer: function(value, metaData, record, rowIdx, colIdx, store){
-            var v = this.getView(),
-                vm = this.getViewModel();
-            var actionDescription = value;
             var ruleDescription = '';
 
             var rule = null;
@@ -672,7 +662,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     // !!! need to run on grid initializer
     processRuleSignature: function(record){
         var me = this,
-            v = me.getView(),
             vm = me.getViewModel(),
             signatures = vm.get('signatures');
         console.log('processRule');
@@ -727,7 +716,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
     controller: 'unintrusionrulesrecordeditorcontroller',
 
     doDestroy: function(){
-        var masterGrid = this.getController().masterGrid;
+        // var masterGrid = this.getController().masterGrid;
         this.callParent();
         // delete using rule id lookup.
         //masterGrid.up('apppanel').getController().signaturesChanged();
@@ -788,8 +777,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.IpsRulesConditionsEditorController'
     },
 
     updateMatchStatusCalculator: function(){
-        var me = this,
-            view = this.getView(),
+        var view = this.getView(),
             store = view.down('grid').getStore(),
             rule = new Ung.model.intrusionprevention.rule({
                 action: 'default',
@@ -1167,7 +1155,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
 
     changeFilterComparator:function(field){
         var me = this,
-            vm = me.getViewModel(),
             value = field.getValue(),
             grid = this.getView().up('grid') ? this.getView().up('grid') : this.getView().up('panel').down('grid'),
             store = grid.getStore(),
@@ -1228,7 +1215,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
 
     createRuleFromFilter: function(button){
         var me = this,
-            view = me.getView(),
             vm = me.getViewModel(),
             field = vm.get('field'),
             comparator = vm.get('comparator'),
@@ -1313,10 +1299,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridController', {
     },
 
     importHandler: function(importMode, newData){
-        var me = this;
-
         this.callParent(arguments);
-        var store = this.getView().getStore();
+        // var store = this.getView().getStore();
 
         // store.each( function(record){
         //     me.updateSignature(record, 'log', record.get('log') );
@@ -1375,7 +1359,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesRecordEditorController', {
         }
         me.setValidation(true);
 
-        var activeVariable = v.up('app-intrusion-prevention').getController().isVariableUsed(newValue);
         if(!Ext.Object.isEmpty(v.up('app-intrusion-prevention').getController().isVariableUsed(newValue))){
             me.setReadOnly(true);
             me.up("").down("[name=activeVariable]").setVisible(true);
@@ -1537,7 +1520,6 @@ Ext.define('Ung.model.intrusionprevention.signature',{
                 networkChanged: false
             };
 
-            var action = 'alert';
             valid = Ung.model.intrusionprevention.signature.signatureRegex.test(signature);
             if(valid){
                 var matches = Ung.model.intrusionprevention.signature.signatureRegex.exec(signature);
@@ -1697,8 +1679,6 @@ Ext.define('Ung.model.intrusionprevention.signature',{
 
     // option to build as recommmended and with rule
     build: function(){
-        var me = this;
-
         var signatureAction = 'alert';
         var action = this.get('recommendedAction');
         if( action == 'block' ){
