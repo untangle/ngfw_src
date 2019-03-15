@@ -164,7 +164,7 @@ public class IpsecVpnTimer extends TimerTask
             else {
 
                 // if our active flag is true we need to log a down event
-                if (watcher.activeFlag == true) {
+                if (watcher.activeFlag == true && tunnel != null) {
                     watcher.activeFlag = false;
                     IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.DISCONNECT);
                     app.logEvent(event);

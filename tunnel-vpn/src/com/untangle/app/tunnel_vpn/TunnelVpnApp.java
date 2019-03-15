@@ -670,7 +670,7 @@ public class TunnelVpnApp extends AppBase
                     outputStream.write(data, 0, len);
             } catch (IOException e) {
                 logger.warn("Unable to validate client file.", e);
-                return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName());
+                return new ExecManagerResult(1, e.getMessage() + ": " + (fileItem != null ? fileItem.getName() : ""));
             } finally {
                 try {
                     if (outputStream != null) outputStream.close();
@@ -692,7 +692,7 @@ public class TunnelVpnApp extends AppBase
                 return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName());
             }
 
-            return new ExecManagerResult(0, temp.getPath() + '&' + "Validated" + ": " + fileItem.getName());
+            return new ExecManagerResult(0, temp.getPath() + '&' + "Validated" + ": " + (fileItem != null ? fileItem.getName(): "" ));
         }
     }
 

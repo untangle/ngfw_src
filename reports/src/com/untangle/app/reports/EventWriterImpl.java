@@ -463,7 +463,7 @@ public class EventWriterImpl implements Runnable
                     }
                     long write_t1 = System.currentTimeMillis();
 
-                    if (logger.isInfoEnabled()) {
+                    if (logger.isInfoEnabled() && className != null) {
                         /**
                          * Update the stats
                          */

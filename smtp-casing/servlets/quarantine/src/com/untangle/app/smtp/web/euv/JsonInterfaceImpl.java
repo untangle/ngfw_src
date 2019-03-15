@@ -418,8 +418,10 @@ public class JsonInterfaceImpl implements JsonInterface
         int releaseCount = 0;
         if (mids.size() > 0) {
             ActionResponse temp = handleMessages(INBOX_ACTION.RELEASE, token, mids.toArray(new String[mids.size()]));
-            totalRecords = temp.getTotalRecords();
-            releaseCount = temp.getReleaseCount();
+            if(temp != null){
+                totalRecords = temp.getTotalRecords();
+                releaseCount = temp.getReleaseCount();
+            }
         }
 
         ActionResponse response = new ActionResponse(totalRecords, userSafelist);

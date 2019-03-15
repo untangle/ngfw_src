@@ -243,11 +243,16 @@ public class IOUtil
             fOut = new FileOutputStream(writeTo, append);
             fOut.write(bytes, start, len);
             fOut.flush();
-            fOut.close();
-        }
-        catch(IOException ex) {
-            close(fOut);
+        }catch(IOException ex) {
             throw ex;
+        }finally{
+            if(fOut != null){
+                try{
+                    close(fOut);
+                }catch(Exception e){
+                    throw e;
+                }
+            }
         }
 
     }

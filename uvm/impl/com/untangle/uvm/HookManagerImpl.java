@@ -210,7 +210,7 @@ public class HookManagerImpl implements HookManager
         LinkedList<HookCallback> callbacks = registeredCallbacks.get( hookName );
         if ( callbacks == null || callbacks.size() == 0 ) {
             if (logger.isDebugEnabled())
-                logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
+                logger.debug( "Calling hook[" + hookName + "] callbacks (" + (callbacks != null ? callbacks.size() : "null") + " hooks)" );
             return;
         }
 

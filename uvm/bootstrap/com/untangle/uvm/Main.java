@@ -103,7 +103,7 @@ public class Main
                 System.err.println("FATAL ERROR: " + str);
             }
         } catch (Throwable y) {
-            System.out.println("Throwable: " + x.getMessage());
+            System.out.println("Throwable: " + ( x!= null ? x.getMessage() : "unknown" ));
             x.printStackTrace();
         } finally {
             System.exit(-1);

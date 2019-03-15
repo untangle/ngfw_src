@@ -433,11 +433,13 @@ class VirusFtpHandler extends FtpEventHandler
                     }
                     sr.attach(p);
                 }
-                if (p.matcher(host.getHostName()).matches()) {
-                    return true;
-                }
-                if (p.matcher(host.getHostAddress()).matches()) {
-                    return true;
+                if(p != null){
+                    if (p.matcher(host.getHostName()).matches()) {
+                        return true;
+                    }
+                    if (p.matcher(host.getHostAddress()).matches()) {
+                        return true;
+                    }
                 }
             }
         }

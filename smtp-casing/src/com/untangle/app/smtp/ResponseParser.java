@@ -390,9 +390,12 @@ public class ResponseParser
                 break;
             }
         }
-        ByteBuffer retBuf = resp.getBytes();
-        byte[] ret = new byte[retBuf.remaining()];
-        retBuf.get(ret);
+        byte[] ret = null;
+        if(resp != null){
+            ByteBuffer retBuf = resp.getBytes();
+            ret = new byte[retBuf.remaining()];
+            retBuf.get(ret);
+        }
         // resultStrList.add(result);
         return ret;
     }
