@@ -120,6 +120,28 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
                 String errorText = ("221 E " + exn.getClass().getName());
                 buffer = errorText.getBytes();
                 rxcount = errorText.length();
+            }finally{
+                if(socket != null){
+                    try{
+                        socket.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
+                }
+                if(txstream != null){
+                    try{
+                        txstream.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
+                }
+                if(rxstream != null){
+                    try{
+                        rxstream.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
+                }
             }
 
             // close the streams and socket ignoring exceptions

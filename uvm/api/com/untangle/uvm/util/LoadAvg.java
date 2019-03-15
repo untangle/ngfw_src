@@ -114,8 +114,11 @@ public class LoadAvg
         if (curTime - SAMPLING_FREQ >= lastSampleTime) {
             lastSampleTime = curTime;
             String line = null;
+            BufferedReader rdr = null;
+            FileReader fr = null;
             try {
-                BufferedReader rdr = new BufferedReader(new FileReader(PATH_PROC_LOADAVG));
+                fr = new FileReader(PATH_PROC_LOADAVG);
+                rdr = new BufferedReader(fr);
 
                 line = rdr.readLine();
 
@@ -136,7 +139,6 @@ public class LoadAvg
                     vals.numrunning = Integer.parseInt(runtoken);
                     vals.numthreads = Integer.parseInt(threadstoken);
                 }
-                rdr.close();
             } catch (FileNotFoundException x) {
                 logger.warn("Cannot open " + PATH_PROC_LOADAVG + "(" + x.getMessage() +
                             "), no stats available");
@@ -150,6 +152,21 @@ public class LoadAvg
             } catch (Exception x) {
                 logger.warn("Unable to parse " + PATH_PROC_LOADAVG + "(" + x.getMessage() +
                             "), line " + line);
+            }finally{
+                if(rdr != null){
+                    try{
+                        rdr.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
+                }
+                if(fr != null){
+                    try{
+                        fr.close();
+                    }catch(Exception e){
+                        logger.warn(e);
+                    }
+                }
             }
         }
     }

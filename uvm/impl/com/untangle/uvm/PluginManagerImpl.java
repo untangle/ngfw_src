@@ -8,8 +8,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.FileVisitOption;
@@ -79,10 +81,11 @@ public class PluginManagerImpl implements PluginManager
      */
     public void loadPlugins()
     {
+        Stream<Path> walker = null;
         try {
             String pathStr = System.getProperty("uvm.lib.dir") + "/plugins";
-            Files.walk(Paths.get(pathStr), FileVisitOption.FOLLOW_LINKS)
-                .filter(Files::isRegularFile)
+            walker = Files.walk(Paths.get(pathStr), FileVisitOption.FOLLOW_LINKS);
+            walker.filter(Files::isRegularFile)
                 .filter(path -> !path.toString().contains("$"))
                 .filter(path -> path.toString().contains("Plugin"))
                 .forEach(path -> {
@@ -94,6 +97,14 @@ public class PluginManagerImpl implements PluginManager
                     });
         } catch (Throwable t) {
             logger.warn("Extension exception: ", t);
+        }finally{
+            if(walker != null){
+                try{
+                    walker.close();
+                }catch(Exception e){
+                    logger.warn(e);
+                }
+            }
         }
     }
 

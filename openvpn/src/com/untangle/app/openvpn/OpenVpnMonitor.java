@@ -296,14 +296,28 @@ class OpenVpnMonitor implements Runnable
 
             /* Check for any dead connections */
             killDeadConnections(out, in);
+        }catch(Exception e){
+            logger.warn(e);
         } finally {
-            if (out != null) out.close();
-            if (in != null) in.close();
+            if (out != null){
+                try{
+                    out.close();
+                }catch(Exception e){
+                    logger.warn(e);
+                }
+            }
+            if (in != null){
+                try{
+                    in.close();
+                }catch(Exception e){
+                    logger.warn(e);
+                }
+            }
             if (socket != null){
                 try{
                     socket.close();
                 }catch( Exception e){
-                    logger.warn("Failed to close socket.", e);
+                    logger.warn(e);
                 }
             }
         }
@@ -495,20 +509,42 @@ class OpenVpnMonitor implements Runnable
      */
     private void checkRemoteServerProcesses()
     {
-        BufferedReader reader;
+        BufferedReader reader = null;
+        FileReader fileReader = null;
         for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
             if (!server.getEnabled()) continue;
 
-            reader = null;
             try {
                 File pidFile = new File("/var/run/openvpn." + server.getName() + ".pid");
                 if (!pidFile.exists()) continue;
 
-                reader = new BufferedReader(new FileReader(pidFile));
-                String currentLine;
                 String contents = "";
-                while ((currentLine = reader.readLine()) != null) {
-                    contents += currentLine;
+                reader = null;
+                fileReader = null;
+                try{
+                    fileReader = new FileReader(pidFile);
+                    reader = new BufferedReader(fileReader);
+                    String currentLine;
+                    while ((currentLine = reader.readLine()) != null) {
+                        contents += currentLine;
+                    }
+                }catch(Exception e){
+                    logger.warn("checkRemoteServerProcesses: Unable to read status: ", e);
+                }finally{
+                    if(reader != null){
+                        try{
+                            reader.close();
+                        }catch( Exception e){
+                            logger.warn("checkRemoteServerProcesses: Unable to close reader: ", e);
+                        }
+                    }
+                    if(fileReader != null){
+                        try{
+                            fileReader.close();
+                        }catch( Exception e){
+                            logger.warn("checkRemoteServerProcesses: Unable to close file reader: ", e);
+                        }
+                    }
                 }
 
                 int pid;

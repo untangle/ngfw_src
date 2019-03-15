@@ -209,9 +209,9 @@ public final class SpamAssassinClient implements Runnable
      */
     public void run()
     {
-        Socket socket;
-        BufferedOutputStream bufOutputStream;
-        BufferedReader bufReader;
+        Socket socket = null;
+        BufferedOutputStream bufOutputStream = null;
+        BufferedReader bufReader = null;
         long startTime = System.currentTimeMillis();
 
         try {
@@ -224,6 +224,7 @@ public final class SpamAssassinClient implements Runnable
             return;
         }
 
+        FileInputStream fInputStream = null;
         try {
             if (this.stop) {
                 logger.warn(dbgName + ", spamc interrupted post socket streams");
@@ -246,7 +247,7 @@ public final class SpamAssassinClient implements Runnable
             bufOutputStream.flush();
 
             // send message
-            FileInputStream fInputStream = new FileInputStream(this.msgFile);
+            fInputStream = new FileInputStream(this.msgFile);
             rBuf = new byte[READ_SZ];
 
             int rLen;
@@ -382,17 +383,36 @@ public final class SpamAssassinClient implements Runnable
         } finally {
             logger.debug(dbgName + ", finish");
 
-            try {
-                bufReader.close();
-            } catch (java.io.IOException e) {
+            if(fInputStream != null){
+                try{
+                    fInputStream.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
             }
-            try {
-                bufOutputStream.close();
-            } catch (java.io.IOException e) {
+
+            if(bufReader != null){
+                try {
+                    bufReader.close();
+                } catch (java.io.IOException e) {
+                    logger.error(e);
+                }
             }
-            try {
-                socket.close();
-            } catch (java.io.IOException e) {
+
+            if(bufOutputStream != null){
+                try {
+                    bufOutputStream.close();
+                } catch (java.io.IOException e) {
+                    logger.error(e);
+                }
+            }
+
+            if(socket != null){
+                try {
+                    socket.close();
+                } catch (java.io.IOException e) {
+                    logger.error(e);
+                }
             }
 
             cleanExit();

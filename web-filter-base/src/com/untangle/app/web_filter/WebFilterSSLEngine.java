@@ -62,10 +62,12 @@ public class WebFilterSSLEngine
         this.nonceStr = nonceStr;
         this.appStr = appStr;
 
+        FileInputStream fis = null;
         try {
             // use the argumented certfile and password to init our keystore
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(new FileInputStream(webCertFile), CertificateManager.CERT_FILE_PASSWORD.toCharArray());
+            fis = new FileInputStream(webCertFile);
+            keyStore.load(fis, CertificateManager.CERT_FILE_PASSWORD.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
             kmf.init(keyStore, CertificateManager.CERT_FILE_PASSWORD.toCharArray());
 
@@ -79,10 +81,16 @@ public class WebFilterSSLEngine
             sslEngine.setUseClientMode(false);
             sslEngine.setNeedClientAuth(false);
             sslEngine.setWantClientAuth(false);
-        }
-
-        catch (Exception exn) {
+        } catch (Exception exn) {
             logger.error("Exception creating WebFilterSSLEngine()", exn);
+        } finally {
+            if(fis != null){
+                try{
+                    fis.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
+            }
         }
     }
 

@@ -152,6 +152,8 @@ class TunnelVpnMonitor implements Runnable
     {
         cycleCount += 1;
 
+        BufferedReader bufferedReader = null;
+        FileReader fileReader = null;
         for (TunnelVpnTunnelSettings tunnel : app.getSettings().getTunnels()) {
 
             TunnelVpnTunnelStatus status = tunnelStatusList.get(tunnel.getTunnelId());
@@ -167,6 +169,8 @@ class TunnelVpnMonitor implements Runnable
             // ignore tunnels that are not enabled
             if (!tunnel.getEnabled()) continue;
 
+            bufferedReader = null;
+            fileReader = null;
             try {
                 File pidFile = new File("/var/run/tunnelvpn/tunnel-" + tunnel.getTunnelId() + ".pid");
                 if (!pidFile.exists()) {
@@ -178,10 +182,11 @@ class TunnelVpnMonitor implements Runnable
                     continue;
                 }
 
-                BufferedReader reader = new BufferedReader(new FileReader(pidFile));
+                fileReader = new FileReader(pidFile);
+                bufferedReader = new BufferedReader(fileReader);
                 String currentLine;
                 String contents = "";
-                while ((currentLine = reader.readLine()) != null) {
+                while ((currentLine = bufferedReader.readLine()) != null) {
                     contents += currentLine;
                 }
 
@@ -202,6 +207,21 @@ class TunnelVpnMonitor implements Runnable
 
             } catch (Exception exn) {
                 logger.warn("Failed to check openvpn pid file.", exn);
+            }finally{
+                if(bufferedReader != null){
+                    try{
+                        bufferedReader.close();
+                    }catch(Exception e){
+                        logger.error(e);
+                    }
+                }
+                if(fileReader != null){
+                    try{
+                        fileReader.close();
+                    }catch(Exception e){
+                        logger.error(e);
+                    }
+                }
             }
         }
 
@@ -352,9 +372,27 @@ class TunnelVpnMonitor implements Runnable
             }
 
         } finally {
-            if (out != null) out.close();
-            if (in != null) in.close();
-            if (socket != null) socket.close();
+            if(socket != null){
+                try{
+                    socket.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
+            }
+            if (out != null){
+                try{
+                    out.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
+            }
+            if (in != null){
+                try{
+                    in.close();
+                }catch(Exception e){
+                    logger.error(e);
+                }
+            }
         }
 
         /*

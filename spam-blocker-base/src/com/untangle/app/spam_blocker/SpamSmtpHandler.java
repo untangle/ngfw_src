@@ -681,7 +681,6 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             mimeOut.flush();
             bOut.flush();
             fOut.flush();
-            fOut.close();
             return ret;
         } catch (Exception ex) {
             try {
@@ -694,6 +693,14 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
             }
             logger.error("Exception writing MIME Message to file", ex);
             return null;
+        }finally{
+            if(fOut != null){
+                try{
+                    fOut.close();
+                }catch(Exception ex){
+                    logger.error(ex);
+                }
+            }
         }
     }
 
