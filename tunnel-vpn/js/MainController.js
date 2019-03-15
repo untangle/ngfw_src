@@ -321,8 +321,8 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
             }
 
             if(virtualInterfaces){
-                virtualInterfaces.forEach( function( interface ){
-                    if( i == interface.interfaceId){
+                virtualInterfaces.forEach( function( intf ){
+                    if( i == intf.interfaceId){
                         found = true;
                         return;
                     }
