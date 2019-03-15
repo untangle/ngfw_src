@@ -111,12 +111,14 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
             return;
-        }
-        try {
-            out.close();
-        } catch (IOException ex) {
-            logger.error("Unable to close file", ex);
-            return;
+        }finally{
+            if(out != null){
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
         }
     }
 

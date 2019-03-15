@@ -113,15 +113,25 @@ public class IOUtil
             fOut = new FileOutputStream(dest);
             pipe(fIn, fOut);
             fOut.flush();
-            close(fIn);
-            close(fOut);
-        }
-        catch(Exception ex) {
-            close(fIn);
-            close(fOut);
+        }catch(Exception ex) {
             IOException newEx = new IOException("Unable to copy file");
             newEx.initCause(ex);
             throw newEx;
+        }finally{
+            if(fIn != null){
+                try{
+                    fIn.close();
+                }catch(Exception ex){
+                    throw ex;
+                }
+            }
+            if(fOut != null){
+                try{
+                    fOut.close();
+                }catch(Exception ex){
+                    throw ex;
+                }
+            }
         }
     }
 
@@ -184,12 +194,17 @@ public class IOUtil
                 }
                 read+=thisRead;
             }
-            close(fIn);
             return bytes;
-        }
-        catch(IOException ex) {
-            close(fIn);
+        }catch(IOException ex) {
             throw ex;
+        }finally{
+            if(fIn != null){
+                try{
+                    fIn.close();
+                }catch(Exception ex){
+                    throw ex;
+                }
+            }
         }
 
     }

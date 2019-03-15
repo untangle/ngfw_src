@@ -523,17 +523,16 @@ public class ReportEntry implements Serializable, JSONString
             sql = sql.replaceAll("\\s+[iI][sS]\\s+[fF][aA][lL][sS][eE]\\s+"," = 0 ");
         }
 
+        java.sql.PreparedStatement statement = null;
         try {
             logger.debug("SQL: " + sql);
-            java.sql.PreparedStatement statement = conn.prepareStatement( sql );
+            statement = conn.prepareStatement( sql );
             SqlCondition.setPreparedStatementValues( statement, conditions, getTable() );
-
-            return statement;
         } catch ( Exception e) {
             logger.warn("SQL Exception. Query: " + sql, e);
             throw new RuntimeException("SqlException",e);
-        }
-
+        }finally{}
+        return statement;
     }
 
     private String conditionsToString( LinkedList<SqlCondition> conditions )

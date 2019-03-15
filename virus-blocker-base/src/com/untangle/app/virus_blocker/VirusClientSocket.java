@@ -55,16 +55,42 @@ public final class VirusClientSocket
      */
     public static VirusClientSocket create(String host, int port) throws Exception
     {
+        VirusClientSocket vSocket = null;
+        Socket socket = null;
+        OutputStream oSocketStream = null;
+        InputStream iSocketStream = null;
         try {
-            Socket socket = new Socket(host, port);
-            OutputStream oSocketStream = socket.getOutputStream();
-            InputStream iSocketStream = socket.getInputStream();
+            socket = new Socket(host, port);
+            oSocketStream = socket.getOutputStream();
+            iSocketStream = socket.getInputStream();
 
-            VirusClientSocket vSocket = new VirusClientSocket(socket, oSocketStream, iSocketStream);
-            return vSocket;
+            vSocket = new VirusClientSocket(socket, oSocketStream, iSocketStream);
         } catch (Exception e) {
             throw new Exception("Could not connect to socket: " + host + "/" + port, e);
+        }finally{
+            if(socket != null){
+                try{
+                    socket.close();
+                }catch(Exception e){
+                    throw e;
+                }
+            }
+            if(oSocketStream != null){
+                try{
+                    oSocketStream.close();
+                }catch(Exception e){
+                    throw e;
+                }
+            }
+            if(iSocketStream != null){
+                try{
+                    iSocketStream.close();
+                }catch(Exception e){
+                    throw e;
+                }
+            }
         }
+        return vSocket;
     }
 
     /**

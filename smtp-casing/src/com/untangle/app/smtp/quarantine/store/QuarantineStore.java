@@ -396,9 +396,10 @@ public class QuarantineStore
             public void ejectMail(InboxRecord record, String inboxAddress, String[] recipients, File data)
             {
                 FileInputStream fIn = null;
+                BufferedInputStream bufIn = null;
                 try {
                     fIn = new FileInputStream(data);
-                    BufferedInputStream bufIn = new BufferedInputStream(fIn);
+                    bufIn = new BufferedInputStream(fIn);
                     boolean success = UvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
                     if (success) {
                         logger.debug("Released mail \"" + record.getMailID() + "\" for " + recipients.length
@@ -409,11 +410,23 @@ public class QuarantineStore
                     }
                 } catch (Exception ex) {
                     logger.warn("Exception reading mail file for rescue", ex);
+                }finally{
+                    if(fIn != null){
+                        try{    
+                            fIn.close();
+                        }catch(Exception e){
+                            logger.warn(e);
+                        }
+                    }
+                    if(bufIn != null){
+                        try{
+                            bufIn.close();
+                        }catch(Exception e){
+                            logger.warn(e);
+                        }
+                    }
                 }
-
-                IOUtil.close(fIn);
                 IOUtil.delete(data);
-
             }
         }, new ListEjectionSelector(mailIDs));
     }

@@ -98,7 +98,6 @@ public class MIMETCPStreamer implements TCPStreamer
             mimeOut.flush();
             bufOut.flush();
             fOut.flush();
-            fOut.close();
         } catch (MessagingException ex) {
             try {
                 fOut.close();
@@ -115,6 +114,14 @@ public class MIMETCPStreamer implements TCPStreamer
             IOException ex2 = new IOException();
             ex2.initCause(ex);
             throw ex;
+        }finally{
+            if(fOut != null){
+                try{
+                    fOut.close();
+                }catch(Exception ex){
+                    throw ex;
+                }
+            }
         }
     }
 
