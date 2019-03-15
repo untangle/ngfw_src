@@ -121,11 +121,7 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
             vm = this.getViewModel(),
             record = vm.get('record');
 
-        var className = '';
-
-        if(!record.get('conditions').list.length){
-            className = 'All';
-        }else{
+        if(record.get('conditions').list.length){
             me.classCondition = record.get('conditions').list.shift();
             className =  me.classCondition.fieldValue;
             if(className.length && className[0] == '*'){

@@ -3981,7 +3981,6 @@ Ext.define('TableConfig', {
 
                                             if( previousAction != "<" && previousAction != ">") {
                                                 previousLine = previousAction + previousLine;
-                                                previousAction = -1;
                                             }
                                             if( currentAction != "<" && currentAction != ">" && currentAction != "|"){
                                                 currentLine = currentAction + currentLine;
