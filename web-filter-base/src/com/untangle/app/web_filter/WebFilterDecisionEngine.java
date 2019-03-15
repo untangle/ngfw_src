@@ -131,7 +131,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
                 if (term != null) {
                     WebFilterQueryEvent hbe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, getApp().getName());
-                    logger.warn("WebFilterDecisionEngine: query terms found: " + term);
                     getApp().logEvent(hbe);
                 }
 
