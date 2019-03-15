@@ -31,6 +31,7 @@ public class SearchEngine
     private static final List<Pattern> searchEngines;
     static {
         searchEngines = new ArrayList<Pattern>();
+        searchEngines.add(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/results\\?search_query=([^&]+).*"));
         searchEngines.add(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
         searchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*"));
         searchEngines.add(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
@@ -39,14 +40,14 @@ public class SearchEngine
 
     /**
      * Get the query term
-     * 
+     *
      * @param clientIp
      *        The client address
      * @param requestLine
      *        The request line token
      * @param header
      *        The header token
-     * 
+     *
      * @return The query term
      */
     public static String getQueryTerm(InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
@@ -76,10 +77,8 @@ public class SearchEngine
             if (m.matches()) {
                 logger.debug("getQueryTerms: ...... match !");
                 String term = "";
-                if (m.groupCount() >= 3) {
-                    term = m.group(3);
-                }
                 try {
+                    term = m.group(m.groupCount());
                     term = URLDecoder.decode(term, "UTF-8");
                 } catch (Exception e) {
 
