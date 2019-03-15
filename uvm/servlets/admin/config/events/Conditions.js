@@ -172,6 +172,7 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
             }
         });
 
+        var className = "";
         if(classValue == 'All'){
             className = 'All';
         }else{

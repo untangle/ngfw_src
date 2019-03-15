@@ -378,7 +378,7 @@ Ext.define('Ung.cmp.ReportTemplateSelectController', {
             }
         }, this, { filtered: true } );
 
-        selectedIds = [];
+        var selectedIds = [];
         store.each( function(record){
             selectedIds.push(record.get('uniqueId'));
         });

@@ -84,7 +84,7 @@ Ext.define('Ung.util.Util', {
     },
     regexHumanReadable: /([-+]?[0-9]*\.?[0-9]+)\s*(.)/,
     humanReadabletoBytes: function(value){
-        bytes = 0;
+        var bytes = 0;
         if(this.regexHumanReadable.test(value)){
             var matches = this.regexHumanReadable.exec(value);
             matches[2] = matches[2].toUpperCase();
