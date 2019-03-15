@@ -6,10 +6,15 @@ package com.untangle.app.web_filter;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import java.util.Iterator;
+
 
 import org.apache.log4j.Logger;
 import org.apache.http.auth.AuthScope;
@@ -46,7 +51,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static final long DIA_TIMEOUT = 604800000; // 1 week
     private static final long DIA_TRY_LIMIT = 300000; // 5 min
     private static final String QUIC_COOKIE_FIELD_NAME = "alt-svc";
+    // private static final String QUIC_COOKIE_FIELD_START = "svc=quic=";
     private static final String QUIC_COOKIE_FIELD_START = "quic=";
+
+    private static final String YOUTUBE_HEADER_FIELD_FIND_NAME = "youtube";
+    private static final String YOUTUBE_RESTRICT_COOKIE_NAME = "PREF=";
+    private static final String YOUTUBE_RESTIRCT_COOKIE_VALUE = "&f2=8000000";
+    private static final int YOUTUBE_RESTRICT_COOKIE_TIMEOUT = 60 * 1000;
+    // private static final int YOUTUBE_RESTRICT_COOKIE_TIMEOUT = 24 * 60 * 60 * 1000;
+    private static final DateFormat COOKIE_DATE_FORMATTER = new SimpleDateFormat("E, MM-dd-yyyy HH:mm:ss z");
+    private static final Pattern SEPARATORS_REGEX = Pattern.compile("\\.");
 
     private static Pattern trailingDotsPattern = Pattern.compile("\\.*$");
     private static Pattern trailingDotsSlashesPattern = Pattern.compile("[.\\/]+$");
@@ -120,7 +134,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     logger.warn("WebFilterDecisionEngine: query terms found: " + term);
                     getApp().logEvent(hbe);
                 }
-            }
+
+                if(ourApp.getSettings().getRestrictYoutube()){
+                    addYoutubeRestrictCookie(sess, header);
+                }
+           }
             return result;
         }
     }
@@ -760,7 +778,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
             List<String> newAltSvcs = new ArrayList<>();
             for(String altSvc : altSvcs){
                 if(!altSvc.toLowerCase().startsWith(QUIC_COOKIE_FIELD_START)){
+                    logger.warn("ADD: " + altSvc);
                     newAltSvcs.add(altSvc);
+                // }else{
+                //     logger.warn("REMOVE: " + altSvc);
                 }
             }
             header.removeField(QUIC_COOKIE_FIELD_NAME);
@@ -768,7 +789,40 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 header.setValues(QUIC_COOKIE_FIELD_NAME, newAltSvcs);
             }
         }
+    }
 
+
+    /**
+     * If host is youtube, replace the inline PREF (if found) or append the PREF cookie that
+     * enables restricted mode.
+     * @param sess
+     *        AppTCPSession for this session.
+     * @param header HeaterToken to parse.
+     */
+    private void addYoutubeRestrictCookie(AppTCPSession sess, HeaderToken header){
+        String host = header.getValue("host");
+
+        if(host != null && SEPARATORS_REGEX.matcher(host.toLowerCase()).replaceAll("").contains(YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
+
+            List<String> cookies = header.getValues("cookie");
+            long cookieExpiration = System.currentTimeMillis() + YOUTUBE_RESTRICT_COOKIE_TIMEOUT;
+
+            if (cookies == null) {
+                cookies = new ArrayList<>();
+            }
+            boolean found = false;
+            for(int i = 0; i < cookies.size(); i++){
+                String setCookie = cookies.get(i);
+                if(setCookie.toUpperCase().startsWith(YOUTUBE_RESTRICT_COOKIE_NAME)){
+                    found = true;
+                    int firstSemiColon=setCookie.indexOf(';');
+                    cookies.set(i, setCookie.substring(0, firstSemiColon) + YOUTUBE_RESTIRCT_COOKIE_VALUE + setCookie.substring(firstSemiColon));
+                }
+            }
+            if(!found){
+                cookies.add(YOUTUBE_RESTRICT_COOKIE_NAME + YOUTUBE_RESTIRCT_COOKIE_VALUE + "; expires="+COOKIE_DATE_FORMATTER.format(cookieExpiration)+"; path=/; domain=.youtube.com");
+            }
+        }
     }
 
 }
