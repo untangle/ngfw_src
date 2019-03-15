@@ -35,6 +35,7 @@ public class WebFilterSettings implements Serializable, JSONString
     private String  unblockMode = UNBLOCK_MODE_NONE;
     private Integer unblockTimeout = 60*60; /* 1 hour */
     private Boolean enforceSafeSearch = true;
+    private Boolean restrictYoutube = false;
     private Boolean blockQuic = true;
     private Boolean blockAllIpHosts = false;
     private Boolean passReferers = true;
@@ -105,6 +106,9 @@ public class WebFilterSettings implements Serializable, JSONString
     public Boolean getEnforceSafeSearch() { return enforceSafeSearch; }
     public void setEnforceSafeSearch( Boolean newValue ) { this.enforceSafeSearch = newValue; }
 
+    public Boolean getRestrictYoutube() { return restrictYoutube; }
+    public void setRestrictYoutube( Boolean newValue ) { this.restrictYoutube = newValue; }
+    
     public Boolean getBlockQuic() { return blockQuic; }
     public void setBlockQuic( Boolean newValue ) { this.blockQuic = newValue; }
     

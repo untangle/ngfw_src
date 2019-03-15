@@ -59,6 +59,10 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             bind: '{settings.enforceSafeSearch}'
         }, {
             xtype: 'checkbox',
+            boxLabel: 'Enforce restrict mode on YouTube'.t(),
+            bind: '{settings.restrictYoutube}'
+        }, {
+            xtype: 'checkbox',
             boxLabel: 'Block QUIC (UDP port 443)'.t(),
             bind: '{settings.blockQuic}'
         }, {
