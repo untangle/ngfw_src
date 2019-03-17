@@ -209,51 +209,37 @@ class TrustCatalog
      */
     public static boolean removeTrustedCertificate(String certAlias)
     {
+        boolean result = false;
         // if the trust store file doesn't exist we can't do anything
         File tester = new File(trustStoreFile);
         if (tester.exists() == false) return (false);
 
-        FileInputStream trustStoreFileInputStream = null;
-        FileOutputStream trustStoreFileOutputStream = null;
-        try {
+        try(
+            FileInputStream trustStoreFileInputStream = new FileInputStream(trustStoreFile);
+            FileOutputStream trustStoreFileOutputStream = new FileOutputStream(trustStoreFile);
+        ) {
             // get a new KeyStore instance
             KeyStore localStore = KeyStore.getInstance("JKS");
 
             // load the trust store file
-            trustStoreFileInputStream = new FileInputStream(trustStoreFile);
             localStore.load(trustStoreFileInputStream, trustStorePass.toCharArray());
 
             // make sure the alias to delete exists
-            if (localStore.containsAlias(certAlias) == false) return (false);
+            if (localStore.containsAlias(certAlias) == true){
+                // add the new certificate to the KeyStore
+                localStore.deleteEntry(certAlias);
 
-            // add the new certificate to the KeyStore
-            localStore.deleteEntry(certAlias);
+                // write the updated KeyStore to the trustStore file
+                localStore.store(trustStoreFileOutputStream, trustStorePass.toCharArray());
 
-            // write the updated KeyStore to the trustStore file
-            trustStoreFileOutputStream = new FileOutputStream(trustStoreFile);
-            localStore.store(trustStoreFileOutputStream, trustStorePass.toCharArray());
+                // return success code and the cert subject
+                result = true;
+            }
 
-            // return success code and the cert subject
-            return (true);
         }catch (Exception exn) {
             logger.debug("Exception removing certificate: " + exn);
-        }finally{
-            if(trustStoreFileOutputStream != null){
-                try{
-                    trustStoreFileOutputStream.close();
-                }catch(Exception e){
-                    logger.error(e);
-                }
-            }
-            if(trustStoreFileInputStream != null){
-                try{
-                    trustStoreFileInputStream.close();
-                }catch(Exception e){
-                    logger.error(e);
-                }
-            }
         }
 
-        return (false);
+        return result;
     }
 }

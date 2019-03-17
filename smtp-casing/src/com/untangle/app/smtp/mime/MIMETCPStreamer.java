@@ -85,17 +85,17 @@ public class MIMETCPStreamer implements TCPStreamer
      */
     private void writeToFile() throws IOException
     {
-        FileOutputStream fOut = null;
         try {
-            try {
-                if (file != null)
-                    file.delete();
-            } catch (Exception ignore) {
-            }
-            file = File.createTempFile("MIMEMessage-", null);
-            fOut = new FileOutputStream(file);
+            if (file != null)
+                file.delete();
+        } catch (Exception ignore) {
+        }
+        file = File.createTempFile("MIMEMessage-", null);
+        try(
+            FileOutputStream fOut = new FileOutputStream(file);
             BufferedOutputStream bufOut = new BufferedOutputStream(fOut);
             MIMEOutputStream mimeOut = new MIMEOutputStream(bufOut);
+        ){
             m_msg.writeTo(mimeOut);
             mimeOut.flush();
             bufOut.flush();
@@ -108,14 +108,6 @@ public class MIMETCPStreamer implements TCPStreamer
             IOException ex2 = new IOException();
             ex2.initCause(ex);
             throw ex;
-        }finally{
-            if(fOut != null){
-                try{
-                    fOut.close();
-                }catch(Exception ex){
-                    throw ex;
-                }
-            }
         }
     }
 
