@@ -445,11 +445,11 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
                 }
             }
 
-            FileOutputStream fos = null;
             File tmp = null;
-            try {
+            try(
+                FileOutputStream fos = new FileOutputStream(tmp);
+            ){
                 tmp = File.createTempFile( file.getName(), ".tmp");
-                fos = new FileOutputStream(tmp);
                 fos.write(parsed.toString().getBytes());
                 fos.flush();
                 IOUtil.copyFile(tmp, new File(filename));
@@ -458,13 +458,6 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
             }finally{
                 if(tmp != null){
                     tmp.delete();
-                }
-                if(fos != null){
-                    try{
-                        fos.close();
-                    }catch(Exception e){
-                        logger.error(e);
-                    }
                 }
             }
         }

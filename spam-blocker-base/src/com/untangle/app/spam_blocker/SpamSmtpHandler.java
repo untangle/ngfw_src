@@ -669,37 +669,35 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         sb.append("\tby ").append(receivedBy == null ? "untangle" : receivedBy).append("; ").append(MIMEUtil.getRFC822Date());
 
         File ret = null;
-        FileOutputStream fOut = null;
-        try {
-            ret = File.createTempFile("SpamSmtpHandler-", null);
+        try{
+            File.createTempFile("SpamSmtpHandler-", null);
             if (ret != null) session.attachTempFile(ret.getAbsolutePath());
-            fOut = new FileOutputStream(ret);
-            BufferedOutputStream bOut = new BufferedOutputStream(fOut);
-            MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
-            mimeOut.writeLine(sb.toString());
-            msg.writeTo(mimeOut);
-            mimeOut.flush();
-            bOut.flush();
-            fOut.flush();
-            return ret;
-        } catch (Exception ex) {
-            if(ret != null){
-                try {
-                    ret.delete();
-                } catch (Exception ignore) {
+        }catch(Exception e){
+            logger.warn("Unable to create temp file:", e);
+        }
+        if(ret != null){
+            try (
+                FileOutputStream fOut = new FileOutputStream(ret);
+                BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+                MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
+            ) {
+                mimeOut.writeLine(sb.toString());
+                msg.writeTo(mimeOut);
+                mimeOut.flush();
+                bOut.flush();
+                fOut.flush();
+            } catch (Exception ex) {
+                if(ret != null){
+                    try {
+                        ret.delete();
+                    } catch (Exception ignore) {
+                    }
+                    ret = null;
                 }
-            }
-            logger.error("Exception writing MIME Message to file", ex);
-            return null;
-        }finally{
-            if(fOut != null){
-                try{
-                    fOut.close();
-                }catch(Exception ex){
-                    logger.error(ex);
-                }
+                logger.error("Exception writing MIME Message to file", ex);
             }
         }
+        return ret;
     }
 
     /**

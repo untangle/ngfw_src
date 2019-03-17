@@ -398,9 +398,9 @@ public class MIMEAccumulator
         if (this.file.length() == 0) {
             return ByteBuffer.allocate(0);
         }
-        FileInputStream fIn = null;
-        try {
-            fIn = new FileInputStream(this.file);
+        try(
+            FileInputStream fIn = new FileInputStream(this.file);
+        ){
             ByteBuffer buf = ByteBuffer.allocate((int) this.file.length());
             FileChannel fc = fIn.getChannel();
             while (buf.hasRemaining()) {
@@ -411,13 +411,6 @@ public class MIMEAccumulator
         } catch (Exception ex) {
             this.logger.error("Error draining headers trapped in file to buffer");
             return null;
-        }finally{
-            if( fIn != null){
-                try {
-                    fIn.close();
-                } catch (Exception ignore) {
-                }
-            }
         }
     }
 

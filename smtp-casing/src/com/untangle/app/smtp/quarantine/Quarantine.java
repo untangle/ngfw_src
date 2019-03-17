@@ -103,22 +103,15 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     {
         // write the cron file for nightly runs
         String conf = this.settings.getDigestMinuteOfDay() + " " + this.settings.getDigestHourOfDay() + " " + CRON_STRING;
-        BufferedWriter out = null;
-        try {
-            out = new BufferedWriter(new FileWriter(CRON_FILE));
+        try (
+            FileWriter fw = new FileWriter(CRON_FILE);
+            BufferedWriter out = new BufferedWriter(fw);
+        ) {
             out.write(conf, 0, conf.length());
             out.write("\n");
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
             return;
-        }finally{
-            if(out != null){
-                try {
-                    out.close();
-                } catch (IOException ex) {
-                    logger.error("Unable to close file", ex);
-                }
-            }
         }
     }
 
