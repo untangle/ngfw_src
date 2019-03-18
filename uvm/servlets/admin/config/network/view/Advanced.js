@@ -848,6 +848,13 @@ Ext.define('Ung.config.network.view.Advanced', {
                 labelWidth: 160,
                 bind: '{settings.dynamicRoutingSettings.enabled}'
             },{
+                xtype: 'component',
+                style: 'background-color: yellow;',
+                bind:{
+                    html: '<i class="fa fa-exclamation-triangle"></i> '  + '{dynamicRoutingWarningsMessages}',
+                    hidden: '{dynamicRoutingWarningsCount == 0}'
+                }
+            },{
                 xtype: 'tabpanel',
                 itemId: 'dynamic_routing',
                 layout: 'fit',

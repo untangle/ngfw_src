@@ -25,6 +25,7 @@ Ext.define('Ung.config.network.MainController', {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
         '#advanced #dynamic_routing': {
+            activate: 'getDynamicRoutingOverview',
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
         '#advanced #dynamic_routing #status':{
@@ -106,6 +107,9 @@ Ext.define('Ung.config.network.MainController', {
 
             vm.set('panel.saveDisabled', false);
 
+            if(vm.get('settings.dynamicRoutingSettings.enabled')){
+                me.getDynamicRoutingOverview();
+            }
             v.setLoading(false);
         }, function(ex) {
             if(!Util.isDestroyed(vm, vm)){
@@ -648,9 +652,55 @@ Ext.define('Ung.config.network.MainController', {
         staticDhcpGrid.getStore().add(newDhcpEntry);
     },
 
+    getDynamicRoutingOverview: function(){
+        var me = this,
+            vm = this.getViewModel();
+
+        var runInterfaceTaskDelay = 100;
+        var runInterfaceTask = new Ext.util.DelayedTask( Ext.bind(function(){
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            var networkInterfaces = vm.get('settings.interfaces');
+            if(!networkInterfaces){
+                runInterfaceTask.delay( runInterfaceTaskDelay );
+                return;
+            }
+
+            var warningsMessages = [];
+
+            if(vm.get('settings.dynamicRoutingSettings.enabled')){
+                if(vm.get('settings.dynamicRoutingSettings.bgpEnabled')){
+                    if(vm.get('settings.dynamicRoutingSettings.bgpNeighbors.list').length == 0){
+                        warningsMessages.push("At least one BGP neighbor must be configured.");
+                    }
+                    if(vm.get('settings.dynamicRoutingSettings.bgpNetworks.list').length == 0){
+                        warningsMessages.push("No BGP networks configured.");
+                    }
+                }
+                if(vm.get('settings.dynamicRoutingSettings.ospfEnabled')){
+                    if(vm.get('settings.dynamicRoutingSettings.ospfAreas.list').length == 0){
+                        warningsMessages.push("At least one OSPF area must be configured.");
+                    }
+                    if(vm.get('settings.dynamicRoutingSettings.ospfNetworks.list').length == 0){
+                        warningsMessages.push("No OSPF networks configured.");
+                    }
+                }
+            }
+            vm.set({
+                dynamicRoutingWarningsMessages: warningsMessages.join("<br>"),
+                dynamicRoutingWarningsCount: warningsMessages.length
+            });
+        }, me) );
+        runInterfaceTask.delay( runInterfaceTaskDelay );
+    },
+
     getDynamicRoutingStatus: function(view){
         if(view.itemId != 'status'){
             view = view.up('#status');
+        }
+        if(!view){
+            return;
         }
         var vm = this.getViewModel();
 
@@ -660,7 +710,9 @@ Ext.define('Ung.config.network.MainController', {
             Rpc.asyncPromise('rpc.execManager.execOutput', 'vtysh -c "show ip bgp summary" | sed -e "/Neighbor/,\\$!d" | sed -e "/Total/,\\$d" -e "1d" | tr -s " "'),
             Rpc.asyncPromise('rpc.execManager.execOutput', 'vtysh -c "show ip ospf neighbor" | sed -e "/Neighbor/,\\$!d" | sed -e "1d" | tr -s " "')
         ]).then( function(result){
-            // !!! check view is not destroyed
+            if(Util.isDestroyed(view)){
+                return;
+            }
             view.setLoading(false);
 
             // Build dynamic routes
@@ -812,7 +864,9 @@ Ext.define('Ung.config.network.MainController', {
 
         var runInterfaceTaskDelay = 100;
         var runInterfaceTask = new Ext.util.DelayedTask( Ext.bind(function(){
-            // !!! look for destroyed objects in 14.0
+            if(Util.isDestroyed(vm)){
+                return;
+            }
             var networkInterfaces = vm.get('settings.interfaces');
             if(!networkInterfaces){
                 runInterfaceTask.delay( runInterfaceTaskDelay );
