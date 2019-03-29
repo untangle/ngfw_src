@@ -527,7 +527,7 @@ public class GroupManager
             Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(domains.size());
             Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(domains.size());
             Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(domains.size());
-            Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<String,Boolean>();
+            Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<>();
             for( String domain : domains){
                 List<GroupEntry> groupList = null;
                 ActiveDirectoryLdapAdapter adAdapter = app.getActiveDirectoryManager().getAdapter(domain);
