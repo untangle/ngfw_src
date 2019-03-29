@@ -25,9 +25,9 @@ public class ExtensionImpl implements Runnable
 {
     private static final Logger logger = Logger.getLogger( ExtensionImpl.class );
 
-    private HashMap<String,String> attributeDescriptions = new HashMap<String,String>();
-    private HashMap<String,String> classDescriptions = new HashMap<String,String>();
-    private HashMap<String,HashMap<String,String>> classSpecificAttributeDescriptions = new HashMap<String,HashMap<String,String>>();
+    private HashMap<String,String> attributeDescriptions = new HashMap<>();
+    private HashMap<String,String> classDescriptions = new HashMap<>();
+    private HashMap<String,HashMap<String,String>> classSpecificAttributeDescriptions = new HashMap<>();
 
     /**
      * ExtensionImpl
@@ -286,29 +286,29 @@ public class ExtensionImpl implements Runnable
 
         HashMap<String,String> specificDescriptions;
 
-        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions = new HashMap<>();
         specificDescriptions.put("action","The action (1=Quota Given, 2=Quota Exceeded)");
         classSpecificAttributeDescriptions.put("QuotaEvent",specificDescriptions);
 
-        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions = new HashMap<>();
         specificDescriptions.put("method","The HTTP method");
         classSpecificAttributeDescriptions.put("HttpRequestEvent",specificDescriptions);
 
-        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions = new HashMap<>();
         specificDescriptions.put("name","The test name");
         classSpecificAttributeDescriptions.put("WanFailoverTestEvent",specificDescriptions);
 
-        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions = new HashMap<>();
         specificDescriptions.put("event","The event (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT)");
         specificDescriptions.put("eventValue","The event value as a string (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT)");
         classSpecificAttributeDescriptions.put("CaptivePortalUserEvent",specificDescriptions);
 
-        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions = new HashMap<>();
         specificDescriptions.put("kind","The type for this address (F=From, T=To, C=CC, G=Envelope From, B=Envelope To, X=Unknown)");
         specificDescriptions.put("personal","personal"); // FIXME
         classSpecificAttributeDescriptions.put("SmtpMessageAddressEvent",specificDescriptions);
 
-        specificDescriptions = new HashMap<String,String>();
+        specificDescriptions = new HashMap<>();
         specificDescriptions.put("blocked","1 if blocked, 0 otherwise");
         classSpecificAttributeDescriptions.put("IntrusionPreventionLogEvent",specificDescriptions);
     }
