@@ -18,7 +18,7 @@ public final class InboxIndex implements Serializable, Iterable<InboxRecord>
     private String m_address;
     private long m_timestamp;
 
-    private HashMap<String, InboxRecord> inboxMap = new HashMap<String, InboxRecord>();
+    private HashMap<String, InboxRecord> inboxMap = new HashMap<>();
 
     /**
      * Write owner address.
