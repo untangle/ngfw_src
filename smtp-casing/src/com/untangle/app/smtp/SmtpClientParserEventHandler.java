@@ -269,7 +269,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
         // is returned from these methods, this method performs cleanup and enters passthru mode.
         //
 
-        List<Token> toks = new LinkedList<Token>();
+        List<Token> toks = new LinkedList<>();
         boolean done = false;
 
         while (!done && buf.hasRemaining()) {
