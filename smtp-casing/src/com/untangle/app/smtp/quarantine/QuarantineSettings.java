@@ -56,9 +56,9 @@ public class QuarantineSettings implements Serializable
     public void setAllowedAddressPatterns(List<EmailAddressRule> patterns)
     {
         if (patterns == null) {
-            patterns = new LinkedList<EmailAddressRule>();
+            patterns = new LinkedList<>();
         }
-        allowedAddressPatterns = new LinkedList<EmailAddressRule>(patterns);
+        allowedAddressPatterns = new LinkedList<>(patterns);
     }
 
     /**
@@ -95,9 +95,9 @@ public class QuarantineSettings implements Serializable
     public void setAddressRemaps(List<EmailAddressPairRule> remaps)
     {
         if (remaps == null) {
-            remaps = new LinkedList<EmailAddressPairRule>();
+            remaps = new LinkedList<>();
         }
-        addressRemaps = new LinkedList<EmailAddressPairRule>(remaps);
+        addressRemaps = new LinkedList<>(remaps);
     }
 
     /**
