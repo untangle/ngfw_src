@@ -135,7 +135,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         /**
          * Set the Email Template Ids
          */
-        HashMap<Integer,Integer> mapOldNewEmailTemplateIds = new HashMap<Integer,Integer>();
+        HashMap<Integer,Integer> mapOldNewEmailTemplateIds = new HashMap<>();
         int idx = 0;
         for (EmailTemplate template : newSettings.getEmailTemplates()) {
             idx = ++idx;
@@ -146,7 +146,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         /**
          * Remove any report entries with a duplicate title (in same category)
          */
-        HashMap<String, ReportEntry> names = new HashMap<String, ReportEntry>();
+        HashMap<String, ReportEntry> names = new HashMap<>();
         for (Iterator<ReportEntry> i = newSettings.getReportEntries().iterator(); i.hasNext(); ) {
             ReportEntry entry = i.next();
             String name = entry.getCategory() + "/" + entry.getTitle();
@@ -167,7 +167,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                         if( user.getEmailTemplateIds().size() > 0 ) {
                             /* Walk existing list and map to new values. */
                             List<Integer> oldEmailTemplateIds = user.getEmailTemplateIds();
-                            LinkedList<Integer> newEmailTemplateIds = new LinkedList<Integer>();
+                            LinkedList<Integer> newEmailTemplateIds = new LinkedList<>();
                             Integer newEmailTemplateId;
                             for(int i = 0; i < oldEmailTemplateIds.size(); i++){
                                 newEmailTemplateId = mapOldNewEmailTemplateIds.get(oldEmailTemplateIds.get(i));
@@ -179,7 +179,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                         }
                         if( user.getEmailTemplateIds().size() == 0) {
                             /* If never set or all removed, add the default. */
-                            LinkedList<Integer> emailTemplateIds = new LinkedList<Integer>();
+                            LinkedList<Integer> emailTemplateIds = new LinkedList<>();
                             emailTemplateIds.push(1);
                             user.setEmailTemplateIds(emailTemplateIds);
                         }
@@ -428,7 +428,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      *  List of email addresses with alert permission.
      */
     public List<String> getAlertEmailAddresses(){
-        List<String> emailAddresses = new LinkedList<String>();
+        List<String> emailAddresses = new LinkedList<>();
 
         App reportsApp = UvmContextFactory.context().appManager().app("reports");
         if(reportsApp == null || !AppState.RUNNING.equals(reportsApp.getRunState())){
@@ -628,23 +628,23 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */        
     private LinkedList<EmailTemplate> defaultEmailTemplates()
     {
-        LinkedList<EmailTemplate> templates = new LinkedList<EmailTemplate>();
+        LinkedList<EmailTemplate> templates = new LinkedList<>();
 
         EmailTemplate emailTemplate;
         LinkedList<String> enabledConfigIds;
         LinkedList<String> enabledAppIds;
 
-        enabledConfigIds = new LinkedList<String>();
+        enabledConfigIds = new LinkedList<>();
         enabledConfigIds.add("_recommended");
-        enabledAppIds = new LinkedList<String>();
+        enabledAppIds = new LinkedList<>();
         enabledAppIds.add("_recommended");
         emailTemplate = new EmailTemplate( I18nUtil.marktr("Reports"), I18nUtil.marktr("Recommended daily reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
         emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 
-        enabledConfigIds = new LinkedList<String>();
+        enabledConfigIds = new LinkedList<>();
         enabledConfigIds.add("network-aGUe5wYZ1x");
-        enabledAppIds = new LinkedList<String>();
+        enabledAppIds = new LinkedList<>();
         emailTemplate = new EmailTemplate( I18nUtil.marktr("Data Usage"), I18nUtil.marktr("Month to date data usage"), 2, false, enabledConfigIds, enabledAppIds);
         templates.add( emailTemplate );
 
@@ -661,11 +661,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers)
     {
-        List<Integer> templateIds = new LinkedList<Integer>();
+        List<Integer> templateIds = new LinkedList<>();
         templateIds.add(0);
 
         if(reportsUsers == null){
-            reportsUsers = new LinkedList<ReportsUser>();
+            reportsUsers = new LinkedList<>();
         }else{
             for(ReportsUser reportsUser : reportsUsers){
                 if(reportsUser.getEmailSummaries() && reportsUser.getEmailTemplateIds() == null){
@@ -942,7 +942,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             }
 
             // fix duplicate report names
-            HashMap<String, ReportEntry> names = new HashMap<String, ReportEntry>();
+            HashMap<String, ReportEntry> names = new HashMap<>();
             for ( ReportEntry entry : settings.getReportEntries() ) {
                 String name = entry.getCategory() + "/" + entry.getTitle();
                 ReportEntry existing = names.get( name );
