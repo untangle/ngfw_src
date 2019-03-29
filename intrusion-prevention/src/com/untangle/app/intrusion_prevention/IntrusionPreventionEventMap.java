@@ -15,7 +15,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class IntrusionPreventionEventMap implements Serializable
 {
-    private Set<IntrusionPreventionEventMapSignature> signatures = new HashSet<IntrusionPreventionEventMapSignature>();
+    private Set<IntrusionPreventionEventMapSignature> signatures = new HashSet<>();
 
     /**
      * Read the signatures.
@@ -24,7 +24,7 @@ public class IntrusionPreventionEventMap implements Serializable
      *  List of event map type signatures.
      */
     public List<IntrusionPreventionEventMapSignature> getSignatures() { 
-        return new LinkedList<IntrusionPreventionEventMapSignature>(this.signatures); 
+        return new LinkedList<>(this.signatures); 
     }
     /**
      * Set the signatures.
@@ -32,7 +32,7 @@ public class IntrusionPreventionEventMap implements Serializable
      * @param newValue
      *  List of event map type signatures.
      */
-    public void setSignatures( List<IntrusionPreventionEventMapSignature> newValue ) { this.signatures = new HashSet<IntrusionPreventionEventMapSignature>(newValue); }
+    public void setSignatures( List<IntrusionPreventionEventMapSignature> newValue ) { this.signatures = new HashSet<>(newValue); }
 
     /**
      * Look for signature signature.
