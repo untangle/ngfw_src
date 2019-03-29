@@ -35,7 +35,7 @@ class FtpNatHandler extends FtpEventHandler
     
     private static final Token SYNTAX_REPLY = FtpReply.makeReply( 501, "Syntax error in parameters or arguments");
 
-    private static Map<SessionRedirectKey,SessionRedirect> redirectMap = new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
+    private static Map<SessionRedirectKey,SessionRedirect> redirectMap = new ConcurrentHashMap<>();
     
     /**
      * FtpNatHandler creates a new FtpNatHandler
@@ -461,7 +461,7 @@ class FtpNatHandler extends FtpEventHandler
  */
 class SessionState
 {
-    protected LinkedList<SessionRedirect> redirects = new LinkedList<SessionRedirect>();
+    protected LinkedList<SessionRedirect> redirects = new LinkedList<>();
 }
 
 /**
