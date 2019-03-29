@@ -25,7 +25,7 @@ public class DashboardSettings implements Serializable, JSONString
         SAND
     };
 
-    private List<DashboardWidgetSettings> widgets = new LinkedList<DashboardWidgetSettings>();
+    private List<DashboardWidgetSettings> widgets = new LinkedList<>();
     private Theme theme = Theme.DEFAULT;
 
     public DashboardSettings() { }
