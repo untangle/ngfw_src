@@ -92,7 +92,7 @@ class TrustCatalog
      */
     public static LinkedList<TrustedCertificate> getTrustCatalog() throws Exception
     {
-        LinkedList<TrustedCertificate> trustCatalog = new LinkedList<TrustedCertificate>();
+        LinkedList<TrustedCertificate> trustCatalog = new LinkedList<>();
 
         // make sure there is a local trustStore file
         File tester = new File(trustStoreFile);
