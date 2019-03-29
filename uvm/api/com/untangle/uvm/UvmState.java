@@ -48,7 +48,7 @@ public class UvmState implements Serializable, org.json.JSONString
         RUNNING = new UvmState("running");
         DESTROYED = new UvmState("destroyed");
 
-        Map<String, UvmState> m = new HashMap<String, UvmState>(4);
+        Map<String, UvmState> m = new HashMap<>(4);
         m.put(LOADED.toString(), LOADED);
         m.put(INITIALIZED.toString(), INITIALIZED);
         m.put(RUNNING.toString(), RUNNING);
