@@ -141,7 +141,7 @@ public class QuarantineStore
     public List<InboxSummary> listInboxes()
     {
         Set<Map.Entry<String, InboxSummary>> allAccounts = masterTable.entries();
-        ArrayList<InboxSummary> ret = new ArrayList<InboxSummary>(allAccounts.size());
+        ArrayList<InboxSummary> ret = new ArrayList<>(allAccounts.size());
         for (Map.Entry<String, InboxSummary> entry : allAccounts) {
             ret.add(new InboxSummary(entry.getKey(), entry.getValue().getTotalSz(), entry.getValue().getTotalMails()));
         }
@@ -209,7 +209,7 @@ public class QuarantineStore
                 newFileName = copyFileToInbox(file, dir);
                 if (newFileName == null) {
                     addressLock.unlock(inboxAddr);
-                    return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
+                    return new Pair<>(AdditionStatus.FAILURE);
                 }
                 renamedFile = false;
             }
@@ -217,7 +217,7 @@ public class QuarantineStore
             newFileName = copyFileToInbox(file, dir);
             if (newFileName == null) {
                 addressLock.unlock(inboxAddr);
-                return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
+                return new Pair<>(AdditionStatus.FAILURE);
             }
             renamedFile = false;
         }
@@ -232,7 +232,7 @@ public class QuarantineStore
                 new File(dir, newFileName).delete();
             }
             addressLock.unlock(inboxAddr);
-            return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
+            return new Pair<>(AdditionStatus.FAILURE);
         }
 
         if (!masterTable.mailAdded(inboxAddr, size)) {
@@ -240,7 +240,7 @@ public class QuarantineStore
             masterTable.mailAdded(inboxAddr, size);
         }
         addressLock.unlock(inboxAddr);
-        return new Pair<AdditionStatus, String>(renamedFile ? AdditionStatus.SUCCESS_FILE_RENAMED
+        return new Pair<>(renamedFile ? AdditionStatus.SUCCESS_FILE_RENAMED
                 : AdditionStatus.SUCCESS_FILE_COPIED, newFileName);
     }
 
@@ -354,7 +354,7 @@ public class QuarantineStore
         File dirRF = getInboxDir(address, false);
         if (dirRF == null) {
             logger.warn("Unable to get inbox folderfor " + address);
-            return new Pair<GenericStatus, InboxIndex>(GenericStatus.NO_SUCH_INBOX);
+            return new Pair<>(GenericStatus.NO_SUCH_INBOX);
         }
         
         // lock the inbox
@@ -367,9 +367,9 @@ public class QuarantineStore
         addressLock.unlock(address);
         if (inboxIndex == null) {
             logger.warn("Unable to read index for " + address);
-            return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
+            return new Pair<>(GenericStatus.ERROR);
         }
-        return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
+        return new Pair<>(GenericStatus.SUCCESS, inboxIndex);
     }
 
     /**
@@ -471,7 +471,7 @@ public class QuarantineStore
         File dirRF = getInboxDir(address, false);
         if (dirRF == null) {
             logger.warn("Unable to purge mails for \"" + address + "\"  No such inbox");
-            return new Pair<GenericStatus, InboxIndex>(GenericStatus.NO_SUCH_INBOX);
+            return new Pair<>(GenericStatus.NO_SUCH_INBOX);
         }
 
         // lock the inbox
@@ -492,7 +492,7 @@ public class QuarantineStore
         if (toDelete.size() == 0) {
             // Nothing to do, and we don't want to update the index w/ a NOOP
             addressLock.unlock(address);
-            return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
+            return new Pair<>(GenericStatus.SUCCESS, inboxIndex);
         }
 
         // Update the index. We'll defer actual ejection until after we release
@@ -500,7 +500,7 @@ public class QuarantineStore
         if (!QuarantineStorageManager.writeQuarantineIndex(address, inboxIndex, getInboxPath(address))) {
             logger.warn("Unable to replace index for address \"" + address + "\".  Abort purge");
             addressLock.unlock(address);
-            return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
+            return new Pair<>(GenericStatus.ERROR);
         }
 
         // Unlock
@@ -527,7 +527,7 @@ public class QuarantineStore
             }
         }
 
-        return new Pair<GenericStatus, InboxIndex>(GenericStatus.SUCCESS, inboxIndex);
+        return new Pair<>(GenericStatus.SUCCESS, inboxIndex);
     }
 
     /**
@@ -718,7 +718,7 @@ public class QuarantineStore
         PruningSelector(long mailCutoff, long inboxCutoff) {
             m_mailCutoff = mailCutoff;
             m_inboxCutoff = inboxCutoff;
-            m_doomedInboxes = new ArrayList<String>();
+            m_doomedInboxes = new ArrayList<>();
         }
 
         /**
@@ -730,7 +730,7 @@ public class QuarantineStore
          */
         List<InboxRecord> selectEjections(InboxIndex index, File rf)
         {
-            ArrayList<InboxRecord> ret = new ArrayList<InboxRecord>();
+            ArrayList<InboxRecord> ret = new ArrayList<>();
 
             if (index.getLastAccessTimestamp() < m_inboxCutoff) {
                 m_doomedInboxes.add(index.getOwnerAddress());
@@ -787,7 +787,7 @@ public class QuarantineStore
          */
         List<InboxRecord> selectEjections(InboxIndex index, File rf)
         {
-            List<InboxRecord> toEject = new ArrayList<InboxRecord>();
+            List<InboxRecord> toEject = new ArrayList<>();
 
             for (String id : m_list) {
                 if (index.getInboxMap().containsKey(id)) {
