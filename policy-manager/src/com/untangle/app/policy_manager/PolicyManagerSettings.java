@@ -16,8 +16,8 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class PolicyManagerSettings implements Serializable, JSONString
 {
-    private List<PolicyRule> rules = new LinkedList<PolicyRule>(); 
-    private List<PolicySettings> policies  = new LinkedList<PolicySettings>();
+    private List<PolicyRule> rules = new LinkedList<>(); 
+    private List<PolicySettings> policies  = new LinkedList<>();
     private int nextPolicyId = 2;
     
     public PolicyManagerSettings() {}
