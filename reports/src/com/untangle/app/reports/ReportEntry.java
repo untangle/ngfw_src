@@ -258,7 +258,7 @@ public class ReportEntry implements Serializable, JSONString
             logger.info("startDate not specified, using 1 day ago: " + dateFormat(startDate));
         }
 
-        LinkedList<SqlCondition> allConditions = new LinkedList<SqlCondition>();
+        LinkedList<SqlCondition> allConditions = new LinkedList<>();
         if ( getConditions() != null )
             allConditions.addAll( Arrays.asList(getConditions()) );
         if ( extraConditions != null )
@@ -572,7 +572,7 @@ public class ReportEntry implements Serializable, JSONString
             logger.info("Getting distinct values: " + statement);
             resultSet = statement.executeQuery();
 
-            LinkedList<String> values = new LinkedList<String>();
+            LinkedList<String> values = new LinkedList<>();
             while (resultSet.next()) {
                 values.add( resultSet.getString(1) );
             }
