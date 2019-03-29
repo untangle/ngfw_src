@@ -47,20 +47,20 @@ public abstract class AppBase implements App
      * This stores a set of parents of this app Parents are any apps that this
      * app depends on to operate properly
      */
-    private Set<AppBase> parents = new HashSet<AppBase>();
+    private Set<AppBase> parents = new HashSet<>();
 
     /**
      * This stores a set of children to this app Children are any apps that
      * depend on this app to operate properly
      */
-    private Set<App> children = new HashSet<App>();
+    private Set<App> children = new HashSet<>();
 
     /**
      * These store this app's metrics (for display in the UI) The hash map is
      * for fast lookups The list is to maintain order for the UI
      */
-    private Map<String, AppMetric> metrics = new ConcurrentHashMap<String, AppMetric>();
-    private List<AppMetric> metricList = new ArrayList<AppMetric>();
+    private Map<String, AppMetric> metrics = new ConcurrentHashMap<>();
+    private List<AppMetric> metricList = new ArrayList<>();
 
     private AppSettings.AppState currentState;
 
@@ -336,7 +336,7 @@ public abstract class AppBase implements App
         try {
             AppBase app;
 
-            Set<App> parentApps = new HashSet<App>();
+            Set<App> parentApps = new HashSet<>();
             if (appProperties.getParents() != null) {
                 for (String parent : appProperties.getParents()) {
                     parentApps.add(startParent(parent, appSettings.getPolicyId()));
@@ -410,7 +410,7 @@ public abstract class AppBase implements App
      */
     public List<SessionTuple> liveSessions()
     {
-        List<SessionTuple> sessions = new LinkedList<SessionTuple>();
+        List<SessionTuple> sessions = new LinkedList<>();
 
         for (AppSession sess : liveAppSessions()) {
             SessionTuple tuple = new SessionTuple(sess.getProtocol(), sess.getClientAddr(), sess.getServerAddr(), sess.getClientPort(), sess.getServerPort());
@@ -427,7 +427,7 @@ public abstract class AppBase implements App
      */
     public List<AppSession> liveAppSessions()
     {
-        List<AppSession> sessions = new LinkedList<AppSession>();
+        List<AppSession> sessions = new LinkedList<>();
 
         if (getConnectors() != null) {
             for (PipelineConnector connector : getConnectors()) {
