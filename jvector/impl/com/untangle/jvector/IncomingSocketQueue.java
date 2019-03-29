@@ -56,7 +56,7 @@ public class IncomingSocketQueue extends Sink
     private String debugString = "";
     
     // List of listeners
-    private final List<SocketQueueListener> listenerList = new LinkedList<SocketQueueListener>();
+    private final List<SocketQueueListener> listenerList = new LinkedList<>();
 
     /**
      * IncomingSocketQueue
