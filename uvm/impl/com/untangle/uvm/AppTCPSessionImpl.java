@@ -894,7 +894,7 @@ public class AppTCPSessionImpl extends AppSessionImpl implements AppTCPSession
         try {
             List<String> attachment = (List<String>) (globalAttachment(TEMP_FILE_KEY));
             if (attachment == null) {
-                attachment = new ArrayList<String>();
+                attachment = new ArrayList<>();
                 globalAttach(TEMP_FILE_KEY, attachment);
             }
             attachment.add(filePath);

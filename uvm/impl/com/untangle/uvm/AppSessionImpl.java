@@ -89,7 +89,7 @@ public abstract class AppSessionImpl implements AppSession
 
     protected final SessionEvent sessionEvent;
 
-    protected HashMap<String, Object> stringAttachments = new HashMap<String, Object>();
+    protected HashMap<String, Object> stringAttachments = new HashMap<>();
     private static final String NO_KEY_VALUE = "NOKEY";
 
     /**
@@ -815,7 +815,7 @@ public abstract class AppSessionImpl implements AppSession
         List<Object> queue = writeQueue[side];
 
         if (queue == null) {
-            queue = new ArrayList<Object>();
+            queue = new ArrayList<>();
             writeQueue[side] = queue;
         }
         queue.add(obj);
