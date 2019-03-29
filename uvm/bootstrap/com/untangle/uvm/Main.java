@@ -182,7 +182,7 @@ public class Main
      */
     private void configureClassLoader() throws Exception
     {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
 
         /* Add everything in lib */
         File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));

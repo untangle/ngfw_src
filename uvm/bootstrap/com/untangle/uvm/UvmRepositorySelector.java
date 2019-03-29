@@ -41,8 +41,8 @@ public class UvmRepositorySelector implements RepositorySelector
      */
     private UvmRepositorySelector()
     {
-        repositories = new HashMap<String, UvmHierarchy>();
-        threadLogInfo = new InheritableThreadLocal<String>();
+        repositories = new HashMap<>();
+        threadLogInfo = new InheritableThreadLocal<>();
     }
 
     /**
@@ -231,7 +231,7 @@ public class UvmRepositorySelector implements RepositorySelector
          */
         public String[] doRender(Throwable t)
         {
-            LinkedList<String> l = new LinkedList<String>();
+            LinkedList<String> l = new LinkedList<>();
             l.add(this.prefix + "      " + t.toString());
             for (StackTraceElement ste: t.getStackTrace()) {
                 l.add(this.prefix + "      " + ste.toString());
