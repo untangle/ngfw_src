@@ -85,7 +85,7 @@ public class PhishBlockerScanner implements SpamScanner
             } else {
                 // convert VirusScannerResult to phish SpamReport
                 ReportItem ourItem = new ReportItem(HIT_SCORE + threshold, vsr.getVirusName());
-                List<ReportItem> items = new LinkedList<ReportItem>();
+                List<ReportItem> items = new LinkedList<>();
                 items.add(ourItem);
                 result = new SpamReport(items, threshold);
             }
