@@ -21,7 +21,7 @@ public class FirewallSettings implements Serializable, JSONString
     
     public FirewallSettings()
     {
-        this.rules = new LinkedList<FirewallRule>();
+        this.rules = new LinkedList<>();
     }
 
     public FirewallSettings(List<FirewallRule> rules)
