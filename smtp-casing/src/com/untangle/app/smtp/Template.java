@@ -180,7 +180,7 @@ public class Template {
                                       printUnassigned);
         }
 
-        ArrayList<Part> list = new ArrayList<Part>();
+        ArrayList<Part> list = new ArrayList<>();
 
         int index = 0;
         final int len = template.length();
