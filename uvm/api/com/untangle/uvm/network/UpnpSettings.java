@@ -20,7 +20,7 @@ public class UpnpSettings implements Serializable, JSONString
     private boolean secureMode = true;
     private int listenPort = 5000;
     
-    private List<UpnpRule> upnpRules = new LinkedList<UpnpRule>();
+    private List<UpnpRule> upnpRules = new LinkedList<>();
 
     public boolean getUpnpEnabled() { return this.upnpEnabled; }
     public void setUpnpEnabled( boolean newValue ) { this.upnpEnabled = newValue; }

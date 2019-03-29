@@ -27,9 +27,9 @@ public class QosSettings implements Serializable, JSONString
     private int sshPriority = 1;
     private int openvpnPriority = 1;
     
-    private List<QosPriority> qosPriorities = new LinkedList<QosPriority>();
+    private List<QosPriority> qosPriorities = new LinkedList<>();
 
-    private List<QosRule> qosRules = new LinkedList<QosRule>();
+    private List<QosRule> qosRules = new LinkedList<>();
 
     public String getQueueDiscipline() { return this.queueDiscipline; }
     public void setQueueDiscipline( String newValue ) { this.queueDiscipline = newValue; }

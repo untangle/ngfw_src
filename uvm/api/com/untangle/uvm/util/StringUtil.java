@@ -23,7 +23,7 @@ public class StringUtil
     private static final Pattern HUMAN_READABLE_PATTERN = Pattern.compile("([-+]?[0-9]*\\.?[0-9]+)\\s*(.)");
     private static final Map<String,Long> humanReadableMap;
     static {
-        humanReadableMap = new HashMap<String,Long>();
+        humanReadableMap = new HashMap<>();
         humanReadableMap.put("P", 1125899906842624L);
         humanReadableMap.put("T", 1099511627776L);
         humanReadableMap.put("G", 1073741824L);
