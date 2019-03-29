@@ -15,7 +15,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class AdminSettings implements Serializable, JSONString
 {
-    private LinkedList<AdminUserSettings> users = new LinkedList<AdminUserSettings>();
+    private LinkedList<AdminUserSettings> users = new LinkedList<>();
     private Long version = null;
     private String defaultUsername = "admin";
 

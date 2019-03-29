@@ -38,7 +38,7 @@ public class DeviceTableEntry implements Serializable, JSONString
     private int         interfaceId = 0;
     private long        lastSessionTime = 0; /* time of the last new session */
 
-    private HashMap<String,Tag> tags = new HashMap<String,Tag>();
+    private HashMap<String,Tag> tags = new HashMap<>();
     
     private static final String IPV4_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
     private static Pattern ipv4Pattern = Pattern.compile( IPV4_PATTERN );
@@ -154,12 +154,12 @@ public class DeviceTableEntry implements Serializable, JSONString
     public synchronized List<Tag> getTags()
     {
         removeExpiredTags();
-        return new LinkedList<Tag>(this.tags.values());
+        return new LinkedList<>(this.tags.values());
     }
 
     public synchronized void setTags( List<Tag> newValue )
     {
-        HashMap<String,Tag> newSet = new HashMap<String,Tag>();
+        HashMap<String,Tag> newSet = new HashMap<>();
         if ( newValue != null ) {
             for ( Tag t : newValue ) {
                 if ( t == null || t.getName() == null )
