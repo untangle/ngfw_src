@@ -18,7 +18,7 @@ public class ShieldSettings implements Serializable, JSONString
 {
     private Integer version = null; /* default is set in initializeSettings() */
     private boolean shieldEnabled = true;
-    private LinkedList<ShieldRule> rules = new LinkedList<ShieldRule>();
+    private LinkedList<ShieldRule> rules = new LinkedList<>();
     private int requestPerSecondLimit = 30;
     
     public ShieldSettings() { }
