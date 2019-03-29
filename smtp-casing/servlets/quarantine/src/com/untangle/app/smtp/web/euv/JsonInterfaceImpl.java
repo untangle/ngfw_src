@@ -95,12 +95,12 @@ public class JsonInterfaceImpl implements JsonInterface
         String account = quarantine.getAccountFromToken(token);
 
         if (account == null)
-            return new ArrayList<InboxRecord>();
+            return new ArrayList<>();
 
         List<InboxRecord> inboxRecords = quarantine.getInboxRecords(account);
 
         if (inboxRecords == null)
-            return new ArrayList<InboxRecord>();
+            return new ArrayList<>();
         return inboxRecords;
     }
 
@@ -365,7 +365,7 @@ public class JsonInterfaceImpl implements JsonInterface
         if (inboxRecords == null)
             return ActionResponse.EMPTY;
 
-        List<String> sl = new ArrayList<String>();
+        List<String> sl = new ArrayList<>();
         for (int c = 0; c < addresses.length; c++){
             if (addresses[c] != null)
                 sl.add(addresses[c].toLowerCase());
@@ -393,7 +393,7 @@ public class JsonInterfaceImpl implements JsonInterface
                 break;
         }
 
-        Set<String> mids = new HashSet<String>();
+        Set<String> mids = new HashSet<>();
 
         /* Now build a list of message ids to release */
         if (action != SAFELIST_ACTION.DELETE) {
