@@ -310,7 +310,7 @@ public class IPMaskedAddress implements Serializable
     public LinkedList<Boolean> bitString()
     {
         byte[] addrb = address.getAddress();
-        LinkedList<Boolean> result = new LinkedList<Boolean>();
+        LinkedList<Boolean> result = new LinkedList<>();
         int i, j, numbits;
         int sum;
 

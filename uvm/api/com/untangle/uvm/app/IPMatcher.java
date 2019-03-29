@@ -236,7 +236,7 @@ public class IPMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = IPMatcherType.LIST;
 
-            this.children = new LinkedList<IPMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
 
