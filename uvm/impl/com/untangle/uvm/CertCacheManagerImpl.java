@@ -43,8 +43,8 @@ import com.untangle.uvm.CertCacheManager;
  */
 public class CertCacheManagerImpl implements CertCacheManager
 {
-    private static ConcurrentHashMap<String, CertificateHolder> certTable = new ConcurrentHashMap<String, CertificateHolder>();
-    private static HashSet<String> certLocker = new HashSet<String>();
+    private static ConcurrentHashMap<String, CertificateHolder> certTable = new ConcurrentHashMap<>();
+    private static HashSet<String> certLocker = new HashSet<>();
 
     private final Logger logger = Logger.getLogger(getClass());
     private final long cacheTimeout = 60000;
