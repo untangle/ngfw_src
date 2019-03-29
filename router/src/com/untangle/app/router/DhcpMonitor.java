@@ -59,7 +59,7 @@ class DhcpMonitor implements Runnable
      * A map of all of the leases being tracked.  Has to be concurrent
      * in order for another thread to look up addresses.
      */
-    private final Map<InetAddress,DhcpLease> currentLeaseMap = new ConcurrentHashMap<InetAddress,DhcpLease>();
+    private final Map<InetAddress,DhcpLease> currentLeaseMap = new ConcurrentHashMap<>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
     private final RouterImpl app;
@@ -192,7 +192,7 @@ class DhcpMonitor implements Runnable
     {
         BufferedReader in = null;
 
-        Set<InetAddress> deletedSet = new HashSet<InetAddress>( currentLeaseMap.keySet() );
+        Set<InetAddress> deletedSet = new HashSet<>( currentLeaseMap.keySet() );
 
         /* If there are no leases, this should never expire */
         nextExpiration = NEVER;
