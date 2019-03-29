@@ -21,7 +21,7 @@ public class OpenVpnRemoteClient implements java.io.Serializable, org.json.JSONS
     private boolean export = false;
     private String exportNetwork;
 
-    private LinkedList<OpenVpnConfigItem> clientConfigItems = new LinkedList<OpenVpnConfigItem>();
+    private LinkedList<OpenVpnConfigItem> clientConfigItems = new LinkedList<>();
 
     public OpenVpnRemoteClient()
     {

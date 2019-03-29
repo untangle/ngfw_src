@@ -580,7 +580,7 @@ public class OpenVpnAppImpl extends AppBase
         /**
          * create a list of default exports - use all static non-WANs by default
          */
-        List<OpenVpnExport> exports = new LinkedList<OpenVpnExport>();
+        List<OpenVpnExport> exports = new LinkedList<>();
         for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getEnabledInterfaces()) {
             if (intfSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED) continue;
             if (intfSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC) continue;
@@ -598,7 +598,7 @@ public class OpenVpnAppImpl extends AppBase
         /**
          * create a list of default groups (just one)
          */
-        List<OpenVpnGroup> groups = new LinkedList<OpenVpnGroup>();
+        List<OpenVpnGroup> groups = new LinkedList<>();
         OpenVpnGroup group = new OpenVpnGroup();
         group.setGroupId(1);
         group.setName(I18nUtil.marktr("Default Group"));
@@ -611,7 +611,7 @@ public class OpenVpnAppImpl extends AppBase
         /**
          * Find an address pool that doesn't intersect anything
          */
-        List<IPMaskedAddress> possibleAddressPools = new LinkedList<IPMaskedAddress>();
+        List<IPMaskedAddress> possibleAddressPools = new LinkedList<>();
         Random rand = new Random();
         possibleAddressPools.add(new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24"));
         possibleAddressPools.add(new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24"));
@@ -682,7 +682,7 @@ public class OpenVpnAppImpl extends AppBase
          * Check each client. Check that it has a good name, and the mapped
          * group exist
          */
-        List<IPMaskedAddress> exportedNetworks = new LinkedList<IPMaskedAddress>();
+        List<IPMaskedAddress> exportedNetworks = new LinkedList<>();
         exportedNetworks.add(newSettings.getAddressSpace());
         for (OpenVpnRemoteClient client : newSettings.getRemoteClients()) {
             if (client.getName() == null || client.getName().contains(" ")) throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": Illegal client name: " + client.getName());
@@ -926,7 +926,7 @@ public class OpenVpnAppImpl extends AppBase
      */
     private List<JSONObject> _getRemoteServersStatus()
     {
-        List<JSONObject> results = new LinkedList<JSONObject>();
+        List<JSONObject> results = new LinkedList<>();
 
         BufferedReader reader;
         for (OpenVpnRemoteServer server : settings.getRemoteServers()) {
