@@ -62,7 +62,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public SmtpTransaction()
     {
-        this.recipients = new ArrayList<EmailAddressWithStatus>();
+        this.recipients = new ArrayList<>();
         this.from = null;
         this.fromConfirmed = false;
     }
@@ -119,7 +119,7 @@ public final class SmtpTransaction implements TemplateValues
      */
     public List<InternetAddress> getRecipients(boolean confirmedOnly)
     {
-        List<InternetAddress> ret = new ArrayList<InternetAddress>();
+        List<InternetAddress> ret = new ArrayList<>();
         for (EmailAddressWithStatus eaws : this.recipients) {
             if ((confirmedOnly && eaws.confirmed) || (!confirmedOnly)) {
                 ret.add(eaws.addr);
