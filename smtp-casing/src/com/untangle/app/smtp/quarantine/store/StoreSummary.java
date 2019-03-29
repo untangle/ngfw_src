@@ -31,7 +31,7 @@ public class StoreSummary implements Serializable
      * @return instance of StoreSummary.
      */
     public StoreSummary() {
-        map = new HashMap<String, InboxSummary>();
+        map = new HashMap<>();
         totalSz = new AtomicLong(0);
         totalMails = new AtomicInteger(0);
     }
@@ -43,7 +43,7 @@ public class StoreSummary implements Serializable
      * @return instance of StoreSummary.
      */
     public StoreSummary(StoreSummary copyFrom) {
-        map = new HashMap<String, InboxSummary>(copyFrom.map);
+        map = new HashMap<>(copyFrom.map);
         totalSz = copyFrom.totalSz;
         totalMails = copyFrom.totalMails;
     }
