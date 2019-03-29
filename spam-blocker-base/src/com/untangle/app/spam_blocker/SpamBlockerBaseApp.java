@@ -473,7 +473,7 @@ public abstract class SpamBlockerBaseApp extends AppBase
         try {
             Set<GreyListKey> keys = SpamBlockerBaseApp.greylist.keySet();
             logger.info("Saving greylist to file... (" + keys.size() + " entries)");
-            LinkedList<GreyListKey> list = new LinkedList<GreyListKey>();
+            LinkedList<GreyListKey> list = new LinkedList<>();
             for (GreyListKey key : keys) {
                 list.add(key);
             }
