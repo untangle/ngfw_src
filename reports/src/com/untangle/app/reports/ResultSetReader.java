@@ -118,7 +118,7 @@ public class ResultSetReader implements Runnable
      */
     public ArrayList<Object> getNextChunk( int chunkSize )
     {
-        ArrayList<Object> newList = new ArrayList<Object>( chunkSize );
+        ArrayList<Object> newList = new ArrayList<>( chunkSize );
 
         try {
             if ( resultSet.isClosed()  ){
@@ -166,7 +166,7 @@ public class ResultSetReader implements Runnable
      */
     public ArrayList<JSONObject> getAllEvents()
     {
-        ArrayList<JSONObject> newList = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> newList = new ArrayList<>();
 
         try {
             if (resultSet == null || connection == null)
