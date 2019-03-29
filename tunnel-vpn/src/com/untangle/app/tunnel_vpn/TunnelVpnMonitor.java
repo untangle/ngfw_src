@@ -47,7 +47,7 @@ class TunnelVpnMonitor implements Runnable
 
     protected final Logger logger = Logger.getLogger(getClass());
 
-    private final ConcurrentHashMap<Integer, TunnelVpnTunnelStatus> tunnelStatusList = new ConcurrentHashMap<Integer, TunnelVpnTunnelStatus>();
+    private final ConcurrentHashMap<Integer, TunnelVpnTunnelStatus> tunnelStatusList = new ConcurrentHashMap<>();
     private final TunnelVpnManager manager;
     private final TunnelVpnApp app;
 
@@ -488,7 +488,7 @@ class TunnelVpnMonitor implements Runnable
      */
     public LinkedList<TunnelVpnTunnelStatus> getTunnelStatusList()
     {
-        LinkedList<TunnelVpnTunnelStatus> statusList = new LinkedList<TunnelVpnTunnelStatus>();
+        LinkedList<TunnelVpnTunnelStatus> statusList = new LinkedList<>();
 
         // if the app is not running just return an empty list
         if (app.getRunState() != AppSettings.AppState.RUNNING) {

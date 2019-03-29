@@ -31,7 +31,7 @@ public class TunnelVpnManager
     private final TunnelVpnApp app;
     private int newTunnelId = -1;
 
-    private HashMap<Integer, Process> processMap = new HashMap<Integer, Process>();
+    private HashMap<Integer, Process> processMap = new HashMap<>();
 
     /**
      * Constructor
