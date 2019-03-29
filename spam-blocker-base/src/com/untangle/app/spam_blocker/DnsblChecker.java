@@ -201,7 +201,7 @@ public class DnsblChecker
      */
     private List<DnsblClient> createClients(String ipAddr, String invertedIPAddr) 
     {
-        LinkedList<DnsblClient> clients = new LinkedList<DnsblClient>();
+        LinkedList<DnsblClient> clients = new LinkedList<>();
         
         for ( SpamDnsbl spamDnsbl : spamDnsblList ) {
             if ( !spamDnsbl.getActive() ) {

@@ -64,7 +64,7 @@ public class SpamReport implements TemplateValues
      */
     public SpamReport(List<ReportItem> items, float score, float threshold)
     {
-        this.items = new LinkedList<ReportItem>(items);
+        this.items = new LinkedList<>(items);
         this.score = score;
         this.threshold = threshold;
     }
@@ -79,7 +79,7 @@ public class SpamReport implements TemplateValues
      */
     public SpamReport(List<ReportItem> items, float threshold)
     {
-        this.items = new LinkedList<ReportItem>(items);
+        this.items = new LinkedList<>(items);
         this.threshold = threshold;
 
         float s = 0;
