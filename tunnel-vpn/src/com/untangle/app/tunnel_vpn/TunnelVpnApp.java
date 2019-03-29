@@ -333,7 +333,7 @@ public class TunnelVpnApp extends AppBase
             // remove strings that we don't want to show the users
             // these are strings/errors that are normal but scary to the user
             String[] lines = output.split("\\n");
-            List<String> list = new LinkedList<String>();
+            List<String> list = new LinkedList<>();
             Collections.addAll(list, lines);
             for (Iterator<String> i = list.iterator(); i.hasNext();) {
                 String str = i.next();
@@ -358,7 +358,7 @@ public class TunnelVpnApp extends AppBase
 
         TunnelVpnSettings settings = new TunnelVpnSettings();
 
-        List<TunnelVpnRule> rules = new LinkedList<TunnelVpnRule>();
+        List<TunnelVpnRule> rules = new LinkedList<>();
         TunnelVpnRule rule;
         List<TunnelVpnRuleCondition> conditions;
         TunnelVpnRuleCondition condition1;
@@ -367,7 +367,7 @@ public class TunnelVpnApp extends AppBase
         rule.setEnabled(false);
         rule.setDescription("Route all traffic over any available Tunnel.");
         rule.setTunnelId(-1); //any tunnel
-        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        conditions = new LinkedList<>();
         rule.setConditions(conditions);
         rules.add(rule);
 
@@ -375,7 +375,7 @@ public class TunnelVpnApp extends AppBase
         rule.setEnabled(false);
         rule.setDescription("Example: Route all hosts tagged with \"tunnel\" over any Tunnel.");
         rule.setTunnelId(-1); //any tunnel
-        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        conditions = new LinkedList<>();
         condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED, "tunnel");
         conditions.add(condition1);
         rule.setConditions(conditions);
@@ -385,7 +385,7 @@ public class TunnelVpnApp extends AppBase
         rule.setEnabled(false);
         rule.setDescription("Example: Route all hosts tagged with \"bittorrent-usage\" over any Tunnel.");
         rule.setTunnelId(-1); //any tunnel
-        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        conditions = new LinkedList<>();
         condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.CLIENT_TAGGED, "bittorrent-usage");
         conditions.add(condition1);
         rule.setConditions(conditions);
@@ -395,7 +395,7 @@ public class TunnelVpnApp extends AppBase
         rule.setEnabled(false);
         rule.setDescription("Example: Route TCP port 80 and port 443 over any Tunnel.");
         rule.setTunnelId(-1); //any tunnel
-        conditions = new LinkedList<TunnelVpnRuleCondition>();
+        conditions = new LinkedList<>();
         condition1 = new TunnelVpnRuleCondition(TunnelVpnRuleCondition.ConditionType.DST_PORT, "80,443");
         conditions.add(condition1);
         rule.setConditions(conditions);
@@ -452,7 +452,7 @@ public class TunnelVpnApp extends AppBase
      */
     private List<TunnelVpnTunnelSettings> findTunnelsMissingFromNetworkSettings()
     {
-        List<TunnelVpnTunnelSettings> missing = new LinkedList<TunnelVpnTunnelSettings>();
+        List<TunnelVpnTunnelSettings> missing = new LinkedList<>();
 
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
@@ -475,7 +475,7 @@ public class TunnelVpnApp extends AppBase
      */
     private List<InterfaceSettings> findExtraVirtualInterfaces()
     {
-        List<InterfaceSettings> extra = new LinkedList<InterfaceSettings>();
+        List<InterfaceSettings> extra = new LinkedList<>();
 
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
