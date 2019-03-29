@@ -95,7 +95,7 @@ public class FtpFunction
     }
 
     static {
-        FUNCTIONS = new ConcurrentHashMap<String, FtpFunction>();
+        FUNCTIONS = new ConcurrentHashMap<>();
 
         USER = new FtpFunction("USER", true);
         PASS = new FtpFunction("PASS", true);

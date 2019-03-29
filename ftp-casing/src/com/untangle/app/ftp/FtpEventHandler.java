@@ -27,7 +27,7 @@ public abstract class FtpEventHandler extends AbstractEventHandler
      * Used to obtain the control session that opened the data session on the
      * given port.
      */
-    private static final Map<InetSocketAddress, Long> ctlSessionIdByDataSocket = new ConcurrentHashMap<InetSocketAddress, Long>();
+    private static final Map<InetSocketAddress, Long> ctlSessionIdByDataSocket = new ConcurrentHashMap<>();
     
     /**
      * Create a new FtpEventHandler
@@ -215,7 +215,7 @@ public abstract class FtpEventHandler extends AbstractEventHandler
      */
     public static void removeDataSockets(long ctlSessionId)
     {
-        Set<InetSocketAddress> set = new HashSet<InetSocketAddress>(ctlSessionIdByDataSocket.keySet());
+        Set<InetSocketAddress> set = new HashSet<>(ctlSessionIdByDataSocket.keySet());
         for (InetSocketAddress dataSocket : set){
             if (ctlSessionIdByDataSocket.get(dataSocket).longValue() == ctlSessionId)
                 ctlSessionIdByDataSocket.remove(dataSocket);
