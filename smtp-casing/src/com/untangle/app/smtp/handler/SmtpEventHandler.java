@@ -72,7 +72,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
 
         protected boolean clientTokensEnabled = true;
 
-        protected List<Token> queuedClientTokens = new ArrayList<Token>();
+        protected List<Token> queuedClientTokens = new ArrayList<>();
 
         protected List<OutstandingRequest> outstandingRequests;
 
@@ -204,7 +204,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
 
         // Build-out request queue
         updateTimestamps( state );
-        state.outstandingRequests = new LinkedList<OutstandingRequest>();
+        state.outstandingRequests = new LinkedList<>();
 
         // The first message passed for SMTP is actualy from the server.
         // Place a Response handler into the OutstandingRequest queue to handle this and call our SessionHandler with
@@ -523,7 +523,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
             return resp;
         }
 
-        List<String> finalList = new ArrayList<String>();
+        List<String> finalList = new ArrayList<>();
         finalList.add(respLines[0]);// Add domain line
 
         for (int i = 1; i < respLines.length; i++) {
@@ -565,7 +565,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
 
         logger.debug("Received Command \"" + cmd.getCmdString() + "\"" + " of type \"" + cmd.getClass().getName() + "\"");
-        List<Response> immediateActions = new LinkedList<Response>();
+        List<Response> immediateActions = new LinkedList<>();
 
         // Check for allowed commands
         if ((!(cmd instanceof UnparsableCommand)) && !isAllowedCommand( cmd.getCmdString(), session )) {
@@ -694,7 +694,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     private void handleBeginMIME( AppTCPSession session, BeginMIMEToken token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
-        List<Response> immediateActions = new LinkedList<Response>();
+        List<Response> immediateActions = new LinkedList<>();
         state.smtpTransactionHandler = getOrCreateTxHandler( state );
         state.smtpTransactionHandler.handleBeginMIME( session, token, this, immediateActions );
         followup( session, immediateActions );
@@ -707,7 +707,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      */
     private void handleContinuedMIME( AppTCPSession session, ContinuedMIMEToken token)
     {
-        List<Response> immediateActions = new LinkedList<Response>();
+        List<Response> immediateActions = new LinkedList<>();
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         SmtpTransactionHandler transactionHandler = getOrCreateTxHandler( state );
         if (token.isLast()) {
@@ -755,7 +755,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
 
         // Looks odd, but the Transaction is complete so just assign the current handler to null.
         state.smtpTransactionHandler = null;
-        List<Response> immediateActions = new LinkedList<Response>();
+        List<Response> immediateActions = new LinkedList<>();
         transactionHandler.handleCompleteMIME( session, token, this, immediateActions );
         followup( session, immediateActions );
     }
