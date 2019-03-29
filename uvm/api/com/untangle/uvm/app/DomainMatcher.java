@@ -193,7 +193,7 @@ public class DomainMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = DomainMatcherType.LIST;
 
-            this.children = new LinkedList<DomainMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
 

@@ -17,7 +17,7 @@ import org.json.JSONString;
 public class AppManagerSettings implements Serializable, JSONString
 {
     private long nextAppId = 1;
-    private LinkedList<AppSettings> apps = new LinkedList<AppSettings>();
+    private LinkedList<AppSettings> apps = new LinkedList<>();
 
     public AppManagerSettings() {}
 
