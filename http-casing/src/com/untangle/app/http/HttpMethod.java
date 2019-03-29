@@ -24,8 +24,8 @@ public class HttpMethod implements Serializable
     public static final HttpMethod CONNECT = new HttpMethod('C', "CONNECT");
     public static final HttpMethod NON_STANDARD = new HttpMethod('X', "NON-STANDARD");
 
-    private static final Map<Character, HttpMethod> INSTANCES = new HashMap<Character, HttpMethod>();
-    private static final Map<String, HttpMethod> BY_NAME = new HashMap<String, HttpMethod>();
+    private static final Map<Character, HttpMethod> INSTANCES = new HashMap<>();
+    private static final Map<String, HttpMethod> BY_NAME = new HashMap<>();
 
     static {
         INSTANCES.put(OPTIONS.getKey(), OPTIONS);

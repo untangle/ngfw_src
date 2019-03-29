@@ -36,7 +36,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
 
     private static final Pattern IMAGE_PATTERN = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))", Pattern.CASE_INSENSITIVE);
 
-    private final NonceFactory<T> nonceFactory = new NonceFactory<T>();
+    private final NonceFactory<T> nonceFactory = new NonceFactory<>();
     private final AppSettings appSettings;
 
     /**
