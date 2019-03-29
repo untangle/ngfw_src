@@ -45,7 +45,7 @@ public class FileMIMESource
     public FileMIMESource(File file, boolean deleteFileOnClose) {
         this.file = file;
         this.deleteFileOnClose = deleteFileOnClose;
-        this.openStreams = new HashSet<MIMEParsingInputStream>();
+        this.openStreams = new HashSet<>();
     }
 
     /**

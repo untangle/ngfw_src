@@ -48,7 +48,7 @@ public class MIMEUtil
      */
     public static List<Part> getParts(MimeMessage msg)
     {
-        List<Part> list = new ArrayList<Part>();
+        List<Part> list = new ArrayList<>();
         try {
             getParts(list, msg);
         } catch (MessagingException e) {
