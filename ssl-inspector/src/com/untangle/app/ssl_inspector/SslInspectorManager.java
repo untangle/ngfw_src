@@ -60,8 +60,8 @@ class SslInspectorManager
      * server cert and used to create the fake certificate.
      */
 
-    private static HashMap<String, String> validSubjectList = new HashMap<String, String>();
-    private static HashMap<Integer, String> validAlternateList = new HashMap<Integer, String>();
+    private static HashMap<String, String> validSubjectList = new HashMap<>();
+    private static HashMap<Integer, String> validAlternateList = new HashMap<>();
 
     // This is the list of subject name tags that we know work with the
     // openssl utility. The key is the tag we retrieve from the server cert
@@ -699,7 +699,7 @@ for more data when a full packet has not yet been received.
      */
     public String[] generateProtocolList(ProtocolList listType)
     {
-        ArrayList<String> protoList = new ArrayList<String>();
+        ArrayList<String> protoList = new ArrayList<>();
 
         switch (listType)
         {
