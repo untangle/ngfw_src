@@ -24,7 +24,7 @@ public class OpenVpnGroup implements java.io.Serializable, org.json.JSONString
     private InetAddress pushDns1;
     private InetAddress pushDns2;
     private String pushDnsDomain;
-    private LinkedList<OpenVpnConfigItem> groupConfigItems = new LinkedList<OpenVpnConfigItem>();
+    private LinkedList<OpenVpnConfigItem> groupConfigItems = new LinkedList<>();
 
     public OpenVpnGroup()
     {

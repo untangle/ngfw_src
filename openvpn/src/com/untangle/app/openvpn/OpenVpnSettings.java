@@ -47,26 +47,26 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     /**
      * List of addresses visible to those connecting to the VPN
      */
-    private List<OpenVpnExport> exports = new LinkedList<OpenVpnExport>();
+    private List<OpenVpnExport> exports = new LinkedList<>();
 
     /**
      * List of the various group of remote clients
      */
-    private List<OpenVpnGroup> groups = new LinkedList<OpenVpnGroup>();
+    private List<OpenVpnGroup> groups = new LinkedList<>();
 
     /**
      * List of all the remote clients
      */
-    private List<OpenVpnRemoteClient> remoteClients = new LinkedList<OpenVpnRemoteClient>();
+    private List<OpenVpnRemoteClient> remoteClients = new LinkedList<>();
 
     /**
      * List of all the remote servers
      */
-    private List<OpenVpnRemoteServer> remoteServers = new LinkedList<OpenVpnRemoteServer>();
+    private List<OpenVpnRemoteServer> remoteServers = new LinkedList<>();
 
     public OpenVpnSettings()
     {
-        serverConfiguration = new LinkedList<OpenVpnConfigItem>();
+        serverConfiguration = new LinkedList<>();
         
         serverConfiguration.add(new OpenVpnConfigItem("mode", "server", true));
         serverConfiguration.add(new OpenVpnConfigItem("multihome", true));
@@ -104,7 +104,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         /* push register-dns to reset DNS on windows machines */
         serverConfiguration.add(new OpenVpnConfigItem("push", "\"register-dns\"", true));
 
-        clientConfiguration = new LinkedList<OpenVpnConfigItem>();
+        clientConfiguration = new LinkedList<>();
         
         clientConfiguration.add(new OpenVpnConfigItem("client", true));
         clientConfiguration.add(new OpenVpnConfigItem("resolv-retry", "20", true));

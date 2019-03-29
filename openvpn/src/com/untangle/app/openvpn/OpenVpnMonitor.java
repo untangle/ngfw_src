@@ -102,7 +102,7 @@ class OpenVpnMonitor implements Runnable
         }
 
         logger.debug("Starting");
-        activeMap = new ConcurrentHashMap<String, ClientState>();
+        activeMap = new ConcurrentHashMap<>();
 
         long nextKillUndefTime = System.currentTimeMillis() + KILL_UNDEF_TIME_MSEC;
         long now = System.currentTimeMillis();
@@ -162,7 +162,7 @@ class OpenVpnMonitor implements Runnable
      */
     public synchronized List<OpenVpnStatusEvent> getOpenConnectionsAsEvents()
     {
-        List<OpenVpnStatusEvent> list = new ArrayList<OpenVpnStatusEvent>();
+        List<OpenVpnStatusEvent> list = new ArrayList<>();
 
         if (activeMap == null) return list;
 
@@ -280,7 +280,7 @@ class OpenVpnMonitor implements Runnable
                 stats.updated = false;
 
             /* Preload, so it is is safe to send commands while processeing */
-            List<String> clientStatus = new LinkedList<String>();
+            List<String> clientStatus = new LinkedList<>();
 
             while (true) {
                 String line = in.readLine().trim();
