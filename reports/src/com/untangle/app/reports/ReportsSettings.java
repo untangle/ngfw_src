@@ -22,10 +22,10 @@ public class ReportsSettings implements Serializable, JSONString
     private Integer dbRetention = 7; // days
     private Integer generationHour = 2;
     private Integer generationMinute = 0;
-    private LinkedList<ReportsHostnameMapEntry> hostnameMap = new LinkedList<ReportsHostnameMapEntry>();
-    private LinkedList<ReportsUser> reportsUsers = new LinkedList<ReportsUser>();
+    private LinkedList<ReportsHostnameMapEntry> hostnameMap = new LinkedList<>();
+    private LinkedList<ReportsUser> reportsUsers = new LinkedList<>();
     private LinkedList<AlertRule> alertRules = null;
-    private LinkedList<EmailTemplate> emailTemplates = new LinkedList<EmailTemplate>();
+    private LinkedList<EmailTemplate> emailTemplates = new LinkedList<>();
     
     private String dbHost = "localhost";
     private int    dbPort = 5432;
@@ -38,7 +38,7 @@ public class ReportsSettings implements Serializable, JSONString
     private int syslogPort = 514;
     private String syslogProtocol = "UDP";
 
-    private LinkedList<ReportEntry> reportEntries  = new LinkedList<ReportEntry>();
+    private LinkedList<ReportEntry> reportEntries  = new LinkedList<>();
 
     private boolean googleDriveUploadData = false;
     private boolean googleDriveUploadCsv = false;

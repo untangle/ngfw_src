@@ -26,7 +26,7 @@ public class ReportsUser implements Serializable, JSONString
     private boolean emailSummaries = true;
     private byte[] passwordHash = null;
     private boolean onlineAccess;
-    private List<Integer> emailTemplateIds = new LinkedList<Integer>();
+    private List<Integer> emailTemplateIds = new LinkedList<>();
 
     public ReportsUser() {}
 
