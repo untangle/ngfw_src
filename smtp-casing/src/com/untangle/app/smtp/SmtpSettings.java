@@ -97,7 +97,7 @@ public class SmtpSettings implements Serializable, JSONString
 
     public void setSafelistSettings(List<SafelistSettings> safelistSettings)
     {
-        this.safelistSettings = new LinkedList<SafelistSettings>(safelistSettings);
+        this.safelistSettings = new LinkedList<>(safelistSettings);
 
         return;
     }

@@ -77,7 +77,7 @@ class SmtpSharedState
          */
         java.util.List<String> getHistory()
         {
-            java.util.List<String> ret = new java.util.ArrayList<String>();
+            java.util.List<String> ret = new java.util.ArrayList<>();
 
             int head = m_head;
 
@@ -117,7 +117,7 @@ class SmtpSharedState
      */
     public SmtpSharedState()
     {
-        outstandingRequests = new LinkedList<ResponseAction>();
+        outstandingRequests = new LinkedList<>();
         // Add response for initial salutation
         outstandingRequests.add(new SimpleResponseAction());
         updateLastTransmissionTimestamp();
