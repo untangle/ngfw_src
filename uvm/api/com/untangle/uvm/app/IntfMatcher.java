@@ -211,7 +211,7 @@ public class IntfMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = IntfMatcherType.LIST;
 
-            this.children = new LinkedList<IntfMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
 

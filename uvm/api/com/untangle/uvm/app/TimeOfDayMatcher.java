@@ -207,7 +207,7 @@ public class TimeOfDayMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = TimeOfDayMatcherType.LIST;
 
-            this.children = new LinkedList<TimeOfDayMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
             
