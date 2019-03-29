@@ -26,7 +26,7 @@ public class GlobEmailAddressList
      */
     public GlobEmailAddressList(List<String> list) {
 
-        List<Pair<String, String>> pairing = new ArrayList<Pair<String, String>>();
+        List<Pair<String, String>> pairing = new ArrayList<>();
 
         for (String s : list) {
             pairing.add(new Pair<String, String>(s, "x"));
