@@ -19,9 +19,9 @@ public class TunnelVpnSettings implements Serializable, JSONString
 {
     private Integer version = Integer.valueOf(1);
 
-    private List<TunnelVpnTunnelSettings> servers = new LinkedList<TunnelVpnTunnelSettings>();
+    private List<TunnelVpnTunnelSettings> servers = new LinkedList<>();
 
-    private List<TunnelVpnRule> rules = new LinkedList<TunnelVpnRule>();
+    private List<TunnelVpnRule> rules = new LinkedList<>();
     
     public TunnelVpnSettings() {}
 
