@@ -20,7 +20,7 @@ public class SpamSettings implements Serializable, JSONString
 
     public SpamSettings()
     {
-        spamDnsblList = new LinkedList<SpamDnsbl>();
+        spamDnsblList = new LinkedList<>();
     }
 
     public List<SpamDnsbl> getSpamDnsblList() { return spamDnsblList; }
