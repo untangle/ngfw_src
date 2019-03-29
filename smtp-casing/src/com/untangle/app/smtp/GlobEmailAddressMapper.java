@@ -36,9 +36,9 @@ public class GlobEmailAddressMapper
 
         m_origList = list;
 
-        m_list = new ArrayList<EmailAddressMatcher>();
+        m_list = new ArrayList<>();
 
-        List<Pair<String, String>> plainAddresses = new ArrayList<Pair<String, String>>();
+        List<Pair<String, String>> plainAddresses = new ArrayList<>();
 
         for (Pair<String, String> p : list) {
             if (isWildcarded(p.a)) {
@@ -95,7 +95,7 @@ public class GlobEmailAddressMapper
 
         boolean isWildcard = isWildcarded(mapping.a);
 
-        List<Pair<String, String>> newList = new ArrayList<Pair<String, String>>(m_origList);
+        List<Pair<String, String>> newList = new ArrayList<>(m_origList);
 
         for (Pair<String, String> pair : m_origList) {
             if (!(pair.b.equalsIgnoreCase(mapping.b))) {
@@ -128,7 +128,7 @@ public class GlobEmailAddressMapper
     {
 
         rightSide = rightSide.toLowerCase().trim();
-        HashSet<String> set = new HashSet<String>();
+        HashSet<String> set = new HashSet<>();
         for (Pair<String, String> pair : m_origList) {
             if (pair.b.equalsIgnoreCase(rightSide)) {
                 set.add(pair.a.toLowerCase());
@@ -227,7 +227,7 @@ public class GlobEmailAddressMapper
          */
         SimpleEmailAddressMatcher(List<Pair<String, String>> pairings) {
 
-            m_map = new HashMap<String, String>();
+            m_map = new HashMap<>();
 
             for (Pair<String, String> p : pairings) {
                 m_map.put(p.a.toLowerCase(), p.b);
@@ -315,7 +315,7 @@ public class GlobEmailAddressMapper
     public static String runTest(String[] args)
     {
         String result = "";
-        List<Pair<String, String>> mappings = new ArrayList<Pair<String, String>>();
+        List<Pair<String, String>> mappings = new ArrayList<>();
 
         mappings.add(new Pair<String, String>("foo@foo.com", "foo2@foo.com"));
         mappings.add(new Pair<String, String>("moo@foo.com", "moo2@foo.com"));
