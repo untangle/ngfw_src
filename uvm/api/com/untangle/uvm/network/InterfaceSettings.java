@@ -67,8 +67,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress v4AutoDns1Override; /* the dhcp override dns1 (null means don't override) */
     private InetAddress v4AutoDns2Override; /* the dhcp override dns2 (null means don't override) */
 
-    private List<InterfaceAlias> v4Aliases = new LinkedList<InterfaceAlias>();
-    private List<InterfaceAlias> v6Aliases = new LinkedList<InterfaceAlias>();
+    private List<InterfaceAlias> v4Aliases = new LinkedList<>();
+    private List<InterfaceAlias> v6Aliases = new LinkedList<>();
     
     private String      v4PPPoERootDev; /* The PPPoE root device (the device ppp is based on)  */
     private String      v4PPPoEUsername; /* PPPoE Username */
@@ -106,7 +106,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private Boolean vrrpEnabled; /* Is VRRP enabled */
     private Integer vrrpId; /* VRRP ID 1-255 */
     private Integer vrrpPriority; /* VRRP priority 1-255, highest priority is master */
-    private List<InterfaceAlias> vrrpAliases = new LinkedList<InterfaceAlias>();
+    private List<InterfaceAlias> vrrpAliases = new LinkedList<>();
 
     private String wirelessSsid = null;
     public static enum WirelessEncryption { NONE, WPA1, WPA12, WPA2 };

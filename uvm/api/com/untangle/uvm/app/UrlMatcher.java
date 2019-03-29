@@ -110,8 +110,7 @@ public class UrlMatcher implements java.io.Serializable
         if (this.regexPattern == null) return false;
         if (url == null) return false;
 
-        Matcher matcher = this.regexPattern.matcher(url);
-        return matcher.matches();
+        return this.regexPattern.matcher(url).matches();
     }
 
     /**

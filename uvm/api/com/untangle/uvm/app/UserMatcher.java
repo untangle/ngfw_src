@@ -156,7 +156,7 @@ public class UserMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = UserMatcherType.LIST;
 
-            this.children = new LinkedList<UserMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
 
