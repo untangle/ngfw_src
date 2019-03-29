@@ -16,7 +16,7 @@ import java.util.TimerTask;
  */
 public class NonceFactory<T>
 {
-    private final Map<String, T> nonces = new HashMap<String, T>();
+    private final Map<String, T> nonces = new HashMap<>();
     private final Random random = new Random();
 
     private Timer timer = null;
