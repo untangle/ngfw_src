@@ -48,7 +48,7 @@ public class SslInspectorApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(SslInspectorApp.class);
 
-    private static HashSet<String> brokenServerList = new HashSet<String>();
+    private static HashSet<String> brokenServerList = new HashSet<>();
 
     private PipelineConnector clientWebConnector = null;
     private PipelineConnector serverWebConnector = null;
@@ -224,7 +224,7 @@ public class SslInspectorApp extends AppBase
 
         catch (Exception exn) {
             logger.error("Exception loading catalog of trusted certificates", exn);
-            trustCatalog = new LinkedList<TrustedCertificate>();
+            trustCatalog = new LinkedList<>();
         }
 
         return (trustCatalog);
@@ -303,7 +303,7 @@ public class SslInspectorApp extends AppBase
      */
     private LinkedList<SslInspectorRule> generateDefaultRules()
     {
-        LinkedList<SslInspectorRule> defaultRules = new LinkedList<SslInspectorRule>();
+        LinkedList<SslInspectorRule> defaultRules = new LinkedList<>();
         int ruleNumber = 1;
 
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Microsoft Update", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*update.microsoft*", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
@@ -348,7 +348,7 @@ public class SslInspectorApp extends AppBase
         SslInspectorRuleAction action;
 
         rule = new SslInspectorRule();
-        matchers = new LinkedList<SslInspectorRuleCondition>();
+        matchers = new LinkedList<>();
 
         if (matcherOneString != null) {
             ruleMatcher = new SslInspectorRuleCondition(matcherOneType, matcherOneString);
