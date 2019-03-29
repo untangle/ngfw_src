@@ -152,7 +152,7 @@ public class ProtocolMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = ProtocolMatcherType.LIST;
 
-            this.children = new LinkedList<ProtocolMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
             

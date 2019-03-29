@@ -231,7 +231,7 @@ public class IntMatcher implements java.io.Serializable
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = IntMatcherType.LIST;
 
-            this.children = new LinkedList<IntMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
 
