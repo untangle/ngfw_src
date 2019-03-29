@@ -14,12 +14,12 @@ public class OutgoingSocketQueue extends Source
     /**
      * List of events to go out
      */
-    private final List<Crumb> eventList = new LinkedList<Crumb>();
+    private final List<Crumb> eventList = new LinkedList<>();
 
     /**
      * List of listeners
      */
-    private final List<SocketQueueListener> listenerList = new LinkedList<SocketQueueListener>();
+    private final List<SocketQueueListener> listenerList = new LinkedList<>();
 
     /**
      * The attachment
