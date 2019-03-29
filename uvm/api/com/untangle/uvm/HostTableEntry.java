@@ -57,7 +57,7 @@ public class HostTableEntry implements Serializable, JSONString
 
     private String httpUserAgent = null; /* the user-agent header from HTTP */
 
-    private HashMap<String,Tag> tags = new HashMap<String,Tag>();
+    private HashMap<String,Tag> tags = new HashMap<>();
     
     public HostTableEntry()
     {
@@ -386,12 +386,12 @@ public class HostTableEntry implements Serializable, JSONString
     public synchronized List<Tag> getTags()
     {
         removeExpiredTags();
-        return new LinkedList<Tag>(this.tags.values());
+        return new LinkedList<>(this.tags.values());
     }
     
     public synchronized void setTags( List<Tag> newValue )
     {
-        HashMap<String,Tag> newSet = new HashMap<String,Tag>();
+        HashMap<String,Tag> newSet = new HashMap<>();
         if ( newValue != null ) {
             for ( Tag t : newValue ) {
                 if ( t == null || t.getName() == null )
