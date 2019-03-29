@@ -369,7 +369,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         if (logger.isDebugEnabled()) {
             logger.debug("parsing chunk: " + buffer);
         }
-        List<Token> tokenList = new LinkedList<Token>();
+        List<Token> tokenList = new LinkedList<>();
 
         boolean done = false;
         while (!done) {

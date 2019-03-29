@@ -70,13 +70,13 @@ public abstract class HttpEventHandler extends AbstractEventHandler
      */
     private class HttpSessionState
     {
-        protected final List<RequestLineToken> requests = new LinkedList<RequestLineToken>();
+        protected final List<RequestLineToken> requests = new LinkedList<>();
 
-        protected final List<Token[]> outstandingResponses = new LinkedList<Token[]>();
+        protected final List<Token[]> outstandingResponses = new LinkedList<>();
 
-        protected final List<Token> requestQueue = new ArrayList<Token>();
-        protected final List<Token> responseQueue = new ArrayList<Token>();
-        protected final Map<RequestLineToken, String> hosts = new HashMap<RequestLineToken, String>();
+        protected final List<Token> requestQueue = new ArrayList<>();
+        protected final List<Token> responseQueue = new ArrayList<>();
+        protected final Map<RequestLineToken, String> hosts = new HashMap<>();
 
         protected ClientState clientState = ClientState.REQ_START_STATE;
         protected ServerState serverState = ServerState.RESP_START_STATE;

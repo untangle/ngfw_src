@@ -17,7 +17,7 @@ import com.untangle.uvm.vnet.Token;
  */
 public class HeaderToken implements Token
 {
-    private Map<String, Field> header = new LinkedHashMap<String, Field>();
+    private Map<String, Field> header = new LinkedHashMap<>();
 
     /**
      * An individual field of a HTTP header
@@ -26,7 +26,7 @@ public class HeaderToken implements Token
     {
         String key;
 
-        private List<String> values = new LinkedList<String>();
+        private List<String> values = new LinkedList<>();
 
         /**
          * create a Field
