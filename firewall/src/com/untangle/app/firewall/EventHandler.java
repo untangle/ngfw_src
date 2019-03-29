@@ -22,7 +22,7 @@ public class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
-    private List<FirewallRule> firewallRuleList = new LinkedList<FirewallRule>();
+    private List<FirewallRule> firewallRuleList = new LinkedList<>();
 
     private boolean blockSilently = true;
 
