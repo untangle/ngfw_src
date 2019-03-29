@@ -29,7 +29,7 @@ public class VirtualUserTable
      */
     public VirtualUserTable()
     {
-        userTable = new Hashtable<InetAddress, VirtualUserEntry>();
+        userTable = new Hashtable<>();
     }
 
     /**
@@ -39,7 +39,7 @@ public class VirtualUserTable
      */
     public LinkedList<VirtualUserEntry> buildUserList()
     {
-        LinkedList<VirtualUserEntry> userList = new LinkedList<VirtualUserEntry>(userTable.values());
+        LinkedList<VirtualUserEntry> userList = new LinkedList<>(userTable.values());
         return (userList);
     }
 
