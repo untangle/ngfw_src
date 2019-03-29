@@ -34,8 +34,8 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
     private SmtpSettings mlSettings;
 
     // caches of values
-    private Map<String, List<String>> m_sndrsByRcpnt = new HashMap<String, List<String>>();
-    private Map<String, Map<String, Pattern>> m_allSndrs = new HashMap<String, Map<String, Pattern>>();
+    private Map<String, List<String>> m_sndrsByRcpnt = new HashMap<>();
+    private Map<String, Map<String, Pattern>> m_allSndrs = new HashMap<>();
     private Object allSndrsLock = new Object();
 
     /**
@@ -94,7 +94,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
 
         boolean bReturn = false;
 
-        Set<String> urs = new HashSet<String>();
+        Set<String> urs = new HashSet<>();
         urs.add("GLOBAL".toLowerCase());
         if (null != recipients) {
             for (InternetAddress r : recipients) {
@@ -349,7 +349,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
     public List<String> listSafelists() throws SafelistActionFailedException
     {
         m_logger.debug("returning all safelists");
-        return new ArrayList<String>(m_sndrsByRcpnt.keySet());
+        return new ArrayList<>(m_sndrsByRcpnt.keySet());
     }
 
     /**
@@ -424,7 +424,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
     public List<SafelistCount> getUserSafelistCounts() throws NoSuchSafelistException, SafelistActionFailedException
     {
         List<String> safelists = listSafelists();
-        List<SafelistCount> safelistCounts = new ArrayList<SafelistCount>(safelists.size());
+        List<SafelistCount> safelistCounts = new ArrayList<>(safelists.size());
         for (String account : safelists) {
 
             if (account.equalsIgnoreCase("GLOBAL")) {
@@ -492,8 +492,8 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
             rcpnt = rcpnt.toLowerCase();
         }
 
-        HashMap<String, ArrayList<SafelistSettings>> allHMSafelistsByRcpnt = new HashMap<String, ArrayList<SafelistSettings>>();
-        HashMap<String, String> allHMSndrs = new HashMap<String, String>();
+        HashMap<String, ArrayList<SafelistSettings>> allHMSafelistsByRcpnt = new HashMap<>();
+        HashMap<String, String> allHMSndrs = new HashMap<>();
         // cast list because xdoclet does not support java 1.5
         List<SafelistSettings> safelists = mlSettings.getSafelistSettings();
 
@@ -520,13 +520,13 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
             rcpntHMSafelists = allHMSafelistsByRcpnt.get(tmpRcpnt);
             if (null == rcpntHMSafelists) {
                 // create safelist cache for recipient
-                rcpntHMSafelists = new ArrayList<SafelistSettings>();
+                rcpntHMSafelists = new ArrayList<>();
                 allHMSafelistsByRcpnt.put(tmpRcpnt, rcpntHMSafelists);
             }
             rcpntHMSafelists.add(safelist); // cache safelist for recipient
         }
 
-        List<SafelistSettings> newSafelists = new ArrayList<SafelistSettings>(safelists.size());
+        List<SafelistSettings> newSafelists = new ArrayList<>(safelists.size());
         List<String> curRcpnts = new ArrayList<String>(m_sndrsByRcpnt.keySet());
 
         SafelistSettings newSafelist;
@@ -556,7 +556,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
                 m_logger.debug("adding recipient: " + curRcpnt);
 
                 // create safelist cache for new recipient
-                rcpntHMSafelists = new ArrayList<SafelistSettings>();
+                rcpntHMSafelists = new ArrayList<>();
                 allHMSafelistsByRcpnt.put(curRcpnt, rcpntHMSafelists);
             } else {
                 // use recipient from any safelist; recipients are all same
@@ -613,7 +613,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         safelists.addAll(newSafelists); // add new cache
 
         // clear all caches of safelist references
-        ArrayList<String> clrRcpnts = new ArrayList<String>(m_sndrsByRcpnt.keySet());
+        ArrayList<String> clrRcpnts = new ArrayList<>(m_sndrsByRcpnt.keySet());
         for (String clrRcpnt : clrRcpnts) {
             allHMSafelistsByRcpnt.get(clrRcpnt).clear();
         }
@@ -706,8 +706,8 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
     {
         m_logger.debug("reading all safelists");
 
-        Map<String, List<String>> sndrsByRcpnt = new HashMap<String, List<String>>();
-        Map<String, Map<String, Pattern>> allSndrs = new HashMap<String, Map<String, Pattern>>();
+        Map<String, List<String>> sndrsByRcpnt = new HashMap<>();
+        Map<String, Map<String, Pattern>> allSndrs = new HashMap<>();
 
         String slRcpnt;
         String slSndr;
@@ -731,7 +731,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
             sndrs = sndrsByRcpnt.get(rcpnt);
             if (null == sndrs) {
                 // create new safelists for this recipient
-                sndrs = new ArrayList<String>();
+                sndrs = new ArrayList<>();
                 sndrs.add(sndr);
                 sndrsByRcpnt.put(rcpnt, sndrs);
                 continue;
@@ -769,7 +769,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
 
         Map<String, Pattern> m = sndrs.get(rcpnt);
         if (null == m) {
-            m = new HashMap<String, Pattern>();
+            m = new HashMap<>();
             sndrs.put(rcpnt, m);
         }
 
@@ -820,7 +820,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         m_logger.debug("recipient: " + rcpnt + ", created safelist");
         List<String> sndrs = getSndrs(rcpnt);
         if (null == sndrs) {
-            sndrs = new ArrayList<String>();
+            sndrs = new ArrayList<>();
             m_sndrsByRcpnt.put(rcpnt, sndrs);
         } else {
             sndrs.clear();
