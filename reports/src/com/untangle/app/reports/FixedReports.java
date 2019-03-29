@@ -115,7 +115,7 @@ public class FixedReports
     public static final ArrayList<String> ReservedReports;
 
     static {
-        TagPatterns = new HashMap<Tag, Pattern>();
+        TagPatterns = new HashMap<>();
 
         TagPatterns.put(Tag.VARIABLE, Pattern.compile("\\{\\{\\s*(.+)\\s*\\}\\}"));
         TagPatterns.put(Tag.TRANS, Pattern.compile("\\{\\%\\s*trans \"([^\"]+)\"\\s*\\%\\}"));
@@ -133,7 +133,7 @@ public class FixedReports
         TagPatterns.put(Tag.CYCLE_INITIALIZE, Pattern.compile("\\{\\%\\s*cycle (.+?) as (.+?) \\s*\\%\\}"));
         TagPatterns.put(Tag.CYCLE_NEXT, Pattern.compile("\\{\\%\\s*cycle ([^\\s]+?) \\s*\\%\\}"));
 
-        FilterPatterns = new HashMap<Filter, Pattern>();
+        FilterPatterns = new HashMap<>();
         FilterPatterns.put(Filter.FIRST, Pattern.compile("first"));
         FilterPatterns.put(Filter.DISTINCT, Pattern.compile("distinct\\=([^,]+)"));
         FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=([^,]+),(.+)"));
@@ -144,10 +144,10 @@ public class FixedReports
 
         NumericOnlyPattern = Pattern.compile("-?\\d+(.\\d+)?");
 
-        ParsePassActiveVariables = new HashMap<ParsePass, String>();
+        ParsePassActiveVariables = new HashMap<>();
         ParsePassActiveVariables.put(ParsePass.POST, "url");
 
-        ConfigCategories = new ArrayList<String>();
+        ConfigCategories = new ArrayList<>();
         ConfigCategories.add("Hosts");
         ConfigCategories.add("Devices");
         ConfigCategories.add("Network");
@@ -158,7 +158,7 @@ public class FixedReports
 
         // This would be better as an external file for easier modification and not
         // hanging onto the memory.
-        ReservedReports = new ArrayList<String>();
+        ReservedReports = new ArrayList<>();
         // Ad Blocker Summary
         ReservedReports.add("ad-blocker-WvH1wCQQ0D");
         // Ads Blocked
@@ -305,7 +305,7 @@ public class FixedReports
         ReservedReports.add("web-monitor-2nx8FA4VCB");
 
         // Order matters when processing
-        ConditionalPatterns = new LinkedHashMap<ConditionalE,Pattern>();
+        ConditionalPatterns = new LinkedHashMap<>();
         ConditionalPatterns.put(ConditionalE.LOGICAL, Pattern.compile("(.+?)\\s+(not\\s+|)(and|or)\\s+(.+)"));
         ConditionalPatterns.put(ConditionalE.EQUALITY, Pattern.compile("(.+?)\\s+(not\\s+|\\!|)(in|\\=|\\=\\=|\\<|\\>)\\s+(.+)"));
     }
@@ -406,8 +406,8 @@ public class FixedReports
             loopBuffer = new StringBuilder();
         }
 
-        List<variableContext> variables = new ArrayList<variableContext>();
-        List<conditionalContext> conditionals = new ArrayList<conditionalContext>();
+        List<variableContext> variables = new ArrayList<>();
+        List<conditionalContext> conditionals = new ArrayList<>();
 
         /**
          * Add variable to this context.
@@ -651,9 +651,9 @@ public class FixedReports
                     selectorString.substring(selectorString.indexOf(tag.group()) + tag.group().length());
             }
 
-            filters = new ArrayList<String>(Arrays.asList(selectorString.split("\\|")));
-            arguments = new ArrayList<String>(Arrays.asList(filters.get(0).split("\\,")));
-            fields = new ArrayList<String>(Arrays.asList(arguments.get(0).split("\\.")));
+            filters = new ArrayList<>(Arrays.asList(selectorString.split("\\|")));
+            arguments = new ArrayList<>(Arrays.asList(filters.get(0).split("\\,")));
+            fields = new ArrayList<>(Arrays.asList(arguments.get(0).split("\\.")));
             filters.remove(0);
             arguments.remove(0);
         }
@@ -860,14 +860,14 @@ public class FixedReports
             (emailTemplate.getMobile() == true ? " " + i18nUtil.tr("Mobile") : "");
 
         // Determine users lists with/without online access for url inclusion
-        List<String> recipientsWithoutOnlineAccess = new ArrayList<String>();
-        List<String> recipientsWithOnlineAccess = new ArrayList<String>();
+        List<String> recipientsWithoutOnlineAccess = new ArrayList<>();
+        List<String> recipientsWithOnlineAccess = new ArrayList<>();
         for(ReportsUser user: users){
             List<String> emailAddresses = null;
             if(user.getEmailAddress().equals("admin")){
                 emailAddresses = reportsManager.getAdminEmailAddresses();
             }else{
-                emailAddresses = new ArrayList<String>();
+                emailAddresses = new ArrayList<>();
                 emailAddresses.add(user.getEmailAddress());
             }
             if(user.getOnlineAccess() == true){
@@ -895,7 +895,7 @@ public class FixedReports
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
 
-        List<String> allowedReportTypes = new ArrayList<String>();
+        List<String> allowedReportTypes = new ArrayList<>();
         for(ReportEntry.ReportEntryType r : ReportEntry.ReportEntryType.values()){
             if(r.name().equals("EVENT_LIST")){
                 continue;
@@ -907,12 +907,12 @@ public class FixedReports
             allowedReportTypes.add(r.name());
         }
 
-        messageParts = new ArrayList<Map<MailSender.MessagePartsField,String>>();
+        messageParts = new ArrayList<>();
         messageText = new StringBuilder();
         messageText.append(i18nUtil.tr("HTML Report enclosed.") + "\n\n");
 
-        List<StringBuilder> inputLines = new ArrayList<StringBuilder>();
-        List<StringBuilder> outputLines = new ArrayList<StringBuilder>();
+        List<StringBuilder> inputLines = new ArrayList<>();
+        List<StringBuilder> outputLines = new ArrayList<>();
 
         // Read template to input
         BufferedReader reader = null;
@@ -937,7 +937,7 @@ public class FixedReports
             }
         }
 
-        Map<String,Object> variableKeyValues = new HashMap<String, Object>();
+        Map<String,Object> variableKeyValues = new HashMap<>();
         variableKeyValues.put("startDate", startDate);
         variableKeyValues.put("endDate", endDate);
         variableKeyValues.put("title", title);
@@ -966,14 +966,14 @@ public class FixedReports
         currentParsePass = ParsePass.POST;
         if(recipientsWithoutOnlineAccess.size() > 0 ){
             variableKeyValues.put("url", "");
-            outputLines = new ArrayList<StringBuilder>();
+            outputLines = new ArrayList<>();
             parseBuffer(inputLines, outputLines, variableKeyValues);
             sendEmail(recipientsWithoutOnlineAccess, outputLines);
         }
 
         if(recipientsWithOnlineAccess.size() > 0 ){
             variableKeyValues.put("url", reportsUrl);
-            outputLines = new ArrayList<StringBuilder>();
+            outputLines = new ArrayList<>();
             parseBuffer(inputLines, outputLines, variableKeyValues);
             sendEmail(recipientsWithOnlineAccess, outputLines);
         }
@@ -1006,15 +1006,15 @@ public class FixedReports
 
         String subject = getVariable(new selector("title")).toString() + " [" + fullName + "]";
 
-        List<Map<MailSender.MessagePartsField,String>> mp = new ArrayList<Map<MailSender.MessagePartsField,String>>();
+        List<Map<MailSender.MessagePartsField,String>> mp = new ArrayList<>();
         for(int i = 0; i < messageParts.size(); i++ ){
             mp.add(messageParts.get(i));
         }
 
-        Map<MailSender.MessagePartsField,String> part = new HashMap<MailSender.MessagePartsField,String>();
+        Map<MailSender.MessagePartsField,String> part = new HashMap<>();
         part.put(MailSender.MessagePartsField.TEXT, messageText.toString());
         mp.add(part);
-        part = new HashMap<MailSender.MessagePartsField,String>();
+        part = new HashMap<>();
         part.put(MailSender.MessagePartsField.HTML, messageHtml.toString());
         mp.add(part);
 
@@ -1033,7 +1033,7 @@ public class FixedReports
      *  Variables and their values to process (add to context)
      */
     void parseBuffer(List<StringBuilder> inputLines, List<StringBuilder> outputLines, Map<String,Object> variableKeyValues){
-        parseContextStack = new ArrayList<parseContext>();
+        parseContextStack = new ArrayList<>();
         parseContext context = new parseContext();
         parseContextStack.add(context);
 
@@ -1329,7 +1329,7 @@ public class FixedReports
                             right = right.substring(1,right.length() -1);
                         }
 
-                        List<String> fields = new ArrayList<String>(Arrays.asList(left.split("\\.")));
+                        List<String> fields = new ArrayList<>(Arrays.asList(left.split("\\.")));
                         fields.remove(0);
                         if(isVariableParseActive(left) == false){
                             // Variable non-active for this pass.  It's proper to short circult everything here.
@@ -1462,7 +1462,7 @@ public class FixedReports
             }
         }
         if( duplicate == false){
-            Map<MailSender.MessagePartsField,String> attachment = new HashMap<MailSender.MessagePartsField,String>();
+            Map<MailSender.MessagePartsField,String> attachment = new HashMap<>();
             attachment.put(MailSender.MessagePartsField.FILENAME, filename);
             if(id != null){
                 attachment.put(MailSender.MessagePartsField.CID, id);
@@ -1482,13 +1482,13 @@ public class FixedReports
     {
         ArrayList<String> values = null;
         if(argumentValues.group(1).indexOf("...") > -1){
-            ArrayList<String> startEnd = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\.\\.\\.")));
-            values = new ArrayList<String>(Integer.parseInt(startEnd.get(1)) - Integer.parseInt(startEnd.get(0)));
+            ArrayList<String> startEnd = new ArrayList<>(Arrays.asList(argumentValues.group(1).split("\\.\\.\\.")));
+            values = new ArrayList<>(Integer.parseInt(startEnd.get(1)) - Integer.parseInt(startEnd.get(0)));
             for(Integer i = Integer.parseInt(startEnd.get(0)); i < Integer.parseInt(startEnd.get(1)); i++){
                 values.add(Integer.toString(i));
             }
         }else{
-            values = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\s")));
+            values = new ArrayList<>(Arrays.asList(argumentValues.group(1).split("\\s")));
         }
         String variableName = argumentValues.group(2);
 
@@ -1716,7 +1716,7 @@ public class FixedReports
      *  Variable.
      */
     private Object createVariableList(String stringList){
-        List<String> variableList = new ArrayList<String>();
+        List<String> variableList = new ArrayList<>();
 
         stringList = stringList.substring(1,stringList.length()-1).trim();
         for(String element: stringList.split("\\s+")){
@@ -1875,11 +1875,11 @@ public class FixedReports
             maximumTemplateArguments++;
         }
 
-        Map<String,String> replacements = new HashMap<String,String>();
+        Map<String,String> replacements = new HashMap<>();
 
         ArrayList<String> sortOrderList = null;
         if(sortOrder.getClass().isArray()){
-            sortOrderList = new ArrayList<String>(Arrays.asList((String[]) sortOrder));
+            sortOrderList = new ArrayList<>(Arrays.asList((String[]) sortOrder));
         }
         String orderName = null;
         int lastSpaceIndex = -1;
@@ -1930,8 +1930,8 @@ public class FixedReports
      *  Filtered object.
      */
     Object filterProcessDistinct(Object incomings, selector filterSelector){
-        List<Object> outgoings = new ArrayList<Object>();
-        List<Object> seens = new ArrayList<Object>();
+        List<Object> outgoings = new ArrayList<>();
+        List<Object> seens = new ArrayList<>();
 
         Method method = null;
         Object object = null;
@@ -1981,7 +1981,7 @@ public class FixedReports
      *  Filtered object.
      */
     Object filterProcessIn(Object incomings, selector filterSelector, Object checklist){
-        List<Object> outgoings = new ArrayList<Object>();
+        List<Object> outgoings = new ArrayList<>();
 
         Method method = null;
         Object object = null;
@@ -2026,17 +2026,17 @@ public class FixedReports
     Object filterProcessOrder(Object incomings, selector filterSelector, selector orderSelector){
         ArrayList<?> orderList = (ArrayList<?>) getVariable(orderSelector);
         if(orderList == null){
-            orderList = new ArrayList<String>();
+            orderList = new ArrayList<>();
             ((ArrayList<String>) orderList).add(orderSelector.fields.get(0));
         }
         Collections.sort((ArrayList<String>)orderList);
 
-        LinkedHashMap<String,ArrayList<Object>> sortedOutgoings = new LinkedHashMap<String,ArrayList<Object>>();
+        LinkedHashMap<String,ArrayList<Object>> sortedOutgoings = new LinkedHashMap<>();
         for(String orderString: (ArrayList<String>) orderList){
             sortedOutgoings.put(orderString, new ArrayList<Object>());
         }
 
-        List<Object> otherOutgoings = new ArrayList<Object>();
+        List<Object> otherOutgoings = new ArrayList<>();
 
         Method method = null;
         Object object = null;
@@ -2073,7 +2073,7 @@ public class FixedReports
             }
         }
 
-        List<Object> outgoings = new ArrayList<Object>();
+        List<Object> outgoings = new ArrayList<>();
         for(Map.Entry<String,ArrayList<Object>> entry : sortedOutgoings.entrySet()){
             if(entry.getValue().size() > 0){
                 outgoings.addAll(entry.getValue());
