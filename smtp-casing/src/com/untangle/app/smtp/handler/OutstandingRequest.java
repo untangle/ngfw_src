@@ -23,7 +23,7 @@ public class OutstandingRequest
      */
     public OutstandingRequest(ResponseCompletion responseCompletion) {
         this.responseCompletion = responseCompletion;
-        additionalActions = new LinkedList<Response>();
+        additionalActions = new LinkedList<>();
     }
 
     /**

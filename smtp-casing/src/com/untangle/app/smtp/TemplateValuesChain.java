@@ -53,7 +53,7 @@ public class TemplateValuesChain
     public TemplateValuesChain append(TemplateValues tv) {
         //For thread safety, copy the list and
         //re-assign the reference.
-        List<TemplateValues> newList = new ArrayList<TemplateValues>(m_valueList);
+        List<TemplateValues> newList = new ArrayList<>(m_valueList);
         newList.add(tv);
         m_valueList = newList;
         return this;
