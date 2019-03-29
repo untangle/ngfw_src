@@ -193,7 +193,7 @@ public class GroupMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = GroupMatcherType.LIST;
 
-            this.children = new LinkedList<GroupMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
 

@@ -238,7 +238,7 @@ public class DayOfWeekMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = DayOfWeekMatcherType.LIST;
 
-            this.children = new LinkedList<DayOfWeekMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
 

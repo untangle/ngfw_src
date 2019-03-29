@@ -156,7 +156,7 @@ public class GlobMatcher
         if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = GlobMatcherType.LIST;
 
-            this.children = new LinkedList<GlobMatcher>();
+            this.children = new LinkedList<>();
 
             String[] results = matcher.split(MARKER_SEPERATOR);
 

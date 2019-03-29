@@ -36,7 +36,7 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
     private boolean invisible = false;
     private int     viewPosition = -1;
 
-    private List<String> parents = new LinkedList<String>();
+    private List<String> parents = new LinkedList<>();
 
     private List<String> supportedArchitectures = Arrays.asList("any");
     private Long         minimumMemory;
