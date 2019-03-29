@@ -107,7 +107,7 @@ public final class Netcap
      */
     public synchronized List<Conntrack> getConntrackDump()
     {
-        LinkedList<Conntrack> entries = new LinkedList<Conntrack>();
+        LinkedList<Conntrack> entries = new LinkedList<>();
         int num = conntrackDump( longArray, longArrayLength );
         for ( int i = 0 ; i < num ; i++ ) {
             if ( longArray[i] == 0 ) {
