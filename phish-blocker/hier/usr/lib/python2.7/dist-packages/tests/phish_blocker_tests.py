@@ -135,7 +135,7 @@ class PhishBlockerTests(unittest2.TestCase):
             from_address = "test0" + str(email_index)
             sendPhishMail(mailfrom=from_address)
 
-            events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
+            events = global_functions.get_events('Phish Blocker','All Phish Events',None,5)
             assert(events != None)
             # print(events['list'][0])
             found = global_functions.check_events( events.get('list'), 5,
