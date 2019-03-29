@@ -111,7 +111,7 @@ public class IpsecVpnApp extends AppBase
         logger.debug("initializeSettings()");
 
         settings = new IpsecVpnSettings();
-        LinkedList<VirtualListen> listenList = new LinkedList<VirtualListen>();
+        LinkedList<VirtualListen> listenList = new LinkedList<>();
 
         // listen on the first WAN interface for the initial L2TP config
         InetAddress firstWan = UvmContextFactory.context().networkManager().getFirstWanAddress();
@@ -123,7 +123,7 @@ public class IpsecVpnApp extends AppBase
 
         settings.setVirtualListenList(listenList);
 
-        LinkedList<IpsecVpnTunnel> tunnelList = new LinkedList<IpsecVpnTunnel>();
+        LinkedList<IpsecVpnTunnel> tunnelList = new LinkedList<>();
         IpsecVpnTunnel tmp;
 
         tmp = new IpsecVpnTunnel();
@@ -665,7 +665,7 @@ public class IpsecVpnApp extends AppBase
      */
     public LinkedList<ConnectionStatusRecord> getTunnelStatus()
     {
-        LinkedList<ConnectionStatusRecord> displayList = new LinkedList<ConnectionStatusRecord>();
+        LinkedList<ConnectionStatusRecord> displayList = new LinkedList<>();
 
         // get the list of configured tunnels from the settings
         LinkedList<IpsecVpnTunnel> configList = settings.getTunnels();

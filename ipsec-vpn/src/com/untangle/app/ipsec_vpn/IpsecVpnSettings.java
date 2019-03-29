@@ -22,14 +22,14 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
         LOCAL_DIRECTORY, RADIUS_SERVER
     };
 
-    private LinkedList<IpsecVpnTunnel> tunnelList = new LinkedList<IpsecVpnTunnel>();
-    private LinkedList<IpsecVpnNetwork> networkList = new LinkedList<IpsecVpnNetwork>();
+    private LinkedList<IpsecVpnTunnel> tunnelList = new LinkedList<>();
+    private LinkedList<IpsecVpnNetwork> networkList = new LinkedList<>();
     private boolean bypassflag = false;
     private boolean debugflag = false;
     private boolean vpnflag = false;
     private boolean neverWriteConfig = false;
     private boolean allowConcurrentLogins = true;
-    private LinkedList<VirtualListen> virtualListenList = new LinkedList<VirtualListen>();
+    private LinkedList<VirtualListen> virtualListenList = new LinkedList<>();
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
     private String virtualNetworkPool = "198.51.100.0/24"; // used for GRE
     private String virtualAddressPool = "198.18.0.0/16"; // used for L2TP

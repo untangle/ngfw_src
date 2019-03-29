@@ -78,7 +78,7 @@ public class IpsecVpnTimer extends TimerTask
     // a tunnel to be detected active before we try to restart if detected down
     private final long RESTART_THRESHOLD = 5;
 
-    private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<String, TunnelWatcher>();
+    private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<>();
     private long cycleCounter = 0;
 
     /**
