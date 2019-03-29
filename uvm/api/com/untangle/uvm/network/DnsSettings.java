@@ -16,8 +16,8 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DnsSettings implements Serializable, JSONString
 {
-    private List<DnsStaticEntry> staticEntries = new LinkedList<DnsStaticEntry>();
-    private List<DnsLocalServer> localServers = new LinkedList<DnsLocalServer>();
+    private List<DnsStaticEntry> staticEntries = new LinkedList<>();
+    private List<DnsLocalServer> localServers = new LinkedList<>();
     
     public DnsSettings() {}
 
