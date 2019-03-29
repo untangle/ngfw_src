@@ -45,7 +45,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
      */
     private class HttpUnparserSessionState
     {
-        protected Queue<ByteBuffer> outputQueue = new LinkedList<ByteBuffer>();
+        protected Queue<ByteBuffer> outputQueue = new LinkedList<>();
         protected int size = 0;
         protected int transferEncoding;
     }
@@ -71,7 +71,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
     {
         HttpUnparserSessionState state = new HttpUnparserSessionState();
         state.size = 0;
-        state.outputQueue = new LinkedList<ByteBuffer>();
+        state.outputQueue = new LinkedList<>();
         session.attach( STATE_KEY, state );
     }
 
@@ -480,7 +480,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "http-request-queue" );
 
         if ( requests == null ) {
-            requests = new LinkedList<RequestLineToken>();
+            requests = new LinkedList<>();
             session.globalAttach( "http-request-queue", requests );
         }
 
