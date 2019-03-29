@@ -33,7 +33,7 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
     private File tmpFile;
 
     /* Senders/Receivers */
-    private Set<SmtpMessageAddressEvent> addresses = new HashSet<SmtpMessageAddressEvent>();
+    private Set<SmtpMessageAddressEvent> addresses = new HashSet<>();
 
     private static long nextId = 0;
 
@@ -181,7 +181,7 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
             "msg_id, subject, " + "sender, " + "hostname " + ")" + " VALUES " +
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
-        List<java.sql.PreparedStatement> sqlList = new LinkedList<java.sql.PreparedStatement>();
+        List<java.sql.PreparedStatement> sqlList = new LinkedList<>();
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 

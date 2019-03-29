@@ -254,7 +254,7 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     @SuppressWarnings("fallthrough")
     protected void doParse( AppTCPSession session, ByteBuffer buf )
     {
-        List<Token> toks = new ArrayList<Token>();
+        List<Token> toks = new ArrayList<>();
         boolean done = false;
         SmtpSharedState serverSideSharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
 
