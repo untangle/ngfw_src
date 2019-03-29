@@ -15,7 +15,7 @@ class AddressLock
 {
     private final static AddressLock INSTANCE = new AddressLock();
 
-    private static Set<String> m_set = new HashSet<String>();
+    private static Set<String> m_set = new HashSet<>();
     private static boolean m_waiting = false;
 
     /**
