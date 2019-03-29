@@ -101,7 +101,7 @@ public class ResponseParser
             ResponseLine respLine = new ResponseLine(replyCode, arg, isLast);
             if (!respLine.isLast) {
                 if (m_lines == null) {
-                    m_lines = new ArrayList<ResponseLine>();
+                    m_lines = new ArrayList<>();
                 }
                 m_lines.add(respLine);
                 continue;
@@ -316,7 +316,7 @@ public class ResponseParser
         while (ch.hasNext()) {
             int[] arraySizes = ch.next();
             String subName = name + arraySizesToString(arraySizes);
-            List<ByteBuffer> bufs = new ArrayList<ByteBuffer>();
+            List<ByteBuffer> bufs = new ArrayList<>();
             int lenSoFar = 0;
             for (int i = 0; i < arraySizes.length; i++) {
                 bufs.add(ByteBuffer.wrap(input, lenSoFar, arraySizes[i]));
@@ -363,7 +363,7 @@ public class ResponseParser
     {
 
         String result = "";
-        List<ByteBuffer> outputBufs = new ArrayList<ByteBuffer>();
+        List<ByteBuffer> outputBufs = new ArrayList<>();
 
         ResponseParser respParser = new ResponseParser();
         Response resp = null;
