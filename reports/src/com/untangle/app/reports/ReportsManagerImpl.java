@@ -46,7 +46,7 @@ public class ReportsManagerImpl implements ReportsManager
      * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
      * which is slow
      */
-    private static HashMap<String,HashMap<String,String>> cacheColumnsResults = new HashMap<String,HashMap<String,String>>();
+    private static HashMap<String,HashMap<String,String>> cacheColumnsResults = new HashMap<>();
 
     /**
      * This stores the tables metadata lookup results so we don't have to frequently lookup metadata
@@ -144,7 +144,7 @@ public class ReportsManagerImpl implements ReportsManager
             throw new RuntimeException("Reports app not found");
         }
 
-        LinkedList<ReportEntry> allReportEntries = new LinkedList<ReportEntry>( app.getSettings().getReportEntries() );
+        LinkedList<ReportEntry> allReportEntries = new LinkedList<>( app.getSettings().getReportEntries() );
 
         Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
 
@@ -162,7 +162,7 @@ public class ReportsManagerImpl implements ReportsManager
     public List<ReportEntry> getReportEntries( String category )
     {
         List<ReportEntry> allReportEntries = getReportEntries();
-        LinkedList<ReportEntry> entries = new LinkedList<ReportEntry>();
+        LinkedList<ReportEntry> entries = new LinkedList<>();
 
         /**
          * If fetching the reports for an app, check that it is installed and has a valid license
@@ -200,7 +200,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public List<JSONObject> getCurrentApplications()
     {
-        ArrayList<JSONObject> currentApplications = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> currentApplications = new ArrayList<>();
 
         for ( AppProperties appProperties : this.appPropertiesList ) {
             if ( appProperties.getInvisible()) {
@@ -236,7 +236,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public Map<String, String> getUnavailableApplicationsMap()
     {
-        Map<String, String> unavailableApplicationsMap = new HashMap<String, String>();
+        Map<String, String> unavailableApplicationsMap = new HashMap<>();
 
         for ( AppProperties appProperties : this.appPropertiesList ) {
             if("shield".equals(appProperties.getName())){
@@ -264,7 +264,7 @@ public class ReportsManagerImpl implements ReportsManager
             throw new RuntimeException("Reports app not found");
         }
 
-        LinkedList<ReportEntry> newReportEntries = new LinkedList<ReportEntry>(newEntries);
+        LinkedList<ReportEntry> newReportEntries = new LinkedList<>(newEntries);
         updateSystemReportEntries( newReportEntries, false );
 
         ReportsSettings settings = app.getSettings();
@@ -492,7 +492,7 @@ public class ReportsManagerImpl implements ReportsManager
     public String[] getColumnsForTable( String tableName )
     {
         String[] array = null;
-        ArrayList<String> columnNames = new ArrayList<String>();
+        ArrayList<String> columnNames = new ArrayList<>();
         HashMap<String,String> metadata = getColumnMetaData( tableName );
 
         if(metadata == null){
@@ -548,7 +548,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public String[] getTables()
     {
-        ArrayList<String> tableNames = new ArrayList<String>();
+        ArrayList<String> tableNames = new ArrayList<>();
         Connection conn = app.getDbConnection();
         try {
             ResultSet rs = cacheTablesResults;
@@ -764,7 +764,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public List<JSONObject> getInterfacesInfo()
     {
-        ArrayList<JSONObject> interfacesInfo = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> interfacesInfo = new ArrayList<>();
         for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ){
             try {
                 JSONObject json = new org.json.JSONObject();
@@ -807,7 +807,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public List<String> getAdminEmailAddresses()
     {
-        LinkedList<String> adminEmailAddresses = new LinkedList<String>();
+        LinkedList<String> adminEmailAddresses = new LinkedList<>();
 
         LinkedList<ReportsUser> reportsUsers = app.getSettings().getReportsUsers();
         Boolean reportsUserFound;
@@ -873,7 +873,7 @@ public class ReportsManagerImpl implements ReportsManager
     {
         boolean updates = false;
         if ( existingEntries == null )
-            existingEntries = new LinkedList<ReportEntry>();
+            existingEntries = new LinkedList<>();
 
         String cmd = "/usr/bin/find " + System.getProperty("uvm.lib.dir") + " -path '*/lib/*/reports/*.json' -print";
         ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
@@ -882,7 +882,7 @@ public class ReportsManagerImpl implements ReportsManager
             return;
         }
         try {
-            List<String> seenUniqueIds = new LinkedList<String>();
+            List<String> seenUniqueIds = new LinkedList<>();
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("Creating Schema: ");
             for ( String line : lines ) {
@@ -1026,7 +1026,7 @@ public class ReportsManagerImpl implements ReportsManager
             if ( results != null ) {
                 return results;
             }
-            results = new HashMap<String,String>();
+            results = new HashMap<>();
 
             ResultSet rs;
             if (ReportsApp.dbDriver.equals("sqlite"))
