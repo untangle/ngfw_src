@@ -44,7 +44,7 @@ public class SslInspectorSettings implements Serializable, JSONString
 
     public SslInspectorSettings()
     {
-        ignoreList = new LinkedList<SslInspectorRule>();
+        ignoreList = new LinkedList<>();
         processEncryptedMailTraffic = false;
         processEncryptedWebTraffic = true;
         blockInvalidTraffic = false;
