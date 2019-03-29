@@ -36,7 +36,7 @@ public class EventReaderImpl
     
     private ReportsApp app;
 
-    private HashMap<String,Class<?>> columnTypeMap = new HashMap<String,Class<?>>();
+    private HashMap<String,Class<?>> columnTypeMap = new HashMap<>();
 
     private Semaphore querySemaphore = new Semaphore(MAX_SIMULTANEOUS_QUERIES);
     
