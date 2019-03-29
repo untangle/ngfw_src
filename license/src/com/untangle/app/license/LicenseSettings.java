@@ -24,7 +24,7 @@ public class LicenseSettings implements Serializable, JSONString
     
     public LicenseSettings( )
     {
-        this.licenses = new LinkedList<License>();
+        this.licenses = new LinkedList<>();
     }
 
     public LicenseSettings( List<License> licenses )

@@ -87,13 +87,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      * This is where the fully evaluated license are stored
      * This map stores the evaluated (validated) licenses
      */
-    private ConcurrentHashMap<String, License> licenseMap = new ConcurrentHashMap<String, License>();
+    private ConcurrentHashMap<String, License> licenseMap = new ConcurrentHashMap<>();
 
     /**
      * A list of all known licenses
      * These are fully evaluated (validated) license
      */
-    private List<License> licenseList = new LinkedList<License>();
+    private List<License> licenseList = new LinkedList<>();
 
     /**
      * The current settings
@@ -534,7 +534,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         logger.info("Initializing Settings...");
 
-        List<License> licenses = new LinkedList<License>();
+        List<License> licenses = new LinkedList<>();
         this.settings = new LicenseSettings(licenses);
 
         this._saveSettings(this.settings);
@@ -798,8 +798,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private synchronized void _mapLicenses()
     {
         /* Create a new map of all of the valid licenses */
-        ConcurrentHashMap<String, License> newMap = new ConcurrentHashMap<String, License>();
-        LinkedList<License> newList = new LinkedList<License>();
+        ConcurrentHashMap<String, License> newMap = new ConcurrentHashMap<>();
+        LinkedList<License> newList = new LinkedList<>();
         License license = null;
         
         if (this.settings != null) {
