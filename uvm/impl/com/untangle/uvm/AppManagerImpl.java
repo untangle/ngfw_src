@@ -46,18 +46,18 @@ public class AppManagerImpl implements AppManager
      * Stores a map of all currently loaded apps from their appId to the App
      * instance
      */
-    private final Map<Long, App> loadedAppsMap = new ConcurrentHashMap<Long, App>();
+    private final Map<Long, App> loadedAppsMap = new ConcurrentHashMap<>();
 
     /**
      * Stores a map of all yet to be loaded apps from their appId to their
      * AppSettings
      */
-    private final Map<Long, AppSettings> unloadedAppsMap = new ConcurrentHashMap<Long, AppSettings>();
+    private final Map<Long, AppSettings> unloadedAppsMap = new ConcurrentHashMap<>();
 
     /**
      * This stores the count of apps currently being loaded
      */
-    private ConcurrentHashMap<Long, AppProperties> appsBeingLoaded = new ConcurrentHashMap<Long, AppProperties>();
+    private ConcurrentHashMap<Long, AppProperties> appsBeingLoaded = new ConcurrentHashMap<>();
 
     private AppManagerSettings settings = null;
 
@@ -138,7 +138,7 @@ public class AppManagerImpl implements AppManager
      */
     public List<App> appInstances()
     {
-        List<App> appList = new ArrayList<App>(loadedAppsMap.values());
+        List<App> appList = new ArrayList<>(loadedAppsMap.values());
 
         // sort by view position, for convenience
         Collections.sort(appList, new Comparator<App>()
@@ -213,7 +213,7 @@ public class AppManagerImpl implements AppManager
     {
         appName = fixupName(appName); // handle old names
 
-        List<App> list = new LinkedList<App>();
+        List<App> list = new LinkedList<>();
 
         for (App app : loadedAppsMap.values()) {
             if (app.getAppProperties().getName().equals(appName)) {
@@ -283,7 +283,7 @@ public class AppManagerImpl implements AppManager
     {
         name = fixupName(name); // handle old names
 
-        List<App> list = new ArrayList<App>(loadedAppsMap.size());
+        List<App> list = new ArrayList<>(loadedAppsMap.size());
 
         for (App app : getAppsForPolicy(policyId, parents)) {
             String appName = app.getAppProperties().getName();
@@ -373,7 +373,7 @@ public class AppManagerImpl implements AppManager
     protected List<App> visibleApps(Integer policyId)
     {
         List<App> loadedApps = appInstances();
-        List<App> list = new ArrayList<App>(loadedApps.size());
+        List<App> list = new ArrayList<>(loadedApps.size());
 
         for (App app : getAppsForPolicy(policyId)) {
             if (!app.getAppProperties().getInvisible()) {
@@ -627,7 +627,7 @@ public class AppManagerImpl implements AppManager
      */
     public Map<Long, AppSettings.AppState> allAppStates()
     {
-        HashMap<Long, AppSettings.AppState> result = new HashMap<Long, AppSettings.AppState>();
+        HashMap<Long, AppSettings.AppState> result = new HashMap<>();
         for (App app : loadedAppsMap.values()) {
             result.put(app.getAppSettings().getId(), app.getRunState());
         }
@@ -665,7 +665,7 @@ public class AppManagerImpl implements AppManager
      */
     public Map<Long, AppSettings> getAllAppSettings()
     {
-        HashMap<Long, AppSettings> result = new HashMap<Long, AppSettings>();
+        HashMap<Long, AppSettings> result = new HashMap<>();
         for (App app : loadedAppsMap.values()) {
             result.put(app.getAppSettings().getId(), app.getAppSettings());
         }
@@ -690,7 +690,7 @@ public class AppManagerImpl implements AppManager
      */
     public Map<Long, AppProperties> getAllAppPropertiesMap()
     {
-        HashMap<Long, AppProperties> result = new HashMap<Long, AppProperties>();
+        HashMap<Long, AppProperties> result = new HashMap<>();
         for (App app : loadedAppsMap.values()) {
             result.put(app.getAppSettings().getId(), app.getAppProperties());
         }
@@ -715,7 +715,7 @@ public class AppManagerImpl implements AppManager
      */
     public List<AppProperties> getAllAppProperties()
     {
-        LinkedList<AppProperties> appProps = new LinkedList<AppProperties>();
+        LinkedList<AppProperties> appProps = new LinkedList<>();
 
         File rootDir = new File(System.getProperty("uvm.lib.dir"));
 
@@ -748,9 +748,9 @@ public class AppManagerImpl implements AppManager
         LicenseManager lm = UvmContextFactory.context().licenseManager();
 
         /* This stores a list of installable apps. (for this rack) */
-        Map<String, String> installableAppsMap = new HashMap<String, String>();
+        Map<String, String> installableAppsMap = new HashMap<>();
         /* This stores a list of all licenses */
-        Map<String, License> licenseMap = new HashMap<String, License>();
+        Map<String, License> licenseMap = new HashMap<>();
 
         /**
          * Build the license map
@@ -785,7 +785,7 @@ public class AppManagerImpl implements AppManager
          * Build the appMetrics (stats in the UI) Remove visible installableApps
          * from installableApps
          */
-        Map<Long, List<AppMetric>> appMetrics = new HashMap<Long, List<AppMetric>>(visibleApps.size());
+        Map<Long, List<AppMetric>> appMetrics = new HashMap<>(visibleApps.size());
         for (App visibleApp : visibleApps) {
             Long appId = visibleApp.getAppSettings().getId();
             Integer appPolicyId = visibleApp.getAppSettings().getPolicyId();
@@ -853,16 +853,16 @@ public class AppManagerImpl implements AppManager
          * Build the list of apps to show on the left hand nav
          */
         logger.debug("Building apps panel:");
-        List<String> installableApps = new ArrayList<String>(installableAppsMap.values());
+        List<String> installableApps = new ArrayList<>(installableAppsMap.values());
         Collections.sort(installableApps);
 
-        List<AppProperties> appProperties = new LinkedList<AppProperties>();
+        List<AppProperties> appProperties = new LinkedList<>();
         for (AppProperties appProps : nm.getAllAppProperties()) {
             if (!appProps.getInvisible()) { /* add only visible apps */
                 appProperties.add(appProps);
             }
         }
-        List<AppSettings> appSettings = new LinkedList<AppSettings>();
+        List<AppSettings> appSettings = new LinkedList<>();
         for (App app : visibleApps) {
             appSettings.add(app.getAppSettings());
         }
@@ -920,7 +920,7 @@ public class AppManagerImpl implements AppManager
      */
     protected synchronized void destroy()
     {
-        List<Runnable> tasks = new ArrayList<Runnable>();
+        List<Runnable> tasks = new ArrayList<>();
 
         for (final App app : loadedAppsMap.values()) {
             Runnable r = new Runnable()
@@ -947,7 +947,7 @@ public class AppManagerImpl implements AppManager
             tasks.add(r);
         }
 
-        List<Thread> threads = new ArrayList<Thread>(tasks.size());
+        List<Thread> threads = new ArrayList<>(tasks.size());
         try {
             for (Iterator<Runnable> taskIterator = tasks.iterator(); taskIterator.hasNext();) {
                 Thread t = UvmContextFactory.context().newThread(taskIterator.next(), "STOP_THREAD");
@@ -1097,7 +1097,7 @@ public class AppManagerImpl implements AppManager
      */
     private void startUnloaded(List<AppSettings> startQueue)
     {
-        List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
+        List<Runnable> restarters = new ArrayList<>(startQueue.size());
 
         for (final AppSettings appSettings : startQueue) {
             final String name = appSettings.getAppName();
@@ -1151,7 +1151,7 @@ public class AppManagerImpl implements AppManager
             }
         }
 
-        List<Thread> threads = new ArrayList<Thread>(restarters.size());
+        List<Thread> threads = new ArrayList<>(restarters.size());
 
         for (Iterator<Runnable> iter = restarters.iterator(); iter.hasNext();) {
             Thread t = UvmContextFactory.context().newThread(iter.next(), "START_" + startThreadNum++);
@@ -1167,8 +1167,8 @@ public class AppManagerImpl implements AppManager
      */
     private List<AppSettings> getLoadable()
     {
-        List<AppSettings> loadable = new ArrayList<AppSettings>(unloadedAppsMap.size());
-        Set<String> thisPass = new HashSet<String>(unloadedAppsMap.size());
+        List<AppSettings> loadable = new ArrayList<>(unloadedAppsMap.size());
+        Set<String> thisPass = new HashSet<>(unloadedAppsMap.size());
 
         for (Iterator<AppSettings> i = unloadedAppsMap.values().iterator(); i.hasNext();) {
             AppSettings appSettings = i.next();
@@ -1269,7 +1269,7 @@ public class AppManagerImpl implements AppManager
             // UPDATE settings if necessary
 
             // look for and remove old apps that no longer exist
-            LinkedList<AppSettings> cleanList = new LinkedList<AppSettings>();
+            LinkedList<AppSettings> cleanList = new LinkedList<>();
             for (AppSettings item : readSettings.getApps()) {
                 if (item.getAppName().equals("webfilter-lite")) continue;
                 if (item.getAppName().equals("ips")) continue;
@@ -1402,7 +1402,7 @@ public class AppManagerImpl implements AppManager
     private List<Integer> getParentPolicies(Integer policyId)
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
-        List<Integer> parentList = new ArrayList<Integer>();
+        List<Integer> parentList = new ArrayList<>();
         if (policyManager == null) return parentList;
 
         for (Integer parentId = policyManager.getParentPolicyId(policyId); parentId != null; parentId = policyManager.getParentPolicyId(parentId)) {
@@ -1438,7 +1438,7 @@ public class AppManagerImpl implements AppManager
         List<Integer> parentPolicies = null;
 
         if (parents && policyId != null) parentPolicies = getParentPolicies(policyId);
-        else parentPolicies = new ArrayList<Integer>();
+        else parentPolicies = new ArrayList<>();
 
         /*
          * This is a list of loadedAppsMap. Each index of the first list
@@ -1450,8 +1450,8 @@ public class AppManagerImpl implements AppManager
          * loadedAppsMap in parentPolicies[n] Policies are ordered
          * parentAppSettingsArray[0] is the first parent, etc
          */
-        List<List<App>> parentAppArray = new ArrayList<List<App>>(parentPolicies.size());
-        List<App> thisPolicyApps = new ArrayList<App>();
+        List<List<App>> parentAppArray = new ArrayList<>(parentPolicies.size());
+        List<App> thisPolicyApps = new ArrayList<>();
         for (int i = 0; i < parentPolicies.size(); i++) {
             parentAppArray.add(new ArrayList<App>());
         }
@@ -1483,7 +1483,7 @@ public class AppManagerImpl implements AppManager
          * entry (which will be most specific app.
          */
         List<App> finalList = thisPolicyApps;
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
 
         for (App app : thisPolicyApps) {
             String n = app.getAppSettings().getAppName();
