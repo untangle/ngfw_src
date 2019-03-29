@@ -95,7 +95,7 @@ public class EventWriterImpl implements Runnable
     /**
      * This is a queue of incoming events
      */
-    private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
+    private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<>();
 
     static {
         String temp;
@@ -141,7 +141,7 @@ public class EventWriterImpl implements Runnable
     {
         thread = Thread.currentThread();
 
-        LinkedList<LogEvent> logQueue = new LinkedList<LogEvent>();
+        LinkedList<LogEvent> logQueue = new LinkedList<>();
         LogEvent event = null;
 
         /**
@@ -328,8 +328,8 @@ public class EventWriterImpl implements Runnable
         /**
          * These map stores the type of objects being written and stats purely for debugging output
          */
-        Map<String,Integer> countMap = new HashMap<String, Integer>(); // Map from Event type to count of this type of event
-        Map<String,Long> timeMap     = new HashMap<String, Long>();    // Map from Event type to culumalite time to write these events
+        Map<String,Integer> countMap = new HashMap<>(); // Map from Event type to count of this type of event
+        Map<String,Long> timeMap     = new HashMap<>();    // Map from Event type to culumalite time to write these events
         if (logger.isInfoEnabled()) {
             for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
                 LogEvent event = i.next();
@@ -359,7 +359,7 @@ public class EventWriterImpl implements Runnable
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
 
-        HashMap<String,PreparedStatement> statementCache = new LinkedHashMap<String,PreparedStatement>();
+        HashMap<String,PreparedStatement> statementCache = new LinkedHashMap<>();
         
         logger.debug("Compiling PreparedStatement(s)... (event count: " + logQueue.size() + ")");
         for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
@@ -497,7 +497,7 @@ public class EventWriterImpl implements Runnable
             /**
              * Sort the list
              */
-            LinkedList<EventTypeMap> eventTypeMapList = new LinkedList<EventTypeMap>();
+            LinkedList<EventTypeMap> eventTypeMapList = new LinkedList<>();
             for ( String key : countMap.keySet() ) {
                 eventTypeMapList.add(new EventTypeMap(key, countMap.get(key)));
             }
