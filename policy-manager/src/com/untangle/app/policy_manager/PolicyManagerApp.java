@@ -172,7 +172,7 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
      */
     public ArrayList<JSONObject> getPoliciesInfo()
     {
-        ArrayList<JSONObject> policyList = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> policyList = new ArrayList<>();
         for ( PolicySettings policySettings: settings.getPolicies() ) {
             try {
                 JSONObject json = new org.json.JSONObject();
@@ -374,7 +374,7 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
             throw new RuntimeException("NULL rule list invalid");
 
         boolean found = false;        
-        HashSet<Integer> policyIds = new HashSet<Integer>();
+        HashSet<Integer> policyIds = new HashSet<>();
         for ( PolicySettings policy : settings.getPolicies() ) {
             if (policy.getPolicyId() == null)
                 throw new RuntimeException("NULL policy ID");
