@@ -135,7 +135,7 @@ class IntrusionPreventionEventMonitor implements Runnable
     public IntrusionPreventionSnortUnified2Parser unified2Parser = new IntrusionPreventionSnortUnified2Parser();
     public IntrusionPreventionStatisticsParser statisticsParser = new IntrusionPreventionStatisticsParser();
     private long currentTime = System.currentTimeMillis();    
-    private Hashtable<File, Long> fileLastPositions = new Hashtable<File, Long>();
+    private Hashtable<File, Long> fileLastPositions = new Hashtable<>();
 
     /** 
      * Walk snort event files and for those that qualify, send to parser.
