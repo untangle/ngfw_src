@@ -137,7 +137,7 @@ public class SmtpImpl extends AppBase implements MailExport
         qs.setMaxIdleInbox(QuarantineSettings.WEEK * 4);
         ns.setQuarantineSettings(qs);
 
-        ArrayList<SafelistSettings> ss = new ArrayList<SafelistSettings>();
+        ArrayList<SafelistSettings> ss = new ArrayList<>();
 
         ns.setSafelistSettings(ss);
 
@@ -437,7 +437,7 @@ public class SmtpImpl extends AppBase implements MailExport
         try {
             return getTests(System.getProperty("uvm.lib.dir") + "/" + getAppProperties().getName());
         } catch (Exception e) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
     
@@ -449,7 +449,7 @@ public class SmtpImpl extends AppBase implements MailExport
     @SuppressWarnings({"unchecked","rawtypes"})
     public List<String> getTests(String path)
     {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         try {
             File test = new File(path);
             if (test.isDirectory()) {
