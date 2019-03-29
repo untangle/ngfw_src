@@ -221,7 +221,7 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         // recipient(s). In fact, if the mail was to "foo@moo.com" but
         // quarantined into "fred@yahoo"'s inbox, when released it should go
         // to "foo" and not "fred".
-        Map<String, List<String>> recipientGroupings = new HashMap<String, List<String>>();
+        Map<String, List<String>> recipientGroupings = new HashMap<>();
 
         for (InternetAddress eAddr : recipients) {
             // Skip null address
@@ -240,7 +240,7 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
 
             List<String> listForInbox = recipientGroupings.get(inboxAddress);
             if (listForInbox == null) {
-                listForInbox = new ArrayList<String>();
+                listForInbox = new ArrayList<>();
                 recipientGroupings.put(inboxAddress, listForInbox);
             }
             listForInbox.add(recipientAddress);
@@ -248,7 +248,7 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
 
         // Now go ahead and perform inserts. Note that we could save a few cycles
         // by breaking-out the (common) case of a mail with a single recipient
-        ArrayList<Pair<String, String>> outcomeList = new ArrayList<Pair<String, String>>();
+        ArrayList<Pair<String, String>> outcomeList = new ArrayList<>();
         boolean allSuccess = true;
 
         for (Map.Entry<String, List<String>> entry : recipientGroupings.entrySet()) {
@@ -604,7 +604,7 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     {
         String r = address.toLowerCase();
 
-        Set<String> seen = new HashSet<String>();
+        Set<String> seen = new HashSet<>();
         seen.add(r);
 
         String s;
@@ -697,7 +697,7 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
      */
     private List<EmailAddressPairRule> toEmailAddressPairRuleList(List<Pair<String, String>> typedList)
     {
-        ArrayList<EmailAddressPairRule> ret = new ArrayList<EmailAddressPairRule>();
+        ArrayList<EmailAddressPairRule> ret = new ArrayList<>();
 
         for (Pair<String, String> pair : typedList) {
             ret.add(new EmailAddressPairRule(pair.a, pair.b));
@@ -712,7 +712,7 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
      */
     private List<Pair<String, String>> fromEmailAddressRuleListPair(List<EmailAddressPairRule> list)
     {
-        ArrayList<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
+        ArrayList<Pair<String, String>> ret = new ArrayList<>();
 
         for (EmailAddressPairRule eaPair : list) {
             ret.add(new Pair<String, String>(eaPair.getAddress1(), eaPair.getAddress2()));
@@ -727,7 +727,7 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
      */
     private List<String> fromEmailAddressRule(List<EmailAddressRule> list) 
     {
-        ArrayList<String> ret = new ArrayList<String>();
+        ArrayList<String> ret = new ArrayList<>();
 
         for(EmailAddressRule wrapper : list) {
             ret.add(wrapper.getAddress());
