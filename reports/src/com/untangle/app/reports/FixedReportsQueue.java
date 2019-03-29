@@ -73,7 +73,7 @@ class FixedReportsQueue
     protected FixedReportsQueue( ReportsApp app )
     {
         this.app = app;
-        this.queue = new LinkedBlockingQueue<reportQueue>();
+        this.queue = new LinkedBlockingQueue<>();
     }
 
     /**
@@ -187,7 +187,7 @@ class FixedReportsQueue
                     if(!report.templateId.equals(emailTemplate.getTemplateId())){
                         continue;
                     }
-                    List<ReportsUser> users = new LinkedList<ReportsUser>();
+                    List<ReportsUser> users = new LinkedList<>();
                     for ( ReportsUser user : app.getSettings().getReportsUsers() ) {
                         if( user.getEmailSummaries() && user.getEmailTemplateIds().contains(emailTemplate.getTemplateId()) ){
                             users.add(user);
