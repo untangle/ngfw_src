@@ -63,7 +63,7 @@ public class SmtpTransactionHandler
 
     private int dataResp = -1;// Special case for when we get a negative
 
-    private LinkedList<String> txLog = new LinkedList<String>();
+    private LinkedList<String> txLog = new LinkedList<>();
 
     public static final ResponseCompletion PASSTHRU_RESPONSE_COMPLETION = new ResponseCompletion()
     {
