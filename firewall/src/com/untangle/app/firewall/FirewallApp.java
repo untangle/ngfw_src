@@ -301,25 +301,25 @@ public class FirewallApp extends AppBase
         logger.info("Creating the default settings...");
 
         /* A few sample settings */
-        List<FirewallRule> ruleList = new LinkedList<FirewallRule>();
+        List<FirewallRule> ruleList = new LinkedList<>();
         LinkedList<FirewallRuleCondition> matcherList = null;
             
         /* example rule 1 */
         FirewallRuleCondition portMatch1 = new FirewallRuleCondition(FirewallRuleCondition.ConditionType.DST_PORT, "21");
-        matcherList = new LinkedList<FirewallRuleCondition>();
+        matcherList = new LinkedList<>();
         matcherList.add(portMatch1);
         ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and flag all traffic destined to port 21"));
                              
         /* example rule 2 */
         FirewallRuleCondition addrMatch2 = new FirewallRuleCondition(FirewallRuleCondition.ConditionType.SRC_ADDR, "1.2.3.4/255.255.255.0");
-        matcherList = new LinkedList<FirewallRuleCondition>();
+        matcherList = new LinkedList<>();
         matcherList.add(addrMatch2);
         ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and flag all TCP traffic from 1.2.3.0 netmask 255.255.255.0"));
 
         /* example rule 3 */
         FirewallRuleCondition addrMatch3 = new FirewallRuleCondition(FirewallRuleCondition.ConditionType.DST_ADDR, "1.2.3.4/255.255.255.0");
         FirewallRuleCondition portMatch3 = new FirewallRuleCondition(FirewallRuleCondition.ConditionType.DST_PORT, "1000-5000");
-        matcherList = new LinkedList<FirewallRuleCondition>();
+        matcherList = new LinkedList<>();
         matcherList.add(addrMatch3);
         matcherList.add(portMatch3);
         ruleList.add(new FirewallRule(false, matcherList, true, false, "Accept and flag all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
