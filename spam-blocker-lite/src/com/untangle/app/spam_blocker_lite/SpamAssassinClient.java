@@ -289,8 +289,8 @@ public final class SpamAssassinClient implements Runnable
             boolean isOK = parseSpamdResponse(line);
 
             // receive (and buffer) rest of spamd hdr and result
-            List<String> spamdHdrList = new LinkedList<String>();
-            List<String> spamdDtlList = new LinkedList<String>();
+            List<String> spamdHdrList = new LinkedList<>();
+            List<String> spamdDtlList = new LinkedList<>();
             boolean addDetail = false;
             while (!this.stop && (line = bufReader.readLine()) != null) {
                 //logger.debug(dbgName + ", " + line);
@@ -608,7 +608,7 @@ public final class SpamAssassinClient implements Runnable
      */
     private void parseSpamdResult(List<String> detailList, long len, float score) throws Exception
     {
-        List<ReportItem> reportItemList = new LinkedList<ReportItem>();
+        List<ReportItem> reportItemList = new LinkedList<>();
         String firstLine = null;
         // CR terminates final line (e.g., ends detail block); count CR
 
