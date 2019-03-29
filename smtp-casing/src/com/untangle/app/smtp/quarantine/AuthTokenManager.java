@@ -97,7 +97,7 @@ class AuthTokenManager
 
             // Check for outer magic
             if (!matches(OUTER_MAGIC, decodedBytes, 0, OUTER_MAGIC.length)) {
-                return new Pair<DecryptOutcome, String>(DecryptOutcome.NOT_A_TOKEN);
+                return new Pair<>(DecryptOutcome.NOT_A_TOKEN);
             }
 
             // Decrypt
@@ -106,15 +106,15 @@ class AuthTokenManager
             byte[] decrypted = c.doFinal(decodedBytes, OUTER_MAGIC.length, decodedBytes.length - OUTER_MAGIC.length);
 
             if (!matches(INNER_MAGIC, decrypted, 0, INNER_MAGIC.length)) {
-                return new Pair<DecryptOutcome, String>(DecryptOutcome.MALFORMED_TOKEN);
+                return new Pair<>(DecryptOutcome.MALFORMED_TOKEN);
             }
 
-            return new Pair<DecryptOutcome, String>(DecryptOutcome.OK, new String(decrypted, INNER_MAGIC.length,
+            return new Pair<>(DecryptOutcome.OK, new String(decrypted, INNER_MAGIC.length,
                     decrypted.length - INNER_MAGIC.length));
 
         } catch (Exception ex) {
             m_logger.warn("Unable to decrypt token", ex);
-            return new Pair<DecryptOutcome, String>(DecryptOutcome.MALFORMED_TOKEN);
+            return new Pair<>(DecryptOutcome.MALFORMED_TOKEN);
         }
     }
 
