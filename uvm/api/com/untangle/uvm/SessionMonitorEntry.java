@@ -169,8 +169,8 @@ public class SessionMonitorEntry implements Serializable, JSONString
     public void               setAttachments( Map<String,Object> attachments )
     {
         // create a copy to avoid CME
-        HashMap<String,Object> oldMap = new HashMap<String,Object>( attachments );
-        this.attachments = new HashMap<String,Object>();
+        HashMap<String,Object> oldMap = new HashMap<>( attachments );
+        this.attachments = new HashMap<>();
         for ( String key : oldMap.keySet() ) {
             Object obj = oldMap.get( key );
             if ( obj instanceof java.io.Serializable ) {
