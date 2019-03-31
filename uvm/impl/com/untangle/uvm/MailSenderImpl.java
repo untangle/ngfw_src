@@ -268,7 +268,7 @@ public class MailSenderImpl implements MailSender
             throw new IllegalArgumentException("sendReports mismatch of locations and extras");
         }
 
-        List<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
+        List<MimeBodyPart> parts = new ArrayList<>();
 
         try {
             for (int i = 0; i < extras.size(); i++) {
@@ -423,7 +423,7 @@ public class MailSenderImpl implements MailSender
             br.skip(l); // go to the end of the logs
 
             // this will contain the messageId after the attempt to send it
-            final List<String> messageId = new ArrayList<String>();
+            final List<String> messageId = new ArrayList<>();
 
             sendSimple(mailSession, new String[] { recipient }, testMessageSubject, testMessageBody, null, messageId);
 
@@ -434,7 +434,7 @@ public class MailSenderImpl implements MailSender
             }
 
             // after sending the message, check the new logs
-            List<String> lines = new ArrayList<String>();
+            List<String> lines = new ArrayList<>();
             String str = br.readLine();
             while (str != null) {
                 lines.add(str);
@@ -699,7 +699,7 @@ public class MailSenderImpl implements MailSender
      */
     private Address[] parseAddresses(String[] addrStrings)
     {
-        List<Address> ret = new ArrayList<Address>();
+        List<Address> ret = new ArrayList<>();
         for (String s : addrStrings) {
             try {
                 for (Address addr : InternetAddress.parse(s, false)) {
