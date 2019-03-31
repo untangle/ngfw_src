@@ -111,7 +111,7 @@ public class CloudManagerImpl implements CloudManager
             builder.addParameter("installType", installType);
             String url = builder.build().toString();
 
-            LinkedList<NameValuePair> bodyParams = new LinkedList<NameValuePair>();
+            LinkedList<NameValuePair> bodyParams = new LinkedList<>();
             bodyParams.add(new BasicNameValuePair("password", password));
             UrlEncodedFormEntity body = new UrlEncodedFormEntity(bodyParams);
 
@@ -176,7 +176,7 @@ public class CloudManagerImpl implements CloudManager
 
             String url = builder.build().toString();
 
-            LinkedList<NameValuePair> bodyParams = new LinkedList<NameValuePair>();
+            LinkedList<NameValuePair> bodyParams = new LinkedList<>();
             bodyParams.add(new BasicNameValuePair("password", password));
             UrlEncodedFormEntity body = new UrlEncodedFormEntity(bodyParams);
 
