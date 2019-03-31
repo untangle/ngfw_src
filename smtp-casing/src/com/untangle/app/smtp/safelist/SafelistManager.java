@@ -527,7 +527,7 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
         }
 
         List<SafelistSettings> newSafelists = new ArrayList<>(safelists.size());
-        List<String> curRcpnts = new ArrayList<String>(m_sndrsByRcpnt.keySet());
+        List<String> curRcpnts = new ArrayList<>(m_sndrsByRcpnt.keySet());
 
         SafelistSettings newSafelist;
         List<String> curSndrs;
