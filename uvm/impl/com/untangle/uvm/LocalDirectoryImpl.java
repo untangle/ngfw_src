@@ -111,7 +111,7 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public LinkedList<LocalDirectoryUser> getUsers()
     {
-        if (this.currentList == null) return new LinkedList<LocalDirectoryUser>();
+        if (this.currentList == null) return new LinkedList<>();
 
         return this.currentList;
     }
@@ -124,7 +124,7 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public void setUsers(LinkedList<LocalDirectoryUser> users)
     {
-        HashSet<String> usersSeen = new HashSet<String>();
+        HashSet<String> usersSeen = new HashSet<>();
 
         /**
          * Remove cleartext password before saving
@@ -259,7 +259,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
-        if (list == null) list = new LinkedList<LocalDirectoryUser>();
+        if (list == null) list = new LinkedList<>();
 
         try {
             settingsManager.save(LOCAL_DIRECTORY_SETTINGS_FILE, list);
