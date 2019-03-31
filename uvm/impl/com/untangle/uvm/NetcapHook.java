@@ -51,8 +51,8 @@ public abstract class NetcapHook implements Runnable
     protected Integer policyId = null;
     protected Integer policyRuleId = null;
 
-    protected List<AppSessionImpl> sessionList = new ArrayList<AppSessionImpl>();
-    protected List<AppSessionImpl> releasedSessionList = new ArrayList<AppSessionImpl>();
+    protected List<AppSessionImpl> sessionList = new ArrayList<>();
+    protected List<AppSessionImpl> releasedSessionList = new ArrayList<>();
 
     protected Source clientSource;
     protected Sink   clientSink;
@@ -607,7 +607,7 @@ public abstract class NetcapHook implements Runnable
      */
     protected void buildPipeline() 
     {
-        LinkedList<Relay> relayList = new LinkedList<Relay>();
+        LinkedList<Relay> relayList = new LinkedList<>();
 
         if ( sessionList.isEmpty() ) {
             if ( state == IPNewSessionRequestImpl.ENDPOINTED ) {
