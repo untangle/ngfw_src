@@ -51,11 +51,11 @@ public class MetricManagerImpl implements MetricManager
 
     private final Pulse updatePulse = new Pulse("system-stat-collector", new SystemStatCollector(), FREQUENCY);
 
-    private final Map<String, Long> rxtxBytesStore = new HashMap<String, Long>();
+    private final Map<String, Long> rxtxBytesStore = new HashMap<>();
 
     private long lastNetDevUpdate = 0;
 
-    private final Map<String, Long> diskRW0 = new HashMap<String, Long>();
+    private final Map<String, Long> diskRW0 = new HashMap<>();
 
     private long lastDiskUpdate = 0;
 
@@ -91,7 +91,7 @@ public class MetricManagerImpl implements MetricManager
      */
     public org.json.JSONObject getMetricsAndStats()
     {
-        List<Long> appIds = new LinkedList<Long>();
+        List<Long> appIds = new LinkedList<>();
 
         for (App app : UvmContextImpl.getInstance().appManager().appInstances()) {
             appIds.add(app.getAppSettings().getId());
@@ -149,7 +149,7 @@ public class MetricManagerImpl implements MetricManager
      */
     public Long getMemTotal()
     {
-        Map<String, Object> m = new HashMap<String, Object>();
+        Map<String, Object> m = new HashMap<>();
 
         try {
             readMeminfo(m);
@@ -170,7 +170,7 @@ public class MetricManagerImpl implements MetricManager
 
     private Map<String, List<AppMetric>> getMetrics(List<Long> appIds)
     {
-        Map<String, List<AppMetric>> stats = new HashMap<String, List<AppMetric>>(appIds.size());
+        Map<String, List<AppMetric>> stats = new HashMap<>(appIds.size());
 
         for (Long appId : appIds) {
             stats.put(Long.toString(appId), getMetrics(appId));
@@ -631,7 +631,7 @@ public class MetricManagerImpl implements MetricManager
          */
         public void run()
         {
-            Map<String, Object> m = new HashMap<String, Object>();
+            Map<String, Object> m = new HashMap<>();
 
             try {
                 readMeminfo(m);
@@ -753,7 +753,7 @@ public class MetricManagerImpl implements MetricManager
     }
 
     static {
-        Set<String> s = new HashSet<String>();
+        Set<String> s = new HashSet<>();
         s.add("MemTotal");
         s.add("MemFree");
         s.add("Cached");
@@ -764,7 +764,7 @@ public class MetricManagerImpl implements MetricManager
         s.add("SwapFree");
         MEMINFO_KEEPERS = Collections.unmodifiableSet(s);
 
-        s = new HashSet<String>();
+        s = new HashSet<>();
         s.add("pgpgin");
         s.add("pgpgout");
         s.add("pgfault");
