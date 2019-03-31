@@ -89,7 +89,7 @@ public class DeviceTableImpl implements DeviceTable
      */
     public synchronized LinkedList<DeviceTableEntry> getDevices()
     {
-        LinkedList<DeviceTableEntry> list = new LinkedList<DeviceTableEntry>(deviceTable.values());
+        LinkedList<DeviceTableEntry> list = new LinkedList<>(deviceTable.values());
         return list;
     }
 
@@ -102,7 +102,7 @@ public class DeviceTableImpl implements DeviceTable
     public synchronized void setDevices(LinkedList<DeviceTableEntry> newDevices)
     {
         ConcurrentHashMap<String, DeviceTableEntry> oldDeviceTable = this.deviceTable;
-        this.deviceTable = new ConcurrentHashMap<String, DeviceTableEntry>();
+        this.deviceTable = new ConcurrentHashMap<>();
 
         /**
          * For each entry, copy the value on top of the exitsing objects so
@@ -278,7 +278,7 @@ public class DeviceTableImpl implements DeviceTable
             Collection<DeviceTableEntry> entries = deviceTable.values();
             logger.info("Saving devices to file... (" + entries.size() + " entries)");
 
-            LinkedList<DeviceTableEntry> list = new LinkedList<DeviceTableEntry>();
+            LinkedList<DeviceTableEntry> list = new LinkedList<>();
             for (DeviceTableEntry entry : entries) {
                 list.add(entry);
             }
@@ -325,7 +325,7 @@ public class DeviceTableImpl implements DeviceTable
     private void loadSavedDevices()
     {
         try {
-            this.deviceTable = new ConcurrentHashMap<String, DeviceTableEntry>();
+            this.deviceTable = new ConcurrentHashMap<>();
 
             logger.info("Loading devices from file...");
             LinkedList<DeviceTableEntry> savedEntries = UvmContextFactory.context().settingsManager().load(LinkedList.class, DEVICES_SAVE_FILENAME);

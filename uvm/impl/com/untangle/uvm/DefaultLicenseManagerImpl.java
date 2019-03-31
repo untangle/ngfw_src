@@ -20,7 +20,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final List<License> licenses = new LinkedList<License>();
+    private final List<License> licenses = new LinkedList<>();
 
     /**
      * Constructor

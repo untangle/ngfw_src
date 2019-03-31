@@ -122,7 +122,7 @@ public class DashboardManagerImpl implements DashboardManager
     private DashboardSettings defaultSettings()
     {
         DashboardWidgetSettings widgetSettings;
-        LinkedList<DashboardWidgetSettings> widgets = new LinkedList<DashboardWidgetSettings>();
+        LinkedList<DashboardWidgetSettings> widgets = new LinkedList<>();
 
         widgets.add(new DashboardWidgetSettings("Information"));
         widgets.add(new DashboardWidgetSettings("Resources"));
