@@ -87,7 +87,7 @@ public class Dispatcher
         this.app = (AppBase) pipelineConnector.app();
         this.sessionEventListener = null;
         this.releasedHandler = new ReleasedEventHandler(app);
-        this.liveSessions = new ConcurrentHashMap<AppSessionImpl, AppSession>();
+        this.liveSessions = new ConcurrentHashMap<>();
 
         this.app.addMetric(new AppMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
         this.app.addMetric(new AppMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
@@ -274,7 +274,7 @@ public class Dispatcher
      */
     protected List<AppSession> liveSessions()
     {
-        LinkedList<AppSession> sessions = new LinkedList<AppSession>();
+        LinkedList<AppSession> sessions = new LinkedList<>();
 
         for (Iterator<AppSessionImpl> i = liveSessions.keySet().iterator(); i.hasNext();) {
             sessions.add(i.next());
