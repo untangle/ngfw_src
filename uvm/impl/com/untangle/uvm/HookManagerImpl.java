@@ -35,7 +35,7 @@ public class HookManagerImpl implements HookManager
     /**
      * This map stores all the current active hooks for each group
      */
-    private HashMap<String,LinkedList<HookCallback>> registeredCallbacks = new HashMap<String,LinkedList<HookCallback>>();
+    private HashMap<String,LinkedList<HookCallback>> registeredCallbacks = new HashMap<>();
 
     /**
      * The thread to run the hooks
@@ -46,7 +46,7 @@ public class HookManagerImpl implements HookManager
     /**
      * The queue stores the hooks to be called
      */
-    private ArrayBlockingQueue<Object[]> queue = new ArrayBlockingQueue<Object[]>(1024);
+    private ArrayBlockingQueue<Object[]> queue = new ArrayBlockingQueue<>(1024);
     
     /**
      * Constructor
@@ -125,7 +125,7 @@ public class HookManagerImpl implements HookManager
          */
         LinkedList<HookCallback> callbacks = registeredCallbacks.get(hookName);
         if (callbacks == null) {
-            callbacks = new LinkedList<HookCallback>();
+            callbacks = new LinkedList<>();
             registeredCallbacks.put(hookName, callbacks);
         }
 
@@ -256,7 +256,7 @@ public class HookManagerImpl implements HookManager
                     logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
                 return 0;
             }
-            LinkedList<HookCallback> callbacks = new LinkedList<HookCallback>(registeredCallbacks.get(hookName));
+            LinkedList<HookCallback> callbacks = new LinkedList<>(registeredCallbacks.get(hookName));
 
             if (logger.isDebugEnabled())
                 logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
@@ -312,7 +312,7 @@ public class HookManagerImpl implements HookManager
                         logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
                         continue;
                     }
-                    callbacks = new LinkedList<HookCallback>(callbacks);
+                    callbacks = new LinkedList<>(callbacks);
 
                     if (logger.isDebugEnabled())
                         logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
