@@ -53,20 +53,20 @@ public class PipelineFoundryImpl implements PipelineFoundry
     /**
      * A global list of all current netcap connectors
      */
-    private final List<PipelineConnectorImpl> pipelineConnectors = new LinkedList<PipelineConnectorImpl>();
+    private final List<PipelineConnectorImpl> pipelineConnectors = new LinkedList<>();
 
     /**
      * This stores a list of "hints" about connections and what fitting types they are
      * If an app knows what kind of connection/fitting should be used for a connection from the given address/port
      * It can register a hint so the pipeline foundry will treat the session accordingly
      */
-    private final Map<InetSocketAddress, Fitting> fittingHints = new ConcurrentHashMap<InetSocketAddress, Fitting>();
+    private final Map<InetSocketAddress, Fitting> fittingHints = new ConcurrentHashMap<>();
 
     /**
      * This stores a map from policyId to a cache for that policy storing the list of netcap connectors for various fitting types
      */
-    private static final Map<Integer, Map<Fitting, List<PipelineConnectorImpl>>> pipelineFoundryCache = new HashMap<Integer, Map<Fitting, List<PipelineConnectorImpl>>>();
-    private static final Map<Integer, Map<Fitting, List<PipelineConnectorImpl>>> pipelineNonPremiumFoundryCache = new HashMap<Integer, Map<Fitting, List<PipelineConnectorImpl>>>();
+    private static final Map<Integer, Map<Fitting, List<PipelineConnectorImpl>>> pipelineFoundryCache = new HashMap<>();
+    private static final Map<Integer, Map<Fitting, List<PipelineConnectorImpl>>> pipelineNonPremiumFoundryCache = new HashMap<>();
     
     /**
      * Private constructor to ensure singleton
@@ -94,8 +94,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
     public List<PipelineConnectorImpl> weld( Long sessionId, SessionTuple sessionTuple, Integer policyId, boolean includePremium )
     {
         Long t0 = System.nanoTime();
-        List<PipelineConnectorImpl> pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
-        List<Fitting> fittings = new LinkedList<Fitting>();
+        List<PipelineConnectorImpl> pipelineConnectorList = new LinkedList<>();
+        List<Fitting> fittings = new LinkedList<>();
 
         /**
          * Check fittingHints for hints
@@ -302,7 +302,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
                 if ( fittingCache == null ) {
                     /* Cache doesn't exist, create a new empty cache for this policy */
-                    fittingCache = new HashMap<Fitting, List<PipelineConnectorImpl>>();
+                    fittingCache = new HashMap<>();
                     cache.put( policyId, fittingCache );
                 } else {
                     /* Cache exists, get the acList for this fitting */
@@ -315,9 +315,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
                  */
                 if ( pipelineConnectorList == null ) {
 
-                    pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
+                    pipelineConnectorList = new LinkedList<>();
 
-                    List<PipelineConnectorImpl> availablePipelineConnectorsApps = new LinkedList<PipelineConnectorImpl>( this.pipelineConnectors );
+                    List<PipelineConnectorImpl> availablePipelineConnectorsApps = new LinkedList<>( this.pipelineConnectors );
 
                     removeUnnecessaryPipelineConnectors( policyId, availablePipelineConnectorsApps, includePremium );
                     printPipelineConnectorList( "available connectors: ", availablePipelineConnectorsApps );
@@ -431,10 +431,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     private void removeUnnecessaryPipelineConnectors( Integer policyId, List<PipelineConnectorImpl> acList, boolean includePremium )
     {
-        Map<String, Integer> numParents = new HashMap<String, Integer>();
-        Map<PipelineConnectorImpl, Integer> fittingDistance = new HashMap<PipelineConnectorImpl, Integer>();
+        Map<String, Integer> numParents = new HashMap<>();
+        Map<PipelineConnectorImpl, Integer> fittingDistance = new HashMap<>();
 
-        List<String> enabledAppsInPolicy = new LinkedList<String>();
+        List<String> enabledAppsInPolicy = new LinkedList<>();
         List<App> appsInPolicy = UvmContextFactory.context().appManager().appInstances( policyId );
         for (App app : appsInPolicy) {
             if (app.getRunState() == AppSettings.AppState.RUNNING)
