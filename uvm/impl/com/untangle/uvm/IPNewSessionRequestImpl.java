@@ -56,7 +56,7 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
     protected byte state = REQUESTED; /* REQUESTED, REJECTED, RELEASED */
     protected byte rejectCode = REJECTED;
 
-    protected HashMap<String, Object> stringAttachments = new HashMap<String, Object>();
+    protected HashMap<String, Object> stringAttachments = new HashMap<>();
     private static final String NO_KEY_VALUE = "NOKEY";
 
     /**

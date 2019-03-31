@@ -150,7 +150,7 @@ public class LanguageManagerImpl implements LanguageManager
 
     private static final ArrayList<languageSource> LanguageSources;
     static {
-        LanguageSources = new ArrayList<languageSource>();
+        LanguageSources = new ArrayList<>();
         LanguageSources.add(new languageSource("official", I18nUtil.marktr("Official"), "untangleserverofficial"));
         LanguageSources.add(new languageSource("community", I18nUtil.marktr("Community"), "untangleserver"));
     }
@@ -171,8 +171,8 @@ public class LanguageManagerImpl implements LanguageManager
         readLanguageSettings();
         allLanguages = loadAllLanguages();
         allCountries = loadAllCountries();
-        translations = new HashMap<String, Map<String, String>>();
-        translationsLastAccessed = new HashMap<String, Long>();
+        translations = new HashMap<>();
+        translationsLastAccessed = new HashMap<>();
         UvmContextFactory.context().newThread(this.cleaner).start();
     }
 
@@ -215,8 +215,8 @@ public class LanguageManagerImpl implements LanguageManager
 
         this.languageSettings = newSettings;
         synchronized( this ) {
-            translations = new HashMap<String, Map<String, String>>();
-            translationsLastAccessed = new HashMap<String, Long>();
+            translations = new HashMap<>();
+            translationsLastAccessed = new HashMap<>();
         }
     }
 
@@ -228,8 +228,8 @@ public class LanguageManagerImpl implements LanguageManager
         downloadLanguage(languageSettings.getSource(), languageSettings.getLanguage());
         
         synchronized( this ) {
-            translations = new HashMap<String, Map<String, String>>();
-            translationsLastAccessed = new HashMap<String, Long>();
+            translations = new HashMap<>();
+            translationsLastAccessed = new HashMap<>();
         }
 
         LanguageSettings settings = getLanguageSettings();
@@ -243,13 +243,13 @@ public class LanguageManagerImpl implements LanguageManager
      */
     public List<LocaleInfo> getLanguagesList()
     {
-        List<LocaleInfo> locales = new ArrayList<LocaleInfo>();
+        List<LocaleInfo> locales = new ArrayList<();
         boolean headerAdded = true;
         boolean defaultAdded = false;
 
         /* Contact translation server */
         for(languageSource source : LanguageSources){
-            Set<String> available = new HashSet<String>();
+            Set<String> available = new HashSet<>();
             Collections.addAll(available, (new File(source.getDirectory())).list());
             if(getRemoteLanguagesList(available, locales, source) == false){
                 // Add header 
@@ -292,7 +292,7 @@ public class LanguageManagerImpl implements LanguageManager
         Map<String, String> map = null;
 
         if (null == module) {
-            return new HashMap<String, String>();
+            return new HashMap<>();
         }
 
         String i18nModule = module.replaceAll("-", "_");
@@ -473,7 +473,7 @@ public class LanguageManagerImpl implements LanguageManager
      */
     private Map<String, String> loadAllLanguages()
     {
-        Map<String, String> languages = new HashMap<String, String>();
+        Map<String, String> languages = new HashMap<>();
 
         // Reading all languages from config file
         BufferedReader in = null;
@@ -512,7 +512,7 @@ public class LanguageManagerImpl implements LanguageManager
      */
     private Map<String, String> loadAllCountries()
     {
-        Map<String, String> countries = new HashMap<String, String>();
+        Map<String, String> countries = new HashMap<>();
 
         // Reading all countries from config file
         BufferedReader in = null;
