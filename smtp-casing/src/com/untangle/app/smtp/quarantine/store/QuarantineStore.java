@@ -484,7 +484,7 @@ public class QuarantineStore
         if (inboxIndex == null) {
             logger.warn("Unable to purge mails for " + address);
             addressLock.unlock(address);
-            return new Pair<GenericStatus, InboxIndex>(GenericStatus.ERROR);
+            return new Pair<>(GenericStatus.ERROR);
         }
 
         List<InboxRecord> toDelete = selector.selectEjections(inboxIndex, dirRF);
