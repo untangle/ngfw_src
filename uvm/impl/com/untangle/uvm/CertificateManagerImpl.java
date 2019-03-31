@@ -76,7 +76,7 @@ public class CertificateManagerImpl implements CertificateManager
 
     // This is the list of subject alternative name types we extract from
     // the server certificate and use when generating our fake certificate
-    private static HashMap<Integer, String> validAlternateList = new HashMap<Integer, String>();
+    private static HashMap<Integer, String> validAlternateList = new HashMap<>();
 
     static {
         validAlternateList.put(0x01, "email");
@@ -391,7 +391,7 @@ public class CertificateManagerImpl implements CertificateManager
      */
     public LinkedList<CertificateInformation> getServerCertificateList()
     {
-        LinkedList<CertificateInformation> certList = new LinkedList<CertificateInformation>();
+        LinkedList<CertificateInformation> certList = new LinkedList<>();
         File filePath = new File(CERT_STORE_PATH);
 
         File[] fileList = filePath.listFiles(new FilenameFilter()
@@ -923,7 +923,7 @@ public class CertificateManagerImpl implements CertificateManager
     {
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        List<String> machineList = new LinkedList<String>();
+        List<String> machineList = new LinkedList<>();
         CertificateInformation certInfo = null;
         String httpsInfo = null;
         String smtpsInfo = null;

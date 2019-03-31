@@ -38,8 +38,8 @@ public class ConntrackMonitorImpl
 
     private final Pulse deadTcpSessionsCleaner;
 
-    private LinkedHashMap<SessionTuple, ConntrackEntryState> conntrackEntries = new LinkedHashMap<SessionTuple, ConntrackEntryState>();
-    private LinkedHashMap<SessionTuple, DeadTcpSessionState> deadTcpSessions = new LinkedHashMap<SessionTuple, DeadTcpSessionState>();
+    private LinkedHashMap<SessionTuple, ConntrackEntryState> conntrackEntries = new LinkedHashMap<>();
+    private LinkedHashMap<SessionTuple, DeadTcpSessionState> deadTcpSessions = new LinkedHashMap<>();
 
     /**
      * Constructor
@@ -240,7 +240,7 @@ public class ConntrackMonitorImpl
         public void run()
         {
             LinkedHashMap<SessionTuple, ConntrackEntryState> oldConntrackEntries = conntrackEntries;
-            LinkedHashMap<SessionTuple, ConntrackEntryState> newConntrackEntries = new LinkedHashMap<SessionTuple, ConntrackEntryState>(conntrackEntries.size() * 2);
+            LinkedHashMap<SessionTuple, ConntrackEntryState> newConntrackEntries = new LinkedHashMap<>(conntrackEntries.size() * 2);
 
             List<Conntrack> dumpEntries = com.untangle.jnetcap.Netcap.getInstance().getConntrackDump();
             boolean logBypassed = UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions();
