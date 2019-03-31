@@ -66,7 +66,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      * Stores a map from the daemon name to daemon object which holds the
      * current usage count along with monitoring details.
      */
-    private ConcurrentHashMap<String, DaemonObject> daemonHashMap = new ConcurrentHashMap<String, DaemonObject>();
+    private ConcurrentHashMap<String, DaemonObject> daemonHashMap = new ConcurrentHashMap<>();
 
     /**
      * Constructor
