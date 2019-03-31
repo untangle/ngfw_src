@@ -76,7 +76,7 @@ public class NotificationManagerImpl implements NotificationManager
      */
     public synchronized List<String> getNotifications()
     {
-        LinkedList<String> notificationList = new LinkedList<String>();
+        LinkedList<String> notificationList = new LinkedList<>();
         boolean dnsWorking = false;
 
         this.execManager = UvmContextFactory.context().createExecManager();
@@ -218,7 +218,7 @@ public class NotificationManagerImpl implements NotificationManager
     private boolean testDNS(List<String> notificationList)
     {
         ConnectivityTesterImpl connectivityTester = (ConnectivityTesterImpl) UvmContextFactory.context().getConnectivityTester();
-        List<InetAddress> nonWorkingDns = new LinkedList<InetAddress>();
+        List<InetAddress> nonWorkingDns = new LinkedList<>();
 
         for (InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces()) {
             if (!intf.getIsWan()) continue;
@@ -459,7 +459,7 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * Parse output brctl showstp output. Example: eth0 2 eth1 1
              */
-            Map<Integer, String> bridgeIdToSystemNameMap = new HashMap<Integer, String>();
+            Map<Integer, String> bridgeIdToSystemNameMap = new HashMap<>();
             for (String line : result.split("\n")) {
                 logger.debug("testBridgeBackwards: line: " + line);
                 String[] subline = line.split(" ");
@@ -664,7 +664,7 @@ public class NotificationManagerImpl implements NotificationManager
             InetAddress dnsPrimary = UvmContextFactory.context().networkManager().getInterfaceStatus(intf.getInterfaceId()).getV4Dns1();
             InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus(intf.getInterfaceId()).getV4Dns2();
 
-            List<String> dnsServers = new LinkedList<String>();
+            List<String> dnsServers = new LinkedList<>();
             if (dnsPrimary != null) dnsServers.add(dnsPrimary.getHostAddress());
             if (dnsSecondary != null) dnsServers.add(dnsSecondary.getHostAddress());
 
@@ -772,7 +772,7 @@ public class NotificationManagerImpl implements NotificationManager
             InetAddress dnsPrimary = UvmContextFactory.context().networkManager().getInterfaceStatus(intf.getInterfaceId()).getV4Dns1();
             InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus(intf.getInterfaceId()).getV4Dns2();
 
-            List<String> dnsServers = new LinkedList<String>();
+            List<String> dnsServers = new LinkedList<>();
             if (dnsPrimary != null) dnsServers.add(dnsPrimary.getHostAddress());
             if (dnsSecondary != null) dnsServers.add(dnsSecondary.getHostAddress());
 
