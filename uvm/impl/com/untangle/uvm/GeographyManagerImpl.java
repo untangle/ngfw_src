@@ -288,7 +288,7 @@ public class GeographyManagerImpl implements GeographyManager
     {
         List<SessionMonitorEntry> sessions = UvmContextFactory.context().sessionMonitor().getMergedSessions();
 
-        HashMap<Double, JSONObject> coordinatesMap = new HashMap<Double, JSONObject>();
+        HashMap<Double, JSONObject> coordinatesMap = new HashMap<>();
 
         for (SessionMonitorEntry session : sessions) {
             Double coordinatesKey = null;
