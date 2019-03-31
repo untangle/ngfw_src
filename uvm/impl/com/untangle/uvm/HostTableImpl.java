@@ -66,7 +66,7 @@ public class HostTableImpl implements HostTable
     private final HostTableAddTagHook addTagHook = new HostTableAddTagHook();
     private final HostTableRemoveTagHook removeTagHook = new HostTableRemoveTagHook();
 
-    private HashMap<String, HashSet<String>> currentIpSets = new HashMap<String, HashSet<String>>();
+    private HashMap<String, HashSet<String>> currentIpSets = new HashMap<>();
 
     /**
      * Constructor
@@ -102,7 +102,7 @@ public class HostTableImpl implements HostTable
     public synchronized void setHosts(LinkedList<HostTableEntry> newHosts, boolean merge)
     {
         ConcurrentHashMap<InetAddress, HostTableEntry> oldHostTable = this.hostTable;
-        this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
+        this.hostTable = new ConcurrentHashMap<>();
 
         /**
          * For each entry, copy the value on top of the exitsing objects so
@@ -194,7 +194,7 @@ public class HostTableImpl implements HostTable
      */
     public HostTableEntry findHostTableEntryByMacAddress(String macaddr)
     {
-        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
+        LinkedList<HostTableEntry> list = new LinkedList<>(UvmContextFactory.context().hostTable().getHosts());
 
         //  look for an entry with matching MAC address
         for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext();) {
@@ -215,7 +215,7 @@ public class HostTableImpl implements HostTable
      */
     public HostTableEntry findHostTableEntryByIpsecUsername(String username)
     {
-        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
+        LinkedList<HostTableEntry> list = new LinkedList<>(UvmContextFactory.context().hostTable().getHosts());
 
         //  look for an entry with matching MAC address
         for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext();) {
@@ -247,7 +247,7 @@ public class HostTableImpl implements HostTable
      */
     public LinkedList<HostTableEntry> getHosts()
     {
-        return new LinkedList<HostTableEntry>(hostTable.values());
+        return new LinkedList<>(hostTable.values());
     }
 
     /**
@@ -443,7 +443,7 @@ public class HostTableImpl implements HostTable
      */
     public LinkedList<HostTableEntry> getQuotaHosts()
     {
-        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
+        LinkedList<HostTableEntry> list = new LinkedList<>(UvmContextFactory.context().hostTable().getHosts());
 
         for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext();) {
             HostTableEntry entry = i.next();
@@ -640,7 +640,7 @@ public class HostTableImpl implements HostTable
             Collection<HostTableEntry> entries = hostTable.values();
             logger.info("Saving hosts to file... (" + entries.size() + " entries)");
 
-            LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>();
+            LinkedList<HostTableEntry> list = new LinkedList<>();
             for (HostTableEntry entry : entries) {
                 list.add(entry);
             }
@@ -737,7 +737,7 @@ public class HostTableImpl implements HostTable
     private void loadSavedHosts()
     {
         try {
-            this.hostTable = new ConcurrentHashMap<InetAddress, HostTableEntry>();
+            this.hostTable = new ConcurrentHashMap<>();
 
             logger.info("Loading hosts from file...");
             LinkedList<HostTableEntry> savedEntries = UvmContextFactory.context().settingsManager().load(LinkedList.class, HOSTS_SAVE_FILENAME);
@@ -794,7 +794,7 @@ public class HostTableImpl implements HostTable
                     /**
                      * Remove old entries
                      */
-                    LinkedList<HostTableEntry> entries = new LinkedList<HostTableEntry>(hostTable.values());
+                    LinkedList<HostTableEntry> entries = new LinkedList<>(hostTable.values());
                     for (HostTableEntry entry : entries) {
                         InetAddress address = entry.getAddress();
                         if (address == null) continue;
@@ -915,7 +915,7 @@ public class HostTableImpl implements HostTable
                      * entitled, set them back
                      */
                     int numUnlicensed = 0;
-                    entries = new LinkedList<HostTableEntry>(hostTable.values());
+                    entries = new LinkedList<>(hostTable.values());
                     for (HostTableEntry entry : entries) {
                         if (!entry.getEntitled()) numUnlicensed++;
                     }
@@ -986,7 +986,7 @@ public class HostTableImpl implements HostTable
                 logger.debug("HostTableReverseHostnameLookup: Running... ");
 
                 try {
-                    LinkedList<HostTableEntry> entries = new LinkedList<HostTableEntry>(hostTable.values());
+                    LinkedList<HostTableEntry> entries = new LinkedList<>(hostTable.values());
                     for (HostTableEntry entry : entries) {
 
                         String currentHostname = entry.getHostname();
@@ -1108,7 +1108,7 @@ public class HostTableImpl implements HostTable
 
                 HashSet<String> currentIps = currentIpSets.get(tagName);
                 if (currentIps == null) {
-                    currentIps = new HashSet<String>();
+                    currentIps = new HashSet<>();
                     currentIpSets.put(tagName, currentIps);
                     output = UvmContextFactory.context().execManager().execOutput("ipset create tag-" + tagName + " iphash");
                     lines = output.split("\\r?\\n");
