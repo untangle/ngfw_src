@@ -243,7 +243,7 @@ public class LanguageManagerImpl implements LanguageManager
      */
     public List<LocaleInfo> getLanguagesList()
     {
-        List<LocaleInfo> locales = new ArrayList<();
+        List<LocaleInfo> locales = new ArrayList<>();
         boolean headerAdded = true;
         boolean defaultAdded = false;
 
