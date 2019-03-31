@@ -28,7 +28,7 @@ public class NetcapConntrackHook implements NetcapCallback
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private HashMap<SessionTuple,Long> conntrackSessionIdMap = new HashMap<SessionTuple, Long>();
+    private HashMap<SessionTuple,Long> conntrackSessionIdMap = new HashMap<>();
     
     /**
      * getInstance gets the singleton instance
