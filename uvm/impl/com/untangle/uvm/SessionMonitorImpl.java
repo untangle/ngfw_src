@@ -296,8 +296,8 @@ public class SessionMonitorImpl implements SessionMonitor
         List<SessionMonitorEntry> sessions = getMergedSessions();
         org.json.JSONObject json = new org.json.JSONObject();
 
-        Map<String, Float> totals = new HashMap<String,Float>();
-        Map<String, Integer> counts = new HashMap<String, Integer>();
+        Map<String, Float> totals = new HashMap<>();
+        Map<String, Integer> counts = new HashMap<>();
 
         try {
             if ( sessions != null ) {
@@ -430,7 +430,7 @@ public class SessionMonitorImpl implements SessionMonitor
     {
         BufferedReader br = null;
         String line;
-        LinkedList<SessionMonitorEntry> list = new LinkedList<SessionMonitorEntry>();
+        LinkedList<SessionMonitorEntry> list = new LinkedList<>();
         String conntrackFilename;
         if ( Files.exists(Paths.get("/proc/net/ip_conntrack")) )
             conntrackFilename = "/proc/net/ip_conntrack";
