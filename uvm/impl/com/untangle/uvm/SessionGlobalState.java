@@ -49,7 +49,7 @@ public class SessionGlobalState
     protected DeviceTableEntry deviceEntry = null;
     protected UserTableEntry userEntry = null;
     
-    private HashMap<String,Tag> tags = new HashMap<String,Tag>();
+    private HashMap<String,Tag> tags = new HashMap<>();
     
     /**
      * This is the global list of attachments for this session
@@ -85,7 +85,7 @@ public class SessionGlobalState
         this.clientSideListener = clientSideListener;
         this.serverSideListener = serverSideListener;
 
-        this.stringAttachments = new HashMap<String,Object>();
+        this.stringAttachments = new HashMap<>();
     }
 
     /**
@@ -321,7 +321,7 @@ public class SessionGlobalState
     public List<Tag> getTags()
     {
         removeExpiredTags();
-        return new LinkedList<Tag>(this.tags.values());
+        return new LinkedList<>(this.tags.values());
     }
 
     /**
