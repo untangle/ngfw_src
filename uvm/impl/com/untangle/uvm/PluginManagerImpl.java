@@ -31,7 +31,7 @@ public class PluginManagerImpl implements PluginManager
      */
     private static final PluginManagerImpl INSTANCE = new PluginManagerImpl();
 
-    private HashMap<String, Plugin> loadedPlugins = new HashMap<String, Plugin>();
+    private HashMap<String, Plugin> loadedPlugins = new HashMap<>();
 
     /**
      * Constructor
@@ -48,7 +48,7 @@ public class PluginManagerImpl implements PluginManager
     private URLClassLoader createClassLoader()
     {
         try {
-            List<URL> urls = new ArrayList<URL>();
+            List<URL> urls = new ArrayList<>();
 
             /* Add everything in lib */
             File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));
