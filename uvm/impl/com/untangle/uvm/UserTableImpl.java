@@ -66,7 +66,7 @@ public class UserTableImpl implements UserTable
     public synchronized void setUsers(LinkedList<UserTableEntry> newUsers)
     {
         ConcurrentHashMap<String, UserTableEntry> oldUserTable = this.userTable;
-        this.userTable = new ConcurrentHashMap<String, UserTableEntry>();
+        this.userTable = new ConcurrentHashMap<>();
 
         /**
          * For each entry, copy the value on top of the exitsing objects so
@@ -149,7 +149,7 @@ public class UserTableImpl implements UserTable
      */
     public synchronized LinkedList<UserTableEntry> getUsers()
     {
-        return new LinkedList<UserTableEntry>(userTable.values());
+        return new LinkedList<>(userTable.values());
     }
 
     /**
@@ -391,7 +391,7 @@ public class UserTableImpl implements UserTable
             Collection<UserTableEntry> entries = userTable.values();
             logger.info("Saving users to file... (" + entries.size() + " entries)");
 
-            LinkedList<UserTableEntry> list = new LinkedList<UserTableEntry>();
+            LinkedList<UserTableEntry> list = new LinkedList<>();
             for (UserTableEntry entry : entries) {
                 list.add(entry);
             }
@@ -436,7 +436,7 @@ public class UserTableImpl implements UserTable
     private void loadSavedUsers()
     {
         try {
-            this.userTable = new ConcurrentHashMap<String, UserTableEntry>();
+            this.userTable = new ConcurrentHashMap<>();
 
             logger.info("Loading users from file...");
             LinkedList<UserTableEntry> savedEntries = UvmContextFactory.context().settingsManager().load(LinkedList.class, USERS_SAVE_FILENAME);
@@ -488,7 +488,7 @@ public class UserTableImpl implements UserTable
                     /**
                      * Remove old entries
                      */
-                    LinkedList<UserTableEntry> entries = new LinkedList<UserTableEntry>(userTable.values());
+                    LinkedList<UserTableEntry> entries = new LinkedList<>(userTable.values());
                     for (UserTableEntry entry : entries) {
                         String username = entry.getUsername();
                         if (username == null) continue;
