@@ -27,8 +27,8 @@ import com.untangle.uvm.servlet.ServletFileManager;
  */
 public class ServletFileManagerImpl implements ServletFileManager
 {
-    Map<String, UploadHandler> uploadHandlers = new HashMap<String, UploadHandler>();
-    Map<String, DownloadHandler> downloadHandlers = new HashMap<String, DownloadHandler>();
+    Map<String, UploadHandler> uploadHandlers = new HashMap<>();
+    Map<String, DownloadHandler> downloadHandlers = new HashMap<>();
 
     /**
      * Get the upload handler for a specified name
