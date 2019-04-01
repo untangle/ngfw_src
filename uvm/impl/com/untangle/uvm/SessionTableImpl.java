@@ -33,9 +33,9 @@ public class SessionTableImpl
 
     private static final SessionTableImpl INSTANCE = new SessionTableImpl();
 
-    private final Map<Long, SessionGlobalState> sessionTableById = new HashMap<Long, SessionGlobalState>();
-    private final Map<SessionTuple, SessionGlobalState> sessionTableByTuple = new HashMap<SessionTuple, SessionGlobalState>();
-    private final Map<NatPortAvailabilityKey, SessionGlobalState> tcpPortAvailabilityMap = new HashMap<NatPortAvailabilityKey, SessionGlobalState>();
+    private final Map<Long, SessionGlobalState> sessionTableById = new HashMap<>();
+    private final Map<SessionTuple, SessionGlobalState> sessionTableByTuple = new HashMap<>();
+    private final Map<NatPortAvailabilityKey, SessionGlobalState> tcpPortAvailabilityMap = new HashMap<>();
 
     /**
      * Singleton
@@ -293,7 +293,7 @@ public class SessionTableImpl
      */
     public synchronized List<SessionGlobalState> getSessions()
     {
-        return new LinkedList<SessionGlobalState>(this.sessionTableById.values());
+        return new LinkedList<>(this.sessionTableById.values());
     }
 
     /**
@@ -326,8 +326,8 @@ public class SessionTableImpl
         }
 
         int shutdownCount = 0;
-        LinkedList<Vector> shutdownList = new LinkedList<Vector>();
-        LinkedList<SessionEvent> conntrackDestroyList = new LinkedList<SessionEvent>();
+        LinkedList<Vector> shutdownList = new LinkedList<>();
+        LinkedList<SessionEvent> conntrackDestroyList = new LinkedList<>();
 
         if (sessionTableById.isEmpty()) return;
 
