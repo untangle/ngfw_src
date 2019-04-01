@@ -141,7 +141,7 @@ public class SkinManagerImpl implements SkinManager
             ZipEntry entry = null;
             File defaultSkinDir = new File(SKINS_DIR + File.separator + DEFAULT_ADMIN_SKIN);
             File skinDir = new File(SKINS_DIR);
-            List<File> processedSkinFolders = new ArrayList<File>();
+            List<File> processedSkinFolders = new ArrayList<>();
 
             //validate skin
             if (!item.getName().endsWith(".zip")) {
@@ -236,7 +236,7 @@ public class SkinManagerImpl implements SkinManager
     public List<SkinInfo> getSkinsList()
     {
 
-        List<SkinInfo> skins = new ArrayList<SkinInfo>();
+        List<SkinInfo> skins = new ArrayList<>();
         File dir = new File(SKINS_DIR);
 
         File[] children = dir.listFiles();
