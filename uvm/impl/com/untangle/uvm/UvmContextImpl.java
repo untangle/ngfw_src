@@ -118,7 +118,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
-    private volatile List<String> annotatedClasses = new LinkedList<String>();
+    private volatile List<String> annotatedClasses = new LinkedList<>();
     
     /**
      * UvmContextImpl - private because its a singleton and cannot be instantiated
@@ -1241,7 +1241,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.loggingManager = new LoggingManagerImpl();
 
-        this.threadRequest = new InheritableThreadLocal<HttpServletRequest>();
+        this.threadRequest = new InheritableThreadLocal<>();
 
         this.tomcatManager = new TomcatManagerImpl(this, threadRequest, System.getProperty("uvm.tomcat.dir"), System.getProperty("uvm.web.dir"), System.getProperty("uvm.log.dir"));
 
