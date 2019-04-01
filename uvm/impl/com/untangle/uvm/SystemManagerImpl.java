@@ -380,7 +380,7 @@ public class SystemManagerImpl implements SystemManager
     public String getTimeZones()
     {
         String[] timezones = TimeZone.getAvailableIDs();
-        List<TimeZone> all = new ArrayList<TimeZone>();
+        List<TimeZone> all = new ArrayList<>();
         for (String tz : timezones) {
             all.add(TimeZone.getTimeZone(tz));
         }
@@ -453,7 +453,7 @@ public class SystemManagerImpl implements SystemManager
      */
     public boolean downloadUpgrades()
     {
-        LinkedList<String> downloadUrls = new LinkedList<String>();
+        LinkedList<String> downloadUrls = new LinkedList<>();
 
         String result = UvmContextFactory.context().execManager().execOutput("apt-get dist-upgrade --yes --print-uris | awk '/^.http/ {print $1}'");
         try {
