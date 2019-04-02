@@ -125,7 +125,7 @@ class PhishBlockerTests(unittest.TestCase):
         found = False
         email_index = 20;
         while (not found and timeout > 0):
-            time.sleep(3)
+            time.sleep(10)
             email_index += 1
             from_address = "test0" + str(email_index)
             sendPhishMail(mailfrom=from_address)
