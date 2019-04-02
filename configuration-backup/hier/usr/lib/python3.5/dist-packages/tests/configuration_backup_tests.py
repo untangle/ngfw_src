@@ -5,6 +5,7 @@ import ast
 import filecmp
 import glob
 import unittest
+import requests
 
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -58,13 +59,12 @@ class ConfigurationBackupTests(unittest.TestCase):
         assert( os.path.isfile("/etc/cron.d/untangle-configuration-backup-nightly")  )
 
     def test_140_compare_cloud_backup(self):
-        raise unittest.SkipTest("dependent on python3-requests, skipping for now")
         """Compare a cloud backup with a local backup"""
         global app
         boxUID = uvmContext.getServerUID()
         #get authentication url and api key
         authUrl,authKey = global_functions.get_live_account_info("UntangleAuth")
-        boxBackupUrl = global_functions.get_live_account_info("BoxBackup")
+        boxBackupUrl,bbKey = global_functions.get_live_account_info("BoxBackup")
         app.sendBackup()
         #remove previous backups/backup directories
         subprocess.call("rm -rf /tmp/localBackup*", shell=True)
@@ -98,7 +98,7 @@ class ConfigurationBackupTests(unittest.TestCase):
         backupList = ast.literal_eval(bbResponse.text)
         #grab the latest cloud backup from the list
         latestBackup = backupList[-1]
-        print("latest backup from cloud: %s" % latestBackup)
+        #print("latest backup from cloud: %s" % latestBackup)
 
         #download the latest backup and save it to /tmp
         dlUrl = boxBackupUrl
