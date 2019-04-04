@@ -425,6 +425,7 @@ class UvmTests(unittest.TestCase):
         for i in range(0,20):
             try:
                 result = subprocess.check_output("/usr/bin/pyconnector-status")
+                result = result.decode("utf-8")  # decode byte to string.
             except subprocess.CalledProcessError as e:
                 print((e.output))
                 time.sleep(10)
@@ -454,7 +455,7 @@ class UvmTests(unittest.TestCase):
     def test_160_change_community_language(self):
         """Check if changing community language converts the GUI"""
         #set language to Russian
-        language_settings_community = uvmContext.languageManager.getLanguageSettings()
+        language_settings_community = uvmContext.languageManager().getLanguageSettings()
         language_settings_community_orig = copy.deepcopy(language_settings_community)
         language_settings_community['language'] = "ru"
         uvmContext.languageManager().setLanguageSettings(language_settings_community)
