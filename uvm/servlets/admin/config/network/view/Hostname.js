@@ -72,6 +72,7 @@ Ext.define('Ung.config.network.view.Hostname', {
         },
         items: [{
             xtype: 'combo',
+            editable: false,
             fieldLabel: 'Service'.t(),
             bind: '{settings.dynamicDnsServiceName}',
             store: [['easydns','EasyDNS'],
