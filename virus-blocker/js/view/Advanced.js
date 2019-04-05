@@ -83,7 +83,7 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
         }, {
             xtype: 'checkbox',
             bind: '{record.enabled}',
-            fieldLabel: 'Pass'.t()
+            fieldLabel: 'Scan'.t()
         }, {
             xtype: 'textarea',
             bind: '{record.description}',
