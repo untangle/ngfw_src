@@ -564,9 +564,9 @@ class CaptivePortalTests(unittest.TestCase):
             raise unittest.SkipTest("No AD server available")
         # Configure AD settings
         testResultString = appAD.getActiveDirectoryManager().getStatusForSettings(create_directory_connector_settings(ldap_secure=False)["activeDirectorySettings"]["servers"]["list"][0])
-        # print('testResultString %s' % testResultString  # debug line)
+        # print('testResultString %s' % testResultString)  # debug line
         appAD.setSettings(create_directory_connector_settings())
-        assert ("success" in testResultString)
+        assert ("PASS" in testResultString['status'])
         # Create Internal NIC capture rule with basic AD login page
         appData['captureRules']['list'] = []
         appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
