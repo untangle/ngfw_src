@@ -120,34 +120,23 @@ public class Downloader extends HttpServlet
     void streamFile(HttpServletRequest request, HttpServletResponse response, String fileName, String downloadFileName, String type) throws ServletException, IOException
     {
         InputStream fileData = null;
-
+        File fileItem = null;
         long length = 0;
 
         logger.debug("Streaming '" + fileName + "'");
 
-        boolean found = true;
+        fileItem = new File(fileName);
+
         try {
-            File file = new File(fileName);
-            fileData = new FileInputStream(file);
-            length = file.length();
+            fileData = new FileInputStream(fileItem);
         } catch (FileNotFoundException e) {
             logger.info("The file '" + fileName + "' does not exist");
             request.setAttribute("com.untangle.app.openvpn.servlet.reason", "The file '" + fileName + "' does not exist");
             rejectFile(request, response);
-            found = false;
-        } finally {
-            if (fileData != null){
-                try {
-                    fileData.close();
-                } catch( Exception e){
-                    logger.warn("Unable to close file", e);
-                }
-            }
-        }
-        if(!found){
             return;
         }
 
+        length = fileItem.length();
         response.setContentType(type);
 
         if (downloadFileName != null) {
@@ -190,6 +179,10 @@ public class Downloader extends HttpServlet
                 logger.warn("Error closing output stream", e);
             }
         }
+
+        // normally not needed because bis.close() will handle it but
+        // it doesn't hurt and is fallback in case of exception above
+        fileData.close();
     }
 
     /**
