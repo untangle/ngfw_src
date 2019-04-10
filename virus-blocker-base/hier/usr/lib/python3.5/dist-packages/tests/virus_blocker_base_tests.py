@@ -61,7 +61,14 @@ def createSSLInspectRule(port="25"):
         "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRule",
         "live": True,
         "ruleId": 1
-    };
+    }
+
+def enableFileExtensionScan(stringtype):
+    virusSettings = app.getSettings()
+    for index, extension in enumerate(virusSettings["httpFileExtensions"]["list"]):
+        if (extension["string"] == stringtype):
+            virusSettings["httpFileExtensions"]["list"][index]["enabled"] = True
+            app.setSettings(virusSettings)
 
 class VirusBlockerBaseTests(unittest.TestCase):
 
@@ -427,6 +434,23 @@ class VirusBlockerBaseTests(unittest.TestCase):
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_120_ftpVirusClean_file | awk '{print $1}'\"", stdout=True)
         print("md5LargePDFClean <%s> vs md5TestNum <%s>" % (md5LargePDFClean, md5TestNum))
         assert (md5LargePDFClean == md5TestNum)
+
+    def test_200_scanFileExtension(self):
+        """test that "Scan" option in advanced tab is scanned, using zip file"""
+        #find 'zip' file extension and enable scan option
+        enableFileExtensionScan("zip")
+
+        remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.zip 2>&1")
+
+        events = global_functions.get_events('Virus Blocker','Scanned Web Events',None,1)
+        assert(events != None)
+
+        found = global_functions.check_events(events.get("list"), 50, 
+                                                'host', 'test.untangle.com',
+                                                'c_client_addr', remote_control.client_ip,
+                                                'uri', '/test/test.zip')
+
+        assert(found)
 
     def test_300_disableAllScans(self):
         virusSettings = self.app.getSettings()
