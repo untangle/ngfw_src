@@ -177,9 +177,8 @@ public class RadiusLdapAdapter
         RadiusClient client = null;
 
         synchronized ( this ) {
-            try(
+            try {
                 DatagramSocket socket = new DatagramSocket();
-            ){                
                 InetAddress address = InetAddress.getByName(radiusSettings.getServer());
                 int port = radiusSettings.getAuthPort();
                 int timeout = Integer.getInteger("com.untangle.app.directory_connector.radius.timeout-ms", 4000);
