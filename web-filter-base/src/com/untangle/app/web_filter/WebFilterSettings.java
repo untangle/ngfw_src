@@ -24,7 +24,7 @@ public class WebFilterSettings implements Serializable, JSONString
     public static final String UNBLOCK_MODE_HOST   = "Host";
     public static final String UNBLOCK_MODE_GLOBAL = "Global";
 
-    private Integer version = new Integer(1);
+    private Integer version = new Integer(3);
 
     private Boolean enableHttpsSni = true;
     private Boolean enableHttpsSniCertFallback = true;
@@ -127,17 +127,15 @@ public class WebFilterSettings implements Serializable, JSONString
     public Integer getUnblockTimeout() { return this.unblockTimeout; }
     public void setUnblockTimeout( Integer unblockTimeout ) { this.unblockTimeout = unblockTimeout; }
     
-    public GenericRule getCategory(String idString)
+    public GenericRule getCategory(Integer id)
     {
-        if (idString == null)
-            return null;
-        
         for (GenericRule cat : getCategories()) {
-            if (idString.equals(cat.getString()))
+            if (id.equals(cat.getId())){
                 return cat;
+            }
         }
 
-            return null;
+        return null;
     }
     
     public String toJSONString()
