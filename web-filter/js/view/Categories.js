@@ -13,11 +13,26 @@ Ext.define('Ung.apps.webfilter.view.Categories', {
         html: 'Block or flag access to sites associated with the specified category.'.t()
     }],
 
+    features: [{
+        ftype: 'grouping',
+        groupHeaderTpl: ['Group: {name:this.formatName} ({rows.length} {[values.rows.length > 1 ? "categories" : "category"]})'.t(),{
+            formatName: function(name){
+                return Ext.String.trim(name);
+            }
+        }],
+        startCollapsed: false
+     }],
+
     listProperty: 'settings.categories.list',
 
     bind: '{categories}',
 
     columns: [{
+        header: 'Group'.t(),
+        width: Renderer.messageWidth,
+        flex: 1,
+        dataIndex: 'category'
+    },{
         header: 'Category'.t(),
         width: Renderer.messageWidth,
         flex: 1,

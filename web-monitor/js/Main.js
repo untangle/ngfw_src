@@ -5,7 +5,10 @@ Ext.define('Ung.apps.webmonitor.Main', {
 
     viewModel: {
         stores: {
-            categories:    { data: '{settings.categories.list}' },
+            categories:    { 
+                data: '{settings.categories.list}',
+                groupField: 'category'
+            },
             blockedUrls:   { data: '{settings.blockedUrls.list}' },
             passedUrls:    { data: '{settings.passedUrls.list}' },
             passedClients: { data: '{settings.passedClients.list}' },
