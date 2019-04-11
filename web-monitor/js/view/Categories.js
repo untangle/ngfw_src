@@ -13,6 +13,16 @@ Ext.define('Ung.apps.webmonitor.view.Categories', {
         html: 'Flag access to sites associated with the specified category.'.t()
     }],
 
+    features: [{
+        ftype: 'grouping',
+        groupHeaderTpl: ['Group: {name:this.formatName} ({rows.length} {[values.rows.length > 1 ? "categories" : "category"]})'.t(),{
+            formatName: function(name){
+                return Ext.String.trim(name);
+            }
+        }],
+        startCollapsed: false
+     }],
+
     listProperty: 'settings.categories.list',
 
     bind: '{categories}',
