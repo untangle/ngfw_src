@@ -100,10 +100,10 @@ public class WebMonitorApp extends WebFilterBase
      * @param expireAll
      *        Expire all flag
      */
-    public void clearCache(boolean expireAll)
-    {
-        this.engine.clearCache(expireAll);
-    }
+    // public void clearCache(boolean expireAll)
+    // {
+    //     this.engine.clearCache(expireAll);
+    // }
 
     /**
      * Called to lookup a specific site
@@ -112,7 +112,7 @@ public class WebMonitorApp extends WebFilterBase
      *        The site to lookup
      * @return The list of categories
      */
-    public List<String> lookupSite(String url)
+    public List<Integer> lookupSite(String url)
     {
         return this.engine.lookupSite(url);
     }
@@ -129,36 +129,6 @@ public class WebMonitorApp extends WebFilterBase
     public int recategorizeSite(String url, int category)
     {
         return this.engine.recategorizeSite(url, category);
-    }
-
-    /**
-     * This is used for the UI alert test
-     * 
-     * @param domain
-     *        The domain
-     * @param uri
-     *        The URI
-     * @param command
-     *        The command
-     * @return result
-     */
-    public String encodeDnsQuery(String domain, String uri, String command)
-    {
-        return this.engine.encodeDnsQuery(domain, uri, command);
-    }
-
-    /**
-     * This is used for the UI alert test
-     * 
-     * @param domain
-     *        The domain
-     * @param uri
-     *        The uri
-     * @return result
-     */
-    public String encodeDnsQuery(String domain, String uri)
-    {
-        return this.engine.encodeDnsQuery(domain, uri);
     }
 
     /**
@@ -227,7 +197,6 @@ public class WebMonitorApp extends WebFilterBase
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        engine.getDiaKey();
         super.preStart(isPermanentTransition);
     }
 
