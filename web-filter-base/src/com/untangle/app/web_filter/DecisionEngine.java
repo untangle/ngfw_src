@@ -42,6 +42,13 @@ public abstract class DecisionEngine
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 
     /**
+     * Match  slashes (except for leading protocol) with single slashes
+     */
+    private static Pattern CONSECUTIVE_SLASHES_URI_PATTERN = Pattern.compile("(?<!:)/+");
+    private static Pattern CONSECUTIVE_SLASHES_PATH_PATTERN = Pattern.compile("/+");
+
+
+    /**
      * This is the base app that owns this decision engine
      */
     private final WebFilterBase app;
@@ -74,7 +81,7 @@ public abstract class DecisionEngine
      *        The uri of the request
      * @return The list of categories
      */
-    protected abstract List<String> categorizeSite(String dom, String uri);
+    protected abstract List<Integer> categorizeSite(String dom, String uri);
 
     /**
      * Checks if the request should be blocked, giving an appropriate response
@@ -110,10 +117,7 @@ public abstract class DecisionEngine
         URI uri = null;
 
         try {
-            /**
-             * XXX what is this: .replaceAll("(?<!:)/+", "/") -dmorris
-             */
-            uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/"));
+            uri = new URI(CONSECUTIVE_SLASHES_URI_PATTERN.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll("/"));
         } catch (URISyntaxException e) {
             logger.error("Could not parse URI '" + uri + "'", e);
         }
@@ -127,6 +131,7 @@ public abstract class DecisionEngine
         }
 
         host = UrlMatchingUtil.normalizeHostname(host);
+
 
         // start by getting the category for the request and attach to session
         bestCategory = checkCategory(sess, clientIp, host, requestLine);
@@ -180,7 +185,7 @@ public abstract class DecisionEngine
         String refererHeader = header.getValue("referer");
         if (app.getSettings().getPassReferers() && (refererHeader != null)) {
             try {
-                URI refererUri = new URI(refererHeader.replaceAll("(?<!:)/+", "/"));
+                URI refererUri = new URI(CONSECUTIVE_SLASHES_URI_PATTERN.matcher(refererHeader).replaceAll("/"));
                 String refererHost = refererUri.getHost();
                 if (refererHost == null) {
                     refererHost = host;
@@ -278,7 +283,6 @@ public abstract class DecisionEngine
          * block lists and don't have a filter rule match so we use the category
          * to make the final pass/block/flag decisions
          */
-
         if (bestCategory != null) {
             if (!isFlagged && bestCategory.getFlagged()) {
                 isFlagged = true;
@@ -343,7 +347,7 @@ public abstract class DecisionEngine
 
         URI uri = null;
         try {
-            uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("/+", "/"));
+            uri = new URI(CONSECUTIVE_SLASHES_PATH_PATTERN.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll("/"));
         } catch (URISyntaxException e) {
             logger.error("Could not parse URI '" + uri + "'", e);
         }
@@ -555,25 +559,25 @@ public abstract class DecisionEngine
             uri = reqUri.normalize().toString();
         }
 
-        uri = uri.replaceAll("/+", "/");
+        uri = CONSECUTIVE_SLASHES_PATH_PATTERN.matcher(uri).replaceAll("/");
 
         logger.debug("checkCategory: " + host + uri);
 
-        List<String> categories = categorizeSite(host, uri);
+        List<Integer> categories = categorizeSite(host, uri);
 
         if (categories == null) {
             logger.warn("NULL categories returned (should be empty list?)");
-            categories = new LinkedList<String>();
+            categories = new LinkedList<Integer>();
         }
 
         boolean isBlocked = false;
         boolean isFlagged = false;
         GenericRule bestCategory = null;
 
-        for (String cat : categories) {
-            GenericRule catSettings = app.getSettings().getCategory(cat);
+        for (Integer catid : categories) {
+            GenericRule catSettings = app.getSettings().getCategory(catid);
             if (catSettings == null) {
-                logger.warn("Missing settings for category: " + cat);
+                logger.warn("Missing settings for category: " + catid);
                 continue;
             }
 
