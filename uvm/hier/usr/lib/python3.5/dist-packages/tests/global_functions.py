@@ -241,8 +241,6 @@ def find_event( events, num_events, *args, **kwargs):
             time_stamp = event.get('time_stamp')
             if type(time_stamp) is int:
                 ts = datetime.datetime.fromtimestamp((time_stamp/1000)+1)#round up
-            elif type(time_stamp) is int:
-                ts = datetime.datetime.fromtimestamp((time_stamp/1000)+1)#round up
             else:
                 ts = datetime.datetime.fromtimestamp((time_stamp['time']/1000)+1)#round up
             if ts < min_date:
