@@ -8,6 +8,10 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.LinkedList;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.AdminSettings;
@@ -52,6 +56,156 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     protected volatile WebFilterSettings settings;
 
     protected final UnblockedSitesMonitor unblockedSitesMonitor;
+
+    /*
+     * Mapping from old category engine ids to new.  Can be removed after 14.2 releease cycle.
+     */
+    private static final Map<Integer, Integer> categoryConversionMap;
+    static{
+        categoryConversionMap = new HashMap<>();
+
+        categoryConversionMap.put(200, 68); // Abortion
+        categoryConversionMap.put(201, 68); // Abortion - Pro Choice
+        categoryConversionMap.put(202, 68); // Abortion - Pro Life
+        categoryConversionMap.put(243, 35); // Advocacy Groups & Trade Associations
+        categoryConversionMap.put(203, 4);  // Agriculture
+        categoryConversionMap.put(16, 76);  // Alcohol
+        categoryConversionMap.put(12, 58);  // Anonymizer
+        categoryConversionMap.put(204, 4); // Architecture & Construction
+        categoryConversionMap.put(205, 21); // Arts
+        categoryConversionMap.put(206, 8); // Astrology & Horoscopes
+        categoryConversionMap.put(207, 20); // Atheism & Agnosticism
+        categoryConversionMap.put(208, 6); // Auctions & Marketplaces
+        categoryConversionMap.put(209, 3); // Banking
+        categoryConversionMap.put(210, 69); // Biotechnology
+        categoryConversionMap.put(211, 67); // Botnet
+        categoryConversionMap.put(212, 4); // Businesses & Services (General)
+        categoryConversionMap.put(213, 21); // Cartoons, Anime & Comic Books
+        categoryConversionMap.put(214, 7); // Catalogs
+        categoryConversionMap.put(216, 66); // Chat
+        categoryConversionMap.put(217, 48); // Child Abuse Images
+        categoryConversionMap.put(297, 48); // Child Inappropriate
+        categoryConversionMap.put(218, 56); // Command and Control Centers
+        categoryConversionMap.put(306, 80); // Community Forums
+        categoryConversionMap.put(1, 56); // Compromised
+        categoryConversionMap.put(219, 65); // Content Servers
+        categoryConversionMap.put(220, 27); // Contests & Surveys
+        categoryConversionMap.put(222, 7); // Coupons
+        categoryConversionMap.put(223, 64); // Criminal Skills
+        categoryConversionMap.put(23, 18); // Dating
+        categoryConversionMap.put(225, 40); // Educational Institutions
+        categoryConversionMap.put(226, 17); // Educational Materials & Studies
+        categoryConversionMap.put(227, 21); // Entertainment News & Celebrity Sites
+        categoryConversionMap.put(228, 21); // Entertainment Venues & Events
+        categoryConversionMap.put(229, 79); // Fashion & Beauty
+        categoryConversionMap.put(230, 47); // File Repositories
+        categoryConversionMap.put(233, 3); // Finance (General)
+        categoryConversionMap.put(231, 80); // Fitness & Recreation
+        categoryConversionMap.put(310, 21); // Food & Restaurants
+        categoryConversionMap.put(20, 27); // Gambling
+        categoryConversionMap.put(21, 34); // Games
+        categoryConversionMap.put(232, 35); // Gay, Lesbian or Bisexual
+        categoryConversionMap.put(235, 61); // Government Sponsored
+        categoryConversionMap.put(237, 33); // Hacking
+        categoryConversionMap.put(3, 46); // Hate Speech
+        categoryConversionMap.put(238, 69); // Health & Medical
+        categoryConversionMap.put(239, 80); // Hobbies & Leisure
+        categoryConversionMap.put(241, 12); // Home & Office Furnishings
+        categoryConversionMap.put(240, 12); // Home, Garden & Family
+        categoryConversionMap.put(37, 21); // Humor
+        categoryConversionMap.put(4, 10); // Illegal Drugs
+        categoryConversionMap.put(305, 78); // Image Search
+        categoryConversionMap.put(244, 2); // Information Security
+        categoryConversionMap.put(245, 66); // Instant Messenger
+        categoryConversionMap.put(246, 3); // Insurance
+        categoryConversionMap.put(247, 66); // Internet Phone & VOIP
+        categoryConversionMap.put(51, 26); // Job Search
+        categoryConversionMap.put(248, 45); // Kid's Pages
+        categoryConversionMap.put(311, 23); // Legislation, Politics & Law
+        categoryConversionMap.put(249, 43); // Lingerie, Suggestive & Pinup
+        categoryConversionMap.put(250, 21); // Literature & Books
+        categoryConversionMap.put(251, 49); // Login Screens
+        categoryConversionMap.put(252, 56); // Malware Call-Home
+        categoryConversionMap.put(253, 56); // Malware Distribution Point
+        categoryConversionMap.put(254, 4); // Manufacturing
+        categoryConversionMap.put(255, 32); // Marijuana
+        categoryConversionMap.put(308, 4); // Marketing Services
+        categoryConversionMap.put(30, 13); // Military
+        categoryConversionMap.put(54, 0); // Miscellaneous
+        categoryConversionMap.put(256, 5); // Mobile Phones
+        categoryConversionMap.put(309, 81); // Motorized Vehicles
+        categoryConversionMap.put(38, 60); // Music
+        categoryConversionMap.put(236, 35); // Nature & Conservation
+        categoryConversionMap.put(39, 63); // News
+        categoryConversionMap.put(257, 15); // No Content Found
+        categoryConversionMap.put(258, 8); // Non-traditional Religion & Occult
+        categoryConversionMap.put(7, 62); // Nudity
+        categoryConversionMap.put(259, 69); // Nutrition & Diet
+        categoryConversionMap.put(49, 52); // Online Ads
+        categoryConversionMap.put(260, 3); // Online Financial Tools & Quotes
+        categoryConversionMap.put(261, 5); // Online Information Management
+        categoryConversionMap.put(262, 7); // Online Shopping
+        categoryConversionMap.put(263, 16); // Online Stock Trading
+        categoryConversionMap.put(99, 75); // Parked
+        categoryConversionMap.put(264, 80); // Parks, Rec Facilities & Gyms
+        categoryConversionMap.put(265, 37); // Pay To Surf
+        categoryConversionMap.put(266, 31); // Peer-to-Peer
+        categoryConversionMap.put(312, 22); // Personal Pages & Blogs
+        categoryConversionMap.put(267, 47); // Personal Storage
+        categoryConversionMap.put(268, 80); // Pets & Animals
+        categoryConversionMap.put(18, 69); // Pharmacy
+        categoryConversionMap.put(269, 39); // Philanthropic Organizations
+        categoryConversionMap.put(5, 57); // Phishing/Fraud
+        categoryConversionMap.put(270, 78); // Photo Sharing
+        categoryConversionMap.put(273, 4); // Physical Security
+        categoryConversionMap.put(271, 33); // Piracy & Copyright Theft
+        categoryConversionMap.put(272, 11); // Pornography
+        categoryConversionMap.put(47, 51); // Portal Sites
+        categoryConversionMap.put(274, 0); // Private IP Address
+        categoryConversionMap.put(275, 7); // Product Reviews & Price Comparisons
+        categoryConversionMap.put(276, 44); // Profanity
+        categoryConversionMap.put(277, 14); // Professional Networking
+        categoryConversionMap.put(278, 11); // R-Rated
+        categoryConversionMap.put(52, 1); // Real Estate
+        categoryConversionMap.put(279, 49); // Redirect
+        categoryConversionMap.put(280, 29); // Reference Materials & Maps
+        categoryConversionMap.put(281, 20); // Religions
+        categoryConversionMap.put(307, 66); // Remote Access
+        categoryConversionMap.put(282, 69); // Retirement Homes & Assisted Living
+        categoryConversionMap.put(283, 53); // School Cheating
+        categoryConversionMap.put(48, 50); // Search Engines
+        categoryConversionMap.put(284, 69); // Self-help & Addiction
+        categoryConversionMap.put(285, 11); // Sex & Erotic
+        categoryConversionMap.put(286, 19); // Sex Education & Pregnancy
+        categoryConversionMap.put(287, 4); // Shipping & Logistics
+        categoryConversionMap.put(288, 14); // Social and Affiliation Organizations
+        categoryConversionMap.put(45, 14); // Social Networking
+        categoryConversionMap.put(289, 2); // Software, Hardware & Electronics
+        categoryConversionMap.put(53, 71); // Spam
+        categoryConversionMap.put(313, 42); // Sport Fighting
+        categoryConversionMap.put(290, 38); // Sport Hunting
+        categoryConversionMap.put(291, 42); // Sports
+        categoryConversionMap.put(292, 59); // Spyware & Questionable Software
+        categoryConversionMap.put(293, 25); // Streaming & Downloadable Audio
+        categoryConversionMap.put(294, 25); // Streaming & Downloadable Video
+        categoryConversionMap.put(295, 69); // Supplements & Compounds
+        categoryConversionMap.put(296, 43); // Swimsuits
+        categoryConversionMap.put(234, 5); // Technology (General)
+        categoryConversionMap.put(298, 21); // Television & Movies
+        categoryConversionMap.put(316, 66); // Text Messaging & SMS
+        categoryConversionMap.put(19, 76); // Tobacco
+        categoryConversionMap.put(299, 31); // Torrent Repository
+        categoryConversionMap.put(300, 21); // Toys
+        categoryConversionMap.put(15, 28); // Translator
+        categoryConversionMap.put(28, 9); // Travel
+        categoryConversionMap.put(301, 15); // Unreachable
+        categoryConversionMap.put(10, 48); // Violence
+        categoryConversionMap.put(11, 36); // Weapons
+        categoryConversionMap.put(302, 82); // Web Hosting, ISP & Telco
+        categoryConversionMap.put(46, 55); // Web-based Email
+        categoryConversionMap.put(303, 41); // Web-based Greeting Cards
+        categoryConversionMap.put(304, 29); // Wikis
+    }
 
     /**
      * Constructor
@@ -586,60 +740,27 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         /**
          * If we found older settings do conversion, save, and return
          */
-        if (readSettings.getVersion() < 2) {
+        if (readSettings.getVersion() < 3) {
 
-            List<WebFilterRule> rlist = new LinkedList<WebFilterRule>();
-            List<WebFilterRuleCondition> clist = null;
-            WebFilterRule rule = null;
-            int ruleNumber = 1;
-
-            // convert V1 mime type rules to V2 web filter rules
-            if (readSettings.V1_getBlockedMimeTypes() != null) {
-
-                for (GenericRule org : readSettings.V1_getBlockedMimeTypes()) {
-                    // we don't care about rules that aren't doing anything
-                    if ((org.getBlocked() == false) && (org.getFlagged() == false)) continue;
-
-                    rule = new WebFilterRule();
-                    clist = new LinkedList<WebFilterRuleCondition>();
-                    rule.setDescription(org.getDescription());
-                    rule.setEnabled(true);
-                    rule.setBlocked(org.getBlocked() == null ? false : org.getBlocked());
-                    rule.setFlagged(org.getFlagged() == null ? false : org.getFlagged());
-                    rule.setRuleId(ruleNumber++);
-                    clist.add(new WebFilterRuleCondition(RuleCondition.ConditionType.WEB_FILTER_RESPONSE_CONTENT_TYPE, org.getString()));
-                    rule.setConditions(clist);
-                    rlist.add(rule);
-                    logger.debug("Converted mime type rule: " + rule.toString());
+            List<GenericRule> oldCategories = readSettings.getCategories();
+            initializeSettings(readSettings);
+            GenericRule newCat = null;
+            for (GenericRule oldCat : oldCategories){
+                try {
+                    newCat = readSettings.getCategory(categoryConversionMap.get(Integer.parseInt(oldCat.getString())));
+                    if(newCat != null){
+                        newCat.setEnabled(oldCat.getEnabled());
+                        newCat.setBlocked(oldCat.getBlocked());
+                        newCat.setFlagged(oldCat.getFlagged());
+                    }
+                } catch (Exception e){
+                    logger.warn("Unable to convert", e);
                 }
             }
 
-            // convert V1 file extension rules to V2 web filter rules
-            if (readSettings.V1_getBlockedExtensions() != null) {
-                if (rlist == null) rlist = new LinkedList<WebFilterRule>();
-
-                for (GenericRule org : readSettings.V1_getBlockedExtensions()) {
-                    // we don't care about rules that aren't doing anything
-                    if ((org.getBlocked() == false) && (org.getFlagged() == false)) continue;
-
-                    rule = new WebFilterRule();
-                    clist = new LinkedList<WebFilterRuleCondition>();
-                    rule.setDescription(org.getDescription());
-                    rule.setEnabled(true);
-                    rule.setBlocked(org.getBlocked() == null ? false : org.getBlocked());
-                    rule.setFlagged(org.getFlagged() == null ? false : org.getFlagged());
-                    rule.setRuleId(ruleNumber++);
-                    clist.add(new WebFilterRuleCondition(RuleCondition.ConditionType.WEB_FILTER_RESPONSE_FILE_EXTENSION, org.getString()));
-                    rule.setConditions(clist);
-                    rlist.add(rule);
-                    logger.debug("Converted file ext rule: " + rule.toString());
-                }
-            }
-            readSettings.setFilterRules(rlist);
-            readSettings.setVersion(2);
+            readSettings.setVersion(3);
             _setSettings(readSettings);
             logger.debug("Converted settings: " + this.settings.toJSONString());
-            return;
         }
 
         // existing settings loaded and no conversion was needed
@@ -776,7 +897,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
          */
         this.settings = newSettings;
         try {
-            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
+            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString());
         } catch (Exception e) {
         }
     }
@@ -788,8 +909,8 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      * 
      * @param categories
      *        The categories
-     * @param string
-     *        The string
+     * @param id
+     *        Category id from provider
      * @param name
      *        The name
      * @param category
@@ -804,14 +925,10 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        The flagged flag
      * @return The category
      */
-    private boolean addCategory(List<GenericRule> categories, String string, String name, String category, String description, boolean enabled, boolean blocked, boolean flagged)
+    private boolean addCategory(List<GenericRule> categories, Integer id, String name, String category, String description, boolean enabled, boolean blocked, boolean flagged)
     {
         if (categories == null) {
             logger.warn("Invalid arguments: categories is null");
-            return false;
-        }
-        if (string == null) {
-            logger.warn("Invalid arguments: string is null");
             return false;
         }
         if (name == null) {
@@ -820,14 +937,14 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
 
         for (GenericRule rule : categories) {
-            if (rule.getString().equals(string)) return false;
+            if (rule.getId().equals(id)) return false;
         }
 
         boolean newBlocked = blocked;
         boolean newFlagged = flagged;
 
-        logger.info("Adding Category: ( " + string + ", " + name + ", " + newBlocked + ", " + newFlagged + " )");
-        categories.add(new GenericRule(string, name, category, description, enabled, newBlocked, newFlagged));
+        logger.info("Adding Category: ( " + id + ", " + name + ", " + newBlocked + ", " + newFlagged + " )");
+        categories.add(new GenericRule(id, name, category, description, enabled, newBlocked, newFlagged));
         return true;
     }
 
@@ -842,154 +959,90 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     {
         boolean added = false;
 
-        added |= addCategory(categories, "200", "Abortion", null, "Web pages that discuss abortion from a historical, medical, legal, or other not overtly biased point of view.", true, false, false);
-        added |= addCategory(categories, "201", "Abortion - Pro Choice", null, "Web pages that push the pro-choice viewpoint or otherwise overtly encourage abortions.", true, false, false);
-        added |= addCategory(categories, "202", "Abortion - Pro Life", null, "Web pages that condemn abortion or otherwise overtly push a pro-life agenda.", true, false, false);
-        added |= addCategory(categories, "243", "Advocacy Groups & Trade Associations", null, "Web pages dedicated to industry trade groups, lobbyists, unions, special interest groups, professional organizations and other associations comprised of members with common goals.", true, false, false);
-        added |= addCategory(categories, "203", "Agriculture", null, "Web pages devoted to the science, art, and business of cultivating soil, producing crops, raising livestock, and products, services, tips, tricks, etc. related to farming.", true, false, false);
-        added |= addCategory(categories, "16", "Alcohol", null, "Web pages that promote, advocate or sell alcohol including beer, wine and hard liquor.", true, false, false);
-        added |= addCategory(categories, "12", "Anonymizer", null, "Web pages that promote proxies and anonymizers for surfing websites with the intent of circumventing filters.", true, true, true);
-        added |= addCategory(categories, "204", "Architecture & Construction", null, "Web pages which involve construction, contractors, structural design, architecture and all businesses or services related to the design, building or engineering of structures and environments.", true, false, false);
-        added |= addCategory(categories, "205", "Arts", null, "Web pages related to the development or display of the visual arts.", true, false, false);
-        added |= addCategory(categories, "206", "Astrology & Horoscopes", null, "Web pages related to astrology, horoscopes, divination according to the stars, or the zodiac.", true, false, false);
-        added |= addCategory(categories, "207", "Atheism & Agnosticism", null, "Web pages that pursue an anti-religion agenda or that challenge religious, spiritual, metaphysical, or supernatural beliefs.", true, false, false);
-        added |= addCategory(categories, "208", "Auctions & Marketplaces", null, "Web pages devoted to person to person selling or trading of goods and services through classifieds, online auctions, or other means not including \"traditional\" online business-to-consumer models.", true, false, false);
-        added |= addCategory(categories, "209", "Banking", null, "Web pages operated by or all about banks and credit unions, particularly online banking web applications, but excludes online brokerages.", true, false, false);
-        added |= addCategory(categories, "210", "Biotechnology", null, "Web pages which include genetics research, biotechnology firms and research institutions.", true, false, false);
-        added |= addCategory(categories, "211", "Botnet", null, "Web pages or compromised web servers running software that is used by hackers to send spam, phishing attacks and denial of service attacks.", true, true, true);
-        added |= addCategory(categories, "212", "Businesses & Services (General)", null, "Web pages that include Businesses and Services, generally used unless there is a more specific category that better describes the actual business or service.", true, false, false);
-        added |= addCategory(categories, "213", "Cartoons, Anime & Comic Books", null, "Web pages dedicated to animated TV shows and movies or to comic books and graphic novels.", true, false, false);
-        added |= addCategory(categories, "214", "Catalogs", null, "Web pages that have product listings and catalogs but do not have an online shopping option.", true, false, false);
-        added |= addCategory(categories, "216", "Chat", null, "Web pages with real-time chat rooms and messaging allowing strangers and friends to chat in groups both in public and private chats.", true, false, false);
-        added |= addCategory(categories, "217", "Child Abuse Images", null, "Web pages that show the physical or sexual abuse / exploitation of children.", true, true, true);
-        added |= addCategory(categories, "297", "Child Inappropriate", null, "Includes tasteless content and material such as web pages that show cruelty (e.g. to animals), bathroom humor, tasteless material or other material potentially inappropriate for children.", true, false, false);
-        added |= addCategory(categories, "218", "Command and Control Centers", null, "Internet servers used to send commands to infected machines called \"bots.\"", true, true, true);
-        added |= addCategory(categories, "306", "Community Forums", null, "Web pages dedicated to forums, newsgroups, email archives, bulletin boards, and other community-driven content.", true, false, false);
-        added |= addCategory(categories, "1", "Compromised", null, "Web pages that have been compromised by someone other than the site owner, which appear to be legitimate, but house malicious code.", true, true, true);
-        added |= addCategory(categories, "219", "Content Servers", null, "Web servers without any navigable web pages typically used to host images and other media files with the purpose of improving web page performance and site scalability.", true, false, false);
-        added |= addCategory(categories, "220", "Contests & Surveys", null, "Web pages devoted to online sweepstakes, contests, giveaways and raffles typically designed to obtain consumer information and demographics, but also used as part of various marketing efforts.", true, false, false);
-        added |= addCategory(categories, "222", "Coupons", null, "Web pages dedicated to listing promotional codes, coupons, etc., either for printing for retail use or codes for online shopping.", true, false, false);
-        added |= addCategory(categories, "223", "Criminal Skills", null, "Web pages providing information on how to perpetrate illegal activities such as burglary, murder, bomb-making, lock picking, etc.", true, false, false);
-        added |= addCategory(categories, "23", "Dating", null, "Web pages that promote relationships such as dating and marriage.", true, false, false);
-        added |= addCategory(categories, "225", "Educational Institutions", null, "Web pages for schools with an online presence including Universities, private and public schools and other real-world places of learning.", true, false, false);
-        added |= addCategory(categories, "226", "Educational Materials & Studies", null, "Web pages with academic publications, journals, published research findings, curriculum, online learning courses and materials or study guides.", true, false, false);
-        added |= addCategory(categories, "227", "Entertainment News & Celebrity Sites", null, "Web pages including news and gossip about celebrities, television shows, movies and show business in general.", true, false, false);
-        added |= addCategory(categories, "228", "Entertainment Venues & Events", null, "Web pages devoted to venues used for entertainment including comedy clubs, night clubs, discos, festivals, theaters, playhouses, etc.", true, false, false);
-        added |= addCategory(categories, "229", "Fashion & Beauty", null, "Web pages devoted to fashion and beauty information and tips. Includes web pages that market products or services related to fashion including clothing, jewelry, cosmetics and perfume.", true, false, false);
-        added |= addCategory(categories, "230", "File Repositories", null, "Web pages including collections of shareware, freeware, open source, and other software downloads.", true, false, false);
-        added |= addCategory(categories, "233", "Finance (General)", null, "Includes web pages that discuss economics, investing strategies, money management, retirement planning and tax planning.", true, false, false);
-        added |= addCategory(categories, "231", "Fitness & Recreation", null, "Web pages with tips and information on fitness or recreational activities.", true, false, false);
-        added |= addCategory(categories, "310", "Food & Restaurants", null, "Web pages related to food from restaurants and dining, to cooking and recipes.", true, false, false);
-        added |= addCategory(categories, "20", "Gambling", null, "Web pages which promote gambling, lotteries, casinos and betting agencies involving chance.", true, false, false);
-        added |= addCategory(categories, "21", "Games", null, "Web pages consisting of computer games, game producers and online gaming.", true, false, false);
-        added |= addCategory(categories, "232", "Gay, Lesbian or Bisexual", null, "Web pages that cater to or discuss the gay, lesbian, bisexual or transgender lifestyle.", true, false, false);
-        added |= addCategory(categories, "235", "Government Sponsored", null, "Web pages devoted to Government organizations, departments, or agencies. Includes police, fire (when employed by a city), elections commissions, elected representatives, government sponsored programs and research.", true, false, false);
-        added |= addCategory(categories, "237", "Hacking", null, "Web pages with information or tools specifically intended to assist in online crime such as the unauthorized access to computers, but also pages with tools and information that enables fraud and other online crime.", true, false, false);
-        added |= addCategory(categories, "3", "Hate Speech", null, "Web pages that promote extreme right/left wing groups, sexism, racism, religious hate and other discrimination.", true, false, false);
-        added |= addCategory(categories, "238", "Health & Medical", null, "Web pages dedicated to personal health, medical services, medical equipment, procedures, mental health, finding and researching doctors, hospitals and clinics.", true, false, false);
-        added |= addCategory(categories, "239", "Hobbies & Leisure", null, "Web pages which include tips and information about crafts, and hobbies such as sewing, stamp collecting, model airplane building, etc.", true, false, false);
-        added |= addCategory(categories, "241", "Home & Office Furnishings", null, "Web pages that include furniture makers, retail furniture outlets, desks, couches, chairs, cabinets, etc.", true, false, false);
-        added |= addCategory(categories, "240", "Home, Garden & Family", null, "Web pages which cover activities in the home and pertaining to the family. Includes tips and information about parenting, interior decorating , gardening, cleaning, family and entertaining.", true, false, false);
-        added |= addCategory(categories, "37", "Humor", null, "Web pages which include comics, jokes and other humorous content.", true, false, false);
-        added |= addCategory(categories, "4", "Illegal Drugs", null, "Web pages that promote the use or information of common illegal drugs and the misuse of prescription drugs and compounds.", true, false, false);
-        added |= addCategory(categories, "305", "Image Search", null, "Web pages and internet search engines used to search pictures and photos found across the Internet where the returned results include thumbnails of the found images.", true, false, false);
-        added |= addCategory(categories, "244", "Information Security", null, "Web pages and companies that provide computer and network security services, hardware, software or information.", true, false, false);
-        added |= addCategory(categories, "245", "Instant Messenger", null, "Instant messaging software and web pages that typically involve staying in touch with a list of \"buddies\" via messaging services.", true, false, false);
-        added |= addCategory(categories, "246", "Insurance", null, "Web pages the cover any type of insurance, insurance company, or government insurance program from Medicare to car insurance to life insurance.", true, false, false);
-        added |= addCategory(categories, "247", "Internet Phone & VOIP", null, "Web pages that allow users to make calls via the web or to download software that allows users to make calls over the Internet.", true, false, false);
-        added |= addCategory(categories, "51", "Job Search", null, "Web pages devoted to job searches or agencies, career planning and human resources.", true, false, false);
-        added |= addCategory(categories, "248", "Kid's Pages", null, "Web pages specifically intended for young children (under 10) including entertainment, games, and recreational pages built with young children in mind.", true, false, false);
-        added |= addCategory(categories, "311", "Legislation, Politics & Law", null, "Web pages covering legislation, the legislative process, politics, political parties, elections, elected officials and opinions on these topics.", true, false, false);
-        added |= addCategory(categories, "249", "Lingerie, Suggestive & Pinup", null, "Web pages that refer specifically to photos and videos where the person who is the subject of the photo is wearing sexually provocative clothing such as lingerie.", true, false, false);
-        added |= addCategory(categories, "250", "Literature & Books", null, "Web pages for published writings including fiction and non-fiction novels, poems and biographies.", true, false, false);
-        added |= addCategory(categories, "251", "Login Screens", null, "Web pages which are used to login to a wide variety of services where the actual service is not known, but could be any of several categories (e.g. Yahoo and Google login pages).", true, false, false);
-        added |= addCategory(categories, "252", "Malware Call-Home", null, "Web pages identified as spyware which report information back to a particular URL.", true, true, true);
-        added |= addCategory(categories, "253", "Malware Distribution Point", null, "Web pages that host viruses, exploits, and other malware.", true, true, true);
-        added |= addCategory(categories, "254", "Manufacturing", null, "Web pages devoted to businesses involved in manufacturing and industrial production.", true, false, false);
-        added |= addCategory(categories, "255", "Marijuana", null, "Web pages about the plant or about smoking the marijuana plant. Includes web pages on legalizing marijuana and using marijuana for medicinal purposes, marijuana facts and info pages.", true, false, false);
-        added |= addCategory(categories, "308", "Marketing Services", null, "Web pages dedicated to advertising agencies and other marketing services that don't include online banner ads.", true, false, false);
-        added |= addCategory(categories, "30", "Military", null, "Web pages sponsored by the armed forces and government controlled agencies.", true, false, false);
-        added |= addCategory(categories, "54", "Miscellaneous", null, "Web pages that do not clearly fall into any other category.", true, false, false);
-        added |= addCategory(categories, "256", "Mobile Phones", null, "Web pages which contain content for Mobile phone manufacturers and mobile phone companies' websites. Also includes sites that sell mobile phones and accessories.", true, false, false);
-        added |= addCategory(categories, "309", "Motorized Vehicles", null, "Web pages which contain information about motorized vehicles including selling, promotion, or discussion. Includes motorized vehicle manufacturers and sites dedicated to the buying and selling of those vehicles.", true, false, false);
-        added |= addCategory(categories, "38", "Music", null, "Web pages that include internet radio and streaming media, musicians, bands, MP3 and media downloads.", true, false, false);
-        added |= addCategory(categories, "236", "Nature & Conservation", null, "Web pages with information on environmental issues, sustainable living, ecology, nature and the environment.", true, false, false);
-        added |= addCategory(categories, "39", "News", null, "Web pages with general news information such as newspapers and magazines.", true, false, false);
-        added |= addCategory(categories, "257", "No Content Found", null, "Web pages which contain no discernable content which can be used for classification purposes.", true, false, false);
-        added |= addCategory(categories, "258", "Non-traditional Religion & Occult", null, "Web pages for religions outside of the mainstream or not in the top ten religions practiced in the world. Also includes occult and supernatural, extraterrestrial, folk religions, mysticism, cults and sects.", true, false, false);
-        added |= addCategory(categories, "7", "Nudity", null, "Web pages that display full or partial nudity with no sexual references or intent.", true, false, false);
-        added |= addCategory(categories, "259", "Nutrition & Diet", null, "Web pages on losing weight and eating healthy, diet plans, weight loss programs and food allergies.", true, false, false);
-        added |= addCategory(categories, "49", "Online Ads", null, "Companies, web pages, and sites responsible for hosting online advertisements including advertising graphics, banners, and pop-up content. Also includes web pages that host source code for dynamically generated ads and pop-ups.", true, false, false);
-        added |= addCategory(categories, "260", "Online Financial Tools & Quotes", null, "Web pages for investment quotes, online portfolio tracking, financial calculation tools such as mortgage calculators, online tax preparation software, online bill payment and online budget tracking software.", true, false, false);
-        added |= addCategory(categories, "261", "Online Information Management", null, "Web pages devoted to online personal information managers such as web applications that manage to-do lists, calendars, address books, etc.", true, false, false);
-        added |= addCategory(categories, "262", "Online Shopping", null, "Websites and web pages that provide a means to purchase online.", true, false, false);
-        added |= addCategory(categories, "263", "Online Stock Trading", null, "Investment brokerage web pages that allow online trading of stocks, mutual funds and other securities.", true, false, false);
-        added |= addCategory(categories, "99", "Parked", null, "Web pages that have been purchased to reserve the name but do not have any real content.", true, false, false);
-        added |= addCategory(categories, "264", "Parks, Rec Facilities & Gyms", null, "Web pages which include parks and other areas designated for recreational activities such as swimming, skateboarding, rock climbing, as well as for non-professional sports such as community athletic fields.", true, false, false);
-        added |= addCategory(categories, "265", "Pay To Surf", null, "Web sites that offer cash to users who install their software which displays ads and tracks browsing habits effectively allowing users to be paid while surfing the web.", true, false, false);
-        added |= addCategory(categories, "266", "Peer-to-Peer", null, "Web pages that provide peer-to-peer (P2P) file sharing software.", true, false, false);
-        added |= addCategory(categories, "312", "Personal Pages & Blogs", null, "Web pages including blogs, or a format for individuals to share news, opinions, and information about themselves. Also includes personal web pages about an individual or that individual's family.", true, false, false);
-        added |= addCategory(categories, "267", "Personal Storage", null, "Web sites used for remote storage of files, sharing of large files, and remote Internet backups.", true, false, false);
-        added |= addCategory(categories, "268", "Pets & Animals", null, "Web pages with information or products and services for pets and other animals including birds, fish, and insects.", true, false, false);
-        added |= addCategory(categories, "18", "Pharmacy", null, "Web pages which include prescribed medications and information about approved drugs and their medical use.", true, false, false);
-        added |= addCategory(categories, "269", "Philanthropic Organizations", null, "Web pages with information regarding charities and other non-profit philanthropic organizations and foundations dedicated to altruistic activities.", true, false, false);
-        added |= addCategory(categories, "5", "Phishing/Fraud", null, "Manipulated web pages and emails used for fraudulent purposes, also known as phishing.", true, true, true);
-        added |= addCategory(categories, "270", "Photo Sharing", null, "Web pages that host digital photographs or allow users to upload, search, and exchange photos and images online.", true, false, false);
-        added |= addCategory(categories, "273", "Physical Security", null, "Web pages devoted to businesses and services related to security products or other security aspects excluding computer security.", true, false, false);
-        added |= addCategory(categories, "271", "Piracy & Copyright Theft", null, "Web pages that provide access to illegally obtained files such as pirated software (aka warez), pirated movies, pirated music, etc.", true, false, false);
-        added |= addCategory(categories, "272", "Pornography", null, "Web pages which contain images or videos depicting sexual acts, sexual arousal, or explicit nude imagery intended to be sexual in nature.", true, true, true);
-        added |= addCategory(categories, "47", "Portal Sites", null, "General web pages with customized personal portals, including white/yellow pages.", true, false, false);
-        added |= addCategory(categories, "274", "Private IP Address", null, "Web pages for Private IP addresses are those reserved for use internally in corporations or homes.", true, false, false);
-        added |= addCategory(categories, "275", "Product Reviews & Price Comparisons", null, "Web pages dedicated to helping consumers comparison shop or choose products or stores, but don't offer online purchasing options.", true, false, false);
-        added |= addCategory(categories, "276", "Profanity", null, "Web pages that use either frequent profanity or serious profanity.", true, false, false);
-        added |= addCategory(categories, "277", "Professional Networking", null, "Social networking web pages intended for professionals and business relationship building.", true, false, false);
-        added |= addCategory(categories, "278", "R-Rated", null, "Web pages whose primary purpose and majority of content is child appropriate, but who have regular or irregular sections of the site with sexually themed, non-educational material.", true, false, false);
-        added |= addCategory(categories, "52", "Real Estate", null, "Web pages possessing information about renting, purchasing, selling or financing real estate including homes, apartments, office space, etc.", true, false, false);
-        added |= addCategory(categories, "279", "Redirect", null, "Web pages that redirect to other pages on other web sites.", true, false, false);
-        added |= addCategory(categories, "280", "Reference Materials & Maps", null, "Web pages which contain reference materials and are specific to data compilations and reference shelf material such as atlases, dictionaries, encyclopedias, census and other reference data.", true, false, false);
-        added |= addCategory(categories, "281", "Religions", null, "Web pages which cover main-stream popular religions world-wide as well as general religion topics and theology.", true, false, false);
-        added |= addCategory(categories, "307", "Remote Access", null, "Web pages that provide remote access to private computers or networks, internal network file shares, and internal web applications.", true, false, false);
-        added |= addCategory(categories, "282", "Retirement Homes & Assisted Living", null, "Web pages containing information on retirement homes and communities including nursing care and hospice care.", true, false, false);
-        added |= addCategory(categories, "283", "School Cheating", null, "Web pages that contain test answers, pre-written term papers and essays, full math problem solvers that show the work and similar web sites that can be used to cheat on homework and tests.", true, false, false);
-        added |= addCategory(categories, "48", "Search Engines", null, "Web pages supporting the searching of web, newsgroups, pictures, directories, and other online content.", true, false, false);
-        added |= addCategory(categories, "284", "Self-help & Addiction", null, "Web pages which include sites with information and help on gambling, drug, and alcohol addiction as well as sites helping with eating disorders such as anorexia, bulimia, and over-eating.", true, false, false);
-        added |= addCategory(categories, "285", "Sex & Erotic", null, "Web pages with sexual content or products or services related to sex, but without nudity or other explicit pictures on the page.", true, true, true);
-        added |= addCategory(categories, "286", "Sex Education & Pregnancy", null, "Web pages with educational materials and clinical explanations of sex, safe sex, birth control, pregnancy, and similar topics aimed at teens and children.", true, false, false);
-        added |= addCategory(categories, "287", "Shipping & Logistics", null, "Web pages that promote management of inventory including transportation, warehousing, distribution, storage, order fulfillment and shipping.", true, false, false);
-        added |= addCategory(categories, "288", "Social and Affiliation Organizations", null, "Web pages built around communities of people where users \"connect\" to other users.", true, false, false);
-        added |= addCategory(categories, "45", "Social Networking", null, "Social networking web pages and online communities built around communities of people where users \"connect\" to other users.", true, false, false);
-        added |= addCategory(categories, "289", "Software, Hardware & Electronics", null, "Web pages with information about or makers of computer equipment, computer software, hardware, peripherals, data networks, computer services and electronics.", true, false, false);
-        added |= addCategory(categories, "53", "Spam", null, "Products and web pages promoted through spam techniques.", true, false, false);
-        added |= addCategory(categories, "313", "Sport Fighting", null, "Web pages dedicated to training and contests involving fighting disciplines and multi-person combat sports such as martial arts, boxing, wrestling, and fencing.", true, false, false);
-        added |= addCategory(categories, "290", "Sport Hunting", null, "Web pages covering recreational hunting of live animals.", true, false, false);
-        added |= addCategory(categories, "291", "Sports", null, "Web pages covering competitive sports in which multiple people or teams compete in both athletic (e.g. football) and non-athletic competitions (e.g. billiards).", true, false, false);
-        added |= addCategory(categories, "292", "Spyware & Questionable Software", null, "Web pages containing software that reports information back to a central server such as spyware or keystroke loggers.", true, true, true);
-        added |= addCategory(categories, "293", "Streaming & Downloadable Audio", null, "Web pages with repositories of music or that provide streaming music or other audio files that may pose a bandwidth risk to companies.", true, false, false);
-        added |= addCategory(categories, "294", "Streaming & Downloadable Video", null, "Web pages with repositories of videos or that provide in-browser streaming videos that may pose a bandwidth risk to companies.", true, false, false);
-        added |= addCategory(categories, "295", "Supplements & Compounds", null, "Web pages containing information on vitamins and other over-the-counter unregulated supplements and compounds.", true, false, false);
-        added |= addCategory(categories, "296", "Swimsuits", null, "Web pages containing pictures of people wearing swimsuits. Does not include pictures of swimsuits on manikins or by themselves.", true, false, false);
-        added |= addCategory(categories, "234", "Technology (General)", null, "Web pages which include web design, internet standards (such as RFCs), protocol specifications, and other broad technology discussions or news.", true, false, false);
-        added |= addCategory(categories, "298", "Television & Movies", null, "Web pages about television shows and movies including reviews, show times, plot summaries, discussions, teasers, marketing sites, etc.", true, false, false);
-        added |= addCategory(categories, "316", "Text Messaging & SMS", null, "Web pages used to send or receive simple message service (SMS) text messages between a web page and a mobile phone.", true, false, false);
-        added |= addCategory(categories, "19", "Tobacco", null, "Web pages promoting the use of tobacco related products (cigarettes, cigars, pipes).", true, false, false);
-        added |= addCategory(categories, "299", "Torrent Repository", null, "Web pages that host repositories of torrent files, which are the instruction file for allowing a bit torrent client to download large files from peers.", true, false, false);
-        added |= addCategory(categories, "300", "Toys", null, "Web pages dedicated to manufacturers of toys, including toy selling or marketing sites.", true, false, false);
-        added |= addCategory(categories, "15", "Translator", null, "Web pages which translate languages from one to another.", true, false, false);
-        added |= addCategory(categories, "28", "Travel", null, "Web pages which provide travel and tourism information, online booking or travel services such as airlines, car rentals, and hotels.", true, false, false);
-        added |= addCategory(categories, "301", "Unreachable", null, "Web pages that give an error such as, \"Network Timeout\", \"The server at example.com is taking too long to respond,\" or \"Address Not Found\".", true, false, false);
-        added |= addCategory(categories, "10", "Violence", null, "Web pages that promote questionable activities such as violence and militancy.", true, false, false);
-        added |= addCategory(categories, "11", "Weapons", null, "Web pages that include guns and weapons when not used in a violent manner.", true, false, false);
-        added |= addCategory(categories, "302", "Web Hosting, ISP & Telco", null, "Web pages for web hosting and blog hosting sites, Internet Service Providers (ISPs) and telecommunications (phone) companies.", true, false, false);
-        added |= addCategory(categories, "46", "Web-based Email", null, "Web pages which enable users to send and/or receive email through a web accessible email account.", true, false, false);
-        added |= addCategory(categories, "303", "Web-based Greeting Cards", null, "Web pages that allow users to send or receive online greeting cards.", true, false, false);
-        added |= addCategory(categories, "304", "Wikis", null, "Web pages or websites in which a community maintains a set of informational documents where anyone in the community can update the content.", true, false, false);
-
+        added |= addCategory(categories, 0, "Uncategorized", "Misc", "Sites that have not been categornized", true, false, false);
+        added |= addCategory(categories, 1, "Real Estate", "Productivity", "Information on renting, buying, or selling real estate or properties.  Tips on buying or selling a home.  Real estate agents, rental or relocation services, and property improvement.", true, false, false);
+        added |= addCategory(categories, 2, "Computer and Internet Security", "Productivity", "Computer/Internet security, security discussion groups.", true, false, false);
+        added |= addCategory(categories, 3, "Financial Services", "Privacy", "Banking services and other types of financial information, such as loans, accountancy, actuaries, banks, mortgages, and general insurance companies. Does not include sites that offer market information, brokerage or trading services.", true, false, false);
+        added |= addCategory(categories, 4, "Business and Economy", "Productivity", "Business firms, corporate websites , business information, economics, marketing, management, and entrepreneurship.", true, false, false);
+        added |= addCategory(categories, 5, "Computer and Internet Info", "Productivity", "General computer and Internet sites, technical information. SaaS sites and other URLs that deliver internet services.", true, false, false);
+        added |= addCategory(categories, 6, "Auctions", "Productivity", "Sites that support the offering and purchasing of goods between individuals as their main purpose. Does not include classified advertisements.", true, false, false);
+        added |= addCategory(categories, 7, "Shopping", "Productivity", "Department stores, retail stores, company catalogs and other sites that allow online consumer or business shopping and the purchase of goods and services.", true, false, false);
+        added |= addCategory(categories, 8, "Cult and Occult", "Sensitive", "Methods, means of instruction, or other resources to interpret, affect or influence real events through the use of astrology, spells, curses, magic powers, satanic or supernatural beings. Includes horoscope sites.", true, false, false);
+        added |= addCategory(categories, 9, "Travel", "Productivity", "Airlines and flight booking agencies. Travel planning, reservations, vehicle rentals, descriptions of travel destinations, or promotions for hotels or casinos. Car rentals.", true, false, false);
+        added |= addCategory(categories, 10, "Abused Drugs", "Sensitive", "Discussion or remedies for illegal, illicit, or abused drugs such as heroin, cocaine, or other street drugs. Information on 'legal highs' : glue sniffing, misuse of prescription drugs or abuse of other legal substances.", true, false, false);
+        added |= addCategory(categories, 11, "Adult and Pornography", "Sensitive", "Sexually explicit material for the purpose of arousing a sexual or prurient interest. Adult products including sex toys, CD-ROMs, and videos. Online groups, including newsgroups and forums, that are sexually explicit in nature. Erotic stories and textual descriptions of sexual acts. Adult services including videoconferencing, escort services, and strip clubs. Sexually explicit art.", true, true, true);
+        added |= addCategory(categories, 12, "Home and Garden", "Productivity", "Home issues and products, including maintenance, home safety, decor, cooking, gardening, home electronics, design, etc.", true, false, false);
+        added |= addCategory(categories, 13, "Military", "Productivity", "Information on military branches, armed services, and military history.", true, false, false);
+        added |= addCategory(categories, 14, "Social Networking", "Productivity", "These are social networking sites that have user communities where users interact, post messages, pictures, and otherwise communicate. These sites were formerly part of Personal Sites and Blogs but have been removed to this new category to provide differentiation and more granular policy.", true, false, false);
+        added |= addCategory(categories, 15, "Dead Sites", "Misc", "These are dead sites that do not respond to http queries. Policy engines should usually treat these as 'Uncategorized' sites.", true, false, false);
+        added |= addCategory(categories, 16, "Individual Stock Advice and Tools", "Productivity", "Promotion and facilitation of securities trading and management of investment assets. Also includes information on financial investment strategies, quotes, and news.", true, false, false);
+        added |= addCategory(categories, 17, "Training and Tools", "Productivity", "Distance education and trade schools, online courses, vocational training, software training, skills training.", true, false, false);
+        added |= addCategory(categories, 18, "Dating", "Sensitive", "Dating websites focused on establishing personal relationships.", true, false, false);
+        added |= addCategory(categories, 19, "Sex Education", "Sensitive", "Information on reproduction, sexual development, safe sex practices, sexually transmitted diseases, sexuality, birth control, sexual development, tips for better sex as well as products used for sexual enhancement, and contraceptives.", true, false, false);
+        added |= addCategory(categories, 20, "Religion", "Sensitive", "Conventional or unconventional religious or quasi-religious subjects, as well as churches, synagogues, or other houses of worship.", true, false, false);
+        added |= addCategory(categories, 21, "Entertainment and Arts", "Productivity", "Motion pictures, videos, television, music and programming guides, books, comics, movie theatres, galleries, artists or reviews on entertainment. Performing arts (theatre, vaudeville, opera, symphonies, etc.). Museums, galleries, artist sites (sculpture, photography, etc.).", true, false, false);
+        added |= addCategory(categories, 22, "Personal sites and Blogs", "Productivity", "Personal websites posted by individuals or groups, as well as blogs.", true, false, false);
+        added |= addCategory(categories, 23, "Legal", "Privacy", "Legal websites, law firms, discussions and analysis of legal issues.", true, false, false);
+        added |= addCategory(categories, 24, "Local Information", "Productivity", "City guides and tourist information, including restaurants, area/regional information, and local points of interest.", true, false, false);
+        added |= addCategory(categories, 25, "Streaming Media", "IT Resources", "Sales, delivery, or streaming of audio or video content, including sites that provide downloads for such viewers.", true, false, false);
+        added |= addCategory(categories, 26, "Job Search", "Productivity", "Assistance in finding employment, and tools for locating prospective employers, or employers looking for employees.", true, false, false);
+        added |= addCategory(categories, 27, "Gambling", "Sensitive", "Gambling or lottery web sites that invite the use of real or virtual money. Information or advice for placing wagers, participating in lotteries, gambling, or running numbers. Virtual casinos and offshore gambling ventures. Sports picks and betting pools. Virtual sports and fantasy leagues that offer large rewards or request significant wagers. Hotel and Resort sites that do not enable gambling on the site are categorized in Travel or Local Information.", true, false, false);
+        added |= addCategory(categories, 28, "Translation", "Sensitive", "URL and language translation sites that allow users to see URL pages in other languages. These sites can also allow users to circumvent filtering as the target page's content is presented within the context of the translator's URL. These sites were formerly part of Proxy Avoidance and Anonymizers, but have been removed to this new category to provide differentiation and more granular policy.", true, false, false);
+        added |= addCategory(categories, 29, "Reference and Research", "Productivity", "Personal, professional, or educational reference material, including online dictionaries, maps, census, almanacs, library catalogues, genealogy, and scientific information.", true, false, false);
+        added |= addCategory(categories, 30, "Shareware and Freeware", "IT Resources", "Software, screensavers, icons, wallpapers, utilities, ringtones. Includes downloads that request a donation, and open source projects.", true, false, false);
+        added |= addCategory(categories, 31, "Peer to Peer", "IT Resources", "Peer to peer clients and access. Includes torrents, music download programs.", true, false, false);
+        added |= addCategory(categories, 32, "Marijuana", "Sensitive", "Marijuana use, cultivation, history, culture, legal issues.", true, false, false);
+        added |= addCategory(categories, 33, "Hacking", "Sensitive", "Illegal or questionable access to or the use of communications equipment/software. Development and distribution of programs that may allow compromise of networks and systems. Avoidance of licensing and fees for computer programs and other systems.", true, false, false);
+        added |= addCategory(categories, 34, "Games", "Productivity", "Game playing or downloading, video games, computer games, electronic games, tips, and advice on games or how to obtain cheat codes. Also includes sites dedicated to selling board games as well as journals and magazines dedicated to game playing. Includes sites that support or host online sweepstakes and giveaways. Includes fantasy sports sites that also host games or game-playing.", true, false, false);
+        added |= addCategory(categories, 35, "Philosophy and Political Advocacy", "Productivity", "Politics, philosophy, discussions, promotion of a particular viewpoint or stance in order to further a cause.", true, false, false);
+        added |= addCategory(categories, 36, "Weapons", "Sensitive", "Sales, reviews, or descriptions of weapons such as guns, knives or martial arts devices, or provide information on their use, accessories, or other modifications.", true, false, false);
+        added |= addCategory(categories, 37, "Pay to Surf", "Productivity", "Sites that pay users in the form of cash or prizes, for clicking on or reading specific links, email, or web pages.", true, false, false);
+        added |= addCategory(categories, 38, "Hunting and Fishing", "Productivity", "Sport hunting, gun clubs, and fishing.", true, false, false);
+        added |= addCategory(categories, 39, "Society", "Productivity", "A variety of topics, groups, and associations relevant to the general populace, broad issues that impact a variety of people, including safety, children, societies, and philanthropic groups.", true, false, false);
+        added |= addCategory(categories, 40, "Educational Institutions", "Productivity", "Pre-school, elementary, secondary, high school, college, university, and vocational school and other educational content and information,including enrollment, tuition, and syllabus.", true, false, false);
+        added |= addCategory(categories, 41, "Online Greeting Cards", "IT Resources", "Online Greeting card sites.", true, false, false);
+        added |= addCategory(categories, 42, "Sports", "Productivity", "Team or conference web sites, international, national, college, professional scores and schedules; sports-related online magazines or newsletters, fantasy sports and virtual sports leagues.", true, false, false);
+        added |= addCategory(categories, 43, "Swimsuits and Intimate Apparel", "Sensitive", "Swimsuits, intimate apparel or other types of suggestive clothing.", true, false, false);
+        added |= addCategory(categories, 44, "Questionable", "Sensitive", "Tasteless humor, 'get rich quick' sites, and sites that manipulate the browser user experience or client in some unusual, unexpected, or suspicious manner.", true, true, true);
+        added |= addCategory(categories, 45, "Kids", "Productivity", "Sites designed specifically for children and teenagers.", true, false, false);
+        added |= addCategory(categories, 46, "Hate and Racism", "Sensitive", "Sites that contain content and language in support of hate crimes and racism such as Nazi, neo-Nazi, Ku Klux Klan, etc.", true, false, false);
+        added |= addCategory(categories, 47, "Personal Storage", "IT Resources", "Online storage and posting of files, music, pictures, and other data.", true, false, false);
+        added |= addCategory(categories, 48, "Violence", "Sensitive", "Sites that advocate violence, depictions, and methods, including game/comic violence and suicide.", true, false, false);
+        added |= addCategory(categories, 49, "Keyloggers and Monitoring", "Security", "Downloads and discussion of software agents that track a user's keystrokes or monitor their web surfing habits.", true, true, true);
+        added |= addCategory(categories, 50, "Search Engines", "Productivity", "Search interfaces using key words or phrases. Returned results may include text, websites, images, videos, and files.", true, false, false);
+        added |= addCategory(categories, 51, "Internet Portals", "Productivity", "Web sites that aggregate a broader set of Internet content and topics, and which typically serve as the starting point for an end user.", true, false, false);
+        added |= addCategory(categories, 52, "Web Advertisements", "IT Resources", "Advertisements, media, content, and banners.", true, false, false);
+        added |= addCategory(categories, 53, "Cheating", "Sensitive", "Sites that support cheating and contain such materials, including free essays, exam copies, plagiarism, etc.", true, false, false);
+        added |= addCategory(categories, 54, "Gross", "Sensitive", "Vomit and other bodily functions, bloody clothing, etc.", true, false, false);
+        added |= addCategory(categories, 55, "Web-based Email", "Privacy", "Sites offering web based email and email clients.", true, false, false);
+        added |= addCategory(categories, 56, "Malware Sites", "Security", "Malicious content including executables, drive-by infection sites, malicious scripts, viruses, trojans, and code.", true, true, true);
+        added |= addCategory(categories, 57, "Phishing and Other Frauds", "Security", "Phishing, pharming, and other sites that pose as a reputable site, usually to harvest personal information from a user. These sites are typically quite short-lived, so examples don?t last long. Please contact us if you need fresh data.", true, true, true);
+        added |= addCategory(categories, 58, "Proxy Avoidance and Anonymizers", "Security", " Proxy servers and other methods to gain access to URLs in any way that bypasses URL filtering or monitoring. Web-based translation sites that circumvent filtering.", true, true, true);
+        added |= addCategory(categories, 59, "Spyware and Adware", "Security", "Spyware or Adware sites that provide or promote information gathering or tracking that is unknown to, or without the explicit consent of, the end user or the organization, also unsolicited advertising popups and programs that may be installed on a user's computer.", true, true, true);
+        added |= addCategory(categories, 60, "Music", "Productivity", "Music sales, distribution, streaming, information on musical groups and performances, lyrics, and the music business.", true, false, false);
+        added |= addCategory(categories, 61, "Government", "Privacy", "Information on government, government agencies and government services such as taxation, public, and emergency services. Also includes sites that discuss or explain laws of various governmental entities. Includes local, county, state, and national government sites.", true, false, false);
+        added |= addCategory(categories, 62, "Nudity", "Sensitive", "Nude or seminude depictions of the human body. These depictions are not necessarily sexual in intent or effect, but may include sites containing nude paintings or photo galleries of artistic nature. This category also includes nudist or naturist sites that contain pictures of nude individuals.", true, false, false);
+        added |= addCategory(categories, 63, "News and Media", "Productivity", "Current events or contemporary issues of the day. Also includes radio stations and magazines, newspapers online, headline news sites, newswire services, personalized news services, and weather sites", true, false, false);
+        added |= addCategory(categories, 64, "Illegal", "Sensitive", "Criminal activity, how not to get caught, copyright and intellectual property violations, etc.", true, false, false);
+        added |= addCategory(categories, 65, "Content Delivery Networks", "IT Resources", "Delivery of content and data for third parties, including ads, media, files, images, and video.", true, false, false);
+        added |= addCategory(categories, 66, "Internet Communications", "IT Resources", "Internet telephony, messaging, VoIP services and related businesses.", true, false, false);
+        added |= addCategory(categories, 67, "Bot Nets", "Security", "These are URLs, typically IP addresses, which are determined to be part of a Bot network, from which network attacks are launched. Attacks may include SPAM messages, DOS, SQL injections, proxy jacking, and other unsolicited contacts.", true, true, true);
+        added |= addCategory(categories, 68, "Abortion", "Sensitive", "Abortion topics, either pro-life or pro-choice.", true, false, false);
+        added |= addCategory(categories, 69, "Health and Medicine", "Privacy", "General health, fitness, well-being, including traditional and non-traditional methods and topics. Medical information on ailments, various conditions, dentistry, psychiatry, optometry, and other specialties. Hospitals and doctor offices. Medical insurance. Cosmetic surgery.", true, false, false);
+        added |= addCategory(categories, 71, "SPAM URLs", "Security", "URLs contained in SPAM", true, false, false);
+        added |= addCategory(categories, 74, "Dynamically Generated Content", "Productivity", "Dynamically Generated Content", true, false, false);
+        added |= addCategory(categories, 75, "Parked Domains", "Sensitive", "Parked domains are URLs which host limited content or click-through ads which may generate revenue for the hosting entities but generally do not contain content useful to the end user. Also includes Under Construction, folders, and web server default home pages.", true, false, false);
+        added |= addCategory(categories, 76, "Alcohol and Tobacco", "Sensitive", "Sites that provide information on, promote, or support the sale of alcoholic beverages or tobacco products and associated paraphernalia.", true, false, false);
+        added |= addCategory(categories, 78, "Image and Video Search", "Sensitive", "Photo and image searches, online photo albums/digital photo exchange, image hosting.", true, false, false);
+        added |= addCategory(categories, 79, "Fashion and Beauty", "Productivity", "Fashion or glamour magazines, beauty, clothes, cosmetics, style.", true, false, false);
+        added |= addCategory(categories, 80, "Recreation and Hobbies", "Productivity", "Information, associations, forums and publications on recreational pastimes such as collecting, kit airplanes, outdoor activities such as hiking, camping, rock climbing, specific arts, craft, or techniques; animal and pet related information, including breed-specifics, training, shows and humane societies.", true, false, false);
+        added |= addCategory(categories, 81, "Motor Vehicles", "Productivity", "Car reviews, vehicle purchasing or sales tips, parts catalogs. Auto trading, photos, discussion of vehicles including motorcycles, boats, cars, trucks and RVs. Journals and magazines on vehicle modifications.", true, false, false);
+        added |= addCategory(categories, 82, "Web Hosting", "IT Resources", "Free or paid hosting services for web pages and information concerning their development, publication and promotion.", true, false, false);
         return added;
     }
-
     /**
      * Deploy the web app
-     * 
+     *
      * @param logger
      *        The logger
      */
