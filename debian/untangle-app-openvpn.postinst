@@ -3,6 +3,10 @@
 # Disable auto-starting of OpenVPN daemon
 deb-systemd-helper disable openvpn.service
 
+# Make sure no openvpn daemon is ever started at boot time (NGFW-12379)
+perl -i -pe 's/^.*(?=AUTOSTART="all")/#/g' /etc/default/openvpn
+perl -i -pe 's/^#?(?=AUTOSTART="none")//g' /etc/default/openvpn
+
 # Hide "WARN: Could not open database for 1536 bits. skipped" when starting daemon
 # https://help.ubuntu.com/community/OpenVPN
 if [ -d /usr/share/openssl-blacklist/ ] ; then
