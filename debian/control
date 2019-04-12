@@ -204,7 +204,7 @@ Conflicts: untangle-node-web-filter
 Replaces: untangle-node-web-filter
 Provides: untangle-node-web-filter
 Section: non-free/net
-Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-app-license, untangle-bctid
 Description: Web Filter
  The Web Filter application.
 
@@ -213,7 +213,7 @@ Architecture: all
 Conflicts: untangle-node-web-monitor
 Replaces: untangle-node-web-monitor
 Provides: untangle-node-web-monitor
-Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-bctid
 Description: Web Monitor
  The Web Monitor application.
 
