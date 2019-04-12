@@ -122,7 +122,23 @@ public class WebFilterApp extends WebFilterBase
             throw new RuntimeException("invalid license");
         }
 
+        UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
+
         super.preStart(isPermanentTransition);
+    }
+
+    /**
+     * Called after the application is stopped
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    @Override
+    protected void postStop(boolean isPermanentTransition)
+    {
+        UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bctid");
+
+        super.postStop(isPermanentTransition);
     }
 
     /**
