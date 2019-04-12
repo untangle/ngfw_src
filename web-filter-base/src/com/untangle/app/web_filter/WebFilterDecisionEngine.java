@@ -53,7 +53,8 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static byte PAYLOAD_SIZE_BEGIN = (byte) '<';
     private static byte PAYLOAD_SIZE_END = (byte) '>';
 
-    private Map<Long, Socket> socketPool = new ConcurrentHashMap<>();
+    private Socket lookupDaemonSocket = null;
+
     private final Logger logger = Logger.getLogger(getClass());
     private WebFilterBase ourApp = null;
     private int failures = 0;
@@ -191,7 +192,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public List<Integer> lookupSite(String url)
     {
-        // ?? why not just use split like we do in DecisionEngine?
         String[] urlSplit = splitUrl(url);
         return categorizeSite(urlSplit[0], urlSplit[2]);
     }
@@ -236,6 +236,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
         return lookupUrl(url, false);
     }
 
+
     /**
      * Perform lookup of URL.
      *
@@ -246,54 +247,52 @@ public class WebFilterDecisionEngine extends DecisionEngine
     List<Integer> lookupUrl(String url, Boolean reopenSocket)
     {
         List<Integer> answers = null;
-        Socket socket = null;
         try{
-            Long threadId = Thread.currentThread().getId();
-            synchronized(socketPool){
-                socket = socketPool.get(threadId);
-                if(socket == null || reopenSocket){
-                    socket = new Socket();
-                    socket.connect(SOCKET_ADDRESS);
-                    socket.setKeepAlive(true);
-                    socketPool.put(threadId, socket);
+            synchronized(this){
+                if(lookupDaemonSocket == null || reopenSocket){
+                    lookupDaemonSocket = new Socket();
+                    lookupDaemonSocket.connect(SOCKET_ADDRESS);
+                    lookupDaemonSocket.setKeepAlive(true);
                 }
-            }
-            socket.getOutputStream().write((URL_QUERY_PREFIX + url + URL_QUERY_SUFFIX).getBytes());
-            socket.getOutputStream().flush();
+                lookupDaemonSocket.getOutputStream().write((URL_QUERY_PREFIX + url + URL_QUERY_SUFFIX).getBytes());
+                lookupDaemonSocket.getOutputStream().flush();
 
-            InputStream is = socket.getInputStream();
+                InputStream is = lookupDaemonSocket.getInputStream();
 
-            boolean inSize = false;
-            int payloadSize = 0;
-            int c;
-            do{
-                c = is.read();
-                if(c == PAYLOAD_SIZE_BEGIN){
-                    inSize = true;
-                    continue;
-                }
-                if(inSize){
-                    if(c == PAYLOAD_SIZE_END){
-                        break;
+                boolean inSize = false;
+                int payloadSize = 0;
+                int c;
+                do{
+                    c = is.read();
+                    if(c == PAYLOAD_SIZE_BEGIN){
+                        inSize = true;
+                        continue;
                     }
-                    payloadSize = (char) (c - 48)+ (payloadSize * 10);
-                }
-            }while(is.available()>0);
-            byte payloadBuffer[] = new byte[payloadSize];
-            is.read(payloadBuffer,0,payloadSize);
+                    if(inSize){
+                        if(c == PAYLOAD_SIZE_END){
+                            break;
+                        }
+                        payloadSize = (char) (c - 48)+ (payloadSize * 10);
+                    }
+                }while(is.available()>0);
+                byte payloadBuffer[] = new byte[payloadSize];
+                is.read(payloadBuffer,0,payloadSize);
 
-            JSONObject jo = new JSONObject(new String(payloadBuffer, 0, payloadSize));
-            JSONArray catids = jo.getJSONObject(url).getJSONArray("catids");
-            answers = new ArrayList<Integer>(catids.length());
-            for(int i = 0; i < catids.length(); i++){
-                answers.add(catids.getInt(i));
+                JSONObject jo = new JSONObject(new String(payloadBuffer, 0, payloadSize));
+                JSONArray catids = jo.getJSONObject(url).getJSONArray("catids");
+                answers = new ArrayList<Integer>(catids.length());
+                for(int i = 0; i < catids.length(); i++){
+                    answers.add(catids.getInt(i));
+                }
             }
         }catch(Exception e){
             logger.warn(e);
+            // logger.warn("what", e);
             try{
-                socket.close();
-                socket = null;
+                lookupDaemonSocket.close();
+                lookupDaemonSocket = null;
             }catch(Exception e2){}
+
             if(reopenSocket == false){
                 return lookupUrl(url, true);
             }
