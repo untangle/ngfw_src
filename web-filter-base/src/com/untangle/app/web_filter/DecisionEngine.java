@@ -44,8 +44,8 @@ public abstract class DecisionEngine
     /**
      * Match  slashes (except for leading protocol) with single slashes
      */
-    private static Pattern CONSECUTIVE_SLASHES_URI_PATTERN = Pattern.compile("(?<!:)/+");
-    private static Pattern CONSECUTIVE_SLASHES_PATH_PATTERN = Pattern.compile("/+");
+    public static Pattern CONSECUTIVE_SLASHES_URI_PATTERN = Pattern.compile("(?<!:)/+");
+    public static Pattern CONSECUTIVE_SLASHES_PATH_PATTERN = Pattern.compile("/+");
 
 
     /**
