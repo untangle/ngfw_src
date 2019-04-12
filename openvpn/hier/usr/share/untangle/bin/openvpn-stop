@@ -1,4 +1,7 @@
 #! /bin/bash
 
-systemctl stop openvpn
+CONFIG_NAME="server"
+SERVICE_NAME="openvpn@$CONFIG_NAME"
+
+systemctl stop $SERVICE_NAME
 
