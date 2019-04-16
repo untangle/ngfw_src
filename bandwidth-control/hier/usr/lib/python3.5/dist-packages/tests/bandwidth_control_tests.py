@@ -418,7 +418,7 @@ class BandwidthControlTests(unittest.TestCase):
         # Test.untangle.com is listed as Software, Hardware in web filter. As of 1/2014 its in Technology 
         settingsWF = app_web_filter.getSettings()
         i = 0
-        untangleCats = ["Software,", "Technology"]
+        untangleCats = ["Computer,", "Security"]
         for webCategories in settingsWF['categories']['list']:
             if any(x in webCategories['name'] for x in untangleCats):
                 settingsWF['categories']['list'][i]['flagged'] = "true"
