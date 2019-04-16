@@ -48,3 +48,9 @@ awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
     echo
 done
 
+echo
+echo
+echo
+
+echo " = IPsec Rules = "
+ip route show table 220
