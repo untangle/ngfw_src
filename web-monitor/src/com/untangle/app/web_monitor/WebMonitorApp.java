@@ -96,14 +96,11 @@ public class WebMonitorApp extends WebFilterBase
 
     /**
      * Clears the decision engine cache
-     * 
-     * @param expireAll
-     *        Expire all flag
      */
-    // public void clearCache(boolean expireAll)
-    // {
-    //     this.engine.clearCache(expireAll);
-    // }
+    public void clearCache()
+    {
+        this.engine.clearCache();
+    }
 
     /**
      * Called to lookup a specific site
