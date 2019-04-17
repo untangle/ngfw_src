@@ -48,8 +48,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static Integer UNCATEGORIZED_CATEGORY = 0;
 
     static private InetSocketAddress SOCKET_ADDRESS = new InetSocketAddress("127.0.0.1", 8484);
-    private static String URL_QUERY_PREFIX = "{\"url/getinfo\":{\"catids\": true,\"urls\":[\"";
-    private static String URL_QUERY_SUFFIX = "\"]}}\r\n";
+    private static String BCTI_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"catids\": true,\"urls\":[\"";
+    private static String BCTI_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
+    private static String BCTI_QUERY_URLCLEARCACHE = "{\"url/clearcache\":{}}\r\n";
     private static byte PAYLOAD_SIZE_BEGIN = (byte) '<';
     private static byte PAYLOAD_SIZE_END = (byte) '>';
 
@@ -162,9 +163,21 @@ public class WebFilterDecisionEngine extends DecisionEngine
             domain = domain.substring(0, i);
         }
 
-        List<Integer> categories = lookupUrl(domain + uri);
+        String url = domain + uri;
 
-        if (categories == null) {
+        List<Integer> categories = null;
+        JSONObject urlAnswer = bctidQuery(BCTI_QUERY_URLINFO_PREFIX + url + BCTI_QUERY_URLINFO_SUFFIX);
+        try{
+            JSONArray catids = urlAnswer.getJSONObject(url).getJSONArray("catids");
+            categories = new ArrayList<Integer>(catids.length());
+            for(i = 0; i < catids.length(); i++){
+                categories.add(catids.getInt(i));
+            }
+        }catch(Exception e){
+            logger.warn(e);
+        }
+
+        if (categories == null || categories.size() == 0){
             categories = new ArrayList<Integer>(1);
             categories.add(UNCATEGORIZED_CATEGORY);
         }
@@ -174,14 +187,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     /**
      * Clear the host cache
-     * 
-     * @param expireAll
-     *        Flag to clear all or expired only
      */
-    // public void clearCache(boolean expireAll)
-    // {
-    //     // HostCache.cleanCache(expireAll);
-    // }
+    public void clearCache()
+    {
+        bctidQuery(BCTI_QUERY_URLCLEARCACHE);
+    }
 
     /**
      * Lookup a site
@@ -226,27 +236,24 @@ public class WebFilterDecisionEngine extends DecisionEngine
     }
 
     /**
-     * Perform lookup of URL.
-     *
-     * @param  url URL to lookup.
-     * @return     List of integers of category ids.
+     * Query daemon.
+     * @param  query        String of bcti query to send
+     * @return     JSON object of response.
      */
-    List<Integer> lookupUrl(String url)
+    JSONObject bctidQuery(String query)
     {
-        return lookupUrl(url, false);
+        return bctidQuery(query, false);
     }
 
-
     /**
-     * Perform lookup of URL.
-     *
-     * @param  url URL to lookup.
-     * @param reopenSocket If true, re-open socket.  Otherwise, use attempt to use cached socket.
-     * @return     List of integers of category ids.
+     * Query daemon.
+     * @param  query        String of bcti query to send
+     * @param  reopenSocket Boolean where if true, eopen the socket, otherwise reuse existing
+     * @return              JSON object of response
      */
-    List<Integer> lookupUrl(String url, Boolean reopenSocket)
+    JSONObject bctidQuery(String query, Boolean reopenSocket)
     {
-        List<Integer> answers = null;
+        JSONObject answer = null;
         try{
             synchronized(this){
                 if(lookupDaemonSocket == null || reopenSocket){
@@ -254,7 +261,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     lookupDaemonSocket.connect(SOCKET_ADDRESS);
                     lookupDaemonSocket.setKeepAlive(true);
                 }
-                lookupDaemonSocket.getOutputStream().write((URL_QUERY_PREFIX + url + URL_QUERY_SUFFIX).getBytes());
+                lookupDaemonSocket.getOutputStream().write(query.getBytes());
                 lookupDaemonSocket.getOutputStream().flush();
 
                 InputStream is = lookupDaemonSocket.getInputStream();
@@ -278,27 +285,21 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 byte payloadBuffer[] = new byte[payloadSize];
                 is.read(payloadBuffer,0,payloadSize);
 
-                JSONObject jo = new JSONObject(new String(payloadBuffer, 0, payloadSize));
-                JSONArray catids = jo.getJSONObject(url).getJSONArray("catids");
-                answers = new ArrayList<Integer>(catids.length());
-                for(int i = 0; i < catids.length(); i++){
-                    answers.add(catids.getInt(i));
-                }
+                answer = new JSONObject(new String(payloadBuffer, 0, payloadSize));
             }
         }catch(Exception e){
             logger.warn(e);
-            // logger.warn("what", e);
             try{
                 lookupDaemonSocket.close();
                 lookupDaemonSocket = null;
             }catch(Exception e2){}
 
             if(reopenSocket == false){
-                return lookupUrl(url, true);
+                return bctidQuery(query, true);
             }
         }
 
-        return answers;
+        return answer;
     }
 
     /**
