@@ -82,7 +82,7 @@ Ext.define('Ung.apps.webmonitor.MainController', {
     clearHostCache: function () {
         Ext.MessageBox.wait('Clearing Category URL Cache...'.t(), 'Please Wait'.t());
 
-        Rpc.asyncData( this.getView().appManager, 'clearCache', true)
+        Rpc.asyncData( this.getView().appManager, 'clearCache')
         .then(function(result){
             Ext.MessageBox.hide();
             Util.successToast('The Category URL Cache was cleared succesfully.'.t());

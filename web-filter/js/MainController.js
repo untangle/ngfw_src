@@ -86,7 +86,7 @@ Ext.define('Ung.apps.webfilter.MainController', {
         var v = this.getView();
         Ext.MessageBox.wait('Clearing Category URL Cache...'.t(), 'Please Wait'.t());
 
-        Rpc.asyncData(v.appManager, 'clearCache', true)
+        Rpc.asyncData(v.appManager, 'clearCache')
         .then(function(result){
             Ext.MessageBox.hide();
             Util.successToast('The Category URL Cache was cleared succesfully.'.t());
@@ -130,21 +130,26 @@ Ext.define('Ung.apps.webfilter.MainController', {
             showAddress.setValue(inputField.getValue());
             inputField.setValue('');
 
-            var categoryList = [];
-            var firstSuggest = null;
-            for(var i = 0 ; i < result.list.length ; i++) {
-                for(var j = 0 ; j < masterList.length ; j++) {
-                    var category = masterList[j];
-                    if (result.list[i] == category.string) {
-                        categoryList.push(category.name);
-                        if (firstSuggest == null) {
-                            firstSuggest = category.string;
-                            suggestBox.setValue(firstSuggest);
+            var currentCategories = [];
+            var suggested = null;
+
+            if(result && result.list && masterList ){
+                result.list.forEach(function(id){
+                    var category = Ext.Array.findBy(masterList, function(cat){
+                        if(cat.id == id){
+                            return true;
+                        }
+                    });
+                    if(category){
+                        currentCategories.push(category.name);
+                        if(suggested == null){
+                            suggested = category.id;
                         }
                     }
-                }
+                });
             }
-            showCategory.setValue(categoryList.join(","));
+            showCategory.setValue(currentCategories.join(","));
+            suggestBox.setValue(suggested);
         }, function(ex) {
             if(!Util.isDestroyed(v)){
                 v.setLoading(false);
@@ -171,6 +176,7 @@ Ext.define('Ung.apps.webfilter.MainController', {
             if(Util.isDestroyed(v, vm, showAddress, suggestBox)){
                 return;
             }
+            console.log(result);
             v.setLoading(false);
 
             var showCategory = v.down("[fieldIndex='siteLookupCategory']");
