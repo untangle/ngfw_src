@@ -43,6 +43,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     private static final String STAT_BLOCK = "block";
     private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
+    private static final String STAT_CACHE_COUNT = "cache_count";
     private static int web_filter_deployCount = 0;
 
     protected static final Logger logger = Logger.getLogger(WebFilterBase.class);
@@ -229,6 +230,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
         this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Pages flagged")));
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
+        this.addMetric(new AppMetric(STAT_CACHE_COUNT, I18nUtil.marktr("Cache count")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 3, isPremium());
         this.connectors = new PipelineConnector[] { connector };
@@ -680,6 +682,15 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         this.incrementMetric(STAT_PASS);
     }
 
+    /**
+     * Set the cache size.
+     * @param count Long of current number of entries.
+     */
+    public void setCacheCount(long count){
+        this.setMetric(STAT_CACHE_COUNT, count);
+    }
+
+    /**
     /**
      * Build a replacement generator
      * 

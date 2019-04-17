@@ -30,6 +30,9 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.vnet.AppTCPSession;
 
+import com.untangle.uvm.util.Pulse;
+
+
 /**
  * Does blacklist lookups from zvelo API.
  */
@@ -51,6 +54,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static String BCTI_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"catids\": true,\"urls\":[\"";
     private static String BCTI_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
     private static String BCTI_QUERY_URLCLEARCACHE = "{\"url/clearcache\":{}}\r\n";
+    private static String BCTI_QUERY_STATUS = "{\"status\":{}}\r\n";
     private static byte PAYLOAD_SIZE_BEGIN = (byte) '<';
     private static byte PAYLOAD_SIZE_END = (byte) '>';
 
@@ -59,6 +63,13 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private final Logger logger = Logger.getLogger(getClass());
     private WebFilterBase ourApp = null;
     private int failures = 0;
+
+    /**
+     * Pulse thread to read btci daemon statistics.
+     */
+    private static long DEFAULT_GET_STATISTICS_INTERVAL_MS = (long) 30 * 1000; /* every 30 seconds */
+    private static long DEFAULT_GET_STATISTICS_RUN_TIMEOUT_MS = (long) 60 * 60 * 1000; /* Kill process after 60 minutes.  */
+    private Pulse pulseGetStatistics = new Pulse("decision-get-statistics", new GetStatistics(), DEFAULT_GET_STATISTICS_INTERVAL_MS, true, DEFAULT_GET_STATISTICS_RUN_TIMEOUT_MS);
 
     /**
      * Constructor
@@ -70,6 +81,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     {
         super(app);
         ourApp = app;
+        pulseGetStatistics.start();
     }
 
     /**
@@ -413,6 +425,25 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }
             if(!found){
                 cookies.add(YOUTUBE_RESTRICT_COOKIE_NAME + YOUTUBE_RESTIRCT_COOKIE_VALUE + "; expires="+COOKIE_DATE_FORMATTER.format(cookieExpiration)+"; path=/; domain=.youtube.com");
+            }
+        }
+    }
+
+    /**
+     * Renew the doman/group cache across all available domains.
+     */
+    private class GetStatistics implements Runnable
+    {
+        /**
+         * Cache update process.
+         */
+        public void run()
+        {
+            JSONObject status = bctidQuery(BCTI_QUERY_STATUS);
+            try{
+                ourApp.setCacheCount(new Long(status.getInt("url_cache_current_size")));
+            }catch(Exception e){
+                logger.warn(e);
             }
         }
     }
