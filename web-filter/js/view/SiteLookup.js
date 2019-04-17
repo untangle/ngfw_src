@@ -6,6 +6,7 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
     viewModel: true,
     bodyPadding: 10,
     scrollable: true,
+    defaultButton: 'searchButton',
 
     tbar: [{
         xtype: 'tbtext',
@@ -16,6 +17,7 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
 
     items: [{
         xtype: 'fieldset',
+        margin: '0 0 5 -10',
         layout: 'column',
         border: false,
         items: [{
@@ -26,6 +28,7 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
             width: 400
         }, {
             xtype: 'button',
+            reference: 'searchButton',
             text: 'Search'.t(),
             iconCls: 'fa fa-search',
             margin: '0 0 0 10',
@@ -77,7 +80,7 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
             width: 400,
             fieldIndex: 'siteLookupSuggest',
             displayField: 'name',
-            valueField: 'string',
+            valueField: 'id',
             editable: false,
             bind: {
                 store: '{categories}',
