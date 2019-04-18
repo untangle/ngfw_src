@@ -21,7 +21,6 @@ appWeb = None
 appSSL = None
 appSSLData = None
 local_user_name = 'test20'
-adLoginName = 'atsadmin@adtest.adtesting.int'
 adUserName = 'atsadmin'
 captureIP = None
 savedCookieFileName = "/tmp/capture_cookie.txt";
@@ -158,7 +157,7 @@ def create_directory_connector_settings(ldap_secure=False):
             "authenticationEnabled": True
         }
     }
-
+        
 def create_radius_settings():
     return {
         "activeDirectorySettings": {
@@ -585,7 +584,7 @@ class CaptivePortalTests(unittest.TestCase):
         # check if AD login and password
         appid = str(app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command("wget -O /tmp/capture_test_035a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adLoginName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        result = remote_control.run_command("wget -O /tmp/capture_test_035a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035a.out")
         assert (search == 0)
@@ -598,7 +597,7 @@ class CaptivePortalTests(unittest.TestCase):
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_035b.out")
         assert (search == 0)
         # try second time to login,
-        result = remote_control.run_command("wget -O /tmp/capture_test_035c.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adLoginName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        result = remote_control.run_command("wget -O /tmp/capture_test_035c.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035c.out")
         assert (search == 0)
@@ -613,7 +612,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert(not foundUsername)
 
         # check extend ascii in login and password bug 10860
-        result = remote_control.run_command("wget -O /tmp/capture_test_035e.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=britishguy@adtest.adtesting.int&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        result = remote_control.run_command("wget -O /tmp/capture_test_035e.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035e.out")
         assert (search == 0)
@@ -884,7 +883,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['userTimeout'] = 3600  # default
         appData['useMacAddress'] = False
         app.setSettings(appData)
-
+        
         # Create random user for expired user test
         random_user_email = global_functions.random_email()
         random_user = random_user_email.split("@")[0]
@@ -915,7 +914,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_065c.out")
         assert (search != 0)
-
+        
         # Put local directory back in expected state
         uvmContext.localDirectory().setUsers(create_local_directory_user())
 
@@ -1001,7 +1000,7 @@ class CaptivePortalTests(unittest.TestCase):
         global app, appData
         # set HTTP port to 8081
         set_http_https_ports(8081,443)
-
+        
         appData['captureRules']['list'] = []
         appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
         appData['authenticationType']="NONE"
@@ -1016,10 +1015,10 @@ class CaptivePortalTests(unittest.TestCase):
             result_dns = remote_control.run_command("host test.untangle.com")
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_080.out http://test.untangle.com/",stdout=True)
         search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_080.out")
-
+        
         # revert back to standard ports
         set_http_https_ports(80,443)
-        assert ("8081" in result)
+        assert ("8081" in result)                
         assert (search == 0)
 
     def test_090_always_use_secure_capture(self):
@@ -1046,8 +1045,8 @@ class CaptivePortalTests(unittest.TestCase):
         assert (result2 == 0)
         search2 = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_090_2.out")
         assert (search2 == 0)
-
-
+        
+    
     def final_tear_down(self):
         global app, appAD, appWeb, appSSL
         uvmContext.localDirectory().setUsers(remove_local_directory_user())
