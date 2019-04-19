@@ -1,7 +1,8 @@
-#! /bin/bash
-
-CONFIG_NAME="server"
-SERVICE_NAME="openvpn@$CONFIG_NAME"
-
-systemctl stop $SERVICE_NAME
-
+#!/bin/bash
+# openvpn-stop
+# called from NGFW after calling systemctl stop for all connections
+# ----------------------------------------------------------------------
+# We now call systemctl directly from Java to start/stop/restart the
+# procs for the server and any configured client configs, so this file
+# only has to handle housekeeping stuff.
+# ----------------------------------------------------------------------
