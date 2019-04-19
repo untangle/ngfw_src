@@ -55,7 +55,7 @@ public class OpenVpnAppImpl extends AppBase
     private final EventHandler handler;
 
     private final OpenVpnMonitor openVpnMonitor;
-    private final OpenVpnManager openVpnManager = new OpenVpnManager();
+    private final OpenVpnManager openVpnManager;
 
     private final OpenVpnHookCallback openVpnHookCallback;
 
@@ -77,6 +77,7 @@ public class OpenVpnAppImpl extends AppBase
 
         this.handler = new EventHandler(this);
         this.openVpnMonitor = new OpenVpnMonitor(this);
+        this.openVpnManager = new OpenVpnManager(this);
         this.openVpnHookCallback = new OpenVpnHookCallback();
 
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
@@ -145,7 +146,7 @@ public class OpenVpnAppImpl extends AppBase
     {
         try {
             this.openVpnManager.configure(settings);
-            this.openVpnManager.restart();
+            this.openVpnManager.start();
         } catch (Exception e) {
             logger.error("Error during startup", e);
             try {
@@ -175,6 +176,7 @@ public class OpenVpnAppImpl extends AppBase
 
         try {
             this.openVpnMonitor.disable();
+            this.openVpnMonitor.stop();
         } catch (Exception e) {
             logger.warn("Error disabling openvpn monitor", e);
         }
@@ -842,7 +844,7 @@ public class OpenVpnAppImpl extends AppBase
             logger.info("Cleanup removing: " + target);
 
             br = null;
-            try{
+            try {
                 File trash = new File(target);
                 br = new BufferedReader(new FileReader(trash));
                 String[] part;
@@ -861,13 +863,13 @@ public class OpenVpnAppImpl extends AppBase
                 }
 
                 trash.delete();
-            } catch(Exception e ){
+            } catch (Exception e) {
                 logger.warn("Unable to clear settings", e);
             } finally {
-                if( br != null){
+                if (br != null) {
                     try {
                         br.close();
-                    } catch( Exception e){
+                    } catch (Exception e) {
                         logger.warn("Unable to close reader", e);
                     }
                 }
@@ -1000,10 +1002,10 @@ public class OpenVpnAppImpl extends AppBase
             } catch (Exception e) {
                 logger.warn("Malformed openvpn status file: " + "/var/run/openvpn/" + server.getName() + ".status", e);
             } finally {
-                if(reader != null){
+                if (reader != null) {
                     try {
                         reader.close();
-                    } catch( Exception e){
+                    } catch (Exception e) {
                         logger.warn("Unable to close reader", e);
                     }
                 }

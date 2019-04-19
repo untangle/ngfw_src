@@ -1,21 +1,18 @@
-#! /bin/bash
-
-RETRY_ATTEMPTS=5
-RESTART_DELAY=2
+#!/bin/bash
+# openvpn-start
+# called from NGFW before calling systemctl start for all connections
+# ----------------------------------------------------------------------
+# We now call systemctl directly from Java to start/stop/restart the
+# procs for the server and any configured client configs, so this file
+# only has to handle housekeeping stuff.
+# ----------------------------------------------------------------------
 SETTINGS_DIR="/usr/share/untangle/settings/openvpn"
-CONFIG_NAME="server"
-SERVICE_NAME="openvpn@$CONFIG_NAME"
 # If the tun device doesn't exist, then create it
 # https://forum.openwrt.org/viewtopic.php?id=15979
 if [ ! -c /dev/net/tun ]; then
     mkdir -p /dev/net
     mknod /dev/net/tun c 10 200
 fi
-
-## Use restart just in case there is one lingering around
-## For some reason "restart" is different stop then start
-systemctl stop $SERVICE_NAME
-sleep .5
 
 # Make sure no openvpn daemon is ever started at boot time (NGFW-12379)
 perl -i -pe 's/^.*(?=AUTOSTART="all")/#/g' /etc/default/openvpn
@@ -26,22 +23,6 @@ systemctl daemon-reload
 mkdir -p /etc/openvpn/data
 for f in server.key server.crt ca.key ca.crt dh.pem ; do
   ln -fs @PREFIX@${SETTINGS_DIR}/$f /etc/openvpn/data/
-done
-
-echo "Starting the openvpn server"
-
-## This is required or else openvpn won't restart properly (sometimes the UDP port is still bound)
-for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
-
-    if systemctl start $SERVICE_NAME ; then
-        echo "Successfully started openvpn daemon"
-        break
-    fi
-
-    echo "Unable to start openvpn daemon, waiting ${RESTART_DELAY} seconds..."
-    systemctl stop $SERVICE_NAME
-
-    sleep ${RESTART_DELAY}
 done
 
 # Write the status file for tun0
@@ -56,4 +37,3 @@ for intf in 250 tun0 ; do
 done
 
 exit $RET
-
