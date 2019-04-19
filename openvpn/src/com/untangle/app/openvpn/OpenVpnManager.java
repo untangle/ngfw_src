@@ -33,6 +33,7 @@ import com.untangle.uvm.network.InterfaceSettings;
 public class OpenVpnManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
+    private final OpenVpnAppImpl app;
 
     private static final String VPN_START_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-start";
     private static final String VPN_STOP_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-stop";
@@ -55,17 +56,22 @@ public class OpenVpnManager
 
     /**
      * Constructor
+     * 
+     * @param app
+     *        The OpenVPN application
      */
-    protected OpenVpnManager()
+    protected OpenVpnManager(OpenVpnAppImpl app)
     {
+        this.app = app;
     }
 
     /**
-     * Restart the OpenVPN server
+     * Start all OpenVPN server instances
      */
-    protected void restart()
+    protected void start()
     {
-        logger.info("Starting openvpn server");
+        // the start script only does housekeeping
+        logger.info("Calling OpenVPN start script: " + VPN_START_SCRIPT);
 
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(VPN_START_SCRIPT);
         try {
@@ -75,21 +81,49 @@ public class OpenVpnManager
                 logger.info(VPN_START_SCRIPT + ": " + line);
         } catch (Exception e) {
         }
+        if (result.getResult() != 0) logger.error("Failed calling OpenVPN start script (return code: " + result.getResult() + ")");
 
-        if (result.getResult() != 0) {
-            logger.error("Failed to start OpenVPN daemon (return code: " + result.getResult() + ")");
-            throw new RuntimeException("Failed to start OpenVPN daemon");
+        logger.info("Starting OpenVPN server tasks");
+
+        // make sure systemctl knows about anything that has been uploaded
+        UvmContextFactory.context().execManager().exec("systemctl daemon-reload");
+
+        // only start the main server when enabled
+        if (this.app.getSettings().getServerEnabled()) {
+            logger.debug("Starting main OpenVPN process for openvpn@server.service");
+            UvmContextFactory.context().execManager().exec("systemctl start openvpn@server.service");
+        }
+
+        // start any remote servers that are enabled
+        for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
+            if (!server.getEnabled()) continue;
+            logger.debug("Starting client OpenVPN process for openvpn@" + server.getName() + ".service");
+            UvmContextFactory.context().execManager().exec("systemctl start openvpn@" + server.getName() + ".service");
         }
 
         insertIptablesRules();
     }
 
     /**
-     * Stop the OpenVPN server
+     * Stop all OpenVPN server instances
      */
     protected void stop()
     {
-        logger.info("Stopping openvpn server");
+
+        logger.info("Stopping OpenVPN server tasks");
+
+        logger.debug("Stopping main OpenVPN process for openvpn@server.service");
+        UvmContextFactory.context().execManager().exec("systemctl stop openvpn@server.service");
+
+        for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
+            logger.debug("Stopping client OpenVPN process for openvpn@" + server.getName() + ".service");
+            UvmContextFactory.context().execManager().exec("systemctl stop openvpn@" + server.getName() + ".service");
+        }
+
+        insertIptablesRules(); // remove since openvpn is not running
+
+        // the stop script only does housekeeping
+        logger.info("Calling OpenVPN stop script");
 
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(VPN_STOP_SCRIPT);
         try {
@@ -101,8 +135,15 @@ public class OpenVpnManager
         }
 
         if (result.getResult() != 0) logger.error("Failed to stop OpenVPN daemon (return code: " + result.getResult() + ")");
+    }
 
-        insertIptablesRules(); // remove since openvpn is not running
+    /**
+     * Restart all OpenVPN server instances
+     */
+    protected void restart()
+    {
+        stop();
+        start();
     }
 
     /**
@@ -639,24 +680,24 @@ public class OpenVpnManager
                 String cpCmd = "cp -f " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf /etc/openvpn/";
                 UvmContextFactory.context().execManager().exec(cpCmd);
             } finally {
-                if (cfgReader != null ){
-                    try{
+                if (cfgReader != null) {
+                    try {
                         cfgReader.close();
-                    }catch(Exception exn){
+                    } catch (Exception exn) {
                         logger.warn("Exception closing cfgReader", exn);
                     }
                 }
-                if (cfgWriter != null ){
-                    try{
+                if (cfgWriter != null) {
+                    try {
                         cfgWriter.close();
-                    }catch(Exception exn){
+                    } catch (Exception exn) {
                         logger.warn("Exception closing cfgWriter", exn);
                     }
                 }
-                if (authWriter != null ){
-                    try{
+                if (authWriter != null) {
+                    try {
                         authWriter.close();
-                    }catch(Exception exn){
+                    } catch (Exception exn) {
                         logger.warn("Exception closing authWriter", exn);
                     }
                 }
@@ -943,12 +984,12 @@ public class OpenVpnManager
             }
         } catch (java.io.IOException exc) {
             logger.error("Error writing iptables script", exc);
-        } finally{
-            if(iptablesScript != null){
-                try{
+        } finally {
+            if (iptablesScript != null) {
+                try {
                     iptablesScript.close();
                     UvmContextFactory.context().execManager().execResult("chmod 755 " + IPTABLES_SCRIPT);
-                }catch( Exception ex){
+                } catch (Exception ex) {
                     logger.error("Error writing iptables script", ex);
                 }
             }

@@ -118,7 +118,7 @@ class OpenVpnMonitor implements Runnable
 
             // Grab lock, such that a concurrent read of the "activeMap"
             // doesn't happen during an update
-            synchronized (this) {
+            if (this.app.getSettings().getServerEnabled()) synchronized (this) {
                 try {
                     /*
                      * Cleanup UNDEF sessions every time you are going to update
@@ -296,28 +296,28 @@ class OpenVpnMonitor implements Runnable
 
             /* Check for any dead connections */
             killDeadConnections(out, in);
-        }catch(Exception e){
-            logger.warn(e);
+        } catch (Exception e) {
+            logger.warn("Exception in updateServerStatus", e);
         } finally {
-            if (out != null){
-                try{
+            if (out != null) {
+                try {
                     out.close();
-                }catch(Exception e){
-                    logger.warn(e);
+                } catch (Exception e) {
+                    logger.warn("Exception closing updateServerStatus(out)", e);
                 }
             }
-            if (in != null){
-                try{
+            if (in != null) {
+                try {
                     in.close();
-                }catch(Exception e){
-                    logger.warn(e);
+                } catch (Exception e) {
+                    logger.warn("Exception closing updateServerStatus(in)", e);
                 }
             }
-            if (socket != null){
-                try{
+            if (socket != null) {
+                try {
                     socket.close();
-                }catch( Exception e){
-                    logger.warn(e);
+                } catch (Exception e) {
+                    logger.warn("Exception Closing updateServerStatus(socket)", e);
                 }
             }
         }
@@ -504,73 +504,54 @@ class OpenVpnMonitor implements Runnable
     }
 
     /**
-     * Checks that all enabled remote servers have a running OpenVpn process. If
-     * one is missing it restarts it
+     * Checks that all enabled remote servers have a running OpenVPN process. If
+     * any are missing the process will be restarted.
      */
     private void checkRemoteServerProcesses()
     {
-        BufferedReader reader = null;
-        FileReader fileReader = null;
+        BufferedReader reader;
+
         for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
             if (!server.getEnabled()) continue;
 
-            try {
-                File pidFile = new File("/var/run/openvpn." + server.getName() + ".pid");
-                if (!pidFile.exists()) continue;
+            reader = null;
 
+            try {
+                File pidFile = new File("/var/run/openvpn/" + server.getName() + ".pid");
+                if (!pidFile.exists()) throw new Exception("The PID file does not exist");
+
+                reader = new BufferedReader(new FileReader(pidFile));
+                String currentLine;
                 String contents = "";
-                reader = null;
-                fileReader = null;
-                try{
-                    fileReader = new FileReader(pidFile);
-                    reader = new BufferedReader(fileReader);
-                    String currentLine;
-                    while ((currentLine = reader.readLine()) != null) {
-                        contents += currentLine;
-                    }
-                }catch(Exception e){
-                    logger.warn("checkRemoteServerProcesses: Unable to read status: ", e);
-                }finally{
-                    if(reader != null){
-                        try{
-                            reader.close();
-                        }catch( Exception e){
-                            logger.warn("checkRemoteServerProcesses: Unable to close reader: ", e);
-                        }
-                    }
-                    if(fileReader != null){
-                        try{
-                            fileReader.close();
-                        }catch( Exception e){
-                            logger.warn("checkRemoteServerProcesses: Unable to close file reader: ", e);
-                        }
-                    }
+                while ((currentLine = reader.readLine()) != null) {
+                    contents += currentLine;
                 }
 
                 int pid;
                 try {
                     pid = Integer.parseInt(contents);
                 } catch (Exception e) {
-                    logger.warn("Unable to parse pid file: " + contents);
-                    continue;
+                    throw new Exception("Unable to parse PID file: " + contents);
                 }
 
                 File procFile = new File("/proc/" + pid);
                 if (!procFile.exists()) {
-                    logger.warn("OpenVpn process for " + server.getName() + " (" + pid + ") missing. Restarting...");
-                    UvmContextFactory.context().execManager().exec("systemctl restart openvpn@" + server.getName() + ".service");
+                    throw new Exception("The PID file does not exist");
                 }
 
-            } catch (Exception e) {
-                logger.warn("Failed to check openvpn pid file.", e);
-            } finally {
-                if (reader != null){
-                    try{
-                        reader.close();
-                    } catch (Exception e) {
-                        logger.warn("Failed to check openvpn pid file.", e);
-                    }
-                }
+            } catch (Exception exn) {
+                logger.warn("OpenVPN process for " + server.getName() + " not found. " + exn.getMessage() + ". Restarting...");
+                UvmContextFactory.context().execManager().exec("systemctl restart openvpn@" + server.getName() + ".service");
+            }
+            if (reader == null) {
+                continue;
+            }
+            try {
+                // closing the BufferedReader actually closes the FileReader
+                // that was created/opened in the constructor
+                reader.close();
+            } catch (Exception exn) {
+                logger.warn("Exception closing BufferedReader", exn);
             }
         }
     }
@@ -611,8 +592,8 @@ class OpenVpnMonitor implements Runnable
         } catch (Exception e) {
             logger.warn("Failed to check openvpn pid file.", e);
         } finally {
-            if (reader != null){
-                try{
+            if (reader != null) {
+                try {
                     reader.close();
                 } catch (Exception e) {
                     logger.warn("Failed to check openvpn pid file.", e);
