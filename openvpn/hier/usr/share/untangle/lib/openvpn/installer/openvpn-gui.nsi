@@ -7,13 +7,14 @@
 ; ****************************************************************************
 
 ; OpenVPN install script for Windows, using NSIS
-; WebFooL whas here ;-)
+; WebFooL was here ;-)
 ; mahotz was here too!
 
 SetCompressor lzma
+!addplugindir .
 
 ; Modern user interface
-!include "MUI.nsh"
+!include "MUI2.nsh"
 !include "LogicLib.nsh"
 
 ; Install for all users. MultiUser.nsh also calls SetShellVarContext to point
@@ -23,6 +24,8 @@ SetCompressor lzma
 !include "x64.nsh"
 !include "DotNetChecker.nsh"
 !include "nsProcess.nsh"
+; WinMessages.nsh is needed to send WM_CLOSE to the GUI if it is still running
+!include "WinMessages.nsh"
 
 ; EnvVarUpdate.nsh is needed to update the PATH environment variable
 !include "EnvVarUpdate.nsh"
@@ -38,8 +41,8 @@ SetCompressor lzma
 !define UNTANGLE_PACKAGE_DIR "/tmp/openvpn/client-packages"
 !define OPENVPN_ROOT "openvpn"
 !define PACKAGE_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.4.3"
-!define GUI_VERSION "11.8.0.0"
+!define OPENVPN_VERSION "2.4.7"
+!define GUI_VERSION "11.12.0.0"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 !define OUTFILE_LABEL ""
 
@@ -70,7 +73,7 @@ InstallDirRegKey HKLM "SOFTWARE\${PACKAGE_NAME}" ""
 ;Modern UI Configuration
 
 ; Compile-time constants which we'll need during install
-!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of ${PACKAGE_NAME} ${OPENVPN_VERSION}, an Open Source VPN package by James Yonan.$\r$\n$\r$\nNote that the Windows version of ${PACKAGE_NAME} will only run on Windows XP, or higher.$\r$\n$\r$\n$\r$\n"
+!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of ${PACKAGE_NAME} ${OPENVPN_VERSION}, an Open Source VPN package by James Yonan.$\r$\n$\r$\nNote that the Windows version of ${PACKAGE_NAME} will only run on Windows 7, or higher.$\r$\n$\r$\n$\r$\n"
 
 !define MUI_COMPONENTSPAGE_TEXT_TOP "Select the components to install/upgrade.  Stop any ${PACKAGE_NAME} processes or the ${PACKAGE_NAME} service if it is running.  All DLLs are installed locally."
 
@@ -124,6 +127,8 @@ LangString DESC_SecOpenSSLUtilities ${LANG_ENGLISH} "Install the OpenSSL Utiliti
 LangString DESC_SecAddPath ${LANG_ENGLISH} "Add ${PACKAGE_NAME} executable directory to the current user's PATH."
 
 LangString DESC_SecAddShortcuts ${LANG_ENGLISH} "Add ${PACKAGE_NAME} shortcuts to the current user's Start Menu."
+
+LangString DESC_SecLaunchGUIOnLogon ${LANG_ENGLISH} "Launch ${PACKAGE_NAME} GUI on user logon."
 
 LangString DESC_SecFileAssociation ${LANG_ENGLISH} "Register ${PACKAGE_NAME} config file association (*.${OPENVPN_CONFIG_EXT})"
 
@@ -290,6 +295,11 @@ Section /o "-workaround" SecAddShortcutsWorkaround
 	; as we don't want to move SecAddShortcuts to top of selection
 SectionEnd
 
+Section /o "-launchondummy" SecLaunchGUIOnLogon0
+	; this section should be selected as SecLaunchGUIOnLogon
+	; this is here as we don't want to move that section to the top
+SectionEnd
+
 Section /o "${PACKAGE_NAME} User-Space Components" SecOpenVPNUserSpace
 
 	SetOverwrite on
@@ -440,6 +450,21 @@ Section "${PACKAGE_NAME} GUI" SecOpenVPNGUI
 		CreateShortCut "$SMPROGRAMS\${PACKAGE_NAME}\${PACKAGE_NAME} GUI.lnk" "$INSTDIR\bin\openvpn-gui.exe" ""
 		CreateShortcut "$DESKTOP\${PACKAGE_NAME} GUI.lnk" "$INSTDIR\bin\openvpn-gui.exe"
 	${EndIf}
+	
+        ; Using active setup registry entries to set/unset GUI to launch on logon for each user.
+	; If the user removes the GUI from startup items it will not be re-added or removed on subsequent
+	; installs unless the value of "Version" is updated (do this only if/when really necessary).
+	; Ref: https://helgeklein.com/blog/2010/04/active-setup-explained/
+	WriteRegStr HKLM "Software\Microsoft\Active Setup\Installed Components\${PACKAGE_NAME}_UserSetup" "" "OpenVPN Setup"
+	WriteRegStr HKLM "Software\Microsoft\Active Setup\Installed Components\${PACKAGE_NAME}_UserSetup" "Version" "2,4,7,0"
+	WriteRegDword HKLM "Software\Microsoft\Active Setup\Installed Components\${PACKAGE_NAME}_UserSetup" "IsInstalled" 0x1
+        ; DontAsk = 2 is used to not prompt the user
+	WriteRegDword HKLM "Software\Microsoft\Active Setup\Installed Components\${PACKAGE_NAME}_UserSetup" "DontAsk" 0x2
+	${If} ${SectionIsSelected} ${SecLaunchGUIOnLogon0}
+		WriteRegStr HKLM "Software\Microsoft\Active Setup\Installed Components\${PACKAGE_NAME}_UserSetup" "StubPath" "reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v OPENVPN-GUI /t REG_SZ /d $\"$INSTDIR\bin\openvpn-gui.exe$\" /f"
+	${Else}
+		WriteRegStr HKLM "Software\Microsoft\Active Setup\Installed Components\${PACKAGE_NAME}_UserSetup" "StubPath" "reg delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v OPENVPN-GUI /f"
+	${EndIf}
 SectionEnd
 
 Section /o "${PACKAGE_NAME} File Associations" SecFileAssociation
@@ -488,6 +513,9 @@ Section /o "Add Shortcuts to Start Menu" SecAddShortcuts
 	CreateShortCut "$SMPROGRAMS\${PACKAGE_NAME}\Uninstall ${PACKAGE_NAME}.lnk" "$INSTDIR\Uninstall.exe"
 SectionEnd
 
+Section /o "Launch ${PACKAGE_NAME} GUI on User Logon" SecLaunchGUIOnLogon
+	SectionEnd
+
 SectionGroup "!Dependencies (Advanced)"
 
 	Section /o "OpenSSL DLLs" SecOpenSSLDLLs
@@ -495,15 +523,15 @@ SectionGroup "!Dependencies (Advanced)"
 		SetOverwrite on
 
 	${If} ${RunningX64}
-        DetailPrint "Installing 64-bit libeay32.dll & ssleay32.dll."
+        DetailPrint "Installing 64-bit DLLs."
 	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win64\libeay32.dll"
-        File "${OPENVPN_ROOT}\bin-win64\ssleay32.dll"
+        File "${OPENVPN_ROOT}\bin-win64\libcrypto-1_1-x64.dll"
+        File "${OPENVPN_ROOT}\bin-win64\libssl-1_1-x64.dll"
         ${Else}
-        DetailPrint "Installing 32-bit libeay32.dll & ssleay32.dll."
+        DetailPrint "Installing 32-bit DLLs."
 	SetOutPath "$INSTDIR\bin"
-	File "${OPENVPN_ROOT}\bin-win32\libeay32.dll"
-        File "${OPENVPN_ROOT}\bin-win32\ssleay32.dll"
+	File "${OPENVPN_ROOT}\bin-win32\libcrypto-1_1.dll"
+	File "${OPENVPN_ROOT}\bin-win32\libssl-1_1.dll"
         ${EndIf}
 
 
@@ -562,11 +590,10 @@ Function .onInit
 !endif
 	!insertmacro SelectByParameter ${SecFileAssociation} SELECT_ASSOCIATIONS 1
 	!insertmacro SelectByParameter ${SecOpenSSLUtilities} SELECT_OPENSSL_UTILITIES 0
-!ifdef USE_EASYRSA
-	!insertmacro SelectByParameter ${SecOpenVPNEasyRSA} SELECT_EASYRSA 0
-!endif
 	!insertmacro SelectByParameter ${SecAddPath} SELECT_PATH 1
 	!insertmacro SelectByParameter ${SecAddShortcuts} SELECT_SHORTCUTS 1
+	!insertmacro SelectByParameter ${SecLaunchGUIOnLogon} SELECT_LAUNCH 1
+	!insertmacro SelectByParameter ${SecLaunchGUIOnLogon0} SELECT_LAUNCH 1
 	!insertmacro SelectByParameter ${SecOpenSSLDLLs} SELECT_OPENSSLDLLS 1
 	!insertmacro SelectByParameter ${SecLZODLLs} SELECT_LZODLLS 1
 	!insertmacro SelectByParameter ${SecPKCS11DLLs} SELECT_PKCS11DLLS 1
@@ -598,15 +625,15 @@ Function .onSelChange
 	${If} ${SectionIsSelected} ${SecService}
 		!insertmacro SelectSection ${SecOpenVPNUserSpace}
 	${EndIf}
-!ifdef USE_EASYRSA
-	${If} ${SectionIsSelected} ${SecOpenVPNEasyRSA}
-		!insertmacro SelectSection ${SecOpenSSLUtilities}
-	${EndIf}
-!endif
 	${If} ${SectionIsSelected} ${SecAddShortcuts}
 		!insertmacro SelectSection ${SecAddShortcutsWorkaround}
 	${Else}
 		!insertmacro UnselectSection ${SecAddShortcutsWorkaround}
+	${EndIf}
+	${If} ${SectionIsSelected} ${SecLaunchGUIOnLogon}
+		!insertmacro SelectSection ${SecLaunchGUIOnLogon0}
+	${Else}
+		!insertmacro UnSelectSection ${SecLaunchGUIOnLogon0}
 	${EndIf}
 FunctionEnd
 
@@ -647,7 +674,6 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecService} $(DESC_SecService)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNGUI} $(DESC_SecOpenVPNGUI)
         !insertmacro MUI_DESCRIPTION_TEXT ${SecTAP} $(DESC_SecTAP)
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNEasyRSA} $(DESC_SecOpenVPNEasyRSA)
         !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLUtilities} $(DESC_SecOpenSSLUtilities)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLDLLs} $(DESC_SecOpenSSLDLLs)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecLZODLLs} $(DESC_SecLZODLLs)
@@ -671,12 +697,27 @@ FunctionEnd
 
 Section "Uninstall"
 
-	; Stop OpenVPN if currently running
-	DetailPrint "Service REMOVE"
-	nsExec::ExecToLog '"$INSTDIR\bin\openvpnserv.exe" -remove'
-	nsExec::ExecToLog '"$INSTDIR\bin\openvpnserv2.exe" -remove'
-	Pop $R0 # return value/error/timeout
+	; Stop OpenVPN-GUI if currently running
+	DetailPrint "Stopping OpenVPN-GUI..."
+	StopGUI:
 
+	FindWindow $0 "OpenVPN-GUI"
+	IntCmp $0 0 guiClosed
+	SendMessage $0 ${WM_CLOSE} 0 0
+	Sleep 100
+	Goto StopGUI
+
+	guiClosed:
+
+	; Services have to be explicitly stopped before they are removed
+	DetailPrint "Stopping OpenVPN Services..."
+	SimpleSC::StopService "OpenVPNService" 0 10
+	SimpleSC::StopService "OpenVPNServiceInteractive" 0 10
+	SimpleSC::StopService "OpenVPNServiceLegacy" 0 10
+	DetailPrint "Removing OpenVPN Services..."
+	SimpleSC::RemoveService "OpenVPNService"
+	SimpleSC::RemoveService "OpenVPNServiceInteractive"
+	SimpleSC::RemoveService "OpenVPNServiceLegacy"
 	Sleep 3000
 
 	 	ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}" "tap"
@@ -697,10 +738,12 @@ Section "Uninstall"
 	Delete "$INSTDIR\bin\openvpn.exe"
 	Delete "$INSTDIR\bin\openvpnserv.exe"
 	Delete "$INSTDIR\bin\openvpnserv2.exe"
-	Delete "$INSTDIR\bin\libeay32.dll"
-	Delete "$INSTDIR\bin\ssleay32.dll"
 	Delete "$INSTDIR\bin\liblzo2-2.dll"
 	Delete "$INSTDIR\bin\libpkcs11-helper-1.dll"
+	Delete "$INSTDIR\bin\libcrypto-1_1.dll"
+	Delete "$INSTDIR\bin\libcrypto-1_1-x64.dll"
+	Delete "$INSTDIR\bin\libssl-1_1.dll"
+	Delete "$INSTDIR\bin\libssl-1_1-x64.dll"
 
 	Delete "$INSTDIR\config\README.txt"
 	Delete "$INSTDIR\log\README.txt"
@@ -726,5 +769,7 @@ Section "Uninstall"
 	DeleteRegKey HKCR "${PACKAGE_NAME}File"
 	DeleteRegKey HKLM "SOFTWARE\${PACKAGE_NAME}"
 	DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}"
-
+        ; Set installed status to 0 in Active Setup
+	WriteRegDword HKLM "Software\Microsoft\Active Setup\Installed Components\${PACKAGE_NAME}_UserSetup" "IsInstalled" 0x0
+	WriteRegStr HKLM "Software\Microsoft\Active Setup\Installed Components\${PACKAGE_NAME}_UserSetup" "StubPath" "reg delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v OPENVPN-GUI /f"
 SectionEnd
