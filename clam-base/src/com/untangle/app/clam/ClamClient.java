@@ -116,7 +116,6 @@ public class ClamClient extends VirusClient
             }
 
             BufferedOutputStream bufMsgOutputStream = msgcSocket.getBufferedOutputStream();
-            FileInputStream fInputStream = null;
             try {
                 // send message (on msg socket)
                 //
@@ -124,7 +123,7 @@ public class ClamClient extends VirusClient
                 // we don't exit until we've checked the main socket
                 // - clamd will always have a result to report
 
-                fInputStream = new FileInputStream(cContext.getMsgFile());
+                FileInputStream fInputStream = new FileInputStream(cContext.getMsgFile());
                 rBuf = new byte[READ_SZ];
 
                 int rLen;
@@ -132,6 +131,8 @@ public class ClamClient extends VirusClient
                     bufMsgOutputStream.write(rBuf, 0, rLen);
                     bufMsgOutputStream.flush();
                 }
+                fInputStream.close();
+                fInputStream = null;
                 rBuf = null;
             } catch (SocketException e) {
                 // thrown during read block
@@ -144,16 +145,6 @@ public class ClamClient extends VirusClient
             } catch (Exception e) {
                 clogger.warn(dbgName + ", clamc msg failed", e);
                 // fall through and check clamd result
-            } finally {
-                if (fInputStream != null){
-                    try{
-                        fInputStream.close();
-                        fInputStream = null;
-                    } catch (Exception e) {
-                        clogger.warn(dbgName + ", unable to close msg file", e);
-
-                    }
-                }
             }
 
             bufMsgOutputStream = null;
