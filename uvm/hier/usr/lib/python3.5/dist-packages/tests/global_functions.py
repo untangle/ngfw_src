@@ -354,7 +354,7 @@ def get_wan_tuples():
             if wan_ip:
                 wanExtip = get_public_ip_address(extra_options="--bind-address=" + wan_ip,localcall=True)
                 wanExtip = wanExtip.rstrip()
-                wanTup = (wanIndex,wan_ip,wanExtip,wanGateway)
+                wanTup = (wanIndex,wan_ip,wanExtip.decode("utf-8"),wanGateway)
                 myWANs.append(wanTup)
     return myWANs
 
