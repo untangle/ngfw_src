@@ -32,12 +32,18 @@ import com.untangle.uvm.vnet.AppTCPSession;
 
 import com.untangle.uvm.util.Pulse;
 
-
 /**
  * Does blacklist lookups from zvelo API.
  */
 public class WebFilterDecisionEngine extends DecisionEngine
 {
+    public static String BCTI_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
+    public static String BCTI_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
+    public static String BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY="cats";
+    public static String BCTI_QUERY_URLINFO_CATEGORY_ID_KEY="catid";
+    public static String BCTI_QUERY_URLCLEARCACHE = "{\"url/setcacheclear\":{}}\r\n";
+    public static String BCTI_QUERY_STATUS = "{\"status\":{}}\r\n";
+
     private static final String QUIC_COOKIE_FIELD_NAME = "alt-svc";
     private static final String QUIC_COOKIE_FIELD_START = "quic=";
 
@@ -51,12 +57,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static Integer UNCATEGORIZED_CATEGORY = 0;
 
     static private InetSocketAddress SOCKET_ADDRESS = new InetSocketAddress("127.0.0.1", 8484);
-    private static String BCTI_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"catids\": true,\"urls\":[\"";
-    private static String BCTI_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
-    private static String BCTI_QUERY_URLCLEARCACHE = "{\"url/clearcache\":{}}\r\n";
-    private static String BCTI_QUERY_STATUS = "{\"status\":{}}\r\n";
-    private static byte PAYLOAD_SIZE_BEGIN = (byte) '<';
-    private static byte PAYLOAD_SIZE_END = (byte) '>';
 
     private Socket lookupDaemonSocket = null;
 
@@ -178,14 +178,18 @@ public class WebFilterDecisionEngine extends DecisionEngine
         String url = domain + uri;
 
         List<Integer> categories = null;
-        JSONObject urlAnswer = bctidQuery(BCTI_QUERY_URLINFO_PREFIX + url + BCTI_QUERY_URLINFO_SUFFIX);
+        String bctidAnswer = null;
         try{
-            JSONArray catids = urlAnswer.getJSONObject(url).getJSONArray("catids");
+            bctidAnswer = bctidQuery(BCTI_QUERY_URLINFO_PREFIX + url + BCTI_QUERY_URLINFO_SUFFIX);
+            JSONObject urlAnswer = new JSONArray(bctidAnswer).getJSONObject(0);
+
+            JSONArray catids = urlAnswer.getJSONArray(BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY);
             categories = new ArrayList<Integer>(catids.length());
             for(i = 0; i < catids.length(); i++){
-                categories.add(catids.getInt(i));
+                categories.add(catids.getJSONObject(i).getInt(BCTI_QUERY_URLINFO_CATEGORY_ID_KEY));
             }
         }catch(Exception e){
+            logger.warn(bctidAnswer);
             logger.warn(e);
         }
 
@@ -250,9 +254,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
     /**
      * Query daemon.
      * @param  query        String of bcti query to send
-     * @return     JSON object of response.
+     * @return              String of json response.
      */
-    JSONObject bctidQuery(String query)
+    String bctidQuery(String query)
     {
         return bctidQuery(query, false);
     }
@@ -261,11 +265,12 @@ public class WebFilterDecisionEngine extends DecisionEngine
      * Query daemon.
      * @param  query        String of bcti query to send
      * @param  reopenSocket Boolean where if true, eopen the socket, otherwise reuse existing
-     * @return              JSON object of response
+     * @return              String of json response.
      */
-    JSONObject bctidQuery(String query, Boolean reopenSocket)
+    String bctidQuery(String query, Boolean reopenSocket)
     {
-        JSONObject answer = null;
+        String answer = null;
+        StringBuilder responseBuilder = new StringBuilder(1024);
         try{
             synchronized(this){
                 if(lookupDaemonSocket == null || reopenSocket){
@@ -278,26 +283,25 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                 InputStream is = lookupDaemonSocket.getInputStream();
 
-                boolean inSize = false;
-                int payloadSize = 0;
-                int c;
+                // !!! look for \r\n not just \n
+                boolean rFound = false;
+                boolean nFound = false;
+                byte payloadBuffer[] = new byte[1024];
+                int c = 0;
+                int payloadRead = 0;
+                int sbLength = 0;
                 do{
-                    c = is.read();
-                    if(c == PAYLOAD_SIZE_BEGIN){
-                        inSize = true;
-                        continue;
+                    payloadRead = is.read(payloadBuffer);
+                    if((char) payloadBuffer[payloadRead - 1] == '\n'){
+                        nFound = true;
                     }
-                    if(inSize){
-                        if(c == PAYLOAD_SIZE_END){
-                            break;
-                        }
-                        payloadSize = (char) (c - 48)+ (payloadSize * 10);
+                    answer = new String(payloadBuffer, 0, payloadRead);
+                    if(nFound && responseBuilder.length() == 0){
+                        break;
                     }
-                }while(is.available()>0);
-                byte payloadBuffer[] = new byte[payloadSize];
-                is.read(payloadBuffer,0,payloadSize);
-
-                answer = new JSONObject(new String(payloadBuffer, 0, payloadSize));
+                    responseBuilder.append(answer);
+                    answer = responseBuilder.toString();
+                }while(!nFound);
             }
         }catch(Exception e){
             logger.warn(e);
@@ -439,9 +443,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
          */
         public void run()
         {
-            JSONObject status = bctidQuery(BCTI_QUERY_STATUS);
             try{
-                ourApp.setCacheCount(new Long(status.getInt("url_cache_current_size")));
+                JSONObject status = new JSONObject(bctidQuery(BCTI_QUERY_STATUS));
+                ourApp.setCacheCount(new Long(status.getJSONObject("url_db").getInt("url_cache_current_size")));
             }catch(Exception e){
                 logger.warn(e);
             }
