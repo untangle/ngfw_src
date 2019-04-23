@@ -669,35 +669,32 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         sb.append("\tby ").append(receivedBy == null ? "untangle" : receivedBy).append("; ").append(MIMEUtil.getRFC822Date());
 
         File ret = null;
-        try{
-            File.createTempFile("SpamSmtpHandler-", null);
+        FileOutputStream fOut = null;
+        try {
+            ret = File.createTempFile("SpamSmtpHandler-", null);
             if (ret != null) session.attachTempFile(ret.getAbsolutePath());
-        }catch(Exception e){
-            logger.warn("Unable to create temp file:", e);
-        }
-        if(ret != null){
-            try (
-                FileOutputStream fOut = new FileOutputStream(ret);
-                BufferedOutputStream bOut = new BufferedOutputStream(fOut);
-                MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
-            ) {
-                mimeOut.writeLine(sb.toString());
-                msg.writeTo(mimeOut);
-                mimeOut.flush();
-                bOut.flush();
-                fOut.flush();
-            } catch (Exception ex) {
-                if(ret != null){
-                    try {
-                        ret.delete();
-                    } catch (Exception ignore) {
-                    }
-                    ret = null;
-                }
-                logger.error("Exception writing MIME Message to file", ex);
+            fOut = new FileOutputStream(ret);
+            BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+            MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
+            mimeOut.writeLine(sb.toString());
+            msg.writeTo(mimeOut);
+            mimeOut.flush();
+            bOut.flush();
+            fOut.flush();
+            fOut.close();
+            return ret;
+        } catch (Exception ex) {
+            try {
+                fOut.close();
+            } catch (Exception ignore) {
             }
+            try {
+                ret.delete();
+            } catch (Exception ignore) {
+            }
+            logger.error("Exception writing MIME Message to file", ex);
+            return null;
         }
-        return ret;
     }
 
     /**
