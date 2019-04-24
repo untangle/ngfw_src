@@ -157,10 +157,13 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     openvpnNameText: 'A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed.'.t(),
 
 
-    domainName: function(value){
+    domainName: function(value) {
+        if (value.charAt(0) === '.') {
+            return(false);
+        }
         return this.mask.domainNameRe.test(value);
     },
-    domainNameText: 'A domain can only contain numbers, letters, dashes and periods.'.t(),
+    domainNameText: 'A domain can only contain numbers, letters, dashes and periods, and must not start with a period.'.t(),
 
     cidrBlock:  function (v) {
         return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(v));
