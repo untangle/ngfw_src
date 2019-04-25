@@ -61,6 +61,8 @@ Ext.define('Ung.apps.webfilter.MainController', {
             });
         });
 
+        console.log(vm.get('settings'));
+
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
         .then(function(result){
@@ -176,7 +178,6 @@ Ext.define('Ung.apps.webfilter.MainController', {
             if(Util.isDestroyed(v, vm, showAddress, suggestBox)){
                 return;
             }
-            console.log(result);
             v.setLoading(false);
 
             var showCategory = v.down("[fieldIndex='siteLookupCategory']");
@@ -200,6 +201,86 @@ Ext.define('Ung.apps.webfilter.MainController', {
             }
             Util.handleException(ex);
         });
-    }
+    },
 
+});
+
+Ext.define('Ung.apps.webfilter.cmp.SearchTermsGridController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.unwebfiltersearchtermsgrid',
+
+    handleImport: function(btn){
+        var me = this;
+
+        btn.up('form').submit({
+            waitMsg: 'Please wait while the settings are uploaded...'.t(),
+            success: function(form, action) {
+                if (!action.result) {
+                    Ext.MessageBox.alert('Warning'.t(), 'Import failed.'.t());
+                    return;
+                }
+                if (!action.result.success) {
+                    Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                    return;
+                }
+
+                var blocked = false;
+                var flagged = false;
+                form.getValues().defaultActions.forEach(function(action){
+                    if(action == 'block'){
+                        blocked = true;
+                    }
+                    if(action == 'flag'){
+                        flagged = true;
+                    }
+                });
+
+                var fileType = form.getValues().fileType;
+                var jsonArray = [];
+                if(fileType == 'COMMA'){
+                    action.result.msg.split("\n").forEach( function(line){
+                        line = line.trim();
+                        if(!line.length || line[0] == '#'){
+                            return;
+                        }
+                        if(line.indexOf(',') > -1){
+                            line.split(",").forEach( function(term){
+                                term = term.trim();
+                                jsonArray.push({
+                                    string: term,
+                                    description: term,
+                                    blocked: blocked,
+                                    flagged: flagged,
+                                    javaClass: "com.untangle.uvm.app.GenericRule"
+                                });
+                            });
+                        }
+                    });
+                }else if(fileType == 'NEWLINE'){
+                    action.result.msg.split("\n").forEach( function(line){
+                        line = line.trim();
+                        if(!line.length){
+                            return;
+                        }
+                        jsonArray.push({
+                            string: line,
+                            description: line,
+                            blocked: blocked,
+                            flagged: flagged,
+                            javaClass: "com.untangle.uvm.app.GenericRule"
+                        });
+                    });
+
+                }else{
+                    jsonArray = action.result.msg;
+                }
+
+                me.importHandler(form.getValues().importMode, jsonArray);
+                me.importDialog.close();
+            },
+            failure: function(form, action) {
+                Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+            }
+        });
+    }
 });
