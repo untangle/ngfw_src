@@ -9,6 +9,7 @@ Ext.define('Ung.apps.webfilter.Main', {
                 data: '{settings.categories.list}',
                 groupField: 'category'
             },
+            searchTerms:   { data: '{settings.searchTerms.list}' },
             blockedUrls:   { data: '{settings.blockedUrls.list}' },
             passedUrls:    { data: '{settings.passedUrls.list}' },
             passedClients: { data: '{settings.passedClients.list}' },
@@ -19,6 +20,7 @@ Ext.define('Ung.apps.webfilter.Main', {
     items: [
         { xtype: 'app-web-filter-status' },
         { xtype: 'app-web-filter-categories' },
+        { xtype: 'app-web-filter-searchterms' },
         { xtype: 'app-web-filter-sitelookup' },
         { xtype: 'app-web-filter-blocksites' },
         { xtype: 'app-web-filter-passsites' },
