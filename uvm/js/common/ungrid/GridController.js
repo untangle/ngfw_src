@@ -265,7 +265,9 @@ Ext.define('Ung.cmp.GridController', {
 
     // import/export features
     importData: function () {
-        var me = this;
+        var me = this,
+            v = me.getView();
+
         this.importDialog = this.getView().add({
             xtype: 'window',
             title: 'Import Settings'.t(),
@@ -279,34 +281,41 @@ Ext.define('Ung.cmp.GridController', {
                 url: 'gridSettings',
                 bodyPadding: 10,
                 layout: 'anchor',
-                items: [{
-                    xtype: 'radiogroup',
+                items: Ext.Array.merge( v.import && v.import.items ? v.import.items : [], [{
+                    fieldLabel: 'How to process'.t(),
                     name: 'importMode',
-                    simpleValue: true,
+                    editable: false,
+                    xtype: 'combo',
+                    queryMode: 'local',
+                    grow: true,
                     value: 'replace',
-                    columns: 1,
-                    vertical: true,
-                    items: [
-                        { boxLabel: '<strong>' + 'Replace current settings'.t() + '</strong>', inputValue: 'replace' },
-                        { boxLabel: '<strong>' + 'Prepend to current settings'.t() + '</strong>', inputValue: 'prepend' },
-                        { boxLabel: '<strong>' + 'Append to current settings'.t() + '</strong>', inputValue: 'append' }
-                    ]
-                }, {
-                    xtype: 'component',
-                    margin: 10,
-                    html: 'with settings from'.t()
+                    store: [[
+                        'replace', 'Replace current settings'.t()
+                    ],[
+                        'prepend', 'Prepend to current settings'.t()
+                    ],[
+                        'append', 'Append to current settings'.t()
+                    ]],
+                    forceSelection: true
                 }, {
                     xtype: 'filefield',
                     anchor: '100%',
-                    fieldLabel: 'File'.t(),
-                    labelAlign: 'right',
+                    fieldLabel: 'Settings file'.t(),
+                    emtpyText: 'Select a file',
                     allowBlank: false,
-                    validateOnBlur: false
+                    validateOnBlur: false,
+                    listeners:{
+                        change: function( field, value){
+                            // Remove "fakepath" leaving just the filename
+                            field.setRawValue(value.replace(/(^.*(\\|\/))?/, ""));
+                        }
+                    }
                 }, {
                     xtype: 'hidden',
                     name: 'type',
                     value: 'import'
-                }],
+                }]
+                ),
                 buttons: [{
                     text: 'Cancel'.t(),
                     iconCls: 'fa fa-ban fa-red',
@@ -317,7 +326,7 @@ Ext.define('Ung.cmp.GridController', {
                     text: 'Import'.t(),
                     iconCls: 'fa fa-check',
                     formBind: true,
-                    handler: function (btn) {
+                    handler: v.import && v.import.handler ? v.import.handler : function (btn) {
                         btn.up('form').submit({
                             waitMsg: 'Please wait while the settings are uploaded...'.t(),
                             success: function(form, action) {
