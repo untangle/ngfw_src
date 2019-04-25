@@ -37,3 +37,5 @@ CREATE TABLE reports.http_query_events (
     s2c_content_length bigint, 
     s2c_content_type text)""",["request_id","event_id"],["session_id","policy_id","time_stamp"])
 
+    sql_helper.add_column('http_query_events', 'blocked', 'boolean') #rule_14.2
+    sql_helper.add_column('http_query_events', 'flagged', 'boolean') #rule_14.2
