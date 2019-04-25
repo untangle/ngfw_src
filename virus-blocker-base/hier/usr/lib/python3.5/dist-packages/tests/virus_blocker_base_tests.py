@@ -442,7 +442,7 @@ class VirusBlockerBaseTests(unittest.TestCase):
 
         remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.zip 2>&1")
 
-        events = global_functions.get_events('Virus Blocker','Scanned Web Events',None,1)
+        events = global_functions.get_events(self.displayName(),'Scanned Web Events',None,1)
         assert(events != None)
 
         found = global_functions.check_events(events.get("list"), 50, 
