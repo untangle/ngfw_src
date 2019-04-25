@@ -1433,7 +1433,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.booleanFilter
             }, {
                 header: 'Reason For Action'.t() +  ' (Web Filter)',
-                width: Renderer.messageWidth,
+                width: Renderer.messageWidth + 30,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'web_filter_reason'
@@ -1556,6 +1556,12 @@ Ext.define('TableConfig', {
                 type: 'string'
             }, {
                 name: 'term'
+            }, {
+                name: 'blocked',
+                type: 'boolean'
+            }, {
+                name: 'flagged',
+                type: 'boolean'
             }],
             columns: [{
                 header: 'Event Id'.t(),
@@ -1680,6 +1686,18 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'term'
+            }, {
+                header: 'Blocked'.t(),
+                width: Renderer.booleanWidth,
+                sortable: true,
+                dataIndex: 'blocked',
+                filter: Renderer.booleanFilter
+            }, {
+                header: 'Flagged'.t(),
+                width: Renderer.booleanWidth,
+                sortable: true,
+                dataIndex: 'flagged',
+                filter: Renderer.booleanFilter
             }, {
                 header: 'Method'.t(),
                 width: Renderer.portWidth,
