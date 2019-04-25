@@ -13,6 +13,7 @@ public enum Reason
 
     BLOCK_CATEGORY('D', "in Categories Block list"),
     BLOCK_URL('U', "in Site Block list"),
+    BLOCK_SEARCH_TERM('T', "in Search Term list"),
     BLOCK_IP_HOST('H', "hostname is an IP address"),
     PASS_URL('I', "in Site Pass list"),
     PASS_REFERER_URL('R', "referer in Site Pass list"),
