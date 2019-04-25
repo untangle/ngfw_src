@@ -47,6 +47,7 @@ public class WebFilterSettings implements Serializable, JSONString
     private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> blockedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> categories = new LinkedList<GenericRule>();
+    private List<GenericRule> searchTerms = new LinkedList<GenericRule>();
 
     // these are needed during V1 to V2 settings conversion 
     private List<GenericRule> blockedMimeTypes = new LinkedList<GenericRule>();
@@ -75,6 +76,9 @@ public class WebFilterSettings implements Serializable, JSONString
 
     public List<GenericRule> getCategories() { return this.categories; }
     public void setCategories( List<GenericRule > categories) { this.categories = categories; }
+
+    public List<GenericRule> getSearchTerms() { return this.searchTerms; }
+    public void setSearchTerms( List<GenericRule > searchTerms) { this.searchTerms = searchTerms; }
 
     public List<GenericRule> V1_getBlockedMimeTypes() { return blockedMimeTypes; }
     public void setBlockedMimeTypes( List<GenericRule > blockedMimeTypes) { this.blockedMimeTypes = blockedMimeTypes; }

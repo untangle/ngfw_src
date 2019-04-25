@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +29,9 @@ import com.untangle.app.web_filter.DecisionEngine;
 import com.untangle.app.web_filter.WebFilterBase;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.License;
+import com.untangle.uvm.app.GenericRule;
+import com.untangle.uvm.app.GlobMatcher;
+import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.vnet.AppTCPSession;
 
 import com.untangle.uvm.util.Pulse;
@@ -102,15 +106,75 @@ public class WebFilterDecisionEngine extends DecisionEngine
     @Override
     public String checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
+        Boolean isFlagged = false;
         if (!isLicenseValid()) {
             return null;
         } else {
             String result = super.checkRequest(sess, clientIp, port, requestLine, header);
             if (result == null) {
                 String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
+
                 if (term != null) {
-                    WebFilterQueryEvent hbe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, getApp().getName());
+                    GenericRule matchingRule = null;
+                    for (GenericRule rule : ourApp.getSettings().getSearchTerms()) {
+                        if (rule.getEnabled() != null && !rule.getEnabled()) continue;
+
+                        Object matcherO = rule.attachment();
+                        GlobMatcher matcher = null;
+
+                        /**
+                         * If the matcher is not attached to the rule, initialize a new one
+                         * and attach it. Otherwise just use the matcher already initialized
+                         * and attached to the rule
+                         */
+                        if (matcherO == null || !(matcherO instanceof GlobMatcher)) {
+                            matcher = GlobMatcher.getMatcher("*\\b" + rule.getString() + "\\b*");
+                            rule.attach(matcher);
+                        } else {
+                            matcher = (GlobMatcher) matcherO;
+                        }
+
+                        if (matcher.isMatch(term)) {
+                            logger.warn("LOG: " + term + " matches " + rule.getString());
+                            matchingRule = rule;
+                            break;
+                        }
+                    }
+
+                    WebFilterQueryEvent hbe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, getApp().getName());
                     getApp().logEvent(hbe);
+
+                    if(matchingRule != null){
+                        URI uri = null;
+
+                        try {
+                            uri = new URI(CONSECUTIVE_SLASHES_URI_PATTERN.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll("/"));
+                        } catch (URISyntaxException e) {
+                            logger.error("Could not parse URI '" + uri + "'", e);
+                        }
+
+                        String host = uri.getHost();
+                        if (null == host) {
+                            host = header.getValue("host");
+                            if (null == host) {
+                                host = clientIp.getHostAddress();
+                            }
+                        }
+
+                        host = UrlMatchingUtil.normalizeHostname(host);
+
+                        if (matchingRule.getBlocked()) {
+                            ourApp.incrementFlagCount();
+
+                            WebFilterBlockDetails bd = new WebFilterBlockDetails(ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle());
+                            return ourApp.generateNonce(bd);
+                        } else {
+                            if (matchingRule.getFlagged()) isFlagged = true;
+
+                            if (isFlagged) ourApp.incrementFlagCount();
+                            return null;
+                        }
+                    }
                 }
 
                 if(ourApp.getSettings().getRestrictYoutube()){
