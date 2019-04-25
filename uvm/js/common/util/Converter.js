@@ -271,6 +271,7 @@ Ext.define('Ung.util.Converter', {
     httpReasonMap: {
         D: 'in Categories Block list'.t(),
         U: 'in Site Block list'.t(),
+        T: 'in Search Term list'.t(),
         E: 'in File Block list'.t(),
         M: 'in MIME Types Block list'.t(),
         H: 'hostname is an IP address'.t(),
