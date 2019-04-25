@@ -41,6 +41,8 @@ public class GridSettingsServlet extends HttpServlet
     
     private static final String CHARACTER_ENCODING = "utf-8";
 
+    private static final String DEFAULT_FILE_TYPE = "JSONArray";
+
     /**
      * doPost - handle POST 
      * @param req
@@ -77,41 +79,52 @@ public class GridSettingsServlet extends HttpServlet
         // Parse the request
         List<FileItem> items = null;
         JSONArray gridSettings = null;
+        String fileType = DEFAULT_FILE_TYPE;
         try {
             items = upload.parseRequest(req);
+            for (FileItem item : items) {
+                if(item.getFieldName().equals("fileType")){
+                    fileType = item.getString();
+                }
+            }
             for (FileItem item : items) {
                 if (!item.isFormField()) {
                     String fileString = item.getString();
                     if (fileString != null && fileString.trim().length() > 0) {
-                        gridSettings = new JSONArray(fileString.trim());
-                        createImportRespose(resp, true, gridSettings);
-                        return;
+                        if(fileType.equals(DEFAULT_FILE_TYPE)){
+                            gridSettings = new JSONArray(fileString.trim());
+                            createImportResponse(resp, true, gridSettings);
+                            return;
+                        }else{
+                            createImportResponse(resp, true, fileString);
+                            return;
+                        }
                     } else {
-                        createImportRespose(resp, false, importFailedMessage());
+                        createImportResponse(resp, false, importFailedMessage());
                         return;
                     }
                 }
             }
         } catch (JSONException e) {
             logger.debug("Import grid settings failed. Settings must be formatted as a JSON Array.", e);
-            createImportRespose(resp, false, importFailedMessage());
+            createImportResponse(resp, false, importFailedMessage());
             return;
         } catch (Exception exn) {
             logger.warn("could not upload", exn);
-            createImportRespose(resp, false, exn.getMessage());
+            createImportResponse(resp, false, exn.getMessage());
             return;
         }
 
     }
     
     /**
-     * createImportRespose - create a response to import
+     * createImportResponse - create a response to import
      * @param resp
      * @param success
      * @param msg
      * @throws IOException
      */
-    private void createImportRespose(HttpServletResponse resp, boolean success, Object msg) throws IOException
+    private void createImportResponse(HttpServletResponse resp, boolean success, Object msg) throws IOException
     {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
