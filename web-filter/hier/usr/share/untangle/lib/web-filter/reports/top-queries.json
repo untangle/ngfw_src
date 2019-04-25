@@ -1,0 +1,31 @@
+{
+    "uniqueId": "web-filter-7hfxugZUBTQ",
+    "category": "Web Filter",
+    "description": "The number of non blocked, non-flagged search queries grouped by term.",
+    "displayOrder": 801,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "term",
+    "pieSumColumn": "count(*)",
+    "readOnly": true,
+    "table": "http_query_events",
+    "title": "Top Searches",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH",
+     "conditions": [
+        {
+            "column": "blocked",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "operator": "=",
+            "value": "false"
+        },{
+            "column": "flagged",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "operator": "=",
+            "value": "false"
+        }
+    ],
+}
