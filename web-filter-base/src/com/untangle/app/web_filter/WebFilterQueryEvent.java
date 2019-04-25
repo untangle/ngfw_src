@@ -25,15 +25,19 @@ public class WebFilterQueryEvent extends LogEvent
     private URI requestUri;
     private String host;
     private long contentLength;
+    private Boolean blocked;
+    private Boolean flagged;
 
     public WebFilterQueryEvent() { }
 
-    public WebFilterQueryEvent(RequestLine requestLine, String host, String term, String appName)
+    public WebFilterQueryEvent(RequestLine requestLine, String host, String term, Boolean blocked, Boolean flagged, String appName)
     {
         this.host = host;
         this.requestId = requestLine.getRequestId();
         this.method = requestLine.getMethod();
         this.term = term;
+        this.blocked = blocked;
+        this.flagged = flagged;
         this.appName = appName;
         this.sessionEvent = requestLine.getSessionEvent();
         this.requestUri = requestLine.getRequestUri();
@@ -50,6 +54,12 @@ public class WebFilterQueryEvent extends LogEvent
 
     public String getTerm() { return term; }
     public void setTerm( String term ) { this.term = term; }
+
+    public Boolean getBlocked() { return blocked; }
+    public void setBlocked( Boolean blocked ) { this.blocked = blocked; }
+
+    public Boolean getFlagged() { return flagged; }
+    public void setFlagged( Boolean flagged ) { this.flagged = flagged; }
 
     public String getAppName() { return appName; }
     public void setAppName(String appName) { this.appName = appName; }
@@ -89,12 +99,14 @@ public class WebFilterQueryEvent extends LogEvent
             "host, " +
             "c2s_content_length, " + 
             "hostname, " +
-            "term" + 
+            "term," + 
+            "blocked," + 
+            "flagged" + 
         ") " + 
         "values ( " + 
             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " + 
             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " + 
-            "?" +
+            "?, ?, ?" +
         ")";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -121,6 +133,8 @@ public class WebFilterQueryEvent extends LogEvent
         pstmt.setLong(++i, getContentLength());
         pstmt.setString(++i, getSessionEvent().getHostname());
         pstmt.setString(++i, getTerm());
+        pstmt.setBoolean(++i, getBlocked());
+        pstmt.setBoolean(++i, getFlagged());
 
         pstmt.addBatch();
         return;
