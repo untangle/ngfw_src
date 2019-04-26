@@ -305,7 +305,7 @@ public class ActiveDirectoryManagerImpl
      */
     public boolean authenticate( String username, String pwd )
     {
-        String authUsername = null;
+        String authUsername = username;
         String authDomain = null;
         if(username.contains("\\")){
             String[] domainUsername = username.split("\\\\");
