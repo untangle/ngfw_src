@@ -19,7 +19,7 @@ orig_netsettings = None
 
 # hardcoded for ats testing
 l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.111.0.134","10.111.56.91","10.111.56.94","10.111.56.57"]
-l2tpClientHost = "10.111.56.83"  # Windows running freeSSHd
+l2tpClientHost = "10.111.56.84"  # Windows 10 using builtin OpenSSH
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
 ipsecHost = "10.111.56.96"
