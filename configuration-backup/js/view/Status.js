@@ -26,29 +26,6 @@ Ext.define('Ung.apps.configurationbackup.view.Status', {
         }, {
             xtype: 'appstate'
         }, {
-            xtype: 'fieldset',
-            title: '<i class="fa fa-files-o"></i> ' + 'Backup Now'.t(),
-            padding: 10,
-            margin: '20 0',
-            cls: 'app-section',
-
-            collapsed: true,
-            disabled: true,
-            bind: {
-                collapsed: '{!state.on}',
-                disabled: '{!state.on}'
-            },
-            items: [{
-                xtype: 'component',
-                html: '<strong>' + 'Force an immediate backup now.'.t() + '</strong>',
-                margin: '0 0 10 0'
-            }, {
-                xtype: 'button',
-                text: 'Backup now'.t(),
-                handler: 'backupNow'
-            }]
-
-        }, {
             xtype: 'appreports'
         }, {
             xtype: 'appremove'
