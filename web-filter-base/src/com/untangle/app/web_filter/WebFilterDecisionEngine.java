@@ -6,6 +6,7 @@ package com.untangle.app.web_filter;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -63,6 +64,8 @@ public class WebFilterDecisionEngine extends DecisionEngine
     static private InetSocketAddress SOCKET_ADDRESS = new InetSocketAddress("127.0.0.1", 8484);
 
     private Socket lookupDaemonSocket = null;
+    private static final long BCTID_CONNECT_WAIT = 5 * 1000;
+    private long lookupSocketConnectWait = 0L;
 
     private final Logger logger = Logger.getLogger(getClass());
     private WebFilterBase ourApp = null;
@@ -337,6 +340,14 @@ public class WebFilterDecisionEngine extends DecisionEngine
         StringBuilder responseBuilder = new StringBuilder(1024);
         try{
             synchronized(this){
+                if(lookupSocketConnectWait > 0){
+                    if(lookupSocketConnectWait < System.currentTimeMillis()){
+                        lookupSocketConnectWait = 0;
+                    }else{
+                        return answer;
+                    }
+                }
+
                 if(lookupDaemonSocket == null || reopenSocket){
                     lookupDaemonSocket = new Socket();
                     lookupDaemonSocket.connect(SOCKET_ADDRESS);
@@ -366,6 +377,12 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     responseBuilder.append(answer);
                     answer = responseBuilder.toString();
                 }while(!nFound);
+            }
+        }catch(ConnectException ce){
+            logger.warn("Unable to connect.  Waiting "+BCTID_CONNECT_WAIT);
+            synchronized(this){
+                lookupDaemonSocket = null;
+                lookupSocketConnectWait = System.currentTimeMillis() + BCTID_CONNECT_WAIT;
             }
         }catch(Exception e){
             logger.warn(e);
