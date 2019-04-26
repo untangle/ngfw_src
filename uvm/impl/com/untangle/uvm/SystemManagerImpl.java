@@ -662,7 +662,10 @@ public class SystemManagerImpl implements SystemManager
 
         writeDefaultSnmpCtlFile(snmpSettings);
         writeSnmpdConfFile(snmpSettings);
-        restartSnmpDaemon();
+
+        if (settings.getSnmpSettings().isEnabled()) restartSnmpDaemon();
+        else stopSnmpDaemon();
+
         // The SNMPv3 manager does its own snmpd management, if neccessary
         writeSnmpdV3User(snmpSettings);
     }
