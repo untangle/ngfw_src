@@ -3853,8 +3853,7 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'address',
-                sortType: 'asIp'
+                name: 'entity'
             }, {
                 name: 'action',
                 convert: Converter.quotaAction
