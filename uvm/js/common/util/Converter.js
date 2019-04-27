@@ -278,7 +278,7 @@ Ext.define('Ung.util.Converter', {
         I: 'in Site Pass list'.t(),
         R: 'referer in Site Pass list'.t(),
         C: 'in Clients Pass list'.t(),
-        B: 'in Unblocked list'.t(),
+        B: 'in Temporary Unblocked list'.t(),
         F: 'in Rules list'.t(),
         N: 'no rule applied'.t(),
         default: 'no rule applied'.t()
