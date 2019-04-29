@@ -763,6 +763,21 @@ Ext.define('Ung.config.network.Interface', {
                 ],
                 queryMode: 'local'
             }, {
+                // visibility
+                xtype: 'combo',
+                fieldLabel: 'Visibility'.t(),
+                value: '0',
+                bind: {
+                 value: '{intf.wirelessVisibility}',
+                 hidden: '{intf.wirelessMode === "CLIENT"}'
+                },
+                editable: false,
+                store: [
+                    ['0', 'Advertise this SSID publicly'.t()],
+                    ['1', 'Hide this SSID'.t()]
+                ],
+                queryMode: 'local'
+            }, {
                 // encryption
                 xtype: 'combo',
                 fieldLabel: 'Encryption'.t(),
@@ -1105,4 +1120,3 @@ Ext.define('Ung.config.network.Interface', {
     }]
 
 });
-
