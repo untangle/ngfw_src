@@ -151,7 +151,7 @@ def add_ad_settings(ldap_secure=False):
     # test the settings before saving them.
     test_result_string = app.getActiveDirectoryManager().getStatusForSettings(create_ad_settings(ldap_secure)["activeDirectorySettings"]["servers"]["list"][0])
     print('AD test_result_string %s' % test_result_string)
-    if ("success" in test_result_string):
+    if ("PASS" in test_result_string['status']):
         # settings are good so save them
         app.setSettings(create_ad_settings())
         return 0
@@ -376,9 +376,10 @@ class DirectoryConnectorTests(unittest.TestCase):
         appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
         appAD = app.getActiveDirectoryManager()
         appADData = appAD.getStatusForSettings(appData)  # if settings are successful
-        found = appADData.count(string_to_find)
+        print("appADData : %s" % appADData)
+        # found = appADData.count(string_to_find)
 
-        assert (found)
+        assert ("PASS" in appADData['status'])
 
     def test_041_checkADSettings_Secure(self):
         """
@@ -394,9 +395,10 @@ class DirectoryConnectorTests(unittest.TestCase):
         appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
         appAD = app.getActiveDirectoryManager()
         appADData = appAD.getStatusForSettings(appData)  # if settings are successful
-        found = appADData.count(string_to_find)
+        print("appADData : %s" % appADData)
+        # found = appADData.count(string_to_find)
 
-        assert (found)
+        assert ("PASS" in appADData['status'])
 
     def test_050_checkListOfADUsers_NonSecure(self):
         """
