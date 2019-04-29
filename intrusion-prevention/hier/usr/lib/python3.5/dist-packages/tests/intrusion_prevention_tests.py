@@ -20,7 +20,7 @@ app = None
 def create_signature( gid = "1", sid = "1999999", classtype="attempted-admin", category="app-detect",  msg="Msg", log=True, block=False, 
     action="alert", type="tcp", source_ip="any", source_port="any", dest_ip="any", dest_port="any"):
     if block:
-        action = "drop"
+        action = "reject"
     else:
         action = "alert"
     signature =   action + " " + type + " " + source_ip + " " + source_port + " -> " + dest_ip + " " + dest_port + " (" + \
@@ -220,7 +220,7 @@ class IntrusionPreventionTests(unittest.TestCase):
                                                 category="app-detect",  
                                                 msg="CompanySecret", 
                                                 log=True, 
-                                                block=False, 
+                                                block=True,
                                                 action="alert", 
                                                 type="udp"))
                                                 
@@ -231,7 +231,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
-        result = remote_control.run_command("host www.companysecret.com 4.2.2.1 > /dev/null")
+        result = remote_control.run_command("echo 'companysecret' | nc -w1 -q1 -u 4.2.2.1 2020 > /dev/null")
 
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
