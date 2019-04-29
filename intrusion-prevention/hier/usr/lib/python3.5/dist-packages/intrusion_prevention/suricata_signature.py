@@ -137,7 +137,7 @@ class SuricataSignature:
         if self.enabled is False:
             return action
 
-        if self.action == 'drop':
+        if self.action == 'drop' or self.action == 'reject':
             action["log"] = True
             action["block"] = True
         elif self.action == 'alert':
