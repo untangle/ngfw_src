@@ -574,7 +574,7 @@ class WebFilterBaseTests(unittest.TestCase):
             eventTime = datetime.datetime.now()
             result1 = remote_control.run_command("wget -q -O - 'http://%s%s' 2>&1 >/dev/null" % ( t["host"], t["uri"] ) )
 
-            events = global_functions.get_events(self.displayName(),'All Query Events',None,1)
+            events = global_functions.get_events(self.displayName(),'All Search Events',None,1)
             assert(events != None)
             found = global_functions.check_events( events.get('list'), 5,
                                                    "host", t["host"],
