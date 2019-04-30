@@ -147,11 +147,6 @@ public class NotificationManagerImpl implements NotificationManager
             logger.warn("Notification test exception", e);
         }
         try {
-            testZveloDNSServers(notificationList);
-        } catch (Exception e) {
-            logger.warn("Notification test exception", e);
-        }
-        try {
             testEventWriteTime(notificationList);
         } catch (Exception e) {
             logger.warn("Notification test exception", e);
@@ -731,110 +726,6 @@ public class NotificationManagerImpl implements NotificationManager
 
                         notificationList.add(notificationText);
                     }
-                }
-            }
-        }
-    }
-
-    /**
-     * Tests that zvelo queries can be resolved correctly
-     * 
-     * @param notificationList - the current list of notifications
-     */
-    @SuppressWarnings("rawtypes")
-    private void testZveloDNSServers(List<String> notificationList)
-    {
-        List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
-
-        if (webFilterList.size() == 0) return;
-
-        String query = null;
-        try {
-            Method method;
-            App webFilter = webFilterList.get(0);
-
-            Class[] args = { String.class, String.class };
-            method = webFilter.getClass().getMethod("encodeDnsQuery", args);
-            query = (String) method.invoke(webFilter, "cnn.com", "/");
-        } catch (Exception e) {
-            logger.warn("Exception generating Web Filter DNS query: ", e);
-            return;
-        }
-
-        if (query == null) {
-            logger.warn("Invalid zvelo query: " + query);
-            return;
-        }
-
-        for (InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces()) {
-            if (!intf.getIsWan()) continue;
-
-            InetAddress dnsPrimary = UvmContextFactory.context().networkManager().getInterfaceStatus(intf.getInterfaceId()).getV4Dns1();
-            InetAddress dnsSecondary = UvmContextFactory.context().networkManager().getInterfaceStatus(intf.getInterfaceId()).getV4Dns2();
-
-            List<String> dnsServers = new LinkedList<>();
-            if (dnsPrimary != null) dnsServers.add(dnsPrimary.getHostAddress());
-            if (dnsSecondary != null) dnsServers.add(dnsSecondary.getHostAddress());
-
-            for (String dnsServer : dnsServers) {
-
-                Lookup lookup;
-                Record[] records = null;
-
-                try {
-                    lookup = new Lookup(query, Type.TXT);
-                } catch (Exception e) {
-                    logger.warn("Invalid Lookup", e);
-                    continue;
-                }
-                long t0 = System.currentTimeMillis();
-                try {
-                    lookup.setResolver(new SimpleResolver(dnsServer));
-                    records = lookup.run();
-                } catch (Exception e) {
-                    logger.warn("Invalid Resolver: " + dnsServer);
-                }
-                long t1 = System.currentTimeMillis();
-
-                if (records == null) {
-                    records = new Record[0];
-                }
-
-                boolean found = false;
-                for (Record r : records) {
-                    if (r instanceof TXTRecord) {
-                        for (Object o : ((TXTRecord) r).getStringsAsByteArrays()) {
-                            String resultStr = new String((byte[]) o);
-                            //if there is a TXT response that includes cnn.com its probably correct
-                            if (resultStr.contains("cnn.com")) found = true;
-                        }
-                    }
-                }
-
-                if (!found) {
-                    String notificationText = "";
-                    notificationText += "Web Filter " + i18nUtil.tr("is installed but a DNS server");
-                    notificationText += " (";
-                    notificationText += intf.getName();
-                    notificationText += ", ";
-                    notificationText += dnsServer + ")";
-                    notificationText += " " + i18nUtil.tr("fails to resolve categorization queries.");
-
-                    logger.warn("DNS Lookup failed [" + dnsServer + ",TXT]: " + query);
-                    notificationList.add(notificationText);
-                } else if (t1 - t0 > 500) {
-                    String notificationText = "";
-                    notificationText += i18nUtil.tr("A DNS server responds slowly.");
-                    notificationText += " (";
-                    notificationText += intf.getName();
-                    notificationText += ", ";
-                    notificationText += dnsServer;
-                    notificationText += ", ";
-                    notificationText += (t1 - t0) + " ms";
-                    notificationText += ") ";
-                    notificationText += i18nUtil.tr("This may negatively affect Web Filter performance.");
-
-                    notificationList.add(notificationText);
                 }
             }
         }
