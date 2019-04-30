@@ -43,6 +43,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     copyId: 'sid',
     copyIdPreserve: true,
     copyAppendField: 'msg',
+    copyReferenceFields: ['matchingRules'],
     copyModify: [{
         key: 'reserved',
         value: false,
