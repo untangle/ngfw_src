@@ -172,7 +172,7 @@ class SslInspectorTests(unittest.TestCase):
             result = remote_control.run_command("curl -s -4 -o /dev/null -A 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1' --connect-timeout 10 --insecure 'https://%s%s'" % ( t["host"], t["uri"] ) )
             assert( result == 0 )
 
-            events = global_functions.get_events('Web Filter','All Query Events',None,1)
+            events = global_functions.get_events('Web Filter','All Search Events',None,1)
             assert(events != None)
             found = global_functions.check_events( events.get('list'), 5,
                                                 "host", t["host"],
