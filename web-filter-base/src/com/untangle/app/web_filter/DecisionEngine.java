@@ -464,6 +464,16 @@ public abstract class DecisionEngine
     }
 
     /**
+     * Start the engine.
+     */
+    public void start(){}
+
+    /**
+     * Stop the engine.
+     */
+    public void stop(){}
+
+    /**
      * checkUnblockedSites checks the host+uri against the current unblocks for
      * clientIp
      * 

@@ -76,6 +76,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     private static long DEFAULT_GET_STATISTICS_INTERVAL_MS = (long) 30 * 1000; /* every 30 seconds */
     private static long DEFAULT_GET_STATISTICS_RUN_TIMEOUT_MS = (long) 60 * 60 * 1000; /* Kill process after 60 minutes.  */
+
     private Pulse pulseGetStatistics = new Pulse("decision-get-statistics", new GetStatistics(), DEFAULT_GET_STATISTICS_INTERVAL_MS, true, DEFAULT_GET_STATISTICS_RUN_TIMEOUT_MS);
 
     /**
@@ -88,7 +89,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
     {
         super(app);
         ourApp = app;
-        pulseGetStatistics.start();
     }
 
     /**
@@ -256,7 +256,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 categories.add(catids.getJSONObject(i).getInt(BCTI_QUERY_URLINFO_CATEGORY_ID_KEY));
             }
         }catch(Exception e){
-            logger.warn(bctidAnswer);
+            if(bctidAnswer != null){
+                logger.warn("bctidAnswer: "+ bctidAnswer);
+            }
             logger.warn(e);
         }
 
@@ -319,6 +321,33 @@ public class WebFilterDecisionEngine extends DecisionEngine
     }
 
     /**
+     * Start the statistics gatherer.
+     */
+    public void start()
+    {
+        pulseGetStatistics.start();
+    }
+
+    /**
+     * Close the bcti sockets.
+     */
+    public void stop()
+    {
+        try{
+            if(pulseGetStatistics.getState() == Pulse.PulseState.RUNNING){
+                pulseGetStatistics.stop();
+            }
+            synchronized(this){
+                if(lookupDaemonSocket != null){
+                    lookupDaemonSocket.close();
+                }
+            }
+        }catch(Exception e){
+            logger.warn("Unable to close socket", e);
+        }
+    }
+
+    /**
      * Query daemon.
      * @param  query        String of bcti query to send
      * @return              String of json response.
@@ -331,7 +360,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     /**
      * Query daemon.
      * @param  query        String of bcti query to send
-     * @param  reopenSocket Boolean where if true, eopen the socket, otherwise reuse existing
+     * @param  reopenSocket Boolean where if true, open the socket, otherwise reuse existing
      * @return              String of json response.
      */
     String bctidQuery(String query, Boolean reopenSocket)
@@ -528,7 +557,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 JSONObject status = new JSONObject(bctidQuery(BCTI_QUERY_STATUS));
                 ourApp.setCacheCount(new Long(status.getJSONObject("url_db").getInt("url_cache_current_size")));
             }catch(Exception e){
-                logger.warn(e);
+                logger.warn("Unable to query cache size",e);
             }
         }
     }

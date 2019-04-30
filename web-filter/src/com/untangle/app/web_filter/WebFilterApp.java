@@ -120,6 +120,7 @@ public class WebFilterApp extends WebFilterBase
         }
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
+        getDecisionEngine().start();
 
         super.preStart(isPermanentTransition);
     }
@@ -133,6 +134,7 @@ public class WebFilterApp extends WebFilterBase
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
+        getDecisionEngine().stop();
         UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bctid");
 
         super.postStop(isPermanentTransition);
@@ -218,4 +220,5 @@ public class WebFilterApp extends WebFilterBase
         addCategories(categories);
         settings.setCategories(categories);
     }
+
 }
