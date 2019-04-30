@@ -1,0 +1,20 @@
+{
+    "category": "Web Monitor",
+    "readOnly": true,
+    "type": "EVENT_LIST",
+    "conditions": [
+        {
+            "column": "flagged",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "operator": "is",
+            "value": "TRUE"
+        }
+    ],
+    "defaultColumns": ["time_stamp","hostname","username","host","term","blocked","flagged","c_client_addr","s_server_addr","s_server_port"],
+    "description": "Shows flagged search queries processed by Web Monitor.",
+    "displayOrder": 1032,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "table": "http_query_events",
+    "title": "Flagged Search Events",
+    "uniqueId": "web-monitor-NXM23M2QBKMF"
+}
