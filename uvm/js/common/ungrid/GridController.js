@@ -63,7 +63,22 @@ Ext.define('Ung.cmp.GridController', {
             newRecord = record.copy(null);
 
         var newRecordData_Id = newRecord.data._id;
-        newRecord.data = JSON.parse(JSON.stringify(record.data));
+        var data = Ext.clone(record.data);
+        var referenceFields = {};
+        if(v.copyReferenceFields){
+            v.copyReferenceFields.forEach( function(field){
+                if(data[field]){
+                    referenceFields[field] = data[field];
+                    delete data[field];
+                }
+            });
+        }
+        newRecord.data = JSON.parse(JSON.stringify(data));
+        if(v.copyReferenceFields){
+            for(var field in referenceFields){
+                newRecord.data[field] = referenceFields[field];
+            }
+        }
         newRecord.data._id = newRecordData_Id;
         newRecord.set('markedForNew', true);
 
