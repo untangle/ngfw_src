@@ -106,8 +106,6 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
             'HTTP_RESPONSE_FILE_EXTENSION',
             'HTTP_USER_AGENT',
             'HTTP_USER_AGENT_OS',
-            'HTTP_USER_AGENT',
-            'HTTP_USER_AGENT_OS',
             'SSL_INSPECTOR_SNI_HOSTNAME',
             'SSL_INSPECTOR_SUBJECT_DN',
             'SSL_INSPECTOR_ISSUER_DN',
