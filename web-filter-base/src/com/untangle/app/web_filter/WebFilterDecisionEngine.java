@@ -61,11 +61,12 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     private static Integer UNCATEGORIZED_CATEGORY = 0;
 
-    static private InetSocketAddress SOCKET_ADDRESS = new InetSocketAddress("127.0.0.1", 8484);
+    static private InetSocketAddress BCTID_SOCKET_ADDRESS = new InetSocketAddress("127.0.0.1", 8484);
 
-    private Socket lookupDaemonSocket = null;
+    private Boolean BctidReady = false;
+    private Socket BctidSocket = null;
     private static final long BCTID_CONNECT_WAIT = 5 * 1000;
-    private long lookupSocketConnectWait = 0L;
+    private long BctidSocketConnectWait = 0L;
 
     private final Logger logger = Logger.getLogger(getClass());
     private WebFilterBase ourApp = null;
@@ -325,6 +326,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public void start()
     {
+        BctidReady = true;
         pulseGetStatistics.start();
     }
 
@@ -338,9 +340,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 pulseGetStatistics.stop();
             }
             synchronized(this){
-                if(lookupDaemonSocket != null){
-                    lookupDaemonSocket.close();
+                if(BctidSocket != null){
+                    BctidSocket.close();
                 }
+                BctidReady = false;
             }
         }catch(Exception e){
             logger.warn("Unable to close socket", e);
@@ -366,26 +369,29 @@ public class WebFilterDecisionEngine extends DecisionEngine
     String bctidQuery(String query, Boolean reopenSocket)
     {
         String answer = null;
+        if(BctidReady == false){
+            return answer;
+        }
         StringBuilder responseBuilder = new StringBuilder(1024);
         try{
             synchronized(this){
-                if(lookupSocketConnectWait > 0){
-                    if(lookupSocketConnectWait < System.currentTimeMillis()){
-                        lookupSocketConnectWait = 0;
+                if(BctidSocketConnectWait > 0){
+                    if(BctidSocketConnectWait < System.currentTimeMillis()){
+                        BctidSocketConnectWait = 0;
                     }else{
                         return answer;
                     }
                 }
 
-                if(lookupDaemonSocket == null || reopenSocket){
-                    lookupDaemonSocket = new Socket();
-                    lookupDaemonSocket.connect(SOCKET_ADDRESS);
-                    lookupDaemonSocket.setKeepAlive(true);
+                if(BctidSocket == null || reopenSocket){
+                    BctidSocket = new Socket();
+                    BctidSocket.connect(BCTID_SOCKET_ADDRESS);
+                    BctidSocket.setKeepAlive(true);
                 }
-                lookupDaemonSocket.getOutputStream().write(query.getBytes());
-                lookupDaemonSocket.getOutputStream().flush();
+                BctidSocket.getOutputStream().write(query.getBytes());
+                BctidSocket.getOutputStream().flush();
 
-                InputStream is = lookupDaemonSocket.getInputStream();
+                InputStream is = BctidSocket.getInputStream();
 
                 // !!! look for \r\n not just \n
                 boolean rFound = false;
@@ -410,14 +416,14 @@ public class WebFilterDecisionEngine extends DecisionEngine
         }catch(ConnectException ce){
             logger.warn("Unable to connect.  Waiting "+BCTID_CONNECT_WAIT);
             synchronized(this){
-                lookupDaemonSocket = null;
-                lookupSocketConnectWait = System.currentTimeMillis() + BCTID_CONNECT_WAIT;
+                BctidSocket = null;
+                BctidSocketConnectWait = System.currentTimeMillis() + BCTID_CONNECT_WAIT;
             }
         }catch(Exception e){
             logger.warn(e);
             try{
-                lookupDaemonSocket.close();
-                lookupDaemonSocket = null;
+                BctidSocket.close();
+                BctidSocket = null;
             }catch(Exception e2){}
 
             if(reopenSocket == false){
