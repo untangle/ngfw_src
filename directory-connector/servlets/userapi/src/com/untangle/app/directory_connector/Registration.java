@@ -147,10 +147,15 @@ public class Registration extends HttpServlet
         }
 
         if(loginType != null){
-            if(loginType.equals("RADIUS")){
-                loginType = LoginEvent.EVENT_LOGIN_TYPE_RADIUS;
-            }else{
-                loginType = LoginEvent.EVENT_LOGIN_TYPE_WIN;
+            switch(loginType){
+                case "RADIUS":
+                    loginType = LoginEvent.EVENT_LOGIN_TYPE_RADIUS;
+                    break;
+                case "TEST":
+                    loginType = LoginEvent.EVENT_LOGIN_TYPE_TEST;
+                    break;
+                default:
+                    loginType = LoginEvent.EVENT_LOGIN_TYPE_WIN;
             }
         }else{
             loginType = LoginEvent.EVENT_LOGIN_TYPE_CLIENT;
