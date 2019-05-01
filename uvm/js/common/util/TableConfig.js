@@ -2092,6 +2092,9 @@ Ext.define('TableConfig', {
                 name: 'type',
                 convert: Converter.directoryConnectorAction
             }, {
+                name: 'login_type',
+                convert: Converter.directoryConnectorActionSource
+            }, {
                 name: 'client_addr',
                 sortType: 'asIp'
             }],
@@ -2113,20 +2116,27 @@ Ext.define('TableConfig', {
                 width: Renderer.usernameWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'login_name'
+                dataIndex: 'login_name',
+                flex: 2
             }, {
                 header: 'Domain'.t(),
-                width: Renderer.usernameWidth,
+                width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'domain'
+                dataIndex: 'domain',
+                flex: 2
             }, {
                 header: 'Action'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'type',
-                flex: 1
+                dataIndex: 'type'
+            }, {
+                header: 'Action Source'.t(),
+                width: Renderer.messageWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'login_type'
             }]
         },
         admin_logins: {
