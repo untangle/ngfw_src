@@ -637,6 +637,7 @@ Ext.define('Ung.util.Converter', {
         I: 'login'.t(),
         U: 'update'.t(),
         O: 'logout'.t(),
+        A: 'authenticate'.t(),
         default: 'unknown'.t()
 
     },
@@ -645,6 +646,20 @@ Ext.define('Ung.util.Converter', {
             return '';
         }
         return ( value in Converter.directoryConnectorActionMap ) ? Converter.directoryConnectorActionMap[value] : Converter.directoryConnectorActionMap['default'];
+    },
+
+    directoryConnectorActionSourceMap: {
+        W: 'client'.t(),
+        A: 'active directory'.t(),
+        R: 'radius'.t(),
+        default: 'unknown'.t()
+
+    },
+    directoryConnectorActionSource: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Converter.directoryConnectorActionSourceMap ) ? Converter.directoryConnectorActionSourceMap[value] : Converter.directoryConnectorActionSourceMap['default'];
     },
 
     bandwidthControlRule: function( value ){

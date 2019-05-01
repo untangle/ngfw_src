@@ -76,6 +76,7 @@ public class Registration extends HttpServlet
         String secretKey = null;
         String clientIp = null;
         String domain = null;
+        String loginType = null;
         InetAddress inetAddress;
 
         try {
@@ -96,8 +97,17 @@ public class Registration extends HttpServlet
             case "action": action = parameters.get( keyitr )[0]; break;
             case "secretkey": secretKey = parameters.get( keyitr )[0]; break;
             case "clientip": clientIp = parameters.get( keyitr )[0]; break;
+            case "logintype": loginType = parameters.get( keyitr )[0]; break;
             default:
                 // do nothing
+            }
+        }
+
+        if(domain != null){
+            for(String adDomain : directoryConnector.getRuleConditionalDomainEntries()){
+                if(adDomain.startsWith(domain)){
+                    domain = adDomain;
+                }
             }
         }
 
@@ -136,13 +146,22 @@ public class Registration extends HttpServlet
             action = "login"; 
         }
 
+        if(loginType != null){
+            if(loginType.equals("RADIUS")){
+                loginType = LoginEvent.EVENT_LOGIN_TYPE_RADIUS;
+            }else{
+                loginType = LoginEvent.EVENT_LOGIN_TYPE_WIN;
+            }
+        }else{
+            loginType = LoginEvent.EVENT_LOGIN_TYPE_CLIENT;
+        }
 
         if (action.equals("logout")) {
             logger.debug( "logout   user: " + username + " hostname: " + hostname + " clientIp: " + clientIp );
 
             UvmContextFactory.context().hostTable().getHostTableEntry( inetAddress, true ).setUsernameDirectoryConnector( null );
 
-            LoginEvent evt = new LoginEvent( inetAddress, username, domain, LoginEvent.EVENT_LOGOUT );
+            LoginEvent evt = new LoginEvent( inetAddress, username, domain, LoginEvent.EVENT_LOGOUT, loginType );
             UvmContextFactory.context().logEvent( evt );
             
         } else if (action.equals("login")) {
@@ -153,12 +172,17 @@ public class Registration extends HttpServlet
 
             if (entry.getUsernameDirectoryConnector() != null && entry.getUsernameDirectoryConnector().equals(username))
                 eventAction = LoginEvent.EVENT_UPDATE;
-            else
-                eventAction = LoginEvent.EVENT_LOGIN;
+            else{
+                if(loginType != null){
+                    eventAction = LoginEvent.EVENT_AUTHENTICATE;
+                }else{
+                    eventAction = LoginEvent.EVENT_LOGIN;
+                }
+            }
             
             entry.setUsernameDirectoryConnector( username );
 
-            LoginEvent evt = new LoginEvent( inetAddress, username, domain, eventAction );
+            LoginEvent evt = new LoginEvent( inetAddress, username, domain, eventAction, loginType);
             UvmContextFactory.context().logEvent( evt );
 
             /* If the hostname was specified and is not already known - set it */

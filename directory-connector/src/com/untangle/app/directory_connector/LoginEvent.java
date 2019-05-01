@@ -15,22 +15,29 @@ import com.untangle.uvm.util.I18nUtil;
 public class LoginEvent extends LogEvent
 {
     public static String EVENT_LOGIN = "I";
+    public static String EVENT_AUTHENTICATE = "A";
     public static String EVENT_UPDATE = "U";
     public static String EVENT_LOGOUT = "O";
+
+    public static String EVENT_LOGIN_TYPE_CLIENT = "W";
+    public static String EVENT_LOGIN_TYPE_WIN = "A";
+    public static String EVENT_LOGIN_TYPE_RADIUS = "R";
 
     private InetAddress clientAddr;
     private String loginName;
     private String domain;
     private String event;
+    private String loginType;
 
     public LoginEvent() { }
 
-    public LoginEvent(InetAddress clientAddr, String loginName, String domain, String event)
+    public LoginEvent(InetAddress clientAddr, String loginName, String domain, String event, String loginType)
     {
         this.clientAddr = clientAddr;
         this.loginName = loginName;
         this.domain = domain;
         this.event = event;
+        this.loginType = loginType;
     }
 
     public InetAddress getClientAddr() { return clientAddr; }
@@ -45,13 +52,16 @@ public class LoginEvent extends LogEvent
     public String getEvent() { return event; }
     public void setEvent( String newEvent ) { this.event = newEvent; }
 
+    public String getLoginType() { return loginType; }
+    public void setLoginType( String newLoginType ) { this.loginType = newLoginType; }
+
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO " + schemaPrefix() + "directory_connector_login_events" + getPartitionTablePostfix() + " " +
-            "(time_stamp, login_name, domain, type, client_addr) " + 
+            "(time_stamp, login_name, domain, type, client_addr, login_type) " + 
             "values " +
-            "( ?, ?, ?, ?, ?)";
+            "( ?, ?, ?, ?, ?, ?)";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
@@ -61,6 +71,7 @@ public class LoginEvent extends LogEvent
         pstmt.setString(++i, getDomain());
         pstmt.setString(++i, getEvent());
         pstmt.setObject(++i, getClientAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setString(++i, getLoginType());
 
         pstmt.addBatch();
         return;
