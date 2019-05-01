@@ -81,6 +81,23 @@ class WebFilterBaseTests(unittest.TestCase):
         rules = self.app.getFilterRules()
         rules["list"] = []
         self.app.setFilterRules(rules)
+        
+    def search_term_rule_add(self, termWords, blocked=True, flagged=True, description="description"):
+        newTerm =  {
+            "blocked": blocked,
+            "flagged": flagged,
+            "description": description,
+            "javaClass": "com.untangle.uvm.app.GenericRule",
+            "string": termWords,
+            }
+        webSettings = self.app.getSettings()
+        webSettings["searchTerms"]["list"].append(newTerm)
+        self.app.setSettings(webSettings)
+
+    def search_term_rules_clear(self):
+        webSettings = self.app.getSettings()
+        webSettings["searchTerms"]["list"] = []
+        self.app.setSettings(rules)
 
     def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options=""):
         app_name = self.app.getAppName()
@@ -580,6 +597,30 @@ class WebFilterBaseTests(unittest.TestCase):
                                                    "host", t["host"],
                                                    "term", t["term"])
             assert( found )
+
+    def test_610_web_search_rules(self):
+        """check the web rule searches log correctly"""
+        host = "www.bing.com"
+        term = "boobs"
+        uri = "/search?q=%s&qs=n&form=QBRE" % term
+        # fname = sys._getframe().f_code.co_name
+        app_name = self.app.getAppName()
+        if ("monitor" in app_name):
+            blocked = False
+        else:
+            blocked = True
+        self.search_term_rule_add(term,blocked)
+        eventTime = datetime.datetime.now()
+        result = remote_control.run_command("wget -q -O - 'http://%s%s' 2>&1 >/dev/null" % (host, uri) )
+
+        events = global_functions.get_events(self.displayName(),'All Search Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               "host", host,
+                                               "term", term,
+                                               'blocked', blocked,
+                                               'flagged', True )
+        assert( found )
 
     @staticmethod
     def final_tear_down(self):
