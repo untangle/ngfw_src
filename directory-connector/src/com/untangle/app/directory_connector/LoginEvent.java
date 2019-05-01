@@ -22,6 +22,7 @@ public class LoginEvent extends LogEvent
     public static String EVENT_LOGIN_TYPE_CLIENT = "W";
     public static String EVENT_LOGIN_TYPE_WIN = "A";
     public static String EVENT_LOGIN_TYPE_RADIUS = "R";
+    public static String EVENT_LOGIN_TYPE_TEST = "T";
 
     private InetAddress clientAddr;
     private String loginName;
