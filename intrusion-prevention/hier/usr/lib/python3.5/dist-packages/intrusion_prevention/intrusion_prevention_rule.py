@@ -113,7 +113,7 @@ class IntrusionPreventionRule:
                     action = "block"
                 match = self.matches_in(action, comparator, condition["value"])
             elif condition["type"] == "MSG":
-                match = self.matches_text(signature.options["msg"].lower(), comparator, condition_value.lower())
+                match = self.matches_text(signature.options["msg"].lower().strip('"'), comparator, condition_value.lower())
             elif condition["type"] == "PROTOCOL":
                 if not isinstance(condition["value"], list):
                     condition["value"] = condition["value"].split(',')
