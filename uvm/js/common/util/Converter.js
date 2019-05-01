@@ -652,6 +652,7 @@ Ext.define('Ung.util.Converter', {
         W: 'client'.t(),
         A: 'active directory'.t(),
         R: 'radius'.t(),
+        T: 'test'.t(),
         default: 'unknown'.t()
 
     },
