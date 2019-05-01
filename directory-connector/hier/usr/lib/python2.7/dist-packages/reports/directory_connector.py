@@ -17,3 +17,4 @@ CREATE TABLE reports.directory_connector_login_events (
     domain text,
     type text,
     client_addr inet)""")
+    sql_helper.add_column('directory_connector_login_events', 'login_type', 'text') #rule_14.2
