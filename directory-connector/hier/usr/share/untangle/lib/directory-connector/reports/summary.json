@@ -8,7 +8,7 @@
     "textColumns": [
         "sum(case when type='I' then 1 else 0 end) as logins"
     ],
-    "textString": "Directory Connector processed {0} logins.", 
+    "textString": "Directory Connector processed {0} events.", 
     "readOnly": true,
     "table": "directory_connector_login_events",
     "title": "Directory Connector Summary",

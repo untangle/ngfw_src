@@ -3,7 +3,7 @@
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
-    "defaultColumns": ["time_stamp","login_name","domain","type","client_addr"],
+    "defaultColumns": ["time_stamp","login_name","domain","type","client_addr","login_type"],
     "description": "Events from the user notification API.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
