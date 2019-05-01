@@ -75,6 +75,7 @@ public class Registration extends HttpServlet
         String action = null;
         String secretKey = null;
         String clientIp = null;
+        String domain = null;
         InetAddress inetAddress;
 
         try {
@@ -90,6 +91,7 @@ public class Registration extends HttpServlet
             String key = keyitr.toLowerCase();
             switch ( key ) {
             case "username": username = parameters.get( keyitr )[0].toLowerCase(); break;
+            case "domain": domain = parameters.get( keyitr )[0].toLowerCase(); break;
             case "hostname": hostname = parameters.get( keyitr )[0].toLowerCase(); break;
             case "action": action = parameters.get( keyitr )[0]; break;
             case "secretkey": secretKey = parameters.get( keyitr )[0]; break;
@@ -121,7 +123,7 @@ public class Registration extends HttpServlet
             }
         }
 
-        logger.debug("User API ( action=" + action + " username=" + username + " hostname=" + hostname + " clientIp=" + clientIp + " secretKey=" + secretKey + " )");
+        logger.debug("User API ( action=" + action + " username=" + username + " domain=" + domain + " hostname=" + hostname + " clientIp=" + clientIp + " secretKey=" + secretKey + " )");
         
         //String remoteHost = request.getRemoteHost();
         if ( username == null ) {
@@ -140,7 +142,7 @@ public class Registration extends HttpServlet
 
             UvmContextFactory.context().hostTable().getHostTableEntry( inetAddress, true ).setUsernameDirectoryConnector( null );
 
-            LoginEvent evt = new LoginEvent( inetAddress, username, null, LoginEvent.EVENT_LOGOUT );
+            LoginEvent evt = new LoginEvent( inetAddress, username, domain, LoginEvent.EVENT_LOGOUT );
             UvmContextFactory.context().logEvent( evt );
             
         } else if (action.equals("login")) {
@@ -156,7 +158,7 @@ public class Registration extends HttpServlet
             
             entry.setUsernameDirectoryConnector( username );
 
-            LoginEvent evt = new LoginEvent( inetAddress, username, null, eventAction );
+            LoginEvent evt = new LoginEvent( inetAddress, username, domain, eventAction );
             UvmContextFactory.context().logEvent( evt );
 
             /* If the hostname was specified and is not already known - set it */
