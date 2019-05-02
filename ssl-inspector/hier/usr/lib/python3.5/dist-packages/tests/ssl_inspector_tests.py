@@ -61,6 +61,23 @@ def nukeBlockedUrls():
     rules["list"] = []
     appWeb.setBlockedUrls(rules)
 
+def search_term_rule_add(termWords, blocked=True, flagged=True, description="description"):
+    newTerm =  {
+        "blocked": blocked,
+        "flagged": flagged,
+        "description": description,
+        "javaClass": "com.untangle.uvm.app.GenericRule",
+        "string": termWords,
+        }
+    webSettings = appWeb.getSettings()
+    webSettings["searchTerms"]["list"].append(newTerm)
+    appWeb.setSettings(webSettings)
+
+def search_term_rules_clear():
+    webSettings = appWeb.getSettings()
+    webSettings["searchTerms"]["list"] = []
+    appWeb.setSettings(webSettings)
+
 class SslInspectorTests(unittest.TestCase):
 
     @staticmethod
@@ -178,6 +195,34 @@ class SslInspectorTests(unittest.TestCase):
                                                 "host", t["host"],
                                                 "term", t["term"])
             assert( found )
+
+    def test_610_web_search_rules(self):
+        """check the https web rule searches log correctly"""
+        term = "boobs"
+
+        termTests = [{
+            "host": "www.bing.com",
+            "uri":  ("/search?q=%s&qs=n&form=QBRE" % term),
+        },{
+            "host": "search.yahoo.com",
+            "uri": ("/search?p=%s" % term),
+        },{
+            "host": "www.google.com",
+            "uri":  ("/search?hl=en&q=%s" % term),
+        }]
+        search_term_rule_add(term)
+        for t in termTests:
+            eventTime = datetime.datetime.now()
+            result = remote_control.run_command("curl -s -4 -o /dev/null -A 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1' --connect-timeout 10 --insecure 'https://%s%s'" % ( t["host"], t["uri"] ) )
+            assert( result == 0 )
+            events = global_functions.get_events("Web Filter",'All Search Events',None,1)
+            found = global_functions.check_events( events.get('list'), 5,
+                                                   "host", t["host"],
+                                                   "term", term,
+                                                   'blocked', True,
+                                                   'flagged', True )
+            assert( found )
+        search_term_rules_clear()
 
     @staticmethod
     def final_tear_down(self):
