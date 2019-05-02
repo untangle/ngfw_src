@@ -474,6 +474,12 @@ public abstract class DecisionEngine
     public void stop(){}
 
     /**
+     * Reconfigure the decision engine.
+     * @param settings WebFilter settings.
+     */
+    public void reconfigure(WebFilterSettings settings){}
+
+    /**
      * checkUnblockedSites checks the host+uri against the current unblocks for
      * clientIp
      * 

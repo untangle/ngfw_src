@@ -752,7 +752,6 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
          * If we found older settings do conversion, save, and return
          */
         if (readSettings.getVersion() < 3) {
-
             List<GenericRule> oldCategories = readSettings.getCategories();
             initializeSettings(readSettings);
             GenericRule newCat = null;
@@ -911,6 +910,9 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString());
         } catch (Exception e) {
         }
+
+        getDecisionEngine().reconfigure(this.settings);
+
     }
 
     /**
