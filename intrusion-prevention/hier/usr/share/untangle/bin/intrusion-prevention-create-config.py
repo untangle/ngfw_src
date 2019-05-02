@@ -164,11 +164,9 @@ def main(argv):
         name = settings_variable["name"]
         value = settings_variable["value"]
         if settings_variable["name"] == "HOME_NET":
-            if settings_variable["value"] == "default":
-                value = default_home_net
+            value = re.sub(r"\b\bdefault\b\b", default_home_net, value)
         if settings_variable["name"] == "EXTERNAL_NET":
-            if settings_variable["value"] == "default":
-                value = "any"
+            value = re.sub(r"\b\bdefault\b\b", "any", value)
 
         suricata_conf.set_variable(name, value)
 
