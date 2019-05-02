@@ -1,0 +1,10 @@
+#! /bin/bash
+
+# Remove old reports .pyc files.
+OLD_REPORTS_PYTHON_LIBRARY=/usr/lib/python2.7/reports
+if [ -d $OLD_REPORTS_PYTHON_LIBRARY ] ; then
+    rm -rf $OLD_REPORTS_PYTHON_LIBRARY
+fi
+
+exit 0
+
