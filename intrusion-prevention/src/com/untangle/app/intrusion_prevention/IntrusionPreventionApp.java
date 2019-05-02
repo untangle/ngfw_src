@@ -840,7 +840,12 @@ public class IntrusionPreventionApp extends AppBase
             logger.warn("Cannot find init script:" + IPTABLES_SCRIPT);
         }
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( IPTABLES_SCRIPT );
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(
+            IPTABLES_SCRIPT +
+            " " + this.settings.getIptablesProcessing() +
+            " " + this.settings.getIptablesNfqNumber() +
+            " " + this.settings.getIptablesMaxScanSize()
+        );
         try {
             String[] lines = result.getOutput().split("\\r?\\n");
             logger.info( IPTABLES_SCRIPT + ": ");

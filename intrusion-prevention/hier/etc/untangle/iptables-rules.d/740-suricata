@@ -15,10 +15,15 @@
 # Let's keep checking with new Debian releases though!
 #
 
+IPTABLES_PROCESSING=$1
+IPTABLES_NFQ_NUMBER=$2
+IPTABLES_MAX_SCAN_SIZE=$3
+
 IPTABLES=${IPTABLES:-iptables}
 
-SETTINGS=$(\
-python -c "\
+if [ "${IPTABLES_PROCESSING}" = "" ] ; then
+    SETTINGS=$(\
+python3.5 -c "\
 from uvm import Manager; \
 from uvm import AppManager; \
 from uvm import Uvm; \
@@ -28,10 +33,10 @@ app = [ instance for instance in AppManager(uvm_context).get_instances() if inst
 settings = app_manager.app(app[0]).getSettings();\
 print('%s %s %s' % (settings['iptablesProcessing'], settings['iptablesNfqNumber'], settings['iptablesMaxScanSize'])); \
 ")
-
-IPTABLES_PROCESSING=$(echo $SETTINGS | cut -d' ' -f 1)
-IPTABLES_NFQ_NUMBER=$(echo $SETTINGS | cut -d' ' -f 2)
-IPTABLES_MAX_SCAN_SIZE=$(echo $SETTINGS | cut -d' ' -f 3)
+    IPTABLES_PROCESSING=$(echo $SETTINGS | cut -d' ' -f 1)
+    IPTABLES_NFQ_NUMBER=$(echo $SETTINGS | cut -d' ' -f 2)
+    IPTABLES_MAX_SCAN_SIZE=$(echo $SETTINGS | cut -d' ' -f 3)
+fi;
 
 TABLE_NAME_MANGLE=mangle
 TABLE_NAME_RAW=raw
