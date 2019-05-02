@@ -3,7 +3,11 @@
 
 package com.untangle.app.web_filter;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ConnectException;
@@ -23,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
 
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
@@ -60,6 +65,12 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static final Pattern SEPARATORS_REGEX = Pattern.compile("\\.");
 
     private static Integer UNCATEGORIZED_CATEGORY = 0;
+
+    public static String BCTID_CONFIG_FILE = "/etc/bctid/bcti.cfg";
+    public static String BCTID_CONFIG_DEVICE_KEY = "Device=";
+    public static String BCTID_CONFIG_DEVICE_VALUE = "NGFirewall";
+    public static String BCTID_CONFIG_DEVICE_DEVELOPER_VALUE = "_Internal";
+    public static String BCTID_CONFIG_UID_KEY = "UID=";
 
     static private InetSocketAddress BCTID_SOCKET_ADDRESS = new InetSocketAddress("127.0.0.1", 8484);
 
@@ -326,6 +337,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public void start()
     {
+        logger.warn("WebFilterDecisionEngine start");
+
+        reconfigure(null);
+
+        UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
         BctidReady = true;
         pulseGetStatistics.start();
     }
@@ -335,6 +351,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public void stop()
     {
+        logger.warn("WebFilterDecisionEngine stop");
         try{
             if(pulseGetStatistics.getState() == Pulse.PulseState.RUNNING){
                 pulseGetStatistics.stop();
@@ -347,6 +364,63 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }
         }catch(Exception e){
             logger.warn("Unable to close socket", e);
+        }
+        UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bctid");
+    }
+
+    /**
+     * Reconfigure the decision engine.
+     * @param settings WebFilter settings.
+     */
+    public void reconfigure(WebFilterSettings settings){
+
+        // Update bctid configuration.
+        File f = new File(BCTID_CONFIG_FILE);
+        if( f.exists() == false ){
+            logger.info("reconfigure: bctid configuration not found: " + BCTID_CONFIG_FILE);
+        }else{
+            String[] config = null;
+            FileInputStream is = null;
+            try{
+                is = new FileInputStream(BCTID_CONFIG_FILE);
+                config = IOUtils.toString(is, "UTF-8").split("\n");
+            }catch (Exception e){
+                logger.error("reconfigure: read config",e);
+            }finally{
+                try{
+                    if(is != null){
+                        is.close();
+                    }
+                }catch( IOException e){
+                    logger.error("reconfigure: failed to close file");
+                }
+            }
+            if(config != null){
+                boolean changed = false;
+                String deviceValue = BCTID_CONFIG_DEVICE_VALUE;
+                if(UvmContextFactory.context().isDevel()){
+                    deviceValue += BCTID_CONFIG_DEVICE_DEVELOPER_VALUE;
+                }
+                String uidValue = UvmContextFactory.context().getServerUID();
+                for(int i = 0; i < config.length; i++){
+                    if(config[i].startsWith(BCTID_CONFIG_DEVICE_KEY) && 
+                       !config[i].equals(BCTID_CONFIG_DEVICE_KEY + deviceValue)){
+                        config[i] = BCTID_CONFIG_DEVICE_KEY + deviceValue;
+                        changed = true;
+                    }else if(config[i].startsWith(BCTID_CONFIG_UID_KEY) &&
+                        !config[i].equals(BCTID_CONFIG_UID_KEY + uidValue)){
+                        config[i] = BCTID_CONFIG_UID_KEY + uidValue;
+                        changed = true;
+                    }
+                }
+                if(changed){
+                    try(FileOutputStream fos = new FileOutputStream(f)){
+                        fos.write(String.join("\n", config).getBytes());
+                    }catch(Exception e){
+                        logger.warn("reconfigure: write file failed with ", e);
+                    }
+                }
+            }
         }
     }
 
