@@ -119,7 +119,6 @@ public class WebFilterApp extends WebFilterBase
             throw new RuntimeException("invalid license");
         }
 
-        UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
         getDecisionEngine().start();
 
         super.preStart(isPermanentTransition);
@@ -135,7 +134,6 @@ public class WebFilterApp extends WebFilterBase
     protected void postStop(boolean isPermanentTransition)
     {
         getDecisionEngine().stop();
-        UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bctid");
 
         super.postStop(isPermanentTransition);
     }

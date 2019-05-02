@@ -195,7 +195,6 @@ public class WebMonitorApp extends WebFilterBase
     protected void preStart(boolean isPermanentTransition)
     {
 
-        UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
         getDecisionEngine().start();
 
         super.preStart(isPermanentTransition);
@@ -223,7 +222,6 @@ public class WebMonitorApp extends WebFilterBase
     protected void postStop(boolean isPermanentTransition)
     {
         getDecisionEngine().stop();
-        UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bctid");
 
         super.postStop(isPermanentTransition);
     }
