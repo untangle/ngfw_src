@@ -97,7 +97,7 @@ class WebFilterBaseTests(unittest.TestCase):
     def search_term_rules_clear(self):
         webSettings = self.app.getSettings()
         webSettings["searchTerms"]["list"] = []
-        self.app.setSettings(rules)
+        self.app.setSettings(webSettings)
 
     def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options=""):
         app_name = self.app.getAppName()
@@ -620,6 +620,7 @@ class WebFilterBaseTests(unittest.TestCase):
                                                "term", term,
                                                'blocked', blocked,
                                                'flagged', True )
+        self.search_term_rules_clear()
         assert( found )
 
     @staticmethod
