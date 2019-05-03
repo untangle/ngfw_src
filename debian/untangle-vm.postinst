@@ -77,20 +77,16 @@ rm -rf /var/lib/postgresql/9.4
 sed -e '/^deb cdrom/d' -i /etc/apt/sources.list
 
 #
-# 14.1 upgrade
+# 14.2 upgrade
 #
 
-# Point to stable-141
-sed -e 's/stable-140\s/stable-141 /g' -i /etc/apt/sources.list.d/untangle.list
-sed -e 's/jessie/stretch/g' -i /etc/apt/sources.list.d/untangle.list
+# Point to stable-142
+sed -e 's/stable-141\s/stable-142 /g' -i /etc/apt/sources.list.d/untangle.list
 
-# We no longer use upstream
-sed -e 's/upstream//g' -i /etc/apt/sources.list.d/untangle.list
-
-# Try again if failed
-if grep -q 'sync-settings failed' /var/log/uvm/stretch.log ; then
-    mv -f /var/log/uvm/stretch.log /var/log/uvm/stretch.log.old
-    nohup /usr/share/untangle/bin/ut-stretch-post-upgrade.sh >> /var/log/uvm/stretch.log 2>&1 &
+# Remove old tests .pyc files.
+OLD_PYTHON_DIR=/usr/lib/python2.7/dist-packages/tests
+if [ -d $OLD_PYTHON_DIR ] ; then
+    rm -rf $OLD_PYTHON_DIR
 fi
 
 exit 0
