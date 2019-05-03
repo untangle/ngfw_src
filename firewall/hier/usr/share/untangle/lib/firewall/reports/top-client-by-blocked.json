@@ -1,7 +1,7 @@
 {
     "uniqueId": "firewall-AsifWhYFae",
     "category": "Firewall",
-    "description": "The number of flagged session grouped by client.",
+    "description": "The number of blocked session grouped by client.",
     "displayOrder": 502,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
