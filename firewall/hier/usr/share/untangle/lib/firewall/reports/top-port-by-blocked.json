@@ -1,7 +1,7 @@
 {
     "uniqueId": "firewall-uywAGHuIud",
     "category": "Firewall",
-    "description": "The number of flagged session grouped by server (destination) port.",
+    "description": "The number of blocked session grouped by server (destination) port.",
     "displayOrder": 702,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
