@@ -197,6 +197,18 @@ Ext.define('TableConfig', {
         return contains;
     },
 
+    getTableField: function(table, name){
+        var tableField = null;
+        if(TableConfig.tableConfig[table] &&
+            TableConfig.tableConfig[table]['fields']){
+            TableConfig.tableConfig[table]['fields'].forEach( function(field){
+                if(field['name'] == name){
+                    tableField = field;
+                }
+            });
+        }
+        return tableField;
+    },
 
     tableConfig: {
         sessions: {
@@ -230,8 +242,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'tags'
             }, {
-                name: 'policy_id',
-                convert: Converter.policy
+                name: 'policy_id'
             }, {
                 name: 'policy_rule_id'
             }, {
@@ -401,7 +412,8 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'policy_id'
+                dataIndex: 'policy_id',
+                renderer: Renderer.policy
             }, {
                 header: 'Policy Rule Id'.t(),
                 width: Renderer.idWidth,
@@ -718,8 +730,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'tags'
             }, {
-                name: 'policy_id',
-                convert: Converter.policy
+                name: 'policy_id'
             }, {
                 name: 'policy_rule_id'
             }, {
@@ -882,7 +893,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'policy_id'
+                dataIndex: 'policy_id',
+                renderer: Renderer.policy
             }, {
                 header: 'Policy Rule Id'.t(),
                 width: Renderer.idWidth,
@@ -1153,8 +1165,7 @@ Ext.define('TableConfig', {
                 name: 'request_id',
                 sortType: 'asInt'
             }, {
-                name: 'policy_id',
-                convert: Converter.policy
+                name: 'policy_id'
             }, {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
@@ -1227,7 +1238,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'web_filter_flagged'
             }, {
-                name: 'web_filter_category',
+                name: 'web_filter_category_id',
                 type: 'string'
             }, {
                 name: 'web_filter_reason',
@@ -1269,7 +1280,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'policy_id'
+                dataIndex: 'policy_id',
+                renderer: Renderer.policy
             }, {
                 header: 'Session Id'.t(),
                 width: Renderer.portWidth,
@@ -1442,7 +1454,7 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'web_filter_category'
+                dataIndex: 'web_filter_category_id'
             }, {
                 header: 'Action'.t() + ' (Ad Blocker)',
                 width: Renderer.messageWidth,
@@ -1487,8 +1499,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'session_id'
             }, {
-                name: 'policy_id',
-                convert: Converter.policy
+                name: 'policy_id'
             }, {
                 name: 'request_id'
             }, {
@@ -1581,7 +1592,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'policy_id'
+                dataIndex: 'policy_id',
+                renderer: Renderer.policy
             }, {
                 header: 'Request Id'.t(),
                 width: Renderer.idWidth,
@@ -1747,8 +1759,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'session_id'
             }, {
-                name: 'policy_id',
-                convert: Converter.policy
+                name: 'policy_id'
             }, {
                 name: 'username'
             }, {
@@ -1866,7 +1877,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'policy_id'
+                dataIndex: 'policy_id',
+                renderer: Renderer.policy
             }, {
                 header: 'Message Id'.t(),
                 width: Renderer.messageWidth,
@@ -3032,8 +3044,7 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'policy_id',
-                convert: Converter.policy
+                name: 'policy_id'
             }, {
                 name: 'event_id'
             }, {
@@ -3058,7 +3069,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'policy_id'
+                dataIndex: 'policy_id',
+                renderer: Renderer.policy
             }, {
                 header: 'Event Id'.t(),
                 width: Renderer.idWidth,
@@ -3166,8 +3178,7 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'policy_id',
-                convert: Converter.policy
+                name: 'policy_id'
             }, {
                 name: 'event_id'
             },{
@@ -3194,7 +3205,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'policy_id'
+                dataIndex: 'policy_id',
+                renderer: Renderer.policy
             }, {
                 header: 'Event Id'.t(),
                 width: Renderer.messageWidth,
@@ -3693,8 +3705,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'session_id'
             }, {
-                name: 'policy_id',
-                convert: Converter.policy
+                name: 'policy_id'
             }, {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
@@ -3753,7 +3764,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'policy_id'
+                dataIndex: 'policy_id',
+                renderer: Renderer.policy
             }, {
                 header: 'Session Id'.t(),
                 width: Renderer.messageWidth,

@@ -552,15 +552,6 @@ Ext.define('Ung.util.Converter', {
         return ( value && value != -1 ) ? this.interfaceMap[value] || value.toString() : '';
     },
 
-    policy: function ( value ) {
-        if (Ext.getStore('policiestree')) { // existing in ADMIN servlet only
-            var policy = Ext.getStore('policiestree').findRecord('policyId', value);
-            return policy ? policy.get('name') + ' [' + value + ']' : '';
-        } else {
-            return '';
-        }
-    },
-
     loginSuccess: function( value ){
         return value ?  'success'.t() : 'failed'.t();
     },
