@@ -467,7 +467,7 @@ Ext.define('Ung.util.Renderer', {
     },
 
     policiesMap: null,
-    policy_id: function (value) {
+    policy: function (value) {
         var policyMap = {};
         if(Renderer.policiesMap == null){
             var policiesInfo = null;
@@ -483,10 +483,10 @@ Ext.define('Ung.util.Renderer', {
                 });
             }
         }
-        if (!value || value === 0) {
-            return 'None'.t() + ' [0]';
+        if(!value || value === 0){
+            return '';
         }
-        return Renderer.policiesMap[parseInt(value, 10)] || value.toString();
+        return Ext.String.format('{0} [{1}]'.t(), Renderer.policiesMap[parseInt(value, 10)] || value.toString(), value);
     },
 
 });
