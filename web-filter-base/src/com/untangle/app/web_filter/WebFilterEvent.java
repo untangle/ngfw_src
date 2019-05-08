@@ -19,18 +19,20 @@ public class WebFilterEvent extends LogEvent
     private Boolean blocked;
     private Boolean flagged;
     private Reason  reason;
-    private String  category;
+    private Integer categoryId = 0;
+    private String category;
     private String  appName;
     
     public WebFilterEvent() { }
 
-    public WebFilterEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Reason reason, String category, String appName)
+    public WebFilterEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Reason reason, Integer categoryId, String category, String appName)
     {
         this.requestLine = requestLine;
         this.sessionEvent = sessionEvent;
         this.blocked = blocked;
         this.flagged = flagged;
         this.reason = reason;
+        this.categoryId = categoryId;
         this.category = category;
         this.appName = appName;
     }
@@ -43,6 +45,9 @@ public class WebFilterEvent extends LogEvent
 
     public Reason getReason() { return reason; }
     public void setReason( Reason newValue ) { this.reason = newValue; }
+
+    public Integer getCategoryId() { return categoryId; }
+    public void setCategoryId( Integer newValue ) { this.categoryId = newValue; }
 
     public String getCategory() { return category; }
     public void setCategory( String newValue ) { this.category = newValue; }
@@ -65,7 +70,7 @@ public class WebFilterEvent extends LogEvent
             _getDatabaseColumnNamePrefix() + "_blocked  = ?, " + 
             _getDatabaseColumnNamePrefix() + "_flagged  = ?, " +
             _getDatabaseColumnNamePrefix() + "_reason   = ?, " +
-            _getDatabaseColumnNamePrefix() + "_category = ? " +
+            _getDatabaseColumnNamePrefix() + "_category_id = ? " +
             "WHERE " +
             "request_id = ? ";
 
@@ -75,7 +80,7 @@ public class WebFilterEvent extends LogEvent
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setString(++i, ((getReason() == null) ? "" : Character.toString(getReason().getKey())));
-        pstmt.setString(++i, getCategory());
+        pstmt.setInt(++i, getCategoryId());
         pstmt.setLong(++i, requestLine.getRequestId());
 
         pstmt.addBatch();
