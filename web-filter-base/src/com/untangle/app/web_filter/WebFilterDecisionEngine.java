@@ -242,10 +242,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
     @Override
     protected List<Integer> categorizeSite(String domain, String uri)
     {
-        if (logger.isDebugEnabled()) {
-            logger.debug("start-checkDecisionEngineDatabase");
-        }
-
         /**
          * While Brightcloud can handle domains with ports its very expensive, around 100 times slower.
          */
