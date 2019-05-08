@@ -208,11 +208,14 @@ def rename_table( oldname, newname ):
     print(sql)
     run_sql(sql)
 
-def convert_column( tablename, columnname, oldtype, newtype ):
+def convert_column( tablename, columnname, oldtype, newtype,expression=None ):
     column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (schema(), tablename, columnname, oldtype))
     if not column_type_exists:
         return
-    sql = "ALTER TABLE %s ALTER COLUMN %s TYPE %s" % (fullname(tablename), columnname, newtype)
+    if expression is not None:
+        sql = "ALTER TABLE %s ALTER COLUMN %s TYPE %s using %s" % (fullname(tablename), columnname, newtype, expression)
+    else:
+        sql = "ALTER TABLE %s ALTER COLUMN %s TYPE %s" % (fullname(tablename), columnname, newtype)
     print(sql)
     run_sql(sql);
 
