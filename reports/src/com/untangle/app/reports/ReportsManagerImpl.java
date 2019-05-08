@@ -29,6 +29,7 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.app.PolicyManager;
 
 /**
@@ -849,10 +850,29 @@ public class ReportsManagerImpl implements ReportsManager
     }
 
     /**
+     * Return app-specific list of values.
+     *
+     * @param  appName  Name of app.
+     * @param  policyId Policy id.
+     * @param  key      Name of list to return.
+     * @return          List of JSONObjects
+     */
+    public List<JSONObject> getReportInfo( String appName, Integer policyId, String key){
+        List<App> apps = UvmContextFactory.context().appManager().appInstances(appName, policyId, false);
+        if(apps != null && apps.size() > 0){
+            return ((AppBase)apps.get(0)).getReportInfo(key);
+        }
+
+        return null;
+    }
+
+
+    /**
      * Return list of policies if defined.
      * @return List of polciies
      */
     public ArrayList<JSONObject> getPoliciesInfo(){
+
         ArrayList<JSONObject> policies = null;
         PolicyManager policyManager = (PolicyManager)UvmContextFactory.context().appManager().app( "policy-manager");
         if (policyManager != null) {
