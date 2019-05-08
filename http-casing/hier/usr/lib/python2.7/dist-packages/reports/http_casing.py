@@ -40,7 +40,7 @@ CREATE TABLE reports.http_events (
     ad_blocker_cookie_ident text,
     ad_blocker_action character,
     web_filter_reason character(1),
-    web_filter_category text,
+    web_filter_category int2,
     web_filter_blocked boolean,
     web_filter_flagged boolean,
     virus_blocker_lite_clean boolean,
@@ -65,3 +65,5 @@ CREATE TABLE reports.http_events (
                                  "virus_blocker_lite_clean",
                                  "ad_blocker_action"])
     sql_helper.add_column('http_events','s2c_content_filename','text')   # 13.2
+    sql_helper.add_column('http_events','web_filter_category_id','int2')   # 14.2
+#    sql_helper.drop_column('http_events','web_filter_category')   # Drop in 14.3 
