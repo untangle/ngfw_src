@@ -268,32 +268,6 @@ Ext.define('Ung.util.Converter', {
         );
     },
 
-    httpReasonMap: {
-        D: 'in Categories Block list'.t(),
-        U: 'in Site Block list'.t(),
-        T: 'in Search Term list'.t(),
-        E: 'in File Block list'.t(),
-        M: 'in MIME Types Block list'.t(),
-        H: 'hostname is an IP address'.t(),
-        I: 'in Site Pass list'.t(),
-        R: 'referer in Site Pass list'.t(),
-        C: 'in Clients Pass list'.t(),
-        B: 'in Temporary Unblocked list'.t(),
-        F: 'in Rules list'.t(),
-        N: 'no rule applied'.t(),
-        default: 'no rule applied'.t()
-    },
-    httpReason: function( value ) {
-        if(Ext.isEmpty(value)) {
-            return '';
-        }
-        return Ext.String.format(
-                Converter.mapValueFormat,
-                ( value in Converter.httpReasonMap ) ? Converter.httpReasonMap[value] : Converter.httpReasonMap['default'],
-                value
-        );
-    },
-
     emailActionMap: {
         P: 'pass message'.t(),
         M: 'mark message'.t(),
