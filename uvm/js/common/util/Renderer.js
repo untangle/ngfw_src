@@ -2,6 +2,10 @@ Ext.define('Ung.util.Renderer', {
     singleton: true,
     alternateClassName: 'Renderer',
 
+    // Format used when there is some value for the user knowing the subscripted value.
+    // Not useful for index values that aren't visible to the user.
+    mapValueFormat: '{0} [{1}]'.t(),
+
     /*
      * Common column widths
      */
@@ -165,15 +169,6 @@ Ext.define('Ung.util.Renderer', {
         }
         return '';
     },
-
-    // policy: function ( value ) {
-    //     var policy = Ext.getStore('policiestree').findRecord('policyId', value);
-    //     if (policy) {
-    //         return policy.get('name') + ' [' + value + ']';
-    //     }else{
-    //         return 'None'.t();
-    //     }
-    // },
 
     datasizeMap: [
         [ 1125899906842624, 'PB'.t() ],
@@ -484,9 +479,103 @@ Ext.define('Ung.util.Renderer', {
             }
         }
         if(!value || value === 0){
-            return '';
+            return 'None'.t();
         }
         return Ext.String.format('{0} [{1}]'.t(), Renderer.policiesMap[parseInt(value, 10)] || value.toString(), value);
     },
+
+    httpReasonMap: {
+        D: 'in Categories Block list'.t(),
+        U: 'in Site Block list'.t(),
+        T: 'in Search Term list'.t(),
+        E: 'in File Block list'.t(),
+        M: 'in MIME Types Block list'.t(),
+        H: 'hostname is an IP address'.t(),
+        I: 'in Site Pass list'.t(),
+        R: 'referer in Site Pass list'.t(),
+        C: 'in Clients Pass list'.t(),
+        B: 'in Temporary Unblocked list'.t(),
+        F: 'in Rules list'.t(),
+        N: 'no rule applied'.t(),
+        default: 'no rule applied'.t()
+    },
+    httpReason: function( value ) {
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return Ext.String.format(
+                Renderer.mapValueFormat,
+                ( value in Renderer.httpReasonMap ) ? Renderer.httpReasonMap[value] : Renderer.httpReasonMap['default'],
+                value
+        );
+    },
+
+
+    /**
+     * The webfilter_category_id is very overloaded with numeric indexes for:
+     * -    Categories
+     * -    Pass sites
+     * -    Block sites
+     * -    Pass clients
+     * -    Filter rules
+     *
+     * The map is organized as:
+     *     policy->source->key=value
+     */
+    webCategoryMap: {},
+    webCategory: function(value, row, record){
+        var policyId = record && record.get ? record.get('policy_id') : 1;
+        var webFilterReason = record && record.get ? record.get('web_filter_reason') : 'N'; 
+        var categorySource = "categories";
+        switch(webFilterReason){
+            case 'D':
+            case 'N':
+                categorySource = "categories";
+                break;
+            case 'U':
+                categorySource = "blockedUrls";
+                break;
+            case 'I':
+            case 'R':
+                categorySource = "passedUrls";
+                break;
+            case 'C':
+                categorySource = "passedClients";
+                break;
+            case 'T':
+                categorySource = "searchTerms";
+                break;
+            case 'F':
+                categorySource = "filterRules";
+                break;
+        }
+
+        if(!Renderer.webCategoryMap[policyId] ||
+            !Renderer.webCategoryMap[policyId][categorySource] ||
+            !Renderer.webCategoryMap[policyId][categorySource][value]){
+
+            categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, categorySource);
+            if(!categoryInfo){
+                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, categorySource);
+            }
+
+            if(categoryInfo && categoryInfo["list"]){
+                categoryInfo["list"].forEach( function(rule){
+                    if(!Renderer.webCategoryMap[policyId]){
+                        Renderer.webCategoryMap[policyId] = {};
+                    }
+                    if(!Renderer.webCategoryMap[policyId][categorySource]){
+                        Renderer.webCategoryMap[policyId][categorySource] = {};
+                    }
+                    Renderer.webCategoryMap[policyId][categorySource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
+                });
+            }
+            if(!Renderer.webCategoryMap[policyId][categorySource][value]){
+                // If category cannot be found, don't just keep coming back for more.
+                Renderer.webCategoryMap[policyId][categorySource][value] = 'Unknown'.t();
+            }
+        }
+        return Renderer.webCategoryMap[policyId][categorySource][value];
+    }
 
 });
