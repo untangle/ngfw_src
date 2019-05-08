@@ -210,6 +210,19 @@ Ext.define('TableConfig', {
         return tableField;
     },
 
+    getTableColumn: function(table, name){
+        var tableColumn = null;
+        if(TableConfig.tableConfig[table] &&
+            TableConfig.tableConfig[table]['columns']){
+            TableConfig.tableConfig[table]['columns'].forEach( function(column){
+                if(column['dataIndex'] == name){
+                    tableColumn = column;
+                }
+            });
+        }
+        return tableColumn;
+    },
+
     tableConfig: {
         sessions: {
             fields: [{
@@ -1242,8 +1255,7 @@ Ext.define('TableConfig', {
                 type: 'string'
             }, {
                 name: 'web_filter_reason',
-                type: 'string',
-                convert: Converter.httpReason
+                type: 'string'
             }, {
                 name: 'ad_blocker_action',
                 type: 'string',
@@ -1448,13 +1460,15 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth + 30,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'web_filter_reason'
+                dataIndex: 'web_filter_reason',
+                renderer: Renderer.httpReason
             }, {
                 header: 'Web Category'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'web_filter_category_id'
+                dataIndex: 'web_filter_category_id',
+                renderer: Renderer.webCategory
             }, {
                 header: 'Action'.t() + ' (Ad Blocker)',
                 width: Renderer.messageWidth,
