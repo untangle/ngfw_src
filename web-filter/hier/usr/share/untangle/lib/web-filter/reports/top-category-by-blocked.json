@@ -8,7 +8,7 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "web_filter_category",
+    "pieGroupColumn": "web_filter_category_id",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
