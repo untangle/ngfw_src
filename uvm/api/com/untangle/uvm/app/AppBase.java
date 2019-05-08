@@ -15,6 +15,8 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
+import org.json.JSONObject;
+
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.vnet.AppSession;
@@ -605,6 +607,15 @@ public abstract class AppBase implements App
     public boolean isLicenseValid()
     {
         return UvmContextFactory.context().licenseManager().isLicenseValid(appProperties.getName());
+    }
+
+    /**
+     * Return restricted list of JSONObjects from this app.
+     * @param key String of key to return;
+     * @return List of apps.
+     */
+    public List<JSONObject> getReportInfo(String key){
+        return null;
     }
 
     // protected methods -------------------------------------------------
