@@ -417,6 +417,36 @@ Ext.define('Ung.view.reports.GraphReport', {
                         return;
                     }
                     me.data = result.list;
+
+                    if (entry.get('type') === 'PIE_GRAPH') {
+                        var fieldName = entry.get('pieGroupColumn');
+
+                        var converters = [];
+                        var renderers = [];
+                        var fieldNames = fieldName.split(",");
+                        fieldNames.forEach(function(field){
+                            var tableField = TableConfig.getTableField(entry.get('table'), field);
+                            if(tableField && tableField['convert']){
+                                converters.push(tableField['convert']);
+                            }
+                            var tableColumn = TableConfig.getTableColumn(entry.get('table'), field);
+                            if(tableColumn && tableColumn['renderer']){
+                                renderers.push(tableColumn['renderer']);
+                            }
+                        });
+
+                        me.data.forEach(function(row){
+                            fieldNames.forEach(function(fieldName){
+                                converters.forEach( function(conveter){
+                                    row[fieldName] = conveter.call(this, row[fieldName], row);
+                                });
+                                renderers.forEach( function(renderer){
+                                    row[fieldName] = renderer.call(this, row[fieldName], row);
+                                });
+                            });
+                        });
+                    }
+
                     me.setSeries();
                     if (cb) { cb(me.data); }
                 }, function () {
