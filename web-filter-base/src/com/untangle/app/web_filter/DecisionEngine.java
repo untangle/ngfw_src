@@ -25,6 +25,8 @@ import com.untangle.uvm.app.GenericRule;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
 
+import java.util.Iterator;
+
 /**
  * This is the core functionality of web filter It decides if a site should be
  * blocked, passed, logged, etc based on the settings and categorization.
@@ -111,7 +113,6 @@ public abstract class DecisionEngine
          */
         Reason reason = Reason.DEFAULT;
         GenericRule bestCategory = null;
-        String bestCategoryStr = null;
         String requestMethod = null;
         String catStr = null;
         URI uri = null;
@@ -132,10 +133,8 @@ public abstract class DecisionEngine
 
         host = UrlMatchingUtil.normalizeHostname(host);
 
-
         // start by getting the category for the request and attach to session
         bestCategory = checkCategory(sess, clientIp, host, requestLine);
-        if (bestCategory != null) bestCategoryStr = bestCategory.getName();
 
         // tag the session with the metadata
         if (sess != null) {
@@ -164,8 +163,7 @@ public abstract class DecisionEngine
         // If a client is on the pass list is is passed regardless of any other settings
         GenericRule rule = UrlMatchingUtil.checkClientList(clientIp, app.getSettings().getPassedClients());
         if (rule != null) {
-            catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, catStr, app.getName());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, rule.getId(), rule.getString(), app.getName());
             logger.debug("LOG: in client pass list: " + requestLine.getRequestLine());
             app.logEvent(hbe);
             return null;
@@ -175,8 +173,7 @@ public abstract class DecisionEngine
         // If a site/URL is on the pass list is is passed regardless of any other settings
         rule = UrlMatchingUtil.checkSiteList(host, uri.toString(), app.getSettings().getPassedUrls());
         if (rule != null) {
-            catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, catStr, app.getName());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, rule.getId(), rule.getString(), app.getName());
             logger.debug("LOG: in site pass list: " + requestLine.getRequestLine());
             app.logEvent(hbe);
             return null;
@@ -194,8 +191,7 @@ public abstract class DecisionEngine
 
                 rule = UrlMatchingUtil.checkSiteList(refererHost, refererUri.getPath().toString(), app.getSettings().getPassedUrls());
                 if (rule != null) {
-                    catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
-                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_REFERER_URL, catStr, app.getName());
+                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_REFERER_URL, rule.getId(), rule.getString(), app.getName());
                     logger.debug("LOG: Referer in pass list: " + requestLine.getRequestLine());
                     app.logEvent(hbe);
                     return null;
@@ -208,12 +204,8 @@ public abstract class DecisionEngine
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
         if (checkUnblockedSites(host, uri, clientIp)) {
-            catStr = bestCategoryStr;
-            if (catStr == null) {
-                updateI18nMap();
-                catStr = I18nUtil.tr("Unblocked", i18nMap);
-            }
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, catStr, app.getName());
+            // !!!! make -1 be a constant
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, -1, "", app.getName());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
             app.logEvent(hbe);
             return null;
@@ -222,9 +214,8 @@ public abstract class DecisionEngine
         // if this is HTTP traffic and the request is IP-based and block IP-based browsing is enabled, block this traffic
         if (port == 80 && app.getSettings().getBlockAllIpHosts()) {
             if (host == null || IP_PATTERN.matcher(host).matches()) {
-                updateI18nMap();
-                catStr = (bestCategoryStr == null ? host : bestCategoryStr);
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, catStr, app.getName());
+                // -2 constant for block IPs
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, -2, "", app.getName());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
@@ -238,7 +229,7 @@ public abstract class DecisionEngine
         GenericRule urlRule = checkUrlList(sess, host, uri.toString(), requestLine);
         if (urlRule != null) {
             if (urlRule.getBlocked()) {
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, catStr, app.getName());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, urlRule.getId(), urlRule.getString(), app.getName());
                 logger.debug("LOG: matched block rule: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
@@ -248,7 +239,7 @@ public abstract class DecisionEngine
             } else {
                 if (urlRule.getFlagged()) isFlagged = true;
 
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, isFlagged, Reason.BLOCK_URL, catStr, app.getName());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, isFlagged, Reason.BLOCK_URL, urlRule.getId(), urlRule.getString(), app.getName());
                 logger.debug("LOG: matched pass rule: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
                 if (isFlagged) app.incrementFlagCount();
@@ -263,19 +254,19 @@ public abstract class DecisionEngine
          * The filter rules take priority over category so if we find a block or
          * flag rule we log the event and pass or block right here
          */
-        if ((filterRule != null) && (filterRule.getBlocked())) {
-            catStr = (bestCategoryStr == null ? filterRule.getDescription() : bestCategoryStr);
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
-            app.logEvent(hbe);
-            app.incrementFlagCount();
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
-            return app.generateNonce(bd);
-        } else if ((filterRule != null) && (filterRule.getFlagged())) {
-            catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
-            app.logEvent(hbe);
-            app.incrementFlagCount();
-            return null;
+        if (filterRule != null){
+            if(filterRule.getBlocked()) {
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, filterRule.getRuleId(), filterRule.getDescription(), app.getName());
+                app.logEvent(hbe);
+                app.incrementFlagCount();
+                WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
+                return app.generateNonce(bd);
+            } else if ((filterRule != null) && (filterRule.getFlagged())) {
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, filterRule.getRuleId(), filterRule.getDescription(), app.getName());
+                app.logEvent(hbe);
+                app.incrementFlagCount();
+                return null;
+            }
         }
 
         /**
@@ -296,7 +287,7 @@ public abstract class DecisionEngine
             /**
              * Always log an event if the site was categorized
              */
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), (bestCategory.getBlocked() ? Boolean.TRUE : Boolean.FALSE), (isFlagged ? Boolean.TRUE : Boolean.FALSE), reason, bestCategory.getName(), app.getName());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), (bestCategory.getBlocked() ? Boolean.TRUE : Boolean.FALSE), (isFlagged ? Boolean.TRUE : Boolean.FALSE), reason, bestCategory.getId(), bestCategory.getName(), app.getName());
             app.logEvent(hbe);
             if (isFlagged) app.incrementFlagCount();
 
@@ -315,7 +306,8 @@ public abstract class DecisionEngine
 
         // No category was found (this should happen rarely as most will return an "Uncategorized" category)
         // Since nothing matched, just log it and return null to allow the visit
-        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, (isFlagged ? Boolean.TRUE : Boolean.FALSE), reason, I18nUtil.tr("None", i18nMap), app.getName());
+        // -3 for No block
+        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, (isFlagged ? Boolean.TRUE : Boolean.FALSE), reason, -3, "", app.getName());
         app.logEvent(hbe);
         if (isFlagged) app.incrementFlagCount();
         return null;
@@ -368,18 +360,20 @@ public abstract class DecisionEngine
             catStr = (String) sess.globalAttachment(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
         }
 
-        if ((filterRule != null) && (filterRule.getBlocked())) {
-            if (catStr == null) catStr = filterRule.getDescription();
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
-            app.logEvent(hbe);
-            app.incrementFlagCount();
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
-            return app.generateNonce(bd);
-        } else if (filterRule != null && (filterRule.getFlagged())) {
-            if (catStr == null) catStr = filterRule.getDescription();
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, catStr, app.getName());
-            app.logEvent(hbe);
-            app.incrementFlagCount();
+        if (filterRule != null){
+            if(filterRule.getBlocked()) {
+                // if (catStr == null) catStr = filterRule.getDescription();
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, filterRule.getRuleId(), filterRule.getDescription(), app.getName());
+                app.logEvent(hbe);
+                app.incrementFlagCount();
+                WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
+                return app.generateNonce(bd);
+            } else if (filterRule.getFlagged()) {
+                // if (catStr == null) catStr = filterRule.getDescription();
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, filterRule.getRuleId(), filterRule.getDescription(), app.getName());
+                app.logEvent(hbe);
+                app.incrementFlagCount();
+            }
         }
 
         return null;
@@ -535,12 +529,12 @@ public abstract class DecisionEngine
             logger.info("Unable to get sessionEvent() for " + requestLine.getRequestLine());
         }else{
             if (rule.getBlocked()) {
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, catStr, app.getName());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, rule.getId(), rule.getName(), app.getName());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
                 return rule;
             } else if (rule.getFlagged()) {
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, catStr, app.getName());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, rule.getId(), rule.getName(), app.getName());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
                 return rule;
