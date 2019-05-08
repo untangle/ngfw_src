@@ -6,11 +6,13 @@ package com.untangle.app.web_filter;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
 
@@ -691,6 +693,56 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     }
 
     /**
+     * Return various list configurations from settings.
+     *
+     * @param  key String of key in settings.
+     * @return     List of JSON objects for the settings.
+     */
+    public ArrayList<JSONObject> getReportInfo(String key){
+
+        ArrayList<JSONObject> result = null;
+
+        if(key.equals("filterRules")){
+            result = new ArrayList<>();
+            for(WebFilterRule wfr : this.settings.getFilterRules()){
+                JSONObject jo = new JSONObject(wfr);
+                jo.remove("class");
+                result.add(jo);
+            }
+        }else{
+            List<GenericRule> genericRuleList = null;
+            switch(key){
+                case "passedClients":
+                    genericRuleList = this.settings.getPassedClients();
+                    break;
+                case "passedUrls":
+                    genericRuleList = this.settings.getPassedUrls();
+                    break;
+                case "blockedUrls":
+                    genericRuleList = this.settings.getBlockedUrls();
+                    break;
+                case "categories":
+                    genericRuleList = this.settings.getCategories();
+                    break;
+                case "searchTerms":
+                    genericRuleList = this.settings.getSearchTerms();
+                    break;
+            }
+            if(genericRuleList != null){
+                result = new ArrayList<>();
+                for(GenericRule gr : genericRuleList){
+                    JSONObject jo = new JSONObject(gr);
+                    jo.remove("class");
+                    result.add(jo);
+                }
+
+            }
+        }
+
+        return result;
+    }
+
+    /**
     /**
      * Build a replacement generator
      * 
@@ -752,6 +804,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
          * If we found older settings do conversion, save, and return
          */
         if (readSettings.getVersion() < 3) {
+            // Convert categories
             List<GenericRule> oldCategories = readSettings.getCategories();
             initializeSettings(readSettings);
             GenericRule newCat = null;
@@ -880,12 +933,32 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                 if (rule.getBlocked()) rule.setFlagged(Boolean.TRUE);
             }
         }
+        Integer index = 0;
         if (newSettings.getFilterRules() != null) {
-            int idx = 0;
             for (WebFilterRule rule : newSettings.getFilterRules()) {
-                rule.setRuleId(++idx);
+                rule.setRuleId(++index);
                 if (rule.getBlocked()) rule.setFlagged(Boolean.TRUE);
             }
+        }
+
+        /**
+         * Numerize all rule ids for lookups (except categories which have their own)
+         */
+        index = 0;
+        for(GenericRule rule : newSettings.getPassedClients()){
+            rule.setId(++index);
+        }
+        index = 0;
+        for(GenericRule rule : newSettings.getPassedUrls()){
+            rule.setId(++index);
+        }
+        index = 0;
+        for(GenericRule rule : newSettings.getBlockedUrls()){
+            rule.setId(++index);
+        }
+        index = 0;
+        for(GenericRule rule : newSettings.getSearchTerms()){
+            rule.setId(++index);
         }
 
         fixupSetSettings(newSettings);
