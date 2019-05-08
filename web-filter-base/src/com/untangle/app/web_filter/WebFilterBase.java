@@ -87,7 +87,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         categoryConversionMap.put(214, 7); // Catalogs
         categoryConversionMap.put(216, 66); // Chat
         categoryConversionMap.put(217, 48); // Child Abuse Images
-        categoryConversionMap.put(297, 48); // Child Inappropriate
+        categoryConversionMap.put(297, 54); // Child Inappropriate
         categoryConversionMap.put(218, 56); // Command and Control Centers
         categoryConversionMap.put(306, 80); // Community Forums
         categoryConversionMap.put(1, 56); // Compromised
