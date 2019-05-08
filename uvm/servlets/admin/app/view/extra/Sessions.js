@@ -61,8 +61,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'policy',
             type: 'string',
-            sortType: 'asUnString',
-            convert: Converter.policy
+            sortType: 'asUnString'
         }, {
             name: 'hostname',
             type: 'string',
@@ -332,8 +331,8 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Policy'.t(),
             dataIndex: 'policy',
             width: Renderer.messageWidth,
-            // Look into list on policy
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            renderer: Renderer.policy
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
