@@ -1020,7 +1020,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.SignatureGridFilterController', {
             },
             disabled: true,
             bind:{
-                disabled: '{!matchesFound}'
+                disabled: '{!filterMatchesFound}'
             }
         });
         v.insert(2, {

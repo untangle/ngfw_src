@@ -9,6 +9,11 @@ Ext.define('Ung.cmp.GridFilterController', {
         }
     },
 
+    statusEl: null,
+    statusTemplate: '<div class="x-grid-empty"><p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-search fa-2x"></i> <br/>{0}</p></div>',
+    statusMessageTemplate: 'Filter showing {0} of {1}'.t(),
+    emptyText: null,
+
     setStore: function(){
         var me = this,
             v = me.getView();
@@ -37,6 +42,10 @@ Ext.define('Ung.cmp.GridFilterController', {
         var me = this;
         me.setStoreTask = new Ext.util.DelayedTask( me.setStore, me );
         me.setStoreTask.delay( 100 );
+        me.tooltip = Ext.create('Ext.tip.ToolTip',{
+            target: me.getView(),
+            html: ''
+        });
     },
 
     changeFilterSearch: function (field) {
@@ -73,20 +82,21 @@ Ext.define('Ung.cmp.GridFilterController', {
 
         if (!value) {
             field.getTrigger('clear').hide();
-            vm.set('filterStyle', {fontWeight: 'normal'});
-            store.getFilters().add(function (record) {
-                return true;
-            });
             if(grouping){
-                grouping.collapseAll();
+                if(grouping.initialConfig.startCollapsed){
+                    grouping.collapseAll();
+                }else{
+                    grouping.expandAll();
+                }
             }
+            v.setBorder(false);
             return;
         }
-        vm.set('filterStyle', {fontWeight: 'bold'});
+        v.setBorder(true);
 
         this.createFilter(grid, store, routeFilter);
         if(grouping){
-            grouping.collapseAll();
+            grouping.expandAll();
         }
 
         field.getTrigger('clear').show();
@@ -120,13 +130,16 @@ Ext.define('Ung.cmp.GridFilterController', {
     },
 
     updateFilterSummary: function(checkReset){
-        var v = this.getView(),
-            vm = this.getViewModel();
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
 
         if(v == null){
             return;
         }
-        var store = v.up('grid') ? v.up('grid').getStore() : v.up('panel').down('grid').getStore(),
+
+        var grid = v.up('grid') ? v.up('grid') : v.up('panel').down('grid'),
+            store = grid.getStore(),
             count = store.getCount();
 
         if( ( checkReset === true ) &&
@@ -139,11 +152,28 @@ Ext.define('Ung.cmp.GridFilterController', {
             v.down('[name=filterSearch]').setValue('');
         }
 
-        vm.set('matchesFound', v.down('[name=filterSearch]').getValue() != '' && count ? true : false);
-        if(!count && ( store.getFilters().getCount() == 0)){
-            vm.set('filterSummary', '');
-        }else{
-            vm.set('filterSummary', Ext.String.format('Showing {0} of {1}'.t(), count, store.getData().getSource() ? store.getData().getSource().items.length : count));
+        // This is used by extensiosn (such as IPS) to determine whther matches exist.
+        vm.set('filterMatchesFound', v.down('[name=filterSearch]').getValue() != '' && count ? true : false);
+
+        var status = "";
+        if(me.statusEl){
+            Ext.removeNode(me.statusEl);
+            me.statusEl = null;
+            if(me.emptyText){
+                grid.getView().emptyText = me.emptyText;
+            }
         }
+        if(store.getFilters().getCount() == 0){
+            status = "No filter".t();
+        }else{
+            status = Ext.String.format(me.statusMessageTemplate, count, store.getData().getSource() ? store.getData().getSource().items.length : count);
+            if(grid.getView().emptyText){
+                me.emptyText = grid.getView().emptyText;
+                grid.getView().emptyText = "";
+            }
+            me.statusEl = Ext.core.DomHelper.insertHtml('beforeEnd', grid.getView().getTargetEl().dom, Ext.String.format(me.statusTemplate,status));
+        }
+        me.tooltip.setHtml(status);
+
     }
 });
