@@ -25,10 +25,7 @@ Ext.define('Ung.cmp.GridFilter', {
         name: 'filterLabel',
         value: 'Filter'.t(),
         labelWidth: 'auto',
-        padding: '2 0 0 5',
-        bind: {
-            fieldStyle: '{filterStyle}'
-        },
+        padding: '2 0 0 5'
     },{
         xtype: 'textfield',
         name: 'filterSearch',
@@ -57,12 +54,5 @@ Ext.define('Ung.cmp.GridFilter', {
             change: 'changeFilterSearch',
             buffer: 500
         }
-    },{
-        xtype: 'tbtext',
-        bind: {
-            style: '{filterStyle}',
-            html: '{filterSummary}'
-        },
-        padding: '5 0 0 6'
     }]
 });
