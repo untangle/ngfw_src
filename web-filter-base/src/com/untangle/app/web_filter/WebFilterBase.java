@@ -46,6 +46,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
     private static final String STAT_CACHE_COUNT = "cache_count";
+    private static final Integer SETTINGS_CURRENT_VERSION = 4;
     private static int web_filter_deployCount = 0;
 
     protected static final Logger logger = Logger.getLogger(WebFilterBase.class);
@@ -803,7 +804,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         /**
          * If we found older settings do conversion, save, and return
          */
-        if (readSettings.getVersion() < 3) {
+        if (readSettings.getVersion() < SETTINGS_CURRENT_VERSION) {
             // Convert categories
             List<GenericRule> oldCategories = readSettings.getCategories();
             initializeSettings(readSettings);
@@ -821,7 +822,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                 }
             }
 
-            readSettings.setVersion(3);
+            readSettings.setVersion(SETTINGS_CURRENT_VERSION);
             _setSettings(readSettings);
             logger.debug("Converted settings: " + this.settings.toJSONString());
         }
