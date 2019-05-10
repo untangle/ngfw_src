@@ -80,9 +80,17 @@ Ext.define('Ung.cmp.GridFilterController', {
         }
         var grouping = grid.getView().findFeature('grouping');
 
+        var cache = null;
+        var key = null;
         if (!value) {
             field.getTrigger('clear').hide();
             if(grouping){
+                cache = grouping.getCache();
+                for(key in cache){
+                    if(!cache[key]){
+                        delete cache[key];
+                    }
+                }
                 if(grouping.initialConfig.startCollapsed){
                     grouping.collapseAll();
                 }else{
@@ -96,6 +104,17 @@ Ext.define('Ung.cmp.GridFilterController', {
 
         this.createFilter(grid, store, routeFilter);
         if(grouping){
+            // Recheck this in latest extjs with following steps:
+            // 1. Type a search value (childrens)
+            // 2. Backspace to delete the "s" and press Enter.
+            // If this is still a JS error without the following code,
+            // keep it in.
+            cache = grouping.getCache();
+            for(key in cache){
+                if(!cache[key]){
+                    delete cache[key];
+                }
+            }
             grouping.expandAll();
         }
 
