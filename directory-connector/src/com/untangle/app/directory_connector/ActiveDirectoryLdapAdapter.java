@@ -134,7 +134,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
     @Override
     protected String getUIDAttributeName()
     {
-        return "sAMAccountName";// Dated, but seems to be what windows uses
+        return (settings.getAzure() ? "userPrincipalName" : "sAMAccountName");
     }
 
     /**
@@ -656,7 +656,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         try {
             String searchStr = "(&"
                     + orStrings("objectClass=", getUserClassType())
-                    + "(" + (settings.getAzure() ? "userPrincipalName" : "sAMAccountName") + "=" + uid + "))";
+                    + "(" + getUIDAttributeName() + "=" + uid + "))";
             SearchResult result = queryFirstAsSuperuser(getSearchBases(),
                     searchStr);
             if (result != null)
