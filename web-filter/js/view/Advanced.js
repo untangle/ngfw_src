@@ -59,7 +59,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             bind: '{settings.enforceSafeSearch}'
         }, {
             xtype: 'checkbox',
-            boxLabel: 'Enforce restrict mode on YouTube'.t(),
+            boxLabel: 'Enforce Restricted Mode on YouTube'.t(),
             bind: '{settings.restrictYoutube}'
         }, {
             xtype: 'checkbox',
