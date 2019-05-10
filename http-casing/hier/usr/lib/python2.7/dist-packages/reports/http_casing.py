@@ -60,7 +60,7 @@ CREATE TABLE reports.http_events (
                                  "server_intf",
                                  "web_filter_blocked",
                                  "web_filter_flagged",
-                                 "web_filter_category",
+                                 "web_filter_category_id",
                                  "virus_blocker_clean",
                                  "virus_blocker_lite_clean",
                                  "ad_blocker_action"])
