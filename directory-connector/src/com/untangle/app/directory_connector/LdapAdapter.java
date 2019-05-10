@@ -609,6 +609,7 @@ abstract class LdapAdapter
         }
 
         ldapEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+        ldapEnv.put(Context.REFERRAL, "throw");
         ldapEnv.put(Context.PROVIDER_URL,  "ldap" + ( secure ? "s" : "") + "://" + host + ":" + Integer.toString(port));
         ldapEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
         ldapEnv.put(Context.SECURITY_PRINCIPAL, dn);
