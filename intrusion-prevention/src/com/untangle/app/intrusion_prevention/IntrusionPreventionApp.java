@@ -78,7 +78,7 @@ public class IntrusionPreventionApp extends AppBase
     
     private final EventHandler handler;
     private final PipelineConnector [] connectors = new PipelineConnector[0];
-    private final IntrusionPreventionEventMonitor ipsEventMonitor;    
+    private IntrusionPreventionEventMonitor ipsEventMonitor;
 
     private static final String DAEMON_NAME = "suricata";
     private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/740-suricata";
@@ -136,8 +136,6 @@ public class IntrusionPreventionApp extends AppBase
         setMetricsBlockCount(0);
         updateMetricsMemory();
 
-        this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
-
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
     }
 
@@ -194,6 +192,8 @@ public class IntrusionPreventionApp extends AppBase
         if(updated){
             this.setSettings(this.settings);
         }
+
+        this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
     }
 
     /**
