@@ -165,7 +165,9 @@ Ext.define('Ung.reports.cmp.ReportData', {
                 header: header,
                 flex: 1,
                 tdCls: 'anchor',
-                renderer: Renderer[entry.get('pieGroupColumn')] || null
+                field: entry.get('pieGroupColumn'),
+                table: entry.get('table'),
+                renderer: Renderer[entry.get('pieGroupColumn')] || TableConfig.getDisplayValue
             }, {
                 dataIndex: 'value',
                 header: 'value'.t(),
@@ -267,11 +269,8 @@ Ext.define('Ung.reports.cmp.ReportData', {
             }
 
             if (cellIndex === 0) {
-                column = grid.getColumns()[0].dataIndex;
-                value = record.get(column);
-
                 // fire event to add global condition, implemented in GlobalConditions.js controller section
-                Ext.fireEvent('addglobalcondition', column, value);
+                Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('pieGroupColumn'), record.get(entry.get('pieGroupColumn')));
             }
         }
 
