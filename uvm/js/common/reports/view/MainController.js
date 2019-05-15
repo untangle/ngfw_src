@@ -120,7 +120,7 @@ Ext.define('Ung.view.reports.MainController', {
         if (!node.get('url')) { return; }
 
         Ext.Array.each(vm.get('query.conditions'), function (c) {
-            condsQuery += '&' + c.column + ':' + encodeURIComponent(c.operator) + ':' + encodeURIComponent(c.value) + ':' + (c.autoFormatValue === true ? 1 : 0);
+            condsQuery += '&' + c.column + ':' + encodeURIComponent(c.operator) + ':' + encodeURIComponent(c.value) + ':' + (c.autoFormatValue === true ? 1 : 0) + (c.table ? ':' + encodeURIComponent(c.table): '');
         });
 
         if (Ung.app.context === 'REPORTS') {
