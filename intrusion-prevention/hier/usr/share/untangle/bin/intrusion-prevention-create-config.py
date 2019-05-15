@@ -46,8 +46,6 @@ def main(argv):
             _debug = True
         elif opt in ("-v", "--home_net"):
             default_home_net = arg
-            if default_home_net.find(",") != -1:
-                default_home_net = "[" + default_home_net + "]"
 
     if _debug is True:
         print("_debug = %r" % (_debug))
@@ -165,8 +163,12 @@ def main(argv):
         value = settings_variable["value"]
         if settings_variable["name"] == "HOME_NET":
             value = re.sub(r"\b\bdefault\b\b", default_home_net, value)
+            if value[0] != "[" and value.find(",") != -1:
+                value = "[" + value + "]"
         if settings_variable["name"] == "EXTERNAL_NET":
             value = re.sub(r"\b\bdefault\b\b", "any", value)
+            if value[0] != "[" and value.find(",") != -1:
+                value = "[" + value + "]"
 
         suricata_conf.set_variable(name, value)
 
