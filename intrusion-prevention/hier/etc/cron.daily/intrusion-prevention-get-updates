@@ -9,6 +9,8 @@ import re
 import shutil
 import tarfile
 import requests
+# import urllib3
+# import urllib3.PoolManager()
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ("@PREFIX@", sys.version_info[0], sys.version_info[1])
 if "@PREFIX@" != '':
@@ -121,7 +123,7 @@ class Update:
             return False
 
         try:
-            url = urllib3.urlopen(self.url)
+            url = requests.get(self.url)
         except:
             self.errors.append({
                 'msg': "Cannot open url=" + self.url,
@@ -138,27 +140,17 @@ class Update:
             })
             return False
 
-        url_bytes_read = 0
-        while url_bytes_read < url_file_size:
-            try:
-                data = url.read(CHUNK_SIZE)
-            except:
-                self.errors.append({
-                    'msg': "Cannot read content at " + str(url_bytes_read),
-                    'error': "\n".join(str(v) for v in sys.exc_info())
-                })
-                return False
+        try:
+            for chunk in url.iter_content(chunk_size=CHUNK_SIZE):
+                if chunk:
+                    write_file.write(chunk)
+        except:
+            self.errors.append({
+                'msg': "Cannot write to url_file_name=" + self.url_file_name,
+                'error': "\n".join(str(v) for v in sys.exc_info())
+            })
+            return False
 
-            url_bytes_read += len(data)
-
-            try:
-                write_file.write(data)
-            except:
-                self.errors.append({
-                    'msg': "Cannot write content at " + str(url_bytes_read),
-                    'error': "\n".join(str(v) for v in sys.exc_info())
-                })
-                return False
         write_file.close()
         return True
 
