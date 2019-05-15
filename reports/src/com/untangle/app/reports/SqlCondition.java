@@ -23,6 +23,7 @@ public class SqlCondition implements Serializable, JSONString
     private String value;
     private String operator;
     private boolean autoFormatValue = true;
+    private String table;
     
     public SqlCondition() {}
     
@@ -32,7 +33,16 @@ public class SqlCondition implements Serializable, JSONString
         this.operator = operator;
         this.value = value;
     }
-    
+
+    public SqlCondition( String column, String operator, String value, String table)
+    {
+        this.table = table;
+        this.column = column;
+        this.operator = operator;
+        this.value = value;
+        this.table = table;
+    }
+
     public String getColumn() { return this.column; }
     public void setColumn( String newValue ) { this.column = newValue; }
 
@@ -99,6 +109,9 @@ public class SqlCondition implements Serializable, JSONString
     {
         this.autoFormatValue = newValue;
     }
+
+    public String getTable() { return this.table; }
+    public void setTable( String newValue ) { this.table = newValue; }
 
     public String toJSONString()
     {

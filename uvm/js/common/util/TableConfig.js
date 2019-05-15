@@ -223,6 +223,23 @@ Ext.define('TableConfig', {
         return tableColumn;
     },
 
+    getDisplayValue: function(value, table, field){
+        if(arguments[6]){
+            var column = arguments[6].getGridColumns()[arguments[4]];
+            table = column.table;
+            field = column.field;
+        }
+        var tableField = TableConfig.getTableField(table, field);
+        var tableColumn = TableConfig.getTableColumn(table, field);
+        if(tableField && tableField['convert']){
+            value = tableField['convert'](value);
+        }
+        if(tableColumn && tableColumn['renderer']){
+            value = tableColumn['renderer'](value);
+        }
+        return value;
+    },
+
     tableConfig: {
         sessions: {
             fields: [{

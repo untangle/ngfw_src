@@ -418,35 +418,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                     }
                     me.data = result.list;
 
-                    if (entry.get('type') === 'PIE_GRAPH') {
-                        var fieldName = entry.get('pieGroupColumn');
-
-                        var converters = [];
-                        var renderers = [];
-                        var fieldNames = fieldName.split(",");
-                        fieldNames.forEach(function(field){
-                            var tableField = TableConfig.getTableField(entry.get('table'), field);
-                            if(tableField && tableField['convert']){
-                                converters.push(tableField['convert']);
-                            }
-                            var tableColumn = TableConfig.getTableColumn(entry.get('table'), field);
-                            if(tableColumn && tableColumn['renderer']){
-                                renderers.push(tableColumn['renderer']);
-                            }
-                        });
-
-                        me.data.forEach(function(row){
-                            fieldNames.forEach(function(fieldName){
-                                converters.forEach( function(conveter){
-                                    row[fieldName] = conveter.call(this, row[fieldName], row);
-                                });
-                                renderers.forEach( function(renderer){
-                                    row[fieldName] = renderer.call(this, row[fieldName], row);
-                                });
-                            });
-                        });
-                    }
-
                     me.setSeries();
                     if (cb) { cb(me.data); }
                 }, function () {
@@ -503,6 +474,7 @@ Ext.define('Ung.view.reports.GraphReport', {
         setSeries: function () {
             var me = this, vm = this.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'),
                 seriesRenderer = ( entry && entry.get('seriesRenderer') ) ? Renderer[entry.get('seriesRenderer')] : null,
+                table = entry.get('table'),
                 seriesData,
                 seriesName;
 
@@ -579,8 +551,9 @@ Ext.define('Ung.view.reports.GraphReport', {
 
                 Ext.Array.each(me.data, function (row, idx) {
                     colVal = row[entry.get('pieGroupColumn')];
+
                     if (!seriesRenderer) {
-                        seriesName = colVal !== undefined ? colVal : 'None'.t();
+                        seriesName = colVal !== undefined ? TableConfig.getDisplayValue(colVal, table, entry.get('pieGroupColumn')) : 'None'.t();
                     } else {
                         seriesName = seriesRenderer(parseInt(colVal, 10));
                     }
@@ -924,10 +897,10 @@ Ext.define('Ung.view.reports.GraphReport', {
 
         onPointClick: function (event) {
             var me = this, vm = me.getViewModel(),
-                column = vm.get('entry.pieGroupColumn'),
+                entry = vm.get('entry'),
                 value = event.point.value;
 
-            Ext.fireEvent('addglobalcondition', column, value);
+            Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('pieGroupColumn'), value);
         }
     }
 });

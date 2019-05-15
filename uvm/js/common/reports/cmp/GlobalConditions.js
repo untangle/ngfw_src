@@ -159,14 +159,13 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 conditionsHolder.removeAll(); // remove all conditions buttons
 
                 Ext.Array.each(query.conditions, function (cond, idx) {
-
                     // condition button
                     conditionsButtons.push({
                         xtype: 'segmentedbutton',
                         allowToggle: false,
                         margin: '0 5',
                         items: [{
-                            text: TableConfig.getColumnHumanReadableName(cond.column) + ' <span style="font-weight: bold; margin: 0 3px;">' + cond.operator + '</span> ' + cond.value,
+                            text: TableConfig.getColumnHumanReadableName(cond.column) + ' <span style="font-weight: bold; margin: 0 3px;">' + cond.operator + '</span> ' + TableConfig.getDisplayValue(cond.value, cond.table, cond.column),
                             menu: {
                                 plain: true,
                                 showSeparator: false,
@@ -289,6 +288,8 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 return;
             }
 
+            // !! new field for valueDisplay
+
             conds.push({
                 column: col,
                 operator: op,
@@ -322,7 +323,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
 
                 Ext.Array.each(conditions, function (cond, idx) {
                     newQuery += (idx === 0 && !route.cat) ? '?' : '&';
-                    newQuery += cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
+                    newQuery += cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0) + ( cond.table ? ':' + encodeURIComponent(cond.table) : '');
                 });
             }
 
@@ -330,7 +331,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 newQuery = '#dashboard';
                 Ext.Array.each(conditions, function (cond, idx) {
                     newQuery += (idx === 0) ? '?' : '&';
-                    newQuery += cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
+                    newQuery += cond.table + ':' + cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0) + ( cond.table ? ':' + encodeURIComponent(cond.table) : '');
                 });
             }
 
@@ -516,14 +517,14 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
         /**
          * Handles the addglobalcondition event
          * used when adding a new condition from a PIE_GRAPH Data View grid
-         * */
-        onAddGlobalCondition: function (col, val) {
+         */
+        onAddGlobalCondition: function (table, field, value) {
             var me = this, vm = me.getViewModel(),
                 conditions = vm.get('query.conditions'),
-                readableColumn = TableConfig.getColumnHumanReadableName(col),
+                readableColumn = TableConfig.getColumnHumanReadableName(field),
                 msg = 'Add <strong>' + readableColumn + '</strong> column to the Global Conditions?'.t();
 
-            if (!val) { return; } // val might be undefined in some cases (e.g. pie 'Others' value)
+            if (!value) { return; } // value might be undefined in some cases (e.g. pie 'Others' value)
 
             // because this component is used in both dashboard and reports, event will fire twice
             // apply following logic to avoid exceptions
@@ -532,16 +533,17 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             Ext.Msg.show({
                 title: 'Add Global Condition'.t(),
                 message: msg + '<br/><br/>' +
-                            '<strong>' + readableColumn + ' [' + col + '] = ' + val + '</strong>',
+                            '<strong>' + readableColumn + ' [' + field + '] = ' + TableConfig.getDisplayValue(value, table, field) + '</strong>',
                 buttons: Ext.Msg.YESNO,
                 icon: Ext.Msg.QUESTION,
                 fn: function (btn) {
                     if (btn === 'yes') {
                         conditions.push({
-                            column: col,
+                            column: field,
                             operator: '=',
-                            value: val,
+                            value: value,
                             autoFormatValue: true,
+                            table: table,
                             javaClass: 'com.untangle.app.reports.SqlCondition'
                         });
                         me.redirect();
@@ -563,7 +565,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             }
 
             Ext.Array.each(vm.get('query.conditions'), function (c) {
-                conds.push('<li><strong>' + TableConfig.getColumnHumanReadableName(c.column) + ' [' + c.column + '] ' + c.operator + ' ' + c.value + '</strong></li>');
+                conds.push('<li><strong>' + TableConfig.getColumnHumanReadableName(c.column) + ' [' + c.column + '] ' + c.operator + ' ' + TableConfig.getDisplayValue(c.value, c.table, c.column) + '</strong></li>');
             });
 
             if (selection.isLeaf()) {
