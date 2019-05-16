@@ -19,7 +19,7 @@ if [ -d $OLD_SNORT_PYTHON_LIBRARY ] ; then
 fi
 
 EVENT_MAP=/etc/suricata/intrusion-prevention.event.map.conf
-if[ -f $EVENT_MAP ] ; then
+if [ -f $EVENT_MAP ] ; then
     rm -f $EVENT_MAP
 fi
 
