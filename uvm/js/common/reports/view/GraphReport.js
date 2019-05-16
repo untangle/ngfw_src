@@ -525,6 +525,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                         if (seriesName.substr(-1) != ']') {
                             seriesName += ' [' + column + ']';
                         }
+                    }else{
+                        seriesName = column !== undefined ? TableConfig.getDisplayValue(column, table, entry.get('timeDataDynamicColumn')) : 'None'.t();
                     }
 
                     me.chart.addSeries({
@@ -552,10 +554,10 @@ Ext.define('Ung.view.reports.GraphReport', {
                 Ext.Array.each(me.data, function (row, idx) {
                     colVal = row[entry.get('pieGroupColumn')];
 
-                    if (!seriesRenderer) {
-                        seriesName = colVal !== undefined ? TableConfig.getDisplayValue(colVal, table, entry.get('pieGroupColumn')) : 'None'.t();
-                    } else {
+                    if (seriesRenderer) {
                         seriesName = seriesRenderer(parseInt(colVal, 10));
+                    } else {
+                        seriesName = colVal !== undefined ? TableConfig.getDisplayValue(colVal, table, entry.get('pieGroupColumn')) : 'None'.t();
                     }
 
                     if (idx < entry.get('pieNumSlices')) {
