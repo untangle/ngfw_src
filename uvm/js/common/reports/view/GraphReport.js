@@ -280,10 +280,11 @@ Ext.define('Ung.view.reports.GraphReport', {
                                 if (this.point.percentage < 2) {
                                     return null;
                                 }
-                                if (this.point.name.length > 25) {
-                                    return this.point.name.substring(0, 25) + '...';
+                                var name = this.point.name;
+                                if (name.length > 25) {
+                                    name = name.substring(0, 25) + '...';
                                 }
-                                return this.point.name + ' (' + this.point.percentage.toFixed(2) + '%)';
+                                return name + ' (' + this.point.percentage.toFixed(2) + '%)';
                             }
                         },
                         events: {
@@ -497,7 +498,6 @@ Ext.define('Ung.view.reports.GraphReport', {
                         dataColumns.push(column.split(' ').splice(-1)[0]);
                     });
                 }
-
 
                 if (entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
                     Ext.Array.each(me.data, function (row) {
