@@ -486,6 +486,9 @@ Ext.define('Ung.util.Renderer', {
         }
         return Ext.String.format('{0} [{1}]'.t(), Renderer.policiesMap[parseInt(value, 10)] || value.toString(), value);
     },
+    policy_id: function(value){
+        return Renderer.policy(value);
+    },
 
     httpReasonMap: {
         D: 'in Categories Block list'.t(),
