@@ -230,6 +230,10 @@ class IntrusionPreventionEventMonitor implements Runnable
                     }
                     try{
                         File file = new File( directory.getCanonicalPath() + "/" + name );
+                        if(file.isFile() && ( file.lastModified() < currentTime )){
+                            file.delete();
+                            return false;
+                        }
                         return file.isFile() && ( file.lastModified() >= currentTime );
                     }catch(Exception e){
                         return false;
