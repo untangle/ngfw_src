@@ -220,7 +220,7 @@ Ext.define('Ung.view.reports.EventReport', {
 
             Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
                 entry.getData(), // entry
-                vm.get('query.conditions'), // global conditions
+                Ung.model.ReportCondition.collect(vm.get('query.conditions')),
                 limit,
                 startDate,
                 endDate)
