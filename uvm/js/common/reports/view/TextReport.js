@@ -85,7 +85,8 @@ Ext.define('Ung.view.reports.TextReport', {
                 entry.getData(), // entry
                 startDate,
                 endDate,
-                vm.get('query.conditions'), -1) // sql filters
+                Ung.model.ReportCondition.collect(vm.get('query.conditions')),
+                -1)
                 .then(function(result) {
                     if(Util.isDestroyed(me)){
                         return;
