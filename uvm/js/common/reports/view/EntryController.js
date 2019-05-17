@@ -506,12 +506,6 @@ Ext.define('Ung.view.reports.EntryController', {
             }
         });
 
-        var conditions = [];
-        Ext.Array.each(Ext.clone(vm.get('query.conditions')), function (cnd) {
-            delete cnd._id;
-            conditions.push(cnd);
-        });
-
         // startDate converted from UI to server date
         startDate = Util.clientToServerDate(vm.get('time.range.since'));
         // endDate converted from UI to server date
@@ -522,7 +516,7 @@ Ext.define('Ung.view.reports.EntryController', {
         downloadForm['type'].value = 'eventLogExport';
         downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(startDate, 'd.m.Y-H:i') + '-' + Ext.Date.format(endDate || Util.clientToServerDate(new Date()), 'd.m.Y-H:i')).replace(/ /g, '_');
         downloadForm['arg2'].value = Ext.encode(entry);
-        downloadForm['arg3'].value = conditions.length > 0 ? Ext.encode(conditions) : '';
+        downloadForm['arg3'].value = Ext.encode(Ung.model.ReportCondition.collect(vm.get('query.conditions')));
         downloadForm['arg4'].value = columns.join(',');
         downloadForm['arg5'].value = startDate ? startDate.getTime() : -1;
         downloadForm['arg6'].value = endDate ? endDate.getTime() : -1;

@@ -174,7 +174,7 @@ Ext.define('Ung.controller.Global', {
      */
     onRoute: function (query) {
         var hash = window.location.hash, view, viewModel = null, validQuery = true,
-            route = {}, conditions = [], condsQuery = '',
+            route = {}, condition, conditions = [],
             decoded, parts, key, sep, val, fmt, table;
 
         if (hash === '' || Ext.String.startsWith(hash, '#') || Ext.String.startsWith(hash, '#dashboard')) {
@@ -210,15 +210,13 @@ Ext.define('Ung.controller.Global', {
                     if (!key || !sep || !val) {
                         validQuery = false;
                     } else {
-                        conditions.push({
+                        conditions.push( new Ung.model.ReportCondition({
                             column: key,
                             operator: sep,
                             value: val,
                             autoFormatValue: fmt === 1 ? true : false,
                             table: table,
-                            javaClass: 'com.untangle.app.reports.SqlCondition'
-                        });
-                        condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt + (table ? ':' + encodeURIComponent(table) : '');
+                        }));
                     }
                 }
             });
@@ -233,7 +231,7 @@ Ext.define('Ung.controller.Global', {
             viewModel.set('query', {
                 route: route,
                 conditions: conditions,
-                string: condsQuery
+                string: Ung.model.ReportCondition.getAllQueries(conditions)
             });
         }
 
