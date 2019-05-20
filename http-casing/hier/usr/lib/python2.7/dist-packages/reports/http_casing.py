@@ -40,7 +40,7 @@ CREATE TABLE reports.http_events (
     ad_blocker_cookie_ident text,
     ad_blocker_action character,
     web_filter_reason character(1),
-    web_filter_category int2,
+    web_filter_category_id int2,
     web_filter_blocked boolean,
     web_filter_flagged boolean,
     virus_blocker_lite_clean boolean,
