@@ -4,7 +4,7 @@
     "type": "EVENT_LIST",
     "conditions": [
         {
-            "column": "flagged",
+            "column": "blocked",
             "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "is",
             "value": "TRUE"
