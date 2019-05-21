@@ -78,7 +78,7 @@ public class IntrusionPreventionApp extends AppBase
     
     private final EventHandler handler;
     private final PipelineConnector [] connectors = new PipelineConnector[0];
-    private IntrusionPreventionEventMonitor ipsEventMonitor;
+    private IntrusionPreventionEventMonitor ipsEventMonitor = null;
 
     private static final String DAEMON_NAME = "suricata";
     private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/740-suricata";
@@ -887,7 +887,10 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void reloadEventMonitorMap()
     {
-        this.ipsEventMonitor.unified2Parser.reloadEventMap();
+        if(this.ipsEventMonitor != null &&
+            this.ipsEventMonitor.unified2Parser != null){
+            this.ipsEventMonitor.unified2Parser.reloadEventMap();
+        }
     }
 
     /**
