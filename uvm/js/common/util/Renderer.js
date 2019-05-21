@@ -2,6 +2,8 @@ Ext.define('Ung.util.Renderer', {
     singleton: true,
     alternateClassName: 'Renderer',
 
+    listKey: '__list__',
+
     // Format used when there is some value for the user knowing the subscripted value.
     // Not useful for index values that aren't visible to the user.
     mapValueFormat: '{0} [{1}]'.t(),
@@ -141,7 +143,11 @@ Ext.define('Ung.util.Renderer', {
             }
             Ung.util.Renderer.interfaceLastUpdated = currentTime;
         }
-        return value ? Ung.util.Renderer.interfaceMap[value] || value.toString() : '';
+        if(value == Renderer.listKey){
+            return Ung.util.Renderer.interfaceMap;
+        }else{
+            return value ? Ung.util.Renderer.interfaceMap[value] || value.toString() : '';
+        }
     },
 
     tags: function (value, metaData) {
@@ -247,6 +253,9 @@ Ext.define('Ung.util.Renderer', {
         2: 'Month to Date'.t()
     },
     timeInterval: function ( value ){
+        if(value == Renderer.listKey){
+            return Renderer.timeIntervalMap;
+        }
         if( value in Ung.util.Renderer.timeIntervalMap ){
             return Ung.util.Renderer.timeIntervalMap[value];
         }
@@ -273,6 +282,9 @@ Ext.define('Ung.util.Renderer', {
         6: 'Saturday'.t()
     },
     dayOfWeek: function( value ){
+        if(value == Renderer.listKey){
+            return Renderer.dayOfWeekMap;
+        }
         if( value in Ung.util.Renderer.dayOfWeekMap ){
             return Ung.util.Renderer.dayOfWeekMap[value];
         }
@@ -292,6 +304,9 @@ Ext.define('Ung.util.Renderer', {
     priority: function( value ){
         if (Ext.isEmpty(value)) {
             value = 0;
+        }
+        if(value == Renderer.listKey){
+            return Renderer.priorityMap;
         }
         if( value in Ung.util.Renderer.priorityMap ){
             return Ung.util.Renderer.priorityMap[value];
@@ -448,7 +463,11 @@ Ext.define('Ung.util.Renderer', {
     },
 
     protocol: function (value) {
-        return value ? Ung.util.Renderer.protocolsMap[value] || value.toString() : '';
+        if(value == Renderer.listKey){
+            return Renderer.protocolsMap;
+        }else{
+            return value ? Ung.util.Renderer.protocolsMap[value] || value.toString() : '';
+        }
     },
 
     settingsFile: function( value ){
@@ -477,6 +496,9 @@ Ext.define('Ung.util.Renderer', {
                     Renderer.policiesMap[policy.policyId] = policy.name;
                 });
             }
+        }
+        if(value == Renderer.listKey){
+            return Renderer.policiesMap;
         }
         if(value === 0){
             return 'None'.t();
@@ -509,11 +531,15 @@ Ext.define('Ung.util.Renderer', {
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return Ext.String.format(
-                Renderer.mapValueFormat,
-                ( value in Renderer.httpReasonMap ) ? Renderer.httpReasonMap[value] : Renderer.httpReasonMap['default'],
-                value
-        );
+        if(value == Renderer.listKey){
+            return Renderer.httpReasonMap;
+        }else{
+            return Ext.String.format(
+                    Renderer.mapValueFormat,
+                    ( value in Renderer.httpReasonMap ) ? Renderer.httpReasonMap[value] : Renderer.httpReasonMap['default'],
+                    value
+            );
+        }
     },
 
 
@@ -558,7 +584,7 @@ Ext.define('Ung.util.Renderer', {
 
         if(!Renderer.webCategoryMap[policyId] ||
             !Renderer.webCategoryMap[policyId][categorySource] ||
-            !Renderer.webCategoryMap[policyId][categorySource][value]){
+            (value != Renderer.listKey && !Renderer.webCategoryMap[policyId][categorySource][value])){
 
             categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, categorySource);
             if(!categoryInfo){
@@ -581,7 +607,11 @@ Ext.define('Ung.util.Renderer', {
                 Renderer.webCategoryMap[policyId][categorySource][value] = 'Unknown'.t();
             }
         }
-        return Renderer.webCategoryMap[policyId][categorySource][value];
+        if(value == Renderer.listKey){
+            return Renderer.webCategoryMap[policyId][categorySource];
+        }else{
+            return Renderer.webCategoryMap[policyId][categorySource][value];
+        }
     }
 
 });
