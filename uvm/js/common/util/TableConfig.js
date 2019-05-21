@@ -223,6 +223,22 @@ Ext.define('TableConfig', {
         return tableColumn;
     },
 
+    getFirstTableFromField: function(fieldName){
+        var table = null;
+        Ext.Object.each(TableConfig.tableConfig, function(tableName, tableValues){
+            tableValues['fields'].forEach(function(field){
+                if(field['name'] == fieldName){
+                    table = tableName;
+                    return false;
+                }                
+            });
+            if(table != null){
+                return false;
+            }
+        });
+        return table;
+    },
+
     getDisplayValue: function(value, table, field){
         if(arguments[6]){
             var column = arguments[6].getGridColumns()[arguments[4]];
@@ -238,6 +254,37 @@ Ext.define('TableConfig', {
             value = tableColumn['renderer'](value);
         }
         return value;
+    },
+
+    getValues: function( table, field ){
+        var values = [];
+        // var tableField = TableConfig.getTableField(table, field);
+        // if(tableField && tableColumn['converter']){
+        //     var rendererValues = tableColumn['renderer']('__list__');
+        //     if(Array.isArray(rendererValues)){
+        //         values = rendererValues;
+        //     }else if(typeof rendererValues === 'object'){
+        //         for(var key in rendererValues){
+        //             if(rendererValues.hasOwnProperty(key)){
+        //                 values.push([String(key), rendererValues[key]]);
+        //             }
+        //         }
+        //     }
+        // }
+        var tableColumn = TableConfig.getTableColumn(table, field);
+        if(tableColumn && tableColumn['renderer']){
+            var rendererValues = tableColumn['renderer']('__list__');
+            if(Array.isArray(rendererValues)){
+                values = rendererValues;
+            }else if(typeof rendererValues === 'object'){
+                for(var key in rendererValues){
+                    if(rendererValues.hasOwnProperty(key)){
+                        values.push([String(key), rendererValues[key]]);
+                    }
+                }
+            }
+        }
+        return values;
     },
 
     tableConfig: {
