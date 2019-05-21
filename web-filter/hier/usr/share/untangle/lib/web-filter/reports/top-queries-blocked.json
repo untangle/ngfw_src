@@ -2,7 +2,7 @@
     "uniqueId": "web-filter-7hfxugZUBTQB",
     "category": "Web Filter",
     "description": "The number of blocked search queries grouped by term.",
-    "displayOrder": 802,
+    "displayOrder": 803,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
