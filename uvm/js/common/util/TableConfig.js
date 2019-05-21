@@ -212,6 +212,9 @@ Ext.define('TableConfig', {
 
     getTableColumn: function(table, name){
         var tableColumn = null;
+        if(table == null){
+            table = TableConfig.getFirstTableFromField(name);
+        }
         if(TableConfig.tableConfig[table] &&
             TableConfig.tableConfig[table]['columns']){
             TableConfig.tableConfig[table]['columns'].forEach( function(column){
