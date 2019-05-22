@@ -17,7 +17,9 @@ import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -50,6 +52,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     public static String BCTI_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
     public static String BCTI_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
     public static String BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY="cats";
+    public static String BCTI_QUERY_URLINFO_ERROR_KEY="ERROR";
     public static String BCTI_QUERY_URLINFO_CATEGORY_ID_KEY="catid";
     public static String BCTI_QUERY_URLCLEARCACHE = "{\"url/setcacheclear\":{}}\r\n";
     public static String BCTI_QUERY_STATUS = "{\"status\":{}}\r\n";
@@ -74,10 +77,17 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     static private InetSocketAddress BCTID_SOCKET_ADDRESS = new InetSocketAddress("127.0.0.1", 8484);
 
-    private Boolean BctidReady = false;
-    private Socket BctidSocket = null;
+    private static AtomicInteger DecisionEngineCount = new AtomicInteger();
+
+    private static Boolean BctidReady = false;
     private static final long BCTID_CONNECT_WAIT = 5 * 1000;
     private long BctidSocketConnectWait = 0L;
+
+    private static Integer BctidMaxSocketQueueSize = 30;
+
+    private static ArrayBlockingQueue<Socket> BctidSocketPool = new ArrayBlockingQueue<>(BctidMaxSocketQueueSize);
+    private static AtomicInteger BctidSocketRunnersCount = new AtomicInteger();
+    private static long BctidSocketPoolMaxWaitSeconds = 5L;
 
     private final Logger logger = Logger.getLogger(getClass());
     private WebFilterBase ourApp = null;
@@ -256,12 +266,19 @@ public class WebFilterDecisionEngine extends DecisionEngine
         String bctidAnswer = null;
         try{
             bctidAnswer = bctidQuery(BCTI_QUERY_URLINFO_PREFIX + url + BCTI_QUERY_URLINFO_SUFFIX);
-            JSONObject urlAnswer = new JSONArray(bctidAnswer).getJSONObject(0);
+            if(bctidAnswer != null){
+                JSONObject urlAnswer = new JSONArray(bctidAnswer).getJSONObject(0);
 
-            JSONArray catids = urlAnswer.getJSONArray(BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY);
-            categories = new ArrayList<Integer>(catids.length());
-            for(i = 0; i < catids.length(); i++){
-                categories.add(catids.getJSONObject(i).getInt(BCTI_QUERY_URLINFO_CATEGORY_ID_KEY));
+                if(urlAnswer.has(BCTI_QUERY_URLINFO_ERROR_KEY)){
+                    logger.warn("categorizeSite: answer contains error: " + bctidAnswer + ", defaulting to UNCATEGORIZED_CATEGORY");
+                }else{
+                    JSONArray catids = urlAnswer.getJSONArray(BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY);
+                    categories = new ArrayList<Integer>(catids.length());
+                    for(i = 0; i < catids.length(); i++){
+                        categories.add(catids.getJSONObject(i).getInt(BCTI_QUERY_URLINFO_CATEGORY_ID_KEY));
+                    }
+                }
+
             }
         }catch(Exception e){
             if(bctidAnswer != null){
@@ -333,12 +350,15 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public void start()
     {
-        logger.warn("WebFilterDecisionEngine start");
-
         reconfigure(null);
+        boolean firstIn = DecisionEngineCount.get() == 0;
+        DecisionEngineCount.incrementAndGet();
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
-        BctidReady = true;
+
+        if(firstIn){
+            BctidReady = true;
+        }
         pulseGetStatistics.start();
     }
 
@@ -347,19 +367,23 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public void stop()
     {
-        logger.warn("WebFilterDecisionEngine stop");
+        boolean lastOut = DecisionEngineCount.decrementAndGet() == 0;
         try{
             if(pulseGetStatistics.getState() == Pulse.PulseState.RUNNING){
                 pulseGetStatistics.stop();
             }
-            synchronized(this){
-                if(BctidSocket != null){
-                    BctidSocket.close();
-                }
+            if( lastOut ){
                 BctidReady = false;
+                Socket socket = null;
+                Thread.sleep(2 * 1000);
+                while((socket = BctidSocketPool.poll(BctidSocketPoolMaxWaitSeconds, TimeUnit.SECONDS)) != null){
+                    socket.close();
+                }
+                BctidSocketPool.clear();
+                BctidSocketRunnersCount.set(0);
             }
         }catch(Exception e){
-            logger.warn("Unable to close socket", e);
+            logger.warn("Unable to properly stop", e);
         }
         UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bctid");
     }
@@ -433,71 +457,78 @@ public class WebFilterDecisionEngine extends DecisionEngine
     /**
      * Query daemon.
      * @param  query        String of bcti query to send
-     * @param  reopenSocket Boolean where if true, open the socket, otherwise reuse existing
+     * @param  retry        Boolean to retry again.
      * @return              String of json response.
      */
-    String bctidQuery(String query, Boolean reopenSocket)
+    String bctidQuery(String query, Boolean retry)
     {
         String answer = null;
+
         if(BctidReady == false){
             return answer;
         }
         StringBuilder responseBuilder = new StringBuilder(1024);
+        Socket bctidSocket = null;
         try{
-            synchronized(this){
-                if(BctidSocketConnectWait > 0){
-                    if(BctidSocketConnectWait < System.currentTimeMillis()){
-                        BctidSocketConnectWait = 0;
-                    }else{
-                        return answer;
-                    }
+            synchronized(BctidSocketRunnersCount){
+                if((BctidSocketRunnersCount.get() + BctidSocketPool.size()) < BctidMaxSocketQueueSize){
+                    bctidSocket = new Socket();
+                    bctidSocket.connect(BCTID_SOCKET_ADDRESS);
+                    bctidSocket.setKeepAlive(true);
+                    BctidSocketRunnersCount.incrementAndGet();
                 }
-
-                if(BctidSocket == null || reopenSocket){
-                    BctidSocket = new Socket();
-                    BctidSocket.connect(BCTID_SOCKET_ADDRESS);
-                    BctidSocket.setKeepAlive(true);
-                }
-                BctidSocket.getOutputStream().write(query.getBytes());
-                BctidSocket.getOutputStream().flush();
-
-                InputStream is = BctidSocket.getInputStream();
-
-                // !!! look for \r\n not just \n
-                boolean rFound = false;
-                boolean nFound = false;
-                byte payloadBuffer[] = new byte[1024];
-                int c = 0;
-                int payloadRead = 0;
-                int sbLength = 0;
-                do{
-                    payloadRead = is.read(payloadBuffer);
-                    if((char) payloadBuffer[payloadRead - 1] == '\n'){
-                        nFound = true;
-                    }
-                    answer = new String(payloadBuffer, 0, payloadRead);
-                    if(nFound && responseBuilder.length() == 0){
-                        break;
-                    }
-                    responseBuilder.append(answer);
-                    answer = responseBuilder.toString();
-                }while(!nFound);
             }
+            if(bctidSocket == null){
+                bctidSocket = BctidSocketPool.poll(BctidSocketPoolMaxWaitSeconds, TimeUnit.SECONDS);
+                BctidSocketRunnersCount.incrementAndGet();
+                if(bctidSocket == null){
+                    logger.warn("bctidQuery: timed out getting socket from pool!" + BctidSocketPool.size());
+                    return answer;
+                }
+            }
+
+            InputStream is = null;
+            bctidSocket.getOutputStream().write(query.getBytes());
+            bctidSocket.getOutputStream().flush();
+            is = bctidSocket.getInputStream();
+
+            // !!! look for \r\n not just \n
+            boolean rFound = false;
+            boolean nFound = false;
+            byte payloadBuffer[] = new byte[1024];
+            int c = 0;
+            int payloadRead = 0;
+            int sbLength = 0;
+            do{
+                payloadRead = is.read(payloadBuffer);
+                if((char) payloadBuffer[payloadRead - 1] == '\n'){
+                    nFound = true;
+                }
+                answer = new String(payloadBuffer, 0, payloadRead);
+                if(nFound && responseBuilder.length() == 0){
+                    break;
+                }
+                responseBuilder.append(answer);
+                answer = responseBuilder.toString();
+            }while(!nFound);
         }catch(ConnectException ce){
             logger.warn("Unable to connect.  Waiting "+BCTID_CONNECT_WAIT);
-            synchronized(this){
-                BctidSocket = null;
-                BctidSocketConnectWait = System.currentTimeMillis() + BCTID_CONNECT_WAIT;
-            }
+            bctidSocket = null;
         }catch(Exception e){
-            logger.warn(e);
             try{
-                BctidSocket.close();
-                BctidSocket = null;
+                bctidSocket.close();
+                bctidSocket = null;
             }catch(Exception e2){}
-
-            if(reopenSocket == false){
+            if(retry == false){
+                logger.warn("Problem with query ("+query+"), retry=false");
                 return bctidQuery(query, true);
+            }else{
+                logger.warn("Problem with query ("+query+"), retry=true", e);
+            }
+        }finally{
+            BctidSocketRunnersCount.decrementAndGet();
+            if(bctidSocket != null){
+                BctidSocketPool.offer(bctidSocket);
             }
         }
 
@@ -630,8 +661,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
         public void run()
         {
             try{
-                JSONObject status = new JSONObject(bctidQuery(BCTI_QUERY_STATUS));
-                ourApp.setCacheCount(new Long(status.getJSONObject("url_db").getInt("url_cache_current_size")));
+                String statusResult = bctidQuery(BCTI_QUERY_STATUS);
+                if(statusResult != null){
+                    JSONObject status = new JSONObject(bctidQuery(BCTI_QUERY_STATUS));
+                    ourApp.setCacheCount(new Long(status.getJSONObject("url_db").getInt("url_cache_current_size")));
+                }
             }catch(Exception e){
                 logger.warn("Unable to query cache size",e);
             }
