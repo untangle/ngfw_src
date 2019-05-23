@@ -293,65 +293,6 @@ Ext.define('Ung.util.Converter', {
         );
     },
 
-    icmpMap: {
-        0: 'Echo Reply'.t(),
-        1: 'Unassigned'.t(),
-        2: 'Unassigned'.t(),
-        3: 'Destination Unreachable'.t(),
-        4: 'Source Quench (Deprecated)'.t(),
-        5: 'Redirect'.t(),
-        6: 'Alternate Host Address (Deprecated)'.t(),
-        7: 'Unassigned'.t(),
-        8: 'Echo'.t(),
-        9: 'Router Advertisement'.t(),
-        10: 'Router Solicitation'.t(),
-        11: 'Time Exceeded'.t(),
-        12: 'Parameter Problem'.t(),
-        13: 'Timestamp'.t(),
-        14: 'Timestamp Reply'.t(),
-        15: 'Information Request (Deprecated)'.t(),
-        16: 'Information Reply (Deprecated)'.t(),
-        17: 'Address Mask Request (Deprecated)'.t(),
-        18: 'Address Mask Reply (Deprecated)'.t(),
-        19: 'Reserved (for Security)'.t(),
-        20: 'Reserved (for Robustness Experiment)'.t(),
-        21: 'Reserved (for Robustness Experiment)'.t(),
-        22: 'Reserved (for Robustness Experiment)'.t(),
-        23: 'Reserved (for Robustness Experiment)'.t(),
-        24: 'Reserved (for Robustness Experiment)'.t(),
-        25: 'Reserved (for Robustness Experiment)'.t(),
-        26: 'Reserved (for Robustness Experiment)'.t(),
-        27: 'Reserved (for Robustness Experiment)'.t(),
-        28: 'Reserved (for Robustness Experiment)'.t(),
-        29: 'Reserved (for Robustness Experiment)'.t(),
-        30: 'Traceroute (Deprecated)'.t(),
-        31: 'Datagram Conversion Error (Deprecated)'.t(),
-        32: 'Mobile Host Redirect (Deprecated)'.t(),
-        33: 'IPv6 Where-Are-You (Deprecated)'.t(),
-        34: 'IPv6 I-Am-Here (Deprecated)'.t(),
-        35: 'Mobile Registration Request (Deprecated)'.t(),
-        36: 'Mobile Registration Reply (Deprecated)'.t(),
-        37: 'Domain Name Request (Deprecated)'.t(),
-        38: 'Domain Name Reply (Deprecated)'.t(),
-        39: 'SKIP (Deprecated)'.t(),
-        40: 'Photuris'.t(),
-        41:  'ICMP messages utilized by experimental mobility protocols'.t(),
-        default: 'Unassigned'.t(),
-        253: 'RFC3692-style Experiment 1'.t(),
-        254: 'RFC3692-style Experiment 2'.t(),
-        255: 'Reserved'.t()
-    },
-    icmp: function( value ){
-        if(Ext.isEmpty(value)) {
-            return '';
-        }
-        return Ext.String.format(
-                Converter.mapValueFormat,
-                ( value in Converter.icmpMap ) ? Converter.icmpMap[value] : Converter.icmpMap['default'],
-                value
-        );
-    },
-
     loginSuccess: function( value ){
         return value ?  'success'.t() : 'failed'.t();
     },
