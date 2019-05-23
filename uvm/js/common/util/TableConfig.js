@@ -3489,7 +3489,6 @@ Ext.define('TableConfig', {
                         if(disabled == false){
                             var recordGid = record.get('gen_id');
                             var recordSid = record.get('sig_id');
-                            // this.up('eventreport').getController().tableConfig.settings.rules.list.forEach(function(rule){
                             TableConfig.tableConfig.intrusion_prevention_events.settings.rules.list.forEach(function(rule){
                                 var sidMatch = false;
                                 var gidMatch = false;
@@ -3509,7 +3508,7 @@ Ext.define('TableConfig', {
                     },
                     handler: function(grid, rowindex, colIndex, item, e, record){
                         var v = grid.up('eventreport'),
-                            tableConfig = grid.up('eventreport').getController().tableConfig;
+                            tableConfig = TableConfig.tableConfig.intrusion_prevention_events;
 
                         var newRule = {
                             'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
@@ -3535,7 +3534,6 @@ Ext.define('TableConfig', {
 
                         v.setLoading(true);
 
-                        tableConfig.setupGrid();
                         tableConfig.settings.rules.list.unshift(newRule);
 
                         Rpc.asyncData(tableConfig.app, 'setSettings', tableConfig.settings)
