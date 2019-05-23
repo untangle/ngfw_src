@@ -422,8 +422,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'bandwidth_control_priority'
             }, {
-                name: 'bandwidth_control_rule',
-                convert: Converter.bandwidthControlRule
+                name: 'bandwidth_control_rule'
             }, {
                 name: 'ssl_inspector_status',
                 type: 'string',
@@ -637,6 +636,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.stringFilter,
                 flex: 1,
                 dataIndex: 'bandwidth_control_rule',
+                renderer: Renderer.bandwidthControlRule
             }, {
                 header: 'Rule Id'.t() + ' (Application Control)',
                 width: Renderer.messageWidth,
@@ -902,8 +902,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'bandwidth_control_priority'
             }, {
-                name: 'bandwidth_control_rule',
-                convert: Converter.bandwidthControlRule
+                name: 'bandwidth_control_rule'
             }, {
                 name: 'ssl_inspector_status'
             }, {
@@ -1119,7 +1118,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'bandwidth_control_rule'
+                dataIndex: 'bandwidth_control_rule',
+                renderer: Renderer.bandwidthControlRule
             }, {
                 header: 'Application'.t() + ' (Application Control)',
                 width: Renderer.messageWidth,
@@ -1323,8 +1323,7 @@ Ext.define('TableConfig', {
                 type: 'string'
             }, {
                 name: 'ad_blocker_action',
-                type: 'string',
-                convert: Converter.adBlockerAction
+                type: 'string'
             }, {
                 name: 'ad_blocker_cookie_ident',
                 type: 'string'
@@ -1541,7 +1540,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'ad_blocker_action'
+                dataIndex: 'ad_blocker_action',
+                renderer: Renderer.adBlockerAction
             }, {
                 header: 'Blocked Cookie'.t() + ' (Ad Blocker)',
                 width: Renderer.messageWidth,
@@ -1900,8 +1900,7 @@ Ext.define('TableConfig', {
                 name: 'vendor'
             }, {
                 name:  'spam_blocker_lite_action',
-                type: 'string',
-                convert: Converter.emailAction
+                type: 'string'
             }, {
                 name: 'spam_blocker_lite_score',
                 sortType: 'asFloat'
@@ -1911,8 +1910,7 @@ Ext.define('TableConfig', {
                 name: 'spam_blocker_lite_tests_string'
             }, {
                 name:  'spam_blocker_action',
-                type: 'string',
-                convert: Converter.emailAction
+                type: 'string'
             }, {
                 name: 'spam_blocker_score',
                 sortType: 'asFloat'
@@ -1922,8 +1920,7 @@ Ext.define('TableConfig', {
                 name: 'spam_blocker_tests_string'
             }, {
                 name:  'phish_blocker_action',
-                type: 'string',
-                convert: Converter.emailAction
+                type: 'string'
             }, {
                 name: 'phish_blocker_score',
                 sortType: 'asFloat'
@@ -2099,7 +2096,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'spam_blocker_lite_action'
+                dataIndex: 'spam_blocker_lite_action',
+                renderer: Renderer.emailAction
             }, {
                 header: 'Spam Score'.t() + ' (Spam Blocker Lite)',
                 width: Renderer.sizeWidth,
@@ -2124,7 +2122,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'spam_blocker_action'
+                dataIndex: 'spam_blocker_action',
+                renderer: Renderer.emailAction
             }, {
                 header: 'Spam Score'.t() + ' (Spam Blocker)',
                 width: Renderer.sizeWidth,
@@ -2149,7 +2148,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'phish_blocker_action'
+                dataIndex: 'phish_blocker_action',
+                renderer: Renderer.emailAction
             }, {
                 header: 'Score'.t() + ' (Phish Blocker)',
                 width: Renderer.sizeWidth,
@@ -2182,11 +2182,9 @@ Ext.define('TableConfig', {
             }, {
                 name: 'domain'
             }, {
-                name: 'type',
-                convert: Converter.directoryConnectorAction
+                name: 'type'
             }, {
-                name: 'login_type',
-                convert: Converter.directoryConnectorActionSource
+                name: 'login_type'
             }, {
                 name: 'client_addr',
                 sortType: 'asIp'
@@ -2223,13 +2221,15 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'type'
+                dataIndex: 'type',
+                renderer: Renderer.directoryConnectorAction
             }, {
                 header: 'Action Source'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'login_type'
+                dataIndex: 'login_type',
+                renderer: Renderer.directoryConnectorActionSource
             }]
         },
         admin_logins: {
@@ -2241,19 +2241,16 @@ Ext.define('TableConfig', {
                 type: 'string'
             }, {
                 name: 'succeeded',
-                type: 'string',
-                convert: Converter.loginSuccess
+                type: 'string'
             }, {
                 name: 'local',
-                type: 'string',
-                convert: Converter.loginFrom
+                type: 'string'
             }, {
                 name: 'client_address',
                 type: 'string'
             }, {
                 name: 'reason',
-                type: 'string',
-                convert: Converter.loginFailureReason
+                type: 'string'
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -2273,13 +2270,15 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'succeeded'
+                dataIndex: 'succeeded',
+                renderer: Renderer.loginSuccess
             }, {
                 header: 'Local'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'local'
+                dataIndex: 'local',
+                renderer: Renderer.loginFrom
             }, {
                 header: 'Client Address'.t(),
                 width: Renderer.ipWidth,
@@ -2292,7 +2291,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'reason'
+                dataIndex: 'reason',
+                renderer: Renderer.loginFailureReason
             }]
         },
         server_events: {
@@ -2604,8 +2604,7 @@ Ext.define('TableConfig', {
                 sortType: 'asTimestamp'
             }, {
                 name: 'success',
-                type: 'string',
-                convert: Converter.configurationBackupSuccess
+                type: 'string'
             }, {
                 name: 'description',
                 type: 'string'
@@ -2631,7 +2630,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'success'
+                dataIndex: 'success',
+                renderer: Renderer.configurationBackupSuccess
             }, {
                 header: 'Destination'.t(),
                 width: Renderer.messageWidth,
@@ -3268,11 +3268,9 @@ Ext.define('TableConfig', {
             },{
                 name: 'login_name'
             },{
-                name: 'auth_type',
-                convert: Converter.authType
+                name: 'auth_type'
             },{
-                name: 'event_info',
-                convert: Converter.captivePortalEventInfo
+                name: 'event_info'
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -3311,13 +3309,15 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'event_info'
+                dataIndex: 'event_info',
+                render: Renderer.captivePortalEventInfo
             }, {
                 header: 'Authentication'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'auth_type',
+                renderer: Renderer.authType,
                 flex: 1
             }]
         },
@@ -3958,8 +3958,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'entity'
             }, {
-                name: 'action',
-                convert: Converter.quotaAction
+                name: 'action'
             }, {
                 name: 'size',
                 sortType: 'asInt'
@@ -3984,7 +3983,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'action'
+                dataIndex: 'action',
+                render: Renderer.quotaAction
             }, {
                 header: 'Size'.t(),
                 width: Renderer.sizeWidth,
