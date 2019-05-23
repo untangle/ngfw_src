@@ -142,10 +142,8 @@ Ext.define('Ung.view.extra.Sessions', {
             name: 'serverLongitude',
         }, {
             name: 'clientKBps',
-            convert: Converter.sessionSpeed
         }, {
             name: 'serverKBps',
-            convert: Converter.sessionSpeed
         }, {
             name: 'totalKBps',
             convert: function(value, record){
@@ -153,7 +151,7 @@ Ext.define('Ung.view.extra.Sessions', {
                      record.data.clientKBps == null ){
                         return null;
                 }
-                return Converter.sessionSpeed(value);
+                return Renderer.sessionSpeed(value);
             }
         }, {
             name: "application-control-lite-protocol",
@@ -486,13 +484,15 @@ Ext.define('Ung.view.extra.Sessions', {
                 dataIndex: 'clientKBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right'
+                align: 'right',
+                renderer: Renderer.sessionSpeed
             }, {
                 header: 'Server'.t(),
                 dataIndex: 'serverKBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right'
+                align: 'right',
+                renderer: Renderer.sessionSpeed
             }, {
                 header: 'Total'.t(),
                 dataIndex: 'totalKBps',
