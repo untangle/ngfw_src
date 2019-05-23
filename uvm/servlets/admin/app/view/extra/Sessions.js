@@ -85,11 +85,9 @@ Ext.define('Ung.view.extra.Sessions', {
             type: 'string',
             sortType: 'asUnString'
        },{
-            name: "priority",
-            convert: Converter.priority
+            name: "priority"
         },{
-            name: "qosPriority",
-            convert: Converter.priority
+            name: "qosPriority"
         },{
             name: "pipeline",
         }, {
@@ -372,13 +370,15 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Bandwidth Control ' + 'Priority'.t(),
             dataIndex: "priority",
             width: Renderer.messageWidth,
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            renderer: Renderer.priority
         },{
             hidden: true,
             header: 'QoS ' + 'Priority'.t(),
             dataIndex: "qosPriority",
             width: Renderer.messageWidth,
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            renderer: Renderer.priority
         },{
             hidden: true,
             header: 'Pipeline'.t(),
