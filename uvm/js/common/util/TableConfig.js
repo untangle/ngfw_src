@@ -309,8 +309,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'protocol'
             }, {
-                name: 'icmp_type',
-                convert: Converter.icmp
+                name: 'icmp_type'
             }, {
                 name: 'hostname',
                 type: 'string'
@@ -484,7 +483,8 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'icmp_type'
+                dataIndex: 'icmp_type',
+                renderer: Renderer.icmp
             }, {
                 header: 'Policy Id'.t(),
                 width: Renderer.portWidth,
@@ -800,8 +800,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'protocol'
             }, {
-                name: 'icmp_type',
-                convert: Converter.icmp
+                name: 'icmp_type'
             }, {
                 name: 'hostname'
             }, {
@@ -965,7 +964,8 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'icmp_type'
+                dataIndex: 'icmp_type',
+                renderer: Renderer.icmp
             }, {
                 header: 'Policy Id'.t(),
                 width: Renderer.messageWidth,
