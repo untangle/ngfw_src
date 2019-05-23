@@ -352,15 +352,13 @@ Ext.define('TableConfig', {
             }, {
                 name: 'server_intf'
             }, {
-                name: 'client_country',
-                convert: Converter.country
+                name: 'client_country'
             }, {
                 name: 'client_latitude'
             }, {
                 name: 'client_longitude'
             }, {
-                name: 'server_country',
-                convert: Converter.country
+                name: 'server_country'
             }, {
                 name: 'server_latitude'
             }, {
@@ -517,7 +515,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_country'
+                dataIndex: 'client_country',
+                renderer: Renderer.country 
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -535,7 +534,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_country'
+                dataIndex: 'server_country',
+                renderer: Renderer.country 
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -840,15 +840,13 @@ Ext.define('TableConfig', {
             }, {
                 name: 'server_intf'
             }, {
-                name: 'client_country',
-                convert: Converter.country
+                name: 'client_country'
             }, {
                 name: 'client_latitude'
             }, {
                 name: 'client_longitude'
             }, {
-                name: 'server_country',
-                convert: Converter.country
+                name: 'server_country'
             }, {
                 name: 'server_latitude'
             }, {
@@ -999,6 +997,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_country',
+                renderer: Renderer.country 
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1017,6 +1016,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'server_country',
+                renderer: Renderer.country 
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
