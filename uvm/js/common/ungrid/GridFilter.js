@@ -54,5 +54,11 @@ Ext.define('Ung.cmp.GridFilter', {
             change: 'changeFilterSearch',
             buffer: 500
         }
+    },{
+        xtype: 'tbtext',
+        bind: {
+            html: '{filterSummary}'
+        },
+        padding: '5 0 0 6'
     }]
 });
