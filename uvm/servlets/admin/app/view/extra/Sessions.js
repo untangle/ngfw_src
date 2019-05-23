@@ -93,8 +93,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'clientIntf',
             type: 'string',
-            sortType: 'asUnString',
-            convert: Converter.interface
+            sortType: 'asUnString'
         }, {
             name: 'preNatClient',
             type: 'string',
@@ -118,8 +117,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'serverIntf',
             type: 'string',
-            sortType: 'asUnString',
-            convert: Converter.interface
+            sortType: 'asUnString'
         }, {
             name: 'preNatServer',
             type: 'string',
@@ -389,7 +387,8 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'clientIntf',
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Renderer.interface
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
@@ -436,7 +435,8 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'serverIntf',
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Renderer.interface
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',

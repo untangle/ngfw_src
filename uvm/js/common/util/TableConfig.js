@@ -350,11 +350,9 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
                 name: 'client_country',
                 convert: Converter.country
@@ -505,13 +503,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Client Country'.t() ,
                 width: Renderer.messageWidth,
@@ -838,11 +838,9 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
                 name: 'client_country',
                 convert: Converter.country
@@ -986,13 +984,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface,
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Client Country'.t() ,
                 width: Renderer.messageWidth,
@@ -1253,11 +1253,9 @@ Ext.define('TableConfig', {
                 name: 'session_id',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
                 name: 'server_intf',
-                convert: Converter.interface
             }, {
                 name: 'c_client_addr',
                 sortType: 'asIp'
@@ -1372,13 +1370,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Client'.t(),
                 width: Renderer.ipWidth,
@@ -1587,11 +1587,9 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
                 name: 'c_client_addr',
                 sortType: 'asIp'
@@ -1692,13 +1690,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Username'.t(),
                 width: Renderer.usernameWidth,
@@ -1870,11 +1870,9 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
                 name: 'virus_blocker_name'
             }, {
@@ -1971,13 +1969,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Username'.t(),
                 width: Renderer.hostnameWidth,
@@ -3809,11 +3809,9 @@ Ext.define('TableConfig', {
             }, {
                 name: 'username'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
                 name: 'uri'
             }, {
@@ -3870,13 +3868,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Client'.t(),
                 width: Renderer.ipWidth,
