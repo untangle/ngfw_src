@@ -512,7 +512,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 answer = responseBuilder.toString();
             }while(!nFound);
         }catch(ConnectException ce){
-            logger.warn("Unable to connect.  Waiting "+BCTID_CONNECT_WAIT);
+            logger.warn("Unable to connect.");
             bctidSocket = null;
         }catch(Exception e){
             try{
