@@ -501,31 +501,6 @@ Ext.define('Ung.util.Converter', {
         );
     },
 
-    interface: function (value) {
-        if (!rpc.reportsManager) {
-            return value.toString();
-        }
-
-        if (!this.interfaceMap) {
-            // this.buildInterfaceMap();
-            var interfacesList = [], i;
-            try {
-                interfacesList = rpc.reportsManager.getInterfacesInfo().list;
-            } catch (ex) {
-                console.log(ex);
-            }
-
-            this.interfaceMap = {};
-            for (i = 0; i < interfacesList.length; i += 1) {
-                this.interfaceMap[interfacesList[i].interfaceId] = Ext.String.format(
-                    Converter.mapValueFormat,
-                    interfacesList[i].name,
-                    interfacesList[i].interfaceId);
-            }
-        }
-        return ( value && value != -1 ) ? this.interfaceMap[value] || value.toString() : '';
-    },
-
     loginSuccess: function( value ){
         return value ?  'success'.t() : 'failed'.t();
     },
