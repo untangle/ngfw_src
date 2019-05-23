@@ -33,14 +33,14 @@ Ext.define ('Ung.model.ReportCondition', {
 
     statics:{
         collect: function(conditions){
-            return Ext.Array.map(conditions, function(condition){
+            return conditions ? Ext.Array.map(conditions, function(condition){
                 return condition.getData();
-            });
+            }) : null;
         },
         getAllQueries: function(conditions, prefix){
-            return ( conditions.length ? ( prefix !== undefined? prefix : '&') + Ext.Array.map(conditions, function(condition){
+            return conditions ? ( conditions.length ? ( prefix !== undefined? prefix : '&') + Ext.Array.map(conditions, function(condition){
                                 return condition.getQuery();
-                                }).join("&") : '' );
+                                }).join("&") : '' ) : '';
         }
     }
 });
