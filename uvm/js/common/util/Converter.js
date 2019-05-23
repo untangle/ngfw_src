@@ -649,10 +649,6 @@ Ext.define('Ung.util.Converter', {
     },
     configurationBackupSuccess: function( value ){
         return ( value in Converter.configurationBackupSuccessMap ) ? Converter.configurationBackupSuccessMap[value] : Converter.configurationBackupSuccessMap['default'];
-    },
-
-    sessionSpeed: function(value){
-        return Math.round(value * 10 )/ 10;
     }
 
 });

@@ -612,6 +612,10 @@ Ext.define('Ung.util.Renderer', {
         }else{
             return Renderer.webCategoryMap[policyId][categorySource][value];
         }
+    },
+
+    sessionSpeed: function(value){
+        return Math.round(value * 10 )/ 10;
     }
 
 });
