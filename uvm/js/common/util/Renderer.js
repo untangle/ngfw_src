@@ -459,7 +459,8 @@ Ext.define('Ung.util.Renderer', {
         139: 'HIP [139]',
         140: 'Shim6 [140]',
         141: 'WESP [141]',
-        142: 'ROHC [142]'
+        142: 'ROHC [142]',
+        default: 'Unknown'.t()
     },
 
     protocol: function (value) {
