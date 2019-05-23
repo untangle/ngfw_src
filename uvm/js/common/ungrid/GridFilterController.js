@@ -12,6 +12,7 @@ Ext.define('Ung.cmp.GridFilterController', {
     statusEl: null,
     statusTemplate: '<div class="x-grid-empty"><p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-search fa-2x"></i> <br/>{0}</p></div>',
     statusMessageTemplate: 'Filter showing {0} of {1}'.t(),
+    statusMessageTotalTemplate: '{0} total'.t(),
     emptyText: null,
 
     setStore: function(){
@@ -135,7 +136,7 @@ Ext.define('Ung.cmp.GridFilterController', {
                 var val = item.get(col.dataIndex);
                 if (!val) { return; }
                 var tableConfigColumn = TableConfig.getTableColumn(null, col.dataIndex);
-                str.push(typeof val === 'object' ? Renderer.timestamp(val) : ( tableConfigColumn['renderer']? tableConfigColumn['renderer'](val): val.toString()) ) ;
+                str.push(typeof val === 'object' ? Renderer.timestamp(val) : ( tableConfigColumn && tableConfigColumn['renderer'] ? tableConfigColumn['renderer'](val): val.toString()) ) ;
             });
             if (regex.test(str.join('|'))) { filtered = true; }
 
@@ -183,8 +184,11 @@ Ext.define('Ung.cmp.GridFilterController', {
                 grid.getView().emptyText = me.emptyText;
             }
         }
-        if(store.getFilters().getCount() == 0){
+        if(!count){
+            vm.set('filterSummary', '');
+        }else if(store.getFilters().getCount() == 0){
             status = "No filter".t();
+            vm.set('filterSummary', Ext.String.format(me.statusMessageTotalTemplate, count));
         }else{
             status = Ext.String.format(me.statusMessageTemplate, count, store.getData().getSource() ? store.getData().getSource().items.length : count);
             if(grid.getView().emptyText){
@@ -192,6 +196,7 @@ Ext.define('Ung.cmp.GridFilterController', {
                 grid.getView().emptyText = "";
             }
             me.statusEl = Ext.core.DomHelper.insertHtml('beforeEnd', grid.getView().getTargetEl().dom, Ext.String.format(me.statusTemplate,status));
+            vm.set('filterSummary', status);
         }
         me.tooltip.setHtml(status);
 
