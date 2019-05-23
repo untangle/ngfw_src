@@ -307,8 +307,7 @@ Ext.define('TableConfig', {
                 name: 'entitled',
                 type: 'boolean'
             }, {
-                name: 'protocol',
-                convert: Converter.protocol
+                name: 'protocol'
             }, {
                 name: 'icmp_type',
                 convert: Converter.icmp
@@ -478,7 +477,8 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'protocol'
+                dataIndex: 'protocol',
+                renderer: Renderer.protocol
             }, {
                 header: 'ICMP Type'.t(),
                 width: Renderer.portWidth,
@@ -798,8 +798,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'entitled'
             }, {
-                name: 'protocol',
-                convert: Converter.protocol
+                name: 'protocol'
             }, {
                 name: 'icmp_type',
                 convert: Converter.icmp
@@ -960,6 +959,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'protocol',
+                renderer: Renderer.protocol
             }, {
                 header: 'ICMP Type'.t(),
                 width: Renderer.portWidth,
@@ -3371,8 +3371,7 @@ Ext.define('TableConfig', {
                 name: 'dest_port',
                 sortType: 'asInt'
             }, {
-                name: 'protocol',
-                convert: Converter.protocol
+                name: 'protocol'
             }, {
                 name: 'blocked'
             }, {
@@ -3446,7 +3445,8 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'protocol'
+                dataIndex: 'protocol',
+                renderer: Renderer.protocol
             }, {
                 header: 'Blocked'.t(),
                 width: Renderer.booleanWidth,
