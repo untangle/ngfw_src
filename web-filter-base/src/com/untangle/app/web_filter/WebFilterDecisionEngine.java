@@ -80,7 +80,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static AtomicInteger DecisionEngineCount = new AtomicInteger();
 
     private static Boolean BctidReady = false;
-    private static final long BCTID_CONNECT_WAIT = 5 * 1000;
+    private static final long BCTID_CONNECT_WAIT = 1 * 1000;
     private long BctidSocketConnectWait = 0L;
 
     private static Integer BctidMaxSocketPoolSize = 30;
@@ -526,8 +526,8 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 logger.warn("Problem with query ("+query+"), retry=true", e);
             }
         }finally{
-            BctidSocketRunnersCount.decrementAndGet();
             if(bctidSocket != null){
+                BctidSocketRunnersCount.decrementAndGet();
                 BctidSocketPool.offer(bctidSocket);
             }
         }
