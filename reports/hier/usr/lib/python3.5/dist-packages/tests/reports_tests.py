@@ -335,6 +335,7 @@ class ReportsTests(unittest.TestCase):
 
         # create settings to receive test_email_address 
         configure_mail_relay()
+        subprocess.call("rm /tmp/test_100_email_report_admin_file > /dev/null 2>&1", shell=True)
 
         # add administrator
         adminsettings = uvmContext.adminManager().getSettings()
@@ -370,7 +371,6 @@ class ReportsTests(unittest.TestCase):
         fp = open("/tmp/test_100_email_report_admin_file")
         email_string = fp.read()
         fp.close()
-        subprocess.call("rm /tmp/test_100_email_report_admin_file", shell=True)
         # Delete the first line as it is blank and throws off the parser
         email_string = '\n'.join(email_string.split('\n')[1:])
         msg = email.message_from_string(email_string)
@@ -445,7 +445,7 @@ class ReportsTests(unittest.TestCase):
 
         # Create settings to receive test_email_address 
         configure_mail_relay()
-        subprocess.call("rm /tmp/test_102_email_admin_override_custom_report_mobile_file", shell=True)
+        subprocess.call("rm /tmp/test_102_email_admin_override_custom_report_mobile_file > /dev/null 2>&1", shell=True)
 
         # add administrator
         adminsettings = uvmContext.adminManager().getSettings()
