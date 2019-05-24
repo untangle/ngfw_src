@@ -514,6 +514,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
         }catch(ConnectException ce){
             logger.warn("Unable to connect.");
             bctidSocket = null;
+            BctidSocketRunnersCount.decrementAndGet();
         }catch(Exception e){
             try{
                 bctidSocket.close();
@@ -521,15 +522,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }catch(Exception e2){}
             if(retry == false){
                 logger.warn("Problem with query ("+query+"), retry=false");
+                BctidSocketRunnersCount.decrementAndGet();
                 return bctidQuery(query, true);
             }else{
                 logger.warn("Problem with query ("+query+"), retry=true", e);
             }
-        }finally{
-            if(bctidSocket != null){
-                BctidSocketRunnersCount.decrementAndGet();
-                BctidSocketPool.offer(bctidSocket);
-            }
+        }
+
+        if(bctidSocket != null){
+            BctidSocketRunnersCount.decrementAndGet();
+            BctidSocketPool.offer(bctidSocket);
         }
 
         return answer;
