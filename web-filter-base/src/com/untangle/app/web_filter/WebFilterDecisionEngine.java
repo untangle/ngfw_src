@@ -480,11 +480,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }
             if(bctidSocket == null){
                 bctidSocket = BctidSocketPool.poll(BctidSocketPoolMaxWaitSeconds, TimeUnit.SECONDS);
-                BctidSocketRunnersCount.incrementAndGet();
                 if(bctidSocket == null){
                     logger.warn("bctidQuery: timed out getting socket from pool!" + BctidSocketRunnersCount.get() + ":" + BctidSocketPool.size());
                     return answer;
                 }
+                BctidSocketRunnersCount.incrementAndGet();
             }
 
             InputStream is = null;
