@@ -83,9 +83,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static final long BCTID_CONNECT_WAIT = 5 * 1000;
     private long BctidSocketConnectWait = 0L;
 
-    private static Integer BctidMaxSocketQueueSize = 30;
+    private static Integer BctidMaxSocketPoolSize = 30;
 
-    private static ArrayBlockingQueue<Socket> BctidSocketPool = new ArrayBlockingQueue<>(BctidMaxSocketQueueSize);
+    private static ArrayBlockingQueue<Socket> BctidSocketPool = new ArrayBlockingQueue<>(BctidMaxSocketPoolSize);
     private static AtomicInteger BctidSocketRunnersCount = new AtomicInteger();
     private static long BctidSocketPoolMaxWaitSeconds = 5L;
 
@@ -471,7 +471,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
         Socket bctidSocket = null;
         try{
             synchronized(BctidSocketRunnersCount){
-                if((BctidSocketRunnersCount.get() + BctidSocketPool.size()) < BctidMaxSocketQueueSize){
+                if((BctidSocketRunnersCount.get() + BctidSocketPool.size()) < BctidMaxSocketPoolSize){
                     bctidSocket = new Socket();
                     bctidSocket.connect(BCTID_SOCKET_ADDRESS);
                     bctidSocket.setKeepAlive(true);
@@ -482,7 +482,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 bctidSocket = BctidSocketPool.poll(BctidSocketPoolMaxWaitSeconds, TimeUnit.SECONDS);
                 BctidSocketRunnersCount.incrementAndGet();
                 if(bctidSocket == null){
-                    logger.warn("bctidQuery: timed out getting socket from pool!" + BctidSocketPool.size());
+                    logger.warn("bctidQuery: timed out getting socket from pool!" + BctidSocketRunnersCount.get() + ":" + BctidSocketPool.size());
                     return answer;
                 }
             }
@@ -663,8 +663,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
             try{
                 String statusResult = bctidQuery(BCTI_QUERY_STATUS);
                 if(statusResult != null){
-                    JSONObject status = new JSONObject(bctidQuery(BCTI_QUERY_STATUS));
+                    JSONObject status = new JSONObject(statusResult);
                     ourApp.setCacheCount(new Long(status.getJSONObject("url_db").getInt("url_cache_current_size")));
+                    ourApp.setNetworkErrorCount(new Long(status.getJSONObject("stats").getJSONObject("errors").getInt("network")));
+                    ourApp.setIpErrorCount(new Long(status.getJSONObject("stats").getJSONObject("errors").getInt("ip")));
                 }
             }catch(Exception e){
                 logger.warn("Unable to query cache size",e);
