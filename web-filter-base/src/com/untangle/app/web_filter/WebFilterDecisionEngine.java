@@ -475,6 +475,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     bctidSocket = new Socket();
                     bctidSocket.connect(BCTID_SOCKET_ADDRESS, 1000);
                     bctidSocket.setKeepAlive(true);
+                    bctidSocket.setSoTimeout(5000);
                     BctidSocketRunnersCount.incrementAndGet();
                 }
             }
@@ -520,12 +521,12 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 bctidSocket.close();
                 bctidSocket = null;
             }catch(Exception e2){}
+            BctidSocketRunnersCount.decrementAndGet();
             if(retry == false){
-                logger.warn("Problem with query ("+query+"), retry=false");
-                BctidSocketRunnersCount.decrementAndGet();
+                logger.warn("problem with query ("+query+"), attemping retry");
                 return bctidQuery(query, true);
             }else{
-                logger.warn("Problem with query ("+query+"), retry=true", e);
+                logger.warn("problem with query ("+query+"), was in retry", e);
             }
         }
 
