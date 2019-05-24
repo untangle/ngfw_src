@@ -473,7 +473,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
             synchronized(BctidSocketRunnersCount){
                 if((BctidSocketRunnersCount.get() + BctidSocketPool.size()) < BctidMaxSocketPoolSize){
                     bctidSocket = new Socket();
-                    bctidSocket.connect(BCTID_SOCKET_ADDRESS);
+                    bctidSocket.connect(BCTID_SOCKET_ADDRESS, 1000);
                     bctidSocket.setKeepAlive(true);
                     BctidSocketRunnersCount.incrementAndGet();
                 }
