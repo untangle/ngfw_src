@@ -252,13 +252,31 @@ Ext.define('Ung.view.reports.GraphReport', {
                     column: {
                         depth: 25,
                         edgeWidth: 1,
-                        edgeColor: '#FFF'
+                        edgeColor: '#FFF',
+                        events: {
+                            click: function(event) {
+                                // call this way to be able to access viewmodel
+                                me.onPointClick(event);
+                            }
+                        }
                     },
                     areaspline: {
-                        lineWidth: 1
+                        lineWidth: 1,
+                        events: {
+                            click: function(event) {
+                                // call this way to be able to access viewmodel
+                                me.onPointClick(event);
+                            }
+                        }
                     },
                     spline: {
-                        lineWidth: 2
+                        lineWidth: 2,
+                        events: {
+                            click: function(event) {
+                                // call this way to be able to access viewmodel
+                                me.onPointClick(event);
+                            }
+                        }
                     },
                     pie: {
                         allowPointSelect: false,
@@ -903,7 +921,18 @@ Ext.define('Ung.view.reports.GraphReport', {
                 entry = vm.get('entry'),
                 value = event.point.value;
 
-            Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('pieGroupColumn'), value);
+            if(value == undefined && event.point.series && event.point.series.name){
+                var values = TableConfig.getValues(entry.get('table'), entry.get('pieGroupColumn') || entry.get('timeDataDynamicColumn'));
+                if(values){
+                    Ext.Array.forEach(values, function(valueSet){
+                        if(valueSet[1] == event.point.series.name){
+                            value = valueSet[0];
+                        }
+                    });
+                }
+            }
+
+            Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('pieGroupColumn') || entry.get('timeDataDynamicColumn'), value);
         }
     }
 });
