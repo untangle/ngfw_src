@@ -261,22 +261,9 @@ Ext.define('TableConfig', {
 
     getValues: function( table, field ){
         var values = [];
-        // var tableField = TableConfig.getTableField(table, field);
-        // if(tableField && tableColumn['converter']){
-        //     var rendererValues = tableColumn['renderer']('__list__');
-        //     if(Array.isArray(rendererValues)){
-        //         values = rendererValues;
-        //     }else if(typeof rendererValues === 'object'){
-        //         for(var key in rendererValues){
-        //             if(rendererValues.hasOwnProperty(key)){
-        //                 values.push([String(key), rendererValues[key]]);
-        //             }
-        //         }
-        //     }
-        // }
         var tableColumn = TableConfig.getTableColumn(table, field);
         if(tableColumn && tableColumn['renderer']){
-            var rendererValues = tableColumn['renderer']('__list__');
+            var rendererValues = tableColumn['renderer'](Renderer.listKey);
             if(Array.isArray(rendererValues)){
                 values = rendererValues;
             }else if(typeof rendererValues === 'object'){
