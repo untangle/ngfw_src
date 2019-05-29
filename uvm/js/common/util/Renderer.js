@@ -591,6 +591,10 @@ Ext.define('Ung.util.Renderer', {
             if(!categoryInfo){
                 categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, categorySource);
             }
+            if(categoryInfo == null){
+                // WebFilter/WebMonitor not in this policy; try again with default policy.
+                return Renderer.webCategory(value);
+            }
 
             if(categoryInfo && categoryInfo["list"]){
                 categoryInfo["list"].forEach( function(rule){
