@@ -146,7 +146,7 @@ Ext.define('Ung.util.Renderer', {
         if(value == Renderer.listKey){
             return Ung.util.Renderer.interfaceMap;
         }else{
-            return ( value && value != -1 ) ? Ung.util.Renderer.interfaceMap[value] || value.toString() : '';
+            return ( value && value != -1 ) ? Ung.util.Renderer.interfaceMap[value] || value.toString() : 'None'.t();
         }
     },
 
