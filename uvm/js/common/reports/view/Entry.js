@@ -1032,9 +1032,10 @@ Ext.define('Ung.view.reports.Entry', {
                     xtype: 'widgetcolumn',
                     flex: 1,
                     widget: {
-                        xtype: 'textfield',
-                        bind: '{record.value}'
-                    }
+                        xtype: 'container',
+                        layout: 'fit'
+                    },
+                    onWidgetAttach: 'onValueWidgetAttach'
                 }, {
                     header: 'Auto Format'.t(),
                     xtype: 'checkcolumn',

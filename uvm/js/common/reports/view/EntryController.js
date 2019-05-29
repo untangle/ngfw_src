@@ -266,6 +266,43 @@ Ext.define('Ung.view.reports.EntryController', {
     sqlColumnRenderer: function (val) {
         return '<strong>' + TableConfig.getColumnHumanReadableName(val) + '</strong> <span style="float: right;">[' + val + ']</span>';
     },
+
+    onValueWidgetAttach: function (column, container, record) {
+        var me = this;
+
+        var firstTable = TableConfig.getFirstTableFromField(record.get('column'));
+        var values = TableConfig.getValues(record.get('table') ? record.get('table') : firstTable, record.get('column'));
+
+        container.removeAll(true);
+
+        if(values.length > 0){
+            container.add({
+                xtype: 'combo',
+                queryMode: 'local',
+                store: new Ext.data.ArrayStore({
+                    fields: ['value', 'display'],
+                    data: values
+                }),
+                emptyText: 'Select value'.t(),
+                displayField: 'display',
+                valueField: 'value',
+                allowBlank: false,
+                editable: false,
+                bind: {
+                    value: '{record.value}'
+                },
+            });
+
+        }else{
+            container.add({
+                xtype: 'textfield',
+                bind: {
+                    value: '{record.value}'
+                },
+            });
+        }
+    },
+
     // TABLE COLUMNS / CONDITIONS END
 
 
