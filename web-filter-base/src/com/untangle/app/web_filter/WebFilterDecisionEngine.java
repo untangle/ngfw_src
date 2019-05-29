@@ -467,16 +467,17 @@ public class WebFilterDecisionEngine extends DecisionEngine
         if(BctidReady == false){
             return answer;
         }
+        boolean failed = false;
         StringBuilder responseBuilder = new StringBuilder(1024);
         Socket bctidSocket = null;
         try{
             synchronized(BctidSocketRunnersCount){
                 if((BctidSocketRunnersCount.get() + BctidSocketPool.size()) < BctidMaxSocketPoolSize){
+                    BctidSocketRunnersCount.incrementAndGet();
                     bctidSocket = new Socket();
                     bctidSocket.connect(BCTID_SOCKET_ADDRESS, 1000);
                     bctidSocket.setKeepAlive(true);
                     bctidSocket.setSoTimeout(5000);
-                    BctidSocketRunnersCount.incrementAndGet();
                 }
             }
             if(bctidSocket == null){
@@ -514,17 +515,19 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }while(!nFound);
         }catch(ConnectException ce){
             logger.warn("Unable to connect.");
-            bctidSocket = null;
             BctidSocketRunnersCount.decrementAndGet();
+            bctidSocket = null;
         }catch(Exception e){
             try{
                 bctidSocket.close();
-                bctidSocket = null;
-            }catch(Exception e2){}
+            }catch(Exception e2){
+                logger.warn("close socket", e2);
+            }
+            bctidSocket = null;
             BctidSocketRunnersCount.decrementAndGet();
             if(retry == false){
                 logger.warn("problem with query ("+query+"), attemping retry");
-                return bctidQuery(query, true);
+                failed = true;
             }else{
                 logger.warn("problem with query ("+query+"), was in retry", e);
             }
@@ -533,6 +536,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
         if(bctidSocket != null){
             BctidSocketRunnersCount.decrementAndGet();
             BctidSocketPool.offer(bctidSocket);
+        }
+
+        if(failed && retry == false){
+            return bctidQuery(query, true);
         }
 
         return answer;
