@@ -181,7 +181,7 @@ Ext.define('Ung.util.Renderer', {
     datasize: function( value ){
         // walk map looking at key.  If larger then divide and use units
         if( value === null){
-            value = 0;
+            return ''; // NGFW-12448, just return an empty string if null value
         }
         value = parseInt( value, 10 );
         var size = Ung.util.Renderer.datasizeMap[Ung.util.Renderer.datasizeMap.length-1];
@@ -528,7 +528,7 @@ Ext.define('Ung.util.Renderer', {
     webCategoryMap: {},
     webCategory: function(value, row, record){
         var policyId = record && record.get ? record.get('policy_id') : 1;
-        var webFilterReason = record && record.get ? record.get('web_filter_reason') : 'N'; 
+        var webFilterReason = record && record.get ? record.get('web_filter_reason') : 'N';
         var categorySource = "categories";
         switch(webFilterReason){
             case 'D':
