@@ -88,8 +88,8 @@ Ext.define('Ung.view.reports.EventReport', {
                 if(Util.isDestroyed(me, view)){
                     return;
                 }
-                if (!entry || entry.get('type') !== 'EVENT_LIST') { 
-                    return; 
+                if (!entry || entry.get('type') !== 'EVENT_LIST') {
+                    return;
                 }
 
                 // if rendered as widget, add to dashboard queue
@@ -179,7 +179,7 @@ Ext.define('Ung.view.reports.EventReport', {
         },
 
         onRefresh: function(){
-            if(this.tableConfig.refresh){
+            if(this.tableConfig && this.tableConfig.refresh){
                 this.tableConfig.refresh();
             }
         },
@@ -229,8 +229,8 @@ Ext.define('Ung.view.reports.EventReport', {
                         return;
                     }
                     me.getView().setLoading(false);
-                    if (reps) { 
-                        reps.getViewModel().set('fetching', false); 
+                    if (reps) {
+                        reps.getViewModel().set('fetching', false);
                     }
                     me.loadResultSet(result);
                 })
@@ -238,12 +238,12 @@ Ext.define('Ung.view.reports.EventReport', {
                     if(Util.isDestroyed(me)){
                         return;
                     }
-                    if (cb) { 
-                        cb(); 
+                    if (cb) {
+                        cb();
                     }
                     me.getView().setLoading(false);
-                    if (reps) { 
-                        reps.getViewModel().set('fetching', false); 
+                    if (reps) {
+                        reps.getViewModel().set('fetching', false);
                     }
                 });
         },
