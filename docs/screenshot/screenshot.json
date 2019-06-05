@@ -321,6 +321,9 @@
         "url": "/admin/index.do#apps/1/web-filter/categories",
         "type": "remove_nav"
     },{
+        "url": "/admin/index.do#apps/1/web-filter/search-terms",
+        "type": "remove_nav"
+    },{
         "url": "/admin/index.do#apps/1/web-filter/site-lookup",
         "type": "remove_nav"
     },{
@@ -1755,6 +1758,15 @@
         "url": "/admin/index.do#reports?cat=web-filter&rep=top-content-(by-size)",
         "type": "remove_report_nav"
       },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-searches",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-flagged-searches",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=top-blocked-searches",
+        "type": "remove_report_nav"
+      },{
         "url": "/admin/index.do#reports?cat=web-filter&rep=all-web-events",
         "type": "remove_report_nav"
       },{
@@ -1773,7 +1785,13 @@
         "url": "/admin/index.do#reports?cat=web-filter&rep=unblocked-web-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports?cat=web-filter&rep=all-query-events",
+        "url": "/admin/index.do#reports?cat=web-filter&rep=all-search-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=flagged-search-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-filter&rep=blocked-search-events",
         "type": "remove_report_nav"
 
       },{
@@ -1846,6 +1864,12 @@
         "url": "/admin/index.do#reports?cat=web-monitor&rep=top-content-(by-size)",
         "type": "remove_report_nav"
       },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=top-searches",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=flagged-searches",
+        "type": "remove_report_nav"
+      },{
         "url": "/admin/index.do#reports?cat=web-monitor&rep=all-web-events",
         "type": "remove_report_nav"
       },{
@@ -1858,7 +1882,10 @@
         "url": "/admin/index.do#reports?cat=web-monitor&rep=all-https-events",
         "type": "remove_report_nav"
       },{
-        "url": "/admin/index.do#reports?cat=web-monitor&rep=all-query-events",
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=all-search-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=web-monitor&rep=flagged-search-events",
         "type": "remove_report_nav"
       }
     ]
