@@ -15,12 +15,12 @@
     "title": "Top Blocked Searches",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH",
-     "conditions": [
+    "conditions": [
         {
             "column": "blocked",
             "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "true"
         }
-    ],
+    ]
 }
