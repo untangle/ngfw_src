@@ -15,12 +15,12 @@
     "title": "Top Flagged Searches",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH",
-     "conditions": [
+    "conditions": [
         {
             "column": "flagged",
             "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "true"
         }
-    ],
+    ]
 }
