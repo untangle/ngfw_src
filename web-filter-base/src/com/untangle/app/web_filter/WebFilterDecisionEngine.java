@@ -49,6 +49,8 @@ import com.untangle.uvm.util.Pulse;
  */
 public class WebFilterDecisionEngine extends DecisionEngine
 {
+    public static char DOMAIN_PORT = ':';
+    public static String DOMAIN_WILDCARD = "*.";
     public static String BCTI_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
     public static String BCTI_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
     public static String BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY="cats";
@@ -255,9 +257,14 @@ public class WebFilterDecisionEngine extends DecisionEngine
         /**
          * While Brightcloud can handle domains with ports its very expensive, around 100 times slower.
          */
-        int i = domain.indexOf(':');
-        if (i > 0) {
+        int i = domain.indexOf(DOMAIN_PORT);
+        if (i > -1) {
             domain = domain.substring(0, i);
+        }
+        i = domain.indexOf(DOMAIN_WILDCARD);
+        if (i > -1) {
+            domain = domain.substring(i + 2);
+            logger.warn("categorizeSite: DOMAIN_WILDCARD found, new domain=" + domain);
         }
 
         String url = domain + uri;
