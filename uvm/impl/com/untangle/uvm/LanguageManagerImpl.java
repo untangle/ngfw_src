@@ -6,14 +6,17 @@ package com.untangle.uvm;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.ByteBuffer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -67,7 +70,8 @@ public class LanguageManagerImpl implements LanguageManager
     private static final String LANGUAGES_CFG = "lang.cfg";
     private static final String COUNTRIES_CFG = "country.cfg";
     private static final String LC_MESSAGES = "LC_MESSAGES";
-    private static final int BUFFER = 2048;
+    private static final String MO_FILENAME = "untangle.mo";
+    private static final int MAX_BUFFER_SIZE = 2048;
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* Check every minute */
     private final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -317,32 +321,106 @@ public class LanguageManagerImpl implements LanguageManager
             }
 
             if(map.size() == 0){
+                /**
+                 * Read .mo file directly
+                 * https://www.gnu.org/software/gettext/manual/html_node/MO-Files.html
+                 */
+                RandomAccessFile in = null;
                 try {
-                    I18n i18n = null;
-                    File file = new File(LANGUAGES_DIR);
-                    ClassLoader urlLoader = null;
-                    try{
-                         urlLoader = new URLClassLoader(new URL[]{file.toURI().toURL()});
-                    }catch(Exception e){
-                        logger.warn("getTranslations: unable to initialize urlLoader, ", e);
-                    }
-                    ResourceBundle.clearCache(urlLoader);
+                    byte buffer[] = new byte[MAX_BUFFER_SIZE];
+                    ByteBuffer byteBuffer;
+                    int version = -1;
+                    int numberOfStrings = 0;
+                    int stringIndexOffset = 0;
+                    int translateIndexOffset = 0;
 
-                    try{
-                        i18n = I18nFactory.getI18n(source.getPrefix(), source.getResourcePath(), urlLoader, locale, I18nFactory.NO_CACHE);
-                    }catch(MissingResourceException e){
-                        // Do nothing.  Likely problem is the rare case of localization resource bundle has been deleted.
-                    }
+                    int currentLength = 0;
+                    int currentOffset = 0;
 
-                    if (i18n != null) {
-                        for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration.hasMoreElements();) {
-                            String key = enumeration.nextElement();
-                            map.put(key, i18n.tr(key));
+                    in = new RandomAccessFile(LOCALE_DIR + File.separator + locale + File.separator + LC_MESSAGES + File.separator + MO_FILENAME, "r");
+
+                    in.seek(4);
+                    in.read(buffer, 0, 4);
+                    byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                    byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                    version = byteBuffer.getInt();
+                    if(version != 0){
+                        logger.warn("Unknown .mo version=" + byteBuffer.getInt());
+                    }else{
+                        in.read(buffer, 0, 4);
+                        byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                        byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                        numberOfStrings = byteBuffer.getInt();
+
+                        in.read(buffer, 0, 4);
+                        byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                        byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                        stringIndexOffset = byteBuffer.getInt();
+
+                        in.read(buffer, 0, 4);
+                        byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                        byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                        translateIndexOffset = byteBuffer.getInt();
+
+                        int stringLength = 0;
+                        int stringOffset = 0;
+                        int translateLength = 0;
+                        int translateOffset = 0;
+                        String string = null;
+                        for(int i = 0; i < numberOfStrings; i++ ){
+                            in.seek(stringIndexOffset);
+                            in.read(buffer, 0, 4);
+                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                            stringLength = byteBuffer.getInt();
+                            if(stringLength > MAX_BUFFER_SIZE){
+                                buffer = new byte[stringLength + 1024];
+                            }
+                            in.read(buffer, 0, 4);
+                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                            stringOffset = byteBuffer.getInt();
+                            stringIndexOffset += 8;
+
+                            if(stringLength == 0){
+                                // Almost certainly the header; ignore.
+                                continue;
+                            }
+
+                            in.seek(stringOffset);
+                            in.read(buffer, 0, stringLength);
+                            string = new String(buffer, 0, stringLength);
+
+                            in.seek(translateIndexOffset);
+                            in.read(buffer, 0, 4);
+                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                            translateLength = byteBuffer.getInt();
+                            if(stringLength > MAX_BUFFER_SIZE){
+                                buffer = new byte[stringLength + 1024];
+                            }
+                            in.read(buffer, 0, 4);
+                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                            translateOffset = byteBuffer.getInt();
+                            translateIndexOffset += 8;
+
+                            in.seek(translateOffset);
+                            in.read(buffer, 0, translateLength);
+
+                            map.put(string, new String(buffer, 0, translateLength));
                         }
                     }
-                } catch (MissingResourceException e) {
-                    // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
-                    // is done in client side
+                } catch (IOException e) {
+                    logger.warn("Failed to load language!", e);
+                } finally {
+                    if(in != null){
+                        try{
+                            in.close();
+                        }catch(IOException ex){
+                            logger.error("Unable to close file", ex);
+                        }
+                    }
                 }
             }
 
@@ -419,7 +497,7 @@ public class LanguageManagerImpl implements LanguageManager
         }
 
         int count;
-        byte data[] = new byte[BUFFER];
+        byte data[] = new byte[MAX_BUFFER_SIZE];
         FileOutputStream fos = null;
         try{
             fos = new FileOutputStream(file);
@@ -429,8 +507,8 @@ public class LanguageManagerImpl implements LanguageManager
             return success;
         }
         try{
-            dest = new BufferedOutputStream(fos, BUFFER);
-            while ((count = zipInputStream.read(data, 0, BUFFER)) != -1) {
+            dest = new BufferedOutputStream(fos, MAX_BUFFER_SIZE);
+            while ((count = zipInputStream.read(data, 0, MAX_BUFFER_SIZE)) != -1) {
                 dest.write(data, 0, count);
             }
             dest.flush();
@@ -864,9 +942,6 @@ public class LanguageManagerImpl implements LanguageManager
                         File parentDir = file.getParentFile();
                         if(extension != null){
                             switch(extension){
-                                case "po":
-                                    copyZipEntryToDisk(zis, entry, source.getDirectory());
-                                    break;
                                 case "mo":
                                     copyZipEntryToDisk(zis, entry, LOCALE_DIR + File.separator + language + File.separator + LC_MESSAGES);
                                     break;
