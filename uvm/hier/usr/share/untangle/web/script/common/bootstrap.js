@@ -53,7 +53,7 @@ Ext.define('Bootstrap', {
         }
 
         // for REPORTS need to fetch translations as for ADMIN there are already set
-        if (this.servletContext === 'REPORTS' && languageManager != null) {
+        if (languageManager != null) {
             rpc.translations = languageManager.getTranslations(lang).map;
         }
 
