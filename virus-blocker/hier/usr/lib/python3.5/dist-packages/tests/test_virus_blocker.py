@@ -12,7 +12,7 @@ import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
 from uvm import Uvm
 
-from tests.virus_blocker_base_tests import VirusBlockerBaseTests
+from .test_virus_blocker_base import VirusBlockerBaseTests
 
 # we have three special files with known MD5's that we use for testing the cloud scanner and memory mode
 md5SmallVirus = "0f14ddcbb42bd6a8af5b820a4f52572b"

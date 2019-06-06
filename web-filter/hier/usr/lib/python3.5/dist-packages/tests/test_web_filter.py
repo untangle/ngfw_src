@@ -16,7 +16,7 @@ import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
 from uvm import Uvm
 
-from tests.web_filter_base_tests import WebFilterBaseTests
+from .test_web_filter_base import WebFilterBaseTests
 
 default_policy_id = 1
 app = None
