@@ -4,6 +4,7 @@ import platform
 import subprocess
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -21,6 +22,7 @@ md5LargeClean = "b3215c06647bc550406a9c8ccc378756"
 #
 # Just extends the virus base tests
 #
+@pytest.mark.virus_blocker
 class VirusBlockTests(VirusBlockerBaseTests):
 
     @staticmethod

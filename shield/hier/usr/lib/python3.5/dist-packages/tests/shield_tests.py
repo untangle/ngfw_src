@@ -3,6 +3,7 @@ import time
 import datetime
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -15,6 +16,7 @@ app = None
 default_enabled = None
 orig_netsettings = None
 
+@pytest.mark.shield
 class ShieldTests(unittest.TestCase):
 
     @staticmethod

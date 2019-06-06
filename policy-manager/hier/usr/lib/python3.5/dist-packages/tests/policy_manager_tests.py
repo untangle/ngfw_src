@@ -4,6 +4,7 @@ import socket
 import base64
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -124,6 +125,7 @@ def removeLocalDirectoryUser():
         'list': []
     }
 
+@pytest.mark.policy_manager
 class PolicyManagerTests(unittest.TestCase):
 
     @staticmethod

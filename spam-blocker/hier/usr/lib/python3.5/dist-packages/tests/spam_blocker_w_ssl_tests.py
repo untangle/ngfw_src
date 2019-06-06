@@ -2,6 +2,7 @@
 import subprocess
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -14,6 +15,7 @@ from tests.spam_blocker_base_tests import SpamBlockerBaseTests
 #
 # Just extends the spam base tests to include SSL Inspector with default settings
 #
+@pytest.mark.spam_blocker_w_ssl
 class SpamBlockerTests(SpamBlockerBaseTests):
 
     @staticmethod

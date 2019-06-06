@@ -5,6 +5,7 @@ import ast
 import filecmp
 import glob
 import unittest
+import pytest
 import requests
 
 from tests.global_functions import uvmContext
@@ -16,6 +17,7 @@ from uvm import Uvm
 app = None
 default_policy_id = 1
 
+@pytest.mark.configuration_backup
 class ConfigurationBackupTests(unittest.TestCase):
     
     @staticmethod

@@ -3,6 +3,7 @@ import time
 import subprocess
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -43,6 +44,7 @@ def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Untangle",vpn_tunnel
     }
 
 
+@pytest.mark.tunnel_vpn
 class TunnelVpnTests(unittest.TestCase):
 
     @staticmethod

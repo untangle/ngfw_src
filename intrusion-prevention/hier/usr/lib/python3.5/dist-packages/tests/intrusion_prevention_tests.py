@@ -4,6 +4,7 @@ import subprocess
 import datetime
 
 import unittest
+import pytest
 import runtests
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -62,6 +63,7 @@ def wait_for_daemon_ready():
             break
         time.sleep(10)
 
+@pytest.mark.intrusion_prevention
 class IntrusionPreventionTests(unittest.TestCase):
 
     @staticmethod

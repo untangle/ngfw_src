@@ -1,5 +1,6 @@
 import socket
 import unittest
+import pytest
 import os
 import sys
 import re
@@ -428,6 +429,7 @@ def try_snmp_command(command):
         result = remote_control.run_command( command )
     return result
 
+@pytest.mark.network
 class NetworkTests(unittest.TestCase):
 
     @staticmethod

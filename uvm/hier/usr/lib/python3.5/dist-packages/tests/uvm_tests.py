@@ -1,5 +1,6 @@
 import socket
 import unittest
+import pytest
 import os
 import subprocess
 import sys
@@ -95,6 +96,7 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
         "ruleId": 1
     }
 
+@pytest.mark.uvm
 class UvmTests(unittest.TestCase):
 
     @staticmethod
