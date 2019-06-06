@@ -11,7 +11,7 @@ import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
 from uvm import Uvm
 
-from tests.virus_blocker_base_tests import VirusBlockerBaseTests
+from .test_virus_blocker_base import VirusBlockerBaseTests
 
 #
 # Just extends the virus base tests

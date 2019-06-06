@@ -10,7 +10,7 @@ import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
 from uvm import Uvm
 
-from tests.spam_blocker_base_tests import SpamBlockerBaseTests
+from .test_spam_blocker_base import SpamBlockerBaseTests
 
 #
 # Just extends the spam base tests to include SSL Inspector with default settings
