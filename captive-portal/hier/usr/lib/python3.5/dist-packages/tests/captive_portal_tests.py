@@ -5,6 +5,7 @@ import subprocess
 import base64
 import copy
 import unittest
+import pytest
 import runtests
 
 from tests.global_functions import uvmContext
@@ -219,6 +220,7 @@ def set_http_https_ports(httpPort, httpsPort):
     netsettings['httpsPort'] = httpsPort
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
+@pytest.mark.captive_portal
 class CaptivePortalTests(unittest.TestCase):
 
     @staticmethod

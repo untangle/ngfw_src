@@ -3,10 +3,12 @@
 # pylint: disable=global-variable-not-assigned
 import pytest
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 
+@pytest.mark.environment
 @pytest.mark.environment
 class EnvironmentTests(unittest.TestCase):
     """NGFW environment tests"""

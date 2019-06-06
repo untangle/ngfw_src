@@ -13,6 +13,7 @@ from html.parser import HTMLParser
 
 import runtests
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -142,6 +143,7 @@ def fetch_email( filename, email_address, tries=40 ):
                 return True
     return False
 
+@pytest.mark.reports
 class ReportsTests(unittest.TestCase):
 
     @staticmethod

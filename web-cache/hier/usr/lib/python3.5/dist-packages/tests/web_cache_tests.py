@@ -2,6 +2,7 @@
 import time
 
 import unittest
+import pytest
 import runtests
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -13,6 +14,7 @@ from uvm import Uvm
 default_policy_id = 1
 app = None
 
+@pytest.mark.web_cache
 class WebCacheTests(unittest.TestCase):
 
     @staticmethod

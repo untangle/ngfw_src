@@ -1,6 +1,7 @@
 """smtp tests"""
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -11,6 +12,7 @@ from uvm import Uvm
 default_policy_id = 1
 app = None
 
+@pytest.mark.smtp_casing
 class SmtpTests(unittest.TestCase):
 
     @staticmethod

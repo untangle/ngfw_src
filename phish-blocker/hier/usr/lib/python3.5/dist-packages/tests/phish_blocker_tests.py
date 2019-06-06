@@ -5,6 +5,7 @@ import socket
 import re
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -34,6 +35,7 @@ def sendPhishMail(mailfrom="test", host=smtpServerHost, useTLS=False):
         mailResult = remote_control.run_command("python mailsender.py --from=" + mailfrom + "@test.untangle.com --to=qa@test.untangle.com ./phish-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
     return mailResult
 
+@pytest.mark.phish_blocker
 class PhishBlockerTests(unittest.TestCase):
 
     @staticmethod

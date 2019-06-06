@@ -1,11 +1,13 @@
 """firewall tests"""
 import unittest
+import pytest
 import time
 import sys
 import traceback
 import socket
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -84,6 +86,7 @@ def rule_append(newRule):
     rules["list"].append(newRule)
     app.setRules(rules)
 
+@pytest.mark.firewall
 class FirewallTests(unittest.TestCase):
 
     @staticmethod

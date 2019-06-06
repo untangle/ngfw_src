@@ -6,6 +6,7 @@ import subprocess
 import requests
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -210,6 +211,7 @@ def find_name_in_host_table (hostname='test'):
     remote_control.run_command("pkill netcat")
     return found_test_session
 
+@pytest.mark.directory_connector
 class DirectoryConnectorTests(unittest.TestCase):
     """
     Directory connector tests
