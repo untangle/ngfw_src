@@ -50,6 +50,7 @@ import com.untangle.uvm.util.Pulse;
 public class WebFilterDecisionEngine extends DecisionEngine
 {
     public static char DOMAIN_PORT = ':';
+    public static char DOMAIN_DOT = '.';
     public static String DOMAIN_WILDCARD = "*.";
     public static String BCTI_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
     public static String BCTI_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
@@ -254,6 +255,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     @Override
     protected List<Integer> categorizeSite(String domain, String uri)
     {
+        List<Integer> categories = null;
         /**
          * While Brightcloud can handle domains with ports its very expensive, around 100 times slower.
          */
@@ -261,36 +263,39 @@ public class WebFilterDecisionEngine extends DecisionEngine
         if (i > -1) {
             domain = domain.substring(0, i);
         }
+        /**
+         * If we see "*.domain.com", strip the wildcard and do lookup on remaining.
+         */
         i = domain.indexOf(DOMAIN_WILDCARD);
         if (i > -1) {
             domain = domain.substring(i + 2);
         }
+        if(domain.indexOf(DOMAIN_DOT) > -1){
+            String url = domain + uri;
 
-        String url = domain + uri;
+            String bctidAnswer = null;
+            try{
+                bctidAnswer = bctidQuery(BCTI_QUERY_URLINFO_PREFIX + url + BCTI_QUERY_URLINFO_SUFFIX);
+                if(bctidAnswer != null){
+                    JSONObject urlAnswer = new JSONArray(bctidAnswer).getJSONObject(0);
 
-        List<Integer> categories = null;
-        String bctidAnswer = null;
-        try{
-            bctidAnswer = bctidQuery(BCTI_QUERY_URLINFO_PREFIX + url + BCTI_QUERY_URLINFO_SUFFIX);
-            if(bctidAnswer != null){
-                JSONObject urlAnswer = new JSONArray(bctidAnswer).getJSONObject(0);
-
-                if(urlAnswer.has(BCTI_QUERY_URLINFO_ERROR_KEY)){
-                    logger.warn("categorizeSite: answer contains error: " + bctidAnswer + ", defaulting to UNCATEGORIZED_CATEGORY");
-                }else{
-                    JSONArray catids = urlAnswer.getJSONArray(BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY);
-                    categories = new ArrayList<Integer>(catids.length());
-                    for(i = 0; i < catids.length(); i++){
-                        categories.add(catids.getJSONObject(i).getInt(BCTI_QUERY_URLINFO_CATEGORY_ID_KEY));
+                    if(urlAnswer.has(BCTI_QUERY_URLINFO_ERROR_KEY)){
+                        logger.warn("categorizeSite: answer contains error: " + bctidAnswer + ", defaulting to UNCATEGORIZED_CATEGORY");
+                    }else{
+                        JSONArray catids = urlAnswer.getJSONArray(BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY);
+                        categories = new ArrayList<Integer>(catids.length());
+                        for(i = 0; i < catids.length(); i++){
+                            categories.add(catids.getJSONObject(i).getInt(BCTI_QUERY_URLINFO_CATEGORY_ID_KEY));
+                        }
                     }
-                }
 
+                }
+            }catch(Exception e){
+                if(bctidAnswer != null){
+                    logger.warn("bctidAnswer: "+ bctidAnswer);
+                }
+                logger.warn(e);
             }
-        }catch(Exception e){
-            if(bctidAnswer != null){
-                logger.warn("bctidAnswer: "+ bctidAnswer);
-            }
-            logger.warn(e);
         }
 
         if (categories == null || categories.size() == 0){
