@@ -1,11 +1,13 @@
 """environment for NGFW tests"""
 # pylint: disable=no-self-use
 # pylint: disable=global-variable-not-assigned
+import pytest
 import unittest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 
+@pytest.mark.environment
 class EnvironmentTests(unittest.TestCase):
     """NGFW environment tests"""
 
