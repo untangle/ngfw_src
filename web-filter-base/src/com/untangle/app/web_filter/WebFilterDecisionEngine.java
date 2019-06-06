@@ -264,7 +264,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
         i = domain.indexOf(DOMAIN_WILDCARD);
         if (i > -1) {
             domain = domain.substring(i + 2);
-            logger.warn("categorizeSite: DOMAIN_WILDCARD found, new domain=" + domain);
         }
 
         String url = domain + uri;
