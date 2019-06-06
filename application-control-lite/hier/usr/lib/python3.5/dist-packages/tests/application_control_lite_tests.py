@@ -1,6 +1,7 @@
 """application_control_lite tests"""
 import time
 import unittest
+import pytest
 
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -36,6 +37,7 @@ def addPatterns(definition, blocked=False, log=True, protocol="protocol", descri
     settings["patterns"] = patterns
     app.setSettings(settings)
 
+@pytest.mark.application_control_lite
 class ApplicationControlLiteTests(unittest.TestCase):
 
     @staticmethod

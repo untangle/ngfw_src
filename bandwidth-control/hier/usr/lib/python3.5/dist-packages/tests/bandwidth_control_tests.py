@@ -8,6 +8,7 @@ import subprocess
 import copy
 import socket
 import unittest
+import pytest
 import runtests
 
 from tests.global_functions import uvmContext
@@ -178,6 +179,7 @@ def print_results( wget_speed_pre, wget_speed_post, expected_speed, allowed_spee
         print("Allowed Post  : %s KB/s" % str(allowed_speed))
         print("Summary: %s < %s = %s" % (wget_speed_post, allowed_speed, str( wget_speed_post < allowed_speed )))
 
+@pytest.mark.bandwidth_control
 class BandwidthControlTests(unittest.TestCase):
 
     @staticmethod

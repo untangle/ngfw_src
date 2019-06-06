@@ -2,6 +2,7 @@
 import sys
 import datetime
 import unittest
+import pytest
 
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -55,6 +56,7 @@ def addPassRule(url, enabled, listName):
            
     app.setSettings(settings)
     
+@pytest.mark.ad_blocker
 class AdBlockerTests(unittest.TestCase):
 
     @staticmethod

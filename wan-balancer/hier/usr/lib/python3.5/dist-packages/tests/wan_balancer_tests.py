@@ -5,6 +5,7 @@ import subprocess
 import socket
 
 import unittest
+import pytest
 import runtests
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -167,6 +168,7 @@ def same_wan_network(indexWANs):
             previousExtIP = currentExtIP    
     return wan_match
             
+@pytest.mark.wan_balancer
 class WanBalancerTests(unittest.TestCase):
     
     @staticmethod

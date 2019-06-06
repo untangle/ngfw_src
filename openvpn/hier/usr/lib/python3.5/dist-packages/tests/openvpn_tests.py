@@ -9,6 +9,7 @@ import base64
 
 import runtests
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -175,6 +176,7 @@ def createDirectoryConnectorSettings(ad_enable=False, radius_enable=False, ldap_
         }
     }
 
+@pytest.mark.openvpn
 class OpenVpnTests(unittest.TestCase):
 
     @staticmethod

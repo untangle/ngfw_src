@@ -8,6 +8,7 @@ import socket
 import subprocess
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -29,6 +30,7 @@ def setHttpHttpsPorts(httpPort, httpsPort):
 #
 # Just extends the web filter base tests
 #
+@pytest.mark.web_filter
 class WebFilterTests(WebFilterBaseTests):
 
     @staticmethod

@@ -2,6 +2,7 @@
 import time
 
 import unittest
+import pytest
 import runtests
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -84,6 +85,7 @@ def nuke_rules():
     appData["tests"]["list"] = []
     app.setSettings(appData)
 
+@pytest.mark.wan_failover
 class WanFailoverTests(unittest.TestCase):
     
     @staticmethod

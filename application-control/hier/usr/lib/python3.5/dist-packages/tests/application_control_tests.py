@@ -2,6 +2,7 @@
 import time
 import subprocess
 import unittest
+import pytest
 import runtests
 
 from tests.global_functions import uvmContext
@@ -68,6 +69,7 @@ def appendLogicRule(newRule):
     appSettings['logicRules']['list'].append(newRule)
     app.setSettings(appSettings)
 
+@pytest.mark.application_control
 class ApplicationControlTests(unittest.TestCase):
 
     @staticmethod

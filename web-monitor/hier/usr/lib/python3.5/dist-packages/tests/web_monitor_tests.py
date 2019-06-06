@@ -1,6 +1,7 @@
 """web_monitor tests"""
 
 import unittest
+import pytest
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -13,6 +14,7 @@ from tests.web_filter_base_tests import WebFilterBaseTests
 default_policy_id = 1
 app = None
 
+@pytest.mark.web_monitor
 class WebMonitorTests(WebFilterBaseTests):
 
     @staticmethod
