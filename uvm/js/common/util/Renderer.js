@@ -483,8 +483,8 @@ Ext.define('Ung.util.Renderer', {
 
     policiesMap: null,
     policy: function (value) {
-        var policyMap = {};
         if(Renderer.policiesMap == null){
+            Renderer.policiesMap = {};
             var policiesInfo = null;
             if(Rpc.exists('rpc.reportsManager')){
                 policiesInfo = Rpc.directData('rpc.reportsManager.getPoliciesInfo');
@@ -492,7 +492,6 @@ Ext.define('Ung.util.Renderer', {
                 policiesInfo = Rpc.directData('rpc.appManager').app('policy-manager').getPoliciesInfo();
             }
             if(policiesInfo && policiesInfo.list){
-                Renderer.policiesMap = {};
                 policiesInfo.list.forEach(function(policy){
                     Renderer.policiesMap[policy.policyId] = policy.name;
                 });
@@ -504,7 +503,7 @@ Ext.define('Ung.util.Renderer', {
         if(value === 0){
             return 'None'.t();
         }
-        if(!value){
+        if(!value || !( value in Renderer.policiesMap )){
             return '';
         }
         return Ext.String.format('{0} [{1}]'.t(), Renderer.policiesMap[parseInt(value, 10)] || value.toString(), value);
