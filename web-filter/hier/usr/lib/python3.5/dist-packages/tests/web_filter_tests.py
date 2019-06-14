@@ -287,6 +287,22 @@ class WebFilterTests(WebFilterBaseTests):
         print("block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock))
         assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
 
+    def test_800_site_lookup(self):
+        """test site lookup functionality"""
+        url = "www.google.com"
+        loop = 10
+        site_returned = False
+
+        while (loop >= 10) and (site_returned == False):
+            site_lookup = self.app.lookupSite(url)
+            site_category_id = site_lookup['list'][0]
+            site_category = self.app.getSettings()['categories']['list'][site_category_id]
+            #print(site_category.get('name'))
+            if (site_category.get("id") != 0):
+                site_returned = True
+            loop -= 1
+        assert (site_returned == True)
+
     def test_010_0000_rule_condition_src_addr(self):
         "test SRC_ADDR"
         self.rule_add("SRC_ADDR",remote_control.client_ip)
