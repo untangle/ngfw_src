@@ -3297,7 +3297,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'event_info',
-                render: Renderer.captivePortalEventInfo
+                renderer: Renderer.captivePortalEventInfo
             }, {
                 header: 'Authentication'.t(),
                 width: Renderer.messageWidth,
@@ -3969,7 +3969,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.stringFilter,
                 sortable: true,
                 dataIndex: 'action',
-                render: Renderer.quotaAction
+                renderer: Renderer.quotaAction
             }, {
                 header: 'Size'.t(),
                 width: Renderer.sizeWidth,
