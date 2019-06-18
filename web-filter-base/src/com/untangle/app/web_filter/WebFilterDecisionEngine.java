@@ -686,8 +686,8 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 if(statusResult != null){
                     JSONObject status = new JSONObject(statusResult);
                     ourApp.setCacheCount(new Long(status.getJSONObject("url_db").getInt("url_cache_current_size")));
-                    ourApp.setNetworkErrorCount(new Long(status.getJSONObject("stats").getJSONObject("errors").getInt("network")));
-                    ourApp.setIpErrorCount(new Long(status.getJSONObject("stats").getJSONObject("errors").getInt("ip")));
+                    ourApp.setNetworkErrorCount(new Long(status.getJSONObject("counters").getJSONObject("errors").getInt("network")));
+                    ourApp.setIpErrorCount(new Long(status.getJSONObject("counters").getJSONObject("errors").getInt("ip")));
                 }
             }catch(Exception e){
                 logger.warn("Unable to query cache size",e);
