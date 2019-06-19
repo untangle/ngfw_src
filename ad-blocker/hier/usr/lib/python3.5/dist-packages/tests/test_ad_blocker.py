@@ -4,12 +4,13 @@ import datetime
 import unittest
 import pytest
 
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 
-default_policy_id = 1
+
 app = None
 
 def addCookieEnabled(url, enabled=True, description="description"):
@@ -57,45 +58,16 @@ def addPassRule(url, enabled, listName):
     app.setSettings(settings)
     
 @pytest.mark.ad_blocker
-class AdBlockerTests(unittest.TestCase):
+class AdBlockerTests(NGFWTestCase):
+
+    force_start = True
 
     @staticmethod
     def module_name():
+        # cheap trick to force class variable _app into global namespace as app
+        global app
+        app = AdBlockerTests._app
         return "ad-blocker"
-
-    @classmethod
-    def get_app(cls):
-        return uvmContext.appManager().appInstances(cls.module_name(),
-                                                    default_policy_id)["list"][0]
-
-    @classmethod
-    def get_app_id(cls):
-        return cls.get_app().getAppSettings()["id"]
-
-    @staticmethod
-    def initial_setup(garbage=None):
-        global app
-        name = AdBlockerTests.module_name()
-        if app or uvmContext.appManager().isInstantiated(name):
-            AdBlockerTests.final_tear_down()
-        app = uvmContext.appManager().instantiate(name, default_policy_id)
-        app.start() # must be called since ad blocker doesn't auto-start
-
-    @staticmethod
-    def final_tear_down(garbage=None):
-        global app
-        name = AdBlockerTests.module_name()
-        if app or uvmContext.appManager().isInstantiated(name):
-            uvmContext.appManager().destroy(AdBlockerTests.get_app_id())
-        app = None
-
-    @classmethod
-    def setup_class(cls):
-        cls.initial_setup()
-
-    @classmethod
-    def teardown_class(cls):
-        cls.final_tear_down()
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -201,6 +173,5 @@ class AdBlockerTests(unittest.TestCase):
         print("Today: \"%s\"" % (today_str))
         print("Yesterday: \"%s\"" % (yesterday_str))
         assert((today_str in result) or (yesterday_str in result))
-
 
 test_registry.register_module("ad-blocker", AdBlockerTests)
