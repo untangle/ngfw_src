@@ -11,7 +11,7 @@
             "value": "TRUE"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","host","uri","web_filter_blocked","web_filter_flagged","web_filter_reason","web_filter_category_id","c_client_addr","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","hostname","username","host","uri","web_filter_blocked","web_filter_flagged","web_filter_reason","web_filter_category_id","web_filter_rule_id","c_client_addr","s_server_addr","s_server_port"],
     "description": "Shows all flagged web requests.",
     "displayOrder": 1011,
     "javaClass": "com.untangle.app.reports.ReportEntry",
