@@ -1306,6 +1306,9 @@ Ext.define('TableConfig', {
                 name: 'web_filter_category_id',
                 type: 'string'
             }, {
+                name: 'web_filter_rule_id',
+                type: 'string'
+            }, {
                 name: 'web_filter_reason',
                 type: 'string'
             }, {
@@ -1509,19 +1512,26 @@ Ext.define('TableConfig', {
                 dataIndex: 'web_filter_flagged',
                 filter: Renderer.booleanFilter
             }, {
-                header: 'Reason For Action'.t() +  ' (Web Filter)',
+                header: 'Web Category'.t() + ' (Web Filter)',
+                width: Renderer.messageWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'web_filter_category_id',
+                renderer: Renderer.webCategory
+            }, {
+                header: 'Reason For Action'.t() + ' (Web Filter)',
                 width: Renderer.messageWidth + 30,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'web_filter_reason',
                 renderer: Renderer.httpReason
             }, {
-                header: 'Web Category'.t(),
+                header: 'Web Rule'.t() + ' (Web Filter)',
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'web_filter_category_id',
-                renderer: Renderer.webCategory
+                dataIndex: 'web_filter_rule_id',
+                renderer: Renderer.webRule
             }, {
                 header: 'Action'.t() + ' (Ad Blocker)',
                 width: Renderer.messageWidth,
