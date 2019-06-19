@@ -524,7 +524,6 @@ Ext.define('Ung.util.Renderer', {
         C: 'in Clients Pass list'.t(),
         B: 'in Temporary Unblocked list'.t(),
         F: 'in Rules list'.t(),
-        N: 'no rule applied'.t(),
         default: 'no rule applied'.t()
     },
     httpReason: function( value ) {
@@ -542,10 +541,35 @@ Ext.define('Ung.util.Renderer', {
         }
     },
 
+    webCategoryMap: {},
+    webCategory: function(value, row, record){
+        var policyId = record && record.get ? record.get('policy_id') : -1;
+
+        if(!Renderer.webCategoryMap[value]){
+            var categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, "categories");
+            if(!categoryInfo){
+                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, "categories");
+            }
+
+            if(categoryInfo && categoryInfo["list"]){
+                categoryInfo["list"].forEach( function(rule){
+                    Renderer.webCategoryMap[rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
+                });
+            }
+            if(!Renderer.webCategoryMap[value]){
+                // If category cannot be found, don't just keep coming back for more.
+                Renderer.webCategoryMap[value] = 'Unknown'.t();
+            }
+        }
+        if(value == Renderer.listKey){
+            return Renderer.webCategoryMap;
+        }else{
+            return Renderer.webCategoryMap[value];
+        }
+    },
 
     /**
-     * The webfilter_category_id is very overloaded with numeric indexes for:
-     * -    Categories
+     * The webfilter_rule_id is very overloaded with numeric indexes for:
      * -    Pass sites
      * -    Block sites
      * -    Pass clients
@@ -554,67 +578,62 @@ Ext.define('Ung.util.Renderer', {
      * The map is organized as:
      *     policy->source->key=value
      */
-    webCategoryMap: {},
-    webCategory: function(value, row, record){
-        var policyId = record && record.get ? record.get('policy_id') : 1;
-        var webFilterReason = record && record.get ? record.get('web_filter_reason') : 'N'; 
-        var categorySource = "categories";
+    webRuleMap: {},
+    webRule: function(value, row, record){
+        var policyId = record && record.get ? record.get('policy_id') : -1;
+        var webFilterReason = record && record.get ? record.get('web_filter_reason') : 'N';
+        var reasonSource = "categories";
         switch(webFilterReason){
             case 'D':
             case 'N':
-                categorySource = "categories";
-                break;
+                return '';
             case 'U':
-                categorySource = "blockedUrls";
+                reasonSource = "blockedUrls";
                 break;
             case 'I':
             case 'R':
-                categorySource = "passedUrls";
+                reasonSource = "passedUrls";
                 break;
             case 'C':
-                categorySource = "passedClients";
+                reasonSource = "passedClients";
                 break;
             case 'T':
-                categorySource = "searchTerms";
+                reasonSource = "searchTerms";
                 break;
             case 'F':
-                categorySource = "filterRules";
+                reasonSource = "filterRules";
                 break;
         }
 
-        if(!Renderer.webCategoryMap[policyId] ||
-            !Renderer.webCategoryMap[policyId][categorySource] ||
-            (value != Renderer.listKey && !Renderer.webCategoryMap[policyId][categorySource][value])){
+        if(!Renderer.webRuleMap[policyId] ||
+            !Renderer.webRuleMap[policyId][reasonSource] ||
+            (value != Renderer.listKey && !Renderer.webRuleMap[policyId][reasonSource][value])){
 
-            categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, categorySource);
+            var categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, reasonSource);
             if(!categoryInfo){
-                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, categorySource);
-            }
-            if(categoryInfo == null){
-                // WebFilter/WebMonitor not in this policy; try again with default policy.
-                return Renderer.webCategory(value);
+                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, reasonSource);
             }
 
             if(categoryInfo && categoryInfo["list"]){
                 categoryInfo["list"].forEach( function(rule){
-                    if(!Renderer.webCategoryMap[policyId]){
-                        Renderer.webCategoryMap[policyId] = {};
+                    if(!Renderer.webRuleMap[policyId]){
+                        Renderer.webRuleMap[policyId] = {};
                     }
-                    if(!Renderer.webCategoryMap[policyId][categorySource]){
-                        Renderer.webCategoryMap[policyId][categorySource] = {};
+                    if(!Renderer.webRuleMap[policyId][reasonSource]){
+                        Renderer.webRuleMap[policyId][reasonSource] = {};
                     }
-                    Renderer.webCategoryMap[policyId][categorySource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
+                    Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
                 });
             }
-            if(!Renderer.webCategoryMap[policyId][categorySource][value]){
+            if(!Renderer.webRuleMap[policyId][reasonSource][value]){
                 // If category cannot be found, don't just keep coming back for more.
-                Renderer.webCategoryMap[policyId][categorySource][value] = 'Unknown'.t();
+                Renderer.webRuleMap[policyId][reasonSource][value] = 'Unknown'.t();
             }
         }
         if(value == Renderer.listKey){
-            return Renderer.webCategoryMap[policyId][categorySource];
+            return Renderer.webRuleMap[policyId][reasonSource];
         }else{
-            return Renderer.webCategoryMap[policyId][categorySource][value];
+            return Renderer.webRuleMap[policyId][reasonSource][value];
         }
     },
 
