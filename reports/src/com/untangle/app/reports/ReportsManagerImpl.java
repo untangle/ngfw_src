@@ -858,7 +858,12 @@ public class ReportsManagerImpl implements ReportsManager
      * @return          List of JSONObjects
      */
     public List<JSONObject> getReportInfo( String appName, Integer policyId, String key){
-        List<App> apps = UvmContextFactory.context().appManager().appInstances(appName, policyId, false);
+        List<App> apps = null;
+        if(policyId == -1){
+            apps = UvmContextFactory.context().appManager().appInstances(appName);
+        }else{
+            apps = UvmContextFactory.context().appManager().appInstances(appName, policyId, false);
+        }
         if(apps != null && apps.size() > 0){
             return ((AppBase)apps.get(0)).getReportInfo(key);
         }
