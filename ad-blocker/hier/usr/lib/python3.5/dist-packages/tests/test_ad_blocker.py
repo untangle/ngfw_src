@@ -64,12 +64,30 @@ class AdBlockerTests(unittest.TestCase):
         return "ad-blocker"
 
     @staticmethod
-    def initial_setup(self):
+    def initial_setup(garbage=None):
         global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
+        name = AdBlockerTests.module_name()
+        if app or uvmContext.appManager().isInstantiated(name):
+            AdBlockerTests.final_tear_down()
+        app = uvmContext.appManager().instantiate(name, default_policy_id)
         app.start() # must be called since ad blocker doesn't auto-start
+
+    @staticmethod
+    def final_tear_down(garbage=None):
+        global app
+        name = AdBlockerTests.module_name()
+        if app or uvmContext.appManager().isInstantiated(name):
+            app = uvmContext.appManager().appInstances(name, default_policy_id)["list"][0]
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+        app = None
+
+    @classmethod
+    def setup_class(cls):
+        cls.initial_setup()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.final_tear_down()
 
     def setUp(self):
         pass
@@ -179,12 +197,5 @@ class AdBlockerTests(unittest.TestCase):
         print("Yesterday: \"%s\"" % (yesterday_str))
         assert((today_str in result) or (yesterday_str in result))
 
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-        app = None
-        
 
 test_registry.register_module("ad-blocker", AdBlockerTests)
