@@ -63,6 +63,15 @@ class AdBlockerTests(unittest.TestCase):
     def module_name():
         return "ad-blocker"
 
+    @classmethod
+    def get_app(cls):
+        return uvmContext.appManager().appInstances(cls.module_name(),
+                                                    default_policy_id)["list"][0]
+
+    @classmethod
+    def get_app_id(cls):
+        return cls.get_app().getAppSettings()["id"]
+
     @staticmethod
     def initial_setup(garbage=None):
         global app
@@ -77,8 +86,7 @@ class AdBlockerTests(unittest.TestCase):
         global app
         name = AdBlockerTests.module_name()
         if app or uvmContext.appManager().isInstantiated(name):
-            app = uvmContext.appManager().appInstances(name, default_policy_id)["list"][0]
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            uvmContext.appManager().destroy(AdBlockerTests.get_app_id())
         app = None
 
     @classmethod
@@ -88,9 +96,6 @@ class AdBlockerTests(unittest.TestCase):
     @classmethod
     def teardown_class(cls):
         cls.final_tear_down()
-
-    def setUp(self):
-        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
