@@ -2263,7 +2263,7 @@ public class NetworkManagerImpl implements NetworkManager
         LinkedList<String> deviceNames = new LinkedList<>( );
 
         // add all eth* devices
-        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
+        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort -n -k 1.4" );
         for ( String name : result.getOutput().split("\\r?\\n") ) {
 
             String devName = name.trim();
@@ -2279,7 +2279,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         // add all wlan* devices
-        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'wlan*' | sed -e 's|/sys/class/net/||' | sort " );
+        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'wlan*' | sed -e 's|/sys/class/net/||' | sort -n -k 1.5 " );
         for ( String name : result.getOutput().split("\\r?\\n") ) {
 
             String devName = name.trim();
