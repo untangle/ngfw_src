@@ -85,6 +85,7 @@ Ext.define('Ung.view.reports.TextReport', {
                 entry.getData(), // entry
                 startDate,
                 endDate,
+                null,
                 Ung.model.ReportCondition.collect(vm.get('query.conditions')),
                 -1)
                 .then(function(result) {

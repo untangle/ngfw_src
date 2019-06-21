@@ -194,6 +194,12 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 conditionsButtons = [];
                 conditionsHolder.removeAll(); // remove all conditions buttons
 
+                var data = {};
+                query.conditions.forEach( function(condition){
+                    data[condition.get("column")] = condition.get("value");
+                });
+                var renderRecord = new Ext.data.Model(data);
+
                 Ext.Array.each(query.conditions, function (condition, idx) {
                     // condition button
                     var firstTable = TableConfig.getFirstTableFromField(condition.get('column'));
@@ -202,7 +208,10 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                         allowToggle: false,
                         margin: '0 5',
                         items: [{
-                            text: TableConfig.getColumnHumanReadableName(condition.get('column')) + ' <span style="font-weight: bold; margin: 0 3px;">' + condition.get('operator') + '</span> ' + TableConfig.getDisplayValue(condition.get('value'), condition.get('table') ? condition.get('table') : firstTable, condition.get('column')),
+                            text: TableConfig.getColumnHumanReadableName(condition.get('column')) +
+                                ' <span style="font-weight: bold; margin: 0 3px;">' +
+                                    condition.get('operator') + '</span> ' +
+                                    TableConfig.getDisplayValue(condition.get('value'), condition.get('table') ? condition.get('table') : firstTable, condition.get('column'), renderRecord),
                             menu: {
                                 plain: true,
                                 showSeparator: false,
@@ -299,7 +308,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                     beforeshow: function(menu){
                                         var valueText = menu.down('[name=valueText]');
                                         var valueCombo =  menu.down('[name=valueCombo]');
-                                        var values = TableConfig.getValues(menu.condition.get('table') ? menu.condition.get('table') : firstTable, menu.condition.get('column'));
+                                        var values = TableConfig.getValues(menu.condition.get('table') ? menu.condition.get('table') : firstTable, menu.condition.get('column'), renderRecord);
                                         if(values.length){
                                             valueCombo.setDisabled(false);
                                             valueCombo.setHidden(false);
@@ -595,10 +604,16 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
         },
 
         onValueWidgetAttach: function (column, container, record) {
-            var me = this;
+            var me = this, vm = me.getViewModel();
+
+            var data = {};
+            vm.get('query.conditions').forEach( function(condition){
+                data[condition.get("column")] = condition.get("value");
+            });
+            var renderRecord = new Ext.data.Model(data);
 
             var firstTable = TableConfig.getFirstTableFromField(record.get('column'));
-            var values = TableConfig.getValues(record.get('table') ? record.get('table') : firstTable, record.get('column'));
+            var values = TableConfig.getValues(record.get('table') ? record.get('table') : firstTable, record.get('column'), renderRecord);
 
             container.removeAll(true);
 
@@ -635,35 +650,47 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
          * used when adding a new condition from a PIE_GRAPH Data View grid
          */
         cTest: [],
-        onAddGlobalCondition: function (table, field, value) {
+        onAddGlobalCondition: function (table, record, value) {
             var me = this, vm = me.getViewModel(),
-                conditions = vm.get('query.conditions'),
-                readableColumn = TableConfig.getColumnHumanReadableName(field),
-                msg = 'Add <strong>' + readableColumn + '</strong> column to the Global Conditions?'.t();
+                conditions = vm.get('query.conditions');
 
-            if (!value) { return; } // value might be undefined in some cases (e.g. pie 'Others' value)
+            var data = {};
+            if(typeof(record) != 'object'){
+                data[record] = value;
+                record = new Ext.data.Model(data);
+            }
 
-            // because this component is used in both dashboard and reports, event will fire twice
-            // apply following logic to avoid exceptions
+            var newConditions = [];
+            var msgConditions = [];
+            data = record.getData();
+            for(var field in data){
+                if( TableConfig.getTableField(table, field) ){
+                    newConditions.push( new Ung.model.ReportCondition({
+                        column: field,
+                        operator: '=',
+                        value: data[field],
+                        autoFormatValue: true,
+                        table: table
+                    }));
+                    msgConditions.push(
+                        '<strong>' + TableConfig.getColumnHumanReadableName(field) + ' [' + field + '] = ' + TableConfig.getDisplayValue(data[field], table, field, record) + '</strong>'
+                    );
+                }
+            }
             if (!conditions) { return; }
-
-            var condition = new Ung.model.ReportCondition({
-                column: field,
-                operator: '=',
-                value: value,
-                autoFormatValue: true,
-                table: table
-            });
 
             Ext.Msg.show({
                 title: 'Add Global Condition'.t(),
-                message: msg + '<br/><br/>' +
-                            '<strong>' + readableColumn + ' [' + field + '] = ' + TableConfig.getDisplayValue(value, table, field) + '</strong>',
+                message: 'Add the following the Global Conditions?'.t() +
+                        '<br/><br/>' +
+                        msgConditions.join('<br>'),
                 buttons: Ext.Msg.YESNO,
                 icon: Ext.Msg.QUESTION,
                 fn: function (btn) {
                     if (btn === 'yes') {
-                        conditions.push(condition);
+                        newConditions.forEach( function(condition){
+                            conditions.push(condition);
+                        });
                         me.redirect();
                     }
                 }
