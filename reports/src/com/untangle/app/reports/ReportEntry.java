@@ -239,15 +239,15 @@ public class ReportEntry implements Serializable, JSONString
 
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {
-        return toSql( conn, startDate, endDate, null, null );
+        return toSql( conn, startDate, endDate, null, null, null );
     }
 
-    public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions )
+    public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, String[] extraSelects, SqlCondition[] extraConditions )
     {
-        return toSql( conn, startDate, endDate, extraConditions, null );
+        return toSql( conn, startDate, endDate, extraSelects, extraConditions, null );
     }
 
-    public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, SqlCondition[] extraConditions, Integer limit )
+    public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, String[] extraSelects, SqlCondition[] extraConditions, Integer limit )
     {
         if ( endDate == null ) {
             endDate = new Date(System.currentTimeMillis() + 60*1000); // now + 1-minute
@@ -267,16 +267,16 @@ public class ReportEntry implements Serializable, JSONString
         switch ( this.type ) {
 
         case PIE_GRAPH:
-            return toSqlPieGraph( conn, startDate, endDate, allConditions );
+            return toSqlPieGraph( conn, startDate, endDate, extraSelects, allConditions );
 
         case TIME_GRAPH:
-            return toSqlTimeGraph( conn, startDate, endDate, allConditions );
+            return toSqlTimeGraph( conn, startDate, endDate, extraSelects, allConditions );
 
         case TIME_GRAPH_DYNAMIC:
-            return toSqlTimeGraphDynamic( conn, startDate, endDate, allConditions );
+            return toSqlTimeGraphDynamic( conn, startDate, endDate, extraSelects, allConditions );
 
         case TEXT:
-            return toSqlText( conn, startDate, endDate, allConditions );
+            return toSqlText( conn, startDate, endDate, extraSelects, allConditions );
 
         case EVENT_LIST:
             return toSqlEventList( conn, startDate, endDate, allConditions, limit );
@@ -319,10 +319,11 @@ public class ReportEntry implements Serializable, JSONString
         return sqlToStatement( conn, query, allConditions );
     }
 
-    private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         String pieQuery = "SELECT " +
+            (extraSelects != null ? String.join(",", extraSelects) + "," : "") +
             getPieGroupColumn() + ", " + getPieSumColumn() + " as value " +
             " FROM " +
             LogEvent.schemaPrefix() + getTable() +
@@ -331,13 +332,15 @@ public class ReportEntry implements Serializable, JSONString
         pieQuery += conditionsToString( allConditions );
 
         pieQuery += " GROUP BY " + getPieGroupColumn() +
+            (extraSelects != null ? "," + String.join(",", extraSelects) : "") +
             ( getOrderByColumn() == null ? "" : " ORDER BY " + getOrderByColumn() + ( getOrderDesc() ? " DESC " : "" ));
         return sqlToStatement( conn, pieQuery, allConditions );
     }
 
-    private PreparedStatement toSqlText( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    private PreparedStatement toSqlText( Connection conn, Date startDate, Date endDate, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
-        String textQuery = "SELECT ";
+        String textQuery = "SELECT " + 
+            (extraSelects != null ? String.join(",", extraSelects) + "," : "");
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
 
         boolean first = true;
@@ -358,13 +361,14 @@ public class ReportEntry implements Serializable, JSONString
         return sqlToStatement( conn, textQuery, allConditions );
     }
 
-    private PreparedStatement toSqlTimeGraph( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    private PreparedStatement toSqlTimeGraph( Connection conn, Date startDate, Date endDate, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         String generateSeriesQuery = generateSeriesQuery( startDate, endDate, dataInterval );
 
         String timeQuery = "SELECT " +
+            (extraSelects != null ? String.join(",", extraSelects) + "," : "") +
             " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
 
         for ( String s : getTimeDataColumns() )
@@ -388,7 +392,7 @@ public class ReportEntry implements Serializable, JSONString
         return sqlToStatement( conn, finalQuery, allConditions );
     }
 
-    private PreparedStatement toSqlTimeGraphDynamic( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
+    private PreparedStatement toSqlTimeGraphDynamic( Connection conn, Date startDate, Date endDate, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
@@ -408,13 +412,16 @@ public class ReportEntry implements Serializable, JSONString
          * distinctQuery
          * This querys the distinct values that will be used to detemine the columns in the final result
          */
-        String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
+        String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " +
+            (extraSelects != null ? String.join(",", extraSelects) + "," : "") +
+            getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
             " FROM " + LogEvent.schemaPrefix() + getTable() +
             " WHERE " + dateCondition +
             conditionsToString( allConditions ) +
             ( getTimeDataDynamicAllowNull() == null || getTimeDataDynamicAllowNull() == Boolean.FALSE ? (" AND " + getTimeDataDynamicColumn() + " IS NOT NULL") : "" ) +
             " GROUP BY " + getTimeDataDynamicColumn() +
-            " ORDER BY 2 DESC " +
+            (extraSelects != null ? "," + String.join(",", extraSelects) : "") +
+            " ORDER BY " + ((extraSelects != null ? extraSelects.length: 0) + 2) + " DESC " +
             ( getTimeDataDynamicLimit() != null ? " LIMIT " + getTimeDataDynamicLimit() : "" );
 
         /**
