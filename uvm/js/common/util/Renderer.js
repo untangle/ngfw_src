@@ -543,8 +543,7 @@ Ext.define('Ung.util.Renderer', {
 
     webCategoryMap: {},
     webCategory: function(value, row, record){
-        var policyId = record && record.get ? record.get('policy_id') : -1;
-
+        var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
         if(!Renderer.webCategoryMap[value]){
             var categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, "categories");
             if(!categoryInfo){
@@ -580,8 +579,8 @@ Ext.define('Ung.util.Renderer', {
      */
     webRuleMap: {},
     webRule: function(value, row, record){
-        var policyId = record && record.get ? record.get('policy_id') : -1;
-        var webFilterReason = record && record.get ? record.get('web_filter_reason') : 'N';
+        var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
+        var webFilterReason = record && record.get && record.get('web_filter_reason') ? record.get('web_filter_reason') : 'N';
         var reasonSource = "categories";
         switch(webFilterReason){
             case 'D':
