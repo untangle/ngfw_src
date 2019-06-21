@@ -67,7 +67,7 @@ for i in "${!TO_DEVICES[@]}"; do
     to_device=${TO_DEVICES[i]}
     from_device=${FROM_DEVICES[i]}
     new_rule=$UDEV_PERSISTENT_NET_RULES_RULE
-    new_rule="${new_rule/__MAC_ADDRESS__/${FROM_MAC_MAP[$from_device]}/}"
-    new_rule="${new_rule/__DEVICE_ID__/$to_device/}"
+    new_rule="${new_rule/__MAC_ADDRESS__/${FROM_MAC_MAP[$from_device]}}"
+    new_rule="${new_rule/__DEVICE_ID__/$to_device}"
     echo $new_rule >> $DESTINATION_FILE
 done
