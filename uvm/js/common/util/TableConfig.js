@@ -242,7 +242,7 @@ Ext.define('TableConfig', {
         return table;
     },
 
-    getDisplayValue: function(value, table, field){
+    getDisplayValue: function(value, table, field, record){
         if(arguments[6]){
             var column = arguments[6].getGridColumns()[arguments[4]];
             table = column.table;
@@ -251,19 +251,19 @@ Ext.define('TableConfig', {
         var tableField = TableConfig.getTableField(table, field);
         var tableColumn = TableConfig.getTableColumn(table, field);
         if(tableField && tableField['convert']){
-            value = tableField['convert'](value);
+            value = tableField['convert'](value, null, record);
         }
         if(tableColumn && tableColumn['renderer']){
-            value = tableColumn['renderer'](value);
+            value = tableColumn['renderer'](value, null, record);
         }
         return value;
     },
 
-    getValues: function( table, field ){
+    getValues: function( table, field, record){
         var values = [];
         var tableColumn = TableConfig.getTableColumn(table, field);
         if(tableColumn && tableColumn['renderer']){
-            var rendererValues = tableColumn['renderer'](Renderer.listKey);
+            var rendererValues = tableColumn['renderer'](Renderer.listKey, null, record);
             if(Array.isArray(rendererValues)){
                 values = rendererValues;
             }else if(typeof rendererValues === 'object'){
@@ -1307,7 +1307,11 @@ Ext.define('TableConfig', {
                 type: 'string'
             }, {
                 name: 'web_filter_rule_id',
-                type: 'string'
+                type: 'string',
+                referenceFields: [
+                    'policy_id',
+                    'web_filter_reason'
+                ]
             }, {
                 name: 'web_filter_reason',
                 type: 'string'
@@ -3333,11 +3337,16 @@ Ext.define('TableConfig', {
             },
             renderer: function(value, meta){
                 var me = TableConfig.tableConfig.intrusion_prevention_events;
+                if(!me.settings){
+                    me.refresh();
+                }  
                 if(me.settings){
                     me.settings.rules.list.forEach(function(rule){
                         if(value == rule['id']){
-                            meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( rule['description'] ) + '"';
                             value = rule['description'];
+                            if(meta && meta.tdAttr){
+                                meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( rule['description'] ) + '"';
+                            }
                         }
                     });
                 }
