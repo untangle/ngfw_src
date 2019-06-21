@@ -426,10 +426,21 @@ Ext.define('Ung.view.reports.GraphReport', {
             me.chart.hideNoData();
             me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
 
+            // get extra selects based on controlling field
+            var tableField = null;
+            if( ( entry.get('type') === 'TIME_GRAPH') ||
+                (entry.get('type') === 'TIME_GRAPH_DYNAMIC') ){
+                tableField = TableConfig.getTableField(entry.get('table'), entry.get('timeDataDynamicColumn'));
+            }else if(entry.get('type') === 'PIE_GRAPH'){
+                tableField = TableConfig.getTableField(entry.get('table'), entry.get('pieGroupColumn'));
+            }
+            var extraSelects = (tableField && tableField.referenceFields) ? tableField.referenceFields: null;
+
             Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
                 entry.getData(), // entry
                 startDate,
                 endDate,
+                extraSelects,
                 Ung.model.ReportCondition.collect(vm.get('query.conditions')),
                 -1) 
                 .then(function (result) {
@@ -496,7 +507,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                 seriesRenderer = ( entry && entry.get('seriesRenderer') ) ? Renderer[entry.get('seriesRenderer')] : null,
                 table = entry.get('table'),
                 seriesData,
-                seriesName;
+                seriesName,
+                rowRecord = null;
 
             // remove any existing series
             while (me.chart.series.length > 0) {
@@ -520,6 +532,7 @@ Ext.define('Ung.view.reports.GraphReport', {
 
                 if (entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
                     Ext.Array.each(me.data, function (row) {
+                        // rowRecord = new Ext.data.Model(row);
                         Ext.Object.each(row, function (key) {
                             if (row.hasOwnProperty(key) && key !== 'time_trunc' && key !== 'time' && dataColumns.indexOf(key) < 0) {
                                 dataColumns.push(key);
@@ -567,23 +580,40 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
 
             if (entry && ( entry.get('type') === 'PIE_GRAPH') ){
-                var othersValue = 0, colVal; // needed for global conditions from pies which have seriesRendered defined (altered) e.g. protocol
+                var othersValue = 0, colVal, colField; // needed for global conditions from pies which have seriesRendered defined (altered) e.g. protocol
                 seriesData = [];
 
                 Ext.Array.each(me.data, function (row, idx) {
-                    colVal = row[entry.get('pieGroupColumn')];
+                    colField = entry.get('pieGroupColumn');
+                    colVal = row[colField];
+                    rowRecord = new Ext.data.Model(row);
 
                     if (seriesRenderer) {
                         seriesName = seriesRenderer(parseInt(colVal, 10));
                     } else {
-                        seriesName = colVal !== undefined ? TableConfig.getDisplayValue(colVal, table, entry.get('pieGroupColumn')) : 'None'.t();
+                        seriesName = colVal !== undefined ? TableConfig.getDisplayValue(colVal, table, colField, rowRecord) : 'None'.t();
+                    }
+
+                    var tableColumn = null;
+                    var expandedInformation = {};
+                    for(var field in row){
+                        if(field == colField){
+                            continue;
+                        }
+                        tableColumn =  TableConfig.getTableColumn(table, field);
+                        if(tableColumn && tableColumn.header){
+                            expandedInformation[tableColumn.header] = 
+                                TableConfig.getDisplayValue(row[field], table, field, rowRecord);
+                        }
                     }
 
                     if (idx < entry.get('pieNumSlices')) {
                         seriesData.push({
                             name: seriesName,
                             value: colVal,
-                            y: row.value
+                            y: row.value,
+                            expandedInformation: expandedInformation,
+                            rowRecord: rowRecord
                         });
                     } else {
                         othersValue += row.value;
@@ -601,11 +631,16 @@ Ext.define('Ung.view.reports.GraphReport', {
 
                 me.chart.addSeries({
                     name: entry.get('units').t(),
-                    // name: seriesName,
                     data: seriesData,
                     tooltip: {
                         pointFormatter: function () {
-                            var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
+                            var str = "";
+                            if(this.series.data[this.index]){
+                                for(var field in this.series.data[this.index].expandedInformation){
+                                    str += field + ":" + this.series.data[this.index].expandedInformation[field] + "<br/>";
+                                }
+                            }
+                            str += '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
                             if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
                                 str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
                             } else {
@@ -921,8 +956,12 @@ Ext.define('Ung.view.reports.GraphReport', {
                 entry = vm.get('entry'),
                 value = event.point.value;
 
-            if(value == undefined && event.point.series && event.point.series.name){
-                var values = TableConfig.getValues(entry.get('table'), entry.get('pieGroupColumn') || entry.get('timeDataDynamicColumn'));
+            var rowRecord = null;
+            if(event.point.rowRecord){
+                rowRecord = event.point.rowRecord;
+                Ext.fireEvent('addglobalcondition', entry.get('table'), rowRecord);
+            }else if(value == undefined && event.point.series && event.point.series.name){
+                var values = TableConfig.getValues(entry.get('table'), entry.get('timeDataDynamicColumn'));
                 if(values){
                     Ext.Array.forEach(values, function(valueSet){
                         if(valueSet[1] == event.point.series.name){
@@ -930,9 +969,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                         }
                     });
                 }
+                Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('timeDataDynamicColumn'), value);
             }
-
-            Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('pieGroupColumn') || entry.get('timeDataDynamicColumn'), value);
         }
     }
 });
