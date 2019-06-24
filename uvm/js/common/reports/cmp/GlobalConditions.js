@@ -195,9 +195,11 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 conditionsHolder.removeAll(); // remove all conditions buttons
 
                 var data = {};
-                query.conditions.forEach( function(condition){
-                    data[condition.get("column")] = condition.get("value");
-                });
+                if(query.conditions){
+                    query.conditions.forEach( function(condition){
+                        data[condition.get("column")] = condition.get("value");
+                    });
+                }
                 var renderRecord = new Ext.data.Model(data);
 
                 Ext.Array.each(query.conditions, function (condition, idx) {
