@@ -962,12 +962,14 @@ Ext.define('Ung.view.reports.GraphReport', {
                 Ext.fireEvent('addglobalcondition', entry.get('table'), rowRecord);
             }else if(value == undefined && event.point.series && event.point.series.name){
                 var values = TableConfig.getValues(entry.get('table'), entry.get('timeDataDynamicColumn'));
-                if(values){
+                if(values.length){
                     Ext.Array.forEach(values, function(valueSet){
                         if(valueSet[1] == event.point.series.name){
                             value = valueSet[0];
                         }
                     });
+                }else{
+                    value = event.point.series.name;
                 }
                 Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('timeDataDynamicColumn'), value);
             }
