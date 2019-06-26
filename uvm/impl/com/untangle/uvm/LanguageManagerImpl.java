@@ -326,99 +326,103 @@ public class LanguageManagerImpl implements LanguageManager
                  * https://www.gnu.org/software/gettext/manual/html_node/MO-Files.html
                  */
                 RandomAccessFile in = null;
-                try {
-                    byte buffer[] = new byte[MAX_BUFFER_SIZE];
-                    ByteBuffer byteBuffer;
-                    int version = -1;
-                    int numberOfStrings = 0;
-                    int stringIndexOffset = 0;
-                    int translateIndexOffset = 0;
+                String filename = LOCALE_DIR + File.separator + locale + File.separator + LC_MESSAGES + File.separator + MO_FILENAME;
+                File file = new File(filename);
+                if (file.exists()) {
+                    try {
+                        byte buffer[] = new byte[MAX_BUFFER_SIZE];
+                        ByteBuffer byteBuffer;
+                        int version = -1;
+                        int numberOfStrings = 0;
+                        int stringIndexOffset = 0;
+                        int translateIndexOffset = 0;
 
-                    int currentLength = 0;
-                    int currentOffset = 0;
+                        int currentLength = 0;
+                        int currentOffset = 0;
 
-                    in = new RandomAccessFile(LOCALE_DIR + File.separator + locale + File.separator + LC_MESSAGES + File.separator + MO_FILENAME, "r");
+                        in = new RandomAccessFile(filename, "r");
 
-                    in.seek(4);
-                    in.read(buffer, 0, 4);
-                    byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
-                    byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-                    version = byteBuffer.getInt();
-                    if(version != 0){
-                        logger.warn("Unknown .mo version=" + byteBuffer.getInt());
-                    }else{
+                        in.seek(4);
                         in.read(buffer, 0, 4);
                         byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
                         byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-                        numberOfStrings = byteBuffer.getInt();
-
-                        in.read(buffer, 0, 4);
-                        byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
-                        byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-                        stringIndexOffset = byteBuffer.getInt();
-
-                        in.read(buffer, 0, 4);
-                        byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
-                        byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-                        translateIndexOffset = byteBuffer.getInt();
-
-                        int stringLength = 0;
-                        int stringOffset = 0;
-                        int translateLength = 0;
-                        int translateOffset = 0;
-                        String string = null;
-                        for(int i = 0; i < numberOfStrings; i++ ){
-                            in.seek(stringIndexOffset);
+                        version = byteBuffer.getInt();
+                        if(version != 0){
+                            logger.warn("Unknown .mo version=" + byteBuffer.getInt());
+                        }else{
                             in.read(buffer, 0, 4);
                             byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
                             byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-                            stringLength = byteBuffer.getInt();
-                            if(stringLength > MAX_BUFFER_SIZE){
-                                buffer = new byte[stringLength + 1024];
+                            numberOfStrings = byteBuffer.getInt();
+
+                            in.read(buffer, 0, 4);
+                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                            stringIndexOffset = byteBuffer.getInt();
+
+                            in.read(buffer, 0, 4);
+                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                            translateIndexOffset = byteBuffer.getInt();
+
+                            int stringLength = 0;
+                            int stringOffset = 0;
+                            int translateLength = 0;
+                            int translateOffset = 0;
+                            String string = null;
+                            for(int i = 0; i < numberOfStrings; i++ ){
+                                in.seek(stringIndexOffset);
+                                in.read(buffer, 0, 4);
+                                byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                                byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                                stringLength = byteBuffer.getInt();
+                                if(stringLength > MAX_BUFFER_SIZE){
+                                    buffer = new byte[stringLength + 1024];
+                                }
+                                in.read(buffer, 0, 4);
+                                byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                                byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                                stringOffset = byteBuffer.getInt();
+                                stringIndexOffset += 8;
+
+                                if(stringLength == 0){
+                                    // Almost certainly the header; ignore.
+                                    continue;
+                                }
+
+                                in.seek(stringOffset);
+                                in.read(buffer, 0, stringLength);
+                                string = new String(buffer, 0, stringLength);
+
+                                in.seek(translateIndexOffset);
+                                in.read(buffer, 0, 4);
+                                byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                                byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                                translateLength = byteBuffer.getInt();
+                                if(stringLength > MAX_BUFFER_SIZE){
+                                    buffer = new byte[stringLength + 1024];
+                                }
+                                in.read(buffer, 0, 4);
+                                byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
+                                byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                                translateOffset = byteBuffer.getInt();
+                                translateIndexOffset += 8;
+
+                                in.seek(translateOffset);
+                                in.read(buffer, 0, translateLength);
+
+                                map.put(string, new String(buffer, 0, translateLength));
                             }
-                            in.read(buffer, 0, 4);
-                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
-                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-                            stringOffset = byteBuffer.getInt();
-                            stringIndexOffset += 8;
-
-                            if(stringLength == 0){
-                                // Almost certainly the header; ignore.
-                                continue;
-                            }
-
-                            in.seek(stringOffset);
-                            in.read(buffer, 0, stringLength);
-                            string = new String(buffer, 0, stringLength);
-
-                            in.seek(translateIndexOffset);
-                            in.read(buffer, 0, 4);
-                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
-                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-                            translateLength = byteBuffer.getInt();
-                            if(stringLength > MAX_BUFFER_SIZE){
-                                buffer = new byte[stringLength + 1024];
-                            }
-                            in.read(buffer, 0, 4);
-                            byteBuffer = ByteBuffer.wrap(buffer, 0, 4);
-                            byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-                            translateOffset = byteBuffer.getInt();
-                            translateIndexOffset += 8;
-
-                            in.seek(translateOffset);
-                            in.read(buffer, 0, translateLength);
-
-                            map.put(string, new String(buffer, 0, translateLength));
                         }
-                    }
-                } catch (IOException e) {
-                    logger.warn("Failed to load language!", e);
-                } finally {
-                    if(in != null){
-                        try{
-                            in.close();
-                        }catch(IOException ex){
-                            logger.error("Unable to close file", ex);
+                    } catch (IOException e) {
+                        logger.warn("Failed to load language!", e);
+                    } finally {
+                        if(in != null){
+                            try{
+                                in.close();
+                            }catch(IOException ex){
+                                logger.error("Unable to close file", ex);
+                            }
                         }
                     }
                 }
