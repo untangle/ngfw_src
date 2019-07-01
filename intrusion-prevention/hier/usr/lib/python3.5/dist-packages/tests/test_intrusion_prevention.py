@@ -2,17 +2,18 @@
 import time
 import subprocess
 import datetime
-
 import unittest
 import pytest
 import runtests
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 from uvm import Uvm
 
-default_policy_id = 1
+
 appSettings = None
 app = None
 
@@ -56,37 +57,25 @@ def create_rule(desc="ATS rule", action="blocklog", rule_type="CLASSTYPE", type_
         "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionRule"
     };
 
-def wait_for_daemon_ready():
-    time.sleep(1)
-    while True:
-        if app.getAppStatus()["daemonReady"] is True:
-            break
-        time.sleep(10)
 
 @pytest.mark.intrusion_prevention
-class IntrusionPreventionTests(unittest.TestCase):
+class IntrusionPreventionTests(NGFWTestCase):
+
+    force_start = True
+    wait_for_daemon_ready = True
 
     @staticmethod
     def module_name():
+        # cheap trick to force class variables _app and _appSettings into
+        # global namespace as app and appSettings
+        global app, appSettings
+        app = IntrusionPreventionTests._app
+        appSettings = IntrusionPreventionTests._appSettings
         return "intrusion-prevention"
 
     @staticmethod
     def vendorName():
         return "Untangle"
-
-    @staticmethod
-    def initial_setup(self):
-        global app, appSettings
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        app.start()
-        wait_for_daemon_ready()
-        appSettings = app.getSettings()
-
-    def setUp(self):
-        pass
-            
 
     def test_009_IsRunning(self):
         result = subprocess.call("ps aux | grep suricata | grep -v grep >/dev/null 2>&1", shell=True)
@@ -120,7 +109,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
         app.setSettings(appSettings, True)
 
-        wait_for_daemon_ready()
+        self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
         loopLimit = 4
@@ -155,7 +144,7 @@ class IntrusionPreventionTests(unittest.TestCase):
             appSettings['rules']['list'][0]['action'] = "log"
             app.setSettings(appSettings, True)
 
-        wait_for_daemon_ready()
+        self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
         loopLimit = 4
@@ -196,7 +185,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         appSettings['rules']['list'].insert(0,create_rule(action="log", rule_type="CATEGORY", type_value="scan"))
         app.setSettings(appSettings, True)
 
-        wait_for_daemon_ready()
+        self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
         remote_control.run_command("nmap -sP " + wan_ip + " >/dev/null 2>&1",host=global_functions.iperf_server)
@@ -230,7 +219,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
         app.setSettings(appSettings, True)
 
-        wait_for_daemon_ready()
+        self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
         result = remote_control.run_command("echo 'companysecret' | nc -w1 -q1 -u 4.2.2.1 2020 > /dev/null")
@@ -268,7 +257,7 @@ class IntrusionPreventionTests(unittest.TestCase):
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
         app.setSettings(appSettings, True)
-        wait_for_daemon_ready()
+        self.do_wait_for_daemon_ready()
 
         app.forceUpdateStats()
         pre_events_scan = global_functions.get_app_metric_value(app,"scan")
@@ -329,12 +318,5 @@ class IntrusionPreventionTests(unittest.TestCase):
                                                'msg', "NMAP",
                                                'blocked', False,
                                                min_date=startTime)
-
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)
