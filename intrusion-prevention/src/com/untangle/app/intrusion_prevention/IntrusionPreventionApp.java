@@ -96,7 +96,7 @@ public class IntrusionPreventionApp extends AppBase
     private static final Pattern SYSTEMCTL_STATUS_MAINPID = Pattern.compile("^MainPID=(\\d+)");
     private static final Pattern SMAP_KERNEL_PAGE_SIZE = Pattern.compile("^KernelPageSize:\\s*(.+)");
     private static final String RELOAD_RULES_COMMAND = "/usr/bin/suricatasc -c 'reload-rules'";
-    private static final String GET_SURICATA_ERRORS="/bin/journalctl -u suricata --no-pager -S \"$(/bin/systemctl show suricata | grep StateChangeTimestamp= | cut -d= -f2)\" | grep '<Error'";
+    private static final String GET_SURICATA_ERRORS="/bin/journalctl -u suricata --no-pager -S \"$(/bin/systemctl show suricata | grep StateChangeTimestamp= | cut -d= -f2)\" | grep '<Error' | grep -v 'libnet_write_raw_ipv6 failed'";
 
     private long kernelPageSize = 0;
     private boolean updatedSettingsFlag = false;
