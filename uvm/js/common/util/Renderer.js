@@ -552,10 +552,10 @@ Ext.define('Ung.util.Renderer', {
 
             if(categoryInfo && categoryInfo["list"]){
                 categoryInfo["list"].forEach( function(rule){
-                    Renderer.webCategoryMap[rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
+                    Renderer.webCategoryMap[rule["id"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
                 });
             }
-            if(!Renderer.webCategoryMap[value]){
+            if(!Renderer.webCategoryMap[value] && (value != Renderer.listKey)){
                 // If category cannot be found, don't just keep coming back for more.
                 Renderer.webCategoryMap[value] = 'Unknown'.t();
             }
