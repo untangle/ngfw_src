@@ -140,8 +140,10 @@ Ext.define('Ung.view.extra.Sessions', {
             name: 'serverLongitude',
         }, {
             name: 'clientKBps',
+            convert: Renderer.sessionSpeed
         }, {
             name: 'serverKBps',
+            convert: Renderer.sessionSpeed
         }, {
             name: 'totalKBps',
             convert: function(value, record){
@@ -484,15 +486,13 @@ Ext.define('Ung.view.extra.Sessions', {
                 dataIndex: 'clientKBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right',
-                renderer: Renderer.sessionSpeed
+                align: 'right'
             }, {
                 header: 'Server'.t(),
                 dataIndex: 'serverKBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right',
-                renderer: Renderer.sessionSpeed
+                align: 'right'
             }, {
                 header: 'Total'.t(),
                 dataIndex: 'totalKBps',
