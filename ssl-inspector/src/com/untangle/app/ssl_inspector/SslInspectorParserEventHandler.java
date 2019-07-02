@@ -547,6 +547,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         SslInspectorLogEvent logevt = null;
         String sniHostname = null;
         String logDetail = null;
+        boolean allowed = false;
 
         // fist clear the casing buffer since it could have been partially
         // filled by a previous underflow exception and then save the
@@ -587,13 +588,67 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             if (exn.getMessage() == null) logger.warn("Exception parsing SNI hostname", exn);
         }
 
-        // check for the captive portal session capture flag
-        Boolean captivePortalFlag = (Boolean) session.globalAttachment(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE);
+        // get the captive portal session capture flag
+        String captureFlag = (String) session.globalAttachment(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE);
+
+        // When captive portal is using OAuth we have to ignore the same
+        // sessions it allows for access to the external login page. If
+        // we try to inspect these things go completely off the rails.
+        if ((captureFlag != null) && (sniHostname != null)) {
+            if (sniHostname.equals("auth-relay.untangle.com")) allowed = true;
+            if (sniHostname.equals("connectivitycheck.gstatic.com")) allowed = true;
+
+            // hosts we must allow for Google OAuth
+            if ((captureFlag == "GOOGLE") || (captureFlag == "ANY_OAUTH")) {
+                if (sniHostname.equals("accounts.google.com")) allowed = true;
+                if (sniHostname.equals("ssl.gstatic.com")) allowed = true;
+            }
+
+            // hosts we must allow for Facebook OAuth
+            if ((captureFlag == "FACEBOOK") || (captureFlag == "ANY_OAUTH")) {
+                if (sniHostname.equals("m.facebook.com")) allowed = true;
+                if (sniHostname.equals("www.facebook.com")) allowed = true;
+                if (sniHostname.equals("graph.facebook.com")) allowed = true;
+                if (sniHostname.equals("staticxx.facebook.com")) allowed = true;
+                if (sniHostname.equals("static.xx.fbcdn.net")) allowed = true;
+            }
+
+            // hosts we must allow for Microsoft OAuth
+            if ((captureFlag == "MICROSOFT") || (captureFlag == "ANY_OAUTH")) {
+                if (sniHostname.endsWith(".microsoftonline.com")) allowed = true;
+                if (sniHostname.endsWith(".microsoftonline-p.com")) allowed = true;
+                if (sniHostname.endsWith(".live.com")) allowed = true;
+                if (sniHostname.endsWith(".gfx.ms")) allowed = true;
+                if (sniHostname.endsWith(".microsoft.com")) allowed = true;
+                if (sniHostname.endsWith(".msauth.net")) allowed = true;
+                if (sniHostname.endsWith(".msftauth.net")) allowed = true;
+                if (sniHostname.endsWith(".azureedge.net")) allowed = true;
+            }
+        }
+
+        if (allowed == true) {
+            logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_IGNORED, "Captive Portal OAuth: " + sniHostname);
+            app.logEvent(logevt);
+            app.incrementMetric(SslInspectorApp.STAT_IGNORED);
+            logger.info("CAPTIVE PORTAL IGNORE(" + captureFlag + ") = " + logevt.toString());
+
+            // let everyone else know that we are ignoring the session
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
+
+            // release the session in the casing on the other side
+            shutdownOtherSide(session, false);
+
+            // release the session and send the original client hello to the server
+            session.sendObjectToServer(new ReleaseToken());
+            session.sendDataToServer(data);
+            session.release();
+            return;
+        }
 
         // if the captive portal flag is set we must do inspection because it
         // expects to use our unencrypted stream to send the redirect with the
         // added benefit of a good MitM cert even on sites we'll later ignore 
-        if ((captivePortalFlag != null) && (captivePortalFlag == true)) {
+        if ((captureFlag != null) && (captureFlag == "CAPTURE")) {
 
             // craft a wakeup message and send it directly to the server side
             // casing using simulateClientData inside the server side casing
