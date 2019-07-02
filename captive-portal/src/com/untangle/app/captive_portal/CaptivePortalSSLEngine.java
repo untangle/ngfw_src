@@ -189,6 +189,9 @@ public class CaptivePortalSSLEngine
                 if (sniHostname.endsWith(".live.com")) allowed = true;
                 if (sniHostname.endsWith(".gfx.ms")) allowed = true;
                 if (sniHostname.endsWith(".microsoft.com")) allowed = true;
+                if (sniHostname.endsWith(".msauth.net")) allowed = true;
+                if (sniHostname.endsWith(".msftauth.net")) allowed = true;
+                if (sniHostname.endsWith(".azureedge.net")) allowed = true;
             }
 
             if (allowed) {
