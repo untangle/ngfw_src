@@ -89,7 +89,7 @@ public class CaptivePortalSSLEngine
         } catch (Exception exn) {
             logger.error("Exception creating CaptivePortalSSLEngine()", exn);
         } finally {
-            if (webCertFileIS != null){
+            if (webCertFileIS != null) {
                 try {
                     webCertFileIS.close();
                 } catch (Exception exn) {
