@@ -292,7 +292,7 @@ public class SslInspectorApp extends AppBase
                 logger.error("Exception initializing server trust factory", exn);
             }
         } else {
-            logger.info("Configured to blindly trust all remote server certificates");
+            logger.warn("Configured to blindly trust all remote server certificates");
         }
     }
 
