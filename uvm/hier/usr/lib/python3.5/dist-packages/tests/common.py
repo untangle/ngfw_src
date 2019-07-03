@@ -62,7 +62,6 @@ class NGFWTestCase(TestCase):
             else:
                 if cls.do_not_install_app: # grab
                     cls._app = uvmContext.appManager().app(name)
-                    print(cls._app)
                 else: # delete and install
                     cls.final_tear_down()
                     cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
