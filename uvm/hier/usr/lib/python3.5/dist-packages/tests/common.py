@@ -53,6 +53,8 @@ class NGFWTestCase(TestCase):
 
     @classmethod
     def initial_setup(cls, unused=None):
+        cls._orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+
         name = cls.module_name()
         if cls._app or uvmContext.appManager().isInstantiated(name):
             if cls.skip_instantiated():
@@ -80,6 +82,8 @@ class NGFWTestCase(TestCase):
 
     @classmethod
     def final_tear_down(cls, unused=None):
+        uvmContext.networkManager().setNetworkSettings(cls._orig_netsettings)
+
         if cls._app:
             cls.final_extra_tear_down()
 
