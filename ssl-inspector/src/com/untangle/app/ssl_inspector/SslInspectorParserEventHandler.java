@@ -630,7 +630,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_IGNORED, "Captive Portal OAuth: " + sniHostname);
             app.logEvent(logevt);
             app.incrementMetric(SslInspectorApp.STAT_IGNORED);
-            logger.info("CAPTIVE PORTAL IGNORE(" + captureFlag + ") = " + logevt.toString());
+            logger.debug("CAPTIVE PORTAL IGNORE(" + captureFlag + ") = " + logevt.toString());
 
             // let everyone else know that we are ignoring the session
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
