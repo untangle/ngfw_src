@@ -30,12 +30,9 @@ class ShieldTests(NGFWTestCase):
     @classmethod
     def initial_extra_setup(cls):
         cls._default_enabled = cls._app.getSettings()['shieldEnabled']
-        cls._orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
     @classmethod
     def final_extra_tear_down(cls):
-        uvmContext.networkManager().setNetworkSettings(cls._orig_netsettings)
-
         if getattr(cls, '_default_enabled'):
             settings = cls._app.getSettings()
             settings['shieldEnabled'] = cls._default_enabled
