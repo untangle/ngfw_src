@@ -60,13 +60,12 @@ class NGFWTestCase(TestCase):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.module_name())
             else:
-                if not cls.do_not_install_app:
+                if cls.do_not_install_app: # grab
+                    cls._app = uvmContext.appManager().app(name)
+                    print(cls._app)
+                else: # delete and install
                     cls.final_tear_down()
-
-        if cls.do_not_install_app:
-            cls._app = uvmContext.appManager().app(name)
-        else:
-            cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
+                    cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
 
         if cls.force_start:
             cls._app.start()
