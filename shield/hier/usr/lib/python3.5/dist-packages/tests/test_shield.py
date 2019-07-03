@@ -4,6 +4,8 @@ import datetime
 
 import unittest
 import pytest
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -11,30 +13,36 @@ import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
 from uvm import Uvm
 
-default_policy_id = 1
-app = None
-default_enabled = None
-orig_netsettings = None
 
 @pytest.mark.shield
-class ShieldTests(unittest.TestCase):
+class ShieldTests(NGFWTestCase):
+
+    do_not_install_app = True
+    do_not_remove_app = True
 
     @staticmethod
     def module_name():
+        # cheap trick to force class variable _app into global namespace as app
+        global app
+        app = ShieldTests._app
         return "shield"
 
-    @staticmethod
-    def initial_setup(self):
-        global app,default_enabled, orig_netsettings
-        if orig_netsettings == None:
-            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if (not uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().app(self.module_name())
-        default_enabled = app.getSettings()['shieldEnabled']
+    @classmethod
+    def initial_extra_setup(cls):
+        cls._default_enabled = cls._app.getSettings()['shieldEnabled']
+        cls._orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
-    def setUp(self):
-        pass
+    @classmethod
+    def final_extra_tear_down(cls):
+        uvmContext.networkManager().setNetworkSettings(cls._orig_netsettings)
+
+        if getattr(cls, '_default_enabled'):
+            settings = cls._app.getSettings()
+            settings['shieldEnabled'] = cls._default_enabled
+            cls._app.setSettings(settings)
+
+        # sleep so the reputation goes down so it will not interfere with any future tests
+        time.sleep(3)
 
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
@@ -88,20 +96,5 @@ class ShieldTests(unittest.TestCase):
                                                min_date=start_time)
         assert( not found )
 
-    @staticmethod
-    def final_tear_down(self):
-        global orig_netsettings
-        # Restore original settings to return to initial settings
-        # print("orig_netsettings <%s>" % orig_netsettings)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-
-        settings = app.getSettings()
-        settings['shieldEnabled'] = default_enabled
-        app.setSettings(settings)
-
-        # sleep so the reputation goes down so it will not interfere with any future tests
-        time.sleep(3)
-        # shield is always installed, do not remove it
-        
 
 test_registry.register_module("shield", ShieldTests)
