@@ -2,6 +2,9 @@
 
 import unittest
 import pytest
+
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -9,30 +12,25 @@ import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
 from uvm import Uvm
 
-default_policy_id = 1
-app = None
 
 @pytest.mark.smtp_casing
-class SmtpTests(unittest.TestCase):
+class SmtpTests(NGFWTestCase):
+
+    do_not_install_app = True
+    do_not_remove_app = True
 
     @staticmethod
     def module_name():
-        return "smtp"
-
-    @staticmethod
-    def initial_setup(self):
+        # cheap trick to force class variable _app into global namespace as app
         global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            app = uvmContext.appManager().app(self.module_name())
-        else:
-            app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-
-    def setUp(self):
-        pass
+        app = SmtpTests._app
+        return "smtp"
 
     # verify client is online
     def test_010_runTests(self):
-        l = app.getTests();
+        self.module_name()
+
+        l = app.getTests()
         for name in l['list']:
             print(app.runTests(name))
             
