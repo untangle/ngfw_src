@@ -8,8 +8,10 @@ from tests.global_functions import uvmContext
 
 class NGFWTestCase(TestCase):
 
-    # overload the next 2 in subclasses if needed
+    # overload the next 4 in subclasses if needed
     force_start = False
+    do_not_install_app = False
+    do_not_remove_app = False
     wait_for_daemon_ready = False
 
     _app = None
@@ -46,26 +48,46 @@ class NGFWTestCase(TestCase):
             time.sleep(1)
 
     @classmethod
+    def initial_extra_setup(cls):
+        """To be implemented in subclasses."""
+
+    @classmethod
     def initial_setup(cls, unused=None):
         name = cls.module_name()
         if cls._app or uvmContext.appManager().isInstantiated(name):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.module_name())
             else:
-                cls.final_tear_down()
-        cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
+                if not cls.do_not_install_app:
+                    cls.final_tear_down()
+
+        if cls.do_not_install_app:
+            cls._app = uvmContext.appManager().app(name)
+        else:
+            cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
+
         if cls.force_start:
             cls._app.start()
             if cls.wait_for_daemon_ready:
                 cls.do_wait_for_daemon_ready()
         cls._appSettings = cls._app.getSettings()
 
+        cls.initial_extra_setup()
+
+    @classmethod
+    def final_extra_tear_down(cls):
+        """To be implemented in subclasses."""
+
     @classmethod
     def final_tear_down(cls, unused=None):
-        name = cls.module_name()
-        if cls._app or uvmContext.appManager().isInstantiated(name):
-            uvmContext.appManager().destroy(cls.get_app_id())
-        cls._app = None
+        if cls._app:
+            cls.final_extra_tear_down()
+
+        if not cls.do_not_remove_app:
+            name = cls.module_name()
+            if cls._app or uvmContext.appManager().isInstantiated(name):
+                uvmContext.appManager().destroy(cls.get_app_id())
+            cls._app = None
 
     @classmethod
     def setup_class(cls):
