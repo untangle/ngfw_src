@@ -95,7 +95,7 @@ Ext.define('Ung.util.Renderer', {
     },
 
     boolean: function( value ){
-        return ( value == true ) ? 'true' : 'false';
+        return ( value == true || value == 'true' ) ? 'true' : 'false';
     },
 
     /**
