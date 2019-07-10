@@ -561,7 +561,15 @@ Ext.define('Ung.util.Renderer', {
             }
         }
         if(value == Renderer.listKey){
-            return Renderer.webCategoryMap;
+            var values = [];
+            Object.values(Renderer.webCategoryMap).sort().forEach( function(value){
+                for(var key in Renderer.webCategoryMap){
+                    if(Renderer.webCategoryMap[key] == value){
+                        values.push([key,value]);
+                    }
+                }
+            });
+            return values;
         }else{
             return Renderer.webCategoryMap[value];
         }
