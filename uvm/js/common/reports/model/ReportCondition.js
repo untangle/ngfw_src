@@ -28,7 +28,7 @@ Ext.define ('Ung.model.ReportCondition', {
     },
 
     getQuery: function(){
-        return encodeURIComponent(this.get('column')) + ':' + encodeURIComponent(this.get('operator')) + ':' + encodeURIComponent(this.get('value')) + ':' + (this.get('autoFormatValue') === true ? 1 : 0) + ( this.get('table') ? ':' + encodeURIComponent(this.get('table')) : '');
+        return encodeURIComponent(this.get('column')) + ':' + encodeURIComponent(this.get('operator')) +  ':' + (this.get('autoFormatValue') === true ? 1 : 0) + ':' + encodeURIComponent(this.get('table'))  + ':' + encodeURIComponent(this.get('value'));
     },
 
     statics:{

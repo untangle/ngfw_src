@@ -196,9 +196,9 @@ Ext.define('Ung.controller.Global', {
                     parts = decoded.split(':');
                     key = parts[0];
                     sep = parts[1];
-                    val = parts[2];
-                    fmt = parseInt(parts[3], 10);
-                    table = parts[4];
+                    fmt = parseInt(parts[2], 10);
+                    table = parts[3];
+                    val = parts.slice(4,parts.length).join(':');
                 } else {
                     parts = decoded.split('=');
                     key = parts[0];
