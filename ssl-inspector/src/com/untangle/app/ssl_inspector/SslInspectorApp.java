@@ -17,7 +17,10 @@ import javax.net.ssl.TrustManagerFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
@@ -56,6 +59,8 @@ public class SslInspectorApp extends AppBase
     private PipelineConnector serverMailConnector = null;
     private PipelineConnector[] connectors = null;
 
+    private final String OAUTH_DOMAIN_CONFIG = System.getProperty("uvm.home") + "/conf/ut-oauth.conf";
+
     protected static final String STAT_COUNTER = "COUNTER";
     protected static final String STAT_INSPECTED = "INSPECTED";
     protected static final String STAT_IGNORED = "IGNORED";
@@ -63,6 +68,7 @@ public class SslInspectorApp extends AppBase
     protected static final String STAT_UNTRUSTED = "UNTRUSTED";
     protected static final String STAT_ABANDONED = "ABANDONED";
 
+    protected ArrayList<oauthDomain> oauthConfigList;
     private TrustManagerFactory trustFactory;
     private SslInspectorSettings settings;
 
@@ -162,6 +168,19 @@ public class SslInspectorApp extends AppBase
         catch (Exception exn) {
             logger.error("Could not apply app settings", exn);
         }
+    }
+
+    /**
+     * Called before the application is started.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    @Override
+    protected void preStart(boolean isPermanentTransition)
+    {
+        // load the list of OAuth domains
+        loadOAuthList();
     }
 
     /**
@@ -440,5 +459,46 @@ public class SslInspectorApp extends AppBase
     protected boolean checkBrokenServer(String brokenServer)
     {
         return (brokenServerList.contains(brokenServer));
+    }
+
+    /**
+     * Holds the details of an OAuth domain
+     */
+    protected class oauthDomain
+    {
+        String provider;
+        String match;
+        String name;
+    }
+
+    /**
+     * Loads the list of OAuth domains that must be allowed for client auth from
+     * a config file in the format PROVIDER|MATCH|NAME
+     * 
+     * @return The list of oauthDomain's
+     */
+    public void loadOAuthList()
+    {
+        oauthConfigList = new ArrayList<oauthDomain>();
+        String line;
+        try (BufferedReader br = new BufferedReader(new FileReader(OAUTH_DOMAIN_CONFIG))) {
+            while ((line = br.readLine()) != null) {
+                // ignore lines that start with a comment character
+                if (line.startsWith("#")) continue;
+                // ignore lines too short to be valid
+                if (line.length() < 5) continue;
+                String[] values = line.split(java.util.regex.Pattern.quote("|"), 3);
+                // ignore lines that don't have exactly three fields
+                if (values.length != 3) continue;
+                oauthDomain rec = new oauthDomain();
+                rec.provider = values[0].toLowerCase();
+                rec.match = values[1].toLowerCase();
+                rec.name = values[2].toLowerCase();
+                oauthConfigList.add(rec);
+                logger.debug("Loaded OAuth config: " + rec.provider + " | " + rec.match + " | " + rec.name);
+            }
+        } catch (Exception exn) {
+            logger.warn("Exception loading OAuth domains:" + OAUTH_DOMAIN_CONFIG, exn);
+        }
     }
 }

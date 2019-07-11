@@ -595,34 +595,32 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         // sessions it allows for access to the external login page. If
         // we try to inspect these things go completely off the rails.
         if ((captureFlag != null) && (sniHostname != null)) {
-            if (sniHostname.equals("auth-relay.untangle.com")) allowed = true;
-            if (sniHostname.equals("connectivitycheck.gstatic.com")) allowed = true;
 
-            // hosts we must allow for Google OAuth
-            if ((captureFlag == "GOOGLE") || (captureFlag == "ANY_OAUTH")) {
-                if (sniHostname.equals("accounts.google.com")) allowed = true;
-                if (sniHostname.equals("ssl.gstatic.com")) allowed = true;
-            }
+            // check the SNI name against each item in the OAuthConfigList
+            for (SslInspectorApp.oauthDomain item : app.oauthConfigList) {
+                // check PROVIDER = all
+                if ((item.provider.equals("all")) && ((captureFlag == "GOOGLE") || (captureFlag == "FACEBOOK") || (captureFlag == "MICROSOFT") || (captureFlag == "ANY_OAUTH"))) {
+                    if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
+                    if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                }
 
-            // hosts we must allow for Facebook OAuth
-            if ((captureFlag == "FACEBOOK") || (captureFlag == "ANY_OAUTH")) {
-                if (sniHostname.equals("m.facebook.com")) allowed = true;
-                if (sniHostname.equals("www.facebook.com")) allowed = true;
-                if (sniHostname.equals("graph.facebook.com")) allowed = true;
-                if (sniHostname.equals("staticxx.facebook.com")) allowed = true;
-                if (sniHostname.equals("static.xx.fbcdn.net")) allowed = true;
-            }
+                // check PROVIDER = google
+                if ((item.provider.equals("google")) && ((captureFlag == "GOOGLE") || (captureFlag == "ANY_OAUTH"))) {
+                    if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
+                    if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                }
 
-            // hosts we must allow for Microsoft OAuth
-            if ((captureFlag == "MICROSOFT") || (captureFlag == "ANY_OAUTH")) {
-                if (sniHostname.endsWith(".microsoftonline.com")) allowed = true;
-                if (sniHostname.endsWith(".microsoftonline-p.com")) allowed = true;
-                if (sniHostname.endsWith(".live.com")) allowed = true;
-                if (sniHostname.endsWith(".gfx.ms")) allowed = true;
-                if (sniHostname.endsWith(".microsoft.com")) allowed = true;
-                if (sniHostname.endsWith(".msauth.net")) allowed = true;
-                if (sniHostname.endsWith(".msftauth.net")) allowed = true;
-                if (sniHostname.endsWith(".azureedge.net")) allowed = true;
+                // check PROVIDER = facebook
+                if ((item.provider.equals("facebook")) && ((captureFlag == "FACEBOOK") || (captureFlag == "ANY_OAUTH"))) {
+                    if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
+                    if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                }
+
+                // check PROVIDER = microsoft
+                if ((item.provider.equals("microsoft")) && ((captureFlag == "MICROSOFT") || (captureFlag == "ANY_OAUTH"))) {
+                    if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
+                    if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                }
             }
         }
 
