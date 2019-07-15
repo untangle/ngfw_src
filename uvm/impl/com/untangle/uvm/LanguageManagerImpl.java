@@ -64,8 +64,7 @@ public class LanguageManagerImpl implements LanguageManager
 {
     private static final String LANGUAGES_DIR;
     private static final String RESOURCES_DIR;
-    // private static final String REMOTE_LANGUAGES_URL = "http://translate.untangle.com/";
-    private static final String REMOTE_LANGUAGES_URL = "http://192.168.25.192/";
+    private static final String REMOTE_LANGUAGES_URL = "http://translations.untangle.com/";
     private static final String REMOTE_LANGUAGES_PROJECT = "ngfw";
     private static final String LOCALE_DIR = "/usr/share/locale";
     private static final String DEFAULT_LANGUAGE = "en";
@@ -387,11 +386,6 @@ public class LanguageManagerImpl implements LanguageManager
                                 byteBuffer.order(java.nio.ByteOrder.LITTLE_ENDIAN);
                                 stringOffset = byteBuffer.getInt();
                                 stringIndexOffset += 8;
-
-                                if(stringLength == 0){
-                                    // Almost certainly the header; ignore.
-                                    continue;
-                                }
 
                                 in.seek(stringOffset);
                                 in.read(buffer, 0, stringLength);
