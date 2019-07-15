@@ -385,11 +385,6 @@ public class LanguageManagerImpl implements LanguageManager
                                 stringOffset = byteBuffer.getInt();
                                 stringIndexOffset += 8;
 
-                                if(stringLength == 0){
-                                    // Almost certainly the header; ignore.
-                                    continue;
-                                }
-
                                 in.seek(stringOffset);
                                 in.read(buffer, 0, stringLength);
                                 string = new String(buffer, 0, stringLength);
