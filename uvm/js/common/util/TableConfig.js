@@ -3981,7 +3981,7 @@ Ext.define('TableConfig', {
                 width: Renderer.ipWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'address'
+                dataIndex: 'entity'
             }, {
                 header: 'Action'.t(),
                 width: Renderer.messageWidth,
