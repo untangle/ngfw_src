@@ -160,7 +160,7 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/ip_forward',"1",False);
     procset('/proc/sys/net/ipv4/ip_nonlocal_bind',"1",False);
     procset('/proc/sys/net/ipv4/ip_local_port_range',"3200   8999",False);
-    procset('/proc/sys/net/ipv4/ip_local_reserved_ports',"4500,8009,8123",False); # charon, tomcat, classd
+    procset('/proc/sys/net/ipv4/ip_local_reserved_ports',"4500,8009,8123,5432,8484",False); # charon, tomcat, classd, postgress, bcid
     # Check for old location, if its not there assume new location (4.9+)
     if os.path.exists('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose'):
         procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False);

@@ -43,7 +43,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     
     protected static final String GOOGLE_AUTH_HOST = "accounts.google.com";
     protected static final String GOOGLE_AUTH_PATH = "/o/oauth2/v2/auth";
-    protected static final String GOOGLE_CLIENT_ID = "271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com";
+    protected static final String GOOGLE_CLIENT_ID = "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com";
 
     protected static final String FACEBOOK_AUTH_HOST = "www.facebook.com";
     protected static final String FACEBOOK_AUTH_PATH = "/v2.9/dialog/oauth";

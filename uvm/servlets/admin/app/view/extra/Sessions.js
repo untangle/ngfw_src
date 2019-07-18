@@ -85,18 +85,15 @@ Ext.define('Ung.view.extra.Sessions', {
             type: 'string',
             sortType: 'asUnString'
        },{
-            name: "priority",
-            convert: Converter.priority
+            name: "priority"
         },{
-            name: "qosPriority",
-            convert: Converter.priority
+            name: "qosPriority"
         },{
             name: "pipeline",
         }, {
             name: 'clientIntf',
             type: 'string',
-            sortType: 'asUnString',
-            convert: Converter.interface
+            sortType: 'asUnString'
         }, {
             name: 'preNatClient',
             type: 'string',
@@ -120,8 +117,7 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'serverIntf',
             type: 'string',
-            sortType: 'asUnString',
-            convert: Converter.interface
+            sortType: 'asUnString'
         }, {
             name: 'preNatServer',
             type: 'string',
@@ -144,10 +140,10 @@ Ext.define('Ung.view.extra.Sessions', {
             name: 'serverLongitude',
         }, {
             name: 'clientKBps',
-            convert: Converter.sessionSpeed
+            convert: Renderer.sessionSpeed
         }, {
             name: 'serverKBps',
-            convert: Converter.sessionSpeed
+            convert: Renderer.sessionSpeed
         }, {
             name: 'totalKBps',
             convert: function(value, record){
@@ -155,7 +151,7 @@ Ext.define('Ung.view.extra.Sessions', {
                      record.data.clientKBps == null ){
                         return null;
                 }
-                return Converter.sessionSpeed(value);
+                return Renderer.sessionSpeed(value);
             }
         }, {
             name: "application-control-lite-protocol",
@@ -372,13 +368,15 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Bandwidth Control ' + 'Priority'.t(),
             dataIndex: "priority",
             width: Renderer.messageWidth,
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            renderer: Renderer.priority
         },{
             hidden: true,
             header: 'QoS ' + 'Priority'.t(),
             dataIndex: "qosPriority",
             width: Renderer.messageWidth,
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            renderer: Renderer.priority
         },{
             hidden: true,
             header: 'Pipeline'.t(),
@@ -391,7 +389,8 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'clientIntf',
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Renderer.interface
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatClient',
@@ -438,7 +437,8 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'serverIntf',
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Renderer.interface
             }, {
                 header: 'Address'.t() + ' (' + 'Pre-NAT'.t() + ')',
                 dataIndex: 'preNatServer',

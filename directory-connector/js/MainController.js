@@ -561,6 +561,9 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTestController
                 case 'FAIL_QUERY_NONE':
                     statusText = 'Query failed, cannot find object defined by domain and OU'.t();
                     break;
+                case 'FAIL_QUERY_REFERRAL':
+                    statusText = 'Response contained a referral defined by domain and OU'.t();
+                    break;
                 case 'PASS':
                     statusText = 'Success!'.t();
                     break;

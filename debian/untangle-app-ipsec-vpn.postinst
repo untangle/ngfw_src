@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# We start and stop the strongswan and xl2tp daemons from Java as needed
+# so disable to prevent the system from ever starting them automatically
+
+deb-systemd-helper disable strongswan.service
+deb-systemd-helper disable xl2tpd.service
+
+exit 0

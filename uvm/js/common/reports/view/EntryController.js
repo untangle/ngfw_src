@@ -266,6 +266,43 @@ Ext.define('Ung.view.reports.EntryController', {
     sqlColumnRenderer: function (val) {
         return '<strong>' + TableConfig.getColumnHumanReadableName(val) + '</strong> <span style="float: right;">[' + val + ']</span>';
     },
+
+    onValueWidgetAttach: function (column, container, record) {
+        var me = this;
+
+        var firstTable = TableConfig.getFirstTableFromField(record.get('column'));
+        var values = TableConfig.getValues(record.get('table') ? record.get('table') : firstTable, record.get('column'));
+
+        container.removeAll(true);
+
+        if(values.length > 0){
+            container.add({
+                xtype: 'combo',
+                queryMode: 'local',
+                store: new Ext.data.ArrayStore({
+                    fields: ['value', 'display'],
+                    data: values
+                }),
+                emptyText: 'Select value'.t(),
+                displayField: 'display',
+                valueField: 'value',
+                allowBlank: false,
+                editable: false,
+                bind: {
+                    value: '{record.value}'
+                },
+            });
+
+        }else{
+            container.add({
+                xtype: 'textfield',
+                bind: {
+                    value: '{record.value}'
+                },
+            });
+        }
+    },
+
     // TABLE COLUMNS / CONDITIONS END
 
 
@@ -506,12 +543,6 @@ Ext.define('Ung.view.reports.EntryController', {
             }
         });
 
-        var conditions = [];
-        Ext.Array.each(Ext.clone(vm.get('query.conditions')), function (cnd) {
-            delete cnd._id;
-            conditions.push(cnd);
-        });
-
         // startDate converted from UI to server date
         startDate = Util.clientToServerDate(vm.get('time.range.since'));
         // endDate converted from UI to server date
@@ -522,7 +553,7 @@ Ext.define('Ung.view.reports.EntryController', {
         downloadForm['type'].value = 'eventLogExport';
         downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(startDate, 'd.m.Y-H:i') + '-' + Ext.Date.format(endDate || Util.clientToServerDate(new Date()), 'd.m.Y-H:i')).replace(/ /g, '_');
         downloadForm['arg2'].value = Ext.encode(entry);
-        downloadForm['arg3'].value = conditions.length > 0 ? Ext.encode(conditions) : '';
+        downloadForm['arg3'].value = Ext.encode(Ung.model.ReportCondition.collect(vm.get('query.conditions')));
         downloadForm['arg4'].value = columns.join(',');
         downloadForm['arg5'].value = startDate ? startDate.getTime() : -1;
         downloadForm['arg6'].value = endDate ? endDate.getTime() : -1;

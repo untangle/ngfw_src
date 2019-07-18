@@ -7,6 +7,7 @@ package com.untangle.app.captive_portal;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,9 @@ import java.util.zip.ZipException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileOutputStream;
+import java.io.BufferedReader;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
@@ -65,6 +68,7 @@ public class CaptivePortalApp extends AppBase
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-remove";
     private final String CAPTURE_TEMPORARY_UPLOAD = System.getProperty("java.io.tmpdir") + "/capture_upload.zip";
+    private final String OAUTH_DOMAIN_CONFIG = System.getProperty("uvm.home") + "/conf/ut-oauth.conf";
 
     private static final int CLEANUP_INTERVAL = 60000;
 
@@ -89,6 +93,8 @@ public class CaptivePortalApp extends AppBase
 
     protected CaptivePortalUserCookieTable captureUserCookieTable = new CaptivePortalUserCookieTable();
     protected CaptivePortalUserTable captureUserTable;
+    protected ArrayList<oauthDomain> oauthConfigList;
+
     private CaptivePortalSettings captureSettings;
     private CaptivePortalTimer captureTimer;
     private Timer timer;
@@ -434,6 +440,9 @@ public class CaptivePortalApp extends AppBase
 
         // load user state from file (if exists)
         loadUserState();
+
+        // load the list of OAuth domains
+        loadOAuthList();
 
         // run a script to create the directory for the custom captive page
         UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
@@ -892,7 +901,7 @@ public class CaptivePortalApp extends AppBase
     }
 
     /**
-     *
+     * 
      * @param userkey
      *        The IP or MAC address of the user to be logged out
      * @param reason
@@ -1353,8 +1362,8 @@ public class CaptivePortalApp extends AppBase
                 tempFile.delete();
                 return new ExecManagerResult(1, exn.getMessage());
             } finally {
-                if (zipFile != null){
-                    try{
+                if (zipFile != null) {
+                    try {
                         zipFile.close();
                     } catch (Exception exn) {
                         return new ExecManagerResult(1, exn.getMessage());
@@ -1472,7 +1481,7 @@ public class CaptivePortalApp extends AppBase
 
         /**
          * This is the callback function.
-         *
+         * 
          * @param args
          *        The arguments passed to the callback
          */
@@ -1498,6 +1507,47 @@ public class CaptivePortalApp extends AppBase
             } catch (Exception exn) {
                 logger.warn("Exception in username callback checking:" + bucket.getString(), exn);
             }
+        }
+    }
+
+    /**
+     * Holds the details of an OAuth domain
+     */
+    protected class oauthDomain
+    {
+        String provider;
+        String match;
+        String name;
+    }
+
+    /**
+     * Loads the list of OAuth domains that must be allowed for client auth from
+     * a config file in the format PROVIDER|MATCH|NAME
+     * 
+     * @return The list of oauthDomain's
+     */
+    public void loadOAuthList()
+    {
+        oauthConfigList = new ArrayList<oauthDomain>();
+        String line;
+        try (BufferedReader br = new BufferedReader(new FileReader(OAUTH_DOMAIN_CONFIG))) {
+            while ((line = br.readLine()) != null) {
+                // ignore lines that start with a comment character
+                if (line.startsWith("#")) continue;
+                // ignore lines too short to be valid
+                if (line.length() < 5) continue;
+                String[] values = line.split(java.util.regex.Pattern.quote("|"), 3);
+                // ignore lines that don't have exactly three fields
+                if (values.length != 3) continue;
+                oauthDomain rec = new oauthDomain();
+                rec.provider = values[0].toLowerCase();
+                rec.match = values[1].toLowerCase();
+                rec.name = values[2].toLowerCase();
+                oauthConfigList.add(rec);
+                logger.debug("Loaded OAuth config: " + rec.provider + " | " + rec.match + " | " + rec.name);
+            }
+        } catch (Exception exn) {
+            logger.warn("Exception loading OAuth domains:" + OAUTH_DOMAIN_CONFIG, exn);
         }
     }
 }

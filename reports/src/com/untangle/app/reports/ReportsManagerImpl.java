@@ -408,6 +408,8 @@ public class ReportsManagerImpl implements ReportsManager
      *  Beginning date.
      * @param endDate
      *  Ending date.
+     * @param extraSelects
+     *  Extra selects
      * @param extraConditions
      *  Additional SQL query options.
      * @param limit
@@ -415,10 +417,10 @@ public class ReportsManagerImpl implements ReportsManager
      * @return
      *  Results of query as a List of JSONObjects.
      */
-    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
+    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, final int limit )
     {
         Connection conn = app.getDbConnection();
-        PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraConditions );
+        PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions );
 
         if ( app != null ) {
             // only flush if there are less than 10k events pending
@@ -456,7 +458,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
     {
-        return getDataForReportEntry( entry, startDate, endDate, null, limit );
+        return getDataForReportEntry( entry, startDate, endDate, null, null, limit );
     }
 
     /**
@@ -479,7 +481,7 @@ public class ReportsManagerImpl implements ReportsManager
             cal.add(Calendar.SECOND, -timeframeSec);
             startDate = cal.getTime();
         }
-        return getDataForReportEntry( entry, startDate, null, null, limit );
+        return getDataForReportEntry( entry, startDate, null, null, null, limit );
     }
 
     /**
@@ -626,7 +628,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
 
         Connection conn = app.getDbConnection();
-        PreparedStatement statement = entry.toSql( conn, null, null, extraConditions, limit );
+        PreparedStatement statement = entry.toSql( conn, null, null, null, extraConditions, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
         logger.info("Statement          : " + statement);
@@ -732,7 +734,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
 
         Connection conn = app.getDbConnection();
-        PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraConditions, limit );
+        PreparedStatement statement = entry.toSql( conn, startDate, endDate, null, extraConditions, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
         logger.info("Statement          : " + statement);
@@ -858,7 +860,12 @@ public class ReportsManagerImpl implements ReportsManager
      * @return          List of JSONObjects
      */
     public List<JSONObject> getReportInfo( String appName, Integer policyId, String key){
-        List<App> apps = UvmContextFactory.context().appManager().appInstances(appName, policyId, false);
+        List<App> apps = null;
+        if(policyId == -1){
+            apps = UvmContextFactory.context().appManager().appInstances(appName);
+        }else{
+            apps = UvmContextFactory.context().appManager().appInstances(appName, policyId, false);
+        }
         if(apps != null && apps.size() > 0){
             return ((AppBase)apps.get(0)).getReportInfo(key);
         }

@@ -174,8 +174,8 @@ Ext.define('Ung.controller.Global', {
      */
     onRoute: function (query) {
         var hash = window.location.hash, view, viewModel = null, validQuery = true,
-            route = {}, conditions = [], condsQuery = '',
-            decoded, parts, key, sep, val, fmt;
+            route = {}, condition, conditions = [],
+            decoded, parts, key, sep, val, fmt, table;
 
         if (hash === '' || Ext.String.startsWith(hash, '#') || Ext.String.startsWith(hash, '#dashboard')) {
             view = 'dashboardMain';
@@ -196,8 +196,9 @@ Ext.define('Ung.controller.Global', {
                     parts = decoded.split(':');
                     key = parts[0];
                     sep = parts[1];
-                    val = parts[2];
-                    fmt = parseInt(parts[3], 10);
+                    fmt = parseInt(parts[2], 10);
+                    table = parts[3];
+                    val = parts.slice(4,parts.length).join(':');
                 } else {
                     parts = decoded.split('=');
                     key = parts[0];
@@ -209,14 +210,13 @@ Ext.define('Ung.controller.Global', {
                     if (!key || !sep || !val) {
                         validQuery = false;
                     } else {
-                        conditions.push({
+                        conditions.push( new Ung.model.ReportCondition({
                             column: key,
                             operator: sep,
                             value: val,
                             autoFormatValue: fmt === 1 ? true : false,
-                            javaClass: 'com.untangle.app.reports.SqlCondition'
-                        });
-                        condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
+                            table: table,
+                        }));
                     }
                 }
             });
@@ -231,7 +231,7 @@ Ext.define('Ung.controller.Global', {
             viewModel.set('query', {
                 route: route,
                 conditions: conditions,
-                string: condsQuery
+                string: Ung.model.ReportCondition.getAllQueries(conditions)
             });
         }
 

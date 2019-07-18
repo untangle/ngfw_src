@@ -46,6 +46,8 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
     private static final String STAT_CACHE_COUNT = "cache_count";
+    private static final String STAT_NETWORK_ERROR_COUNT = "network_error_count";
+    private static final String STAT_IP_ERROR_COUNT = "ip_error_count";
     private static final Integer SETTINGS_CURRENT_VERSION = 4;
     private static int web_filter_deployCount = 0;
 
@@ -234,6 +236,8 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Pages flagged")));
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
         this.addMetric(new AppMetric(STAT_CACHE_COUNT, I18nUtil.marktr("Cache count")));
+        this.addMetric(new AppMetric(STAT_NETWORK_ERROR_COUNT, I18nUtil.marktr("Network error count")));
+        this.addMetric(new AppMetric(STAT_IP_ERROR_COUNT, I18nUtil.marktr("DNS error count")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 3, isPremium());
         this.connectors = new PipelineConnector[] { connector };
@@ -691,6 +695,21 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     public void setCacheCount(long count){
         this.setMetric(STAT_CACHE_COUNT, count);
+    }
+
+    /**
+     * Set network error count.
+     * @param count Long of current number of daemon network errors.
+     */
+    public void setNetworkErrorCount(long count){
+        this.setMetric(STAT_NETWORK_ERROR_COUNT, count);
+    }
+    /**
+     * Set ip error count
+     * @param count Long of current number daemon ip errors.
+     */
+    public void setIpErrorCount(long count){
+        this.setMetric(STAT_IP_ERROR_COUNT, count);
     }
 
     /**

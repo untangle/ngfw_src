@@ -86,9 +86,6 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("partitionTablePostfix","");
         attributeDescriptions.put("tag","");
 
-        attributeDescriptions.put("login","Login name"); // FIXME
-        attributeDescriptions.put("local","Logged in locally"); // FIXME
-        attributeDescriptions.put("succeeded","Login succeeded"); // FIXME
         attributeDescriptions.put("address","The address");
         attributeDescriptions.put("class","The class name");
         attributeDescriptions.put("key","The key");
@@ -159,6 +156,8 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("swapTotal","The total size of swap");
         attributeDescriptions.put("inBytes","The number of bytes received from this tunnel");
         attributeDescriptions.put("outBytes","The number of bytes sent in this tunnel");
+        attributeDescriptions.put("localAddress","The local host address");
+        attributeDescriptions.put("serverAddress","The server address");
         attributeDescriptions.put("tunnelName","The name of this tunnel");
         attributeDescriptions.put("clientAddress","The client address");
         attributeDescriptions.put("clientProtocol","The client protocol");
@@ -185,6 +184,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("priority","The priority");
         attributeDescriptions.put("ruleId","The rule ID");
         attributeDescriptions.put("sessionEvent","The session event");
+        attributeDescriptions.put("contentFilename","The content filename");
         attributeDescriptions.put("contentLength","The content length");
         attributeDescriptions.put("contentType","The content type");
         attributeDescriptions.put("requestLine","The request line");
@@ -260,6 +260,8 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("type","The type");
         attributeDescriptions.put("bytesRxDelta","The delta number of RX (received) bytes from the previous event");
         attributeDescriptions.put("bytesRxTotal","The total number of RX (received) bytes");
+        attributeDescriptions.put("rxBytes","The total of received bytes");
+        attributeDescriptions.put("txBytes","The total of transmitted bytes");
         attributeDescriptions.put("bytesTxDelta","The delta number of TX (transmitted) bytes from the previous event");
         attributeDescriptions.put("bytesTxTotal","The total number of TX (transmitted) bytes");
         attributeDescriptions.put("end","The end");
@@ -273,6 +275,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("endTime","The end time/date");
         attributeDescriptions.put("localAddr","The local host address");
         attributeDescriptions.put("remoteAddr","The remote host address");
+        attributeDescriptions.put("remoteAddress","The remote host address");
         attributeDescriptions.put("policyRuleId","The policy rule ID");
         attributeDescriptions.put("settingsFile","The settings file");
         attributeDescriptions.put("httpRequestEvent","The corresponding HTTP request event");
@@ -280,9 +283,13 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("entity","The entity");
         attributeDescriptions.put("causalRule","The causal rule");
         attributeDescriptions.put("eventSent","True if the event was sent, false otherwise");
-        attributeDescriptions.put("oldValue","");
-        attributeDescriptions.put("rxBytes","The number of RX (received) bytes");
-        attributeDescriptions.put("txBytes","The number of TX (transmitted) bytes");
+        attributeDescriptions.put("oldValue","The old value");
+        attributeDescriptions.put("login","The login username");
+        attributeDescriptions.put("succeeded","1 if successful, 0 otherwise");
+        attributeDescriptions.put("rid","Rule ID");
+        attributeDescriptions.put("loginType","W = Windows login, A=Active Directory, R=RADIUS, T=test");
+        attributeDescriptions.put("categoryId","Numeric value of matching category");
+        attributeDescriptions.put("tunnelDescription","Description of tunnel");
 
         HashMap<String,String> specificDescriptions;
 
@@ -311,6 +318,10 @@ public class ExtensionImpl implements Runnable
         specificDescriptions = new HashMap<>();
         specificDescriptions.put("blocked","1 if blocked, 0 otherwise");
         classSpecificAttributeDescriptions.put("IntrusionPreventionLogEvent",specificDescriptions);
+
+        specificDescriptions = new HashMap<>();
+        specificDescriptions.put("local","1 if login is done via local console, 0 otherwise");
+        classSpecificAttributeDescriptions.put("AdminLoginEvent",specificDescriptions);
     }
 
     /**
@@ -400,6 +411,9 @@ public class ExtensionImpl implements Runnable
             for(PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(clazz).getPropertyDescriptors()){
                 Method method = propertyDescriptor.getReadMethod();
 
+                if(method == null){
+                    continue;
+                }
                 String methodName = method.getName();
                 methodName = methodName.replaceAll("^get","");
                 if (methodName.length() > 1) {

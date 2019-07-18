@@ -78,7 +78,7 @@ public class IntrusionPreventionApp extends AppBase
     
     private final EventHandler handler;
     private final PipelineConnector [] connectors = new PipelineConnector[0];
-    private final IntrusionPreventionEventMonitor ipsEventMonitor;    
+    private IntrusionPreventionEventMonitor ipsEventMonitor = null;
 
     private static final String DAEMON_NAME = "suricata";
     private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/740-suricata";
@@ -96,7 +96,7 @@ public class IntrusionPreventionApp extends AppBase
     private static final Pattern SYSTEMCTL_STATUS_MAINPID = Pattern.compile("^MainPID=(\\d+)");
     private static final Pattern SMAP_KERNEL_PAGE_SIZE = Pattern.compile("^KernelPageSize:\\s*(.+)");
     private static final String RELOAD_RULES_COMMAND = "/usr/bin/suricatasc -c 'reload-rules'";
-    private static final String GET_SURICATA_ERRORS="/bin/journalctl -u suricata --no-pager -S \"$(/bin/systemctl show suricata | grep StateChangeTimestamp= | cut -d= -f2)\" | grep '<Error'";
+    private static final String GET_SURICATA_ERRORS="/bin/journalctl -u suricata --no-pager -S \"$(/bin/systemctl show suricata | grep StateChangeTimestamp= | cut -d= -f2)\" | grep '<Error' | grep -v 'libnet_write_raw_ipv6 failed'";
 
     private long kernelPageSize = 0;
     private boolean updatedSettingsFlag = false;
@@ -135,8 +135,6 @@ public class IntrusionPreventionApp extends AppBase
         setMetricsDetectCount(0);
         setMetricsBlockCount(0);
         updateMetricsMemory();
-
-        this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
     }
@@ -194,6 +192,8 @@ public class IntrusionPreventionApp extends AppBase
         if(updated){
             this.setSettings(this.settings);
         }
+
+        this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
     }
 
     /**
@@ -887,7 +887,10 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void reloadEventMonitorMap()
     {
-        this.ipsEventMonitor.unified2Parser.reloadEventMap();
+        if(this.ipsEventMonitor != null &&
+            this.ipsEventMonitor.unified2Parser != null){
+            this.ipsEventMonitor.unified2Parser.reloadEventMap();
+        }
     }
 
     /**

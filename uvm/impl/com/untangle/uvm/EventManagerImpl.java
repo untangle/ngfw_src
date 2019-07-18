@@ -44,7 +44,7 @@ public class EventManagerImpl implements EventManager
 {
     private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
 
-    private static final Integer SETTINGS_CURRENT_VERSION = 2;
+    private static final Integer SETTINGS_CURRENT_VERSION = 3;
 
     private static EventManagerImpl instance = null;
 
@@ -228,14 +228,19 @@ public class EventManagerImpl implements EventManager
         if(settings.getVersion() < SETTINGS_CURRENT_VERSION){
 
             boolean webfilterEvent = false;
+            boolean sessionEvent = false;
             for(EventRule er : Stream.of(settings.getAlertRules(), settings.getSyslogRules(), settings.getTriggerRules())
                                 .flatMap(Collection::stream)
                                 .collect(Collectors.toList()) ){
 
                 webfilterEvent = false;
+                sessionEvent = false;
                 for(EventRuleCondition c : er.getConditions()){
                     if(c.getField().equals("class") && c.getFieldValue().equals("*WebFilterEvent*")){
                         webfilterEvent = true;
+                    }
+                    if(c.getField().equals("class") && c.getFieldValue().equals("*SessionEvent*")){
+                        sessionEvent = true;
                     }
                     if(webfilterEvent){
                         if(c.getField().equals("category") && c.getFieldValue().equals("Malware Distribution Point")){
@@ -249,6 +254,11 @@ public class EventManagerImpl implements EventManager
                         if(c.getField().equals("category") && c.getFieldValue().equals("Phishing/Fraud")){
                             c.setFieldValue("Phishing and Other Frauds");
                             er.setDescription(er.getDescription().replaceAll("Phishing/Fraud", "Phishing and Other Frauds"));
+                        }
+                    }
+                    if(sessionEvent){
+                        if(c.getField().equals("sServerPort")){
+                            c.setField("SServerPort");
                         }
                     }
                 }

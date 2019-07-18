@@ -212,6 +212,9 @@ Ext.define('TableConfig', {
 
     getTableColumn: function(table, name){
         var tableColumn = null;
+        if(table == null){
+            table = TableConfig.getFirstTableFromField(name);
+        }
         if(TableConfig.tableConfig[table] &&
             TableConfig.tableConfig[table]['columns']){
             TableConfig.tableConfig[table]['columns'].forEach( function(column){
@@ -221,6 +224,57 @@ Ext.define('TableConfig', {
             });
         }
         return tableColumn;
+    },
+
+    getFirstTableFromField: function(fieldName){
+        var table = null;
+        Ext.Object.each(TableConfig.tableConfig, function(tableName, tableValues){
+            tableValues['fields'].forEach(function(field){
+                if(field['name'] == fieldName){
+                    table = tableName;
+                    return false;
+                }                
+            });
+            if(table != null){
+                return false;
+            }
+        });
+        return table;
+    },
+
+    getDisplayValue: function(value, table, field, record){
+        if(arguments[6]){
+            var column = arguments[6].getGridColumns()[arguments[4]];
+            table = column.table;
+            field = column.field;
+        }
+        var tableField = TableConfig.getTableField(table, field);
+        var tableColumn = TableConfig.getTableColumn(table, field);
+        if(tableField && tableField['convert']){
+            value = tableField['convert'](value, null, record);
+        }
+        if(tableColumn && tableColumn['renderer']){
+            value = tableColumn['renderer'](value, null, record);
+        }
+        return value;
+    },
+
+    getValues: function( table, field, record){
+        var values = [];
+        var tableColumn = TableConfig.getTableColumn(table, field);
+        if(tableColumn && tableColumn['renderer']){
+            var rendererValues = tableColumn['renderer'](Renderer.listKey, null, record);
+            if(Array.isArray(rendererValues)){
+                values = rendererValues;
+            }else if(typeof rendererValues === 'object'){
+                for(var key in rendererValues){
+                    if(rendererValues.hasOwnProperty(key)){
+                        values.push([String(key), rendererValues[key]]);
+                    }
+                }
+            }
+        }
+        return values;
     },
 
     tableConfig: {
@@ -240,11 +294,9 @@ Ext.define('TableConfig', {
                 name: 'entitled',
                 type: 'boolean'
             }, {
-                name: 'protocol',
-                convert: Converter.protocol
+                name: 'protocol'
             }, {
-                name: 'icmp_type',
-                convert: Converter.icmp
+                name: 'icmp_type'
             }, {
                 name: 'hostname',
                 type: 'string'
@@ -283,21 +335,17 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
-                name: 'client_country',
-                convert: Converter.country
+                name: 'client_country'
             }, {
                 name: 'client_latitude'
             }, {
                 name: 'client_longitude'
             }, {
-                name: 'server_country',
-                convert: Converter.country
+                name: 'server_country'
             }, {
                 name: 'server_latitude'
             }, {
@@ -361,8 +409,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'bandwidth_control_priority'
             }, {
-                name: 'bandwidth_control_rule',
-                convert: Converter.bandwidthControlRule
+                name: 'bandwidth_control_rule'
             }, {
                 name: 'ssl_inspector_status',
                 type: 'string',
@@ -413,13 +460,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'protocol'
+                dataIndex: 'protocol',
+                renderer: Renderer.protocol
             }, {
                 header: 'ICMP Type'.t(),
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'icmp_type'
+                dataIndex: 'icmp_type',
+                renderer: Renderer.icmp
             }, {
                 header: 'Policy Id'.t(),
                 width: Renderer.portWidth,
@@ -438,19 +487,22 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Client Country'.t() ,
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_country'
+                dataIndex: 'client_country',
+                renderer: Renderer.country 
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -468,7 +520,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_country'
+                dataIndex: 'server_country',
+                renderer: Renderer.country 
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -570,6 +623,7 @@ Ext.define('TableConfig', {
                 filter: Renderer.stringFilter,
                 flex: 1,
                 dataIndex: 'bandwidth_control_rule',
+                renderer: Renderer.bandwidthControlRule
             }, {
                 header: 'Rule Id'.t() + ' (Application Control)',
                 width: Renderer.messageWidth,
@@ -731,11 +785,9 @@ Ext.define('TableConfig', {
             }, {
                 name: 'entitled'
             }, {
-                name: 'protocol',
-                convert: Converter.protocol
+                name: 'protocol'
             }, {
-                name: 'icmp_type',
-                convert: Converter.icmp
+                name: 'icmp_type'
             }, {
                 name: 'hostname'
             }, {
@@ -771,21 +823,17 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
-                name: 'client_country',
-                convert: Converter.country
+                name: 'client_country'
             }, {
                 name: 'client_latitude'
             }, {
                 name: 'client_longitude'
             }, {
-                name: 'server_country',
-                convert: Converter.country
+                name: 'server_country'
             }, {
                 name: 'server_latitude'
             }, {
@@ -841,8 +889,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'bandwidth_control_priority'
             }, {
-                name: 'bandwidth_control_rule',
-                convert: Converter.bandwidthControlRule
+                name: 'bandwidth_control_rule'
             }, {
                 name: 'ssl_inspector_status'
             }, {
@@ -895,12 +942,14 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'protocol',
+                renderer: Renderer.protocol
             }, {
                 header: 'ICMP Type'.t(),
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'icmp_type'
+                dataIndex: 'icmp_type',
+                renderer: Renderer.icmp
             }, {
                 header: 'Policy Id'.t(),
                 width: Renderer.messageWidth,
@@ -919,19 +968,22 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface,
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Client Country'.t() ,
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_country',
+                renderer: Renderer.country 
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -950,6 +1002,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'server_country',
+                renderer: Renderer.country 
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1052,7 +1105,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'bandwidth_control_rule'
+                dataIndex: 'bandwidth_control_rule',
+                renderer: Renderer.bandwidthControlRule
             }, {
                 header: 'Application'.t() + ' (Application Control)',
                 width: Renderer.messageWidth,
@@ -1186,11 +1240,9 @@ Ext.define('TableConfig', {
                 name: 'session_id',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
                 name: 'server_intf',
-                convert: Converter.interface
             }, {
                 name: 'c_client_addr',
                 sortType: 'asIp'
@@ -1254,12 +1306,18 @@ Ext.define('TableConfig', {
                 name: 'web_filter_category_id',
                 type: 'string'
             }, {
+                name: 'web_filter_rule_id',
+                type: 'string',
+                referenceFields: [
+                    'policy_id',
+                    'web_filter_reason'
+                ]
+            }, {
                 name: 'web_filter_reason',
                 type: 'string'
             }, {
                 name: 'ad_blocker_action',
-                type: 'string',
-                convert: Converter.adBlockerAction
+                type: 'string'
             }, {
                 name: 'ad_blocker_cookie_ident',
                 type: 'string'
@@ -1305,13 +1363,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Client'.t(),
                 width: Renderer.ipWidth,
@@ -1456,25 +1516,33 @@ Ext.define('TableConfig', {
                 dataIndex: 'web_filter_flagged',
                 filter: Renderer.booleanFilter
             }, {
-                header: 'Reason For Action'.t() +  ' (Web Filter)',
-                width: Renderer.messageWidth + 30,
-                sortable: true,
-                filter: Renderer.stringFilter,
-                dataIndex: 'web_filter_reason',
-                renderer: Renderer.httpReason
-            }, {
-                header: 'Web Category'.t(),
+                header: 'Web Category'.t() + ' (Web Filter)',
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'web_filter_category_id',
                 renderer: Renderer.webCategory
             }, {
+                header: 'Reason For Action'.t() + ' (Web Filter)',
+                width: Renderer.messageWidth + 30,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'web_filter_reason',
+                renderer: Renderer.httpReason
+            }, {
+                header: 'Web Rule'.t() + ' (Web Filter)',
+                width: Renderer.messageWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'web_filter_rule_id',
+                renderer: Renderer.webRule
+            }, {
                 header: 'Action'.t() + ' (Ad Blocker)',
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'ad_blocker_action'
+                dataIndex: 'ad_blocker_action',
+                renderer: Renderer.adBlockerAction
             }, {
                 header: 'Blocked Cookie'.t() + ' (Ad Blocker)',
                 width: Renderer.messageWidth,
@@ -1520,11 +1588,9 @@ Ext.define('TableConfig', {
                 name: 'time_stamp',
                 sortType: 'asTimestamp'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
                 name: 'c_client_addr',
                 sortType: 'asIp'
@@ -1625,13 +1691,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Username'.t(),
                 width: Renderer.usernameWidth,
@@ -1803,11 +1871,9 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
                 name: 'virus_blocker_name'
             }, {
@@ -1835,8 +1901,7 @@ Ext.define('TableConfig', {
                 name: 'vendor'
             }, {
                 name:  'spam_blocker_lite_action',
-                type: 'string',
-                convert: Converter.emailAction
+                type: 'string'
             }, {
                 name: 'spam_blocker_lite_score',
                 sortType: 'asFloat'
@@ -1846,8 +1911,7 @@ Ext.define('TableConfig', {
                 name: 'spam_blocker_lite_tests_string'
             }, {
                 name:  'spam_blocker_action',
-                type: 'string',
-                convert: Converter.emailAction
+                type: 'string'
             }, {
                 name: 'spam_blocker_score',
                 sortType: 'asFloat'
@@ -1857,8 +1921,7 @@ Ext.define('TableConfig', {
                 name: 'spam_blocker_tests_string'
             }, {
                 name:  'phish_blocker_action',
-                type: 'string',
-                convert: Converter.emailAction
+                type: 'string'
             }, {
                 name: 'phish_blocker_score',
                 sortType: 'asFloat'
@@ -1904,13 +1967,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Username'.t(),
                 width: Renderer.hostnameWidth,
@@ -2032,7 +2097,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'spam_blocker_lite_action'
+                dataIndex: 'spam_blocker_lite_action',
+                renderer: Renderer.emailAction
             }, {
                 header: 'Spam Score'.t() + ' (Spam Blocker Lite)',
                 width: Renderer.sizeWidth,
@@ -2057,7 +2123,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'spam_blocker_action'
+                dataIndex: 'spam_blocker_action',
+                renderer: Renderer.emailAction
             }, {
                 header: 'Spam Score'.t() + ' (Spam Blocker)',
                 width: Renderer.sizeWidth,
@@ -2082,7 +2149,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'phish_blocker_action'
+                dataIndex: 'phish_blocker_action',
+                renderer: Renderer.emailAction
             }, {
                 header: 'Score'.t() + ' (Phish Blocker)',
                 width: Renderer.sizeWidth,
@@ -2115,11 +2183,9 @@ Ext.define('TableConfig', {
             }, {
                 name: 'domain'
             }, {
-                name: 'type',
-                convert: Converter.directoryConnectorAction
+                name: 'type'
             }, {
-                name: 'login_type',
-                convert: Converter.directoryConnectorActionSource
+                name: 'login_type'
             }, {
                 name: 'client_addr',
                 sortType: 'asIp'
@@ -2156,13 +2222,15 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'type'
+                dataIndex: 'type',
+                renderer: Renderer.directoryConnectorAction
             }, {
                 header: 'Action Source'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'login_type'
+                dataIndex: 'login_type',
+                renderer: Renderer.directoryConnectorActionSource
             }]
         },
         admin_logins: {
@@ -2174,19 +2242,16 @@ Ext.define('TableConfig', {
                 type: 'string'
             }, {
                 name: 'succeeded',
-                type: 'string',
-                convert: Converter.loginSuccess
+                type: 'string'
             }, {
                 name: 'local',
-                type: 'string',
-                convert: Converter.loginFrom
+                type: 'string'
             }, {
                 name: 'client_address',
                 type: 'string'
             }, {
                 name: 'reason',
-                type: 'string',
-                convert: Converter.loginFailureReason
+                type: 'string'
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -2206,13 +2271,15 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'succeeded'
+                dataIndex: 'succeeded',
+                renderer: Renderer.loginSuccess
             }, {
                 header: 'Local'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'local'
+                dataIndex: 'local',
+                renderer: Renderer.loginFrom
             }, {
                 header: 'Client Address'.t(),
                 width: Renderer.ipWidth,
@@ -2225,7 +2292,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'reason'
+                dataIndex: 'reason',
+                renderer: Renderer.loginFailureReason
             }]
         },
         server_events: {
@@ -2537,8 +2605,7 @@ Ext.define('TableConfig', {
                 sortType: 'asTimestamp'
             }, {
                 name: 'success',
-                type: 'string',
-                convert: Converter.configurationBackupSuccess
+                type: 'string'
             }, {
                 name: 'description',
                 type: 'string'
@@ -2564,7 +2631,8 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'success'
+                dataIndex: 'success',
+                renderer: Renderer.configurationBackupSuccess
             }, {
                 header: 'Destination'.t(),
                 width: Renderer.messageWidth,
@@ -3201,11 +3269,9 @@ Ext.define('TableConfig', {
             },{
                 name: 'login_name'
             },{
-                name: 'auth_type',
-                convert: Converter.authType
+                name: 'auth_type'
             },{
-                name: 'event_info',
-                convert: Converter.captivePortalEventInfo
+                name: 'event_info'
             }],
             columns: [{
                 header: 'Timestamp'.t(),
@@ -3244,13 +3310,15 @@ Ext.define('TableConfig', {
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'event_info'
+                dataIndex: 'event_info',
+                renderer: Renderer.captivePortalEventInfo
             }, {
                 header: 'Authentication'.t(),
                 width: Renderer.messageWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'auth_type',
+                renderer: Renderer.authType,
                 flex: 1
             }]
         },
@@ -3269,11 +3337,16 @@ Ext.define('TableConfig', {
             },
             renderer: function(value, meta){
                 var me = TableConfig.tableConfig.intrusion_prevention_events;
+                if(!me.settings){
+                    me.refresh();
+                }  
                 if(me.settings){
                     me.settings.rules.list.forEach(function(rule){
                         if(value == rule['id']){
-                            meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( rule['description'] ) + '"';
                             value = rule['description'];
+                            if(meta && meta.tdAttr){
+                                meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( rule['description'] ) + '"';
+                            }
                         }
                     });
                 }
@@ -3304,8 +3377,7 @@ Ext.define('TableConfig', {
                 name: 'dest_port',
                 sortType: 'asInt'
             }, {
-                name: 'protocol',
-                convert: Converter.protocol
+                name: 'protocol'
             }, {
                 name: 'blocked'
             }, {
@@ -3379,7 +3451,8 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 sortable: true,
                 filter: Renderer.stringFilter,
-                dataIndex: 'protocol'
+                dataIndex: 'protocol',
+                renderer: Renderer.protocol
             }, {
                 header: 'Blocked'.t(),
                 width: Renderer.booleanWidth,
@@ -3422,7 +3495,6 @@ Ext.define('TableConfig', {
                         if(disabled == false){
                             var recordGid = record.get('gen_id');
                             var recordSid = record.get('sig_id');
-                            // this.up('eventreport').getController().tableConfig.settings.rules.list.forEach(function(rule){
                             TableConfig.tableConfig.intrusion_prevention_events.settings.rules.list.forEach(function(rule){
                                 var sidMatch = false;
                                 var gidMatch = false;
@@ -3442,7 +3514,7 @@ Ext.define('TableConfig', {
                     },
                     handler: function(grid, rowindex, colIndex, item, e, record){
                         var v = grid.up('eventreport'),
-                            tableConfig = grid.up('eventreport').getController().tableConfig;
+                            tableConfig = TableConfig.tableConfig.intrusion_prevention_events;
 
                         var newRule = {
                             'javaClass': 'com.untangle.app.intrusion_prevention.IntrusionPreventionRule',
@@ -3468,7 +3540,6 @@ Ext.define('TableConfig', {
 
                         v.setLoading(true);
 
-                        tableConfig.setupGrid();
                         tableConfig.settings.rules.list.unshift(newRule);
 
                         Rpc.asyncData(tableConfig.app, 'setSettings', tableConfig.settings)
@@ -3742,11 +3813,9 @@ Ext.define('TableConfig', {
             }, {
                 name: 'username'
             }, {
-                name: 'client_intf',
-                convert: Converter.interface
+                name: 'client_intf'
             }, {
-                name: 'server_intf',
-                convert: Converter.interface
+                name: 'server_intf'
             }, {
                 name: 'uri'
             }, {
@@ -3803,13 +3872,15 @@ Ext.define('TableConfig', {
                 width: Renderer.portWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'client_intf'
+                dataIndex: 'client_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Server Interface'.t() ,
                 width: Renderer.portWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'server_intf'
+                dataIndex: 'server_intf',
+                renderer: Renderer.interface
             }, {
                 header: 'Client'.t(),
                 width: Renderer.ipWidth,
@@ -3891,8 +3962,7 @@ Ext.define('TableConfig', {
             }, {
                 name: 'entity'
             }, {
-                name: 'action',
-                convert: Converter.quotaAction
+                name: 'action'
             }, {
                 name: 'size',
                 sortType: 'asInt'
@@ -3911,13 +3981,14 @@ Ext.define('TableConfig', {
                 width: Renderer.ipWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'address'
+                dataIndex: 'entity'
             }, {
                 header: 'Action'.t(),
                 width: Renderer.messageWidth,
                 filter: Renderer.stringFilter,
                 sortable: true,
-                dataIndex: 'action'
+                dataIndex: 'action',
+                renderer: Renderer.quotaAction
             }, {
                 header: 'Size'.t(),
                 width: Renderer.sizeWidth,

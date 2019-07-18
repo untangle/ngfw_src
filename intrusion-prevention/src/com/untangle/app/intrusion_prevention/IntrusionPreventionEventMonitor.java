@@ -42,6 +42,11 @@ class IntrusionPreventionEventMonitor implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
+    public IntrusionPreventionSnortUnified2Parser unified2Parser = new IntrusionPreventionSnortUnified2Parser();
+    public IntrusionPreventionStatisticsParser statisticsParser = new IntrusionPreventionStatisticsParser();
+    private long currentTime = System.currentTimeMillis();
+    private Hashtable<File, Long> fileLastPositions = new Hashtable<>();
+
     /**
      * Initialize event monitor.
      *
@@ -51,6 +56,11 @@ class IntrusionPreventionEventMonitor implements Runnable
     protected IntrusionPreventionEventMonitor( IntrusionPreventionApp app )
     {
         this.app = app;
+
+        File f = new File( IntrusionPreventionSnortUnified2Parser.EVENT_MAP );
+        if(!f.exists()){
+            this.app.reconfigure(false);
+        }
     }
 
     /**
@@ -131,11 +141,6 @@ class IntrusionPreventionEventMonitor implements Runnable
             thread = null;
         }
     }
-
-    public IntrusionPreventionSnortUnified2Parser unified2Parser = new IntrusionPreventionSnortUnified2Parser();
-    public IntrusionPreventionStatisticsParser statisticsParser = new IntrusionPreventionStatisticsParser();
-    private long currentTime = System.currentTimeMillis();    
-    private Hashtable<File, Long> fileLastPositions = new Hashtable<>();
 
     /** 
      * Walk snort event files and for those that qualify, send to parser.
@@ -225,6 +230,10 @@ class IntrusionPreventionEventMonitor implements Runnable
                     }
                     try{
                         File file = new File( directory.getCanonicalPath() + "/" + name );
+                        if(file.isFile() && ( file.lastModified() < currentTime )){
+                            file.delete();
+                            return false;
+                        }
                         return file.isFile() && ( file.lastModified() >= currentTime );
                     }catch(Exception e){
                         return false;

@@ -122,6 +122,8 @@ public interface ReportsManager
      *  Start date of query.
      * @param endDate
      *  End date of query.
+     * @param extraSelects
+     *  Extra selects
      * @param extraConditions
      *  Additional SQL conditions to use in query. 
      * @param limit
@@ -129,7 +131,7 @@ public interface ReportsManager
      * @return
      *  List of JSONObject of results.
      */
-    List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit );
+    List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, final int limit );
 
     /**
      * Query events in the reports database

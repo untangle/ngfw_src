@@ -2,6 +2,8 @@ Ext.define('Ung.util.Renderer', {
     singleton: true,
     alternateClassName: 'Renderer',
 
+    listKey: '__list__',
+
     // Format used when there is some value for the user knowing the subscripted value.
     // Not useful for index values that aren't visible to the user.
     mapValueFormat: '{0} [{1}]'.t(),
@@ -93,7 +95,7 @@ Ext.define('Ung.util.Renderer', {
     },
 
     boolean: function( value ){
-        return ( value == true ) ? 'true' : 'false';
+        return ( value == true || value == 'true' ) ? 'true' : 'false';
     },
 
     /**
@@ -141,7 +143,11 @@ Ext.define('Ung.util.Renderer', {
             }
             Ung.util.Renderer.interfaceLastUpdated = currentTime;
         }
-        return value ? Ung.util.Renderer.interfaceMap[value] || value.toString() : '';
+        if(value == Renderer.listKey){
+            return Ung.util.Renderer.interfaceMap;
+        }else{
+            return ( value && value != -1 ) ? Ung.util.Renderer.interfaceMap[value] || value.toString() : 'None'.t();
+        }
     },
 
     tags: function (value, metaData) {
@@ -181,7 +187,7 @@ Ext.define('Ung.util.Renderer', {
     datasize: function( value ){
         // walk map looking at key.  If larger then divide and use units
         if( value === null){
-            return ''; // NGFW-12448, just return an empty string if null value
+            value = 0;
         }
         value = parseInt( value, 10 );
         var size = Ung.util.Renderer.datasizeMap[Ung.util.Renderer.datasizeMap.length-1];
@@ -247,6 +253,9 @@ Ext.define('Ung.util.Renderer', {
         2: 'Month to Date'.t()
     },
     timeInterval: function ( value ){
+        if(value == Renderer.listKey){
+            return Renderer.timeIntervalMap;
+        }
         if( value in Ung.util.Renderer.timeIntervalMap ){
             return Ung.util.Renderer.timeIntervalMap[value];
         }
@@ -273,6 +282,9 @@ Ext.define('Ung.util.Renderer', {
         6: 'Saturday'.t()
     },
     dayOfWeek: function( value ){
+        if(value == Renderer.listKey){
+            return Renderer.dayOfWeekMap;
+        }
         if( value in Ung.util.Renderer.dayOfWeekMap ){
             return Ung.util.Renderer.dayOfWeekMap[value];
         }
@@ -292,6 +304,9 @@ Ext.define('Ung.util.Renderer', {
     priority: function( value ){
         if (Ext.isEmpty(value)) {
             value = 0;
+        }
+        if(value == Renderer.listKey){
+            return Renderer.priorityMap;
         }
         if( value in Ung.util.Renderer.priorityMap ){
             return Ung.util.Renderer.priorityMap[value];
@@ -444,11 +459,16 @@ Ext.define('Ung.util.Renderer', {
         139: 'HIP [139]',
         140: 'Shim6 [140]',
         141: 'WESP [141]',
-        142: 'ROHC [142]'
+        142: 'ROHC [142]',
+        default: 'Unknown'.t()
     },
 
     protocol: function (value) {
-        return value ? Ung.util.Renderer.protocolsMap[value] || value.toString() : '';
+        if(value == Renderer.listKey){
+            return Renderer.protocolsMap;
+        }else{
+            return value ? Ung.util.Renderer.protocolsMap[value] || value.toString() : '';
+        }
     },
 
     settingsFile: function( value ){
@@ -463,8 +483,8 @@ Ext.define('Ung.util.Renderer', {
 
     policiesMap: null,
     policy: function (value) {
-        var policyMap = {};
         if(Renderer.policiesMap == null){
+            Renderer.policiesMap = {};
             var policiesInfo = null;
             if(Rpc.exists('rpc.reportsManager')){
                 policiesInfo = Rpc.directData('rpc.reportsManager.getPoliciesInfo');
@@ -472,19 +492,24 @@ Ext.define('Ung.util.Renderer', {
                 policiesInfo = Rpc.directData('rpc.appManager').app('policy-manager').getPoliciesInfo();
             }
             if(policiesInfo && policiesInfo.list){
-                Renderer.policiesMap = {};
                 policiesInfo.list.forEach(function(policy){
                     Renderer.policiesMap[policy.policyId] = policy.name;
                 });
             }
         }
+        if(value == Renderer.listKey){
+            return Renderer.policiesMap;
+        }
         if(value === 0){
             return 'None'.t();
         }
-        if(!value){
+        if(!value || !( value in Renderer.policiesMap )){
             return '';
         }
         return Ext.String.format('{0} [{1}]'.t(), Renderer.policiesMap[parseInt(value, 10)] || value.toString(), value);
+    },
+    policy_id: function(value){
+        return Renderer.policy(value);
     },
 
     httpReasonMap: {
@@ -499,24 +524,59 @@ Ext.define('Ung.util.Renderer', {
         C: 'in Clients Pass list'.t(),
         B: 'in Temporary Unblocked list'.t(),
         F: 'in Rules list'.t(),
-        N: 'no rule applied'.t(),
         default: 'no rule applied'.t()
     },
     httpReason: function( value ) {
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return Ext.String.format(
-                Renderer.mapValueFormat,
-                ( value in Renderer.httpReasonMap ) ? Renderer.httpReasonMap[value] : Renderer.httpReasonMap['default'],
-                value
-        );
+        if(value == Renderer.listKey){
+            return Renderer.httpReasonMap;
+        }else{
+            return Ext.String.format(
+                    Renderer.mapValueFormat,
+                    ( value in Renderer.httpReasonMap ) ? Renderer.httpReasonMap[value] : Renderer.httpReasonMap['default'],
+                    value
+            );
+        }
     },
 
+    webCategoryMap: {},
+    webCategory: function(value, row, record){
+        var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
+        if(!Renderer.webCategoryMap[value]){
+            var categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, "categories");
+            if(!categoryInfo){
+                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, "categories");
+            }
+
+            if(categoryInfo && categoryInfo["list"]){
+                categoryInfo["list"].forEach( function(rule){
+                    Renderer.webCategoryMap[rule["id"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
+                });
+            }
+            if(!Renderer.webCategoryMap[value] && (value != Renderer.listKey)){
+                // If category cannot be found, don't just keep coming back for more.
+                Renderer.webCategoryMap[value] = 'Unknown'.t();
+            }
+        }
+        if(value == Renderer.listKey){
+            var values = [];
+            Object.values(Renderer.webCategoryMap).sort().forEach( function(value){
+                for(var key in Renderer.webCategoryMap){
+                    if(Renderer.webCategoryMap[key] == value){
+                        values.push([key,value]);
+                    }
+                }
+            });
+            return values;
+        }else{
+            return Renderer.webCategoryMap[value];
+        }
+    },
 
     /**
-     * The webfilter_category_id is very overloaded with numeric indexes for:
-     * -    Categories
+     * The webfilter_rule_id is very overloaded with numeric indexes for:
      * -    Pass sites
      * -    Block sites
      * -    Pass clients
@@ -525,60 +585,540 @@ Ext.define('Ung.util.Renderer', {
      * The map is organized as:
      *     policy->source->key=value
      */
-    webCategoryMap: {},
-    webCategory: function(value, row, record){
-        var policyId = record && record.get ? record.get('policy_id') : 1;
-        var webFilterReason = record && record.get ? record.get('web_filter_reason') : 'N';
-        var categorySource = "categories";
+    webRuleMap: {},
+    webRule: function(value, row, record){
+        var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
+        var webFilterReason = record && record.get && record.get('web_filter_reason') ? record.get('web_filter_reason') : 'N';
+        var reasonSource = "categories";
         switch(webFilterReason){
             case 'D':
             case 'N':
-                categorySource = "categories";
-                break;
+                return '';
             case 'U':
-                categorySource = "blockedUrls";
+                reasonSource = "blockedUrls";
                 break;
             case 'I':
             case 'R':
-                categorySource = "passedUrls";
+                reasonSource = "passedUrls";
                 break;
             case 'C':
-                categorySource = "passedClients";
+                reasonSource = "passedClients";
                 break;
             case 'T':
-                categorySource = "searchTerms";
+                reasonSource = "searchTerms";
                 break;
             case 'F':
-                categorySource = "filterRules";
+                reasonSource = "filterRules";
                 break;
         }
 
-        if(!Renderer.webCategoryMap[policyId] ||
-            !Renderer.webCategoryMap[policyId][categorySource] ||
-            !Renderer.webCategoryMap[policyId][categorySource][value]){
+        if(!Renderer.webRuleMap[policyId] ||
+            !Renderer.webRuleMap[policyId][reasonSource] ||
+            (value != Renderer.listKey && !Renderer.webRuleMap[policyId][reasonSource][value])){
 
-            categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, categorySource);
+            var categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, reasonSource);
             if(!categoryInfo){
-                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, categorySource);
+                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, reasonSource);
             }
 
             if(categoryInfo && categoryInfo["list"]){
                 categoryInfo["list"].forEach( function(rule){
-                    if(!Renderer.webCategoryMap[policyId]){
-                        Renderer.webCategoryMap[policyId] = {};
+                    if(!Renderer.webRuleMap[policyId]){
+                        Renderer.webRuleMap[policyId] = {};
                     }
-                    if(!Renderer.webCategoryMap[policyId][categorySource]){
-                        Renderer.webCategoryMap[policyId][categorySource] = {};
+                    if(!Renderer.webRuleMap[policyId][reasonSource]){
+                        Renderer.webRuleMap[policyId][reasonSource] = {};
                     }
-                    Renderer.webCategoryMap[policyId][categorySource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
+                    Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
                 });
             }
-            if(!Renderer.webCategoryMap[policyId][categorySource][value]){
+            if(!Renderer.webRuleMap[policyId][reasonSource][value]){
                 // If category cannot be found, don't just keep coming back for more.
-                Renderer.webCategoryMap[policyId][categorySource][value] = 'Unknown'.t();
+                Renderer.webRuleMap[policyId][reasonSource][value] = 'Unknown'.t();
             }
         }
-        return Renderer.webCategoryMap[policyId][categorySource][value];
-    }
+        if(value == Renderer.listKey){
+            return Renderer.webRuleMap[policyId][reasonSource];
+        }else{
+            return Renderer.webRuleMap[policyId][reasonSource][value];
+        }
+    },
+
+    sessionSpeed: function(value){
+        return Math.round(value * 10 )/ 10;
+    },
+
+    icmpMap: {
+        0: 'Echo Reply'.t(),
+        1: 'Unassigned'.t(),
+        2: 'Unassigned'.t(),
+        3: 'Destination Unreachable'.t(),
+        4: 'Source Quench (Deprecated)'.t(),
+        5: 'Redirect'.t(),
+        6: 'Alternate Host Address (Deprecated)'.t(),
+        7: 'Unassigned'.t(),
+        8: 'Echo'.t(),
+        9: 'Router Advertisement'.t(),
+        10: 'Router Solicitation'.t(),
+        11: 'Time Exceeded'.t(),
+        12: 'Parameter Problem'.t(),
+        13: 'Timestamp'.t(),
+        14: 'Timestamp Reply'.t(),
+        15: 'Information Request (Deprecated)'.t(),
+        16: 'Information Reply (Deprecated)'.t(),
+        17: 'Address Mask Request (Deprecated)'.t(),
+        18: 'Address Mask Reply (Deprecated)'.t(),
+        19: 'Reserved (for Security)'.t(),
+        20: 'Reserved (for Robustness Experiment)'.t(),
+        21: 'Reserved (for Robustness Experiment)'.t(),
+        22: 'Reserved (for Robustness Experiment)'.t(),
+        23: 'Reserved (for Robustness Experiment)'.t(),
+        24: 'Reserved (for Robustness Experiment)'.t(),
+        25: 'Reserved (for Robustness Experiment)'.t(),
+        26: 'Reserved (for Robustness Experiment)'.t(),
+        27: 'Reserved (for Robustness Experiment)'.t(),
+        28: 'Reserved (for Robustness Experiment)'.t(),
+        29: 'Reserved (for Robustness Experiment)'.t(),
+        30: 'Traceroute (Deprecated)'.t(),
+        31: 'Datagram Conversion Error (Deprecated)'.t(),
+        32: 'Mobile Host Redirect (Deprecated)'.t(),
+        33: 'IPv6 Where-Are-You (Deprecated)'.t(),
+        34: 'IPv6 I-Am-Here (Deprecated)'.t(),
+        35: 'Mobile Registration Request (Deprecated)'.t(),
+        36: 'Mobile Registration Reply (Deprecated)'.t(),
+        37: 'Domain Name Request (Deprecated)'.t(),
+        38: 'Domain Name Reply (Deprecated)'.t(),
+        39: 'SKIP (Deprecated)'.t(),
+        40: 'Photuris'.t(),
+        41:  'ICMP messages utilized by experimental mobility protocols'.t(),
+        default: 'Unassigned'.t(),
+        253: 'RFC3692-style Experiment 1'.t(),
+        254: 'RFC3692-style Experiment 2'.t(),
+        255: 'Reserved'.t()
+    },
+    icmp: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return Ext.String.format(
+                Renderer.mapValueFormat,
+                ( value in Renderer.icmpMap ) ? Renderer.icmpMap[value] : Renderer.icmpMap['default'],
+                value
+        );
+    },
+
+    countryMap: {
+        XU: 'Unknown'.t(),
+        XL: 'Local'.t(),
+        AF: 'Afghanistan'.t(),
+        AX: 'Aland Islands'.t(),
+        AL: 'Albania'.t(),
+        DZ: 'Algeria'.t(),
+        AS: 'American Samoa'.t(),
+        AD: 'Andorra'.t(),
+        AO: 'Angola'.t(),
+        AI: 'Anguilla'.t(),
+        AQ: 'Antarctica'.t(),
+        AG: 'Antigua and Barbuda'.t(),
+        AR: 'Argentina'.t(),
+        AM: 'Armenia'.t(),
+        AW: 'Aruba'.t(),
+        AU: 'Australia'.t(),
+        AT: 'Austria'.t(),
+        AZ: 'Azerbaijan'.t(),
+        BS: 'Bahamas'.t(),
+        BH: 'Bahrain'.t(),
+        BD: 'Bangladesh'.t(),
+        BB: 'Barbados'.t(),
+        BY: 'Belarus'.t(),
+        BE: 'Belgium'.t(),
+        BZ: 'Belize'.t(),
+        BJ: 'Benin'.t(),
+        BM: 'Bermuda'.t(),
+        BT: 'Bhutan'.t(),
+        BO: 'Bolivia, Plurinational State of'.t(),
+        BQ: 'Bonaire, Sint Eustatius and Saba'.t(),
+        BA: 'Bosnia and Herzegovina'.t(),
+        BW: 'Botswana'.t(),
+        BV: 'Bouvet Island'.t(),
+        BR: 'Brazil'.t(),
+        IO: 'British Indian Ocean Territory'.t(),
+        BN: 'Brunei Darussalam'.t(),
+        BG: 'Bulgaria'.t(),
+        BF: 'Burkina Faso'.t(),
+        BI: 'Burundi'.t(),
+        KH: 'Cambodia'.t(),
+        CM: 'Cameroon'.t(),
+        CA: 'Canada'.t(),
+        CV: 'Cape Verde'.t(),
+        KY: 'Cayman Islands'.t(),
+        CF: 'Central African Republic'.t(),
+        TD: 'Chad'.t(),
+        CL: 'Chile'.t(),
+        CN: 'China'.t(),
+        CX: 'Christmas Island'.t(),
+        CC: 'Cocos (Keeling) Islands'.t(),
+        CO: 'Colombia'.t(),
+        KM: 'Comoros'.t(),
+        CG: 'Congo'.t(),
+        CD: 'Congo, the Democratic Republic of the'.t(),
+        CK: 'Cook Islands'.t(),
+        CR: 'Costa Rica'.t(),
+        CI: "Cote d'Ivoire".t(),
+        HR: 'Croatia'.t(),
+        CU: 'Cuba'.t(),
+        CW: 'Curacao'.t(),
+        CY: 'Cyprus'.t(),
+        CZ: 'Czech Republic'.t(),
+        DK: 'Denmark'.t(),
+        DJ: 'Djibouti'.t(),
+        DM: 'Dominica'.t(),
+        DO: 'Dominican Republic'.t(),
+        EC: 'Ecuador'.t(),
+        EG: 'Egypt'.t(),
+        SV: 'El Salvador'.t(),
+        GQ: 'Equatorial Guinea'.t(),
+        ER: 'Eritrea'.t(),
+        EE: 'Estonia'.t(),
+        ET: 'Ethiopia'.t(),
+        FK: 'Falkland Islands (Malvinas)'.t(),
+        FO: 'Faroe Islands'.t(),
+        FJ: 'Fiji'.t(),
+        FI: 'Finland'.t(),
+        FR: 'France'.t(),
+        GF: 'French Guiana'.t(),
+        PF: 'French Polynesia'.t(),
+        TF: 'French Southern Territories'.t(),
+        GA: 'Gabon'.t(),
+        GM: 'Gambia'.t(),
+        GE: 'Georgia'.t(),
+        DE: 'Germany'.t(),
+        GH: 'Ghana'.t(),
+        GI: 'Gibraltar'.t(),
+        GR: 'Greece'.t(),
+        GL: 'Greenland'.t(),
+        GD: 'Grenada'.t(),
+        GP: 'Guadeloupe'.t(),
+        GU: 'Guam'.t(),
+        GT: 'Guatemala'.t(),
+        GG: 'Guernsey'.t(),
+        GN: 'Guinea'.t(),
+        GW: 'Guinea-Bissau'.t(),
+        GY: 'Guyana'.t(),
+        HT: 'Haiti'.t(),
+        HM: 'Heard Island and McDonald Islands'.t(),
+        VA: 'Holy See (Vatican City State)'.t(),
+        HN: 'Honduras'.t(),
+        HK: 'Hong Kong'.t(),
+        HU: 'Hungary'.t(),
+        IS: 'Iceland'.t(),
+        IN: 'India'.t(),
+        ID: 'Indonesia'.t(),
+        IR: 'Iran, Islamic Republic of'.t(),
+        IQ: 'Iraq'.t(),
+        IE: 'Ireland'.t(),
+        IM: 'Isle of Man'.t(),
+        IL: 'Israel'.t(),
+        IT: 'Italy'.t(),
+        JM: 'Jamaica'.t(),
+        JP: 'Japan'.t(),
+        JE: 'Jersey'.t(),
+        JO: 'Jordan'.t(),
+        KZ: 'Kazakhstan'.t(),
+        KE: 'Kenya'.t(),
+        KI: 'Kiribati'.t(),
+        KP: "Korea, Democratic People's Republic of".t(),
+        KR: 'Korea, Republic of'.t(),
+        KW: 'Kuwait'.t(),
+        KG: 'Kyrgyzstan'.t(),
+        LA: "Lao People's Democratic Republic".t(),
+        LV: 'Latvia'.t(),
+        LB: 'Lebanon'.t(),
+        LS: 'Lesotho'.t(),
+        LR: 'Liberia'.t(),
+        LY: 'Libya'.t(),
+        LI: 'Liechtenstein'.t(),
+        LT: 'Lithuania'.t(),
+        LU: 'Luxembourg'.t(),
+        MO: 'Macao'.t(),
+        MK: 'Macedonia, the Former Yugoslav Republic of'.t(),
+        MG: 'Madagascar'.t(),
+        MW: 'Malawi'.t(),
+        MY: 'Malaysia'.t(),
+        MV: 'Maldives'.t(),
+        ML: 'Mali'.t(),
+        MT: 'Malta'.t(),
+        MH: 'Marshall Islands'.t(),
+        MQ: 'Martinique'.t(),
+        MR: 'Mauritania'.t(),
+        MU: 'Mauritius'.t(),
+        YT: 'Mayotte'.t(),
+        MX: 'Mexico'.t(),
+        FM: 'Micronesia, Federated States of'.t(),
+        MD: 'Moldova, Republic of'.t(),
+        MC: 'Monaco'.t(),
+        MN: 'Mongolia'.t(),
+        ME: 'Montenegro'.t(),
+        MS: 'Montserrat'.t(),
+        MA: 'Morocco'.t(),
+        MZ: 'Mozambique'.t(),
+        MM: 'Myanmar'.t(),
+        NA: 'Namibia'.t(),
+        NR: 'Nauru'.t(),
+        NP: 'Nepal'.t(),
+        NL: 'Netherlands'.t(),
+        NC: 'New Caledonia'.t(),
+        NZ: 'New Zealand'.t(),
+        NI: 'Nicaragua'.t(),
+        NE: 'Niger'.t(),
+        NG: 'Nigeria'.t(),
+        NU: 'Niue'.t(),
+        NF: 'Norfolk Island'.t(),
+        MP: 'Northern Mariana Islands'.t(),
+        NO: 'Norway'.t(),
+        OM: 'Oman'.t(),
+        PK: 'Pakistan'.t(),
+        PW: 'Palau'.t(),
+        PS: 'Palestine, State of'.t(),
+        PA: 'Panama'.t(),
+        PG: 'Papua New Guinea'.t(),
+        PY: 'Paraguay'.t(),
+        PE: 'Peru'.t(),
+        PH: 'Philippines'.t(),
+        PN: 'Pitcairn'.t(),
+        PL: 'Poland'.t(),
+        PT: 'Portugal'.t(),
+        PR: 'Puerto Rico'.t(),
+        QA: 'Qatar'.t(),
+        RE: 'Reunion'.t(),
+        RO: 'Romania'.t(),
+        RU: 'Russian Federation'.t(),
+        RW: 'Rwanda'.t(),
+        BL: 'Saint Barthelemy'.t(),
+        SH: 'Saint Helena, Ascension and Tristan da Cunha'.t(),
+        KN: 'Saint Kitts and Nevis'.t(),
+        LC: 'Saint Lucia'.t(),
+        MF: 'Saint Martin (French part)'.t(),
+        PM: 'Saint Pierre and Miquelon'.t(),
+        VC: 'Saint Vincent and the Grenadines'.t(),
+        WS: 'Samoa'.t(),
+        SM: 'San Marino'.t(),
+        ST: 'Sao Tome and Principe'.t(),
+        SA: 'Saudi Arabia'.t(),
+        SN: 'Senegal'.t(),
+        RS: 'Serbia'.t(),
+        SC: 'Seychelles'.t(),
+        SL: 'Sierra Leone'.t(),
+        SG: 'Singapore'.t(),
+        SX: 'Sint Maarten (Dutch part)'.t(),
+        SK: 'Slovakia'.t(),
+        SI: 'Slovenia'.t(),
+        SB: 'Solomon Islands'.t(),
+        SO: 'Somalia'.t(),
+        ZA: 'South Africa'.t(),
+        GS: 'South Georgia and the South Sandwich Islands'.t(),
+        SS: 'South Sudan'.t(),
+        ES: 'Spain'.t(),
+        LK: 'Sri Lanka'.t(),
+        SD: 'Sudan'.t(),
+        SR: 'Suriname'.t(),
+        SJ: 'Svalbard and Jan Mayen'.t(),
+        SZ: 'Swaziland'.t(),
+        SE: 'Sweden'.t(),
+        CH: 'Switzerland'.t(),
+        SY: 'Syrian Arab Republic'.t(),
+        TW: 'Taiwan, Province of China'.t(),
+        TJ: 'Tajikistan'.t(),
+        TZ: 'Tanzania, United Republic of'.t(),
+        TH: 'Thailand'.t(),
+        TL: 'Timor-Leste'.t(),
+        TG: 'Togo'.t(),
+        TK: 'Tokelau'.t(),
+        TO: 'Tonga'.t(),
+        TT: 'Trinidad and Tobago'.t(),
+        TN: 'Tunisia'.t(),
+        TR: 'Turkey'.t(),
+        TM: 'Turkmenistan'.t(),
+        TC: 'Turks and Caicos Islands'.t(),
+        TV: 'Tuvalu'.t(),
+        UG: 'Uganda'.t(),
+        UA: 'Ukraine'.t(),
+        AE: 'United Arab Emirates'.t(),
+        GB: 'United Kingdom'.t(),
+        US: 'United States'.t(),
+        UM: 'United States Minor Outlying Islands'.t(),
+        UY: 'Uruguay'.t(),
+        UZ: 'Uzbekistan'.t(),
+        VU: 'Vanuatu'.t(),
+        VE: 'Venezuela, Bolivarian Republic of'.t(),
+        VN: 'Viet Nam'.t(),
+        VG: 'Virgin Islands, British'.t(),
+        VI: 'Virgin Islands, U.S.'.t(),
+        WF: 'Wallis and Futuna'.t(),
+        EH: 'Western Sahara'.t(),
+        YE: 'Yemen'.t(),
+        ZM: 'Zambia'.t(),
+        ZW: 'Zimbabwe'.t(),
+    },
+    country: function( value ) {
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return Ext.String.format(
+                Renderer.mapValueFormat,
+                ( value in Renderer.countryMap ) ? Renderer.countryMap[value] : Renderer.countryMap['default'],
+                value
+        );
+    },
+
+    quotaActionMap: {
+        1: 'Given'.t(),
+        2: 'Exceeded'.t(),
+        default: 'Unknown'.t()
+    },
+    quotaAction: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return Ext.String.format(
+                Renderer.mapValueFormat,
+                ( value in Renderer.quotaActionMap ) ? Renderer.quotaActionMap[value] : Renderer.quotaActionMap['default'],
+                value
+        );
+    },
+
+    captivePortalEventInfoMap: {
+        LOGIN: 'Login Success'.t(),
+        FAILED: 'Login Failure'.t(),
+        TIMEOUT: 'Session Timeout'.t(),
+        INACTIVE: 'Idle Timeout'.t(),
+        USER_LOGOUT: 'User Logout'.t(),
+        ADMIN_LOGOUT: 'Admin Logout'.t(),
+        HOST_CHANGE: 'Host Change Logout'.t(),
+        default: 'Unknown'.t()
+    },
+    captivePortalEventInfo: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Renderer.captivePortalEventInfoMap ) ? Renderer.captivePortalEventInfoMap[value] : Renderer.captivePortalEventInfoMap['default'];
+    },
+
+    authTypeMap: {
+        NONE: 'None'.t(),
+        LOCAL_DIRECTORY: 'Local Directory'.t(),
+        ACTIVE_DIRECTORY: 'Active Directory'.t(),
+        RADIUS: 'RADIUS'.t(),
+        GOOGLE: 'Google Account'.t(),
+        FACEBOOK: 'Facebook Account'.t(),
+        MICROSOFT: 'Microsoft Account'.t(),
+        CUSTOM: 'Custom'.t(),
+        default: 'Unknown'.t()
+    },
+    authType: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Renderer.authTypeMap ) ? Renderer.authTypeMap[value] : Renderer.authTypeMap['default'];
+    },
+
+    configurationBackupSuccessMap:{
+        true: 'success'.t(),
+        default: 'failed'.t()
+    },
+    configurationBackupSuccess: function( value ){
+        return ( value in Renderer.configurationBackupSuccessMap ) ? Renderer.configurationBackupSuccessMap[value] : Renderer.configurationBackupSuccessMap['default'];
+    },
+
+    loginFailureReasonMap : {
+        U:'invalid username'.t(),
+        P: 'invalid password'.t(),
+        default: ''
+
+    },
+    loginFailureReason: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Renderer.loginFailureReasonMap ) ? Renderer.loginFailureReasonMap[value] : Renderer.loginFailureReasonMap['default'];
+    },
+
+    loginSuccess: function( value ){
+        return value ?  'success'.t() : 'failed'.t();
+    },
+
+    loginFrom: function( value ){
+        return value ?  'local'.t() : 'remote'.t();
+    },
+
+    directoryConnectorActionMap: {
+        I: 'login'.t(),
+        U: 'update'.t(),
+        O: 'logout'.t(),
+        A: 'authenticate'.t(),
+        default: 'unknown'.t()
+
+    },
+    directoryConnectorAction: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Renderer.directoryConnectorActionMap ) ? Renderer.directoryConnectorActionMap[value] : Renderer.directoryConnectorActionMap['default'];
+    },
+
+    directoryConnectorActionSourceMap: {
+        W: 'client'.t(),
+        A: 'active directory'.t(),
+        R: 'radius'.t(),
+        T: 'test'.t(),
+        default: 'unknown'.t()
+
+    },
+    directoryConnectorActionSource: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Renderer.directoryConnectorActionSourceMap ) ? Renderer.directoryConnectorActionSourceMap[value] : Renderer.directoryConnectorActionSourceMap['default'];
+    },
+
+    adBlockerActionMap:{
+        B: 'block'.t(),
+        default: 'pass'.t()
+    },
+    adBlockerAction: function( value ){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return ( value in Renderer.adBlockerActionMap ) ? Renderer.adBlockerActionMap[value] : Renderer.adBlockerActionMap['default'];
+    },
+
+    bandwidthControlRule: function( value ){
+        return Ext.isEmpty(value) ? 'none'.t() : value;
+    },
+
+    emailActionMap: {
+        P: 'pass message'.t(),
+        M: 'mark message'.t(),
+        D: 'drop message'.t(),
+        B: 'block message'.t(),
+        Q: 'quarantine message'.t(),
+        S: 'pass safelist message'.t(),
+        Z: 'pass oversize message'.t(),
+        O: 'pass outbound message'.t(),
+        F: 'block message (scan failure)'.t(),
+        G: 'pass message (scan failure)'.t(),
+        Y: 'block message (greylist)'.t(),
+        default:  'unknown action'.t()
+    },
+    emailAction: function(value){
+        if(Ext.isEmpty(value)) {
+            return '';
+        }
+        return Ext.String.format(
+                Renderer.mapValueFormat,
+                ( value in Renderer.emailActionMap ) ? Renderer.emailActionMap[value] : Renderer.emailActionMap['default'],
+                value
+        );
+    },
 
 });

@@ -89,7 +89,7 @@ public class CaptivePortalSSLEngine
         } catch (Exception exn) {
             logger.error("Exception creating CaptivePortalSSLEngine()", exn);
         } finally {
-            if (webCertFileIS != null){
+            if (webCertFileIS != null) {
                 try {
                     webCertFileIS.close();
                 } catch (Exception exn) {
@@ -164,31 +164,31 @@ public class CaptivePortalSSLEngine
             // attach sniHostname to session just like SSL Inspector for use by rules 
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
 
-            if (sniHostname.equals("auth-relay.untangle.com")) allowed = true;
-            if (sniHostname.equals("connectivitycheck.gstatic.com")) allowed = true;
+            // check the SNI name against each item in the OAuthConfigList
+            for (CaptivePortalApp.oauthDomain item : captureApp.oauthConfigList) {
+                // check PROVIDER = all
+                if ((item.provider.equals("all")) && ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.MICROSOFT) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH))) {
+                    if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
+                    if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                }
 
-            // hosts we must allow for Google OAuth
-            if ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
-                if (sniHostname.equals("accounts.google.com")) allowed = true;
-                if (sniHostname.equals("ssl.gstatic.com")) allowed = true;
-            }
+                // check PROVIDER = google
+                if ((item.provider.equals("google")) && ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH))) {
+                    if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
+                    if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                }
 
-            // hosts we must allow for Facebook OAuth
-            if ((authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
-                if (sniHostname.equals("m.facebook.com")) allowed = true;
-                if (sniHostname.equals("www.facebook.com")) allowed = true;
-                if (sniHostname.equals("graph.facebook.com")) allowed = true;
-                if (sniHostname.equals("staticxx.facebook.com")) allowed = true;
-                if (sniHostname.equals("static.xx.fbcdn.net")) allowed = true;
-            }
+                // check PROVIDER = facebook
+                if ((item.provider.equals("facebook")) && ((authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH))) {
+                    if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
+                    if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                }
 
-            // hosts we must allow for Microsoft OAuth
-            if ((authType == CaptivePortalSettings.AuthenticationType.MICROSOFT) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH)) {
-                if (sniHostname.endsWith(".microsoftonline.com")) allowed = true;
-                if (sniHostname.endsWith(".microsoftonline-p.com")) allowed = true;
-                if (sniHostname.endsWith(".live.com")) allowed = true;
-                if (sniHostname.endsWith(".gfx.ms")) allowed = true;
-                if (sniHostname.endsWith(".microsoft.com")) allowed = true;
+                // check PROVIDER = microsoft
+                if ((item.provider.equals("microsoft")) && ((authType == CaptivePortalSettings.AuthenticationType.MICROSOFT) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH))) {
+                    if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
+                    if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                }
             }
 
             if (allowed) {

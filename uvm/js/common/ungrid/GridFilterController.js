@@ -12,6 +12,7 @@ Ext.define('Ung.cmp.GridFilterController', {
     statusEl: null,
     statusTemplate: '<div class="x-grid-empty"><p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-search fa-2x"></i> <br/>{0}</p></div>',
     statusMessageTemplate: 'Filter showing {0} of {1}'.t(),
+    statusMessageTotalTemplate: '{0} total'.t(),
     emptyText: null,
 
     setStore: function(){
@@ -80,9 +81,17 @@ Ext.define('Ung.cmp.GridFilterController', {
         }
         var grouping = grid.getView().findFeature('grouping');
 
+        var cache = null;
+        var key = null;
         if (!value) {
             field.getTrigger('clear').hide();
             if(grouping){
+                cache = grouping.getCache();
+                for(key in cache){
+                    if(!cache[key]){
+                        delete cache[key];
+                    }
+                }
                 if(grouping.initialConfig.startCollapsed){
                     grouping.collapseAll();
                 }else{
@@ -96,6 +105,17 @@ Ext.define('Ung.cmp.GridFilterController', {
 
         this.createFilter(grid, store, routeFilter);
         if(grouping){
+            // Recheck this in latest extjs with following steps:
+            // 1. Type a search value (childrens)
+            // 2. Backspace to delete the "s" and press Enter.
+            // If this is still a JS error without the following code,
+            // keep it in.
+            cache = grouping.getCache();
+            for(key in cache){
+                if(!cache[key]){
+                    delete cache[key];
+                }
+            }
             grouping.expandAll();
         }
 
@@ -115,7 +135,8 @@ Ext.define('Ung.cmp.GridFilterController', {
             Ext.Array.each(cols, function (col) {
                 var val = item.get(col.dataIndex);
                 if (!val) { return; }
-                str.push(typeof val === 'object' ? Renderer.timestamp(val) : val.toString());
+                var tableConfigColumn = TableConfig.getTableColumn(null, col.dataIndex);
+                str.push(typeof val === 'object' ? Renderer.timestamp(val) : ( tableConfigColumn && tableConfigColumn['renderer'] ? tableConfigColumn['renderer'](val): val.toString()) ) ;
             });
             if (regex.test(str.join('|'))) { filtered = true; }
 
@@ -163,8 +184,11 @@ Ext.define('Ung.cmp.GridFilterController', {
                 grid.getView().emptyText = me.emptyText;
             }
         }
-        if(store.getFilters().getCount() == 0){
+        if(!count){
+            vm.set('filterSummary', '');
+        }else if(store.getFilters().getCount() == 0){
             status = "No filter".t();
+            vm.set('filterSummary', Ext.String.format(me.statusMessageTotalTemplate, count));
         }else{
             status = Ext.String.format(me.statusMessageTemplate, count, store.getData().getSource() ? store.getData().getSource().items.length : count);
             if(grid.getView().emptyText){
@@ -172,6 +196,7 @@ Ext.define('Ung.cmp.GridFilterController', {
                 grid.getView().emptyText = "";
             }
             me.statusEl = Ext.core.DomHelper.insertHtml('beforeEnd', grid.getView().getTargetEl().dom, Ext.String.format(me.statusTemplate,status));
+            vm.set('filterSummary', status);
         }
         me.tooltip.setHtml(status);
 
