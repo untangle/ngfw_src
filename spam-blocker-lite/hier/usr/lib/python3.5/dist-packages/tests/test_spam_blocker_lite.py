@@ -1,25 +1,21 @@
 """spam_blocker_lite tests"""
-import subprocess
 
+import subprocess
 import unittest
 import pytest
-from tests.global_functions import uvmContext
-import runtests.remote_control as remote_control
-import runtests.test_registry as test_registry
-import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 
+import runtests.test_registry as test_registry
 from .test_spam_blocker_base import SpamBlockerBaseTests
 
-#
-# Just extends the spam base tests
-#
+
 @pytest.mark.spam_blocker_lite
 class SpamBlockerLiteTests(SpamBlockerBaseTests):
 
     @staticmethod
     def module_name():
+        # cheap trick to force class variable _app into global namespace as app
+        global app
+        app = SpamBlockerBaseTests._app
         return "spam-blocker-lite"
 
     @staticmethod
@@ -32,6 +28,7 @@ class SpamBlockerLiteTests(SpamBlockerBaseTests):
 
     # verify daemon is running
     def test_009_IsRunning(self):
+        self.module_name() # do not remove
         result = subprocess.call("ps aux | grep spamd | grep -v grep >/dev/null 2>&1", shell=True)
         assert (result == 0)
 

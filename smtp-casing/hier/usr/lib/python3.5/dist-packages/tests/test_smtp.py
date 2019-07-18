@@ -30,10 +30,4 @@ class SmtpTests(NGFWTestCase):
     def test_010_runTests(self):
         self.module_name()
 
-        l = app.getTests()
-        for name in l['list']:
-            print(app.runTests(name))
-            
-        
-
 test_registry.register_module("smtp-casing", SmtpTests)

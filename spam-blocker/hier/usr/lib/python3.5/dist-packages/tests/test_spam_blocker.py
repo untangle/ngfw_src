@@ -1,25 +1,21 @@
 """spam_blocker tests"""
-import subprocess
 
+import subprocess
 import unittest
 import pytest
-from tests.global_functions import uvmContext
-import runtests.remote_control as remote_control
+
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
-
 from .test_spam_blocker_base import SpamBlockerBaseTests
 
-#
-# Just extends the spam base tests
-#
+
 @pytest.mark.spam_blocker
 class SpamBlockerTests(SpamBlockerBaseTests):
 
     @staticmethod
     def module_name():
+        global app
+        app = SpamBlockerTests._app
         return "spam-blocker"
 
     @staticmethod
@@ -32,10 +28,11 @@ class SpamBlockerTests(SpamBlockerBaseTests):
 
     # verify daemon is running
     def test_009_IsRunning(self):
-        result = subprocess.call("ps aux | grep spamd | grep -v grep >/dev/null 2>&1", shell=True)
-        assert (result == 0)
-        result = subprocess.call("ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1", shell=True)
-        assert ( result == 0 )
+        self.module_name() # do not remove
+        result1 = subprocess.call("ps aux | grep spamd | grep -v grep >/dev/null 2>&1", shell=True)
+        assert (result1 == 0)
+        result2 = subprocess.call("ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1", shell=True)
+        assert ( result2 == 0 )
 
     # verify MAIL_SHELL is scoring. Relies on test_20_smtpTest
     def test_021_check_for_mailshell(self):
