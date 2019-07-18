@@ -16,10 +16,13 @@ from .test_spam_blocker_base import SpamBlockerBaseTests
 # Just extends the spam base tests to include SSL Inspector with default settings
 #
 @pytest.mark.spam_blocker_w_ssl
-class SpamBlockerTests(SpamBlockerBaseTests):
+class SpamBlockerWithSSLTests(SpamBlockerBaseTests):
 
     @staticmethod
     def module_name():
+        # cheap trick to force class variable _app into global namespace as app
+        global app
+        app = SpamBlockerBaseTests._app
         return "spam-blocker"
 
     @staticmethod
@@ -39,4 +42,8 @@ class SpamBlockerTests(SpamBlockerBaseTests):
         result = subprocess.call("ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1", shell=True)
         assert ( result == 0 )
 
-test_registry.register_module("spam-blocker-w-ssl", SpamBlockerTests)
+    def test_010_license_valid(self):
+        print("MODULE NAME FROM SUBCLASS: %s" % self.module_name())
+        assert(uvmContext.licenseManager().isLicenseValid("spam-blocker-lite"))
+
+test_registry.register_module("spam-blocker-w-ssl", SpamBlockerWithSSLTests)

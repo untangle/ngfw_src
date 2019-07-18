@@ -2,13 +2,15 @@
 import time
 import socket
 import re
-
 import unittest
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 from uvm import Uvm
+
 
 default_policy_id = 1
 app = None
@@ -65,11 +67,7 @@ def createSSLInspectRule(port="25"):
         "ruleId": 1
     };
 
-class SpamBlockerBaseTests(unittest.TestCase):
-
-    @staticmethod
-    def shortName():
-        return "untangle"
+class SpamBlockerBaseTests(NGFWTestCase):
 
     @staticmethod
     def appNameSpamCase():
@@ -79,25 +77,34 @@ class SpamBlockerBaseTests(unittest.TestCase):
     def appNameSSLInspector():
         return "ssl-inspector"
 
-    @staticmethod
-    def initial_setup(self):
-        global app, appData, appSP, appDataSP, appSSL, appSSLData, canRelay
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        appData = app.getSettings()
-        appSP = uvmContext.appManager().app(self.appNameSpamCase())
+    # @staticmethod
+    # def module_name():
+    #     # cheap trick to force class variable _app into global namespace as app
+    #     global app
+    #     app = SpamBlockerBaseTests._app
+    #     return "spam-blocker-lite"
+
+    # @staticmethod
+    # def displayName():
+    #     return "Spam Blocker Lite"
+
+    @classmethod
+    def initial_extra_setup(cls):
+        global appData, appSP, appDataSP, appSSL, appSSLData, canRelay
+
+        appData = cls._app.getSettings()
+        appSP = uvmContext.appManager().app(cls.appNameSpamCase())
         appDataSP = appSP.getSmtpSettings()
-        if uvmContext.appManager().isInstantiated(self.appNameSSLInspector()):
-            raise Exception('app %s already instantiated' % self.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
+        if uvmContext.appManager().isInstantiated(cls.appNameSSLInspector()):
+            raise Exception('app %s already instantiated' % cls.appNameSSLInspector())
+        appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
         # appSSL.start() # leave app off. app doesn't auto-start
         appSSLData = appSSL.getSettings()
         try:
             canRelay = global_functions.send_test_email(mailhost=smtpServerHost)
         except Exception as e:
             canRelay = False
-        self.canRelay = canRelay
+        cls.canRelay = canRelay
         getLatestMailSender()
         # flush quarantine.
         curQuarantine = appSP.getQuarantineMaintenenceView()
@@ -106,32 +113,31 @@ class SpamBlockerBaseTests(unittest.TestCase):
             if checkAddress['address']:
                 curQuarantine.deleteInbox(checkAddress['address'])
 
-    def setUp(self):
-        pass
-
     # verify client is online
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(uvmContext.licenseManager().isLicenseValid(self.shortName()))
 
     def test_020_smtpTest(self):
-        if (not canRelay):
+        if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         # Get the IP address of test.untangle.com
         test_untangle_IP = socket.gethostbyname(smtpServerHost)
 
         result, to_address = sendSpamMail()
         
+        print('DISPLAY_NAME: %s' % self.displayName())
         events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
         assert( events != None )
         assert( events.get('list') != None )
 
+        print(events['list'])
         print(events['list'][0])
         found = global_functions.check_events( events.get('list'), 10,
                                                's_server_addr', test_untangle_IP,
@@ -141,12 +147,12 @@ class SpamBlockerBaseTests(unittest.TestCase):
         assert( found ) 
 
     def test_030_adminQuarantine(self):
-        if (not canRelay):
+        if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         # send some spam
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         result, to_address = sendSpamMail()
         events = global_functions.get_events(self.displayName(),'Quarantined Events',None,1)
        
@@ -163,12 +169,12 @@ class SpamBlockerBaseTests(unittest.TestCase):
         assert(addressFound)
 
     def test_040_userQuarantine(self):
-        if (not canRelay):
+        if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         # send some spam
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         result, to_address = sendSpamMail()
         # Get user quarantine list of email addresses
         addressFound = False
@@ -178,12 +184,12 @@ class SpamBlockerBaseTests(unittest.TestCase):
         assert(len(curQuarantineList['list']) > 0)
 
     def test_050_userQuarantinePurge(self):
-        if (not canRelay):
+        if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         # send some spam
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         result, to_address = sendSpamMail()
         # Get user quarantine list of email addresses
         addressFound = False
@@ -200,12 +206,12 @@ class SpamBlockerBaseTests(unittest.TestCase):
 
     def test_060_adminQuarantineDeleteAccount(self):
         # Get adminstrative quarantine list of email addresses
-        if (not canRelay):
+        if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         # send some spam
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 30
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         result, to_address = sendSpamMail()
         addressFound = False
         curQuarantine = appSP.getQuarantineMaintenenceView()
@@ -216,14 +222,14 @@ class SpamBlockerBaseTests(unittest.TestCase):
         assert(not addressFound)
 
     def test_070_checkForSMTPHeaders(self):
-        if (not canRelay):
+        if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
 
         appData['smtpConfig']['blockSuperSpam'] = False
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['addSpamHeaders'] = True
         appData['smtpConfig']['msgAction'] = "MARK"
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         result, to_address = sendSpamMail()
         # check for email file if there is no timeout
@@ -240,7 +246,7 @@ class SpamBlockerBaseTests(unittest.TestCase):
                 
         # Either found email file or timed out so kill mail sink
         appData['smtpConfig']['msgAction'] = "QUARANTINE"
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         assert (timeout != 0)
         # look for added header in delivered email
         lines = emailContext.split("\n")
@@ -263,35 +269,36 @@ class SpamBlockerBaseTests(unittest.TestCase):
         # assert(float(requiredScore) > float(spamScore))
 
     def test_080_checkAllowTLS(self):
-        if (not canRelay):
+        if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         # Make sure SSL Inspector is off
         appSSL.stop()
         tlsSMTPResult, to_address = sendSpamMail(useTLS=True)
         # print("TLS 1 : " + str(tlsSMTPResult))
         assert(tlsSMTPResult != 0)
         appData['smtpConfig']['allowTls'] = True
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         tlsSMTPResult, to_address = sendSpamMail(host=global_functions.TEST_SERVER_HOST, useTLS=True)
         # print("TLS 2 : " + str(tlsSMTPResult))
         assert(tlsSMTPResult == 0)
         
     
     def test_090_checkTLSwSSLInspector(self):
-        if (not canRelay):
+        if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         test_untangle_IP = socket.gethostbyname(smtpServerHost)
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['allowTls'] = False
         appData['smtpConfig']['strength'] = 30
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         # Turn on SSL Inspector
         appSSLData['processEncryptedMailTraffic'] = True
         appSSLData['ignoreRules']['list'].insert(0,createSSLInspectRule("25"))
         appSSL.setSettings(appSSLData)
         appSSL.start()
+        time.sleep(10)
         tlsSMTPResult, to_address = sendSpamMail(useTLS=True)
         # print("TLS 090 : " + str(tlsSMTPResult))
         appSSL.stop()
@@ -308,12 +315,9 @@ class SpamBlockerBaseTests(unittest.TestCase):
                                                'c_client_addr', remote_control.client_ip)
         assert( found ) 
             
-    @staticmethod
-    def final_tear_down(self):
-        global app,appSSL
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
+    @classmethod
+    def final_extra_tear_down(cls):
+        global appSSL
         if appSSL != None:
             uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
             appSSL = None
