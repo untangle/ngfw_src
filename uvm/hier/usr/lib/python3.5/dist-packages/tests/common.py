@@ -56,7 +56,7 @@ class NGFWTestCase(TestCase):
         cls._orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
         name = cls.module_name()
-
+        print("initial_setup for app %s" % name)
         if cls._app or uvmContext.appManager().isInstantiated(name):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.module_name())
@@ -67,6 +67,7 @@ class NGFWTestCase(TestCase):
                     cls.final_tear_down()
                     cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
         else:
+            print("starting %s" % (name,))
             cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
 
         if cls.force_start:
