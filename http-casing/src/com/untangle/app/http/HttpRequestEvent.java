@@ -239,6 +239,11 @@ public class HttpRequestEvent extends LogEvent
         if ( host == null )
             return null;
         
+        int portPos = host.indexOf(':');
+        if(portPos > -1){
+            host = host.substring(0, portPos);
+        }
+
         String[] parts = host.split("\\.");
         int len = parts.length;
         

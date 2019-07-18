@@ -41,10 +41,10 @@ VPN_SERVER_IP = "10.111.56.96"
 VPN_SERVER_LAN_IP = "192.168.235.96"
 
 # special Untangle box configured as a OpenVPN server with User/Pass authentication enabled
-VPN_SERVER_USER_PASS_IP = "10.111.56.91"
+VPN_SERVER_USER_PASS_IP = "10.111.56.93"
 
 # special box within VPN_SERVER_USER_PASS_IP's network
-VPN_SERVER_USER_PASS_LAN_IP = "192.168.235.91"
+VPN_SERVER_USER_PASS_LAN_IP = "192.168.235.43"
 
 # special box with testshell in the sudoer group  - used to connect to vpn as client
 VPN_CLIENT_IP = "10.111.56.23"  

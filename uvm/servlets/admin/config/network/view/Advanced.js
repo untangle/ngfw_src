@@ -499,7 +499,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     listeners: {
                         beforecheckchange: function (col, rowIndex, checked, record) {
                             if (record.get('readOnly')) {
-                                Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be edited!');
+                                Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> cannot be edited!');
                                 return false;
                             }
                         }

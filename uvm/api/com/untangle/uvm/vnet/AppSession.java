@@ -160,7 +160,7 @@ public interface AppSession
     public final String KEY_WEB_FILTER_SSL_ENGINE = "web-filter-ssl-engine"; /* WebFilterSSLEngine */
     public final String KEY_CAPTIVE_PORTAL_REDIRECT = "captive-portal-redirect-client"; /* InetAddress */
     public final String KEY_CAPTIVE_PORTAL_SSL_ENGINE = "captive-portal-ssl-engine"; /* CaptureSSLEngine */
-    public final String KEY_CAPTIVE_PORTAL_SESSION_CAPTURE = "captive-portal-session-capture"; /* Boolean */
+    public final String KEY_CAPTIVE_PORTAL_SESSION_CAPTURE = "captive-portal-session-capture"; /* String */
 
     /**
      * Returns the protocol for the session.</p>

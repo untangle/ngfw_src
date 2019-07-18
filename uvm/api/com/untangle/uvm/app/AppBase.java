@@ -466,7 +466,8 @@ public abstract class AppBase implements App
     public AppMetric getMetric(String name)
     {
         AppMetric metric = metrics.get(name);
-        if (metric == null) logger.warn("Metric not found: " + name);
+        if (metric == null)
+            logger.debug("Metric not found: " + name);
         return metric;
     }
 

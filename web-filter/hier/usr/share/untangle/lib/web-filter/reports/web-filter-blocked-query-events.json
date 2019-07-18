@@ -12,7 +12,7 @@
     ],
     "defaultColumns": ["time_stamp","hostname","username","host","term","blocked","flagged","c_client_addr","s_server_addr","s_server_port"],
     "description": "Shows blocked search queries processed by Web Filter.",
-    "displayOrder": 1031,
+    "displayOrder": 1032,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "http_query_events",
     "title": "Blocked Search Events",

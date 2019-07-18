@@ -49,10 +49,31 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     { boxLabel: 'Hostname'.t(), name: 'col', inputValue: 'hostname' },
                     { boxLabel: 'Client'.t(), name: 'col', inputValue: 'c_client_addr' },
                     { boxLabel: 'Server'.t(), name: 'col', inputValue: 's_server_addr' },
-                    //{ boxLabel: 'Client Port'.t(), name: 'col', inputValue: 'c_client_port' },
                     { boxLabel: 'Server Port'.t(), name: 'col', inputValue: 's_server_port' },
                     { boxLabel: 'Policy Id'.t(), name: 'col', inputValue: 'policy_id' }
-                ]
+                ],
+                listeners: {
+                    change: function(el, newValue, oldValue){
+                        var valueText = el.up('menu').down('#add_value_text');
+                        var valueCombo =  el.up('menu').down('#add_value_combo');
+
+                        var table = TableConfig.getFirstTableFromField(newValue);
+                        var values = TableConfig.getValues(table, newValue);
+                        if(values.length){
+                            valueCombo.setDisabled(false);
+                            valueCombo.setHidden(false);
+                            valueCombo.getStore().loadData(values);
+                            valueCombo.setValue(valueCombo.getValue() !== null ? valueCombo.getValue() : values[0][0]);
+                            valueText.setDisabled(true);
+                            valueText.setHidden(true);
+                        }else{
+                            valueCombo.setDisabled(true);
+                            valueCombo.setHidden(true);
+                            valueText.setDisabled(false);
+                            valueText.setHidden(false);
+                        }
+                    }
+                }
             }, '-', {
                 xtype: 'combobox',
                 itemId: 'add_operator',
@@ -79,6 +100,15 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     ['in', 'in'.t()],
                     ['not in', 'not in'.t()]
                 ]
+            }, {
+                xtype: 'checkbox',
+                itemId: 'add_fmt',
+                boxLabel: 'AutoFormat Value'.t(),
+                value: true,
+                disabled: true,
+                bind: {
+                    disabled: '{!rg.value}'
+                }
             }, '-', {
                 xtype: 'container',
                 layout: {
@@ -94,7 +124,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 },
                 items: [{
                     xtype: 'textfield',
-                    itemId: 'add_value',
+                    itemId: 'add_value_text',
                     enableKeyEvents: true,
                     flex: 1,
                     listeners: {
@@ -104,6 +134,21 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                             }
                         }
                     }
+                }, {
+                    xtype: 'combo',
+                    itemId: 'add_value_combo',
+                    queryMode: 'local',
+                    hidden: true,
+                    disabled: true,
+                    store: new Ext.data.ArrayStore({
+                        fields: ['value', 'display'],
+                        data: []
+                    }),
+                    emptyText: 'Select value'.t(),
+                    displayField: 'display',
+                    valueField: 'value',
+                    allowBlank: false,
+                    editable: false
                 }, {
                     xtype: 'button',
                     text: 'OK'.t(),
@@ -115,15 +160,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                         }
                     }
                 }]
-            }, {
-                xtype: 'checkbox',
-                itemId: 'add_fmt',
-                boxLabel: 'AutoFormat Value'.t(),
-                value: true,
-                disabled: true,
-                bind: {
-                    disabled: '{!rg.value}'
-                }
             }, '-', {
                 text: '<strong>' + 'More conditions ...'.t() + '</strong>',
                 handler: 'onMoreConditions'
@@ -158,22 +194,73 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 conditionsButtons = [];
                 conditionsHolder.removeAll(); // remove all conditions buttons
 
-                Ext.Array.each(query.conditions, function (cond, idx) {
+                var data = {};
+                if(query.conditions){
+                    query.conditions.forEach( function(condition){
+                        data[condition.get("column")] = condition.get("value");
+                    });
+                }
+                var renderRecord = new Ext.data.Model(data);
 
+                Ext.Array.each(query.conditions, function (condition, idx) {
                     // condition button
+                    var firstTable = TableConfig.getFirstTableFromField(condition.get('column'));
                     conditionsButtons.push({
                         xtype: 'segmentedbutton',
                         allowToggle: false,
                         margin: '0 5',
                         items: [{
-                            text: TableConfig.getColumnHumanReadableName(cond.column) + ' <span style="font-weight: bold; margin: 0 3px;">' + cond.operator + '</span> ' + cond.value,
+                            text: TableConfig.getColumnHumanReadableName(condition.get('column')) +
+                                ' <span style="font-weight: bold; margin: 0 3px;">' +
+                                    condition.get('operator') + '</span> ' +
+                                    TableConfig.getDisplayValue(condition.get('value'), condition.get('table') ? condition.get('table') : firstTable, condition.get('column'), renderRecord),
                             menu: {
                                 plain: true,
                                 showSeparator: false,
                                 mouseLeaveDelay: 0,
-                                condition: cond,
+                                condition: condition,
                                 items: [{
+                                    xtype: 'combobox',
+                                    itemId: 'add_operator',
+                                    fieldLabel: '<strong>' + 'Operator'.t() + '</strong>',
+                                    labelAlign: 'top',
+                                    editable: false,
+                                    queryMode: 'local',
+                                    value: condition.get('operator'),
+                                    store: [
+                                        ['=', 'equals [=]'.t()],
+                                        ['!=', 'not equals [!=]'.t()],
+                                        ['>', 'greater than [>]'.t()],
+                                        ['<', 'less than [<]'.t()],
+                                        ['>=', 'greater or equal [>=]'.t()],
+                                        ['<=', 'less or equal [<=]'.t()],
+                                        ['like', 'like'.t()],
+                                        ['not like', 'not like'.t()],
+                                        ['is', 'is'.t()],
+                                        ['is not', 'is not'.t()],
+                                        ['in', 'in'.t()],
+                                        ['not in', 'not in'.t()]
+                                    ],
+                                    listeners: {
+                                        change: function (rg, val) {
+                                            condition.set('operator', val);
+                                            me.redirect();
+                                        }
+                                    }
+                                }, '-', {
+                                    xtype: 'checkbox',
+                                    boxLabel: 'AutoFormat Value'.t(),
+                                    margin: 5,
+                                    value: condition.get('autoFormatValue'),
+                                    listeners: {
+                                        change: function (el, val) {
+                                            condition.set('autoFormatValue', val);
+                                            me.redirect();
+                                        }
+                                    }
+                                }, '-', {
                                     xtype: 'container',
+                                    name: 'values',
                                     layout: {
                                         type: 'hbox',
                                         align: 'stretch'
@@ -181,9 +268,10 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                     margin: '5 5',
                                     items: [{
                                         xtype: 'textfield',
+                                        name: 'valueText',
                                         enableKeyEvents: true,
                                         flex: 1,
-                                        value: cond.value,
+                                        value: condition.get('value'),
                                         listeners: {
                                             keyup: function (el, e) {
                                                 if (e.keyCode === 13) {
@@ -192,7 +280,22 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                             }
                                         }
                                     }, {
+                                        xtype: 'combo',
+                                        name: 'valueCombo',
+                                        queryMode: 'local',
+                                        store: new Ext.data.ArrayStore({
+                                            fields: ['value', 'display'],
+                                            data: []
+                                        }),
+                                        emptyText: 'Select value'.t(),
+                                        displayField: 'display',
+                                        valueField: 'value',
+                                        allowBlank: false,
+                                        editable: false,
+                                        value: condition.get('value'),
+                                    }, {
                                         xtype: 'button',
+                                        name: 'okButton',
                                         text: 'OK'.t(),
                                         iconCls: 'fa fa-check',
                                         margin: '0 0 0 5',
@@ -202,51 +305,38 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                             }
                                         }
                                     }]
-                                }, '-', {
-                                    // sets the condition operator
-                                    xtype: 'radiogroup',
-                                    simpleValue: true,
-                                    publishes: 'value',
-                                    // fieldLabel: '<strong>' + 'Operator'.t() + '</strong>',
-                                    // labelAlign: 'top',
-                                    columns: 1,
-                                    vertical: true,
-                                    value: cond.operator,
-                                    items: [
-                                        { boxLabel: 'equals [=]'.t(), name: 'op', inputValue: '=' },
-                                        { boxLabel: 'not equals [!=]'.t(), name: 'op', inputValue: '!=' },
-                                        { boxLabel: 'greater than [>]'.t(), name: 'op', inputValue: '>' },
-                                        { boxLabel: 'less than [<]'.t(), name: 'op', inputValue: '<' },
-                                        { boxLabel: 'greater or equal [>=]'.t(), name: 'op', inputValue: '>=' },
-                                        { boxLabel: 'less or equal [<=]', name: 'op', inputValue: '<=' },
-                                        { boxLabel: 'like'.t(), name: 'op', inputValue: 'like' },
-                                        { boxLabel: 'not like'.t(), name: 'op', inputValue: 'not like' },
-                                        { boxLabel: 'is'.t(), name: 'op', inputValue: 'is' },
-                                        { boxLabel: 'is not'.t(), name: 'op', inputValue: 'is not' },
-                                        { boxLabel: 'in'.t(), name: 'op', inputValue: 'in' },
-                                        { boxLabel: 'not in'.t(), name: 'op', inputValue: 'not in' }
-                                    ],
-                                    listeners: {
-                                        change: function (rg, val) {
-                                            cond.operator = val;
-                                            me.redirect();
-                                        }
-                                    }
-                                }, '-', {
-                                    xtype: 'checkbox',
-                                    boxLabel: 'Autoformat Value'.t(),
-                                    margin: 5,
-                                    value: cond.autoFormatValue,
-                                    listeners: {
-                                        change: function (el, val) {
-                                            cond.autoFormatValue = val;
-                                            me.redirect();
-                                        }
-                                    }
                                 }],
                                 listeners: {
-                                    beforehide: function (el) {
-                                        el.condition.value = el.down('textfield').getValue();
+                                    beforeshow: function(menu){
+                                        var valueText = menu.down('[name=valueText]');
+                                        var valueCombo =  menu.down('[name=valueCombo]');
+                                        var values = TableConfig.getValues(menu.condition.get('table') ? menu.condition.get('table') : firstTable, menu.condition.get('column'), renderRecord);
+                                        if(values.length){
+                                            valueCombo.setDisabled(false);
+                                            valueCombo.setHidden(false);
+                                            valueCombo.getStore().loadData(values);
+                                            valueCombo.setValue(valueCombo.getValue());
+                                            valueText.setDisabled(true);
+                                            valueText.setHidden(true);
+                                        }else{
+                                            valueCombo.setDisabled(true);
+                                            valueCombo.setHidden(true);
+                                            valueText.setDisabled(false);
+                                            valueText.setHidden(false);
+                                        }
+                                    },
+                                    show: function(menu){
+                                        menu.down("[name=valueCombo]").setWidth(menu.up().getWidth() - menu.down("[name=okButton]").getWidth());
+                                    },
+                                    beforehide: function (menu) {
+                                        var valueText = menu.down('[name=valueText]');
+                                        var valueCombo =  menu.down('[name=valueCombo]');
+
+                                        if(valueCombo.isVisible() == true){
+                                            menu.condition.set('value', valueCombo.getValue());
+                                        }else{
+                                            menu.condition.set('value', valueText.getValue());
+                                        }
                                     },
                                     hide: function () {
                                         me.redirect();
@@ -274,28 +364,28 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
          */
         onAddConditionHide: function (menu) {
             var me = this, vm = me.getViewModel(),
-                conds = vm.get('query.conditions'),
-                col = menu.down('#add_column').getValue(),
-                op = menu.down('#add_operator').getValue(),
-                val = menu.down('#add_value').getValue(),
-                fmt = menu.down('#add_fmt').getValue();
+                conditions = vm.get('query.conditions'),
+                column = menu.down('#add_column').getValue(),
+                operator = menu.down('#add_operator').getValue(),
+                value = menu.down('#add_value_text').getValue() || menu.down('#add_value_combo').getValue() ,
+                autoFormatValue = menu.down('#add_fmt').getValue();
 
             menu.down('#add_column').reset();
             menu.down('#add_operator').setValue('=');
-            menu.down('#add_value').setValue('');
+            menu.down('#add_value_text').setValue('');
+            menu.down('#add_value_combo').setValue('');
             menu.down('#add_fmt').setValue(true);
 
-            if (!col || !op || !val) {
+            if (!column || !operator || !value) {
                 return;
             }
 
-            conds.push({
-                column: col,
-                operator: op,
-                value: val,
-                autoFormatValue: fmt,
-                javaClass: 'com.untangle.app.reports.SqlCondition'
-            });
+            conditions.push( new Ung.model.ReportCondition({
+                column: column,
+                operator: operator,
+                value: value,
+                autoFormatValue: autoFormatValue,
+            }));
             me.redirect();
         },
 
@@ -303,38 +393,36 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
          * Create new route based on new global conditions, and redirect to the new location
          */
         redirect: function () {
-            var me = this, vm = me.getViewModel(),
-                newQuery = '', route,
+            var me = this,
+                vm = me.getViewModel(),
+                queryContext = '',
+                queryArguments = [],
+                route,
                 conditions = vm.get('query.conditions');
 
             // view.context refers to dashboard or reports in admin servlet
             // app.context refers to admin or reports servlet
             if (Ung.app.conditionsContext === 'REPORTS') {
-                newQuery = (Ung.app.context === 'REPORTS') ? '' : '#reports';
+                queryContext = (Ung.app.context === 'REPORTS') ? '' : '#reports';
                 route = vm.get('query.route');
                 if (route.cat) {
-                    newQuery += '?cat=' + route.cat;
+                    queryArguments.push('cat=' + route.cat);
                 }
 
                 if (route.rep) {
-                    newQuery += '&rep=' + route.rep;
+                    queryArguments.push('rep=' + route.rep);
                 }
-
-                Ext.Array.each(conditions, function (cond, idx) {
-                    newQuery += (idx === 0 && !route.cat) ? '?' : '&';
-                    newQuery += cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
-                });
             }
 
             if (Ung.app.conditionsContext === 'DASHBOARD') {
-                newQuery = '#dashboard';
-                Ext.Array.each(conditions, function (cond, idx) {
-                    newQuery += (idx === 0) ? '?' : '&';
-                    newQuery += cond.column + ':' + encodeURIComponent(cond.operator) + ':' + encodeURIComponent(cond.value) + ':' + (cond.autoFormatValue === true ? 1 : 0);
-                });
+                queryContext = '#dashboard';
             }
 
-            Ung.app.redirectTo(newQuery);
+            Ung.app.redirectTo(
+                queryContext + 
+                ( queryArguments.length && conditions.length ? '?' : '' ) +
+                queryArguments.join("&") + Ung.model.ReportCondition.getAllQueries(vm.get('query.conditions'), queryArguments.length ? '&' : '')
+            );
         },
 
         /**
@@ -468,11 +556,11 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                         xtype: 'widgetcolumn',
                         text: 'Value'.t(),
                         width: 200,
-                        dataIndex: 'value',
                         widget: {
-                            xtype: 'textfield',
-                            bind: '{record.value}'
-                        }
+                            xtype: 'container',
+                            layout: 'fit'
+                        },
+                        onWidgetAttach: 'onValueWidgetAttach'
                     }, {
                         xtype: 'checkcolumn',
                         text: 'AutoFormat'.t(),
@@ -503,7 +591,11 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     iconCls: 'fa fa-check',
                     handler: function (el) {
                         var win = el.up('window'), store = win.down('grid').getStore();
-                        vm.set('query.conditions', Ext.Array.pluck(store.getRange(), 'data'));
+                        var conditions = [];
+                        Ext.Array.pluck(store.getRange(), 'data').forEach( function(data){
+                            conditions.push(new Ung.model.ReportCondition(data) );
+                        });
+                        vm.set('query.conditions', conditions);
                         win.hide();
                         me.redirect();
                     }
@@ -513,36 +605,93 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             dialog.show();
         },
 
+        onValueWidgetAttach: function (column, container, record) {
+            var me = this, vm = me.getViewModel();
+
+            var data = {};
+            vm.get('query.conditions').forEach( function(condition){
+                data[condition.get("column")] = condition.get("value");
+            });
+            var renderRecord = new Ext.data.Model(data);
+
+            var firstTable = TableConfig.getFirstTableFromField(record.get('column'));
+            var values = TableConfig.getValues(record.get('table') ? record.get('table') : firstTable, record.get('column'), renderRecord);
+
+            container.removeAll(true);
+
+            if(values.length > 0){
+                container.add({
+                    xtype: 'combo',
+                    queryMode: 'local',
+                    store: new Ext.data.ArrayStore({
+                        fields: ['value', 'display'],
+                        data: values
+                    }),
+                    emptyText: 'Select value'.t(),
+                    displayField: 'display',
+                    valueField: 'value',
+                    allowBlank: false,
+                    editable: false,
+                    bind: {
+                        value: '{record.value}'
+                    },
+                });
+
+            }else{
+                container.add({
+                    xtype: 'textfield',
+                    bind: {
+                        value: '{record.value}'
+                    },
+                });
+            }
+        },
+
         /**
          * Handles the addglobalcondition event
          * used when adding a new condition from a PIE_GRAPH Data View grid
-         * */
-        onAddGlobalCondition: function (col, val) {
+         */
+        cTest: [],
+        onAddGlobalCondition: function (table, record, value) {
             var me = this, vm = me.getViewModel(),
-                conditions = vm.get('query.conditions'),
-                readableColumn = TableConfig.getColumnHumanReadableName(col),
-                msg = 'Add <strong>' + readableColumn + '</strong> column to the Global Conditions?'.t();
+                conditions = vm.get('query.conditions');
 
-            if (!val) { return; } // val might be undefined in some cases (e.g. pie 'Others' value)
+            var data = {};
+            if(typeof(record) != 'object'){
+                data[record] = value;
+                record = new Ext.data.Model(data);
+            }
 
-            // because this component is used in both dashboard and reports, event will fire twice
-            // apply following logic to avoid exceptions
+            var newConditions = [];
+            var msgConditions = [];
+            data = record.getData();
+            for(var field in data){
+                if( TableConfig.getTableField(table, field) ){
+                    newConditions.push( new Ung.model.ReportCondition({
+                        column: field,
+                        operator: '=',
+                        value: data[field],
+                        autoFormatValue: true,
+                        table: table
+                    }));
+                    msgConditions.push(
+                        '<strong>' + TableConfig.getColumnHumanReadableName(field) + ' [' + field + '] = ' + TableConfig.getDisplayValue(data[field], table, field, record) + '</strong>'
+                    );
+                }
+            }
             if (!conditions) { return; }
 
             Ext.Msg.show({
                 title: 'Add Global Condition'.t(),
-                message: msg + '<br/><br/>' +
-                            '<strong>' + readableColumn + ' [' + col + '] = ' + val + '</strong>',
+                message: 'Add the following the Global Conditions?'.t() +
+                        '<br/><br/>' +
+                        msgConditions.join('<br>'),
                 buttons: Ext.Msg.YESNO,
                 icon: Ext.Msg.QUESTION,
                 fn: function (btn) {
                     if (btn === 'yes') {
-                        conditions.push({
-                            column: col,
-                            operator: '=',
-                            value: val,
-                            autoFormatValue: true,
-                            javaClass: 'com.untangle.app.reports.SqlCondition'
+                        newConditions.forEach( function(condition){
+                            conditions.push(condition);
                         });
                         me.redirect();
                     }
@@ -563,7 +712,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             }
 
             Ext.Array.each(vm.get('query.conditions'), function (c) {
-                conds.push('<li><strong>' + TableConfig.getColumnHumanReadableName(c.column) + ' [' + c.column + '] ' + c.operator + ' ' + c.value + '</strong></li>');
+                conds.push('<li><strong>' + TableConfig.getColumnHumanReadableName(c.column) + ' [' + c.column + '] ' + c.operator + ' ' + TableConfig.getDisplayValue(c.value, c.table, c.column) + '</strong></li>');
             });
 
             if (selection.isLeaf()) {

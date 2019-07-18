@@ -17,8 +17,8 @@ def handle_google(logfile,authcode):
 	else:
 		authdata = {}
 		authdata['code'] = authcode
-		authdata['client_id'] = '271473271217-m3kh6o0coa3kfb515un8gkhrdako9acv.apps.googleusercontent.com'
-		authdata['client_secret'] = 'GMbC0PUZe2qCw_sq98_-SE5l'
+		authdata['client_id'] = '365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com'
+		authdata['client_secret'] = '76RDgNAPNwZ6-frswmLPDaRJ'
 		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
 		authdata['grant_type'] = 'authorization_code'
 		authresp = requests.post("https://www.googleapis.com/oauth2/v4/token", data=authdata)

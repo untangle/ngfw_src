@@ -1158,7 +1158,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 Date startDate = getDate(arg5);
                 Date endDate = getDate(arg6);
 
-                if ( "".equals(arg3) || arg3 == null )
+                if ( "".equals(arg3) || "[]".equals(arg3) || arg3 == null )
                     conditions = null;
                 else
                     conditions = (SqlCondition[]) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg3") );

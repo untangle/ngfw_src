@@ -6,7 +6,7 @@ import re
 import base64
 import calendar
 import email
-from io import StringIO as StringIO
+from io import BytesIO as BytesIO
 from datetime import datetime
 from datetime import timedelta
 from html.parser import HTMLParser
@@ -337,6 +337,7 @@ class ReportsTests(unittest.TestCase):
 
         # create settings to receive test_email_address 
         configure_mail_relay()
+        subprocess.call("rm /tmp/test_100_email_report_admin_file > /dev/null 2>&1", shell=True)
 
         # add administrator
         adminsettings = uvmContext.adminManager().getSettings()
@@ -372,7 +373,6 @@ class ReportsTests(unittest.TestCase):
         fp = open("/tmp/test_100_email_report_admin_file")
         email_string = fp.read()
         fp.close()
-        subprocess.call("rm /tmp/test_100_email_report_admin_file", shell=True)
         # Delete the first line as it is blank and throws off the parser
         email_string = '\n'.join(email_string.split('\n')[1:])
         msg = email.message_from_string(email_string)
@@ -385,7 +385,7 @@ class ReportsTests(unittest.TestCase):
                     if key == "Content-ID":
                         mime_content_ids.append(part.values()[index])
             elif part.get_content_maintype() == "text":
-                parser.feed(part.get_payload(decode=True))
+                parser.feed((part.get_payload(decode=True)).decode("utf-8"))
 
         assert(len(parser.content_ids) == len(mime_content_ids))
 
@@ -447,6 +447,7 @@ class ReportsTests(unittest.TestCase):
 
         # Create settings to receive test_email_address 
         configure_mail_relay()
+        subprocess.call("rm /tmp/test_102_email_admin_override_custom_report_mobile_file > /dev/null 2>&1", shell=True)
 
         # add administrator
         adminsettings = uvmContext.adminManager().getSettings()
@@ -485,7 +486,6 @@ class ReportsTests(unittest.TestCase):
         fp = open("/tmp/test_102_email_admin_override_custom_report_mobile_file")
         email_string = fp.read()
         fp.close()
-        subprocess.call("rm /tmp/test_102_email_admin_override_custom_report_mobile_file", shell=True)
         # Delete the first line as it is blank and throws off the parser
         email_string = '\n'.join(email_string.split('\n')[1:])
         msg = email.message_from_string(email_string)
@@ -497,7 +497,7 @@ class ReportsTests(unittest.TestCase):
                 for index, key in enumerate(part.keys()):
                     if key == "Content-ID" and "untangle.int" in part.values()[index]:
                         email_image = part.get_payload(decode=True)
-                        im = Image.open(StringIO(email_image))
+                        im = Image.open(BytesIO(email_image))
                         (image_width,image_height) = im.size
                         print("Image %s width: %d height: %d" % (part.values()[index], image_width, image_height))
                         assert(image_width <= 350 and image_height <= 350)

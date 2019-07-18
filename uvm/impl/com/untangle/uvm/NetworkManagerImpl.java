@@ -65,8 +65,6 @@ public class NetworkManagerImpl implements NetworkManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    private static final String[] GREEK_NAMES = new String[]{"Alpha","Beta","Gamma","Delta","Epsilon","Zeta","Eta","Theta","Iota","Kappa","Lambda","Mu"};
-    
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
     private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";
     private final String upnpManagerScript = System.getProperty("uvm.bin.dir") + "/ut-upnp-manager";
@@ -742,11 +740,7 @@ public class NetworkManagerImpl implements NetworkManager
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
                 int interfaceId = getNextFreeInterfaceId( netSettings, 1 );
                 interfaceSettings.setInterfaceId( interfaceId );
-                try {
-                    interfaceSettings.setName("Interface " + GREEK_NAMES[interfaceId-1]);
-                } catch (Exception e) {
-                    interfaceSettings.setName("Interface " + interfaceId);
-                }
+                interfaceSettings.setName("Interface " + interfaceId);
                 interfaceSettings.setPhysicalDev( deviceName );
                 interfaceSettings.setSystemDev( deviceName );
                 interfaceSettings.setSymbolicDev( deviceName );
@@ -887,11 +881,7 @@ public class NetworkManagerImpl implements NetworkManager
                 InterfaceSettings intf = new InterfaceSettings();
                 int interfaceId = i+1;
                 intf.setInterfaceId( interfaceId );
-                try {
-                    intf.setName("Interface " + GREEK_NAMES[interfaceId-1]);
-                } catch (Exception e) {
-                    intf.setName("Interface " + interfaceId);
-                }
+                intf.setName("Interface " + interfaceId);
 
                 // Check for wireless interfaces
                 if (devName.startsWith("wlan")) {
@@ -2263,7 +2253,7 @@ public class NetworkManagerImpl implements NetworkManager
         LinkedList<String> deviceNames = new LinkedList<>( );
 
         // add all eth* devices
-        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort " );
+        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort -n -k 1.4" );
         for ( String name : result.getOutput().split("\\r?\\n") ) {
 
             String devName = name.trim();
@@ -2279,7 +2269,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         // add all wlan* devices
-        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'wlan*' | sed -e 's|/sys/class/net/||' | sort " );
+        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'wlan*' | sed -e 's|/sys/class/net/||' | sort -n -k 1.5 " );
         for ( String name : result.getOutput().split("\\r?\\n") ) {
 
             String devName = name.trim();
