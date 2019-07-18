@@ -85,16 +85,18 @@ Ext.define('Ung.view.reports.MainController', {
             if(Util.isDestroyed(me)){
                 return;
             }
-            var root = Ext.getStore('reportstree').getRoot(), conds = [], disabledCategory;
-            Ext.Array.each(conditions, function (c) {
-                conds.push(c.column);
-            });
+            var root = Ext.getStore('reportstree').getRoot(), disabledCategory;
 
             root.eachChild(function (catNode) {
                 disabledCategory = true;
                 catNode.eachChild(function (repNode) { // report node
-                    if (conds.length > 0) {
-                        if (TableConfig.containsColumns(repNode.get('table'), conds)) {
+                    if (conditions.length > 0) {
+                        if (TableConfig.containsColumns(
+                                repNode.get('table'), 
+                                Ext.Array.map(conditions, function(condition){
+                                    return condition.get('column');
+                                })
+                            )) {
                             repNode.set('disabled', false);
                             disabledCategory = false;
                         } else {
@@ -115,19 +117,19 @@ Ext.define('Ung.view.reports.MainController', {
      * Redirects (updates route) based on selected reports tree node or breadcrumb node
      */
     onSelectReport: function (el, node) {
-        var me = this, vm = me.getViewModel(), condsQuery = '';
+        var me = this, vm = me.getViewModel();
 
         if (!node.get('url')) { return; }
 
-        Ext.Array.each(vm.get('query.conditions'), function (c) {
-            condsQuery += '&' + c.column + ':' + encodeURIComponent(c.operator) + ':' + encodeURIComponent(c.value) + ':' + (c.autoFormatValue === true ? 1 : 0);
-        });
-
-        if (Ung.app.context === 'REPORTS') {
-            Ung.app.redirectTo(node.get('url') + condsQuery);
-        } else {
-            Ung.app.redirectTo('#reports?' + node.get('url') + condsQuery);
+        var url = "";
+        if (Ung.app.context !== 'REPORTS') {
+            url += "#reports?";
         }
+        Ung.app.redirectTo(
+            url + node.get('url') +
+            Ung.model.ReportCondition.getAllQueries(vm.get('query.conditions'))
+        );
+
         me.showNode(node);
     },
 

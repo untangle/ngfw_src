@@ -235,7 +235,8 @@ public class ActiveDirectoryManagerImpl
         WARN_QUERY_NO_USERS,
         FAIL_EMPTY_SETTINGS,
         FAIL_QUERY,
-        FAIL_QUERY_NONE
+        FAIL_QUERY_NONE,
+        FAIL_QUERY_REFERRAL
     }
 
     /**
@@ -276,7 +277,13 @@ public class ActiveDirectoryManagerImpl
         } catch (Exception e) {
             logger.warn("Active Directory Test Failure", e);
             try{
-                statusResult = e.toString().contains("DSID-03100238") ? STATUS_RESULTS.FAIL_QUERY_NONE : STATUS_RESULTS.FAIL_QUERY;
+                if(e.toString().contains("DSID-03100238")){
+                    statusResult = STATUS_RESULTS.FAIL_QUERY_NONE;
+                }else if(e.toString().contains("DSID-0310082F")){
+                    statusResult = STATUS_RESULTS.FAIL_QUERY_REFERRAL;
+                }else{
+                    statusResult = STATUS_RESULTS.FAIL_QUERY;
+                }
                 status.put("extras", e.toString());
             }catch(Exception je){
                 logger.warn("Unable to set status:", je);

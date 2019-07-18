@@ -252,13 +252,31 @@ Ext.define('Ung.view.reports.GraphReport', {
                     column: {
                         depth: 25,
                         edgeWidth: 1,
-                        edgeColor: '#FFF'
+                        edgeColor: '#FFF',
+                        events: {
+                            click: function(event) {
+                                // call this way to be able to access viewmodel
+                                me.onPointClick(event);
+                            }
+                        }
                     },
                     areaspline: {
-                        lineWidth: 1
+                        lineWidth: 1,
+                        events: {
+                            click: function(event) {
+                                // call this way to be able to access viewmodel
+                                me.onPointClick(event);
+                            }
+                        }
                     },
                     spline: {
-                        lineWidth: 2
+                        lineWidth: 2,
+                        events: {
+                            click: function(event) {
+                                // call this way to be able to access viewmodel
+                                me.onPointClick(event);
+                            }
+                        }
                     },
                     pie: {
                         allowPointSelect: false,
@@ -280,10 +298,11 @@ Ext.define('Ung.view.reports.GraphReport', {
                                 if (this.point.percentage < 2) {
                                     return null;
                                 }
-                                if (this.point.name.length > 25) {
-                                    return this.point.name.substring(0, 25) + '...';
+                                var name = this.point.name;
+                                if (name.length > 25) {
+                                    name = name.substring(0, 25) + '...';
                                 }
-                                return this.point.name + ' (' + this.point.percentage.toFixed(2) + '%)';
+                                return name + ' (' + this.point.percentage.toFixed(2) + '%)';
                             }
                         },
                         events: {
@@ -407,45 +426,28 @@ Ext.define('Ung.view.reports.GraphReport', {
             me.chart.hideNoData();
             me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-fw fa-lg"></i>');
 
+            // get extra selects based on controlling field
+            var tableField = null;
+            if( ( entry.get('type') === 'TIME_GRAPH') ||
+                (entry.get('type') === 'TIME_GRAPH_DYNAMIC') ){
+                tableField = TableConfig.getTableField(entry.get('table'), entry.get('timeDataDynamicColumn'));
+            }else if(entry.get('type') === 'PIE_GRAPH'){
+                tableField = TableConfig.getTableField(entry.get('table'), entry.get('pieGroupColumn'));
+            }
+            var extraSelects = (tableField && tableField.referenceFields) ? tableField.referenceFields: null;
+
             Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
                 entry.getData(), // entry
                 startDate,
                 endDate,
-                vm.get('query.conditions'), -1) // sql filters
+                extraSelects,
+                Ung.model.ReportCondition.collect(vm.get('query.conditions')),
+                -1) 
                 .then(function (result) {
                     if(Util.isDestroyed(me)){
                         return;
                     }
                     me.data = result.list;
-
-                    if (entry.get('type') === 'PIE_GRAPH') {
-                        var fieldName = entry.get('pieGroupColumn');
-
-                        var converters = [];
-                        var renderers = [];
-                        var fieldNames = fieldName.split(",");
-                        fieldNames.forEach(function(field){
-                            var tableField = TableConfig.getTableField(entry.get('table'), field);
-                            if(tableField && tableField['convert']){
-                                converters.push(tableField['convert']);
-                            }
-                            var tableColumn = TableConfig.getTableColumn(entry.get('table'), field);
-                            if(tableColumn && tableColumn['renderer']){
-                                renderers.push(tableColumn['renderer']);
-                            }
-                        });
-
-                        me.data.forEach(function(row){
-                            fieldNames.forEach(function(fieldName){
-                                converters.forEach( function(conveter){
-                                    row[fieldName] = conveter.call(this, row[fieldName], row);
-                                });
-                                renderers.forEach( function(renderer){
-                                    row[fieldName] = renderer.call(this, row[fieldName], row);
-                                });
-                            });
-                        });
-                    }
 
                     me.setSeries();
                     if (cb) { cb(me.data); }
@@ -503,8 +505,10 @@ Ext.define('Ung.view.reports.GraphReport', {
         setSeries: function () {
             var me = this, vm = this.getViewModel(), entry = vm.get('eEntry') || vm.get('entry'),
                 seriesRenderer = ( entry && entry.get('seriesRenderer') ) ? Renderer[entry.get('seriesRenderer')] : null,
+                table = entry.get('table'),
                 seriesData,
-                seriesName;
+                seriesName,
+                rowRecord = null;
 
             // remove any existing series
             while (me.chart.series.length > 0) {
@@ -526,9 +530,9 @@ Ext.define('Ung.view.reports.GraphReport', {
                     });
                 }
 
-
                 if (entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
                     Ext.Array.each(me.data, function (row) {
+                        // rowRecord = new Ext.data.Model(row);
                         Ext.Object.each(row, function (key) {
                             if (row.hasOwnProperty(key) && key !== 'time_trunc' && key !== 'time' && dataColumns.indexOf(key) < 0) {
                                 dataColumns.push(key);
@@ -553,6 +557,8 @@ Ext.define('Ung.view.reports.GraphReport', {
                         if (seriesName.substr(-1) != ']') {
                             seriesName += ' [' + column + ']';
                         }
+                    }else{
+                        seriesName = column !== undefined ? TableConfig.getDisplayValue(column, table, entry.get('timeDataDynamicColumn')) : 'None'.t();
                     }
 
                     me.chart.addSeries({
@@ -574,22 +580,40 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
 
             if (entry && ( entry.get('type') === 'PIE_GRAPH') ){
-                var othersValue = 0, colVal; // needed for global conditions from pies which have seriesRendered defined (altered) e.g. protocol
+                var othersValue = 0, colVal, colField; // needed for global conditions from pies which have seriesRendered defined (altered) e.g. protocol
                 seriesData = [];
 
                 Ext.Array.each(me.data, function (row, idx) {
-                    colVal = row[entry.get('pieGroupColumn')];
-                    if (!seriesRenderer) {
-                        seriesName = colVal !== undefined ? colVal : 'None'.t();
-                    } else {
+                    colField = entry.get('pieGroupColumn');
+                    colVal = row[colField];
+                    rowRecord = new Ext.data.Model(row);
+
+                    if (seriesRenderer) {
                         seriesName = seriesRenderer(parseInt(colVal, 10));
+                    } else {
+                        seriesName = colVal !== undefined ? TableConfig.getDisplayValue(colVal, table, colField, rowRecord) : 'None'.t();
+                    }
+
+                    var tableColumn = null;
+                    var expandedInformation = {};
+                    for(var field in row){
+                        if(field == colField){
+                            continue;
+                        }
+                        tableColumn =  TableConfig.getTableColumn(table, field);
+                        if(tableColumn && tableColumn.header){
+                            expandedInformation[tableColumn.header] = 
+                                TableConfig.getDisplayValue(row[field], table, field, rowRecord);
+                        }
                     }
 
                     if (idx < entry.get('pieNumSlices')) {
                         seriesData.push({
                             name: seriesName,
                             value: colVal,
-                            y: row.value
+                            y: row.value,
+                            expandedInformation: expandedInformation,
+                            rowRecord: rowRecord
                         });
                     } else {
                         othersValue += row.value;
@@ -607,11 +631,16 @@ Ext.define('Ung.view.reports.GraphReport', {
 
                 me.chart.addSeries({
                     name: entry.get('units').t(),
-                    // name: seriesName,
                     data: seriesData,
                     tooltip: {
                         pointFormatter: function () {
-                            var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
+                            var str = "";
+                            if(this.series.data[this.index]){
+                                for(var field in this.series.data[this.index].expandedInformation){
+                                    str += field + ":" + this.series.data[this.index].expandedInformation[field] + "<br/>";
+                                }
+                            }
+                            str += '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
                             if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
                                 str += ': <b>' + Util.bytesRenderer(this.y) + '</b>';
                             } else {
@@ -924,10 +953,26 @@ Ext.define('Ung.view.reports.GraphReport', {
 
         onPointClick: function (event) {
             var me = this, vm = me.getViewModel(),
-                column = vm.get('entry.pieGroupColumn'),
+                entry = vm.get('entry'),
                 value = event.point.value;
 
-            Ext.fireEvent('addglobalcondition', column, value);
+            var rowRecord = null;
+            if(event.point.rowRecord){
+                rowRecord = event.point.rowRecord;
+                Ext.fireEvent('addglobalcondition', entry.get('table'), rowRecord);
+            }else if(value == undefined && event.point.series && event.point.series.name){
+                var values = TableConfig.getValues(entry.get('table'), entry.get('timeDataDynamicColumn'));
+                if(values.length){
+                    Ext.Array.forEach(values, function(valueSet){
+                        if(valueSet[1] == event.point.series.name){
+                            value = valueSet[0];
+                        }
+                    });
+                }else{
+                    value = event.point.series.name;
+                }
+                Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('timeDataDynamicColumn'), value);
+            }
         }
     }
 });

@@ -31,7 +31,7 @@ public class IntrusionPreventionSnortUnified2Parser
     private final Logger logger = Logger.getLogger(getClass());
     private final static int MaximumProcessedRecords = 5000;
 
-    private static final String EVENT_MAP = "/etc/suricata/intrusion-prevention.event.map.conf";
+    public static final String EVENT_MAP = "/etc/suricata/intrusion-prevention.event.map.conf";
 
 	private FileChannel fc;
 	private ByteBuffer bufSerialHeader = null;

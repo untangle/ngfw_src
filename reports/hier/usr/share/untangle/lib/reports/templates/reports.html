@@ -154,7 +154,7 @@ Summary
 		</td></tr>
 		<tr>
 		{% if report.getType == TEXT %}
-			{% with reportRows=reportsApp.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+			{% with reportRows=reportsApp.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,null,-1 %}
 				{% with reportRow=reportRows|first %}
 					<td>
 					{{ report.getTextString|format=reportRow,report.getTextColumns }}
@@ -215,7 +215,7 @@ Summary
 						</td></tr>
 						<tr>
 						{% if report.getType == TEXT %}
-							{% with reportRows=reportsApp.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+							{% with reportRows=reportsApp.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,null,-1 %}
 								{% with reportRow=reportRows|first %}
 									<td>
 									{{ report.getTextString|format=reportRow,report.getTextColumns }}

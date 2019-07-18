@@ -108,8 +108,28 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         // and ensure any redirect is sent using the MitM certificate which
         // will eliminate errors on capture redirect even to pages that we
         // aren't ultimately going to inspect once the client has authenticated.
+        // We store the authentication type as the flag so ssl inspector can
+        // ignore the same sessions we allow to pass so the login page can
+        // be loaded from the external server.
         if (sessreq.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
-            sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE, new Boolean(true));
+            switch (app.getSettings().getAuthenticationType())
+            {
+            case MICROSOFT:
+                sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE, "MICROSOFT");
+                break;
+            case FACEBOOK:
+                sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE, "FACEBOOK");
+                break;
+            case GOOGLE:
+                sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE, "GOOGLE");
+                break;
+            case ANY_OAUTH:
+                sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE, "ANY_OAUTH");
+                break;
+            default:
+                sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SESSION_CAPTURE, "CAPTURE");
+                break;
+            }
             sessreq.release();
             return;
         }

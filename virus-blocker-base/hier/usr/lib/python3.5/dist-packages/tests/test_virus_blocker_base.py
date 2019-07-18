@@ -152,6 +152,9 @@ class VirusBlockerBaseTests(unittest.TestCase):
         pre_events_block = global_functions.get_app_metric_value(app,"block")
 
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
+        # temporary for debugging
+        if (result == 1):
+            remote_control.run_command("wget -q -O /tmp/eicar_wget_output.zip http://test.untangle.com/virus/eicar.zip")
         assert (result == 0)
 
         post_events_scan = global_functions.get_app_metric_value(app,"scan")

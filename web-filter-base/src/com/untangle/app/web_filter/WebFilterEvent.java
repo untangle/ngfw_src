@@ -20,12 +20,14 @@ public class WebFilterEvent extends LogEvent
     private Boolean flagged;
     private Reason  reason;
     private Integer categoryId = 0;
+    private Integer ruleId = 0;
+    // We keep category around for events
     private String category;
     private String  appName;
     
     public WebFilterEvent() { }
 
-    public WebFilterEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Reason reason, Integer categoryId, String category, String appName)
+    public WebFilterEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Reason reason, Integer categoryId, Integer ruleId, String category, String appName)
     {
         this.requestLine = requestLine;
         this.sessionEvent = sessionEvent;
@@ -33,6 +35,7 @@ public class WebFilterEvent extends LogEvent
         this.flagged = flagged;
         this.reason = reason;
         this.categoryId = categoryId;
+        this.ruleId = ruleId;
         this.category = category;
         this.appName = appName;
     }
@@ -48,6 +51,9 @@ public class WebFilterEvent extends LogEvent
 
     public Integer getCategoryId() { return categoryId; }
     public void setCategoryId( Integer newValue ) { this.categoryId = newValue; }
+
+    public Integer getRuleId() { return ruleId; }
+    public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
 
     public String getCategory() { return category; }
     public void setCategory( String newValue ) { this.category = newValue; }
@@ -70,7 +76,8 @@ public class WebFilterEvent extends LogEvent
             _getDatabaseColumnNamePrefix() + "_blocked  = ?, " + 
             _getDatabaseColumnNamePrefix() + "_flagged  = ?, " +
             _getDatabaseColumnNamePrefix() + "_reason   = ?, " +
-            _getDatabaseColumnNamePrefix() + "_category_id = ? " +
+            _getDatabaseColumnNamePrefix() + "_category_id = ?, " +
+            _getDatabaseColumnNamePrefix() + "_rule_id = ? " +
             "WHERE " +
             "request_id = ? ";
 
@@ -81,6 +88,7 @@ public class WebFilterEvent extends LogEvent
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setString(++i, ((getReason() == null) ? "" : Character.toString(getReason().getKey())));
         pstmt.setInt(++i, getCategoryId());
+        pstmt.setInt(++i, getRuleId());
         pstmt.setLong(++i, requestLine.getRequestId());
 
         pstmt.addBatch();

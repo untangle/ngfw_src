@@ -39,20 +39,19 @@ Ext.define('Ung.widget.WidgetController', {
 
         // highlight only widgets for which conditions apply
         if (widget.getXType() === 'reportwidget') {
-            var conds = [];
             vm.bind('{query.conditions}', function (conditions) {
                 widget.lastFetchTime = null;
-                conds = [];
                 if (conditions.length === 0) {
                     widget.unmask();
                     return;
                 }
 
-                Ext.Array.each(conditions, function (c) {
-                    conds.push(c.column);
-                });
-
-                if (!TableConfig.containsColumns(vm.get('entry.table'), conds)) {
+                if (!TableConfig.containsColumns(
+                        vm.get('entry.table'),
+                        Ext.Array.map(conditions, function(condition){
+                            return condition.get('column');
+                        })
+                        )) {
                     widget.mask();
                 } else {
                     widget.unmask();

@@ -68,7 +68,7 @@ Ext.define('Ung.widget.PolicyOverview', {
             align: 'right',
             text: 'Traffic'.t() + '<br/>(KB/s)',
             renderer: function(val) {
-                return (val && val.totalKbps > 0) ? Converter.sessionSpeed(val.totalKbps) : '<span style="color: #CCC">0</span>';
+                return (val && val.totalKbps > 0) ? Renderer.sessionSpeed(val.totalKbps) : '<span style="color: #CCC">0</span>';
             }
         }, {
             xtype: 'actioncolumn',

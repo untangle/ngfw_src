@@ -118,6 +118,7 @@ Ext.define('Ung.controller.Global', {
                     sep = parts[1];
                     val = parts[2];
                     fmt = parseInt(parts[3], 10);
+                    table = parts[4];
                 } else {
                     parts = decoded.split('=');
                     key = parts[0];
@@ -130,14 +131,13 @@ Ext.define('Ung.controller.Global', {
                     if (!key || !sep || !val) {
                         validQuery = false;
                     } else {
-                        conditions.push({
+                        conditions.push( new Ung.model.ReportCondition({
                             column: key,
                             operator: sep,
                             value: val,
                             autoFormatValue: fmt === 1 ? true : false,
-                            javaClass: 'com.untangle.app.reports.SqlCondition'
-                        });
-                        condsQuery += '&' + key + ':' + encodeURIComponent(sep) + ':' + encodeURIComponent(val) + ':' + fmt;
+                            table: table,
+                        }));
                     }
                 }
             });
@@ -151,7 +151,7 @@ Ext.define('Ung.controller.Global', {
         reportsVm.set('query', {
             route: route,
             conditions: conditions,
-            string: condsQuery
+            string: Ung.model.ReportCondition.getAllQueries(conditions)
         });
 
         Ung.app.getMainView().getViewModel().set('activeItem', 'reports');

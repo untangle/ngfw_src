@@ -19,7 +19,7 @@ Ext.define('Ung.view.reports.Main', {
             conditionsText: function (get) {
                 var conds = get('query.conditions'), html = [];
                 Ext.Array.each(conds, function (cond) {
-                    html.push(TableConfig.getColumnHumanReadableName(cond.column) + ' ' + cond.operator + ' ' + cond.value);
+                    html.push(TableConfig.getColumnHumanReadableName(cond.get('column')) + ' ' + cond.get('operator') + ' ' + cond.get('value'));
                 });
                 if (html.length === 0) { return; }
                 return 'Reports for: ' + html.join(', ');

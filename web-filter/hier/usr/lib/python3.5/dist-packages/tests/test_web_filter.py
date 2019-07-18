@@ -179,18 +179,40 @@ class WebFilterTests(WebFilterBaseTests):
 
 
     def test_700_safe_search_enabled(self):
-        """Check google safe search"""
+        """Check google/bing/yahoo safe search"""
         settings = self.app.getSettings()
         settings["enforceSafeSearch"] = False
         self.app.setSettings(settings)
-        result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=off'");
+        google_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=off'");
 
         settings["enforceSafeSearch"] = True
         self.app.setSettings(settings)
-        result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=strict'");
+        google_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=strict'");
 
-        assert( result_without_safe == 0 )
-        assert( result_with_safe == 0 )
+        assert( google_result_without_safe == 0 )
+        assert( google_result_with_safe == 0 )
+
+        settings["enforceSafeSearch"] = False
+        self.app.setSettings(settings)
+        bing_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.bing.com/search?q=boobs&adlt=off' | grep -q 'adlt=off'")
+
+        settings["enforceSafeSearch"] = True
+        self.app.setSettings(settings)
+        bing_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.bing.com/search?q=boobs&adlt=off' | grep -q 'adlt=strict'")
+    
+        assert(bing_result_without_safe == 0)
+        assert(bing_result_with_safe == 0)
+
+        settings["enforceSafeSearch"] = False
+        self.app.setSettings(settings)
+        yahoo_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=p'")
+
+        settings["enforceSafeSearch"] = True
+        self.app.setSettings(settings)
+        yahoo_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=r'")
+
+        assert(yahoo_result_with_safe == 0)
+        assert(yahoo_result_without_safe == 0)
 
     def test_701_unblock_option(self):
         """verify that a block page is shown but unblock button option is available."""
@@ -266,6 +288,22 @@ class WebFilterTests(WebFilterBaseTests):
         self.block_url_list_clear()
         print("block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock))
         assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
+
+    def test_800_site_lookup(self):
+        """test site lookup functionality"""
+        url = "www.google.com"
+        loop = 10
+        site_returned = False
+
+        while (loop >= 10) and (site_returned == False):
+            site_lookup = self.app.lookupSite(url)
+            site_category_id = site_lookup['list'][0]
+            site_category = self.app.getSettings()['categories']['list'][site_category_id]
+            #print(site_category.get('name'))
+            if (site_category.get("id") != 0):
+                site_returned = True
+            loop -= 1
+        assert (site_returned == True)
 
     def test_010_0000_rule_condition_src_addr(self):
         "test SRC_ADDR"
