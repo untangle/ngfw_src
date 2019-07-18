@@ -3,6 +3,7 @@ import datetime
 
 import unittest
 import pytest
+import sys
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -225,6 +226,24 @@ class SslInspectorTests(unittest.TestCase):
                                                    'flagged', True )
             assert( found )
         search_term_rules_clear()
+
+    def test_700_youtube_safe_search(self):
+        """Verify activation of YouTube Safe Search"""
+        fname = sys._getframe().f_code.co_name
+        settings = appWeb.getSettings()
+        settings["enableHttpsSni"] = False
+        settings["enableHttpsSniCertFallback"] = False
+        settings["restrictYoutube"] = True
+        appWeb.setSettings(settings)
+        remote_control.run_command("rm /tmp/%s.out" % fname)
+        youtube_selenium = "http://10.111.56.29/youtube-client.py"
+
+        remote_control.run_command("wget -q -t 1 --timeout=3 " + youtube_selenium + " -O ./youtube-client.py" )
+        result = remote_control.run_command("python youtube-client.py > /tmp/%s.out" % fname)
+        resultYoutube = remote_control.run_command("grep -q '>Age-restricted video' /tmp/%s.out" % fname)
+        print("youtube-client %s resultYoutube %s" % (result,resultYoutube))
+        assert( result == 0 )
+        assert( resultYoutube == 0 )
 
     @staticmethod
     def final_tear_down(self):
