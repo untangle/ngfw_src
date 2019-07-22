@@ -37,9 +37,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
 {
     private WebrootQuery webrootQuery = null;
 
-    public static String BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY="cats";
-    public static String BCTI_QUERY_URLINFO_CATEGORY_ID_KEY="catid";
-
     private static final String QUIC_COOKIE_FIELD_NAME = "alt-svc";
     private static final String QUIC_COOKIE_FIELD_START = "quic=";
 
