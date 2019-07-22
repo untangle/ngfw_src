@@ -204,7 +204,7 @@ Conflicts: untangle-node-web-filter
 Replaces: untangle-node-web-filter
 Provides: untangle-node-web-filter
 Section: non-free/net
-Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-app-license, untangle-bctid
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-app-license, untangle-bctid, untangle-app-webroot
 Description: Web Filter
  The Web Filter application.
 
@@ -213,7 +213,7 @@ Architecture: all
 Conflicts: untangle-node-web-monitor
 Replaces: untangle-node-web-monitor
 Provides: untangle-node-web-monitor
-Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-bctid
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-bctid, untangle-app-webroot
 Description: Web Monitor
  The Web Monitor application.
 
@@ -252,6 +252,15 @@ Provides: untangle-node-firewall
 Depends: ${misc:Depends}, untangle-vm
 Description: Firewall application
  The Firewall application.
+
+#Package: untangle-app-ip-reputation
+#Architecture: all
+#Conflicts: untangle-node-ip-reputation
+#Replaces: untangle-node-ip-reputation
+#Provides: untangle-node-ip-reputation
+#Depends: ${misc:Depends}, untangle-vm, untangle-app-license, untangle-bctid
+#Description: IP reputation application
+# The IP reputation application.
 
 Package: untangle-app-spam-blocker-lite
 Architecture: all
