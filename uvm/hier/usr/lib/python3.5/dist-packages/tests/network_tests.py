@@ -6,6 +6,7 @@ import re
 import subprocess
 import pprint
 import time
+import copy
 import runtests
 
 from jsonrpc import ServiceProxy
@@ -357,7 +358,7 @@ def append_vlan(parentInterfaceID):
 
 def append_aliases():
     ip_found = False
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = copy.deepcopy(orig_netsettings)
     for i in range(len(netsettings['interfaces']['list'])):
         if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED":
             if netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
@@ -487,13 +488,23 @@ class NetworkTests(unittest.TestCase):
             # print("alias_ip <%s>" % AliasIP)
             result = remote_control.run_command("ping -c 1 %s" % alias_ip)
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            result2 = remote_control.run_command("ping -c 1 %s" % alias_ip)
             assert (result == 0)
+            assert (result2 != 0)
         else:
             # No alias IP added so just skip
             unittest.SkipTest("No alias address available")
 
     # test basic port forward (tcp port 80)
     def test_020_port_forward_80(self):
+        # networking might not be ready specially on boxes with DHCP WAN
+        timeout = 30
+        ping_result = 1
+        while (timeout > 0 and ping_result != 0):
+            timeout -= 1
+            print("Try " + str(timeout))
+            ping_result = remote_control.run_command("ping -c 1 %s" % test_untangle_com_ip)
+        result = remote_control.run_command("ping -c 1 %s" % test_untangle_com_ip)
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","80","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
         assert(result == 0)
