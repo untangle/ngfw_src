@@ -643,7 +643,7 @@ Ext.define('Ung.util.Renderer', {
                     if(!Renderer.webRuleMap[policyId][reasonSource]){
                         Renderer.webRuleMap[policyId][reasonSource] = {};
                     }
-                    Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
+                    Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] && rule["name"] != "null" ? rule["name"] : ( rule["description"] ? rule["description"] : rule["description"] );
                 });
             }
             if(!Renderer.webRuleMap[policyId][reasonSource][value]){
