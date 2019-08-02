@@ -189,6 +189,20 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     }
 
     /**
+     * Restart daemon
+     *
+     * @param daemonName
+     *        The daemon name
+     */
+    public void restart(String daemonName)
+    {
+        DaemonObject daemonObject = getDaemonObject(daemonName);
+        synchronized (daemonObject) {
+            execDaemonControlEvil(daemonName, "restart");
+        }
+    }
+
+    /**
      * Used to set an optional additional command that should be executed after
      * the normal restart command is executed.
      * 
