@@ -15,6 +15,8 @@ public interface DaemonManager
 
     public void reload(String daemonName);
 
+    public void restart(String daemonName);
+
     public int getUsageCount(String daemonName);
 
     public String getStatus(String daemonName);
