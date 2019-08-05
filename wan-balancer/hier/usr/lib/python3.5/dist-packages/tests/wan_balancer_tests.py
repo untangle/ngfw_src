@@ -47,7 +47,7 @@ def create_route_rule( networkAddr, netmask, gateway):
         "ruleId": 1, 
         "toAddr": True, 
         "toDev": False
-         };
+         }
 
 def build_nat_rules(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
     global rule_counter
@@ -395,7 +395,7 @@ class WanBalancerTests(unittest.TestCase):
             build_wan_test_rule(wanIndex)
 
         # return settings to default
-        nuke_wan_balancer_rules();
+        nuke_wan_balancer_rules()
         nuke_wan_failover_rules()
                     
     def test_100_wanBalancerRouteWanDown(self):
@@ -411,7 +411,7 @@ class WanBalancerTests(unittest.TestCase):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for wanIndexTup in index_of_wans:
             wanIndex = wanIndexTup[0]
-            nuke_wan_balancer_rules();
+            nuke_wan_balancer_rules()
             # Get the external IP of the interface selected.
             routedIP = wanIndexTup[2]
             # WAN index for route rules is from networking list.  Balance is zero  
@@ -441,8 +441,9 @@ class WanBalancerTests(unittest.TestCase):
                 print("WAN Down WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result != routedIP)
 
-        nuke_wan_balancer_rules();
+        nuke_wan_balancer_rules()
         nuke_wan_failover_rules()
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
     
     def test_110_networkRouteWanDown(self):
         # create a network route and then down the wan which the route is set to
@@ -452,13 +453,13 @@ class WanBalancerTests(unittest.TestCase):
         if (len(index_of_wans) < 2):
             raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        nuke_wan_balancer_rules();
+        nuke_wan_balancer_rules()
 
         for wanIndexTup in index_of_wans:
             # Add networking route which does not handle re-routing if WAN is down
             # get the WAN IP address which was source routed
             wanIndex = wanIndexTup[0]
-            print("Testing interface: %i" % wanIndex)
+            print("Testing interface: %s" % str(wanIndexTup))
             sys.stdout.flush()
             # Get the external IP of the interface selected.
             routedIP = wanIndexTup[2]
@@ -469,7 +470,12 @@ class WanBalancerTests(unittest.TestCase):
             # Test that only the routed interface is used 5 times
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                result = ""
+                timeout = 60
+                while (timeout > 0 and result == ""):
+                    time.sleep(1)
+                    timeout -= 1
+                    result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
                 print("Network Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
@@ -510,7 +516,7 @@ class WanBalancerTests(unittest.TestCase):
         
         # raise unittest.SkipTest('Skipping test_120_natOneToOneWanDown as not possible with current network layout ')
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        nuke_wan_balancer_rules();
+        nuke_wan_balancer_rules()
         nuke_wan_failover_rules()
         # create valid failover tests
         for wanIndexTup in index_of_wans:
@@ -531,7 +537,12 @@ class WanBalancerTests(unittest.TestCase):
             # Test that only the routed interface is used 5 times
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = global_functions.get_public_ip_address()
+                result = ""
+                timeout = 60
+                while (timeout > 0 and result == ""):
+                    time.sleep(1)
+                    timeout -= 1
+                    result = global_functions.get_public_ip_address()
                 print("NAT 1:1 IP %s External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result))
                 assert (result == wanExternalIP)
             # now down the selected wan and see if traffic flows out the other wan
