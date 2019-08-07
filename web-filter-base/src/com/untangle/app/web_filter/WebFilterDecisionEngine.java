@@ -113,7 +113,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     private static long DEFAULT_GET_HEARTBEAT_INTERVAL_MS = (long) 1000; /* every 1seconds */
     private static long DEFAULT_GET_HEARTBEAT_RUN_TIMEOUT_MS = (long) 60 * 60 * 1000; /* Kill process after 60 minutes.  */
-    static private Pulse pulseHeatbeat = new Pulse("decision-heartbeat", new GetHeartbeat(), DEFAULT_GET_HEARTBEAT_INTERVAL_MS, true, DEFAULT_GET_HEARTBEAT_RUN_TIMEOUT_MS);
+    static private Pulse pulseHeartbeat = new Pulse("decision-heartbeat", new GetHeartbeat(), DEFAULT_GET_HEARTBEAT_INTERVAL_MS, true, DEFAULT_GET_HEARTBEAT_RUN_TIMEOUT_MS);
 
     /**
      * Constructor
@@ -379,7 +379,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
 
         if(firstIn){
-            pulseHeatbeat.start();
+            pulseHeartbeat.start();
         }
         pulseGetStatistics.start();
     }
@@ -397,7 +397,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 Thread.sleep(2 * 1000);
             }
             if( lastOut ){
-                pulseHeatbeat.stop();
+                pulseHeartbeat.stop();
                 Thread.sleep(2 * 1000);
                 closeBctidSockets();
                 BctidSocketRunnersCount.set(0);
@@ -509,7 +509,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 BctidSocketRunnersCount.incrementAndGet();
             }
 
-            bctidSocket.setSoTimeout(5000);
+            bctidSocket.setSoTimeout(BctidClientReadTimeout);
             InputStream is = null;
             bctidSocket.getOutputStream().write(query.getBytes());
             bctidSocket.getOutputStream().flush();
