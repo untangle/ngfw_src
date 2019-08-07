@@ -403,7 +403,7 @@ public class NotificationManagerImpl implements NotificationManager
             for (App app2 : webFilterList) {
                 if (app1.getAppSettings().getId().equals(app2.getAppSettings().getId())) continue;
 
-                if (app1.getAppSettings().getPolicyId().equals(app2.getAppSettings().getPolicyId())) notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Monitor");
+                if (app1.getAppSettings().getPolicyId().equals(app2.getAppSettings().getPolicyId())) notificationList.add(i18nUtil.tr("One or more policies contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Monitor");
             }
         }
 
@@ -411,7 +411,7 @@ public class NotificationManagerImpl implements NotificationManager
             for (App app2 : spamblockerList) {
                 if (app1.getAppSettings().getId().equals(app2.getAppSettings().getId())) continue;
 
-                if (app1.getAppSettings().getPolicyId().equals(app2.getAppSettings().getPolicyId())) notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite");
+                if (app1.getAppSettings().getPolicyId().equals(app2.getAppSettings().getPolicyId())) notificationList.add(i18nUtil.tr("One or more policies contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite");
             }
         }
     }
