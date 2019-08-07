@@ -543,11 +543,25 @@ Ext.define('Ung.util.Renderer', {
 
     webCategoryMap: {},
     webCategory: function(value, row, record){
-        var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
         if(!Renderer.webCategoryMap[value]){
-            var categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, "categories");
-            if(!categoryInfo){
-                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, "categories");
+            var categoryInfo = null;
+            if( record && record.get && record.get('policy_id') ){
+                var policyId = record.get('policy_id');
+                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, "categories");
+                if(!categoryInfo){
+                    categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, "categories");
+                }
+            }else{
+                var policies = Rpc.directData('rpc.reportsManager.getPoliciesInfo').list;
+                for(var i = 0; i < policies.length; i++){
+                    categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policies[i].policyId, "categories");
+                    if(!categoryInfo){
+                        categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policies[i].policyId, "categories");
+                    }
+                    if(categoryInfo != null){
+                        break;
+                    }
+                }
             }
 
             if(categoryInfo && categoryInfo["list"]){
@@ -629,7 +643,7 @@ Ext.define('Ung.util.Renderer', {
                     if(!Renderer.webRuleMap[policyId][reasonSource]){
                         Renderer.webRuleMap[policyId][reasonSource] = {};
                     }
-                    Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
+                    Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] && rule["name"] != "null" ? rule["name"] : ( rule["description"] ? rule["description"] : rule["description"] );
                 });
             }
             if(!Renderer.webRuleMap[policyId][reasonSource][value]){
