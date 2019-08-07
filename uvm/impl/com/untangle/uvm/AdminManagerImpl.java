@@ -342,7 +342,7 @@ public class AdminManagerImpl implements AdminManager
                     
         } else {
             if ( passwordHashShadow == null ) {
-                passwordHashShadow != "!";
+                passwordHashShadow = "!";
             }
             ExecManagerResult result = UvmContextImpl.context().execManager().exec( "usermod -p '" + passwordHashShadow + "' root" );
             int exitCode = result.getResult();
