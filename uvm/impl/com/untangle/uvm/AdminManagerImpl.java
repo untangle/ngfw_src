@@ -340,14 +340,15 @@ public class AdminManagerImpl implements AdminManager
                 }
             }
                     
-        } else if ( passwordHashShadow != null ) {
+        } else {
+            if ( passwordHashShadow == null ) {
+                passwordHashShadow != "!";
+            }
             ExecManagerResult result = UvmContextImpl.context().execManager().exec( "usermod -p '" + passwordHashShadow + "' root" );
             int exitCode = result.getResult();
             if ( exitCode != 0 ) {
                 logger.warn( "Setting root password returned non-zero exit code: " + exitCode );
             }
-        } else {
-            logger.warn("Unable to set root password. No known password or password hash");
         }
     }
 }
