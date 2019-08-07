@@ -18,11 +18,19 @@ app = None
 appData = None
 appSSL = None
 canRelay = True
+mail_app = True
 smtpServerHost = global_functions.TEST_SERVER_HOST
 
 def getLatestMailSender():
+    global mail_app
     remote_control.run_command("rm -f mailpkg.tar*") # remove all previous mail packages
     results = remote_control.run_command("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    #  check if the download was successful
+    if (results != 0):
+        # check if existing mail app is already there
+        mail_result = remote_control.run_command("test -x mailsender.py")
+        if (mail_result != 0):
+            mail_app = False
     # print("Results from getting mailpkg.tar <%s>" % results)
     results = remote_control.run_command("tar -xvf mailpkg.tar")
     # print("Results from untaring mailpkg.tar <%s>" % results)
@@ -105,6 +113,8 @@ class PhishBlockerTests(unittest.TestCase):
     def test_020_smtpQuarantinedPhishBlockerTest(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
+        if (not mail_app):
+            raise unittest.SkipTest('Unable download mailsendder app')
         pre_events_quarantine = global_functions.get_app_metric_value(app,"quarantine")
 
         appData['smtpConfig']['scanWanMail'] = True
@@ -152,6 +162,9 @@ class PhishBlockerTests(unittest.TestCase):
     def test_030_smtpMarkPhishBlockerTest(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
+        if (not mail_app):
+            raise unittest.SkipTest('Unable download mailsendder app')
+            
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 5
         appData['smtpConfig']['msgAction'] = "MARK"
@@ -183,6 +196,9 @@ class PhishBlockerTests(unittest.TestCase):
     def test_040_smtpDropPhishBlockerTest(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through' + smtpServerHost)
+        if (not mail_app):
+            raise unittest.SkipTest('Unable download mailsendder app')
+            
         appData['smtpConfig']['scanWanMail'] = True
         appData['smtpConfig']['strength'] = 5
         appData['smtpConfig']['msgAction'] = "DROP"
@@ -204,6 +220,9 @@ class PhishBlockerTests(unittest.TestCase):
     def test_050_checkTLSBypass(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
+        if (not mail_app):
+            raise unittest.SkipTest('Unable download mailsendder app')
+            
         tlsSMTPResult = sendPhishMail(host=smtpServerHost, useTLS=True)
         # print("TLS  : " + str(tlsSMTPResult))
         assert(tlsSMTPResult == 0)
@@ -212,6 +231,9 @@ class PhishBlockerTests(unittest.TestCase):
         global appSSL
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
+        if (not mail_app):
+            raise unittest.SkipTest('Unable download mailsendder app')
+            
         ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
         appSSL.start()
         tlsSMTPResult = sendPhishMail(mailfrom="test060", host=smtpServerHost, useTLS=True)
