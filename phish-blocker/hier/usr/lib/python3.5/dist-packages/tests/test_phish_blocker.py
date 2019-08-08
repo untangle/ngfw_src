@@ -1,17 +1,17 @@
 """phish_blocker tests"""
+
 import time
 import subprocess
 import socket
 import re
-
 import unittest
 import pytest
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 
 default_policy_id = 1
 app = None
@@ -44,10 +44,12 @@ def sendPhishMail(mailfrom="test", host=smtpServerHost, useTLS=False):
     return mailResult
 
 @pytest.mark.phish_blocker
-class PhishBlockerTests(unittest.TestCase):
+class PhishBlockerTests(NGFWTestCase):
 
     @staticmethod
     def module_name():
+        global app
+        app = PhishBlockerTests._app
         return "phish-blocker"
 
     @staticmethod
@@ -62,18 +64,18 @@ class PhishBlockerTests(unittest.TestCase):
     def appNameSSLInspector():
         return "ssl-inspector"
 
-    @staticmethod
-    def initial_setup(self):
-        global app, appData, appSP, appDataSP, appSSL, canRelay
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        appData = app.getSettings()
-        appSP = uvmContext.appManager().app(self.appNameSpamCase())
+    @classmethod
+    def initial_extra_setup(cls):
+        # FIXME: same as SpamBlockerBaseTests
+
+        global appData, appSP, appDataSP, appSSL, canRelay
+
+        appData = cls._app.getSettings()
+        appSP = uvmContext.appManager().app(cls.appNameSpamCase())
         appDataSP = appSP.getSmtpSettings()
-        if uvmContext.appManager().isInstantiated(self.appNameSSLInspector()):
-            raise Exception('app %s already instantiated' % self.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
+        if uvmContext.appManager().isInstantiated(cls.appNameSSLInspector()):
+            raise Exception('app %s already instantiated' % cls.appNameSSLInspector())
+        appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
         # appSSL.start() # leave app off. app doesn't auto-start
         try:
             canRelay = global_functions.send_test_email(mailhost=smtpServerHost)
@@ -81,7 +83,6 @@ class PhishBlockerTests(unittest.TestCase):
             canRelay = False
         getLatestMailSender()
         
-    def setUp(self):
         # flush quarantine.
         curQuarantine = appSP.getQuarantineMaintenenceView()
         curQuarantineList = curQuarantine.listInboxes()
@@ -250,12 +251,9 @@ class PhishBlockerTests(unittest.TestCase):
                                             'c_client_addr', remote_control.client_ip,
                                             'phish_blocker_action', 'D')
     
-    @staticmethod
-    def final_tear_down(self):
-        global app, appSSL
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
+    @classmethod
+    def final_extra_tear_down(cls):
+        global appSSL
         if appSSL != None:
             uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
             appSSL = None
