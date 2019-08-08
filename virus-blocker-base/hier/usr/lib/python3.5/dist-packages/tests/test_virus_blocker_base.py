@@ -1,18 +1,18 @@
 """virus_blocker_base tests"""
+
 import subprocess
 from datetime import datetime
 import sys
 import socket
 import platform
-
 import unittest
 import runtests
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
-import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
-from uvm import Uvm
 
 default_policy_id = 1
 app = None
@@ -22,13 +22,13 @@ canRelay = True
 testsite = global_functions.TEST_SERVER_HOST
 testsiteIP = socket.gethostbyname(testsite)
 
-def addPassSite(site, enabled=True, description="description"):
+def addPassSite(app, site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": site }
     rules = app.getPassSites()
     rules["list"].append(newRule)
     app.setPassSites(rules)
 
-def nukePassSites():
+def nukePassSites(app):
     rules = app.getPassSites()
     rules["list"] = []
     app.setPassSites(rules)
@@ -63,43 +63,33 @@ def createSSLInspectRule(port="25"):
         "ruleId": 1
     }
 
-def enableFileExtensionScan(stringtype):
+def enableFileExtensionScan(app, stringtype):
     virusSettings = app.getSettings()
     for index, extension in enumerate(virusSettings["httpFileExtensions"]["list"]):
         if (extension["string"] == stringtype):
             virusSettings["httpFileExtensions"]["list"][index]["enabled"] = True
             app.setSettings(virusSettings)
 
-class VirusBlockerBaseTests(unittest.TestCase):
 
-    @staticmethod
-    def module_name():
-        return "untangle-base-virus-blocker"
-
-    @staticmethod
-    def shortName():
-        return "untangle"
-
-    @staticmethod
-    def displayName():
-        return "Virus Blocker Lite"
+class VirusBlockerBaseTests(NGFWTestCase):
 
     @staticmethod
     def appNameSSLInspector():
         return "ssl-inspector"
 
-    @staticmethod
-    def initial_setup(self):
-        global app,md5StdNum, appSSL, appSSLData, canRelay
+    @classmethod
+    def initial_extra_setup(cls):
+        global md5StdNum, appSSL, appSSLData, canRelay
+
         # download eicar and trojan files before installing virus blocker
-        self.ftp_user_name, self.ftp_password = global_functions.get_live_account_info("ftp")
+        cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
         remote_control.run_command("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
+        result = remote_control.run_command("wget --user=" + cls.ftp_user_name + " --password='" + cls.ftp_password + "' -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
         assert (result == 0)
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --user=" + cls.ftp_user_name + " --password='" + cls.ftp_password + "' -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
         md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        self.md5StdNum = md5StdNum
+        cls.md5StdNum = md5StdNum
         # print("md5StdNum <%s>" % md5StdNum)
         assert (result == 0)
 
@@ -108,23 +98,15 @@ class VirusBlockerBaseTests(unittest.TestCase):
         except Exception as e:
             canRelay = False
 
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        self.app = app
-
-        if uvmContext.appManager().isInstantiated(self.appNameSSLInspector()):
-            raise Exception('app %s already instantiated' % self.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
+        if uvmContext.appManager().isInstantiated(cls.appNameSSLInspector()):
+            raise Exception('app %s already instantiated' % cls.appNameSSLInspector())
+        appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
         # appSSL.start() # leave app off. app doesn't auto-start
         appSSLData = appSSL.getSettings()
         # Enable cloud connection
         system_settings = uvmContext.systemManager().getSettings()
         system_settings['cloudEnabled'] = True
         uvmContext.systemManager().setSettings(system_settings)
-
-    def setUp(self):
-        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -148,8 +130,8 @@ class VirusBlockerBaseTests(unittest.TestCase):
     def test_015_httpEicarBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
-        pre_events_scan = global_functions.get_app_metric_value(app,"scan")
-        pre_events_block = global_functions.get_app_metric_value(app,"block")
+        pre_events_scan = global_functions.get_app_metric_value(self._app,"scan")
+        pre_events_block = global_functions.get_app_metric_value(self._app,"block")
 
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         # temporary for debugging
@@ -157,8 +139,8 @@ class VirusBlockerBaseTests(unittest.TestCase):
             remote_control.run_command("wget -q -O /tmp/eicar_wget_output.zip http://test.untangle.com/virus/eicar.zip")
         assert (result == 0)
 
-        post_events_scan = global_functions.get_app_metric_value(app,"scan")
-        post_events_block = global_functions.get_app_metric_value(app,"block")
+        post_events_scan = global_functions.get_app_metric_value(self._app,"scan")
+        post_events_block = global_functions.get_app_metric_value(self._app,"block")
 
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
@@ -188,9 +170,9 @@ class VirusBlockerBaseTests(unittest.TestCase):
 
     # test that client can block virus http download zip
     def test_019_httpEicarPassSite(self):
-        addPassSite(testsite)
+        addPassSite(self._app, testsite)
         result = remote_control.run_command("wget -q -O - http://" + testsite + "/virus/eicar.zip 2>&1 | grep -q blocked")
-        nukePassSites()
+        nukePassSites(self._app)
         assert (result == 1)
 
     # test that client can ftp download zip
@@ -237,10 +219,10 @@ class VirusBlockerBaseTests(unittest.TestCase):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
-        addPassSite(global_functions.ftp_server)
+        addPassSite(self._app, global_functions.ftp_server)
         remote_control.run_command("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
-        nukePassSites()
+        nukePassSites(self._app)
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
         print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
@@ -360,25 +342,25 @@ class VirusBlockerBaseTests(unittest.TestCase):
     def test_106_eventlog_smtpVirusPassList(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + testsite)
-        addPassSite(testsiteIP)
+        addPassSite(self._app, testsiteIP)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         result = remote_control.run_command("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         if result != 0:
-            nukePassSites()
+            nukePassSites(self._app)
             assert( False )
         # download the email script
         result = remote_control.run_command("wget -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
         if result != 0:
-            nukePassSites()
+            nukePassSites(self._app)
             assert( False )
         result = remote_control.run_command("chmod 775 /tmp/email_script.py")
         if result != 0:
-            nukePassSites()
+            nukePassSites(self._app)
             assert( False )
         # email the file
         result = remote_control.run_command("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
-        nukePassSites()
+        nukePassSites(self._app)
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Clean Email Events',None,1)
@@ -441,7 +423,7 @@ class VirusBlockerBaseTests(unittest.TestCase):
     def test_200_scanFileExtension(self):
         """test that "Scan" option in advanced tab is scanned, using zip file"""
         #find 'zip' file extension and enable scan option
-        enableFileExtensionScan("zip")
+        enableFileExtensionScan(self._app, "zip")
 
         remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.zip 2>&1")
 
@@ -456,27 +438,24 @@ class VirusBlockerBaseTests(unittest.TestCase):
         assert(found)
 
     def test_300_disableAllScans(self):
-        virusSettings = self.app.getSettings()
+        virusSettings = self._app.getSettings()
 
-        self.app.clearAllEventHandlerCaches()
+        self._app.clearAllEventHandlerCaches()
 
         virusSettings['enableCloudScan'] = False
         virusSettings['enableLocalScan'] = False
-        self.app.setSettings(virusSettings)
+        self._app.setSettings(virusSettings)
 
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
 
         virusSettings['enableCloudScan'] = True
         virusSettings['enableLocalScan'] = True
-        self.app.setSettings(virusSettings)
+        self._app.setSettings(virusSettings)
         assert (result != 0)
 
-    @staticmethod
-    def final_tear_down(self):
-        global app, appSSL
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
+    @classmethod
+    def final_tear_down(cls):
+        global appSSL
         if appSSL != None:
             uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
             appSSL = None
