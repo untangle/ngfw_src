@@ -62,7 +62,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
     public static String BCTI_QUERY_URLINFO_CATEGORY_ID_KEY="catid";
     public static String BCTI_QUERY_URLCLEARCACHE = "{\"url/setcacheclear\":{}}\r\n";
     public static String BCTI_QUERY_STATUS = "{\"status\":{}}\r\n";
-    public static String BCTI_QUERY_HEARTBEAT = "{\"heartbeat\":{}}\r\n";
 
     private static final String QUIC_COOKIE_FIELD_NAME = "alt-svc";
     private static final String QUIC_COOKIE_FIELD_START = "quic=";
@@ -85,6 +84,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
     static private InetSocketAddress BCTID_SOCKET_ADDRESS = new InetSocketAddress("127.0.0.1", 8484);
 
     private static AtomicInteger DecisionEngineCount = new AtomicInteger();
+
+    private static final long BCTID_RETRY_INTERVAL = 60 * 1000;
+    private static final int BCTID_RETRY_MAX_COUNT = 5;
+    private static AtomicInteger BctidRetryCount = new AtomicInteger(0);
+    private static AtomicLong BctidRetryIntervalExpire = new AtomicLong(0L);
 
     private static AtomicBoolean BctidReady = new AtomicBoolean(false);
     private long BctidSocketConnectWait = 0L;
@@ -110,10 +114,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static long DEFAULT_GET_STATISTICS_RUN_TIMEOUT_MS = (long) 60 * 60 * 1000; /* Kill process after 60 minutes.  */
 
     private Pulse pulseGetStatistics = new Pulse("decision-get-statistics", new GetStatistics(), DEFAULT_GET_STATISTICS_INTERVAL_MS, true, DEFAULT_GET_STATISTICS_RUN_TIMEOUT_MS);
-
-    private static long DEFAULT_GET_HEARTBEAT_INTERVAL_MS = (long) 1000; /* every 1seconds */
-    private static long DEFAULT_GET_HEARTBEAT_RUN_TIMEOUT_MS = (long) 60 * 60 * 1000; /* Kill process after 60 minutes.  */
-    static private Pulse pulseHeartbeat = new Pulse("decision-heartbeat", new GetHeartbeat(), DEFAULT_GET_HEARTBEAT_INTERVAL_MS, true, DEFAULT_GET_HEARTBEAT_RUN_TIMEOUT_MS);
 
     /**
      * Constructor
@@ -379,7 +379,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
 
         if(firstIn){
-            pulseHeartbeat.start();
+            BctidReady.set(true);
         }
         pulseGetStatistics.start();
     }
@@ -397,7 +397,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 Thread.sleep(2 * 1000);
             }
             if( lastOut ){
-                pulseHeartbeat.stop();
+                BctidReady.set(false);
                 Thread.sleep(2 * 1000);
                 closeBctidSockets();
                 BctidSocketRunnersCount.set(0);
@@ -541,7 +541,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
             logger.warn("Unable to connect");
             BctidSocketRunnersCount.decrementAndGet();
             bctidSocket = null;
-            BctidReady.set(false);
+            failed = true;
         }catch(Exception e){
             try{
                 bctidSocket.close();
@@ -552,9 +552,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
             BctidSocketRunnersCount.decrementAndGet();
 
             String poolStatus = "runnerCount="+BctidSocketRunnersCount.get()+", poolCount=" + BctidSocketPool.size();
+            failed = true;
             if(retry == false){
                 logger.warn("problem with query ("+query+"), attempting retry " + poolStatus, e);
-                failed = true;
             }else{
                 logger.warn("problem with query ("+query+"), was in retry " + poolStatus, e);
             }
@@ -565,8 +565,22 @@ public class WebFilterDecisionEngine extends DecisionEngine
             BctidSocketPool.offer(bctidSocket);
         }
 
-        if(failed && retry == false){
-            return bctidQuery(query, true);
+        if(failed){
+            if(retry == false){
+                return bctidQuery(query, true);
+            }else{
+                BctidRetryCount.incrementAndGet();
+                if(BctidRetryIntervalExpire.get() == 0){
+                    BctidRetryIntervalExpire.set(System.currentTimeMillis() + BCTID_RETRY_INTERVAL);
+                }else if(BctidRetryIntervalExpire.get() < System.currentTimeMillis() ){
+                    BctidRetryIntervalExpire.set(0);
+                    if(BctidRetryCount.get() >= BCTID_RETRY_MAX_COUNT){
+                        closeBctidSockets();
+                        BctidRetryCount.set(0);
+                        UvmContextFactory.context().daemonManager().restart("untangle-bctid");
+                    }
+                }
+            }
         }
 
         return answer;
@@ -725,74 +739,5 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }
         }
     }
-
-    /**
-     * Renew the doman/group cache across all available domains.
-     */
-    static private class GetHeartbeat implements Runnable
-    {
-        static Socket bctidSocket = null;
-        static byte payloadBuffer[] = new byte[1024];
-        static final long BCTID_MAX_WAIT_RESTART = 10 * 1000L;
-        static int BctidHearbeatReadTimeout = 250;
-        static long BctidConnectNextTry = 0;
-      /**
-         * Get heartbeat.
-         */
-        public void run()
-        {
-            try{
-                if(bctidSocket == null){
-                    bctidSocket = new Socket();
-                    bctidSocket.connect(BCTID_SOCKET_ADDRESS, BctidClientConnectTimeout);
-                    bctidSocket.setKeepAlive(true);
-                }
-                if(bctidSocket != null){
-                    bctidSocket.setSoTimeout(BctidHearbeatReadTimeout);
-                    InputStream is = null;
-                    bctidSocket.getOutputStream().write(BCTI_QUERY_HEARTBEAT.getBytes());
-                    bctidSocket.getOutputStream().flush();
-                    is = bctidSocket.getInputStream();
-
-                    int payloadRead = is.read(payloadBuffer);
-                    if(payloadRead > 0){
-                        String answer = new String(payloadBuffer, 0, payloadRead);
-                        if(answer.startsWith("{\"up\":")){
-                            if(BctidReady.get() == false){
-                                staticLogger.warn("GetHeartbeat: Daemon running properly");
-                                BctidConnectNextTry = 0;
-                            }
-                            BctidReady.set(true);
-                            return;
-                        }
-                    }
-                }
-                BctidReady.set(false);
-            }catch(ConnectException ce){
-                BctidReady.set(false);
-            }catch(Exception e){
-                BctidReady.set(false);
-            }finally{
-                if(BctidReady.get() == false){
-                    if(BctidConnectNextTry == 0){
-                        staticLogger.warn("GetHeartbeat: Detected daemon connection failure");
-                        // Just determined not ready.  Set wait for restart and shutdown all sockets.
-                        BctidConnectNextTry = System.currentTimeMillis() + BCTID_MAX_WAIT_RESTART;
-                        closeBctidSockets();
-                    }else if(BctidConnectNextTry <  System.currentTimeMillis()){
-                        // Ready to restart.
-                        staticLogger.warn("GetHeartbeat: Restarting daemon");
-                        UvmContextFactory.context().daemonManager().restart("untangle-bctid");
-                        BctidConnectNextTry = 0;
-                    }
-                    try{
-                        bctidSocket.close();
-                    }catch(Exception sc ){}
-                    bctidSocket = null;
-                }
-            }
-        }
-    }
-
 
 }
