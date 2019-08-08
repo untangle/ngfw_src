@@ -6,8 +6,7 @@ import sys
 import traceback
 import socket
 
-import unittest
-import pytest
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -87,20 +86,14 @@ def rule_append(newRule):
     app.setRules(rules)
 
 @pytest.mark.firewall
-class FirewallTests(unittest.TestCase):
+class FirewallTests(NGFWTestCase):
 
     @staticmethod
     def module_name():
-        return "firewall"
-
-    def initial_setup(self):
+        # cheap trick to force class variable _app into global namespace as app
         global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-
-    def setUp(self):
-        print()
+        app = FirewallTests._app
+        return "firewall"
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -873,13 +866,6 @@ class FirewallTests(unittest.TestCase):
                                             'firewall_blocked', False,
                                             'firewall_flagged', True)
         assert( found )
-
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-        app = None
 
 test_registry.register_module("firewall", FirewallTests)
 
