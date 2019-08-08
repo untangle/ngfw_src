@@ -3,6 +3,9 @@ import pytest
 
 import runtests
 
+# these need to be transformed into command-line switches as well
+runtests.remote_control.external_interface = 1
+runtests.remote_control.interface = 2
 
 def pytest_addoption(parser):
     parser.addoption("--runtests-host", type=foo, default="192.168.122.122", help="client IP")
