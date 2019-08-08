@@ -2,14 +2,8 @@
 import time
 import subprocess
 
-import unittest
 import pytest
-from tests.global_functions import uvmContext
-import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
-import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 
 from .test_virus_blocker_base import VirusBlockerBaseTests
 
@@ -21,6 +15,9 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
 
     @staticmethod
     def module_name():
+        # cheap trick to force class variable _app into global namespace as app
+        global app
+        app = VirusBlockerBaseTests._app
         return "virus-blocker-lite"
 
     @staticmethod
