@@ -27,6 +27,8 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     @staticmethod
     def module_name():
+        global app
+        app = VirusBlockerBaseTests._app
         return "virus-blocker"
 
     @staticmethod
@@ -68,18 +70,18 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # turn on forceMemoryMode to test the logic used when we have no disk (i.e., Asus ARM Router)
     def test_210_enableForceMemoryScanMode(self):
-        virusSettings = self.app.getSettings()
+        virusSettings = self._app.getSettings()
         assert (virusSettings['forceMemoryMode'] == False)
 
         virusSettings['forceMemoryMode'] = True
-        self.app.setSettings(virusSettings)
+        self._app.setSettings(virusSettings)
 
-        virusSettings = self.app.getSettings()
+        virusSettings = self._app.getSettings()
         assert (virusSettings['forceMemoryMode'] == True)
 
     # clear anything cached to force files to be downloaded again
     def test_220_clearEventHandlerCache(self):
-        self.app.clearAllEventHandlerCaches()
+        self._app.clearAllEventHandlerCaches()
 
     # test the cloud scanner with http using our special small test virus
     def test_230_httpCloudSmallBlocked(self):
@@ -154,13 +156,13 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # turn off forceMemoryMode when we are finished
     def test_280_disableForceMemoryScanMode(self):
-        virusSettings = self.app.getSettings()
+        virusSettings = self._app.getSettings()
         assert (virusSettings['forceMemoryMode'] == True)
 
         virusSettings['forceMemoryMode'] = False
-        self.app.setSettings(virusSettings)
+        self._app.setSettings(virusSettings)
 
-        virusSettings = self.app.getSettings()
+        virusSettings = self._app.getSettings()
         assert (virusSettings['forceMemoryMode'] == False)
 
 test_registry.register_module("virus-blocker", VirusBlockTests)
