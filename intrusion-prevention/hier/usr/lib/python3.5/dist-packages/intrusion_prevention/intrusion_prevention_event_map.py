@@ -33,9 +33,6 @@ class IntrusionPreventionEventMap:
         for signature in self.signatures.get_signatures().values():
             if signature.options["sid"] == "":
                 continue
-            if signature.rule is None:
-                # If no rule, signature is disabled.
-                continue
             msg = signature.options["msg"]
             if msg.startswith('"') and msg.endswith('"'):
                 msg = msg[1:-1]
