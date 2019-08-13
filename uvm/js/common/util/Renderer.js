@@ -628,7 +628,7 @@ Ext.define('Ung.util.Renderer', {
 
         if(!Renderer.webRuleMap[policyId] ||
             !Renderer.webRuleMap[policyId][reasonSource] ||
-            (value != Renderer.listKey && !Renderer.webRuleMap[policyId][reasonSource][value])){
+            (value != Renderer.listKey && !(value in Renderer.webRuleMap[policyId][reasonSource]))){
 
             var categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, reasonSource);
             if(!categoryInfo){
@@ -646,7 +646,7 @@ Ext.define('Ung.util.Renderer', {
                     Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] && rule["name"] != "null" ? rule["name"] : ( rule["description"] ? rule["description"] : rule["description"] );
                 });
             }
-            if(!Renderer.webRuleMap[policyId][reasonSource][value]){
+            if(!(value in Renderer.webRuleMap[policyId][reasonSource]) && (value != Renderer.listKey)){
                 // If category cannot be found, don't just keep coming back for more.
                 Renderer.webRuleMap[policyId][reasonSource][value] = 'Unknown'.t();
             }
