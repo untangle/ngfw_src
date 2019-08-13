@@ -5,17 +5,17 @@ if [ ! -z "`pidof openvpn`" ] ; then
     systemctl --no-block restart openvpn
 fi
 
-# HUP doesnt seem to work - openvpn dies on startup
-# killall -HUP openvpn 2>/dev/null
+# Call the openvpn app script to generate the interface status
+# files using the values from the application settings
+echo "Creating interface status files"
+/usr/share/untangle/bin/openvpn-create-statfile
 
-# Rewrite status files
-echo "Writing status file: /var/lib/interface-status/interface-250-status.js"
-/usr/share/untangle-sync-settings/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/interface-status/interface-250-status.js
+# Check the interface ID file
 if [ ! -f /var/lib/interface-status/interface-250-status.js ] ; then
     echo "Missing status file: /var/lib/interface-status/interface-250-status.js"
 fi
-echo "Writing status file: /var/lib/interface-status/interface-tun0-status.js"
-/usr/share/untangle-sync-settings/bin/write-interface-status.py -I tun0 -i 250 -w /var/lib/interface-status/interface-tun0-status.js
+
+# Check the interface name file
 if [ ! -f /var/lib/interface-status/interface-tun0-status.js ] ; then
     echo "Missing status file: /var/lib/interface-status/interface-tun0-status.js"
 fi
