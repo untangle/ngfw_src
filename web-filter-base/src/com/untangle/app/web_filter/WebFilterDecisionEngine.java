@@ -372,13 +372,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public void start()
     {
-        reconfigure(null);
         boolean firstIn = DecisionEngineCount.get() == 0;
+        if(firstIn){
+            reconfigure(null);
+        }
         DecisionEngineCount.incrementAndGet();
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
 
         if(firstIn){
+            UvmContextFactory.context().daemonManager().restart("untangle-bctid");
             BctidReady.set(true);
         }
         pulseGetStatistics.start();
@@ -554,7 +557,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
             String poolStatus = "runnerCount="+BctidSocketRunnersCount.get()+", poolCount=" + BctidSocketPool.size();
             failed = true;
             if(retry == false){
-                logger.warn("problem with query ("+query+"), attempting retry " + poolStatus, e);
+                logger.warn("problem with query ("+query+"), attempting retry " + poolStatus + " (" + e + ")");
             }else{
                 logger.warn("problem with query ("+query+"), was in retry " + poolStatus, e);
             }
@@ -576,9 +579,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     BctidRetryIntervalExpire.set(0);
                     if(BctidRetryCount.get() >= BCTID_RETRY_MAX_COUNT){
                         closeBctidSockets();
-                        BctidRetryCount.set(0);
                         UvmContextFactory.context().daemonManager().restart("untangle-bctid");
                     }
+                    BctidRetryCount.set(0);
                 }
             }
         }
