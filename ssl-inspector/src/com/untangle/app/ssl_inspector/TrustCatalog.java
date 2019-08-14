@@ -55,22 +55,27 @@ class TrustCatalog
     public static TrustManagerFactory createTrustFactory() throws Exception
     {
         KeyStore trustStore = KeyStore.getInstance("JKS");
+        FileInputStream keyStream = null;
 
         // first we load the standard list of trusted CA certificates
-        trustStore.load(new FileInputStream(globalStoreFile), globalStorePass.toCharArray());
+        keyStream = new FileInputStream(globalStoreFile);
+        trustStore.load(keyStream, globalStorePass.toCharArray());
+        keyStream.close();
         logger.info("Loaded " + trustStore.size() + " trusted certificates from " + globalStoreFile);
 
         // now we see if there is a local trustStore file
         File tester = new File(trustStoreFile);
 
         // found the file so load the certs and add each to trustStore
-        if (tester.exists() == true) {
+        if ((tester.exists() == true) && (tester.length() != 0)) {
             KeyStore localStore = KeyStore.getInstance("JKS");
-            localStore.load(new FileInputStream(trustStoreFile), trustStorePass.toCharArray());
-            Enumeration<String> certlist = localStore.aliases();
+            keyStream = new FileInputStream(trustStoreFile);
+            localStore.load(keyStream, trustStorePass.toCharArray());
+            keyStream.close();
 
             // walk through all the certs in the trustStore file and add
             // each one to the store we use to init the SSL context
+            Enumeration<String> certlist = localStore.aliases();
             while (certlist.hasMoreElements()) {
                 String alias = certlist.nextElement();
                 logger.info("Adding trusted cert [" + alias + "] from " + trustStoreFile);
@@ -92,20 +97,22 @@ class TrustCatalog
      */
     public static LinkedList<TrustedCertificate> getTrustCatalog() throws Exception
     {
-        LinkedList<TrustedCertificate> trustCatalog = new LinkedList<>();
+        LinkedList<TrustedCertificate> trustCatalog = new LinkedList<TrustedCertificate>();
 
         // make sure there is a local trustStore file
         File tester = new File(trustStoreFile);
 
         // if not found just return the empty catalog
-        if (tester.exists() == false) return (trustCatalog);
+        if ((tester.exists() == false) || (tester.length() == 0)) return (trustCatalog);
 
         KeyStore localStore = KeyStore.getInstance("JKS");
-        localStore.load(new FileInputStream(trustStoreFile), trustStorePass.toCharArray());
-        Enumeration<String> certlist = localStore.aliases();
+        FileInputStream keyStream = new FileInputStream(trustStoreFile);
+        localStore.load(keyStream, trustStorePass.toCharArray());
+        keyStream.close();
 
         // walk through all the certs in the trustStore file and add
-        // each one to the store we use to init the SSL context
+        // each one to the list that will be returned to the caller
+        Enumeration<String> certlist = localStore.aliases();
         while (certlist.hasMoreElements()) {
             String alias = certlist.nextElement();
             X509Certificate cert = (X509Certificate) localStore.getCertificate(alias);
@@ -141,13 +148,12 @@ class TrustCatalog
         String certString = new String(certBytes);
         if ((certString.contains("BEGIN CERTIFICATE") == false) || (certString.contains("END CERTIFICATE") == false)) return new ExecManagerResult(2, "Certificates should be DER-encoded text files in Base64 format and must start with -----BEGIN CERTIFICATE----- and end with -----END CERTIFICATE-----");
 
-        FileInputStream trustStoreFileInputStream = null;
-        FileOutputStream trustStoreFileOutputStream = null;
         try {
             // convert the uploaded certificate file to an actual cert object
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             ByteArrayInputStream stream = new ByteArrayInputStream(certBytes);
             X509Certificate certObject = (X509Certificate) factory.generateCertificate(stream);
+            stream.close();
 
             // get a new KeyStore instance
             KeyStore localStore = KeyStore.getInstance("JKS");
@@ -156,9 +162,10 @@ class TrustCatalog
             File tester = new File(trustStoreFile);
 
             // found the file so load the existing certificates
-            if (tester.exists() == true) {
-                trustStoreFileInputStream = new FileInputStream(trustStoreFile);
-                localStore.load(trustStoreFileInputStream, trustStorePass.toCharArray());
+            if ((tester.exists() == true) && (tester.length() != 0)) {
+                FileInputStream iStream = new FileInputStream(trustStoreFile);
+                localStore.load(iStream, trustStorePass.toCharArray());
+                iStream.close();
 
                 // make sure they don't attempt to overwrite an existing cert
                 if (localStore.containsAlias(certAlias) == true) return new ExecManagerResult(3, "The alias specified is already assigned to an existing certificate.");
@@ -173,8 +180,9 @@ class TrustCatalog
             localStore.setCertificateEntry(certAlias, certObject);
 
             // write the updated KeyStore to the trustStore file
-            trustStoreFileOutputStream = new FileOutputStream(trustStoreFile);
-            localStore.store(trustStoreFileOutputStream, trustStorePass.toCharArray());
+            FileOutputStream oStream = new FileOutputStream(trustStoreFile);
+            localStore.store(oStream, trustStorePass.toCharArray());
+            oStream.close();
 
             // return success code and the cert subject
             return new ExecManagerResult(0, certObject.getSubjectDN().toString());
@@ -182,21 +190,6 @@ class TrustCatalog
 
         catch (Exception exn) {
             return new ExecManagerResult(100, "Exception processing certificate: " + exn.getMessage());
-        }finally{
-            if(trustStoreFileOutputStream != null){
-                try{
-                    trustStoreFileOutputStream.close();
-                }catch(Exception e){
-                    logger.error(e);
-                }
-            }
-            if(trustStoreFileInputStream != null){
-                try{
-                    trustStoreFileInputStream.close();
-                }catch(Exception e){
-                    logger.error(e);
-                }
-            }
         }
     }
 
@@ -205,41 +198,63 @@ class TrustCatalog
      * 
      * @param certAlias
      *        The alias of the certificate to remove
-     * @return True if found and removed, owtherwise false
+     * @return True if found and removed, otherwise false
      */
     public static boolean removeTrustedCertificate(String certAlias)
     {
-        boolean result = false;
+        FileInputStream iStream = null;
+        FileOutputStream oStream = null;
+        KeyStore localStore = null;
+
         // if the trust store file doesn't exist we can't do anything
         File tester = new File(trustStoreFile);
-        if (tester.exists() == false) return (false);
+        if ((tester.exists() == false) || (tester.length() == 0)) return (false);
 
-        try(
-            FileInputStream trustStoreFileInputStream = new FileInputStream(trustStoreFile);
-            FileOutputStream trustStoreFileOutputStream = new FileOutputStream(trustStoreFile);
-        ) {
-            // get a new KeyStore instance
-            KeyStore localStore = KeyStore.getInstance("JKS");
-
-            // load the trust store file
-            localStore.load(trustStoreFileInputStream, trustStorePass.toCharArray());
-
-            // make sure the alias to delete exists
-            if (localStore.containsAlias(certAlias) == true){
-                // add the new certificate to the KeyStore
-                localStore.deleteEntry(certAlias);
-
-                // write the updated KeyStore to the trustStore file
-                localStore.store(trustStoreFileOutputStream, trustStorePass.toCharArray());
-
-                // return success code and the cert subject
-                result = true;
-            }
-
-        }catch (Exception exn) {
-            logger.debug("Exception removing certificate: " + exn);
+        // get an empty keystore
+        try {
+            localStore = KeyStore.getInstance("JKS");
+        } catch (Exception exn) {
+            logger.warn("Exception calling KeyStore.getInstance", exn);
+            return (false);
         }
 
-        return result;
+        // load the keystore from the file
+        try {
+            iStream = new FileInputStream(trustStoreFile);
+            localStore.load(iStream, trustStorePass.toCharArray());
+            iStream.close();
+        } catch (Exception exn) {
+            logger.error("Exception loading keystore: " + trustStoreFile, exn);
+            return (false);
+        }
+
+        // make sure the alias to be removed exists
+        try {
+            if (localStore.containsAlias(certAlias) == false) return (false);
+        } catch (Exception exn) {
+            logger.error("Exception checking alias: " + certAlias, exn);
+            return (false);
+        }
+
+        // remove the alias from the keystore
+        try {
+            localStore.deleteEntry(certAlias);
+        } catch (Exception exn) {
+            logger.error("Exception removing alias: " + certAlias, exn);
+            return (false);
+        }
+
+        // write the updated keystore to the file
+        try {
+            oStream = new FileOutputStream(trustStoreFile);
+            localStore.store(oStream, trustStorePass.toCharArray());
+            oStream.close();
+        } catch (Exception exn) {
+            logger.error("Exception saving keystore: " + trustStoreFile, exn);
+            return (false);
+        }
+
+        // return true for success
+        return (true);
     }
 }
