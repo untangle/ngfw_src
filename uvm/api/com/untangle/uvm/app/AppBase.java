@@ -514,6 +514,7 @@ public abstract class AppBase implements App
             return;
         }
         metric.setValue(newValue);
+        metric.calculate();
     }
 
     /**
@@ -537,10 +538,23 @@ public abstract class AppBase implements App
             return;
         }
 
-        Long value = metric.getValue();
-        if (value == null) value = 0L;
-        value = value + adjustmentValue;
-        metric.setValue(value);
+        Long value;
+        if(metric.getType() == AppMetric.Type.AVG_TIME){
+            value = metric.getTimeValue();
+            if (value == null) value = 0L;
+            value = value + adjustmentValue;
+            metric.setTimeValue(value);
+            value = metric.getCounterValue();
+            if (value == null) value = 0L;
+            value = value + ( ( adjustmentValue >= 0 ) ? 1 : -1);
+            metric.setCounterValue(value);
+        }else{
+            value = metric.getValue();
+            if (value == null) value = 0L;
+            value = value + adjustmentValue;
+            metric.setValue(value);
+        }
+        metric.calculate();
     }
 
     /**
