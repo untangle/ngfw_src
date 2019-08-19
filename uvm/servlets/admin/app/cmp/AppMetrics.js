@@ -49,8 +49,11 @@ Ext.define('Ung.cmp.AppMetrics', {
             var gridSource = {};
             var appMetrics = Ext.getStore('metrics').findRecord('appId', vm.get('instance.id'));
             if (appMetrics) {
+                var expertMode = Rpc.directData('rpc.isExpertMode');
                 appMetrics.get('metrics').list.forEach(function (metric) {
-                    gridSource[metric.displayName.t()] = metric.value;
+                    if(!metric.expert || expertMode){
+                        gridSource[metric.displayName.t()] = metric.value + ( metric.displayUnits ? metric.displayUnits : '');
+                    }
                 });
             }
             vm.set('metrics', gridSource);
