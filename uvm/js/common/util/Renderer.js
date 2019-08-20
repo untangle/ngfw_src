@@ -558,7 +558,7 @@ Ext.define('Ung.util.Renderer', {
                         list: [{
                             policyId: 1
                         }]
-                    }
+                    };
                 }
                 policies = policies.list;
                 for(var i = 0; i < policies.length; i++){
