@@ -552,7 +552,15 @@ Ext.define('Ung.util.Renderer', {
                     categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, "categories");
                 }
             }else{
-                var policies = Rpc.directData('rpc.reportsManager.getPoliciesInfo').list;
+                var policies = Rpc.directData('rpc.reportsManager.getPoliciesInfo');
+                if(policies == null){
+                    policies = {
+                        list: [{
+                            policyId: 1
+                        }]
+                    }
+                }
+                policies = policies.list;
                 for(var i = 0; i < policies.length; i++){
                     categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policies[i].policyId, "categories");
                     if(!categoryInfo){
