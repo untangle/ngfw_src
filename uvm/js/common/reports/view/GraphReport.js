@@ -436,12 +436,22 @@ Ext.define('Ung.view.reports.GraphReport', {
             }
             var extraSelects = (tableField && tableField.referenceFields) ? tableField.referenceFields: null;
 
+            var fromType = null;
+            if( ( entry.get('type') === 'TIME_GRAPH') ||
+                (entry.get('type') === 'TIME_GRAPH_DYNAMIC') ){
+                fromType = TableConfig.getFromType(entry.get('table'), entry.get('timeDataDynamicColumn'));
+            }else if(entry.get('type') === 'PIE_GRAPH'){
+                fromType = TableConfig.getFromType(entry.get('table'), entry.get('pieGroupColumn'));
+            }
+            console.log(fromType);
+
             Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
                 entry.getData(), // entry
                 startDate,
                 endDate,
                 extraSelects,
                 Ung.model.ReportCondition.collect(vm.get('query.conditions')),
+                fromType,
                 -1) 
                 .then(function (result) {
                     if(Util.isDestroyed(me)){
