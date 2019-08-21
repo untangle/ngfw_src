@@ -412,15 +412,17 @@ public class ReportsManagerImpl implements ReportsManager
      *  Extra selects
      * @param extraConditions
      *  Additional SQL query options.
+     * @param fromType
+     *  If null, use the table, otherwise construct using information in object.
      * @param limit
      *  Restrict number of results to this number.
      * @return
      *  Results of query as a List of JSONObjects.
      */
-    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, final int limit )
+    public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit )
     {
         Connection conn = app.getDbConnection();
-        PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions );
+        PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType);
 
         if ( app != null ) {
             // only flush if there are less than 10k events pending
@@ -458,7 +460,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
     {
-        return getDataForReportEntry( entry, startDate, endDate, null, null, limit );
+        return getDataForReportEntry( entry, startDate, endDate, null, null, null, limit );
     }
 
     /**
@@ -481,7 +483,7 @@ public class ReportsManagerImpl implements ReportsManager
             cal.add(Calendar.SECOND, -timeframeSec);
             startDate = cal.getTime();
         }
-        return getDataForReportEntry( entry, startDate, null, null, null, limit );
+        return getDataForReportEntry( entry, startDate, null, null, null, null, limit );
     }
 
     /**
@@ -628,7 +630,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
 
         Connection conn = app.getDbConnection();
-        PreparedStatement statement = entry.toSql( conn, null, null, null, extraConditions, limit );
+        PreparedStatement statement = entry.toSql( conn, null, null, null, extraConditions, null, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
         logger.info("Statement          : " + statement);
@@ -734,7 +736,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
 
         Connection conn = app.getDbConnection();
-        PreparedStatement statement = entry.toSql( conn, startDate, endDate, null, extraConditions, limit );
+        PreparedStatement statement = entry.toSql( conn, startDate, endDate, null, extraConditions, null, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
         logger.info("Statement          : " + statement);
