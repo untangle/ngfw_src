@@ -87,6 +87,7 @@ Ext.define('Ung.view.reports.TextReport', {
                 endDate,
                 null,
                 Ung.model.ReportCondition.collect(vm.get('query.conditions')),
+                null,
                 -1)
                 .then(function(result) {
                     if(Util.isDestroyed(me)){
