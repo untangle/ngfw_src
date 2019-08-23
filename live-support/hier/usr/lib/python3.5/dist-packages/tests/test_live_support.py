@@ -1,37 +1,26 @@
 """live_support tests"""
 
-import unittest
 import pytest
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
-import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
-
-default_policy_id = 1
-app = None
 
 @pytest.mark.live_support
-class LiveSupportTests(unittest.TestCase):
+class LiveSupportTests(NGFWTestCase):
+
+    no_settings = True
 
     @staticmethod
     def module_name():
+        global app
+        app = LiveSupportTests._app
         return "live-support"
 
     @staticmethod
     def vendorName():
         return "Untangle"
-
-    @staticmethod
-    def initial_setup(self):
-        global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-
-    def setUp(self):
-        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -40,13 +29,6 @@ class LiveSupportTests(unittest.TestCase):
 
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
-
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-        app = None
 
 test_registry.register_module("live-support", LiveSupportTests)
 
