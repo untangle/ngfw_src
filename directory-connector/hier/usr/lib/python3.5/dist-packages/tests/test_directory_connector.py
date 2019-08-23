@@ -4,14 +4,14 @@ import string
 import random
 import subprocess
 import requests
-
-import unittest
 import pytest
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-from uvm import Uvm
+
 
 default_policy_id = 1
 app = None
@@ -20,6 +20,7 @@ AD_RESULT = 1
 RADIUS_RESULT = 1
 
 # pdb.set_trace()
+
 
 def create_ad_settings(ldap_secure=False):
     """
@@ -212,15 +213,14 @@ def find_name_in_host_table (hostname='test'):
     return found_test_session
 
 @pytest.mark.directory_connector
-class DirectoryConnectorTests(unittest.TestCase):
+class DirectoryConnectorTests(NGFWTestCase):
     """
     Directory connector tests
     """
     @staticmethod
     def module_name():
-        """
-        App name
-        """
+        global app
+        app = DirectoryConnectorTests._app
         return "directory-connector"
 
     @staticmethod
@@ -230,22 +230,17 @@ class DirectoryConnectorTests(unittest.TestCase):
         """
         return "Untangle"
 
-    @staticmethod
-    def initial_setup(self):
-        global app, AD_RESULT, AD_RESULT, RADIUS_RESULT
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
+    @classmethod
+    def initial_extra_setup(cls):
+        global AD_RESULT, AD_RESULT, RADIUS_RESULT
+
         AD_RESULT = subprocess.call(["ping", "-c", "1", global_functions.AD_SERVER], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", global_functions.RADIUS_SERVER], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # enable the API for testing
-        appSettings = app.getSettings()
+        appSettings = cls._app.getSettings()
         appSettings['apiEnabled'] = True
-        app.setSettings(appSettings)
-
-    def setUp(self):
-        pass
+        cls._app.setSettings(appSettings)
 
     def test_010_clientIsOnline(self):
         """
@@ -375,8 +370,8 @@ class DirectoryConnectorTests(unittest.TestCase):
         assert (result == 0)
 
         string_to_find = "authentication success"
-        appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
-        appAD = app.getActiveDirectoryManager()
+        appData = self._app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
+        appAD = self._app.getActiveDirectoryManager()
         appADData = appAD.getStatusForSettings(appData)  # if settings are successful
         print("appADData : %s" % appADData)
         # found = appADData.count(string_to_find)
@@ -394,8 +389,8 @@ class DirectoryConnectorTests(unittest.TestCase):
         assert (result == 0)
 
         string_to_find = "authentication success"
-        appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
-        appAD = app.getActiveDirectoryManager()
+        appData = self._app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
+        appAD = self._app.getActiveDirectoryManager()
         appADData = appAD.getStatusForSettings(appData)  # if settings are successful
         print("appADData : %s" % appADData)
         # found = appADData.count(string_to_find)
@@ -414,8 +409,8 @@ class DirectoryConnectorTests(unittest.TestCase):
         print('result %s' % result)
         assert (result == 0)
 
-        appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
-        appAD = app.getActiveDirectoryManager()
+        appData = self._app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
+        appAD = self._app.getActiveDirectoryManager()
         appADData = appAD.getUsers(None)  # list of users in AD
         result = 1
         # check for known user "tempuser" in AD user list
@@ -438,8 +433,8 @@ class DirectoryConnectorTests(unittest.TestCase):
         print('result %s' % result)
         assert (result == 0)
 
-        appData = app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
-        appAD = app.getActiveDirectoryManager()
+        appData = self._app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
+        appAD = self._app.getActiveDirectoryManager()
         appADData = appAD.getUsers(None)  # list of users in AD
         result = 1
         # check for known user "tempuser" in AD user list
@@ -456,26 +451,16 @@ class DirectoryConnectorTests(unittest.TestCase):
         """
         if (RADIUS_RESULT != 0):
             raise unittest.SkipTest("No RADIUS server available")
-        app.setSettings(create_radius_settings())
+        self._app.setSettings(create_radius_settings())
 
         attempts = 0
         while attempts < 3:
-            test_result_string = app.getRadiusManager().getRadiusStatusForSettings(create_radius_settings(), "normal", "passwd")
+            test_result_string = self._app.getRadiusManager().getRadiusStatusForSettings(create_radius_settings(), "normal", "passwd")
             if ("success" in test_result_string):
                 break
             else:
                 attempts += 1
         print('test_result_string %s attempts %s' % (test_result_string, attempts) ) # debug line
         assert ("success" in test_result_string)
-
-    @staticmethod
-    def final_tear_down(self):
-        """
-        Tear down
-        """
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
 
 test_registry.register_module("directory-connector", DirectoryConnectorTests)
