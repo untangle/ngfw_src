@@ -3,7 +3,7 @@ import re
 import unittest
 import pytest
 
-from tests.global_functions import uvmContext
+from tests.common import NGFWTestCase
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -17,7 +17,7 @@ newContactEmail = "skynet@untangle.com"
 
 default_policy_id = 1
 
-def setDefaultBrandingManagerSettings():
+def setDefaultBrandingManagerSettings(app):
     appData = {
         "javaClass": "com.untangle.app.branding_manager.BrandingManagerSettings",
         "companyName": "Untangle",
@@ -30,10 +30,12 @@ def setDefaultBrandingManagerSettings():
     app.setSettings(appData)
     
 @pytest.mark.branding_manager
-class BrandingManagerTests(unittest.TestCase):
+class BrandingManagerTests(NGFWTestCase):
     
     @staticmethod
     def module_name():
+        global app
+        app = BrandingManagerTests._app
         return "branding-manager"
 
     @staticmethod
@@ -44,21 +46,15 @@ class BrandingManagerTests(unittest.TestCase):
     def vendorName():
         return "Untangle"
 
-    @staticmethod
-    def initial_setup(self):
-        global appData, app, appWeb
-        if (global_functions.uvmContextLongTimeout.appManager().isInstantiated(self.module_name())):
-            print("ERROR: App %s already installed" % self.module_name())
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = global_functions.uvmContextLongTimeout.appManager().instantiate(self.module_name(), default_policy_id)
-        appData = app.getSettings()
-        if (global_functions.uvmContextLongTimeout.appManager().isInstantiated(self.appNameWeb())):
-            print("ERROR: App %s already installed" % self.appNameWeb())
-            raise Exception('app %s already instantiated' % self.appNameWeb())
-        appWeb = global_functions.uvmContextLongTimeout.appManager().instantiate(self.appNameWeb(), default_policy_id)
+    @classmethod
+    def initial_extra_setup(cls):
+        global appData, appWeb
 
-    def setUp(self):
-        pass
+        appData = cls._app.getSettings()
+        if (global_functions.uvmContextLongTimeout.appManager().isInstantiated(cls.appNameWeb())):
+            print("ERROR: App %s already installed" % cls.appNameWeb())
+            raise Exception('app %s already instantiated' % cls.appNameWeb())
+        appWeb = global_functions.uvmContextLongTimeout.appManager().instantiate(cls.appNameWeb(), default_policy_id)
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -158,14 +154,14 @@ class BrandingManagerTests(unittest.TestCase):
         else:
             assert(True)
         
-    @staticmethod
-    def final_tear_down(self):
-        global app, appWeb
-        if app != None:
+    @classmethod
+    def final_extra_tear_down(cls):
+        global appWeb
+
+        if cls._app != None:
             # Restore original settings to return to initial settings
-            setDefaultBrandingManagerSettings()
+            setDefaultBrandingManagerSettings(cls._app)
             global_functions.uvmContextLongTimeout.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
         if appWeb != None:
             global_functions.uvmContextLongTimeout.appManager().destroy( appWeb.getAppSettings()["id"] )
             appWeb = None
