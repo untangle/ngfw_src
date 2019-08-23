@@ -13,6 +13,7 @@ class NGFWTestCase(TestCase):
     do_not_install_app = False
     do_not_remove_app = False
     wait_for_daemon_ready = False
+    no_settings = False
 
     _app = None
     _appSettings = None
@@ -74,7 +75,9 @@ class NGFWTestCase(TestCase):
             cls._app.start()
             if cls.wait_for_daemon_ready:
                 cls.do_wait_for_daemon_ready()
-        cls._appSettings = cls._app.getSettings()
+
+        if not cls.no_settings:
+            cls._appSettings = cls._app.getSettings()
 
         cls.initial_extra_setup()
 
