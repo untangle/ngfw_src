@@ -1,15 +1,14 @@
 """ssl_inspector tests"""
 import datetime
-
-import unittest
 import pytest
 import sys
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
+
 
 default_policy_id = 1
 app = None
@@ -19,6 +18,7 @@ testedServerName="news.ycombinator.com"
 testedServerURLParts = testedServerName.split(".")
 testedServerDomainWildcard = "*" + testedServerURLParts[-2] + "." + testedServerURLParts[-1]
 dropboxIssuer="/C=US/ST=California/L=San Francisco/O=Dropbox"
+
 
 def createSSLInspectRule(url=testedServerDomainWildcard):
     return {
@@ -44,6 +44,7 @@ def createSSLInspectRule(url=testedServerDomainWildcard):
         "ruleId": 1
     };
 
+
 def findRule(target_description):
     found = False
     for rule in appData['ignoreRules']['list']:
@@ -52,16 +53,19 @@ def findRule(target_description):
             break
     return found
     
+
 def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
     newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
     rules = appWeb.getBlockedUrls()
     rules["list"].append(newRule)
     appWeb.setBlockedUrls(rules)
 
+
 def nukeBlockedUrls():
     rules = appWeb.getBlockedUrls()
     rules["list"] = []
     appWeb.setBlockedUrls(rules)
+
 
 def search_term_rule_add(termWords, blocked=True, flagged=True, description="description"):
     newTerm =  {
@@ -75,41 +79,42 @@ def search_term_rule_add(termWords, blocked=True, flagged=True, description="des
     webSettings["searchTerms"]["list"].append(newTerm)
     appWeb.setSettings(webSettings)
 
+
 def search_term_rules_clear():
     webSettings = appWeb.getSettings()
     webSettings["searchTerms"]["list"] = []
     appWeb.setSettings(webSettings)
 
+
 @pytest.mark.ssl_inspector
-class SslInspectorTests(unittest.TestCase):
+class SslInspectorTests(NGFWTestCase):
+
+    force_start = True
 
     @staticmethod
     def module_name():
+        # cheap trick to force class variable _app into global namespace as app
+        global app
+        app = SslInspectorTests._app
         return "ssl-inspector"
 
     @staticmethod
     def appWeb():
         return "web-filter"
 
-    @staticmethod
-    def initial_setup(self):
-        global app, appData, appWeb, appWebData
-        if uvmContext.appManager().isInstantiated(self.module_name()):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        app.start() # must be called since the app doesn't auto-start
-        appData = app.getSettings()
-        if (uvmContext.appManager().isInstantiated(self.appWeb())):
-            raise Exception('app %s already instantiated' % self.appWeb())
-        appWeb = uvmContext.appManager().instantiate(self.appWeb(), default_policy_id)
+    @classmethod
+    def initial_extra_setup(cls):
+        global appData, appWeb, appWebData
+
+        appData = cls._app.getSettings()
+        if (uvmContext.appManager().isInstantiated(cls.appWeb())):
+            raise Exception('app %s already instantiated' % cls.appWeb())
+        appWeb = uvmContext.appManager().instantiate(cls.appWeb(), default_policy_id)
         appWebData = appWeb.getSettings()
 
         appData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
-        app.setSettings(appData)
+        cls._app.setSettings(appData)
         
-    def setUp(self):
-        pass
-
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
         assert (result == 0)
@@ -246,12 +251,10 @@ class SslInspectorTests(unittest.TestCase):
         print("youtube-client %s resultYoutube %s" % (result,resultYoutube))
         assert( resultYoutube == 0 )
 
-    @staticmethod
-    def final_tear_down(self):
-        global app, appWeb
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
+    @classmethod
+    def final_extra_tear_down(cls):
+        global appWeb
+
         if appWeb != None:
             uvmContext.appManager().destroy( appWeb.getAppSettings()["id"])
             appWeb = None
