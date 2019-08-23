@@ -4,33 +4,28 @@ import time
 import unittest
 import pytest
 import runtests
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 
 default_policy_id = 1
 app = None
 
 @pytest.mark.web_cache
-class WebCacheTests(unittest.TestCase):
+class WebCacheTests(NGFWTestCase):
+
+    force_start = True
 
     @staticmethod
     def module_name():
-        return "web-cache"
-
-    @staticmethod
-    def initial_setup(self):
+        # cheap trick to force class variable _app into global namespace as app
         global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        app.start() # must be called since web cache doesn't auto-start
+        app = WebCacheTests._app
 
-    def setUp(self):
-        pass
+        return "web-cache"
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -62,12 +57,5 @@ class WebCacheTests(unittest.TestCase):
         post_events_hit = global_functions.get_app_metric_value(app,"hit")
 
         assert(pre_events_hit < post_events_hit)
-
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
         
 test_registry.register_module("web-cache", WebCacheTests)
