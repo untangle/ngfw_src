@@ -454,7 +454,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert (result != 0)
 
     @classmethod
-    def final_tear_down(cls):
+    def final_extra_tear_down(cls):
         global appSSL
         if appSSL != None:
             uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
