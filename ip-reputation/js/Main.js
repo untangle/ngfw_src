@@ -23,11 +23,6 @@ Ext.define('Ung.apps.ipreputation.Main', {
                 direction: 'ASC'
             }],
             data: [
-            [ 'e51313', 0,  20, 'High Risk'.t(), 'These are high risk IP addresses. There is a high predictive risk that these IPs will deliver attacks – such as malicious payloads, DoS attacks, or others – to your infrastructure and endpoints.'.t() ],
-            [ 'e8580c', 21, 40, 'Suspicious'.t(), 'These are suspicious IPs. There is a higher than average predictive risk that these IPs will deliver attacks to your infrastructure and endpoints.'.t() ],
-            [ 'ff9a22', 41, 60, 'Moderate Risk'.t(), 'These are generally benign IPs, but have exhibited some potential risk characteristics. There is some predictive risk that these IPs will deliver attacks to our infrastructure and endpoints.'.t() ],
-            [ '68af68', 61, 80, 'Low Risk'.t(), 'These are benign IPs and rarely exhibit characteristics that expose your infrastructure and endpoints to security risks. There is a low predictive risk of attack.'.t() ],
-            [ '408740', 81, 100, 'Trustworthy'.t(), 'These are clean IPs that have not been tied to a security risk. There is a very low predictive risk that your infrastructure and endpoints will be exposed to attack.'.t() ]
             ]
         }),
 
