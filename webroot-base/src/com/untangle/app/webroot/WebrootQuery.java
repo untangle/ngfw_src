@@ -4,6 +4,7 @@
 package com.untangle.app.webroot;
 
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ConnectException;
 import java.net.Socket;
@@ -11,7 +12,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,20 +36,29 @@ public class WebrootQuery
 
     private static WebrootDaemon webrootDaemon = WebrootDaemon.getInstance();
 
-    public static char DOMAIN_PORT = ':';
-    public static char DOMAIN_DOT = '.';
-    public static String DOMAIN_WILDCARD = "*.";
+    public static final char DOMAIN_PORT = ':';
+    public static final char DOMAIN_DOT = '.';
+    public static final String DOMAIN_WILDCARD = "*.";
 
-    public static String BCTI_API_ERROR_KEY="ERROR";
+    public static final String BCTI_API_ERROR_KEY="ERROR";
 
-    public static String BCTI_API_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
-    public static String BCTI_API_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
+    public static final String BCTI_API_QUERY_HEARTBEAT = "{\"heartbeat\":{}}\r\n";
 
-    public static String BCTI_API_RESPONSE_URLINFO_CATEGORY_LIST_KEY="cats";
-    public static String BCTI_API_RESPONSE_URLINFO_CATEGORY_ID_KEY="catid";
+    public static final String BCTI_API_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
+    public static final String BCTI_API_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
 
-    public static String BCTI_API_QUERY_URLCLEARCACHE = "{\"url/setcacheclear\":{}}\r\n";
-    public static String BCTI_API_QUERY_STATUS = "{\"status\":{}}\r\n";
+    public static final String BCTI_API_RESPONSE_URLINFO_CATEGORY_LIST_KEY="cats";
+    public static final String BCTI_API_RESPONSE_URLINFO_CATEGORY_ID_KEY="catid";
+
+    public static final String BCTI_API_QUERY_IPINFO_PREFIX = "{\"ip/getinfo\":{\"ips\":[\"";
+    public static final String BCTI_API_QUERY_IPINFO_SUFFIX = "\"]}}\r\n";
+
+    public static final String BCTI_API_RESPONSE_IPINFO_IP_KEY="ip";
+    public static final String BCTI_API_RESPONSE_IPINFO_THREATMASK_KEY="threat_mask";
+    public static final String BCTI_API_RESPONSE_IPINFO_REPUTATION_KEY="reputation";
+
+    public static final String BCTI_API_QUERY_URLCLEARCACHE = "{\"url/setcacheclear\":{}}\r\n";
+    public static final String BCTI_API_QUERY_STATUS = "{\"status\":{}}\r\n";
 
     private static Integer UNCATEGORIZED_CATEGORY = 0;
 
@@ -54,13 +67,25 @@ public class WebrootQuery
     private static final long BCTID_CONNECT_WAIT = 1 * 1000;
     private long BctidSocketConnectWait = 0L;
 
-    private static Integer BctidMaxSocketPoolSize = 30;
+    private static final long BCTID_RETRY_INTERVAL = 60 * 1000;
+    private static final int BCTID_RETRY_MAX_COUNT = 5;
+    private static AtomicInteger BctidRetryCount = new AtomicInteger(0);
+    private static AtomicLong BctidRetryIntervalExpire = new AtomicLong(0L);
+
+    // private static Integer BctidMaxSocketPoolSize = 30;
+    private static Integer BctidMaxSocketPoolSize = 2;
 
     private static ArrayBlockingQueue<Socket> BctidSocketPool = new ArrayBlockingQueue<>(BctidMaxSocketPoolSize);
     private static AtomicInteger BctidSocketRunnersCount = new AtomicInteger();
     private static long BctidSocketPoolMaxWaitSeconds = 5L;
 
+    private static int BctidClientConnectTimeout = 250;
+    private static int BctidClientReadTimeout = 2500;
+
     private int failures = 0;
+
+    private static AtomicInteger ipCacheSync = new AtomicInteger(0);
+    private WebrootCache ipCache = new WebrootCache();
 
     /**
      * Get our singleton instance
@@ -147,6 +172,21 @@ public class WebrootQuery
     }
 
     /**
+     * Shutdown the static pool.
+     */
+    static void closeBctidSockets(){
+        try{
+            Socket socket = null;
+            while((socket = BctidSocketPool.poll(BctidSocketPoolMaxWaitSeconds, TimeUnit.SECONDS)) != null){
+                socket.close();
+            }
+            BctidSocketPool.clear();
+        }catch(Exception e){
+            logger.warn("closeBctidSockets:", e);
+        }
+    }
+
+    /**
      * Query daemon.
      * @param  query        String of bcti query to send
      * @return              String of json response.
@@ -171,16 +211,14 @@ public class WebrootQuery
             return answer;
         }
         boolean failed = false;
-        StringBuilder responseBuilder = new StringBuilder(1024);
         Socket bctidSocket = null;
         try{
             synchronized(BctidSocketRunnersCount){
                 if((BctidSocketRunnersCount.get() + BctidSocketPool.size()) < BctidMaxSocketPoolSize){
                     BctidSocketRunnersCount.incrementAndGet();
                     bctidSocket = new Socket();
-                    bctidSocket.connect(BCTID_SOCKET_ADDRESS, 1000);
+                    bctidSocket.connect(BCTID_SOCKET_ADDRESS, BctidClientConnectTimeout);
                     bctidSocket.setKeepAlive(true);
-                    bctidSocket.setSoTimeout(5000);
                 }
             }
             if(bctidSocket == null){
@@ -192,6 +230,8 @@ public class WebrootQuery
                 BctidSocketRunnersCount.incrementAndGet();
             }
 
+            StringBuilder responseBuilder = new StringBuilder(1024);
+            bctidSocket.setSoTimeout(BctidClientReadTimeout);
             InputStream is = null;
             bctidSocket.getOutputStream().write(query.getBytes());
             bctidSocket.getOutputStream().flush();
@@ -228,9 +268,9 @@ public class WebrootQuery
             }
             bctidSocket = null;
             BctidSocketRunnersCount.decrementAndGet();
+            failed = true;
             if(retry == false){
                 logger.warn("problem with query ("+query+"), attemping retry");
-                failed = true;
             }else{
                 logger.warn("problem with query ("+query+"), was in retry", e);
             }
@@ -241,9 +281,26 @@ public class WebrootQuery
             BctidSocketPool.offer(bctidSocket);
         }
 
-        if(failed && retry == false){
-            return api(query, true);
+        if(failed){
+            if(retry == false){
+                return api(query, true);
+            }else{
+                BctidRetryCount.incrementAndGet();
+                if(BctidRetryIntervalExpire.get() == 0){
+                    BctidRetryIntervalExpire.set(System.currentTimeMillis() + BCTID_RETRY_INTERVAL);
+                }else if(BctidRetryIntervalExpire.get() < System.currentTimeMillis() ){
+                    BctidRetryIntervalExpire.set(0);
+                    if(BctidRetryCount.get() >= BCTID_RETRY_MAX_COUNT){
+                        closeBctidSockets();
+                        BctidRetryCount.set(0);
+                        webrootDaemon.restart();
+                    }
+                    BctidRetryCount.set(0);
+                }
+            }
         }
+
+        logger.warn("rawAnswer=" + rawAnswer);
 
         try{
             answer = new JSONArray(rawAnswer);
@@ -307,6 +364,35 @@ public class WebrootQuery
     }
 
     /**
+     * Perform url ip getinfo query for address.
+     *
+     * NOTE: This is optimized for webfilter/webmonitor queries which arrive with the
+     *       domain and uri already split.
+     *
+     * @param  ips String of IP addresss
+     * @return     JSONArray of webroot response.
+     */
+    public JSONArray ipGetInfo(String... ips)
+    {
+        JSONArray answer = null;
+        String key = String.join("\",\"", ips);
+        synchronized(ipCacheSync){
+            logger.warn("ipGetInfo: cache size=" + ipCache.size());
+            answer = ipCache.get(key);
+        }
+        if(answer == null){
+            answer = api(BCTI_API_QUERY_IPINFO_PREFIX + key + BCTI_API_QUERY_IPINFO_SUFFIX);
+            if(answer != null){
+                synchronized(ipCacheSync){
+                    ipCache.put(key, answer);
+                }
+            }
+        }
+        return answer;
+    }
+
+
+    /**
      * Get daemon status
      * @return JSONArray of status
      */
@@ -318,5 +404,22 @@ public class WebrootQuery
     // ipGetInfo(ips...)
     // status()
 
+    /**
+     *  Generic cache class
+     */
+    @SuppressWarnings("serial")
+    private class WebrootCache extends LinkedHashMap<String,JSONArray>
+    {
+        private static final int MAX_ENTRIES = 100;
+
+        /**
+         * Extend so that aging is performed on the oldest accessed entry.
+         * @param  eldest Map element of String/JSONArray
+         * @return        Whether the size of the cache is greater than maximum number of entries.
+         */
+        protected boolean removeEldestEntry(Map.Entry<String,JSONArray> eldest) {
+            return size() > MAX_ENTRIES;
+        }
+    }
 
 }
