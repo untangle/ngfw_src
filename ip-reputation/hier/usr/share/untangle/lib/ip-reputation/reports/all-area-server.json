@@ -1,0 +1,34 @@
+{
+    "uniqueId": "ip-reputation-h0jelsttGpiaas",
+    "category": "IP Reputation",
+    "description": "The amount of total, flagged, and blocked sessions to servers over time.",
+    "displayOrder": 11,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "hits",
+    "readOnly": true,
+    "table": "sessions",
+    "timeDataColumns": [
+        "count(*) as scanned",
+        "sum(ip_reputation_flagged::int) as flagged",
+        "sum(ip_reputation_blocked::int) as blocked"
+    ],
+    "conditions": [
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "ip_reputation_server_reputation",
+            "operator": ">",
+            "value": "0"
+        }
+    ],
+    "colors": [
+        "#396c2b",
+        "#e5e500",
+        "#8c0000"
+    ],
+    "timeDataInterval": "AUTO",
+    "timeStyle": "AREA",
+    "title": "IP Reputation Usage (server)",
+    "type": "TIME_GRAPH"
+}
