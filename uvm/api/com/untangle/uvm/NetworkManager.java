@@ -59,4 +59,6 @@ public interface NetworkManager
     String getFullyQualifiedHostname();
 
     int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum);
+
+    List<IPMaskedAddress> getLocalNetworks();
 }
