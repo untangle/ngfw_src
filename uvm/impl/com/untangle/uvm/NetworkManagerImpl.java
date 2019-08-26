@@ -653,6 +653,70 @@ public class NetworkManagerImpl implements NetworkManager
     }
     
     /**
+     * Get locally routed networks.
+     * @return List of IPMaskedAddrress
+     */
+    public List<IPMaskedAddress> getLocalNetworks()
+    {
+        boolean match;
+        IPMaskedAddress maskedAddress;
+        List<IPMaskedAddress> addresses = new LinkedList<>();
+
+        /*
+         * Pull static addresses from non-WAN interfaces.
+         */
+        for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
+            if ( interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED ){
+                continue;
+            }
+            if ( interfaceSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC ){
+                continue;
+            }
+            if(interfaceSettings.getIsWan()){
+                continue;
+            }
+
+            addresses.add(new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix()));
+            for ( InterfaceSettings.InterfaceAlias alias : interfaceSettings.getV4Aliases() ) {
+                /*
+                 * Don't add if already in list
+                 */
+                match = false;
+                maskedAddress = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
+                for( IPMaskedAddress ma : addresses ){
+                    if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                        ( ma.getPrefixLength() == maskedAddress.getPrefixLength() ) ){
+                        match = true;
+                    }
+                }
+                if( match == false ){
+                    addresses.add( maskedAddress );
+                }
+            }
+        }
+
+        /**
+         * Pull static routes that route locally
+         */
+        for (StaticRoute route : UvmContextFactory.context().networkManager().getNetworkSettings().getStaticRoutes()) {
+            match = false;
+            maskedAddress = new IPMaskedAddress( route.getNetwork(), route.getPrefix());
+            for( IPMaskedAddress ma : addresses ){
+                if( ma.getMaskedAddress().getHostAddress().equals( maskedAddress.getMaskedAddress().getHostAddress() ) &&
+                    ( ma.getPrefixLength() == route.getPrefix() ) ){
+                    match = true;
+                }
+            }
+            if( match == false ){
+                addresses.add( maskedAddress );
+            }
+        }
+
+        return addresses;
+
+    }
+
+    /**
      * Insert the iptables rules for capturing traffic
      */
     protected void insertRules( )
