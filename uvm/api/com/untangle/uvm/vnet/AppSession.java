@@ -162,6 +162,11 @@ public interface AppSession
     public final String KEY_CAPTIVE_PORTAL_SSL_ENGINE = "captive-portal-ssl-engine"; /* CaptureSSLEngine */
     public final String KEY_CAPTIVE_PORTAL_SESSION_CAPTURE = "captive-portal-session-capture"; /* String */
 
+    public final String KEY_IP_REPUTATION_CLIENT_REPUTATION = "ip-reputation-client-reputation";
+    public final String KEY_IP_REPUTATION_CLIENT_THREATMASK = "ip-reputation-client-threatmask";
+    public final String KEY_IP_REPUTATION_SERVER_REPUTATION = "ip-reputation-server-reputation";
+    public final String KEY_IP_REPUTATION_SERVER_THREATMASK = "ip-reputation-server-threatmask";
+
     /**
      * Returns the protocol for the session.</p>
      * @return a <code>short</code> giving one of the protocols (right now always TCP or UDP)
