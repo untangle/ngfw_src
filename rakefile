@@ -76,7 +76,7 @@ task :targets => :download do
   require "#{SRC_HOME}/router/package.rb"
   require "#{SRC_HOME}/shield/package.rb"
   require "#{SRC_HOME}/firewall/package.rb"
-  #require "#{SRC_HOME}/ip-reputation/package.rb"
+  require "#{SRC_HOME}/ip-reputation/package.rb"
   require "#{SRC_HOME}/application-control-lite/package.rb"
   require "#{SRC_HOME}/intrusion-prevention/package.rb"
   require "#{SRC_HOME}/spam-blocker-base/package.rb"

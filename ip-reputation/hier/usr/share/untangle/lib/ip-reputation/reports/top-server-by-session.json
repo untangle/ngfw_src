@@ -1,0 +1,26 @@
+{
+    "uniqueId": "ip-reputation-Mpnd3b85xtsbs",
+    "category": "IP Reputation",
+    "description": "The number of scanned session grouped by server.",
+    "displayOrder": 400,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "c_client_addr",
+    "pieSumColumn": "count(*)",
+    "conditions": [
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "ip_reputation_server_reputation",
+            "operator": ">",
+            "value": "0"            
+        }
+    ],
+    "readOnly": true,
+    "table": "sessions",
+    "title": "Top Scanned Servers",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

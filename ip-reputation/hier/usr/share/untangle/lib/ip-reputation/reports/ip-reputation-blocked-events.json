@@ -1,0 +1,20 @@
+{
+    "category": "IP Reputation",
+    "readOnly": true,
+    "type": "EVENT_LIST",
+    "conditions": [
+        {
+            "column": "ip_reputation_blocked",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "operator": "is",
+            "value": "TRUE"
+        }
+    ],
+    "defaultColumns": ["time_stamp","username","hostname","c_client_port","protocol","ip_reputation_blocked","ip_reputation_flagged","ip_reputation_rule_index","ip_reputation_client_reputation","ip_reputation_client_threatmask","ip_reputation_server_reputation","ip_reputation_server_threatmask","c_client_addr","s_server_addr","s_server_port"],
+    "description": "Events blocked by IP Reputation.",
+    "displayOrder": 1020,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "table": "sessions",
+    "title": "Blocked Events",
+    "uniqueId": "ip-reputation-N195L7ZCAX"
+}
