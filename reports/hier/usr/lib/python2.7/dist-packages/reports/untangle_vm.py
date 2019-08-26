@@ -80,6 +80,14 @@ CREATE TABLE reports.sessions (
         firewall_blocked boolean,
         firewall_flagged boolean,
         firewall_rule_index integer,
+        ip_reputation_blocked boolean,
+        ip_reputation_flagged boolean,
+        ip_reputation_reason character(1),
+        ip_reputation_rule_index integer,
+        ip_reputation_client_reputation int2,
+        ip_reputation_client_threatmask integer,
+        ip_reputation_server_reputation int2,
+        ip_reputation_server_threatmask integer,
         application_control_lite_protocol text,
         application_control_lite_blocked boolean,
         captive_portal_blocked boolean,
@@ -109,10 +117,19 @@ CREATE TABLE reports.sessions (
                                  "server_intf",
                                  "firewall_flagged",
                                  "firewall_blocked",
+                                 "ip_reputation_flagged",
+                                 "ip_reputation_blocked",
                                  "application_control_application",
                                  "application_control_blocked",
                                  "application_control_flagged"])
-    sql_helper.add_column('sessions','tags','text') # 13.0
+    sql_helper.add_column('sessions','ip_reputation_blocked','boolean') # 14.3
+    sql_helper.add_column('sessions','ip_reputation_flagged','boolean') # 14.3
+    sql_helper.add_column('sessions','ip_reputation_reason','character') # 14.3
+    sql_helper.add_column('sessions','ip_reputation_rule_index','integer') # 14.3
+    sql_helper.add_column('sessions','ip_reputation_client_reputation','int2') # 14.3
+    sql_helper.add_column('sessions','ip_reputation_client_threatmask','integer') # 14.3
+    sql_helper.add_column('sessions','ip_reputation_server_reputation','int2') # 14.3
+    sql_helper.add_column('sessions','ip_reputation_server_threatmask','integer') # 14.3
 
 @sql_helper.print_timing
 def __create_session_minutes_table(  ):
@@ -154,6 +171,14 @@ CREATE TABLE reports.session_minutes (
         firewall_blocked boolean,
         firewall_flagged boolean,
         firewall_rule_index integer,
+        ip_reputation_blocked boolean,
+        ip_reputation_flagged boolean,
+        ip_reputation_reason character(1),
+        ip_reputation_rule_index integer,
+        ip_reputation_client_reputation int2,
+        ip_reputation_client_threatmask integer,
+        ip_reputation_server_reputation int2,
+        ip_reputation_server_threatmask integer,
         application_control_lite_protocol text,
         application_control_lite_blocked boolean,
         captive_portal_blocked boolean,
@@ -184,7 +209,14 @@ CREATE TABLE reports.session_minutes (
                                  "client_intf",
                                  "server_intf",
                                  "application_control_application"])
-    sql_helper.add_column('session_minutes','tags','text') # 13.0
+    sql_helper.add_column('session_minutes','ip_reputation_blocked','boolean') # 14.3
+    sql_helper.add_column('session_minutes','ip_reputation_flagged','boolean') # 14.3
+    sql_helper.add_column('session_minutes','ip_reputation_reason','character') # 14.3
+    sql_helper.add_column('session_minutes','ip_reputation_rule_index','integer') # 14.3
+    sql_helper.add_column('session_minutes','ip_reputation_client_reputation','int2') # 14.3
+    sql_helper.add_column('session_minutes','ip_reputation_client_threatmask','integer') # 14.3
+    sql_helper.add_column('session_minutes','ip_reputation_server_reputation','int2') # 14.3
+    sql_helper.add_column('session_minutes','ip_reputation_server_threatmask','integer') # 14.3
         
 
 @sql_helper.print_timing
