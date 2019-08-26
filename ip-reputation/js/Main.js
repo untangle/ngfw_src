@@ -42,6 +42,11 @@ Ext.define('Ung.apps.ipreputation.Main', {
                 direction: 'ASC'
             }],
             data: [
+                ["0", 'Any'.t(), 'Any threat'.t()],
+                ["1", 'Spam Sources'.t(), 'IP addresses from rogue SMTP server connection attempts, anomalous mail activity detected on network sensors, and IPs correlated with known email and forum spammers.'.t() ],
+                ["2", 'Windows Exploits'.t(), 'IP addresses participating in distribution of malware or malware attacks, protocol exploits, recorded login attempts, information stealing and other advanced or nefarious shell code, rootkits, worms or virus-related activity.'.t() ],
+                ["3", 'Web Attacks'.t(), 'IP addresses using cross-site scripting, iFrame injection, SQL injection, cross-domain injection, domain password brute force attacks to target vulnerabilities on a web server, and malicious automated web activity.'.t()],
+                ["4", 'Botnets'.t(), 'IP addresses acting as botnet Command and Control (C&C) centers, infected zombie machines controlled by the C&C servers, botnet hosts distributing malware, cobalt beacons, suspicious fast flux activity, and ransomware reported C&C.'.t() ],
             ]
         }),
 
