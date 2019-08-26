@@ -1,0 +1,9 @@
+{
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.ip_reputation.IpReputationApp",
+        "name" : "ip-reputation",
+        "displayName" : "IP Reputation",
+        "type" : "FILTER",
+        "viewPosition" : 111
+}
+

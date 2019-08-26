@@ -1,0 +1,31 @@
+{
+    "uniqueId": "ip-reputation-AsifWhYFtrbfs",
+    "category": "IP Reputation",
+    "description": "The number of flagged sessions to servers grouped by reputation.",
+    "displayOrder": 22,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "ip_reputation_server_reputation",
+    "pieSumColumn": "count(*)",
+    "conditions": [
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "ip_reputation_flagged",
+            "operator": "=",
+            "value": "true"
+        },{
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "ip_reputation_server_reputation",
+            "operator": ">",
+            "value": "0"
+        }
+    ],
+    "readOnly": true,
+    "table": "sessions",
+    "title": "Top Flagged Reputations (by server)",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

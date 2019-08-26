@@ -1,0 +1,32 @@
+{
+    "uniqueId": "ip-reputation-AsifWhYFaetcbb",
+    "category": "IP Reputation",
+    "description": "The number of blocked session grouped by client.",
+    "displayOrder": 502,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "c_client_addr",
+    "pieSumColumn": "count(*)",
+    "conditions": [
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "ip_reputation_client_reputation",
+            "operator": ">",
+            "value": "0"            
+        },
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "ip_reputation_blocked",
+            "operator": "=",
+            "value": "true"
+        }
+    ],
+    "readOnly": true,
+    "table": "sessions",
+    "title": "Top Blocked Clients",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

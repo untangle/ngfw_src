@@ -253,14 +253,14 @@ Depends: ${misc:Depends}, untangle-vm
 Description: Firewall application
  The Firewall application.
 
-#Package: untangle-app-ip-reputation
-#Architecture: all
-#Conflicts: untangle-node-ip-reputation
-#Replaces: untangle-node-ip-reputation
-#Provides: untangle-node-ip-reputation
-#Depends: ${misc:Depends}, untangle-vm, untangle-app-license, untangle-bctid
-#Description: IP reputation application
-# The IP reputation application.
+Package: untangle-app-ip-reputation
+Architecture: all
+Conflicts: untangle-node-ip-reputation
+Replaces: untangle-node-ip-reputation
+Provides: untangle-node-ip-reputation
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, untangle-bctid, untangle-app-webroot
+Description: IP reputation application
+ The IP reputation application.
 
 Package: untangle-app-spam-blocker-lite
 Architecture: all
