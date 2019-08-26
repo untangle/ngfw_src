@@ -108,6 +108,7 @@ public class WebrootDaemon
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
 
         if(firstIn){
+            restart();
             WebrootQuery.start();
             pulseGetStatistics.start();
         }
@@ -126,6 +127,14 @@ public class WebrootDaemon
             WebrootQuery.stop();
         }
         UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bctid");
+    }
+
+    /**
+     * Restart the daemon.
+     */
+    public void restart()
+    {
+        UvmContextFactory.context().daemonManager().restart("untangle-bctid");
     }
 
     /**
