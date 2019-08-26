@@ -34,6 +34,7 @@ Ext.define('Ung.util.Util', {
         'application-control-lite': 'Application Control Lite identifies, logs, and blocks sessions based on the session content using custom signatures.'.t(),
         'captive-portal': 'Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'.t(),
         'firewall': 'Firewall is a simple application that flags and blocks sessions based on rules.'.t(),
+        'ip-reputation': 'IP Reputation flags and blocks sessions based on rules that match IP address historical statistics.'.t(),
         'ad-blocker': 'Ad Blocker blocks advertising content and tracking cookies for scanned web traffic.'.t(),
         'reports': 'Reports records network events to provide administrators the visibility and data necessary to investigate network activity.'.t(),
         'policy-manager': 'Policy Manager enables administrators to create different policies and handle different sessions with different policies based on rules.'.t(),
