@@ -22,7 +22,6 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppMetric;
-import com.untangle.uvm.app.AppMetricRate;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
@@ -30,11 +29,9 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.app.IntMatcher;
-import com.untangle.uvm.app.BitmaskMatcher;
-
 
 /** FirewalApp is the IP Reputation Application implementation */
-public class IpReputationApp extends AppBase implements com.untangle.uvm.app.IpReputation
+public class IpReputationApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -403,56 +400,5 @@ public class IpReputationApp extends AppBase implements com.untangle.uvm.app.IpR
     // attach ip reputation to global session state
 
     // private attachIpReputation()
-
-    /**
-     * [isReputationThresholdMatch description]
-     * @param  address    [description]
-     * @param  reputationMatcher [description]
-     * @return            [description]
-     */
-    public boolean isReputationThresholdMatch( InetAddress address, IntMatcher reputationMatcher ){
-        if (!isLicenseValid()) {
-            return false;
-        }
-
-        try{
-            JSONArray answer = webrootQuery.ipGetInfo(address.getHostAddress());
-            logger.warn(answer);
-            if(answer != null){
-                JSONObject ipAnswer = answer.getJSONObject(0);
-                logger.warn("isReputationThresholdMatch:" + reputationMatcher.isMatch(ipAnswer.getInt(WebrootQuery.BCTI_API_RESPONSE_IPINFO_REPUTATION_KEY)));
-                return reputationMatcher.isMatch(ipAnswer.getInt(WebrootQuery.BCTI_API_RESPONSE_IPINFO_REPUTATION_KEY));
-            }
-        }catch(Exception e){
-            logger.warn("Unable to process ip get info ", e);
-        }
-        return false;
-    }
-
-    /**
-     * [isReputationThreatMatch description]
-     * @param  address       [description]
-     * @param  threatMatcher [description]
-     * @return               [description]
-     */
-    public boolean isReputationThreatMatch( InetAddress address, BitmaskMatcher threatMatcher ){
-        if (!isLicenseValid()) {
-            return false;
-        }
-
-        // try{
-        //     JSONArray answer = webrootQuery.ipGetInfo(address);
-        //     logger.warn(answer);
-        //     if(answer != null){
-        //         JSONObject ipAnswer = answer.getJSONObject(0);
-        //         return threatMatcher.isMatch(ipAnswer.getInt(WebrootQuery.BCTI_API_RESPONSE_IPINFO_THREAT_MASK_KEY));
-        //     }
-        // }catch(Exception e){
-        //     logger.warn("Unable to process ip get info ", e);
-        // }
-        return false;
-
-    }
-
 
 }
