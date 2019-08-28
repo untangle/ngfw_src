@@ -1,16 +1,11 @@
 """bandwidth_control tests"""
 import time
-import sys
-import pdb
-import os
-import re
-import subprocess
 import copy
-import socket
 import unittest
 import pytest
 import runtests
 
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -26,6 +21,7 @@ orig_network_settings_without_qos = None
 wan_limit_kbit = None
 wan_limit_mbit = None
 pre_down_speed_kbit = None
+
 
 def create_single_condition_rule( conditionType, value, actionType="SET_PRIORITY", priorityValue=3 ):
     conditionTypeStr = str(conditionType)
@@ -53,6 +49,7 @@ def create_single_condition_rule( conditionType, value, actionType="SET_PRIORITY
         }
     }
 
+
 def create_penalty_rule( conditionType, value, actionType="TAG_HOST", tagName="", tagTime=1000 ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
@@ -79,6 +76,7 @@ def create_penalty_rule( conditionType, value, actionType="TAG_HOST", tagName=""
             ]
         }
     }
+
             
 def create_quota_rule( conditionType, value, actionType, quotaValue=100 ):
     conditionTypeStr = str(conditionType)
@@ -106,6 +104,7 @@ def create_quota_rule( conditionType, value, actionType, quotaValue=100 ):
             ]
         },
     }
+
     
 def create_qos_custom_rule( conditionType, value, priorityValue=3 ):
     conditionTypeStr = str(conditionType)
@@ -135,6 +134,7 @@ def create_qos_custom_rule( conditionType, value, priorityValue=3 ):
         "priority": priorityValue,
         "ruleId": 5
     }
+
     
 def create_bypass_condition_rule( conditionType, value):
     return {
@@ -162,15 +162,18 @@ def create_bypass_condition_rule( conditionType, value):
         "ruleId": 1
     } 
 
-def append_rule(newRule):
+
+def append_rule(app, newRule):
     rules = app.getRules()
     rules["list"].append(newRule)
     app.setRules(rules)
 
-def nuke_rules():
+
+def nuke_rules(app):
     rules = app.getRules()
     rules["list"] = []
     app.setRules(rules)
+
 
 def print_results( wget_speed_pre, wget_speed_post, expected_speed, allowed_speed ):
         print("Pre Results   : %s KB/s" % str(wget_speed_pre))
@@ -179,11 +182,14 @@ def print_results( wget_speed_pre, wget_speed_post, expected_speed, allowed_spee
         print("Allowed Post  : %s KB/s" % str(allowed_speed))
         print("Summary: %s < %s = %s" % (wget_speed_post, allowed_speed, str( wget_speed_post < allowed_speed )))
 
+
 @pytest.mark.bandwidth_control
-class BandwidthControlTests(unittest.TestCase):
+class BandwidthControlTests(NGFWTestCase):
 
     @staticmethod
     def module_name():
+        global app
+        app = BandwidthControlTests._app
         return "bandwidth-control"
 
     @staticmethod
@@ -198,19 +204,15 @@ class BandwidthControlTests(unittest.TestCase):
     def displayName():
         return "Bandwidth Control"
 
-    @staticmethod
-    def initial_setup(self):
-        global app, app_web_filter, orig_network_settings, orig_network_settings_with_qos, orig_network_settings_without_qos, pre_down_speed_kbit, wan_limit_kbit, wan_limit_mbit
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        settings = app.getSettings()
+    @classmethod
+    def initial_extra_setup(cls):
+        global app_web_filter, orig_network_settings, orig_network_settings_with_qos, orig_network_settings_without_qos, pre_down_speed_kbit, wan_limit_kbit, wan_limit_mbit
+
+        settings = cls._app.getSettings()
         settings["configured"] = True
-        app.setSettings(settings)        
-        app.start()
-        if (uvmContext.appManager().isInstantiated(self.appNameWF())):
-            raise Exception('app %s already instantiated' % self.appNameWF())
-        app_web_filter = uvmContext.appManager().instantiate(self.appNameWF(), default_policy_id)
+        cls._app.setSettings(settings)        
+        cls._app.start()
+
         if orig_network_settings == None:
             orig_network_settings = uvmContext.networkManager().getNetworkSettings()
 
@@ -247,9 +249,6 @@ class BandwidthControlTests(unittest.TestCase):
         
         uvmContext.networkManager().setNetworkSettings(orig_network_settings_with_qos)
         
-    def setUp(self):
-        pass
-
     # verify client is online
     def test_010_client_is_online(self):
         result = remote_control.is_online()
@@ -270,7 +269,7 @@ class BandwidthControlTests(unittest.TestCase):
 
     def test_013_qos_bypass_custom_rules_tcp(self):
         global app
-        nuke_rules()
+        nuke_rules(self._app)
         priority_level = 7
         # Record average speed without bandwidth control configured
         wget_speed_pre = global_functions.get_download_speed()
@@ -325,7 +324,7 @@ class BandwidthControlTests(unittest.TestCase):
 
     def test_015_qos_nobpass_custom_rules_tcp(self):
         global app
-        nuke_rules()
+        nuke_rules(self._app)
         priority_level = 7
 
         # Record average speed without bandwidth control configured
@@ -350,13 +349,13 @@ class BandwidthControlTests(unittest.TestCase):
 
     def test_020_severely_limited_tcp(self):
         global app
-        nuke_rules()
+        nuke_rules(self._app)
         priority_level = 7
         # Record average speed without bandwidth control configured
         wget_speed_pre = global_functions.get_download_speed()
 
         # Create SRC_ADDR based rule to limit bandwidth
-        append_rule(create_single_condition_rule("SRC_ADDR",remote_control.client_ip,"SET_PRIORITY",priority_level))
+        append_rule(self._app, create_single_condition_rule("SRC_ADDR",remote_control.client_ip,"SET_PRIORITY",priority_level))
 
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.get_download_speed()
@@ -389,15 +388,15 @@ class BandwidthControlTests(unittest.TestCase):
             raise unittest.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
         # Enabled QoS
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        nuke_rules()
+        nuke_rules(self._app)
 
-        append_rule(create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",1))
+        append_rule(self._app, create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",1))
             
         pre_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.client_ip, targetRate=targetSpeedMbit )
 
         # Create DST_PORT based rule to limit bandwidth
-        nuke_rules()
-        append_rule(create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",7))
+        nuke_rules(self._app)
+        append_rule(self._app, create_single_condition_rule("DST_PORT","5000","SET_PRIORITY",7))
 
         post_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.client_ip, targetRate=targetSpeedMbit )
 
@@ -406,7 +405,7 @@ class BandwidthControlTests(unittest.TestCase):
 
     def test_050_severely_limited_web_filter_flagged(self):
         global app, app_web_filter
-        nuke_rules()
+        nuke_rules(self._app)
         pre_count = global_functions.get_app_metric_value(app,"prioritize")
 
         priority_level = 7
@@ -415,7 +414,7 @@ class BandwidthControlTests(unittest.TestCase):
         wget_speed_pre = global_functions.get_download_speed(download_server="test.untangle.com")
         
         # Create WEB_FILTER_FLAGGED based rule to limit bandwidth
-        append_rule(create_single_condition_rule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
+        append_rule(self._app, create_single_condition_rule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
 
         # Test.untangle.com is listed as Software, Hardware in web filter. As of 1/2014 its in Technology 
         settingsWF = app_web_filter.getSettings()
@@ -450,7 +449,7 @@ class BandwidthControlTests(unittest.TestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         global app
-        nuke_rules()
+        nuke_rules(self._app)
         priority_level = 7 # Severely Limited 
         given_quota = 10000 # 10k 
 
@@ -461,9 +460,9 @@ class BandwidthControlTests(unittest.TestCase):
         wget_speed_pre = global_functions.get_download_speed()
         
         # Create rule to give quota
-        append_rule(create_quota_rule("HOST_HAS_NO_QUOTA","true","GIVE_HOST_QUOTA",given_quota))
+        append_rule(self._app, create_quota_rule("HOST_HAS_NO_QUOTA","true","GIVE_HOST_QUOTA",given_quota))
         # Create penalty for exceeding quota
-        append_rule(create_single_condition_rule("HOST_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
+        append_rule(self._app, create_single_condition_rule("HOST_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
         global_functions.get_download_speed(meg=1)
@@ -505,7 +504,7 @@ class BandwidthControlTests(unittest.TestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         global app
-        nuke_rules()
+        nuke_rules(self._app)
         priority_level = 7 # Severely Limited 
         given_quota = 10000 # 10k 
 
@@ -522,10 +521,10 @@ class BandwidthControlTests(unittest.TestCase):
         wget_speed_pre = global_functions.get_download_speed()
         
         # Create rule to give quota
-        append_rule(create_quota_rule("USER_HAS_NO_QUOTA","true","GIVE_USER_QUOTA",given_quota))
+        append_rule(self._app, create_quota_rule("USER_HAS_NO_QUOTA","true","GIVE_USER_QUOTA",given_quota))
 
         # Create penalty for exceeding quota
-        append_rule(create_single_condition_rule("USER_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
+        append_rule(self._app, create_single_condition_rule("USER_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
         global_functions.get_download_speed(meg=1)
@@ -569,7 +568,7 @@ class BandwidthControlTests(unittest.TestCase):
         
     def test_070_penalty_rule(self):
         global app
-        nuke_rules()
+        nuke_rules(self._app)
         tag_time = 2000000
 
         # remove tags
@@ -578,7 +577,7 @@ class BandwidthControlTests(unittest.TestCase):
         entry = uvmContext.hostTable().setHostTableEntry(remote_control.client_ip, entry)
         
         # Create penalty rule
-        append_rule(create_penalty_rule("SRC_ADDR",remote_control.client_ip,"TAG_HOST","penalty-box",tag_time))
+        append_rule(self._app, create_penalty_rule("SRC_ADDR",remote_control.client_ip,"TAG_HOST","penalty-box",tag_time))
         
         # go to test.untangle.com 
         result = remote_control.is_online()
@@ -607,15 +606,12 @@ class BandwidthControlTests(unittest.TestCase):
         
         assert((event != None))
 
-    @staticmethod
-    def final_tear_down(self):
-        global app, app_web_filter, orig_network_settings
+    @classmethod
+    def final_extra_tear_down(cls):
+        global app_web_filter, orig_network_settings
         # Restore original settings to return to initial settings
         if orig_network_settings != None:
             uvmContext.networkManager().setNetworkSettings( orig_network_settings )
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
         if app_web_filter != None:
             uvmContext.appManager().destroy( app_web_filter.getAppSettings()["id"] )
             app_web_filter = None
