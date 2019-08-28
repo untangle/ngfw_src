@@ -5,15 +5,16 @@ import subprocess
 import unittest
 import pytest
 from tests.global_functions import uvmContext
+
+from tests.common import NGFWTestCase
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
-import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
+
 
 default_policy_id = 1
 app = None
 vpn_tunnel_file = "http://10.111.56.29/openvpn-ats-test-tunnelvpn-config.zip"
+
 
 def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=200):
     return {
@@ -28,6 +29,7 @@ def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=2
             "ruleId": rule_id,
             "tunnelId": vpn_tunnel_id
     }
+
 
 def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Untangle",vpn_tunnel_id=200):
     return {
@@ -45,7 +47,7 @@ def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Untangle",vpn_tunnel
 
 
 @pytest.mark.tunnel_vpn
-class TunnelVpnTests(unittest.TestCase):
+class TunnelVpnTests(NGFWTestCase):
 
     @staticmethod
     def module_name():
@@ -54,17 +56,6 @@ class TunnelVpnTests(unittest.TestCase):
     @staticmethod
     def vendorName():
         return "Untangle"
-
-    @staticmethod
-    def initial_setup(self):
-        global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        app.start()
-
-    def setUp(self):
-        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -82,12 +73,12 @@ class TunnelVpnTests(unittest.TestCase):
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
         print("Original WAN IP: " + currentWanIP)
-        app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
+        self._app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
 
-        appData = app.getSettings()
+        appData = self._app.getSettings()
         appData['rules']['list'].append(create_tunnel_rule())
         appData['tunnels']['list'].append(create_tunnel_profile())
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # wait for vpn tunnel to form
         timeout = 60
@@ -95,10 +86,10 @@ class TunnelVpnTests(unittest.TestCase):
         while (not connected and timeout > 0):
             newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
             if (currentWanIP != newWanIP and newWanIP != ""):
-                listOfConnections = app.getTunnelStatusList()
+                listOfConnections = self._app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
                 connected = True
-                listOfConnections = app.getTunnelStatusList()
+                listOfConnections = self._app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
             else:
                 time.sleep(1)
@@ -107,7 +98,7 @@ class TunnelVpnTests(unittest.TestCase):
         # remove the added tunnel
         appData['rules']['list'][:] = []
         appData['tunnels']['list'][:] = []
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
@@ -121,12 +112,12 @@ class TunnelVpnTests(unittest.TestCase):
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
         print("Original WAN IP: " + currentWanIP)
-        app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
+        self._app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
 
-        appData = app.getSettings()
+        appData = self._app.getSettings()
         appData['rules']['list'].append(create_tunnel_rule(vpn_tunnel_id=-1))
         appData['tunnels']['list'].append(create_tunnel_profile())
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # wait for vpn tunnel to form
         timeout = 60
@@ -134,10 +125,10 @@ class TunnelVpnTests(unittest.TestCase):
         while (not connected and timeout > 0):
             newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
             if (currentWanIP != newWanIP):
-                listOfConnections = app.getTunnelStatusList()
+                listOfConnections = self._app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
                 connected = True
-                listOfConnections = app.getTunnelStatusList()
+                listOfConnections = self._app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
             else:
                 time.sleep(1)
@@ -146,17 +137,11 @@ class TunnelVpnTests(unittest.TestCase):
         # remove the added tunnel
         appData['rules']['list'][:] = []
         appData['tunnels']['list'][:] = []
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
         assert(connectStatus == "CONNECTED")
 
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-        app = None
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
