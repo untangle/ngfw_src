@@ -5,25 +5,29 @@ import unittest
 import pytest
 import runtests
 
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 
+
 default_policy_id = 1
 appSettings = None
 app = None
 
+
 #pdb.set_trace()
 
-def touchProtoRule( protoGusername, flag = True, block =True ):
-    global appSettings,app
-    for rec in appSettings['protoRules']['list']:
+def touchProtoRule(app, protoGusername, flag = True, block =True ):
+    settings = app.getSettings()
+    for rec in settings['protoRules']['list']:
         # print("appSettings: " + str(rec))
         if (rec['name'] == protoGusername):
             rec['flag'] = flag
             rec['block'] = block
-    app.setSettings(appSettings)
+    app.setSettings(settings)
+
 
 def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Value, blocked=True ):
     matcher1TypeStr = str(matcher1Type)
@@ -59,40 +63,38 @@ def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Val
             }
         };
 
-def nukeLogicRules():
-    global app, appSettings
-    appSettings['logicRules']['list'] = []
-    app.setSettings(appSettings)
 
-def appendLogicRule(newRule):
-    global app, appSettings
-    appSettings['logicRules']['list'].append(newRule)
-    app.setSettings(appSettings)
+def nukeLogicRules(app):
+    settings = app.getSettings()
+    settings['logicRules']['list'] = []
+    app.setSettings(settings)
+
+
+def appendLogicRule(app, newRule):
+    settings = app.getSettings()
+    settings['logicRules']['list'].append(newRule)
+    app.setSettings(settings)
+
 
 @pytest.mark.application_control
-class ApplicationControlTests(unittest.TestCase):
+class ApplicationControlTests(NGFWTestCase):
+
+    force_start = True
 
     @staticmethod
     def module_name():
+        global app
+        app = ApplicationControlTests._app
         return "application-control"
 
     @staticmethod
     def vendorName():
         return "Untangle"
 
-    @staticmethod
-    def initial_setup(self):
-        global appSettings, app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        appSettings = app.getSettings()
-        # run a few sessions so that the classd daemon starts classifying
+    @classmethod
+    def initial_extra_setup(cls):
         for i in range(2): remote_control.is_online()
 
-    def setUp(self):
-        pass
-            
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
         assert (result == 0)
@@ -109,54 +111,54 @@ class ApplicationControlTests(unittest.TestCase):
         assert (result == 0)
 
     def test_021_protoRule_Block_Google(self):
-        touchProtoRule("Google",False,False)
+        touchProtoRule(self._app, "Google",False,False)
         result1 = remote_control.run_command("wget -4 -q -O /dev/null -t 2 --timeout=5 http://www.google.com/")
-        touchProtoRule("Google",True,True)
+        touchProtoRule(self._app, "Google",True,True)
         result2 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
-        touchProtoRule("Google",False,False)
+        touchProtoRule(self._app, "Google",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
 
     def test_023_protoRule_Facebook(self):
-        touchProtoRule("Facebook",False,False)
+        touchProtoRule(self._app, "Facebook",False,False)
         result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://facebook.com/")
-        touchProtoRule("Facebook",True,True)
+        touchProtoRule(self._app, "Facebook",True,True)
         result2 = remote_control.run_command("wget --no-check-certificate -4 -q -O /dev/null -t 2 --timeout=5 https://facebook.com/")
-        touchProtoRule("Facebook",False,False)
+        touchProtoRule(self._app, "Facebook",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
 
     def test_024_protoRule_Dns(self):
         raise unittest.SkipTest("Test not consistent, disabling.")
-        touchProtoRule("DNS",False,False)
+        touchProtoRule(self._app, "DNS",False,False)
         result1 = remote_control.run_command("host -4 -W3 test.untangle.com 8.8.8.8")
-        touchProtoRule("DNS",True,True)
+        touchProtoRule(self._app, "DNS",True,True)
         result2 = remote_control.run_command("host -4 -W3 test.untangle.com 8.8.8.8")
-        touchProtoRule("DNS",False,False)
+        touchProtoRule(self._app, "DNS",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
 
     def test_025_protoRule_Ftp(self):
-        touchProtoRule("FTP",False,False)
+        touchProtoRule(self._app, "FTP",False,False)
         pingResult = subprocess.call(["ping","-c","1",global_functions.ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if pingResult:
             raise unittest.SkipTest(global_functions.ftp_server + " not reachable")
         ftpUserName, ftpPassword = global_functions.get_live_account_info("ftp")            
         result1 = remote_control.run_command("wget --user=" + ftpUserName + " --password='" + ftpPassword + "' -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftp_server + "/")
-        touchProtoRule("FTP",True,True)
+        touchProtoRule(self._app, "FTP",True,True)
         result2 = remote_control.run_command("wget --user=" + ftpUserName + " --password='" + ftpPassword + "' -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftp_server + "/")
-        touchProtoRule("FTP",False,False)
+        touchProtoRule(self._app, "FTP",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
 
     def test_026_protoRule_Pandora(self):
         pre_count = global_functions.get_app_metric_value(app,"pass")
 
-        touchProtoRule("Pandora",False,False)
+        touchProtoRule(self._app, "Pandora",False,False)
         result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
-        touchProtoRule("Pandora",True,True)
+        touchProtoRule(self._app, "Pandora",True,True)
         result2 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
-        touchProtoRule("Pandora",False,False)
+        touchProtoRule(self._app, "Pandora",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
 
@@ -169,43 +171,43 @@ class ApplicationControlTests(unittest.TestCase):
         assert (result == 0)
         
     def test_031_logicRule_Block_Gmail(self):
-        nukeLogicRules()
-        appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_APPLICATION", "GMAIL"))
+        nukeLogicRules(self._app)
+        appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_APPLICATION", "GMAIL"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_031_logicRule_Block_Gmail_by_ProtoChain(self):
-        nukeLogicRules()
-        appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PROTOCHAIN", "*/SSL*"))
+        nukeLogicRules(self._app)
+        appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PROTOCHAIN", "*/SSL*"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_032_logicRule_Block_Gmail_by_Category(self):
-        nukeLogicRules()
-        appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CATEGORY", "Mail"))
+        nukeLogicRules(self._app)
+        appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CATEGORY", "Mail"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_033_logicRule_Block_Gmail_by_Productivity(self):
-        nukeLogicRules()
-        appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PRODUCTIVITY", ">2"))
+        nukeLogicRules(self._app)
+        appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PRODUCTIVITY", ">2"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_034_logicRule_Block_Gmail_by_Risk(self):
-        nukeLogicRules()
-        appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_RISK", "<5"))
+        nukeLogicRules(self._app)
+        appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_RISK", "<5"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_034_logicRule_Block_Gmail_by_Confidence(self):
-        nukeLogicRules()
-        appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CONFIDENCE", ">50"))
+        nukeLogicRules(self._app)
+        appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CONFIDENCE", ">50"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_100_eventlog_Block_Google(self):
-        touchProtoRule("Google",True,True)
+        touchProtoRule(self._app, "Google",True,True)
         result = remote_control.run_command("wget -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
         assert (result != 0)
         time.sleep(1)
@@ -235,12 +237,6 @@ class ApplicationControlTests(unittest.TestCase):
             result = remote_control.is_online()
             time.sleep(1)
 
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
 
 test_registry.register_module("application-control", ApplicationControlTests)
 

@@ -1,24 +1,27 @@
 """application_control_lite tests"""
 import time
-import unittest
 import pytest
 
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 
+
 default_policy_id = 1
 app = None
 
-def nukepatterns():
+
+def nukepatterns(app):
     settings = app.getSettings()
     patterns = settings["patterns"]
     patterns["list"] = [];
     settings["patterns"] = patterns
     app.setSettings(settings)
 
-def addPatterns(definition, blocked=False, log=True, protocol="protocol", description="description", category="category"):
+
+def addPatterns(app, definition, blocked=False, log=True, protocol="protocol", description="description", category="category"):
     newPatterns = { 
                 "alert": False, 
                 "blocked": blocked, 
@@ -38,22 +41,15 @@ def addPatterns(definition, blocked=False, log=True, protocol="protocol", descri
     app.setSettings(settings)
 
 @pytest.mark.application_control_lite
-class ApplicationControlLiteTests(unittest.TestCase):
+class ApplicationControlLiteTests(NGFWTestCase):
+
+    force_start = True
 
     @staticmethod
     def module_name():
-        return "application-control-lite"
-
-    @staticmethod
-    def initial_setup(self):
         global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        app.start() # must be called since ad blocker doesn't auto-start
-
-    def setUp(self):
-        pass
+        app = ApplicationControlLiteTests._app
+        return "application-control-lite"
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -64,19 +60,20 @@ class ApplicationControlLiteTests(unittest.TestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
   
     def test_020_testHttpPatternLog(self):
-        nukepatterns()
+        nukepatterns(self._app)
         
-        addPatterns(definition="http/(0\\.9|1\\.0|1\\.1) [1-5][0-9][0-9] [\\x09-\\x0d -~]*(connection:|content-type:|content-length:|date:)|post [\\x09-\\x0d -~]* http/[01]\\.[019]",
+        addPatterns(self._app, definition="http/(0\\.9|1\\.0|1\\.1) [1-5][0-9][0-9] [\\x09-\\x0d -~]*(connection:|content-type:|content-length:|date:)|post [\\x09-\\x0d -~]* http/[01]\\.[019]",
                     protocol="HTTP", 
                     category="Web", 
                     description="HyperText Transfer Protocol")
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        nukepatterns()
+        nukepatterns(self._app)
         assert (result == 0)
         time.sleep(3);
 
         events = global_functions.get_events('Application Control Lite','All Events',None,5)
         assert(events != None)
+        print(events)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.client_ip,
                                             'application_control_lite_protocol', 'HTTP',
@@ -84,9 +81,9 @@ class ApplicationControlLiteTests(unittest.TestCase):
         assert( found )
 
     def test_030_testHttpPatternBlocked(self):
-        nukepatterns()
+        nukepatterns(self._app)
         
-        addPatterns(definition="http/(0\\.9|1\\.0|1\\.1) [1-5][0-9][0-9] [\\x09-\\x0d -~]*(connection:|content-type:|content-length:|date:)|post [\\x09-\\x0d -~]* http/[01]\\.[019]",
+        addPatterns(self._app, definition="http/(0\\.9|1\\.0|1\\.1) [1-5][0-9][0-9] [\\x09-\\x0d -~]*(connection:|content-type:|content-length:|date:)|post [\\x09-\\x0d -~]* http/[01]\\.[019]",
                     protocol="HTTP",
                     blocked=True,
                     category="Web", 
@@ -104,9 +101,9 @@ class ApplicationControlLiteTests(unittest.TestCase):
         assert( found )
 
     def test_040_testFtpPatternBlock(self):
-        nukepatterns()
+        nukepatterns(self._app)
         
-        addPatterns(definition="^220[\x09-\x0d -~]*ftp",
+        addPatterns(self._app, definition="^220[\x09-\x0d -~]*ftp",
                     protocol="FTP", 
                     blocked=True,
                     category="Web", 
@@ -124,9 +121,9 @@ class ApplicationControlLiteTests(unittest.TestCase):
         assert( found )
 
     def test_050_testDnsUdpPatternLog(self):
-        nukepatterns()
+        nukepatterns(self._app)
         
-        addPatterns(definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
+        addPatterns(self._app, definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
                     protocol="DNS", 
                     blocked=False,
                     category="Web", 
@@ -144,9 +141,9 @@ class ApplicationControlLiteTests(unittest.TestCase):
         assert( found )
 
     def test_060_testDnsUdpPatternBlock(self):
-        nukepatterns()
+        nukepatterns(self._app)
         
-        addPatterns(definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
+        addPatterns(self._app, definition="^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-?][a-z0-9][\x01-?a-z]*[\x02-\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\x01-\x10\x1c]",
                     protocol="DNS", 
                     blocked=True,
                     category="Web", 
@@ -163,12 +160,5 @@ class ApplicationControlLiteTests(unittest.TestCase):
                                             'application_control_lite_blocked', True )
         assert( found )
 
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
-        
 
 test_registry.register_module("application-control-lite", ApplicationControlLiteTests)
