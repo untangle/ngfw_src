@@ -68,6 +68,12 @@ Provides: untangle-node-web-cache
 Description: Web Cache
  The Web Cache application.
 
+Package: untangle-app-webroot
+Architecture: all
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license
+Description: Web Root
+ The Web Root application.
+
 Package: untangle-app-wan-failover
 Architecture: all
 Section: non-free/net
