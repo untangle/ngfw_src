@@ -4,39 +4,32 @@ import subprocess
 import ast
 import filecmp
 import glob
-import unittest
 import pytest
 import requests
 
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-from uvm import Uvm
+
 
 app = None
 default_policy_id = 1
 
+
 @pytest.mark.configuration_backup
-class ConfigurationBackupTests(unittest.TestCase):
+class ConfigurationBackupTests(NGFWTestCase):
     
     @staticmethod
     def module_name():
+        global app
+        app = ConfigurationBackupTests._app
         return "configuration-backup"
 
     @staticmethod
     def vendorName():
         return "Untangle"
-
-    @staticmethod
-    def initial_setup(self):
-        global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-
-    def setUp(self):
-        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -47,9 +40,7 @@ class ConfigurationBackupTests(unittest.TestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_backupNow(self):
-        global app
-        boxUID = uvmContext.getServerUID()
-        app.sendBackup()
+        self._app.sendBackup()
 
         events = global_functions.get_events('Configuration Backup','Backup Events',None,1)
         assert(events != None)
@@ -62,12 +53,11 @@ class ConfigurationBackupTests(unittest.TestCase):
 
     def test_140_compare_cloud_backup(self):
         """Compare a cloud backup with a local backup"""
-        global app
         boxUID = uvmContext.getServerUID()
         #get authentication url and api key
         authUrl,authKey = global_functions.get_live_account_info("UntangleAuth")
         boxBackupUrl,bbKey = global_functions.get_live_account_info("BoxBackup")
-        app.sendBackup()
+        self._app.sendBackup()
         #remove previous backups/backup directories
         subprocess.call("rm -rf /tmp/localBackup*", shell=True)
         subprocess.call("rm -rf /tmp/cloudBackup*", shell=True)
@@ -127,13 +117,6 @@ class ConfigurationBackupTests(unittest.TestCase):
             return True
     
         assert(is_same(localBackupPath, cloudBackupPath))
-
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
 
 
 test_registry.register_module("configuration-backup", ConfigurationBackupTests)
