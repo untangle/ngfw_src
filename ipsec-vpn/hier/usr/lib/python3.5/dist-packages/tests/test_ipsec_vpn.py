@@ -2,14 +2,14 @@
 import time
 import subprocess
 import base64
-
 import unittest
 import pytest
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-from uvm import Uvm
 
 default_policy_id = 1
 app = None
@@ -35,7 +35,6 @@ configuredHostIPs = [('10.111.0.134','192.168.2.1','192.168.2.0/24'), # ATS
                      ('10.111.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
                      ('10.111.56.57','192.168.4.1','192.168.4.0/24')] # QA box .57
 
-# pdb.set_trace()
 
 def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLANRange=""):
     return {
@@ -56,15 +55,18 @@ def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLA
         "secret": "supersecret"
     }    
 
+
 def appendTunnel(newTunnel):
     ipsecSettings = app.getSettings()
     ipsecSettings["tunnels"]["list"].append(newTunnel)
     app.setSettings(ipsecSettings)
 
+
 def nukeIPSecTunnels():
     ipsecSettings = app.getSettings()
     ipsecSettings["tunnels"]["list"] = []
     app.setSettings(ipsecSettings)
+
 
 def createL2TPconfig(authType="LOCAL_DIRECTORY"):
     ipsecSettings = app.getSettings()
@@ -73,6 +75,7 @@ def createL2TPconfig(authType="LOCAL_DIRECTORY"):
     ipsecSettings["virtualSecret"] = "testthis"
     ipsecSettings["vpnflag"] = True
     app.setSettings(ipsecSettings);
+
 
 def createLocalDirectoryUser(userpassword=l2tpLocalPassword):
     passwd_encoded = base64.b64encode(userpassword.encode("utf-8"))
@@ -88,10 +91,12 @@ def createLocalDirectoryUser(userpassword=l2tpLocalPassword):
             },]
     }
 
+
 def removeLocalDirectoryUser():
     return {'javaClass': 'java.util.LinkedList', 
         'list': []
     }
+
 
 def createRadiusSettings():
     return {
@@ -131,6 +136,7 @@ def createRadiusSettings():
         },
         "version": 1
     }
+
     
 def createDNSRule( networkAddr, name):
     return {
@@ -139,16 +145,20 @@ def createDNSRule( networkAddr, name):
         "name": name
          }
 
+
 def addDNSRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)  
 
+
 @pytest.mark.ipsec_vpn
-class IPsecTests(unittest.TestCase):
+class IPsecTests(NGFWTestCase):
 
     @staticmethod
     def module_name():
+        global app
+        app = IPsecTests._app
         return "ipsec-vpn"
 
     @staticmethod
@@ -159,25 +169,21 @@ class IPsecTests(unittest.TestCase):
     def vendorName():
         return "Untangle"
 
-    @staticmethod
-    def initial_setup(self):
-        global app, orig_netsettings, ipsecHostResult, l2tpClientHostResult, appAD, appDataRD, radiusResult
+    @classmethod
+    def initial_extra_setup(cls):
+        global orig_netsettings, ipsecHostResult, l2tpClientHostResult, appAD, appDataRD, radiusResult
+
         tunnelUp = False
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        if (uvmContext.appManager().isInstantiated(self.appNameAD())):
-            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
+
+        if (uvmContext.appManager().isInstantiated(cls.appNameAD())):
+            raise unittest.SkipTest('app %s already instantiated' % cls.module_name())
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        appAD = uvmContext.appManager().instantiate(self.appNameAD(), default_policy_id)
+        appAD = uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
         appDataRD = appAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-
-    def setUp(self):
-        pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -341,17 +347,15 @@ class IPsecTests(unittest.TestCase):
         # Check to see if the faceplate counters have incremented. 
         assert(pre_events_enabled < post_events_enabled)
 
-    @staticmethod
-    def final_tear_down(self):
-        global app, appAD
+    @classmethod
+    def final_extra_tear_down(cls):
+        global appAD
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
         if appAD != None:
             uvmContext.appManager().destroy( appAD.getAppSettings()["id"] )
             appAD = None
+
 
 test_registry.register_module("ipsec-vpn", IPsecTests)
