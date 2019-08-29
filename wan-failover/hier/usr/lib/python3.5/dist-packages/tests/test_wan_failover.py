@@ -1,20 +1,20 @@
 """wan_failover tests"""
 import time
-
 import unittest
 import pytest
 import runtests
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 
 app = None
 orig_netsettings = None
 indexOfWans = []
 default_policy_id = 1
+
 
 def all_wans_online():
     online_count = 0
@@ -25,6 +25,7 @@ def all_wans_online():
             online_count = online_count + 1
     return ( online_count == wanCount )
 
+
 def online_wan_count():
     online_count = 0
     wanStatus = app.getWanStatus()
@@ -33,6 +34,7 @@ def online_wan_count():
             online_count = online_count + 1
     return online_count
 
+
 def offline_wan_count():
     offline_count = 0
     wanStatus = app.getWanStatus()
@@ -40,6 +42,7 @@ def offline_wan_count():
         if not statusInterface['online']:
             offline_count = offline_count + 1
     return offline_count
+
 
 def wait_for_wan_offline(maxWait=120,increment=1):
     offline_count = offline_wan_count()
@@ -54,10 +57,12 @@ def wait_for_wan_offline(maxWait=120,increment=1):
             break
     print("final    : offline_count: %s"%(str(offline_count)))
 
+
 def set_interface_field( interfaceId, netsettings, fieldName, value ):
     for interface in netsettings['interfaces']['list']:
         if interface.get('interfaceId') == interfaceId:
             interface[fieldName] = value
+
 
 def build_wan_test(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2):
     name = "test " + str(testType) + " " + str(matchInterface)
@@ -80,35 +85,32 @@ def build_wan_test(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL=
     appData["tests"]["list"].append(rule)
     app.setSettings(appData)
 
+
 def nuke_rules():
     appData = app.getSettings()
     appData["tests"]["list"] = []
     app.setSettings(appData)
 
+
 @pytest.mark.wan_failover
-class WanFailoverTests(unittest.TestCase):
+class WanFailoverTests(NGFWTestCase):
     
     @staticmethod
     def module_name():
+        global app
+        app = WanFailoverTests._app
         return "wan-failover"
 
     @staticmethod
     def vendorName():
         return "Untangle"
 
-    @staticmethod
-    def initial_setup(self):
-        global indexOfWans, appData, app, orig_netsettings
-        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        app.start()
-        appData = app.getSettings()
-        indexOfWans = global_functions.get_wan_tuples()
+    @classmethod
+    def initial_extra_setup(cls):
+        global indexOfWans, appData, orig_netsettings
 
-    def setUp(self):
-        print() # verify client is online
+        appData = cls._app.getSettings()
+        indexOfWans = global_functions.get_wan_tuples()
         
     def test_010_client_is_online(self):
         result = remote_control.is_online()
@@ -343,13 +345,6 @@ class WanFailoverTests(unittest.TestCase):
         # Check to see if the faceplate counters have incremented. 
         post_count = global_functions.get_app_metric_value(app,"changed")
         assert(pre_count < post_count)
-
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
 
 
 test_registry.register_module("wan-failover", WanFailoverTests)
