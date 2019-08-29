@@ -373,10 +373,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
     public void start()
     {
         boolean firstIn = DecisionEngineCount.get() == 0;
+        DecisionEngineCount.incrementAndGet();
         if(firstIn){
             reconfigure(null);
         }
-        DecisionEngineCount.incrementAndGet();
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
 
