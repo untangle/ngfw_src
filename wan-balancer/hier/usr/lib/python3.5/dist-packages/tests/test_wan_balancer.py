@@ -3,16 +3,15 @@ import time
 import sys
 import subprocess
 import socket
-
 import unittest
 import pytest
 import runtests
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 
 app = None
 app_data = None
@@ -23,6 +22,7 @@ ip_address_testdestination = None
 index_of_wans = []
 rule_counter = 0
 default_policy_id = 1
+
 
 def set_wan_weight(interfaceId, weight):
     if interfaceId == None or interfaceId == 0:
@@ -38,6 +38,7 @@ def set_wan_weight(interfaceId, weight):
         app_data["weights"][interfaceId-1] = weight
     app.setSettings(app_data)
 
+
 def create_route_rule( networkAddr, netmask, gateway):
     return {
         "description": "wan-balancer test route", 
@@ -49,6 +50,7 @@ def create_route_rule( networkAddr, netmask, gateway):
         "toAddr": True, 
         "toDev": False
          }
+
 
 def build_nat_rules(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
     global rule_counter
@@ -77,6 +79,7 @@ def build_nat_rules(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1
     rule["conditions"]["list"].append(ruleCondition)
     return rule
 
+
 def build_single_wan_route_rule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestination=1):
     print("wanDestination: %s" % wanDestination)
     global rule_counter
@@ -104,15 +107,18 @@ def build_single_wan_route_rule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDes
     app_data["routeRules"]["list"].append(rule)
     app.setSettings(app_data)
 
+
 def nuke_wan_balancer_route_rules():
     app_data = app.getSettings()
     app_data["routeRules"]["list"] = []
     app.setSettings(app_data)
 
+
 def append_route_rule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['staticRoutes']['list'].append(newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
+
 
 def build_wan_test_rule(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2):
     name = "test " + str(testType) + " " + str(matchInterface)
@@ -144,6 +150,7 @@ def build_wan_test_rule(matchInterface, testType="ping", pingHost="8.8.8.8", htt
     else:
         app_data_wan_failover["tests"]["list"][wanRuleIndex] = rule
     app_wan_failover.setSettings(app_data_wan_failover)
+
     
 def nuke_wan_balancer_rules():
     set_wan_weight("all",50)
@@ -151,10 +158,12 @@ def nuke_wan_balancer_rules():
     app_data["routeRules"]["list"] = []
     app.setSettings(app_data)
 
+
 def nuke_wan_failover_rules():
     app_data_wan_failover = app_wan_failover.getSettings()
     app_data_wan_failover["tests"]["list"] = []
     app_wan_failover.setSettings(app_data_wan_failover)
+
     
 def same_wan_network(indexWANs):
     previousExtIP = None
@@ -167,12 +176,17 @@ def same_wan_network(indexWANs):
         else:
             previousExtIP = currentExtIP    
     return wan_match
+
             
 @pytest.mark.wan_balancer
-class WanBalancerTests(unittest.TestCase):
+class WanBalancerTests(NGFWTestCase):
     
+    force_start = True
+
     @staticmethod
     def module_name():
+        global app
+        app = WanBalancerTests._app
         return "wan-balancer"
 
     @staticmethod
@@ -183,19 +197,15 @@ class WanBalancerTests(unittest.TestCase):
     def vendorName():
         return "Untangle"
 
-    @staticmethod
-    def initial_setup(self):
-        global index_of_wans, app, app_data, app_wan_failover, app_data_wan_failover, orig_netsettings, ip_address_testdestination
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
+    @classmethod
+    def initial_extra_setup(cls):
+        global index_of_wans, app_data, app_wan_failover, app_data_wan_failover, orig_netsettings, ip_address_testdestination
 
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        app.start()
-        app_data = app.getSettings()
+        app_data = cls._app.getSettings()
             
-        if (uvmContext.appManager().isInstantiated(self.appNameWanFailover())):
-            raise Exception('app %s already instantiated' % self.appNameWanFailover())
-        app_wan_failover = uvmContext.appManager().instantiate(self.appNameWanFailover(), default_policy_id)
+        if (uvmContext.appManager().isInstantiated(cls.appNameWanFailover())):
+            raise Exception('app %s already instantiated' % cls.appNameWanFailover())
+        app_wan_failover = uvmContext.appManager().instantiate(cls.appNameWanFailover(), default_policy_id)
         app_wan_failover.start()
         app_wan_failoverData = app_wan_failover.getSettings()
 
@@ -572,20 +582,16 @@ class WanBalancerTests(unittest.TestCase):
         post_count = global_functions.get_app_metric_value(app_wan_failover,"changed")
         assert(pre_count < post_count)
 
-    @staticmethod
-    def final_tear_down(self):
-        global app, app_wan_failover
+    @classmethod
+    def final_extra_tear_down(cls):
+        global app_wan_failover
+
         # Restore original settings to return to initial settings
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
         if app_wan_failover != None:
             uvmContext.appManager().destroy( app_wan_failover.getAppSettings()["id"] )
             app_wan_failover = None
         if orig_netsettings != None:
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-
-
             
 
 test_registry.register_module("wan-balancer", WanBalancerTests)
