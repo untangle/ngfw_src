@@ -8,6 +8,7 @@ import unittest
 import pytest
 import runtests
 
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -25,6 +26,7 @@ local_user_name = 'test20'
 adUserName = 'atsadmin'
 captureIP = None
 savedCookieFileName = "/tmp/capture_cookie.txt";
+
 
 # pdb.set_trace()
 def create_capture_non_wan_nic_rule(id_value):
@@ -46,6 +48,7 @@ def create_capture_non_wan_nic_rule(id_value):
         "ruleId": id_value
     };
 
+
 def create_capture_allow_http_rule(id_value):
     return {
         "capture": False,
@@ -64,6 +67,7 @@ def create_capture_allow_http_rule(id_value):
             },
         "ruleId": id_value
      };
+
 
 def create_capture_allow_https_rule(id_value):
     return {
@@ -84,6 +88,7 @@ def create_capture_allow_https_rule(id_value):
         "ruleId": id_value
      };
 
+
 def create_local_directory_user(directory_user=local_user_name,expire_time=0):
     user_email = directory_user + "@test.untangle.com"
     passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
@@ -99,10 +104,12 @@ def create_local_directory_user(directory_user=local_user_name,expire_time=0):
             },]
     }
 
+
 def remove_local_directory_user():
     return {'javaClass': 'java.util.LinkedList',
         'list': []
     }
+
 
 def create_directory_connector_settings(ldap_secure=False):
     # Need to send Radius setting even though it's not used in this case.
@@ -158,6 +165,7 @@ def create_directory_connector_settings(ldap_secure=False):
             "authenticationEnabled": True
         }
     }
+
         
 def create_radius_settings():
     return {
@@ -188,6 +196,7 @@ def create_radius_settings():
         }
     }
 
+
 def find_name_in_host_table(hostname='test'):
     #  Test for username in session
     foundTestSession = False
@@ -204,6 +213,7 @@ def find_name_in_host_table(hostname='test'):
     remote_control.run_command("pkill netcat")
     return foundTestSession
 
+
 def time_of_client_off (timediff=60):
     # Check the time differential betwen the Untangle and client is less than 1 min.
     client_time = int(remote_control.run_command("date +%s",stdout=True))
@@ -214,14 +224,16 @@ def time_of_client_off (timediff=60):
     else:
         return False
 
+
 def set_http_https_ports(httpPort, httpsPort):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['httpPort'] = httpPort
     netsettings['httpsPort'] = httpsPort
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
+
 @pytest.mark.captive_portal
-class CaptivePortalTests(unittest.TestCase):
+class CaptivePortalTests(NGFWTestCase):
 
     @staticmethod
     def module_name():
@@ -243,28 +255,25 @@ class CaptivePortalTests(unittest.TestCase):
     def vendorName():
         return "Untangle"
 
-    @staticmethod
-    def initial_setup(self):
-        global appData, app, appDataRD, appDataAD, appAD, appWeb, appSSL, appSSLData, adResult, radiusResult, test_untangle_com_ip, captureIP
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            print("ERROR: App %s already installed" % self.module_name())
-            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        appData = app.getSettings()
-        if (uvmContext.appManager().isInstantiated(self.appNameAD())):
-            print("ERROR: App %s already installed" % self.appNameAD())
-            raise unittest.SkipTest('app %s already instantiated' % self.module_name())
-        appAD = uvmContext.appManager().instantiate(self.appNameAD(), default_policy_id)
+    @classmethod
+    def initial_extra_setup(cls):
+        global appData, appDataRD, appDataAD, appAD, appWeb, appSSL, appSSLData, adResult, radiusResult, test_untangle_com_ip, captureIP
+
+        appData = cls._app.getSettings()
+        if (uvmContext.appManager().isInstantiated(cls.appNameAD())):
+            print("ERROR: App %s already installed" % cls.appNameAD())
+            raise unittest.SkipTest('app %s already instantiated' % cls.module_name())
+        appAD = uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
         appDataAD = appAD.getSettings().get('activeDirectorySettings')
         appDataRD = appAD.getSettings().get('radiusSettings')
-        if (uvmContext.appManager().isInstantiated(self.appNameWeb())):
-            print("ERROR: App %s already installed" % self.appNameWeb())
-            raise unittest.SkipTest('app %s already instantiated' % self.appNameWeb())
-        appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), default_policy_id)
-        if (uvmContext.appManager().isInstantiated(self.appNameSSLInspector())):
-            print("ERROR: App %s already installed" % self.appNameSSLInspector())
-            raise unittest.SkipTest('app %s already instantiated' % self.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), default_policy_id)
+        if (uvmContext.appManager().isInstantiated(cls.appNameWeb())):
+            print("ERROR: App %s already installed" % cls.appNameWeb())
+            raise unittest.SkipTest('app %s already instantiated' % cls.appNameWeb())
+        appWeb = uvmContext.appManager().instantiate(cls.appNameWeb(), default_policy_id)
+        if (uvmContext.appManager().isInstantiated(cls.appNameSSLInspector())):
+            print("ERROR: App %s already installed" % cls.appNameSSLInspector())
+            raise unittest.SkipTest('app %s already instantiated' % cls.appNameSSLInspector())
+        appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
         appSSLData = appSSL.getSettings()
         adResult = subprocess.call(["ping","-c","1",global_functions.AD_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -275,9 +284,6 @@ class CaptivePortalTests(unittest.TestCase):
 
         # remove previous temp files
         remote_control.run_command("rm -f /tmp/capture_test_*")
-
-    def setUp(self):
-        pass
 
     def test_010_client_is_online(self):
         result = remote_control.is_online()
@@ -294,7 +300,7 @@ class CaptivePortalTests(unittest.TestCase):
         global app, appData
         appData['captureRules']['list'] = []
         appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log http://test.untangle.com/")
         assert (result == 0)
 
@@ -316,7 +322,7 @@ class CaptivePortalTests(unittest.TestCase):
         global app, appData, appWeb
         appData['captureRules']['list'] = []
         appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         newRule = { "blocked": True, "description": "test.untangle.com", "flagged": True, "javaClass": "com.untangle.uvm.app.GenericRule", "string": "test.untangle.com" }
         rules_orig = appWeb.getBlockedUrls()
@@ -347,7 +353,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_023.out http://test.untangle.com/")
@@ -356,7 +362,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # Verify anonymous works
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         print('appid is %s' % appid)  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_023a.out  \'" + global_functions.get_http_url() + "capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -381,14 +387,14 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 10
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_024.out http://test.untangle.com/")
         assert (result == 0)
 
         # Verify anonymous works
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         print('appid is %s' % appid)  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_024a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -397,7 +403,7 @@ class CaptivePortalTests(unittest.TestCase):
 
         # Wait for captive timeout
         time.sleep(20)
-        app.runCleanup() # run the periodic cleanup task to remove expired users
+        self._app.runCleanup() # run the periodic cleanup task to remove expired users
 
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_024b.out http://test.untangle.com/")
         assert (result == 0)
@@ -413,7 +419,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_025.out --insecure https://test.untangle.com/")
@@ -422,7 +428,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # Verify anonymous works
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         print('appid is %s' % appid ) # debug line
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_025a.out --insecure  \'" + global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -446,7 +452,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is NOT show for host with HTTP hostname pass rule
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_026.out http://test.untangle.com/")
@@ -464,7 +470,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is NOT show for host with SNI hostname pass rule
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_027.out --insecure https://test.untangle.com/")
@@ -479,7 +485,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         appSSL.start()
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_028.out --insecure https://test.untangle.com/")
@@ -497,7 +503,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="LOCAL_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030.out http://test.untangle.com/")
@@ -506,7 +512,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -O /tmp/capture_test_030a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -533,7 +539,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="ANY_DIRCON"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030.out http://test.untangle.com/")
@@ -542,7 +548,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -O /tmp/capture_test_030a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -575,7 +581,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="ACTIVE_DIRECTORY"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_035.out http://test.untangle.com/")
@@ -584,7 +590,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if AD login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -O /tmp/capture_test_035a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -648,7 +654,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="RADIUS"
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -q -4 -t 2 --timeout=5 -O /tmp/capture_test_040.out http://test.untangle.com/")
@@ -657,7 +663,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if RADIUS login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -O /tmp/capture_test_040a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040a.out")
@@ -671,7 +677,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if RADIUS login and password a second time.
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -O /tmp/capture_test_040c.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040c.out")
@@ -705,7 +711,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['sessionCookiesEnabled'] = True
         appData['sessionCookiesTimeout'] = 86400
         appData['userTimeout'] = 10
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O " + capture_file_name + " http://test.untangle.com/")
@@ -714,7 +720,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
 
         # connect and auth to get cookie
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --save-cookies " + cookie_file_name)
@@ -724,7 +730,7 @@ class CaptivePortalTests(unittest.TestCase):
 
         # Wait for captive timeout
         time.sleep(20)
-        app.runCleanup() # run the periodic cleanup task to remove expired users
+        self._app.runCleanup() # run the periodic cleanup task to remove expired users
 
         # try again without cookie (confirm session not active)
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/?username=&password=&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -743,7 +749,7 @@ class CaptivePortalTests(unittest.TestCase):
 
         # Wait for captive timeout
         time.sleep(20)
-        app.runCleanup() # run the periodic cleanup task to remove expired users
+        self._app.runCleanup() # run the periodic cleanup task to remove expired users
 
     def test_051_cookie_timeout(self):
         """
@@ -769,7 +775,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['sessionCookiesEnabled'] = True
         appData['sessionCookiesTimeout'] = cookie_timeout
         appData['userTimeout'] = 10
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O " + capture_file_name + " http://test.untangle.com/")
@@ -778,7 +784,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
 
         # connect and auth to get cookie
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --save-cookies " + cookie_file_name)
@@ -788,7 +794,7 @@ class CaptivePortalTests(unittest.TestCase):
 
         # Wait for captive timeout
         time.sleep(20)
-        app.runCleanup() # run the periodic cleanup task to remove expired users
+        self._app.runCleanup() # run the periodic cleanup task to remove expired users
 
         # Cookie expiration is handled by browser so check that after the cookie timeout,
         # the client side's expiration difference from current is greater than timeout.
@@ -821,10 +827,10 @@ class CaptivePortalTests(unittest.TestCase):
         appData['sessionCookiesEnabled'] = False
         appData['sessionCookiesTimeout'] = 10
         appData['userTimeout'] = 3600
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
 
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --load-cookies " + savedCookieFileName)
         assert (result == 0)
@@ -845,7 +851,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
         appData['useMacAddress'] = True
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_060.out http://test.untangle.com/")
@@ -854,7 +860,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -O /tmp/capture_test_060a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -884,7 +890,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
         appData['useMacAddress'] = False
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         
         # Create random user for expired user test
         random_user_email = global_functions.random_email()
@@ -899,7 +905,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -O /tmp/capture_test_065a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + random_user + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -930,7 +936,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['pageType'] = "BASIC_LOGIN"
         appData['userTimeout'] = 3600  # default
         appData['redirectUsingHostname'] = True
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is shown using HTTP
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_070a.out http://test.untangle.com/")
@@ -945,7 +951,7 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(app.getAppSettings()["id"])
+        appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
         result = remote_control.run_command("wget -O /tmp/capture_test_070c.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -973,7 +979,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
         appData['disableSecureRedirect'] = False
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that basic captive page is show when secure redirection is enabled
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_071.out --insecure https://test.untangle.com/")
@@ -991,7 +997,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
         appData['disableSecureRedirect'] = True
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         # check that the request times out when secure redirection is disabled
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_072.out --insecure https://test.untangle.com/")
@@ -1008,7 +1014,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
-        app.setSettings(appData)
+        self._app.setSettings(appData)
         timeout = 60
         result_dns = 1
         while result_dns != 0 and timeout > 0:
@@ -1034,7 +1040,7 @@ class CaptivePortalTests(unittest.TestCase):
         appData['userTimeout'] = 3600
         appData['disableSecureRedirect'] = False #this was set True in test_072, and never set back, causing this test to fail
         appData['alwaysUseSecureCapture'] = True
-        app.setSettings(appData)
+        self._app.setSettings(appData)
 
         #check setting
         result1 = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_090_1.out --no-check-certificate https://test.untangle.com/")
@@ -1049,12 +1055,11 @@ class CaptivePortalTests(unittest.TestCase):
         assert (search2 == 0)
         
     
-    def final_tear_down(self):
-        global app, appAD, appWeb, appSSL
+    @classmethod
+    def final_extra_tear_down(cls):
+        global appAD, appWeb, appSSL
         uvmContext.localDirectory().setUsers(remove_local_directory_user())
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
+
         if appAD != None:
             uvmContext.appManager().destroy( appAD.getAppSettings()["id"] )
             appAD = None
@@ -1064,5 +1069,6 @@ class CaptivePortalTests(unittest.TestCase):
         if appSSL != None:
             uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
             appSSL = None
+
 
 test_registry.register_module("captive-portal", CaptivePortalTests)
