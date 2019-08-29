@@ -6,20 +6,20 @@ import re
 import base64
 import calendar
 import email
+import runtests
+import unittest
+import pytest
+
 from io import BytesIO as BytesIO
 from datetime import datetime
 from datetime import timedelta
 from html.parser import HTMLParser
 
-import runtests
-import unittest
-import pytest
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 from PIL import Image as Image
 
 default_policy_id = 1
@@ -37,6 +37,7 @@ syslog_server_host = ""
 test_email_address = ""
 # pdb.set_trace()
 
+
 class ContentIdParser(HTMLParser):
     content_ids = []
     cid_src_regex = re.compile(r'^cid:(.*)')
@@ -48,6 +49,7 @@ class ContentIdParser(HTMLParser):
                     if matches is not None and len(matches.groups()) > 0:
                         self.content_ids.append(matches.group(1))                    
 
+
 def configure_mail_relay():
     global orig_mailsettings, test_email_address
     test_email_address = global_functions.random_email()
@@ -56,6 +58,7 @@ def configure_mail_relay():
     new_mailsettings['sendMethod'] = 'DIRECT'
     new_mailsettings['fromAddress'] = test_email_address
     uvmContext.mailSender().setSettings(new_mailsettings)
+
 
 def create_firewall_rule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
@@ -80,6 +83,7 @@ def create_firewall_rule( conditionType, value, blocked=True ):
             }
         }
 
+
 def create_reports_user(profile_email=test_email_address, email_template_id=1, access=False):
     passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
     return  {
@@ -97,6 +101,7 @@ def create_reports_user(profile_email=test_email_address, email_template_id=1, a
             "passwordHashBase64": passwd_encoded.decode("utf-8")
     }
 
+
 def create_admin_user(useremail=test_email_address):
     username,domainname = useremail.split("@")
     return {
@@ -108,6 +113,7 @@ def create_admin_user(useremail=test_email_address):
             "passwordHashBase64": "YWdlQWnp64i/3IZ6O34JLF0h+BJQ0J3W",
             "username": username
         }
+
 
 def create_email_template(mobile=False):
     return {
@@ -131,6 +137,7 @@ def create_email_template(mobile=False):
         "title": "Custom Report"
     }
 
+
 def fetch_email( filename, email_address, tries=40 ):
     remote_control.run_command("rm -f %s" % filename)
     while tries > 0:
@@ -143,11 +150,14 @@ def fetch_email( filename, email_address, tries=40 ):
                 return True
     return False
 
+
 @pytest.mark.reports
-class ReportsTests(unittest.TestCase):
+class ReportsTests(NGFWTestCase):
 
     @staticmethod
     def module_name():
+        global app
+        app = ReportsTests._app
         return "reports"
 
     @staticmethod
@@ -158,22 +168,16 @@ class ReportsTests(unittest.TestCase):
     def vendorName():
         return "Untangle"
 
-    @staticmethod
-    def initial_setup(self):
-        global app, orig_settings, test_email_address, can_relay, can_syslog, syslog_server_host, web_app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            # report app is normally installed.
-            # print("App %s already installed" % self.module_name())
-            # raise Exception('app %s already instantiated' % self.module_name())
-            app = uvmContext.appManager().app(self.module_name())
-        else:
-            app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        reportSettings = app.getSettings()
+    @classmethod
+    def initial_extra_setup(cls):
+        global orig_settings, test_email_address, can_relay, can_syslog, syslog_server_host, web_app
+
+        reportSettings = cls._app.getSettings()
         orig_settings = copy.deepcopy(reportSettings)
 
-        if (uvmContext.appManager().isInstantiated(self.webAppName())):
-            raise Exception('app %s already instantiated' % self.webAppName())
-        web_app = uvmContext.appManager().instantiate(self.webAppName(), default_policy_id)
+        if (uvmContext.appManager().isInstantiated(cls.webAppName())):
+            raise Exception('app %s already instantiated' % cls.webAppName())
+        web_app = uvmContext.appManager().instantiate(cls.webAppName(), default_policy_id)
         # Skip checking relaying is possible if we have determined it as true on previous test.
         try:
             can_relay = global_functions.send_test_email()
@@ -189,8 +193,6 @@ class ReportsTests(unittest.TestCase):
                 if portResult == 0:
                     can_syslog = True
                
-    def setUp(self):
-        print(                )
     # verify client is online
     def test_010_client_is_online(self):
         result = remote_control.is_online()
@@ -585,19 +587,19 @@ class ReportsTests(unittest.TestCase):
         resultLoginPage = subprocess.call("wget -q -O - " + adminURL + '"auth/login?url=/reports&realm=Reports&username=test&password=passwd" 2>&1 | grep -q Report', shell=True)
         assert (resultLoginPage == 0)
         
-    @staticmethod
-    def final_tear_down(self):
-        global app, web_app
+    @classmethod
+    def final_extra_tear_down(cls):
+        global web_app
+
         # remove all the apps in case test 103 does not remove them.
         for name in apps_list:
             if (uvmContext.appManager().isInstantiated(name)):
                 remove_app = uvmContext.appManager().app(name)
                 uvmContext.appManager().destroy(remove_app.getAppSettings()["id"])
-        if app != None:
-            app.setSettings(orig_settings)
         if orig_mailsettings != None:
             uvmContext.mailSender().setSettings(orig_mailsettings)
-        app = None
+
         web_app = None
+
         
 test_registry.register_module("reports", ReportsTests)
