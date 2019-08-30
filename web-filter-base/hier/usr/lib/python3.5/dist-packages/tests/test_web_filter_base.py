@@ -2,15 +2,13 @@
 import sys
 import datetime
 
-import unittest
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
-import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 
-class WebFilterBaseTests(unittest.TestCase):
+
+class WebFilterBaseTests(NGFWTestCase):
 
     @staticmethod
     def module_name():
@@ -29,30 +27,30 @@ class WebFilterBaseTests(unittest.TestCase):
         return "Web Filter"
 
     def block_url_list_add(self, url, blocked=True, flagged=True, description="description"):
-        app_name = self.app.getAppName()
+        app_name = self._app.getAppName()
         if ("monitor" in app_name):
             newRule = { "blocked": False, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
         else:
             newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-        rules = self.app.getBlockedUrls()
+        rules = self._app.getBlockedUrls()
         rules["list"].append(newRule)
-        self.app.setBlockedUrls(rules)
+        self._app.setBlockedUrls(rules)
 
     def block_url_list_clear(self):
-        rules = self.app.getBlockedUrls()
+        rules = self._app.getBlockedUrls()
         rules["list"] = []
-        self.app.setBlockedUrls(rules)
+        self._app.setBlockedUrls(rules)
 
     def pass_url_list_add(self, url, enabled=True, description="description"):
         newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-        rules = self.app.getPassedUrls()
+        rules = self._app.getPassedUrls()
         rules["list"].append(newRule)
-        self.app.setPassedUrls(rules)
+        self._app.setPassedUrls(rules)
 
     def pass_url_list_clear(self):
-        rules = self.app.getPassedUrls()
+        rules = self._app.getPassedUrls()
         rules["list"] = []
-        self.app.setPassedUrls(rules)
+        self._app.setPassedUrls(rules)
 
     def rule_add(self, conditionType, conditionData, blocked=True, flagged=True, description="description"):
         newRule =  {
@@ -73,14 +71,14 @@ class WebFilterBaseTests(unittest.TestCase):
                     ]
                 }
             }
-        rules = self.app.getFilterRules()
+        rules = self._app.getFilterRules()
         rules["list"].append(newRule)
-        self.app.setFilterRules(rules)
+        self._app.setFilterRules(rules)
 
     def rules_clear(self):
-        rules = self.app.getFilterRules()
+        rules = self._app.getFilterRules()
         rules["list"] = []
-        self.app.setFilterRules(rules)
+        self._app.setFilterRules(rules)
         
     def search_term_rule_add(self, termWords, blocked=True, flagged=True, description="description"):
         newTerm =  {
@@ -90,17 +88,17 @@ class WebFilterBaseTests(unittest.TestCase):
             "javaClass": "com.untangle.uvm.app.GenericRule",
             "string": termWords,
             }
-        webSettings = self.app.getSettings()
+        webSettings = self._app.getSettings()
         webSettings["searchTerms"]["list"].append(newTerm)
-        self.app.setSettings(webSettings)
+        self._app.setSettings(webSettings)
 
     def search_term_rules_clear(self):
-        webSettings = self.app.getSettings()
+        webSettings = self._app.getSettings()
         webSettings["searchTerms"]["list"] = []
-        self.app.setSettings(webSettings)
+        self._app.setSettings(webSettings)
 
     def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options=""):
-        app_name = self.app.getAppName()
+        app_name = self._app.getAppName()
         if ("https" in url) or ("playboy" in url):
             extra_options += "--no-check-certificate "
         if ((expected == None) or (("monitor" in app_name) and (expected == "blockpage"))):
@@ -111,7 +109,7 @@ class WebFilterBaseTests(unittest.TestCase):
         return result
 
     def check_events(self, host="", uri="", blocked=True, flagged=None):
-        app_display_name = self.app.getAppTitle()
+        app_display_name = self._app.getAppTitle()
         if flagged == None:
             flagged = blocked
         if (("Monitor" in app_display_name) and blocked):
@@ -131,17 +129,6 @@ class WebFilterBaseTests(unittest.TestCase):
                                             'web_filter_flagged', flagged )
         return found
     
-    @staticmethod
-    def initial_setup(self):
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        appmetrics = uvmContext.metricManager().getMetrics(app.getAppSettings()["id"])
-        self.app = app
-
-    def setUp(self):
-        pass
-
     def test_000_client_is_online(self):
         result = remote_control.is_online()
         assert (result == 0)
@@ -604,7 +591,7 @@ class WebFilterBaseTests(unittest.TestCase):
         term = "boobs"
         uri = "/search?q=%s&qs=n&form=QBRE" % term
         # fname = sys._getframe().f_code.co_name
-        app_name = self.app.getAppName()
+        app_name = self._app.getAppName()
         if ("monitor" in app_name):
             blocked = False
         else:
@@ -622,9 +609,3 @@ class WebFilterBaseTests(unittest.TestCase):
                                                'flagged', True )
         self.search_term_rules_clear()
         assert( found )
-
-    @staticmethod
-    def final_tear_down(self):
-        if self.app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            self.app = None
