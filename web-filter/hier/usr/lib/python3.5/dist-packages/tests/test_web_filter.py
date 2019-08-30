@@ -1,5 +1,4 @@
 """web_filter tests"""
-import time
 import sys
 import re
 import datetime
@@ -13,13 +12,9 @@ from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-import tests.ipaddr as ipaddr
-from uvm import Uvm
 
 from .test_web_filter_base import WebFilterBaseTests
 
-default_policy_id = 1
-app = None
 
 def setHttpHttpsPorts(httpPort, httpsPort):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -49,26 +44,17 @@ class WebFilterTests(WebFilterBaseTests):
     def displayName():
         return "Web Filter"
 
-    @staticmethod
-    def initial_setup(self):
-        global app
-        if (uvmContext.appManager().isInstantiated(self.module_name())):
-            raise Exception('app %s already instantiated' % self.module_name())
-        app = uvmContext.appManager().instantiate(self.module_name(), default_policy_id)
-        appmetrics = uvmContext.metricManager().getMetrics(app.getAppSettings()["id"])
-        self.app = app
-
     def test_016_block_url(self):
         """verify basic URL blocking the the url block list"""
-        pre_events_scan = global_functions.get_app_metric_value(self.app, "scan")
-        pre_events_block = global_functions.get_app_metric_value(self.app, "block")
+        pre_events_scan = global_functions.get_app_metric_value(self._app, "scan")
+        pre_events_block = global_functions.get_app_metric_value(self._app, "block")
         self.block_url_list_add("test.untangle.com/test/testPage1.html")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.block_url_list_clear()
         assert ( result == 0 )
         # verify the faceplate counters have incremented.
-        post_events_scan = global_functions.get_app_metric_value(self.app, "scan")
-        post_events_block = global_functions.get_app_metric_value(self.app, "block")
+        post_events_scan = global_functions.get_app_metric_value(self._app, "scan")
+        post_events_block = global_functions.get_app_metric_value(self._app, "block")
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
 
@@ -109,9 +95,9 @@ class WebFilterTests(WebFilterBaseTests):
         """disable pass referer and verify that a page with content that would be blocked is blocked."""
         self.block_url_list_add("test.untangle.com/test/refererPage.html")
         self.pass_url_list_add("test.untangle.com/test/testPage1.html")
-        settings = self.app.getSettings()
+        settings = self._app.getSettings()
         settings["passReferers"] = False
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
         print("result %s passReferers %s" % (resultReferer,settings["passReferers"]))
 
@@ -123,9 +109,9 @@ class WebFilterTests(WebFilterBaseTests):
         """disable pass referer and verify that a page with content that would be blocked is allowed."""
         self.block_url_list_add("test.untangle.com/test/refererPage.html")
         self.pass_url_list_add("test.untangle.com/test/testPage1.html")
-        settings = self.app.getSettings()
+        settings = self._app.getSettings()
         settings["passReferers"] = True
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
         print("result %s passReferers %s" % (resultReferer,settings["passReferers"]))
 
@@ -135,9 +121,9 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_300_block_ip_only_hosts(self):
         """Enable 'block IP only hosts', then check that traffic to an IP is blocked"""
-        settings = self.app.getSettings()
+        settings = self._app.getSettings()
         settings["blockAllIpHosts"]=True
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         result = self.get_web_request_results(url=global_functions.test_server_ip, expected="blockpage")
         assert(result == 0)
 
@@ -151,9 +137,9 @@ class WebFilterTests(WebFilterBaseTests):
             raise unittest.SkipTest("server not available")
 
         #set block to false first to verify netcat works
-        settings = self.app.getSettings()
+        settings = self._app.getSettings()
         settings["blockQuic"]=False
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
 
         serverHost = global_functions.LIST_SYSLOG_SERVER
 
@@ -167,7 +153,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         #set block to true
         settings["blockQuic"]=True
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
 
         #retry netcat connection, verify it fails correctly
         remote_control.run_command("sudo rm -f /tmp/nc_quic_true.txt",host=serverHost)
@@ -180,35 +166,35 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_700_safe_search_enabled(self):
         """Check google/bing/yahoo safe search"""
-        settings = self.app.getSettings()
+        settings = self._app.getSettings()
         settings["enforceSafeSearch"] = False
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         google_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=off'");
 
         settings["enforceSafeSearch"] = True
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         google_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=strict'");
 
         assert( google_result_without_safe == 0 )
         assert( google_result_with_safe == 0 )
 
         settings["enforceSafeSearch"] = False
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         bing_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.bing.com/search?q=boobs&adlt=off' | grep -q 'adlt=off'")
 
         settings["enforceSafeSearch"] = True
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         bing_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.bing.com/search?q=boobs&adlt=off' | grep -q 'adlt=strict'")
     
         assert(bing_result_without_safe == 0)
         assert(bing_result_with_safe == 0)
 
         settings["enforceSafeSearch"] = False
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         yahoo_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=p'")
 
         settings["enforceSafeSearch"] = True
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         yahoo_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=r'")
 
         assert(yahoo_result_with_safe == 0)
@@ -217,9 +203,9 @@ class WebFilterTests(WebFilterBaseTests):
     def test_701_unblock_option(self):
         """verify that a block page is shown but unblock button option is available."""
         self.block_url_list_add("test.untangle.com/test/testPage1.html")
-        settings = self.app.getSettings()
+        settings = self._app.getSettings()
         settings["unblockMode"] = "Host"
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         # this test URL should be blocked but allow
         remote_control.run_command("rm -f /tmp/web_filter_base_test_120.log")
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/web_filter_base_test_120.log -O /tmp/web_filter_base_test_120.out http://test.untangle.com/test/testPage1.html")
@@ -242,7 +228,7 @@ class WebFilterTests(WebFilterBaseTests):
         resultUnBlock = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
 
         self.block_url_list_clear()
-        self.app.flushAllUnblockedSites()
+        self._app.flushAllUnblockedSites()
 
         print("block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock))
         assert (resultBlock == 0)
@@ -253,11 +239,11 @@ class WebFilterTests(WebFilterBaseTests):
         """verify that a block page is shown but unblock if correct password."""
         fname = sys._getframe().f_code.co_name
         self.block_url_list_add("test.untangle.com/test/testPage2.html")
-        settings = self.app.getSettings()
+        settings = self._app.getSettings()
         settings["unblockMode"] = "Host"
         settings["unblockPassword"] = "atstest"
         settings["unblockPasswordEnabled"] = True
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
 
         # this test URL should be blocked but allow
         remote_control.run_command("rm -f /tmp/%s.log"%fname)
@@ -279,12 +265,12 @@ class WebFilterTests(WebFilterBaseTests):
         remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
         resultUnBlock = remote_control.run_command("wget -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
 
-        settings = self.app.getSettings()
+        settings = self._app.getSettings()
         settings["unblockMode"] = "None"
         settings["unblockPassword"] = ""
         settings["unblockPasswordEnabled"] = False
 
-        self.app.setSettings(settings)
+        self._app.setSettings(settings)
         self.block_url_list_clear()
         print("block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock))
         assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
@@ -296,9 +282,9 @@ class WebFilterTests(WebFilterBaseTests):
         site_returned = False
 
         while (loop >= 10) and (site_returned == False):
-            site_lookup = self.app.lookupSite(url)
+            site_lookup = self._app.lookupSite(url)
             site_category_id = site_lookup['list'][0]
-            site_category = self.app.getSettings()['categories']['list'][site_category_id]
+            site_category = self._app.getSettings()['categories']['list'][site_category_id]
             #print(site_category.get('name'))
             if (site_category.get("id") != 0):
                 site_returned = True
@@ -1389,12 +1375,6 @@ class WebFilterTests(WebFilterBaseTests):
         result = self.get_web_request_results(url="http://test.untangle.com/download.php?file=testPage1.html", expected="text123")
         self.rules_clear()
         assert (result == 0)
-        
-    @staticmethod
-    def final_tear_down(self):
-        global app
-        if app != None:
-            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-            app = None
+
 
 test_registry.register_module("web-filter", WebFilterTests)
