@@ -61,8 +61,6 @@ Ext.define('Ung.apps.webfilter.MainController', {
             });
         });
 
-        console.log(vm.get('settings'));
-
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
         .then(function(result){
