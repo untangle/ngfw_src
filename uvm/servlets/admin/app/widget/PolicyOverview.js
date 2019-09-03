@@ -121,8 +121,10 @@ Ext.define('Ung.widget.PolicyOverview', {
                                     });
                                 }
                             });
-                            treePol.set('apps', apps);
-                            treePol.set('stats', stats[policy.policyId.toString()]);
+                            if(treePol){
+                                treePol.set('apps', apps);
+                                treePol.set('stats', stats[policy.policyId.toString()]);
+                            }
                         });
 
                         Ext.getStore('policiestree').sync();
