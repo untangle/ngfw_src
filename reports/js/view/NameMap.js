@@ -55,7 +55,7 @@ Ext.define('Ung.apps.reports.view.NameMap', {
         width: 300,
         vtype: 'ipAddress',
         validator: function (val) {
-            if (this.up('grid').getStore().find('address', val) >= 0) {
+            if (this.up('grid').getStore().findExact('address', val) >= 0) {
                 return 'IP address is already defined in Name Map'.t();
             } else {
                 return true;
