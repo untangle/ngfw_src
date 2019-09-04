@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -86,7 +87,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static AtomicInteger DecisionEngineCount = new AtomicInteger();
 
     private static final long BCTID_RETRY_INTERVAL = 60 * 1000;
-    private static final int BCTID_RETRY_MAX_COUNT = 5;
+    private static final int BCTID_RETRY_MAX_COUNT = 10;
     private static AtomicInteger BctidRetryCount = new AtomicInteger(0);
     private static AtomicLong BctidRetryIntervalExpire = new AtomicLong(0L);
 
@@ -107,6 +108,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private WebFilterBase ourApp = null;
     private int failures = 0;
 
+    private static AtomicInteger urlCacheSync = new AtomicInteger(0);
+    private static WebrootCache urlCache = null;
+
     /**
      * Pulse thread to read btci daemon statistics.
      */
@@ -114,6 +118,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static long DEFAULT_GET_STATISTICS_RUN_TIMEOUT_MS = (long) 60 * 60 * 1000; /* Kill process after 60 minutes.  */
 
     private Pulse pulseGetStatistics = new Pulse("decision-get-statistics", new GetStatistics(), DEFAULT_GET_STATISTICS_INTERVAL_MS, true, DEFAULT_GET_STATISTICS_RUN_TIMEOUT_MS);
+
+    static {
+        urlCache = new WebrootCache();
+    }
 
     /**
      * Constructor
@@ -285,18 +293,31 @@ public class WebFilterDecisionEngine extends DecisionEngine
             String url = domain + uri;
 
             String bctidAnswer = null;
+            JSONArray jsonBctidAnswer = null;
             try{
-                bctidAnswer = bctidQuery(BCTI_QUERY_URLINFO_PREFIX + url + BCTI_QUERY_URLINFO_SUFFIX);
-                if(bctidAnswer != null){
-                    JSONObject urlAnswer = new JSONArray(bctidAnswer).getJSONObject(0);
+                synchronized(urlCacheSync){
+                    jsonBctidAnswer = urlCache.get(url);
+                }
+                if(jsonBctidAnswer == null){
+                    bctidAnswer = bctidQuery(BCTI_QUERY_URLINFO_PREFIX + url + BCTI_QUERY_URLINFO_SUFFIX);
+                    if(bctidAnswer != null){
+                        jsonBctidAnswer = new JSONArray(bctidAnswer);
+                    }
+                }
+
+                if(jsonBctidAnswer != null){
+                    JSONObject urlAnswer = jsonBctidAnswer.getJSONObject(0);
 
                     if(urlAnswer.has(BCTI_QUERY_URLINFO_ERROR_KEY)){
-                        logger.warn("categorizeSite: answer contains error: " + bctidAnswer + ", defaulting to UNCATEGORIZED_CATEGORY");
+                        logger.warn("categorizeSite: answer contains error: " + urlAnswer + ", defaulting to UNCATEGORIZED_CATEGORY");
                     }else{
                         JSONArray catids = urlAnswer.getJSONArray(BCTI_QUERY_URLINFO_CATEGORY_LIST_KEY);
                         categories = new ArrayList<Integer>(catids.length());
                         for(i = 0; i < catids.length(); i++){
                             categories.add(catids.getJSONObject(i).getInt(BCTI_QUERY_URLINFO_CATEGORY_ID_KEY));
+                        }
+                        synchronized(urlCacheSync){
+                            urlCache.put(url, jsonBctidAnswer);
                         }
                     }
 
@@ -323,6 +344,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
     public void clearCache()
     {
         bctidQuery(BCTI_QUERY_URLCLEARCACHE);
+        synchronized(urlCacheSync){
+            urlCache.clear();
+        }
     }
 
     /**
@@ -577,11 +601,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     BctidRetryIntervalExpire.set(System.currentTimeMillis() + BCTID_RETRY_INTERVAL);
                 }else if(BctidRetryIntervalExpire.get() < System.currentTimeMillis() ){
                     BctidRetryIntervalExpire.set(0);
+                    BctidRetryCount.set(0);
                     if(BctidRetryCount.get() >= BCTID_RETRY_MAX_COUNT){
                         closeBctidSockets();
                         UvmContextFactory.context().daemonManager().restart("untangle-bctid");
                     }
-                    BctidRetryCount.set(0);
                 }
             }
         }
@@ -740,6 +764,24 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }catch(Exception e){
                 logger.warn("Unable to query cache size",e);
             }
+        }
+    }
+
+    /**
+     *  Generic cache class
+     */
+    @SuppressWarnings("serial")
+    static private class WebrootCache extends LinkedHashMap<String,JSONArray>
+    {
+        private static final int MAX_ENTRIES = 1000;
+
+        /**
+         * Extend so that aging is performed on the oldest accessed entry.
+         * @param  eldest Map element of String/JSONArray
+         * @return        Whether the size of the cache is greater than maximum number of entries.
+         */
+        protected boolean removeEldestEntry(Map.Entry<String,JSONArray> eldest) {
+            return size() > MAX_ENTRIES;
         }
     }
 
