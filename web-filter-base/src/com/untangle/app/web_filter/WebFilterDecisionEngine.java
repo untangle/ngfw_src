@@ -23,11 +23,13 @@ import com.untangle.app.webroot.WebrootQuery;
 import com.untangle.app.webroot.WebrootDaemon;
 import com.untangle.app.web_filter.DecisionEngine;
 import com.untangle.app.web_filter.WebFilterBase;
+import com.untangle.uvm.HookManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.util.UrlMatchingUtil;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
@@ -193,7 +195,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     /**
      * Categorize a site
-     * 
+     *
+     * @param sess
+     *        The session
      * @param domain
      *        The domain
      * @param uri
@@ -201,7 +205,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
      * @return The category list
      */
     @Override
-    protected List<Integer> categorizeSite(String domain, String uri)
+    protected List<Integer> categorizeSite(AppTCPSession sess, String domain, String uri)
     {
         List<Integer> categories = null;
         try{
@@ -213,6 +217,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 categories = new ArrayList<Integer>(catids.length());
                 for(int i = 0; i < catids.length(); i++){
                     categories.add(catids.getJSONObject(i).getInt(WebrootQuery.BCTI_API_RESPONSE_URLINFO_CATEGORY_ID_KEY));
+                }
+
+                if( (sess != null) &&
+                    UvmContextFactory.context().hookManager().hooksExist(HookManager.WEBFILTER_BASE_CATEGORIZE_SITE)){
+                    UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.WEBFILTER_BASE_CATEGORIZE_SITE, sess, urlAnswer.getInt(WebrootQuery.BCTI_API_RESPONSE_URLINFO_REPUTATION_KEY), categories );
                 }
             }
         }catch(Exception e){
@@ -245,7 +254,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     public List<Integer> lookupSite(String url)
     {
         String[] urlSplit = splitUrl(url);
-        return categorizeSite(urlSplit[0], urlSplit[2]);
+        return categorizeSite(null, urlSplit[0], urlSplit[2]);
     }
 
     /**

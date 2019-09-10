@@ -76,14 +76,16 @@ public abstract class DecisionEngine
     /**
      * This must be overridden by the specific implementation of the Decision
      * Engine It must return a list of categories (strings) for a given URL
-     * 
+     *
+     * @param sess
+     *        The session
      * @param dom
      *        The domain (host header)
      * @param uri
      *        The uri of the request
      * @return The list of categories
      */
-    protected abstract List<Integer> categorizeSite(String dom, String uri);
+    protected abstract List<Integer> categorizeSite(AppTCPSession sess, String dom, String uri);
 
     /**
      * Checks if the request should be blocked, giving an appropriate response
@@ -575,7 +577,7 @@ public abstract class DecisionEngine
 
         logger.debug("checkCategory: " + host + uri);
 
-        List<Integer> categories = categorizeSite(host, uri);
+        List<Integer> categories = categorizeSite(sess, host, uri);
 
         if (categories == null) {
             logger.warn("NULL categories returned (should be empty list?)");
