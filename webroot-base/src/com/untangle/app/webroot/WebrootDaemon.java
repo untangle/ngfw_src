@@ -100,10 +100,10 @@ public class WebrootDaemon
     public void start()
     {
         boolean firstIn = AppCount.get() == 0;
+        AppCount.incrementAndGet();
         if(firstIn){
             reconfigure();
         }
-        AppCount.incrementAndGet();
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bctid");
 
