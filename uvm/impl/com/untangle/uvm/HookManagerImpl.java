@@ -205,7 +205,7 @@ public class HookManagerImpl implements HookManager
             arguments = new Object[0];
         }
 
-        // If there are now callbacks for this hook registered
+        // If there are no callbacks for this hook registered
         // just return
         LinkedList<HookCallback> callbacks = registeredCallbacks.get( hookName );
         if ( callbacks == null || callbacks.size() == 0 ) {
@@ -278,6 +278,23 @@ public class HookManagerImpl implements HookManager
             return 0;
         }
 
+    }
+
+    /**
+     * Determine if hooks exists.
+     *
+     * While the callback functions check this condition appropriately,
+     * this can be used in cases to avoid the cost of making those calls where
+     * performance is critical.
+     *
+     * @param  hookName Hook name.
+     * @return          true if hooks exists, false otherwise.
+     */
+    public boolean hooksExist(String hookName){
+        if (hookName == null) {
+            return false;
+        }
+        return registeredCallbacks.get( hookName ) != null;
     }
 
     /**
