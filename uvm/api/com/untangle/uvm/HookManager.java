@@ -27,6 +27,7 @@ public interface HookManager
     public static String USER_TABLE_QUOTA_EXCEEDED = "user-table-quota-exceeded";
     public static String USER_TABLE_QUOTA_REMOVED = "user-table-quota-removed";
     public static String CAPTURE_USERNAME_CHECK = "capture-username-check";
+    public static String WEBFILTER_BASE_CATEGORIZE_SITE = "webfilter-base-categorize-site";
     
     public boolean isRegistered( String hookName, HookCallback callback );
 
@@ -37,4 +38,6 @@ public interface HookManager
     public void callCallbacks( String hookName, Object... arguments );
 
     public int callCallbacksSynchronous( String hookName, Object... arguments );
+
+    public boolean hooksExist(String hookName);
 }
