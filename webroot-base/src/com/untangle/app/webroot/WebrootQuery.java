@@ -23,6 +23,7 @@ import org.json.JSONException;
 
 import org.apache.log4j.Logger;
 
+
 /**
  * Queries for webroot daemon
  */
@@ -45,10 +46,13 @@ public class WebrootQuery
     public static final String BCTI_API_QUERY_HEARTBEAT = "{\"heartbeat\":{}}\r\n";
 
     public static final String BCTI_API_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
-    public static final String BCTI_API_QUERY_URLINFO_SUFFIX = "\"]}}\r\n";
+    public static final String BCTI_API_QUERY_URLINFO_SUFFIX = "\"],\"a1cat\":1, \"reputation\":1}}\r\n";
 
     public static final String BCTI_API_RESPONSE_URLINFO_CATEGORY_LIST_KEY="cats";
     public static final String BCTI_API_RESPONSE_URLINFO_CATEGORY_ID_KEY="catid";
+
+    public static final String BCTI_API_RESPONSE_URLINFO_URL_KEY="url";
+    public static final String BCTI_API_RESPONSE_URLINFO_REPUTATION_KEY="reputation";
 
     public static final String BCTI_API_QUERY_IPINFO_PREFIX = "{\"ip/getinfo\":{\"ips\":[\"";
     public static final String BCTI_API_QUERY_IPINFO_SUFFIX = "\"]}}\r\n";
@@ -85,7 +89,14 @@ public class WebrootQuery
     private int failures = 0;
 
     private static AtomicInteger ipCacheSync = new AtomicInteger(0);
-    private WebrootCache ipCache = new WebrootCache();
+    private static WebrootCache ipCache = null;
+    private static AtomicInteger urlCacheSync = new AtomicInteger(0);
+    private static WebrootCache urlCache = null;
+
+    static {
+        ipCache = new WebrootCache();
+        urlCache = new WebrootCache();
+    }
 
     /**
      * Get our singleton instance
@@ -300,7 +311,7 @@ public class WebrootQuery
             }
         }
 
-        logger.warn("rawAnswer=" + rawAnswer);
+        // logger.warn("rawAnswer=" + rawAnswer);
 
         try{
             answer = new JSONArray(rawAnswer);
@@ -358,18 +369,42 @@ public class WebrootQuery
             domain = domain.substring(i + 2);
         }
         if(domain.indexOf(DOMAIN_DOT) > -1){
-            return api(BCTI_API_QUERY_URLINFO_PREFIX + domain + uri + BCTI_API_QUERY_URLINFO_SUFFIX);
+            return urlGetInfo(domain + uri);
         }
         return null;
     }
 
     /**
-     * Perform url ip getinfo query for address.
+     * Perform url getinfo query for address.
+     *
+     * @param  urls Strings of urls
+     * @return      JSONArray of webroot response.
+     */
+    public JSONArray urlGetInfo(String... urls)
+    {
+        JSONArray answer = null;
+        String key = String.join("\",\"", urls);
+        synchronized(urlCacheSync){
+            answer = urlCache.get(key);
+        }
+        if(answer == null){
+            answer = api(BCTI_API_QUERY_URLINFO_PREFIX + key + BCTI_API_QUERY_URLINFO_SUFFIX);
+            if(answer != null){
+                synchronized(urlCacheSync){
+                    urlCache.put(key, answer);
+                }
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * Perform ip getinfo query for address.
      *
      * NOTE: This is optimized for webfilter/webmonitor queries which arrive with the
      *       domain and uri already split.
      *
-     * @param  ips String of IP addresss
+     * @param  ips Strings of IP addresss
      * @return     JSONArray of webroot response.
      */
     public JSONArray ipGetInfo(String... ips)
@@ -377,7 +412,6 @@ public class WebrootQuery
         JSONArray answer = null;
         String key = String.join("\",\"", ips);
         synchronized(ipCacheSync){
-            logger.warn("ipGetInfo: cache size=" + ipCache.size());
             answer = ipCache.get(key);
         }
         if(answer == null){
@@ -408,7 +442,7 @@ public class WebrootQuery
      *  Generic cache class
      */
     @SuppressWarnings("serial")
-    private class WebrootCache extends LinkedHashMap<String,JSONArray>
+    static private class WebrootCache extends LinkedHashMap<String,JSONArray>
     {
         private static final int MAX_ENTRIES = 100;
 
