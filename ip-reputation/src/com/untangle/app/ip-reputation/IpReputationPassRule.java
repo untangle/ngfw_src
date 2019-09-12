@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.vnet.IPNewSessionRequest;
+
 /**
  * This in the implementation of an IP Reputation Pass Rule
  *
@@ -67,10 +69,7 @@ public class IpReputationPassRule implements JSONString, Serializable
         return jO.toString();
     }
     
-    public boolean isMatch( short protocol,
-                            int srcIntf, int dstIntf,
-                            InetAddress srcAddress, InetAddress dstAddress,
-                            int srcPort, int dstPort )
+    public boolean isMatch( IPNewSessionRequest request)
     {
         if (!getEnabled())
             return false;
@@ -89,8 +88,12 @@ public class IpReputationPassRule implements JSONString, Serializable
          * IF any matcher doesn't match - return false
          */
         for ( IpReputationPassRuleCondition matcher : matchers ) {
-            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort))
-                return false;
+            if (!matcher.matches(request.getProtocol(),
+                             request.getClientIntf(), request.getServerIntf(),
+                             request.getOrigClientAddr(), request.getNewServerAddr(),
+                             request.getOrigClientPort(), request.getNewServerPort(),
+                             request))
+            return false;
         }
 
         /**
