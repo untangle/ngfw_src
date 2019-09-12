@@ -37,7 +37,7 @@ Ext.define('Ung.apps.virusblocker.view.Status', {
             }
         }, {
             xtype: 'displayfield',
-            value: 'Scanning Engine &copy; BitDefender 1997-2017',
+            value: 'Scanning Engine &copy; BitDefender 1997-2019',
             bind: {
                 hidden: '{!isFileScannerAvailable}'
             }

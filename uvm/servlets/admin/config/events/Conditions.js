@@ -3,7 +3,7 @@
  *
  * The biggest change is to handle the first record in the condition list which is the "class"
  * field.  This controls which class fields are selectable and targets (tags).
- * 
+ *
  */
 Ext.define('Ung.config.events.ConditionsEditor', {
     extend: 'Ung.cmp.ConditionsEditor',
@@ -57,7 +57,7 @@ Ext.define('Ung.config.events.ConditionsEditor', {
 
     statics:{
         classRenderer: function(value, meta){
-            var me = this, 
+            var me = this,
                 view = me.getView().up('grid'),
                 conditionsEditorField = Ext.Array.findBy(view.editorFields, function(item){
                     if(item.xtype.indexOf('conditionseditor') > -1){
@@ -81,7 +81,7 @@ Ext.define('Ung.config.events.ConditionsEditor', {
             return className;
         },
         conditionsRenderer: function(value, meta){
-            var me = this, 
+            var me = this,
                 view = me.getView().up('grid'),
                 conditionsEditorField = Ext.Array.findBy(view.editorFields, function(item){
                     if(item.xtype.indexOf('conditionseditor') > -1){
@@ -121,6 +121,7 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
             vm = this.getViewModel(),
             record = vm.get('record');
 
+        var className = null;
         if(record.get('conditions').list.length){
             me.classCondition = record.get('conditions').list.shift();
             className =  me.classCondition.fieldValue;
@@ -128,17 +129,21 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
                 className = className.substring(1, className.length -1);
             }
         }
+        if(className == null){
+            className = 'All';
+        }
         record.set('class', className);
         record.commit();
 
         var classFields = vm.get('allClassFields');
-        if(classFields[className].conditionsOrder){
-            view.conditionsOrder = classFields[className].conditionsOrder;
+        if(className){
+            if(classFields[className].conditionsOrder){
+                view.conditionsOrder = classFields[className].conditionsOrder;
+            }
+            if(classFields[className].conditions){
+                view.conditions = classFields[className].conditions;
+            }
         }
-        if(classFields[className].conditions){
-            view.conditions = classFields[className].conditions;
-        }
-
         me.callParent([component]);
     },
 
@@ -199,14 +204,14 @@ Ext.define('Ung.config.events.ConditionsEditorController', {
         view.comparators = Ext.clone(Ung.cmp.ConditionsEditor.comparators);
         me.buildConditions(view);
         me.updateTargetFields();
-        
+
         if(oldValue == null){
             return;
         }
 
         var record = this.getViewModel().get('record');
-        if(record.previousValues && 
-            record.previousValues.class && 
+        if(record.previousValues &&
+            record.previousValues.class &&
             oldValue == record.previousValues.class){
             // Set back to previous and cancelled.
             return;

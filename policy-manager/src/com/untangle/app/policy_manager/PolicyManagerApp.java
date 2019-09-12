@@ -179,6 +179,9 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
 
                 json.put("policyId", policySettings.getPolicyId());
                 json.put("name", policySettings.getName());
+                if(policySettings.getParentId() != null){
+                    json.put("parentId", policySettings.getParentId());
+                }
                 policyList.add(json);
             } catch (Exception e) {
                 logger.warn("Error generating policy list",e);

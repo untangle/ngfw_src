@@ -1065,7 +1065,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     {
         boolean added = false;
 
-        added |= addCategory(categories, 0, "Uncategorized", "Misc", "Sites that have not been categornized", true, false, false);
+        added |= addCategory(categories, 0, "Uncategorized", "Misc", "Sites that have not been categorized", true, false, false);
         added |= addCategory(categories, 1, "Real Estate", "Productivity", "Information on renting, buying, or selling real estate or properties.  Tips on buying or selling a home.  Real estate agents, rental or relocation services, and property improvement.", true, false, false);
         added |= addCategory(categories, 2, "Computer and Internet Security", "Productivity", "Computer/Internet security, security discussion groups.", true, false, false);
         added |= addCategory(categories, 3, "Financial Services", "Privacy", "Banking services and other types of financial information, such as loans, accountancy, actuaries, banks, mortgages, and general insurance companies. Does not include sites that offer market information, brokerage or trading services.", true, false, false);

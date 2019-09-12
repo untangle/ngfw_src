@@ -21,10 +21,19 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
         layout: 'column',
         border: false,
         items: [{
+            xtype: 'displayfield',
+            value: 'Web Filter must be enabled to perform lookups'.t(),
+            bind:{
+                hidden: '{state.on == true}'
+            }
+        },{
             xtype: 'textfield',
             fieldLabel: 'Site URL'.t(),
             fieldIndex: 'siteLookupInput',
-            bind: '{siteLookupInput}',
+            bind: {
+                hidden: '{state.on == false}',
+                value: '{siteLookupInput}'
+            },
             width: 400
         }, {
             xtype: 'button',
@@ -34,6 +43,7 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
             margin: '0 0 0 10',
             handler: 'handleSiteLookup',
             bind:{
+                hidden: '{state.on == false}',
                 disabled: '{siteLookupInput.length === 0}'
             }
         }],
