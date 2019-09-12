@@ -3,6 +3,7 @@
  */
 package com.untangle.app.ip_reputation;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ import org.json.JSONObject;
 import com.untangle.app.webroot.WebrootQuery;
 import com.untangle.app.webroot.WebrootDaemon;
 
+import com.untangle.uvm.HookCallback;
+import com.untangle.uvm.HookManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
@@ -26,6 +29,8 @@ import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.app.IntMatcher;
@@ -47,6 +52,22 @@ public class IpReputationApp extends AppBase
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
 
+    private static final HookCallback WebrootQueryGetUrlInfoHook;
+
+    public static final Map<Integer, Integer> UrlCatThreatMap;
+    static {
+        WebrootQueryGetUrlInfoHook = new IpReputationWebrootQueryGetUrlInfoHook();
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.WEBFILTER_BASE_CATEGORIZE_SITE, WebrootQueryGetUrlInfoHook );
+
+        UrlCatThreatMap = new HashMap<>();
+        UrlCatThreatMap.put(71, 1);         // Spam
+        UrlCatThreatMap.put(67, 16);        // Botnets
+        UrlCatThreatMap.put(57, 256);       // Phishing
+        UrlCatThreatMap.put(58, 512);       // Proxy
+        UrlCatThreatMap.put(49, 655362);    // Keyloggers
+        UrlCatThreatMap.put(56, 131072);    // Malware
+        UrlCatThreatMap.put(59, 262144);    // Spyware
+    }
 
     private IpReputationSettings settings = null;
 
@@ -397,8 +418,50 @@ public class IpReputationApp extends AppBase
         }
     }
 
-    // attach ip reputation to global session state
+    /**
+     * Hook into network setting saves.
+     */
+    static private class IpReputationWebrootQueryGetUrlInfoHook implements HookCallback
+    {
+        private static final Logger hookLogger = Logger.getLogger(IpReputationWebrootQueryGetUrlInfoHook.class);
+        /**
+        * @return Name of callback hook
+        */
+        public String getName()
+        {
+            return "ip-reputation-categorize-site";
+        }
 
-    // private attachIpReputation()
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
+        public void callback( Object... args )
+        {
+            AppTCPSession sess = (AppTCPSession) args[0];
+            Integer reputation = (Integer) args[1];
+            @SuppressWarnings("unchecked")
+            List<Integer> categories = (List<Integer>) args[2];
+
+            if(sess == null || reputation == null || categories == null){
+                return;
+            }
+            if ( ! (sess instanceof AppTCPSession) ) {
+                hookLogger.warn( "Invalid session: " + sess);
+                return;
+            }
+            int threatmask = 0;
+            for(Integer category : categories){
+                if(UrlCatThreatMap.get(category) != null){
+                    threatmask += UrlCatThreatMap.get(category);
+                }
+            }
+
+            sess.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, reputation);
+            sess.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, threatmask);
+
+        }
+    }
 
 }
