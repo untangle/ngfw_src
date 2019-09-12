@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-# We need to create an interface status file so OpenVPN clients know
-# how to find the Untangle server.  Since we really only care
-# about the IP address we dummy up the other values
+# We need to create the interface status files so OpenVPN clients
+# know how to find the Untangle server.  Since we really only care
+# about the IP address we dummy up the other values.
 
 from netaddr import IPNetwork
 from uvm.settings_reader import get_app_settings_item
@@ -16,6 +16,8 @@ serverFlag = get_app_settings_item("openvpn", "serverEnabled")
 if serverFlag != True:
     if os.path.exists("/var/lib/interface-status/interface-250-status.js"):
         os.remove("/var/lib/interface-status/interface-250-status.js")
+    if os.path.exists("/var/lib/interface-status/interface-tun0-status.js"):
+        os.remove("/var/lib/interface-status/interface-tun0-status.js")
     sys.exit(0)
 
 # Read the server address space from the OpenVPN app settings file
@@ -25,6 +27,8 @@ addressPool = get_app_settings_item("openvpn", "addressSpace")
 if addressPool == None:
     if os.path.exists("/var/lib/interface-status/interface-250-status.js"):
         os.remove("/var/lib/interface-status/interface-250-status.js")
+    if os.path.exists("/var/lib/interface-status/interface-tun0-status.js"):
+        os.remove("/var/lib/interface-status/interface-tun0-status.js")
     sys.exit(0)
 
 # We have good config data so use the first address for the server
@@ -33,12 +37,20 @@ serverAddress = str(network[1])
 blockSize = str(network.prefixlen)
 blockMask = str(network.netmask)
 
-file = open("/var/lib/interface-status/interface-250-status.js", "w");
-file.write("{");
-file.write("\"javaClass\": \"com.untangle.uvm.network.InterfaceStatus\", ");
-file.write("\"v4Address\": \"" + serverAddress + "\", ");
-file.write("\"v4Netmask\": \"" + blockMask + "\", ");
-file.write("\"v4PrefixLength\": \"" + blockSize + "\", ");
-file.write("\"interfaceId\": 250");
-file.write("}");
-file.close()
+# Create the json config string
+cfgstr = ("")
+cfgstr += ("{")
+cfgstr += ("\"javaClass\": \"com.untangle.uvm.network.InterfaceStatus\", ")
+cfgstr += ("\"v4Address\": \"" + serverAddress + "\", ")
+cfgstr += ("\"v4Netmask\": \"" + blockMask + "\", ")
+cfgstr += ("\"v4PrefixLength\": \"" + blockSize + "\", ")
+cfgstr += ("\"interfaceId\": 250")
+cfgstr += ("}\n")
+
+afile = open("/var/lib/interface-status/interface-250-status.js", "w")
+afile.write(cfgstr)
+afile.close()
+
+bfile = open("/var/lib/interface-status/interface-tun0-status.js", "w")
+bfile.write(cfgstr)
+bfile.close()

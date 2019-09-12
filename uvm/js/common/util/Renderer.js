@@ -541,39 +541,88 @@ Ext.define('Ung.util.Renderer', {
         }
     },
 
-    webCategoryMap: {},
+    webCategoryMap:{
+        0: "Uncategorized",
+        1: "Real Estate",
+        2: "Computer and Internet Security",
+        3: "Financial Services",
+        4: "Business and Economy",
+        5: "Computer and Internet Info",
+        6: "Auctions",
+        7: "Shopping",
+        8: "Cult and Occult",
+        9: "Travel",
+        10: "Abused Drugs",
+        11: "Adult and Pornography",
+        12: "Home and Garden",
+        13: "Military",
+        14: "Social Networking",
+        15: "Dead Sites",
+        16: "Individual Stock Advice and Tools",
+        17: "Training and Tools",
+        18: "Dating",
+        19: "Sex Education",
+        20: "Religion",
+        21: "Entertainment and Arts",
+        22: "Personal sites and Blogs",
+        23: "Legal",
+        24: "Local Information",
+        25: "Streaming Media",
+        26: "Job Search",
+        27: "Gambling",
+        28: "Translation",
+        29: "Reference and Research",
+        30: "Shareware and Freeware",
+        31: "Peer to Peer",
+        32: "Marijuana",
+        33: "Hacking",
+        34: "Games",
+        35: "Philosophy and Political Advocacy",
+        36: "Weapons",
+        37: "Pay to Surf",
+        38: "Hunting and Fishing",
+        39: "Society",
+        40: "Educational Institutions",
+        41: "Online Greeting Cards",
+        42: "Sports",
+        43: "Swimsuits and Intimate Apparel",
+        44: "Questionable",
+        45: "Kids",
+        46: "Hate and Racism",
+        47: "Personal Storage",
+        48: "Violence",
+        49: "Keyloggers and Monitoring",
+        50: "Search Engines",
+        51: "Internet Portals",
+        52: "Web Advertisements",
+        53: "Cheating",
+        54: "Gross",
+        55: "Web-based Email",
+        56: "Malware Sites",
+        57: "Phishing and Other Frauds",
+        58: "Proxy Avoidance and Anonymizers",
+        59: "Spyware and Adware",
+        60: "Music",
+        61: "Government",
+        62: "Nudity",
+        63: "News and Media",
+        64: "Illegal",
+        65: "Content Delivery Networks",
+        66: "Internet Communications",
+        67: "Bot Nets",
+        68: "Abortion",
+        69: "Health and Medicine",
+        71: "SPAM URLs",
+        74: "Dynamically Generated Content",
+        75: "Parked Domains",
+        76: "Alcohol and Tobacco",
+        78: "Image and Video Search",
+        79: "Fashion and Beauty",
+        80: "Recreation and Hobbies",
+        81: "Motor Vehicles",
+        82: "Web Hosting"
+    },
     webCategory: function(value, row, record){
-        if(!Renderer.webCategoryMap[value]){
-            var categoryInfo = null;
-            if( record && record.get && record.get('policy_id') ){
-                var policyId = record.get('policy_id');
-                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, "categories");
-                if(!categoryInfo){
-                    categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, "categories");
-                }
-            }else{
-                var policies = Rpc.directData('rpc.reportsManager.getPoliciesInfo').list;
-                for(var i = 0; i < policies.length; i++){
-                    categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policies[i].policyId, "categories");
-                    if(!categoryInfo){
-                        categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policies[i].policyId, "categories");
-                    }
-                    if(categoryInfo != null){
-                        break;
-                    }
-                }
-            }
-
-            if(categoryInfo && categoryInfo["list"]){
-                categoryInfo["list"].forEach( function(rule){
-                    Renderer.webCategoryMap[rule["id"]] = rule["name"] ? rule["name"] : ( rule["string"] ? rule["string"] : rule["description"] );
-                });
-            }
-            if(!Renderer.webCategoryMap[value] && (value != Renderer.listKey)){
-                // If category cannot be found, don't just keep coming back for more.
-                Renderer.webCategoryMap[value] = 'Unknown'.t();
-            }
-        }
         if(value == Renderer.listKey){
             var values = [];
             Object.values(Renderer.webCategoryMap).sort().forEach( function(value){
@@ -587,6 +636,68 @@ Ext.define('Ung.util.Renderer', {
         }else{
             return Renderer.webCategoryMap[value];
         }
+    },
+
+    getReportInfo: function(record, apps, infoName){
+        if(typeof apps == "string"){
+            apps = [apps];
+        }
+        var reportInfo = null;
+        var policyIds = [];
+        var i;
+        if( record && record.get && record.get('policy_id') ){
+            policyIds = [record.get('policy_id')];
+        }
+
+        var policies = Rpc.directData('rpc.reportsManager.getPoliciesInfo');
+        var hasParent = false;
+        if(policies != null){
+            if(policyIds.length == 0){
+                // We have no policy ids.  Search through all.
+                for(i = 0; i < policies.list.length; i++){
+                    policyIds.push(policies.list[i].policyId);
+                }
+            }else{
+                policyIds.forEach( function(policyId){
+                    policies.list.forEach( function(policy){
+                        if(policy['policyId'] == policyId &&
+                            ( 'parentId' in policy )){
+                                hasParent = true;
+                            }
+                    });
+                });
+            }
+        }
+        var policyId = null;
+        var parentPolicyId = null;
+        for(i = 0; i < policyIds.length; i++){
+            policyId = ( parentPolicyId != null) ? parentPolicyId : policyIds[i];
+
+            for(j = 0; j < apps.length; j++){
+                reportInfo = Rpc.directData('rpc.reportsManager.getReportInfo', apps[j], policyId, infoName);
+                if(reportInfo != null){
+                    break;
+                }
+            }
+            if(reportInfo != null){
+                break;
+            }
+            if(hasParent){
+                policies.list.forEach( function(policy){
+                    if(policy['policyId'] == policyId &&
+                        ( 'parentId' in policy )){
+                            parentPolicyId =policy['parentId'];
+                            i--;
+                        }
+                });
+            }
+        }
+        if(reportInfo == null){
+            reportInfo = {
+                list: []
+            };
+        }
+        return reportInfo;
     },
 
     /**
@@ -628,25 +739,22 @@ Ext.define('Ung.util.Renderer', {
 
         if(!Renderer.webRuleMap[policyId] ||
             !Renderer.webRuleMap[policyId][reasonSource] ||
-            (value != Renderer.listKey && !Renderer.webRuleMap[policyId][reasonSource][value])){
-
-            var categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-filter', policyId, reasonSource);
-            if(!categoryInfo){
-                categoryInfo = Rpc.directData('rpc.reportsManager.getReportInfo', 'web-monitor', policyId, reasonSource);
+            (value != Renderer.listKey && !(value in Renderer.webRuleMap[policyId][reasonSource]))){
+            if(!Renderer.webRuleMap[policyId]){
+                Renderer.webRuleMap[policyId] = {};
             }
+            if(!Renderer.webRuleMap[policyId][reasonSource]){
+                Renderer.webRuleMap[policyId][reasonSource] = {};
+            }
+
+            var categoryInfo = Ung.util.Renderer.getReportInfo(record, ["web-filter", "web-monitor"], reasonSource);
 
             if(categoryInfo && categoryInfo["list"]){
                 categoryInfo["list"].forEach( function(rule){
-                    if(!Renderer.webRuleMap[policyId]){
-                        Renderer.webRuleMap[policyId] = {};
-                    }
-                    if(!Renderer.webRuleMap[policyId][reasonSource]){
-                        Renderer.webRuleMap[policyId][reasonSource] = {};
-                    }
-                    Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["name"] && rule["name"] != "null" ? rule["name"] : ( rule["description"] ? rule["description"] : rule["description"] );
+                    Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["description"] ? rule["description"] : rule["string"];
                 });
             }
-            if(!Renderer.webRuleMap[policyId][reasonSource][value]){
+            if(!(value in Renderer.webRuleMap[policyId][reasonSource]) && (value != Renderer.listKey)){
                 // If category cannot be found, don't just keep coming back for more.
                 Renderer.webRuleMap[policyId][reasonSource][value] = 'Unknown'.t();
             }
