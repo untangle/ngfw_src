@@ -14,7 +14,7 @@ import java.net.InetAddress;
 /**
  * The base Sessoin interface
  */
-public interface AppSession
+public interface AppSession extends SessionAttachments
 {
     public static final int CLIENT = 0;
     public static final int SERVER = 1;
@@ -37,60 +37,6 @@ public interface AppSession
     PipelineConnector pipelineConnector();
 
     /**
-     * Attaches the given object to this session.
-     *
-     * <p> An attached object may later be retrieved via the {@link
-     * #attachment attachment} method.  Only one object may be
-     * attached at a time; invoking this method causes any previous
-     * attachment to be discarded.  The current attachment may be
-     * discarded by attaching <tt>null</tt>.
-     *
-     * @param ob The object to be attached; may be <tt>null</tt>
-     *
-     * @return The previously-attached object, if any, otherwise
-     *          <tt>null</tt>
-     */
-    Object attach(Object ob);
-    Object attach(String key, Object ob);
-
-    /**
-     * Retrieves the current attachment.
-     *
-     * @return The object currently attached to this session, or
-     *          <tt>null</tt> if there is no attachment
-     */
-    Object attachment();
-    Object attachment(String key);
-    
-    /**
-     * Attaches the given object to this session
-     * This is visible and modifiable by all Apps
-     *
-     * <p> An attached object may later be retrieved via the {@link
-     * #attachment attachment} method.  Only one object may be
-     * attached at a time for a given key; invoking this method
-     * causes any previous attachment to be discarded.  The
-     * current attachment may be discarded by attaching <tt>null</tt>.
-     *
-     * @param key The string key; may be <tt>null</tt>
-     * @param ob The object to be attached; may be <tt>null</tt>
-     *
-     * @return The previously-attached object, if any, otherwise
-     *          <tt>null</tt>
-     */
-    Object globalAttach(String key, Object ob);
-
-    /**
-     * Retrieves an attachment from the global session attachment table
-     *
-     * @param key The string key; may be <tt>null</tt>
-     * 
-     * @return The object currently attached to this session, or
-     *          <tt>null</tt> if there is no attachment
-     */
-    Object globalAttachment(String key);
-
-    /**
      * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
      * All sessions have a unique id assigned by Netcap.  This will eventually, of course,
      * wrap around.  This will take long enough, and any super-long-lived sessions that
@@ -107,65 +53,6 @@ public interface AppSession
      *
      */
     String user();
-
-    /**
-     * The following are attachment keys used by various apps to
-     * share information with other apps.
-     */
-    public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE = "application-control-lite-protocol"; /* String */
-    public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY = "application-control-lite-category"; /* String */
-    public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION = "application-control-lite-description"; /* String */
-    public final String KEY_APPLICATION_CONTROL_LITE_SIGNATURE_MATCHED = "application-control-lite-matched";  /* Boolean */
-
-    public final String KEY_HTTP_HOSTNAME = "http-hostname";  /* String */
-    public final String KEY_HTTP_REFERER = "http-referer";  /* String */
-    public final String KEY_HTTP_URI = "http-uri";  /* String */
-    public final String KEY_HTTP_URL = "http-url";  /* String */
-    public final String KEY_HTTP_USER_AGENT = "http-user-agent";  /* String */
-    public final String KEY_HTTP_CONTENT_TYPE = "http-content-type"; /* String */
-    public final String KEY_HTTP_CONTENT_LENGTH = "http-content-length"; /* Long */
-    public final String KEY_HTTP_REQUEST_METHOD = "http-request-method"; /* String */
-    public final String KEY_HTTP_REQUEST_FILE_PATH = "http-request-file-path"; /* String */
-    public final String KEY_HTTP_REQUEST_FILE_NAME = "http-request-file-name"; /* String */
-    public final String KEY_HTTP_REQUEST_FILE_EXTENSION = "http-request-file-extension"; /* String */
-    public final String KEY_HTTP_RESPONSE_FILE_NAME = "http-response-file-name"; /* String */
-    public final String KEY_HTTP_RESPONSE_FILE_EXTENSION = "http-response-file-extension"; /* String */
-    
-    public final String KEY_FTP_FILE_NAME = "ftp-file-name";  /* String */
-    public final String KEY_FTP_DATA_SESSION = "ftp-data-session";  /* Boolean */
-    
-    public final String KEY_WEB_FILTER_BEST_CATEGORY_ID = "web-filter-best-category-id"; /* String */
-    public final String KEY_WEB_FILTER_BEST_CATEGORY_NAME = "web-filter-best-category-name"; /* String */
-    public final String KEY_WEB_FILTER_BEST_CATEGORY_DESCRIPTION = "web-filter-best-category-description"; /* String */
-    public final String KEY_WEB_FILTER_BEST_CATEGORY_FLAGGED = "web-filter-best-category-flagged"; /* Boolean */
-    public final String KEY_WEB_FILTER_BEST_CATEGORY_BLOCKED = "web-filter-best-category-blocked"; /* String */
-    public final String KEY_WEB_FILTER_FLAGGED = "web-filter-flagged"; /* Boolean */
-    public final String KEY_WEB_FILTER_CATEGORIES = "web-filter-categories"; /* List<String> */
-
-    public final String KEY_APPLICATION_CONTROL_APPLICATION = "application-control-application"; /* String */
-    public final String KEY_APPLICATION_CONTROL_CATEGORY = "application-control-category"; /* String */
-    public final String KEY_APPLICATION_CONTROL_PROTOCHAIN = "application-control-protochain"; /* String */
-    public final String KEY_APPLICATION_CONTROL_DETAIL = "application-control-detail"; /* String */
-    public final String KEY_APPLICATION_CONTROL_CONFIDENCE = "application-control-confidence"; /* Integer */
-    public final String KEY_APPLICATION_CONTROL_PRODUCTIVITY = "application-control-productivity"; /* Integer */
-    public final String KEY_APPLICATION_CONTROL_RISK = "application-control-risk"; /* Integer */
-
-    public final String KEY_SSL_INSPECTOR_SNI_HOSTNAME = "ssl-sni-host"; /* String */
-    public final String KEY_SSL_INSPECTOR_SUBJECT_DN = "ssl-subject-dn"; /* String */
-    public final String KEY_SSL_INSPECTOR_ISSUER_DN = "ssl-issuer-dn"; /* String */
-    public final String KEY_SSL_INSPECTOR_CLIENT_MANAGER = "ssl-client-manager"; /* HttpsManager */
-    public final String KEY_SSL_INSPECTOR_SERVER_MANAGER = "ssl-server-manager"; /* HttpsManager */
-    public final String KEY_SSL_INSPECTOR_SESSION_INSPECT = "ssl-session-inspect"; /* Boolean */
-
-    public final String KEY_WEB_FILTER_SSL_ENGINE = "web-filter-ssl-engine"; /* WebFilterSSLEngine */
-    public final String KEY_CAPTIVE_PORTAL_REDIRECT = "captive-portal-redirect-client"; /* InetAddress */
-    public final String KEY_CAPTIVE_PORTAL_SSL_ENGINE = "captive-portal-ssl-engine"; /* CaptureSSLEngine */
-    public final String KEY_CAPTIVE_PORTAL_SESSION_CAPTURE = "captive-portal-session-capture"; /* String */
-
-    public final String KEY_IP_REPUTATION_CLIENT_REPUTATION = "ip-reputation-client-reputation";
-    public final String KEY_IP_REPUTATION_CLIENT_THREATMASK = "ip-reputation-client-threatmask";
-    public final String KEY_IP_REPUTATION_SERVER_REPUTATION = "ip-reputation-server-reputation";
-    public final String KEY_IP_REPUTATION_SERVER_THREATMASK = "ip-reputation-server-threatmask";
 
     /**
      * Returns the protocol for the session.</p>
