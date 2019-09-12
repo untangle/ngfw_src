@@ -1146,7 +1146,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             
             reader = new BufferedReader(new FileReader(giftFile));
             Integer i = Integer.parseInt(reader.readLine());
-            if ( i != null )
+            if ( i == null )
                 returnValue = 0;
             else
                 returnValue = i;
