@@ -23,7 +23,6 @@ import org.json.JSONException;
 
 import org.apache.log4j.Logger;
 
-
 /**
  * Queries for webroot daemon
  */
@@ -50,6 +49,7 @@ public class WebrootQuery
 
     public static final String BCTI_API_RESPONSE_URLINFO_CATEGORY_LIST_KEY="cats";
     public static final String BCTI_API_RESPONSE_URLINFO_CATEGORY_ID_KEY="catid";
+    public static final String BCTI_API_RESPONSE_URLINFO_A1CAT_KEY="a1cat";
 
     public static final String BCTI_API_RESPONSE_URLINFO_URL_KEY="url";
     public static final String BCTI_API_RESPONSE_URLINFO_REPUTATION_KEY="reputation";
@@ -92,10 +92,12 @@ public class WebrootQuery
     private static WebrootCache ipCache = null;
     private static AtomicInteger urlCacheSync = new AtomicInteger(0);
     private static WebrootCache urlCache = null;
+    private static WebrootCache urlA1Cache = null;
 
     static {
         ipCache = new WebrootCache();
         urlCache = new WebrootCache();
+        urlA1Cache = new WebrootCache();
     }
 
     /**
@@ -383,15 +385,51 @@ public class WebrootQuery
     public JSONArray urlGetInfo(String... urls)
     {
         JSONArray answer = null;
-        String key = String.join("\",\"", urls);
-        synchronized(urlCacheSync){
-            answer = urlCache.get(key);
-        }
-        if(answer == null){
-            answer = api(BCTI_API_QUERY_URLINFO_PREFIX + key + BCTI_API_QUERY_URLINFO_SUFFIX);
-            if(answer != null){
-                synchronized(urlCacheSync){
-                    urlCache.put(key, answer);
+        for(int i = 0; i < urls.length; i++){
+            int strippedSlashesLength = urls[i].replace("/", "").length();
+            boolean rootUrl = false;
+            if(strippedSlashesLength == urls[i].length() || ( strippedSlashesLength == ( urls[i].length() - 1)) ){
+                rootUrl = true;
+            }
+            JSONArray queryAnswer = null;
+            synchronized(urlCacheSync){
+                queryAnswer = urlCache.get(urls[i]);
+                if(queryAnswer == null){
+                    queryAnswer = urlA1Cache.get(urls[i]);
+                }
+            }
+            if(queryAnswer == null){
+                queryAnswer = api(BCTI_API_QUERY_URLINFO_PREFIX + urls[i] + BCTI_API_QUERY_URLINFO_SUFFIX);
+                if(queryAnswer != null){
+                    boolean a1 = false;
+                    try{
+                        a1 = (urls.length == 1) && queryAnswer.getJSONObject(0).getBoolean(BCTI_API_RESPONSE_URLINFO_A1CAT_KEY);
+                    }catch(Exception e){
+                        logger.warn("Unable to determine a1cat: "+ queryAnswer);
+                    }
+                    // logger.warn("a1:"+ urls[0] + " -> " + urls[i].replace("/", "") + ":" + rootUrl + " && " + a1);
+                    synchronized(urlCacheSync){
+                        if(rootUrl && a1){
+                            urlA1Cache.put(urls[i], queryAnswer);
+                        }else{
+                            urlCache.put(urls[i], queryAnswer);
+                        }
+                        // logger.warn("urlA1Cache=" + urlA1Cache.size() + ", urlCache="+urlCache.size() );
+                    }
+                }
+            }
+            if(queryAnswer != null){
+                if( i == ( urls.length + 1 ) ){
+                    answer = queryAnswer;
+                }else{
+                    if(answer == null){
+                        answer = new JSONArray();
+                    }
+                    try{
+                        answer.put(queryAnswer.get(0));
+                    }catch(Exception e){
+                        logger.warn("Unable to add queryAnswer: "+ queryAnswer);
+                    }
                 }
             }
         }
@@ -444,7 +482,7 @@ public class WebrootQuery
     @SuppressWarnings("serial")
     static private class WebrootCache extends LinkedHashMap<String,JSONArray>
     {
-        private static final int MAX_ENTRIES = 100;
+        private static final int MAX_ENTRIES = 1000;
 
         /**
          * Extend so that aging is performed on the oldest accessed entry.
