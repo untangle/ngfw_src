@@ -25,6 +25,7 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
+import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
@@ -121,7 +122,7 @@ public class Dispatcher
              * @param attachments
              * @return Always returns true to match all sessions
              */
-            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
+            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, SessionAttachments attachments)
             {
                 return true;
             }

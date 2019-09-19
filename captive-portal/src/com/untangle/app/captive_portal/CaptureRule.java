@@ -13,6 +13,7 @@ import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.SessionAttachments;
 
 /**
  * This in the implementation of a Capture Rule
@@ -97,9 +98,11 @@ public class CaptureRule implements JSONString, Serializable
      *        The source port
      * @param dstPort
      *        The destination port
+     * @param attachments
+     *        attachments
      * @return True if this rule matches, otherwise false
      */
-    public boolean isMatch(short protocol, int srcIntf, int dstIntf, InetAddress srcAddress, InetAddress dstAddress, int srcPort, int dstPort)
+    public boolean isMatch(short protocol, int srcIntf, int dstIntf, InetAddress srcAddress, InetAddress dstAddress, int srcPort, int dstPort, SessionAttachments attachments)
     {
         if (!getEnabled()) return false;
 
@@ -115,7 +118,7 @@ public class CaptureRule implements JSONString, Serializable
          * IF any matcher doesn't match - return false
          */
         for (CaptureRuleCondition matcher : matchers) {
-            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort)) return false;
+            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, attachments)) return false;
         }
 
         /**

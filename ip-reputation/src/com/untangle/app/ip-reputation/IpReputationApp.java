@@ -33,6 +33,7 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.app.IntMatcher;
 
 /** FirewalApp is the IP Reputation Application implementation */
@@ -92,7 +93,7 @@ public class IpReputationApp extends AppBase
                                     int clientIntf, int serverIntf,
                                     InetAddress clientAddr, InetAddress serverAddr,
                                     int clientPort, int serverPort,
-                                    Map<String,Object> attachments )
+                                    SessionAttachments attachments )
             {
                 logger.warn("in isMatch");
                 logger.warn(handler);
@@ -104,26 +105,27 @@ public class IpReputationApp extends AppBase
                 /**
                  * Find the matching rule compute block/log verdicts
                  */
-                // for (IpReputationRule rule : settings.getPassRules()) {
-                //     if (rule.isMatch(protocol,
-                //                      clientIntf, serverIntf,
-                //                      clientAddr, serverAddr,
-                //                      clientPort, serverPort)) {
-                //         matchedRule = rule;
-                //         break;
-                //     }
-                // }
+                for (IpReputationPassRule rule : settings.getPassRules()) {
+                    if (rule.isMatch(protocol,
+                                     clientIntf, serverIntf,
+                                     clientAddr, serverAddr,
+                                     clientPort, serverPort,
+                                     attachments)) {
+                        matchedRule = rule;
+                        break;
+                    }
+                }
         
                 if (matchedRule == null)
                     return false;
 
-                // logger.info("IP Reputation Save Setting Matcher: " +
-                //             clientAddr.getHostAddress().toString() + ":" + clientPort + " -> " +
-                //             serverAddr.getHostAddress().toString() + ":" + serverPort +
-                //             " :: block:" + matchedRule.getBlock());
+                logger.info("IP Reputation Save Setting Matcher: " +
+                            clientAddr.getHostAddress().toString() + ":" + clientPort + " -> " +
+                            serverAddr.getHostAddress().toString() + ":" + serverPort +
+                            " :: pass:" + matchedRule.getPass());
                 
-                // return matchedRule.getBlock();
-                return false;
+                return matchedRule.getPass() == false;
+                // return false;
             }
     };
     

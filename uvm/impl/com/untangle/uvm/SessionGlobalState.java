@@ -17,13 +17,15 @@ import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.vnet.SessionAttachments;
 
 /**
  * This stores the global system-wide state for a given session
  */
-public class SessionGlobalState
+public class SessionGlobalState implements SessionAttachments
 {
     private final Logger logger = Logger.getLogger(getClass());
+    private static final String NO_KEY_VALUE = "NOKEY";
 
     protected final NetcapSession netcapSession;
 
@@ -512,6 +514,51 @@ public class SessionGlobalState
     public Map<String,Object> getAttachments()
     {
         return this.stringAttachments;
+    }
+
+
+    // The following methods satisfy the SessionAttachments interface.
+    /**
+     * Get an attachment for the specified key
+     * @param key
+     * @return the obj (or null)
+     */
+    public Object globalAttachment(String key)
+    {
+        return attachment(key);
+    }
+
+    /**
+     * Attach an object with the specified key
+     * @param key
+     * @param attachment
+     * @return the previous attachment for this key
+     */
+    public Object globalAttach(String key, Object attachment)
+    {
+        return this.attach(key,attachment);
+    }
+
+    /**
+     * Attach an unnamed object to the session
+     *
+     * @param ob
+     *        The object
+     * @return The object
+     */
+    public Object attach(Object ob)
+    {
+        return attach(NO_KEY_VALUE, ob);
+    }
+
+    /**
+     * Get the unnamed object attached to the session
+     *
+     * @return The object
+     */
+    public Object attachment()
+    {
+        return attachment(NO_KEY_VALUE);
     }
 
     /**
