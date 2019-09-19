@@ -14,6 +14,7 @@ class NGFWTestCase(TestCase):
     do_not_remove_app = False
     wait_for_daemon_ready = False
     no_settings = False
+    not_an_app = False
 
     _app = None
     _appSettings = None
@@ -56,28 +57,29 @@ class NGFWTestCase(TestCase):
     def initial_setup(cls, unused=None):
         cls._orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
-        name = cls.module_name()
-        print("initial_setup for app %s" % name)
-        if cls._app or uvmContext.appManager().isInstantiated(name):
-            if cls.skip_instantiated():
-                pytest.skip('app %s already instantiated' % cls.module_name())
+        if not cls.not_an_app:
+            name = cls.module_name()
+            print("initial_setup for app %s" % name)
+            if cls._app or uvmContext.appManager().isInstantiated(name):
+                if cls.skip_instantiated():
+                    pytest.skip('app %s already instantiated' % cls.module_name())
+                else:
+                    if cls.do_not_install_app: # grab
+                        cls._app = uvmContext.appManager().app(name)
+                    else: # delete and install
+                        cls.final_tear_down()
+                        cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
             else:
-                if cls.do_not_install_app: # grab
-                    cls._app = uvmContext.appManager().app(name)
-                else: # delete and install
-                    cls.final_tear_down()
-                    cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
-        else:
-            print("starting %s" % (name,))
-            cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
+                print("starting %s" % (name,))
+                cls._app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
 
-        if cls.force_start:
-            cls._app.start()
-            if cls.wait_for_daemon_ready:
-                cls.do_wait_for_daemon_ready()
+            if cls.force_start:
+                cls._app.start()
+                if cls.wait_for_daemon_ready:
+                    cls.do_wait_for_daemon_ready()
 
-        if not cls.no_settings:
-            cls._appSettings = cls._app.getSettings()
+            if not cls.no_settings:
+                cls._appSettings = cls._app.getSettings()
 
         cls.initial_extra_setup()
 
