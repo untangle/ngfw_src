@@ -443,7 +443,6 @@ Ext.define('Ung.view.reports.GraphReport', {
             }else if(entry.get('type') === 'PIE_GRAPH'){
                 fromType = TableConfig.getFromType(entry.get('table'), entry.get('pieGroupColumn'));
             }
-            console.log(fromType);
 
             Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
                 entry.getData(), // entry
