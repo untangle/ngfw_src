@@ -10,11 +10,8 @@ import time
 import copy
 import runtests
 
-from jsonrpc import ServiceProxy
-from jsonrpc import JSONRPCException
 from .global_functions import uvmContext
-from uvm import Manager
-from uvm import Uvm
+from tests.common import NGFWTestCase
 import runtests.test_registry as test_registry
 import runtests.remote_control as remote_control
 from . import global_functions
@@ -431,21 +428,23 @@ def try_snmp_command(command):
     return result
 
 @pytest.mark.network
-class NetworkTests(unittest.TestCase):
+class NetworkTests(NGFWTestCase):
+
+    not_an_app = True
 
     @staticmethod
     def module_name():
         return "network"
 
-    @staticmethod
-    def initial_setup(self):
+    @classmethod
+    def initial_extra_setup(cls):
         global orig_netsettings, run_ftp_inbound_tests, wan_ip, device_in_office
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         wan_ip = uvmContext.networkManager().getFirstWanAddress()
         print(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
-        self.ftpUserName, self.ftpPassword = global_functions.get_live_account_info("ftp")
+        cls.ftpUserName, cls.ftpPassword = global_functions.get_live_account_info("ftp")
         
         if run_ftp_inbound_tests == None:
             try:
@@ -460,10 +459,6 @@ class NetworkTests(unittest.TestCase):
             except:
                 print(("Socket test failed to %s" % remote_control.client_ip))
                 run_ftp_inbound_tests = False
-
-    def setUp(self):
-        print()
-        pass
 
     def test_010_client_is_online(self):
         result = remote_control.is_online()
@@ -645,8 +640,8 @@ class NetworkTests(unittest.TestCase):
     def test_060_bypass_rules(self):
         app_fw = None
         if (uvmContext.appManager().isInstantiated("firewall")):
-            print(("ERROR: App %s already installed" % "firewall"))
-            raise Exception('app %s already instantiated' % "firewall")
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.module_name())
         app_fw = uvmContext.appManager().instantiate("firewall", default_policy_id)
         nuke_first_level_rule('bypassRules')
         # verify port 80 is open
@@ -1473,8 +1468,8 @@ class NetworkTests(unittest.TestCase):
         result = remote_control.run_command("/usr/bin/upnpc -a %s 5559 5559 tcp 2>&1 | grep failed" % (remote_control.client_ip),stdout=False)
         assert(result == 0)
 
-    @staticmethod
-    def final_tear_down(self):
+    @classmethod
+    def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
