@@ -83,7 +83,8 @@ public class EventHandler extends AbstractEventHandler
             if (rule.isMatch(request.getProtocol(),
                              request.getClientIntf(), request.getServerIntf(),
                              request.getOrigClientAddr(), request.getNewServerAddr(),
-                             request.getOrigClientPort(), request.getNewServerPort())) {
+                             request.getOrigClientPort(), request.getNewServerPort(),
+                             request)) {
                 matchedRule = rule;
                 break;
             }

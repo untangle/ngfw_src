@@ -43,6 +43,7 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.I18nUtil;
@@ -375,7 +376,7 @@ public class CaptivePortalApp extends AppBase
              * @param attachments
              * @return True if the session matches, otherwise false
              */
-            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
+            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, SessionAttachments attachments)
             {
                 // if userAddress is not null and this session is for someone
                 // other than userAddress then we just leave it alone
@@ -399,7 +400,7 @@ public class CaptivePortalApp extends AppBase
 
                 // check the session against the rule list
                 for (CaptureRule rule : ruleList) {
-                    if (rule.isMatch(protocol, clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort)) {
+                    if (rule.isMatch(protocol, clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort, attachments)) {
                         // on a matching rule continue if capture is false
                         if (rule.getCapture() == false) continue;
 
@@ -1117,7 +1118,7 @@ public class CaptivePortalApp extends AppBase
 
         // check the session against the rule list
         for (CaptureRule rule : ruleList) {
-            if (rule.isMatch(sessreq.getProtocol(), sessreq.getClientIntf(), sessreq.getServerIntf(), sessreq.getOrigClientAddr(), sessreq.getNewServerAddr(), sessreq.getOrigClientPort(), sessreq.getNewServerPort())) {
+            if (rule.isMatch(sessreq.getProtocol(), sessreq.getClientIntf(), sessreq.getServerIntf(), sessreq.getOrigClientAddr(), sessreq.getNewServerAddr(), sessreq.getOrigClientPort(), sessreq.getNewServerPort(), sessreq)) {
                 return (rule);
             }
         }

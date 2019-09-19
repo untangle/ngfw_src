@@ -19,6 +19,7 @@ import com.untangle.uvm.app.App;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.vnet.SessionAttachments;
 
 /** Implementation of the Policy Manager app */
 public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.PolicyManager
@@ -479,7 +480,7 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
          * @param attachments
          * @return true if the session should be a different policy
          */
-        public boolean isMatch( Integer oldPolicyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
+        public boolean isMatch( Integer oldPolicyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, SessionAttachments attachments )
         {
             PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().appManager().app("policy-manager");
             Integer newPolicyId = null;

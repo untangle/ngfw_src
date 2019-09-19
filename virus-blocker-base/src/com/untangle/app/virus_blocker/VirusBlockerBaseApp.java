@@ -26,6 +26,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.HeaderToken;
 
@@ -111,7 +112,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
          *        Session attachments
          * @return True if the session should be terminated, otherwise false
          */
-        public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
+        public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, SessionAttachments attachments)
         {
             /* Only look at TCP sessions */
             if (protocol != 6 /* TCP */) {

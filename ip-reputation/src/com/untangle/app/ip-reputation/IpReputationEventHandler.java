@@ -93,7 +93,6 @@ public class IpReputationEventHandler extends AbstractEventHandler
         }else if(!localSrc){
             answer = app.webrootQuery.ipGetInfo(request.getOrigClientAddr().getHostAddress());
         }else if(!localDst){
-            answer = app.webrootQuery.ipGetInfo(request.getNewServerAddr().getHostAddress());
             answer = app.webrootQuery.urlGetInfo(request.getNewServerAddr().getHostAddress());
         }
         app.adjustLookupAverage(System.currentTimeMillis() - lookupTimeBegin);
@@ -150,13 +149,19 @@ public class IpReputationEventHandler extends AbstractEventHandler
                 ( ( ( clientReputation != null ) && (Integer) clientReputation > 0 && (Integer) clientReputation <= app.getSettings().getThreatLevel() ) );
 
         for (IpReputationPassRule rule : ipReputationPassRuleList) {
-            if (rule.isMatch(request)){
+            if( rule.isMatch(request.getProtocol(),
+                            request.getClientIntf(), request.getServerIntf(),
+                            request.getOrigClientAddr(), request.getNewServerAddr(),
+                            request.getOrigClientPort(), request.getNewServerPort(),
+                            request) ){
                 block = !rule.getPass();
                 flag = rule.getFlag();
                 ruleIndex = rule.getRuleId();
                 break;
             }
         }
+
+        // !!!! VERIFY NO MATCH IF BCTID NOT RUNNING
 
         /**
          * Take the appropriate actions

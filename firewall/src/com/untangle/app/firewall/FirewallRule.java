@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.vnet.SessionAttachments;
+
 /**
  * This in the implementation of a Firewall Rule
  *
@@ -70,7 +72,8 @@ public class FirewallRule implements JSONString, Serializable
     public boolean isMatch( short protocol,
                             int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,
-                            int srcPort, int dstPort )
+                            int srcPort, int dstPort,
+                            SessionAttachments attachments)
     {
         if (!getEnabled())
             return false;
@@ -89,7 +92,7 @@ public class FirewallRule implements JSONString, Serializable
          * IF any matcher doesn't match - return false
          */
         for ( FirewallRuleCondition matcher : matchers ) {
-            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort))
+            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, attachments))
                 return false;
         }
 

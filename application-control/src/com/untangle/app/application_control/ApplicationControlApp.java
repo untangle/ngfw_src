@@ -26,6 +26,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -480,10 +481,10 @@ public class ApplicationControlApp extends AppBase
              * @return True if the session matches, otherwise false
              */
             // look at every active session and apply the current proto rules
-            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
+            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, SessionAttachments attachments)
             {
                 // find the application and if missing leave the session alone
-                String application = (String) attachments.get(AppSession.KEY_APPLICATION_CONTROL_APPLICATION);
+                String application = (String) attachments.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_APPLICATION);
                 if (application == null) return (false);
 
                 // see if there is a rule for the application and if not leave the session alone

@@ -21,6 +21,7 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.vnet.SessionAttachments;
 
 
 /** FirewalApp is the Firewall Application implementation */
@@ -61,7 +62,7 @@ public class FirewallApp extends AppBase
                                     int clientIntf, int serverIntf,
                                     InetAddress clientAddr, InetAddress serverAddr,
                                     int clientPort, int serverPort,
-                                    Map<String,Object> attachments )
+                                    SessionAttachments attachments )
             {
                 if (handler == null)
                     return false;
@@ -75,7 +76,8 @@ public class FirewallApp extends AppBase
                     if (rule.isMatch(protocol,
                                      clientIntf, serverIntf,
                                      clientAddr, serverAddr,
-                                     clientPort, serverPort)) {
+                                     clientPort, serverPort,
+                                     attachments)) {
                         matchedRule = rule;
                         break;
                     }
