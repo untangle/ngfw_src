@@ -2,16 +2,22 @@
 # pylint: disable=no-self-use
 # pylint: disable=global-variable-not-assigned
 import pytest
-import unittest
-import pytest
+
 from tests.global_functions import uvmContext
+from tests.common import NGFWTestCase
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 
+
 @pytest.mark.environment
-@pytest.mark.environment
-class EnvironmentTests(unittest.TestCase):
+class EnvironmentTests(NGFWTestCase):
     """NGFW environment tests"""
+
+    not_an_app = True
+
+    @staticmethod
+    def module_name():
+        return "environment"
 
     def test_01_uvm_connectivity(self):
         """verify connectivity to untangle-vm"""
