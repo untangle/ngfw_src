@@ -130,7 +130,12 @@ Ext.define('Ung.apps.webmonitor.view.Rules', {
             'SSL_INSPECTOR_ISSUER_DN',
     
             'CLIENT_COUNTRY',
-            'SERVER_COUNTRY'
+            'SERVER_COUNTRY',
+
+            'IP_REPUTATION_SRC_REPUTATION',
+            'IP_REPUTATION_SRC_THREATMASK',
+            'IP_REPUTATION_DST_REPUTATION',
+            'IP_REPUTATION_DST_THREATMASK'
         ]),
         Field.flagged,
     ]
