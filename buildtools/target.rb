@@ -320,7 +320,7 @@ class JsBuilder < Target
 
   @@WEB_DEST = "usr/share/untangle/web"
 
-  def initialize(package, name, sourcePaths, webDestDir)
+  def initialize(package, name, sourcePaths, webDestDir, excludeDir="")
     @name = name
     @path = sourcePaths.kind_of?(Array) ? sourcePaths : [sourcePaths]
     @webDestDir = webDestDir
@@ -329,7 +329,7 @@ class JsBuilder < Target
     @relativeDestPath = "#{@@WEB_DEST}/#{@webDestDir}/#{@name}.js"
 
     @deps = @path.map do |p|
-      File::directory?(p) ? FileList["#{p}/**/*.js"] : p
+      File::directory?(p) ? FileList["#{p}/**/*.js"].exclude(/\/#{excludeDir}\//) : p
     end
     @deps.flatten!
 
