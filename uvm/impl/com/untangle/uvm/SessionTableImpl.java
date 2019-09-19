@@ -20,6 +20,7 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.vnet.SessionAttachments;
 
 /**
  * This table stores a global list of all currently active sessions being
@@ -364,7 +365,7 @@ public class SessionTableImpl
                                        sessionEvent.getClientIntf(), sessionEvent.getServerIntf(),
                                        sessionEvent.getCClientAddr(), sessionEvent.getSServerAddr(),
                                        sessionEvent.getCClientPort(), sessionEvent.getSServerPort(),
-                                       session.getAttachments() );
+                                       session );
 
             if ( logger.isDebugEnabled() ) {
                 logger.debug( "shutdownMatches(" + matcher.getClass().getSimpleName() + ") Tested    session[" + session.id() + "]: " +

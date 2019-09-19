@@ -21,6 +21,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -779,7 +780,7 @@ public abstract class AppBase implements App
              * @param attachments
              * @return Always true to match everything
              */
-            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
+            public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, SessionAttachments attachments)
             {
                 return true;
             }
