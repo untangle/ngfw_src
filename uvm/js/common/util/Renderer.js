@@ -1243,4 +1243,72 @@ Ext.define('Ung.util.Renderer', {
         );
     },
 
+    // !!! pull this list from bctid?
+    ipReputationMap:{
+        20: 'High Risk'.t(),
+        40: 'Suspicious'.t(),
+        60: 'Moderate Risk'.t(),
+        80: 'Low Risk'.t(),
+        100: 'Trustworthy'.t()
+    },
+    ipReputation: function(value){
+        if(value == 0 || value == null){
+            return null;
+        }
+        var description = '';
+        var reputationMaxes = Object.keys(Renderer.ipReputationMap);
+        for(var i = 0; i < reputationMaxes.length; i++){
+            if(value <= reputationMaxes[i]){
+                description = Renderer.ipReputationMap[reputationMaxes[i]];
+                break;
+            }
+
+        }
+        // return Ext.String.format(
+        //         Renderer.mapValueFormat,
+        //         description,
+        //         value
+        // );
+        return description;
+    },
+
+    // !!! pull this list from bctid
+    ipThreatMap:{
+        0: 'Spam Sources'.t(),
+        1: 'Windows Exploits'.t(),
+        2: 'Web Attacks'.t(),
+        3: 'Botnets'.t(),
+        4: 'Scanners'.t(),
+        5: 'Denial of Service'.t(),
+        6: 'Reputation'.t(),
+        7: 'Phishing'.t(),
+        8: 'Proxy'.t(),
+        11: 'Mobile Threats'.t(),
+        13: 'Tor Proxy'.t(),
+        16: 'Keyloggers'.t(),
+        17: 'Malware'.t(),
+        18: 'Spyware'.t()
+    },
+    ipThreatmask: function(value){
+        if(value == 0){
+            return null;
+        }
+        // look for Ung.apps.ipreputation.Main.threats
+        Ext.Loader.loadScript({
+            url: '/admin/script/apps/ip-reputation.js',
+            onError: function(){
+                console.log("error!");
+            },
+            scope: window
+        });
+        var descriptions = [];
+        var threatBits = Object.keys(Renderer.ipThreatMap);
+        for(var i = 0; i < threatBits.length; i++){
+            if(Math.pow(2,threatBits[i]) & value){
+                descriptions.push(Renderer.ipThreatMap[threatBits[i]]);
+            }
+        }
+        return descriptions.join(', ');
+    }
+
 });
