@@ -50,8 +50,14 @@ class AppBuilder
 
     # JS files (if needed)
     if File.directory?(File.join(location, "js")) then
-      JsBuilder.new(@uvm_lib, location, "#{location}/js", "admin/script/apps")
+      # JsBuilder.new(@uvm_lib, location, "#{location}/js", "admin/script/apps")
+      JsBuilder.new(@uvm_lib, location, "#{location}/js", "admin/script/apps", 'common')
       JsLintTarget.new(@uvm_lib, "#{location}/js", "jslint-adminui-#{name}")
+    end
+    if File.directory?(File.join(location, "js/common")) then
+      JsBuilder.new(@uvm_lib, "app-"+location+"-all", "#{location}/js/common", "script/common/")
+#      JsLintTarget.new(@uvm_lib, "#{location}/js/common", "jslint-adminui-#{name}")
+      JsLintTarget.new(@uvm_lib, "#{location}/js/common", "jslint-common-#{name}")
     end
   end
 
