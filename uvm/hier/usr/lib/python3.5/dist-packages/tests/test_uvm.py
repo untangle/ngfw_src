@@ -1,30 +1,23 @@
-import socket
-import unittest
-import pytest
-import os
-import subprocess
-import sys
-import re
-import urllib.request, urllib.error, urllib.parse
-import time
 import copy
-import re
-import subprocess
-from . import ipaddr
-import time
-import ssl
-import json
 import glob
-
+import json
+import os
+import pytest
+import re
 import runtests
-import tests.global_functions as global_functions
-from jsonrpc import ServiceProxy
-from jsonrpc import JSONRPCException
+import socket
+import ssl
+import subprocess
+import time
+import unittest
+import urllib.request, urllib.error, urllib.parse
+
+from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
-from uvm import Manager
-from uvm import Uvm
+import tests.global_functions as global_functions
 import runtests.test_registry as test_registry
 import runtests.remote_control as remote_control
+
 
 app = None
 appFW = None
@@ -97,7 +90,9 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
     }
 
 @pytest.mark.uvm
-class UvmTests(unittest.TestCase):
+class UvmTests(NGFWTestCase):
+
+    not_an_app = True
 
     @staticmethod
     def module_name():
@@ -110,13 +105,6 @@ class UvmTests(unittest.TestCase):
     @staticmethod
     def appNameSpamCase():
         return "smtp"
-
-    @staticmethod
-    def initial_setup(self):
-        pass
-
-    def setUp(self):
-        pass
 
     def test_010_client_is_online(self):
         result = remote_control.is_online()
