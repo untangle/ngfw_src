@@ -19,7 +19,7 @@ Ext.define('Ung.apps.ipreputation.MainController', {
             }
 
             vm.set('settings', result);
-            console.log(result);
+            // console.log(result);
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -82,7 +82,7 @@ Ext.define('Ung.ThreatSlider', {
     useTips: true,
     tipText: function(thumb){
         var matchingThreat = null;
-        Ung.apps.ipreputation.Main.threatLevels.each( function(threat){
+        Ung.common.ipreputation.references.reputations.each( function(threat){
             if(thumb.value >= threat.get('rangeBegin') && thumb.value <= threat.get('rangeEnd')){
                 matchingThreat = threat;
             }
@@ -102,7 +102,7 @@ Ext.define('Ung.ThreatSlider', {
         var viewRangeComponent = this.up().down('[itemId='+this.rangeLabel+']');
         var matched = false;
         var rangeArguments = [slider.rangeTpl];
-        Ung.apps.ipreputation.Main.threatLevels.each( function(threat){
+        Ung.common.ipreputation.references.reputations.each( function(threat){
             if(matched == false && newValue > 0){
                 rangeArguments.push(threat.get('color'));
             }else{
@@ -129,7 +129,7 @@ Ext.define('Ung.Threats', {
     constructor: function(config) {
         var me = this;
         var items = [];
-        Ung.apps.ipreputation.Main.threats.each( function(threat){
+        Ung.common.ipreputation.references.threats.each( function(threat){
             items.push({
                 inputValue: threat.get('bit'),
                 boxLabel: threat.get('description'),

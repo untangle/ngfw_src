@@ -3,6 +3,7 @@ Ext.define('Ung.apps.ipreputation.view.Reputation', {
     alias: 'widget.app-ip-reputation-reputation',
     itemId: 'reputation',
     title: 'Reputation'.t(),
+
     viewModel: true,
     scrollable: true,
 
@@ -18,7 +19,7 @@ Ext.define('Ung.apps.ipreputation.view.Reputation', {
             margin: '0 10 20 0',
             items: [{
                 xtype: 'label',
-                text: 'Threat Level'.t(),
+                text: 'Reputation'.t(),
                 margin: '0 10 0 0',
                 width: 100
             },{
@@ -59,18 +60,18 @@ Ext.define('Ung.apps.ipreputation.view.Reputation', {
                     itemId: 'threatLabel'
                 }]
             }]
-        },{
-            xtype: 'threats',
-            fieldLabel: 'Threats'.t(),
-            labelWidth: 100,
-            bind: {
-                value: '{settings.threats}'
-            },
-            columns: 3,
-            vertical: true,
-            defaults: {
-                padding: '0 10'
-            }
+        // },{
+        //     xtype: 'threats',
+        //     fieldLabel: 'Threats'.t(),
+        //     labelWidth: 100,
+        //     bind: {
+        //         value: '{settings.threats}'
+        //     },
+        //     columns: 3,
+        //     vertical: true,
+        //     defaults: {
+        //         padding: '0 10'
+        //     }
         },{
             xtype: 'combo',
             fieldLabel: 'Action'.t(),
@@ -82,7 +83,7 @@ Ext.define('Ung.apps.ipreputation.view.Reputation', {
             bind:{
                 value: '{settings.action}'
             },
-            store: Ung.apps.ipreputation.Main.actions
+            store: Ung.common.ipreputation.references.actions
         },{
             xtype: 'checkbox',
             fieldLabel: 'Flag'.t(),
