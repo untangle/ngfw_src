@@ -1,3 +1,4 @@
+Ext.syncRequire('Ung.common.ipreputation');
 Ext.define('Ung.cmp.ConditionsEditor', {
     extend: 'Ext.form.FieldSet',
     alias: 'widget.conditionseditor',
@@ -218,6 +219,25 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                     default:
                         // to avoid exceptions, in some situations condition value is null
                         if (value !== null) {
+                            var found = false;
+                            Ung.cmp.ConditionsEditor.conditions.forEach(function(condition){
+                                if(condition['name'] == type && condition['values']){
+                                    var newValue = [];
+                                    value.split(',').forEach(function(v){
+                                        found = false;
+                                        condition['values'].forEach(function(record){
+                                            if(record[0] == v){
+                                                found = true;
+                                                newValue.push(record[1]);
+                                            }
+                                        });
+                                        if(found == false){
+                                            newValue.push(v);
+                                        }
+                                    });
+                                    value = newValue.join(',');
+                                }
+                            });
                             valueRenderer = value.toString().split(',');
                         } else {
                             valueRenderer = [];
@@ -754,6 +774,29 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             name:'SERVER_COUNTRY',
             displayName: 'Server Country'.t(),
             type: 'countryfield'
+        },{
+            name:'IP_REPUTATION_SRC_REPUTATION',
+            displayName: 'IP Reputation: Source address reputation'.t(),
+            type: 'checkboxgroup',
+            // Also, tips
+            values: Ung.common.ipreputation.references.reputatationConditionValues()
+        },{
+            name:'IP_REPUTATION_DST_REPUTATION',
+            displayName: 'IP Reputation: Destination address reputation'.t(),
+            type: 'checkboxgroup',
+            values: Ung.common.ipreputation.references.reputatationConditionValues()
+        },{
+            name:'IP_REPUTATION_SRC_THREATMASK',
+            displayName: 'IP Reputation: Source address threats'.t(),
+            type: 'checkboxgroup',
+            // Also, tips
+            values: Ung.common.ipreputation.references.threatsConditionValues()
+        },{
+            name:'IP_REPUTATION_DST_THREATMASK',
+            displayName: 'IP Reputation: Destination address threats'.t(),
+            type: 'checkboxgroup',
+            // Also, tips
+            values: Ung.common.ipreputation.references.threatsConditionValues()
         },{
             name:'SSL_INSPECTOR_SNI_HOSTNAME',
             displayName: 'SSL Inspector: SNI Host Name'.t(),
