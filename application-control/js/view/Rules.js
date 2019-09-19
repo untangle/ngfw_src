@@ -127,7 +127,11 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
             'DIRECTORY_CONNECTOR_GROUP',
             'DIRECTORY_CONNECTOR_DOMAIN',
             'CLIENT_COUNTRY',
-            'SERVER_COUNTRY'
+            'SERVER_COUNTRY',
+            'IP_REPUTATION_SRC_REPUTATION',
+            'IP_REPUTATION_DST_REPUTATION',
+            'IP_REPUTATION_SRC_THREATMASK',
+            'IP_REPUTATION_DST_THREATMASK',
         ]), {
             xtype: 'combo',
             fieldLabel: 'Action Type'.t(),
