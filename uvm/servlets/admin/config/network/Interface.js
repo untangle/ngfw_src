@@ -620,7 +620,7 @@ Ext.define('Ung.config.network.Interface', {
                     fieldLabel: 'Gateway'.t(),
                     hidden: true,
                     bind: {
-                        value: '{v6StaticGateway}',
+                        value: '{intf.v6StaticGateway}',
                         hidden: '{!intf.isWan}'
                     },
                     vtype: 'ip6Address'
@@ -629,7 +629,7 @@ Ext.define('Ung.config.network.Interface', {
                     fieldLabel: 'Primary DNS'.t(),
                     hidden: true,
                     bind: {
-                        value: '{v6StaticDns1}',
+                        value: '{intf.v6StaticDns1}',
                         hidden: '{!intf.isWan}'
                     },
                     vtype: 'ip6Address'
@@ -638,7 +638,7 @@ Ext.define('Ung.config.network.Interface', {
                     fieldLabel: 'Secondary DNS'.t(),
                     hidden: true,
                     bind: {
-                        value: '{v6StaticDns2}',
+                        value: '{intf.v6StaticDns2}',
                         hidden: '{!intf.isWan}'
                     },
                     vtype: 'ip6Address'
