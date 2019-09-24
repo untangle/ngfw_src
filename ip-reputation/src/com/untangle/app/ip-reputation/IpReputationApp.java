@@ -3,6 +3,7 @@
  */
 package com.untangle.app.ip_reputation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -147,7 +148,6 @@ public class IpReputationApp extends AppBase
         //      this should just get local network list for us.
         localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
 
-
         this.handler = new IpReputationEventHandler(this);
 
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
@@ -273,6 +273,37 @@ public class IpReputationApp extends AppBase
     public void adjustLookupAverage(long time)
     {
         this.adjustMetric(STAT_LOOKUP_AVG, time);
+    }
+
+    /**
+     * Return various local valus for use with reports.
+     *
+     * @param  key String of key in settings.
+     * @param arguments Array of String arguments to pass.
+     * @return     List of JSON objects for the settings.
+     */
+    public JSONArray getReportInfo(String key, String... arguments){
+        JSONArray result = null;
+        int index = 0;
+
+        if(key.equals("localNetworks")){
+            result = new JSONArray();
+            try{
+                for(IPMaskedAddress address : localNetworks){
+                    JSONObject jo = new JSONObject(address);
+                    jo.remove("class");
+                    result.put(index++, jo);
+                }
+            }catch(Exception e){
+                logger.warn("getReportnfo:", e);
+            }
+        }else if(key.equals("getUrlHistory")){
+            return webrootQuery.getUrlHistory(arguments);
+        }else if(key.equals("getIpHistory")){
+            return webrootQuery.getIpHistory(arguments);
+        }
+
+        return result;
     }
 
     /**
