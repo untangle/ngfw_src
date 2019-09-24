@@ -213,15 +213,15 @@ public class WebFilterDecisionEngine extends DecisionEngine
             if(answer != null){
                 JSONObject urlAnswer = answer.getJSONObject(0);
 
-                JSONArray catids = urlAnswer.getJSONArray(WebrootQuery.BCTI_API_RESPONSE_URLINFO_CATEGORY_LIST_KEY);
+                JSONArray catids = urlAnswer.getJSONArray(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_LIST_KEY);
                 categories = new ArrayList<Integer>(catids.length());
                 for(int i = 0; i < catids.length(); i++){
-                    categories.add(catids.getJSONObject(i).getInt(WebrootQuery.BCTI_API_RESPONSE_URLINFO_CATEGORY_ID_KEY));
+                    categories.add(catids.getJSONObject(i).getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_ID_KEY));
                 }
 
                 if( (sess != null) &&
                     UvmContextFactory.context().hookManager().hooksExist(HookManager.WEBFILTER_BASE_CATEGORIZE_SITE)){
-                    UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.WEBFILTER_BASE_CATEGORIZE_SITE, sess, urlAnswer.getInt(WebrootQuery.BCTI_API_RESPONSE_URLINFO_REPUTATION_KEY), categories );
+                    UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.WEBFILTER_BASE_CATEGORIZE_SITE, sess, urlAnswer.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY), categories );
                 }
             }
         }catch(Exception e){

@@ -98,43 +98,44 @@ public class IpReputationEventHandler extends AbstractEventHandler
         app.adjustLookupAverage(System.currentTimeMillis() - lookupTimeBegin);
 
         JSONObject ipInfo = null;
-        String ip = null;
-        try{
-            for(int i = 0; i < answer.length(); i++){
-                ipInfo = answer.getJSONObject(i);
-                if(ipInfo.has(WebrootQuery.BCTI_API_RESPONSE_IPINFO_IP_KEY)){
-                    ip = ipInfo.getString(WebrootQuery.BCTI_API_RESPONSE_IPINFO_IP_KEY);
-                    if(!localSrc && ip.equals(request.getOrigClientAddr().getHostAddress())){
-                        request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_RESPONSE_IPINFO_REPUTATION_KEY));
-                        request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_RESPONSE_IPINFO_THREATMASK_KEY));
-                    }else if(!localDst && ip.equals(request.getNewServerAddr().getHostAddress())){
-                        request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_RESPONSE_IPINFO_REPUTATION_KEY));
-                        request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_RESPONSE_IPINFO_THREATMASK_KEY));
-                    }
-                }else if(ipInfo.has(WebrootQuery.BCTI_API_RESPONSE_URLINFO_URL_KEY)){
-                    ip = ipInfo.getString(WebrootQuery.BCTI_API_RESPONSE_URLINFO_URL_KEY);
-                    int threatmask = 0;
+        if(answer != null){
+            String ip = null;
+            try{
+                for(int i = 0; i < answer.length(); i++){
+                    ipInfo = answer.getJSONObject(i);
+                    if(ipInfo.has(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_IP_KEY)){
+                        ip = ipInfo.getString(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_IP_KEY);
+                        if(!localSrc && ip.equals(request.getOrigClientAddr().getHostAddress())){
+                            request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
+                            request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
+                        }else if(!localDst && ip.equals(request.getNewServerAddr().getHostAddress())){
+                            request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
+                            request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
+                        }
+                    }else if(ipInfo.has(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY)){
+                        ip = ipInfo.getString(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY);
+                        int threatmask = 0;
 
-                    JSONArray catids = ipInfo.getJSONArray(WebrootQuery.BCTI_API_RESPONSE_URLINFO_CATEGORY_LIST_KEY);
-                    for(int j = 0; j < catids.length(); j++){
-                        Integer cat = catids.getJSONObject(i).getInt(WebrootQuery.BCTI_API_RESPONSE_URLINFO_CATEGORY_ID_KEY);
-                        if(IpReputationApp.UrlCatThreatMap.get(cat) != null){
-                            threatmask += IpReputationApp.UrlCatThreatMap.get(cat);
+                        JSONArray catids = ipInfo.getJSONArray(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_LIST_KEY);
+                        for(int j = 0; j < catids.length(); j++){
+                            Integer cat = catids.getJSONObject(i).getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_ID_KEY);
+                            if(IpReputationApp.UrlCatThreatMap.get(cat) != null){
+                                threatmask += IpReputationApp.UrlCatThreatMap.get(cat);
+                            }
+                        }
+
+                        if(!localSrc && ip.equals(request.getOrigClientAddr().getHostAddress())){
+                            request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
+                            request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK, threatmask);
+                        }else if(!localDst && ip.equals(request.getNewServerAddr().getHostAddress())){
+                            request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
+                            request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, threatmask);
                         }
                     }
-
-                    if(!localSrc && ip.equals(request.getOrigClientAddr().getHostAddress())){
-                        request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_RESPONSE_URLINFO_REPUTATION_KEY));
-                        request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK, threatmask);
-                    }else if(!localDst && ip.equals(request.getNewServerAddr().getHostAddress())){
-                        request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_RESPONSE_URLINFO_REPUTATION_KEY));
-                        request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, threatmask);
-                    }
-
                 }
+            }catch(Exception e){
+                logger.warn("Cannot pull IP information ", e);
             }
-        }catch(Exception e){
-            logger.warn("Cannot pull IP information ", e);
         }
 
         Object clientReputation = request.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION);
