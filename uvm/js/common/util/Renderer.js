@@ -749,8 +749,8 @@ Ext.define('Ung.util.Renderer', {
 
             var categoryInfo = Ung.util.Renderer.getReportInfo(record, ["web-filter", "web-monitor"], reasonSource);
 
-            if(categoryInfo && categoryInfo["list"]){
-                categoryInfo["list"].forEach( function(rule){
+            if(categoryInfo){
+                categoryInfo.forEach( function(rule){
                     Renderer.webRuleMap[policyId][reasonSource][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["description"] ? rule["description"] : rule["string"];
                 });
             }
