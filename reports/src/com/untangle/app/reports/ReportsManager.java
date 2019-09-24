@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -291,4 +292,18 @@ public interface ReportsManager
      *  List of report identifiers.
      */
     List<String> getRecommendedReportIds();
+
+    /**
+     * Return application specific list of values throught
+     * the app's getReportInfo method, ensuring that the app explictly
+     * is allowing this informaiton.
+     *
+     * @param  appName  Name of app.
+     * @param  policyId Policy id.
+     * @param  key Key of information to retrieve.
+     * @param arguments Array of String arguments to pass.
+     * @return          JSONArray of result.
+     */
+    public JSONArray getReportInfo( String appName, Integer policyId, String key, String...arguments);
+
 }
