@@ -787,13 +787,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             values: Ung.common.ipreputation.references.reputatationConditionValues()
         },{
             name:'IP_REPUTATION_SRC_THREATMASK',
-            displayName: 'IP Reputation: Source address threats'.t(),
+            displayName: 'IP Reputation: Source address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.ipreputation.references.threatsConditionValues()
         },{
             name:'IP_REPUTATION_DST_THREATMASK',
-            displayName: 'IP Reputation: Destination address threats'.t(),
+            displayName: 'IP Reputation: Destination address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.ipreputation.references.threatsConditionValues()
