@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -109,7 +110,11 @@ public class WebrootDaemon
 
         if(firstIn){
             restart();
-            WebrootQuery.start();
+            try{
+                WebrootQuery.start();
+            }catch(Exception e){
+                logger.warn(e);
+            }
             pulseGetStatistics.start();
         }
     }
@@ -135,6 +140,61 @@ public class WebrootDaemon
     public void restart()
     {
         UvmContextFactory.context().daemonManager().restart("untangle-bctid");
+    }
+
+    /**
+     * Return current brightcloud configuration as a map of section/key/value.
+     * @return Hash map of section/key/value.
+     */
+    public Map<String,Map<String,String>> getConfig()
+    {
+        Map<String,Map<String,String>> configMap = new HashMap<>();
+        File f = new File(BCTID_CONFIG_FILE);
+        if( f.exists() == false ){
+            logger.info("getConfig: bctid configuration not found: " + BCTID_CONFIG_FILE);
+        }else{
+            String[] config = null;
+            FileInputStream is = null;
+            try{
+                is = new FileInputStream(BCTID_CONFIG_FILE);
+                config = IOUtils.toString(is, "UTF-8").split("\n");
+            }catch (Exception e){
+                logger.error("getConfig: read config",e);
+            }finally{
+                try{
+                    if(is != null){
+                        is.close();
+                    }
+                }catch( IOException e){
+                    logger.error("getConfig: failed to close file");
+                }
+            }
+            if(config != null){
+                int splitIndex = 0;
+                String currentSectionName = null;
+                Map<String,String> currentSection = null;
+                for(int i = 0; i < config.length; i++){
+                    if(config[i].startsWith("[")){
+                        if(currentSectionName != null && currentSection != null){
+                            configMap.put(currentSectionName, currentSection);
+                        }
+                        currentSectionName = config[i].substring(config[i].indexOf('[') + 1, config[i].indexOf(']') );
+                        currentSection = new HashMap<>();
+                    }else if(
+                        config[i].trim().isEmpty() == false &&
+                        config[i].trim().startsWith("#") == false){
+                        String[] keyValuePair = config[i].split("=", 2);
+                        if(keyValuePair.length == 2){
+                            currentSection.put(keyValuePair[0], keyValuePair[1]);
+                        }
+                    }
+                }
+                if(currentSectionName != null && currentSection != null){
+                    configMap.put(currentSectionName, currentSection);
+                }
+            }
+        }
+        return configMap;
     }
 
     /**

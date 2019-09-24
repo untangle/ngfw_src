@@ -23,8 +23,19 @@ import org.json.JSONException;
 
 import org.apache.log4j.Logger;
 
+import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.DataOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+
 /**
- * Queries for webroot daemon
+ * Queries for webroot
  */
 public class WebrootQuery
 {
@@ -40,29 +51,60 @@ public class WebrootQuery
     public static final char DOMAIN_DOT = '.';
     public static final String DOMAIN_WILDCARD = "*.";
 
+    private static final DateFormat BCTI_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+    private static final String BCTI_DATE_TIME = "T00:00:00";
+    private static final int BCTI_DATE_MAX_START_DAYS = 180;
+
     public static final String BCTI_API_ERROR_KEY="ERROR";
 
-    public static final String BCTI_API_QUERY_HEARTBEAT = "{\"heartbeat\":{}}\r\n";
+    public static final String BCTI_API_DIRECT_REQUEST_IPS_PARAMETER = "%ips%";
+    public static final String BCTI_API_DIRECT_REQUEST_URLS_PARAMETER = "%urls%";
+    public static final String BCTI_API_DIRECT_REQUEST_STARTDATE_PARAMETER = "%startdate%";
+    public static final String BCTI_API_DIRECT_REQUEST_ENDDATE_PARAMETER = "%enddate%";
 
-    public static final String BCTI_API_QUERY_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
-    public static final String BCTI_API_QUERY_URLINFO_SUFFIX = "\"],\"a1cat\":1, \"reputation\":1}}\r\n";
+    public static final String BCTI_API_DIRECT_RESPONSE_QUERIES_KEY = "queries";
 
-    public static final String BCTI_API_RESPONSE_URLINFO_CATEGORY_LIST_KEY="cats";
-    public static final String BCTI_API_RESPONSE_URLINFO_CATEGORY_ID_KEY="catid";
-    public static final String BCTI_API_RESPONSE_URLINFO_A1CAT_KEY="a1cat";
+    public static final String BCTI_API_DIRECT_URL_PREFIX_TEMPLATE = "%protocol%://%server%/1.0/";
+    public static final String BCTI_API_DIRECT_REQUEST_PREFIX_TEMPLATE = "{\"requestid\": \"%requestid%\", \"oemid\": \"%oemid%\",\"deviceid\": \"%deviceid%\",\"uid\": \"%uid%\",";
+    public static final String BCTI_API_DIRECT_REQUEST_SUFFIX_TEMPLATE = ",\"xml\": 0}";
 
-    public static final String BCTI_API_RESPONSE_URLINFO_URL_KEY="url";
-    public static final String BCTI_API_RESPONSE_URLINFO_REPUTATION_KEY="reputation";
+    public static final String BCTI_API_DIRECT_REQUEST_URL = "url";
+    public static final String BCTI_API_DIRECT_REQUEST_URL_GETREPINFO = "\"queries\": [\"getrepinfo\",],\"urls\": [\"%urls%\"]";
 
-    public static final String BCTI_API_QUERY_IPINFO_PREFIX = "{\"ip/getinfo\":{\"ips\":[\"";
-    public static final String BCTI_API_QUERY_IPINFO_SUFFIX = "\"]}}\r\n";
+    public static final String BCTI_API_DIRECT_REQUEST_URLTHREATINSIGHT = "urlthreatinsight";
+    public static final String BCTI_API_DIRECT_REQUEST_URLTHREATINSIGHT_GETURLINFO = "\"queries\": [\"geturlhistory\",], \"startdate\": \"%startdate%\",\"enddate\": \"%enddate%\",\"values\": [\"%urls%\"]";
 
-    public static final String BCTI_API_RESPONSE_IPINFO_IP_KEY="ip";
-    public static final String BCTI_API_RESPONSE_IPINFO_THREATMASK_KEY="threat_mask";
-    public static final String BCTI_API_RESPONSE_IPINFO_REPUTATION_KEY="reputation";
+    public static final String BCTI_API_DIRECT_REQUEST_IP = "ip";
+    public static final String BCTI_API_DIRECT_REQUEST_IP_GETREPHISTORY = "\"queries\": [\"getrephistory\",],\"ips\": [\"%ips%\"]";
+    public static final String BCTI_API_DIRECT_REQUEST_IP_GETTHREATHISTORY = "\"queries\": [\"getthreathistory\",],\"ips\": [\"%ips%\"]";
 
-    public static final String BCTI_API_QUERY_URLCLEARCACHE = "{\"url/setcacheclear\":{}}\r\n";
-    public static final String BCTI_API_QUERY_STATUS = "{\"status\":{}}\r\n";
+    public static final String BCTI_API_DIRECT_REQUEST_IPTHREATINSIGHT = "ipthreatinsight";
+    public static final String BCTI_API_DIRECT_REQUEST_IPTHREATINSIGHT_GETIPEVIDENCE = "\"queries\": [\"getipevidence\",],\"values\": [\"%ips%\"]";
+
+    public static final String BCTI_API_DAEMON_REQUEST_URLINFO_PREFIX = "{\"url/getinfo\":{\"urls\":[\"";
+    public static final String BCTI_API_DAEMON_REQUEST_URLINFO_SUFFIX = "\"],\"a1cat\":1, \"reputation\":1}}\r\n";
+
+    public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_LIST_KEY="cats";
+    public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_ID_KEY="catid";
+    public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_A1CAT_KEY="a1cat";
+
+    public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY="url";
+    public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY="reputation";
+
+    public static final String BCTI_API_DAEMON_REQUEST_IPINFO_PREFIX = "{\"ip/getinfo\":{\"ips\":[\"";
+    public static final String BCTI_API_DAEMON_REQUEST_IPINFO_SUFFIX = "\"]}}\r\n";
+
+    public static final String BCTI_API_DAEMON_RESPONSE_IPINFO_IP_KEY="ip";
+    public static final String BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY="threat_mask";
+    public static final String BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY="reputation";
+
+    public static final String BCTI_API_DAEMON_REQUEST_URLCLEARCACHE = "{\"url/setcacheclear\":{}}\r\n";
+    public static final String BCTI_API_DAEMON_REQUEST_STATUS = "{\"status\":{}}\r\n";
+
+    public static String BctiApiDirectUrlPrefix = "";
+    public static String BctiApiDirectRequestPrefix = "";
+    public static String BctiApiDirectRequestSuffix = "";
+    public static Integer requestId = 0;
 
     private static Integer UNCATEGORIZED_CATEGORY = 0;
 
@@ -93,11 +135,17 @@ public class WebrootQuery
     private static AtomicInteger urlCacheSync = new AtomicInteger(0);
     private static WebrootCache urlCache = null;
     private static WebrootCache urlA1Cache = null;
+    private static AtomicInteger ipHistoryCacheSync = new AtomicInteger(0);
+    private static WebrootCache ipHistoryCache = null;
+    private static AtomicInteger urlHistoryCacheSync = new AtomicInteger(0);
+    private static WebrootCache urlHistoryCache = null;
 
     static {
         ipCache = new WebrootCache();
         urlCache = new WebrootCache();
         urlA1Cache = new WebrootCache();
+        ipHistoryCache = new WebrootCache();
+        urlHistoryCache = new WebrootCache();
     }
 
     /**
@@ -111,9 +159,18 @@ public class WebrootQuery
     }
 
     /**
-     * Enable queries.
+     * Build up direct parameters.
      */
     public static void start(){
+        Map<String,Map<String,String>> config = WebrootDaemon.getInstance().getConfig();
+        BctiApiDirectUrlPrefix = BCTI_API_DIRECT_URL_PREFIX_TEMPLATE
+            .replaceAll("%protocol%", config.get("Global").get("IsisPort").equals("443") ? "https" : "http")
+            .replaceAll("%server%", config.get("Global").get("IsisServer"));
+        BctiApiDirectRequestPrefix = BCTI_API_DIRECT_REQUEST_PREFIX_TEMPLATE
+            .replaceAll("%oemid%", config.get("Global").get("OEM"))
+            .replaceAll("%deviceid%", config.get("Global").get("Device"))
+            .replaceAll("%uid%", config.get("Global").get("UID"));
+        BctiApiDirectRequestSuffix = BCTI_API_DIRECT_REQUEST_SUFFIX_TEMPLATE;
     }
 
     /**
@@ -138,7 +195,7 @@ public class WebrootQuery
      */
     public void clearCache()
     {
-        api(BCTI_API_QUERY_URLCLEARCACHE);
+        apiDaemon(BCTI_API_DAEMON_REQUEST_URLCLEARCACHE);
     }
 
     /**
@@ -204,9 +261,9 @@ public class WebrootQuery
      * @param  query        String of bcti query to send
      * @return              String of json response.
      */
-    public JSONArray api(String query)
+    public JSONArray apiDaemon(String query)
     {
-        return api(query, false);
+        return apiDaemon(query, false);
     }
 
     /**
@@ -215,7 +272,7 @@ public class WebrootQuery
      * @param  retry        Boolean to retry again.
      * @return              String of json response.
      */
-    public JSONArray api(String query, Boolean retry)
+    public JSONArray apiDaemon(String query, Boolean retry)
     {
         JSONArray answer = null;
         String rawAnswer = null;
@@ -237,7 +294,7 @@ public class WebrootQuery
             if(bctidSocket == null){
                 bctidSocket = BctidSocketPool.poll(BctidSocketPoolMaxWaitSeconds, TimeUnit.SECONDS);
                 if(bctidSocket == null){
-                    logger.warn("api: timed out getting socket from pool!" + BctidSocketRunnersCount.get() + ":" + BctidSocketPool.size());
+                    logger.warn("apiDaemon: timed out getting socket from pool!" + BctidSocketRunnersCount.get() + ":" + BctidSocketPool.size());
                     return answer;
                 }
                 BctidSocketRunnersCount.incrementAndGet();
@@ -296,7 +353,7 @@ public class WebrootQuery
 
         if(failed){
             if(retry == false){
-                return api(query, true);
+                return apiDaemon(query, true);
             }else{
                 BctidRetryCount.incrementAndGet();
                 if(BctidRetryIntervalExpire.get() == 0){
@@ -333,7 +390,7 @@ public class WebrootQuery
             try{
                 JSONObject urlAnswer = answer.getJSONObject(0);
                 if(urlAnswer.has(BCTI_API_ERROR_KEY)){
-                    logger.warn("api: answer contains error: " + rawAnswer);
+                    logger.warn("apiDaemon: answer contains error: " + rawAnswer);
                     answer = null;
                 }
             }catch(Exception e){
@@ -399,11 +456,11 @@ public class WebrootQuery
                 }
             }
             if(queryAnswer == null){
-                queryAnswer = api(BCTI_API_QUERY_URLINFO_PREFIX + urls[i] + BCTI_API_QUERY_URLINFO_SUFFIX);
+                queryAnswer = apiDaemon(BCTI_API_DAEMON_REQUEST_URLINFO_PREFIX + urls[i] + BCTI_API_DAEMON_REQUEST_URLINFO_SUFFIX);
                 if(queryAnswer != null){
                     boolean a1 = false;
                     try{
-                        a1 = (urls.length == 1) && queryAnswer.getJSONObject(0).getBoolean(BCTI_API_RESPONSE_URLINFO_A1CAT_KEY);
+                        a1 = (urls.length == 1) && queryAnswer.getJSONObject(0).getBoolean(BCTI_API_DAEMON_RESPONSE_URLINFO_A1CAT_KEY);
                     }catch(Exception e){
                         logger.warn("Unable to determine a1cat: "+ queryAnswer);
                     }
@@ -453,7 +510,7 @@ public class WebrootQuery
             answer = ipCache.get(key);
         }
         if(answer == null){
-            answer = api(BCTI_API_QUERY_IPINFO_PREFIX + key + BCTI_API_QUERY_IPINFO_SUFFIX);
+            answer = apiDaemon(BCTI_API_DAEMON_REQUEST_IPINFO_PREFIX + key + BCTI_API_DAEMON_REQUEST_IPINFO_SUFFIX);
             if(answer != null){
                 synchronized(ipCacheSync){
                     ipCache.put(key, answer);
@@ -465,12 +522,167 @@ public class WebrootQuery
 
 
     /**
+     * Perform direct queries to webroot servers.
+     *
+     * @param api Major API name.
+     * @param  query Minor API name
+     * @return       JSONArray of answer.
+     */
+    public JSONArray apiDirect(String api, String query){
+        JSONArray answer = null;
+        URL url = null;
+
+        try{
+            url = new URL(BctiApiDirectUrlPrefix + api);
+        }catch(Exception e){
+            logger.warn("apiDirect: ", e);
+            return answer;
+        }
+        HttpsURLConnection connection = null;
+
+        try{
+            connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+            connection.setDoOutput(true);
+            DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
+            // encode query?
+            logger.warn("apiDirect: query=" + BctiApiDirectRequestPrefix.replaceAll("%requestid%", Integer.toString(requestId)) + query + BctiApiDirectRequestSuffix);
+            dos.writeBytes(BctiApiDirectRequestPrefix.replaceAll("%requestid%", Integer.toString(requestId)) + query + BctiApiDirectRequestSuffix);
+            requestId++;
+            dos.flush();
+            dos.close();
+
+            int responseCode = connection.getResponseCode();
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            logger.warn(response.toString());
+            JSONObject jsonObject = new JSONObject(response.toString());
+            logger.warn(jsonObject);
+            answer = jsonObject.getJSONArray("results");
+            // close buffered reader?
+            // close connection
+        }catch(Exception e){
+            logger.warn("apiDirect: ", e);
+            return answer;
+        }
+
+        return answer;
+    }
+
+    /**
+     * Diret query for historical information about incoming IP addresses.
+     *
+     * @param  addresses String array of IP addresses.
+     * @return           JSONArray of each query for each address.
+     */
+    public JSONArray getIpHistory(String... addresses)
+    {
+        JSONArray answer = null;
+        String key = String.join("\",\"", addresses);
+        synchronized(ipHistoryCacheSync){
+            answer = ipHistoryCache.get(key);
+        }
+        if(answer == null){
+            answer = new JSONArray();
+            int index = 0;
+            Calendar startDate = Calendar.getInstance();
+            startDate.add(Calendar.DATE, -BCTI_DATE_MAX_START_DAYS);
+            Calendar endDate = Calendar.getInstance();
+            JSONArray directAnswer = null;
+            try{
+                directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_IP,
+                    BCTI_API_DIRECT_REQUEST_IP_GETREPHISTORY
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_IPS_PARAMETER, key)
+                );
+                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+                directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_IP,
+                    BCTI_API_DIRECT_REQUEST_IP_GETTHREATHISTORY
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_IPS_PARAMETER, key)
+                );
+                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+                directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_IPTHREATINSIGHT,
+                    BCTI_API_DIRECT_REQUEST_IPTHREATINSIGHT_GETIPEVIDENCE
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_IPS_PARAMETER, key)
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_STARTDATE_PARAMETER, BCTI_DATE_FORMATTER.format(startDate.getTime()) + BCTI_DATE_TIME)
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_ENDDATE_PARAMETER, BCTI_DATE_FORMATTER.format(endDate.getTime()) + BCTI_DATE_TIME)
+                );
+                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+            }catch(Exception e){
+                logger.warn("getIpHistory: ", e);
+            }
+
+            if(answer != null){
+                synchronized(ipHistoryCacheSync){
+                    ipHistoryCache.put(key, answer);
+                }
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * Diret query for historical information about ourgoing IP addresses or urls.
+     *
+     * @param  addresses String array of IP addresses.
+     * @return           JSONArray of each query for each address.
+     */
+    public JSONArray getUrlHistory(String... addresses)
+    {
+        JSONArray answer = null;
+        String key = String.join("\",\"", addresses);
+        synchronized(urlHistoryCacheSync){
+            answer = urlHistoryCache.get(key);
+        }
+        if(answer == null){
+            answer = new JSONArray();
+
+            int index = 0;
+            Calendar startDate = Calendar.getInstance();
+            startDate.add(Calendar.DATE, -BCTI_DATE_MAX_START_DAYS);
+            Calendar endDate = Calendar.getInstance();
+            JSONArray directAnswer = null;
+            try{
+                directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_URL,
+                    BCTI_API_DIRECT_REQUEST_URL_GETREPINFO
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_URLS_PARAMETER, key)
+                );
+                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+                directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_URLTHREATINSIGHT, 
+                    BCTI_API_DIRECT_REQUEST_URLTHREATINSIGHT_GETURLINFO
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_URLS_PARAMETER, key)
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_STARTDATE_PARAMETER, BCTI_DATE_FORMATTER.format(startDate.getTime()) + BCTI_DATE_TIME)
+                        .replaceAll(BCTI_API_DIRECT_REQUEST_ENDDATE_PARAMETER, BCTI_DATE_FORMATTER.format(endDate.getTime()) + BCTI_DATE_TIME)
+                );
+                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+            }catch(Exception e){
+                logger.warn("getUrlHistory: ", e);
+            }
+
+            if(answer != null){
+                synchronized(urlHistoryCacheSync){
+                    urlHistoryCache.put(key, answer);
+                }
+            }
+        }
+        return answer;
+    }
+
+    /**
      * Get daemon status
      * @return JSONArray of status
      */
     public JSONArray status()
     {
-        return api(BCTI_API_QUERY_STATUS);
+        return apiDaemon(BCTI_API_DAEMON_REQUEST_STATUS);
     }
 
     // ipGetInfo(ips...)
