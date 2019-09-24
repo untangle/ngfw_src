@@ -6,6 +6,7 @@ package com.untangle.app.reports;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.untangle.uvm.AdminUserSettings;
@@ -854,14 +856,17 @@ public class ReportsManagerImpl implements ReportsManager
     }
 
     /**
-     * Return app-specific list of values.
+     * Return application specific list of values throught
+     * the app's getReportInfo method, ensuring that the app explictly
+     * is allowing this informaiton.
      *
      * @param  appName  Name of app.
      * @param  policyId Policy id.
-     * @param  key      Name of list to return.
-     * @return          List of JSONObjects
+     * @param  key Key of information to retrieve.
+     * @param arguments Array of String arguments to pass.
+     * @return          JSONArray of result.
      */
-    public List<JSONObject> getReportInfo( String appName, Integer policyId, String key){
+    public JSONArray getReportInfo( String appName, Integer policyId, String key, String...arguments){
         List<App> apps = null;
         if(policyId == -1){
             apps = UvmContextFactory.context().appManager().appInstances(appName);
@@ -869,12 +874,26 @@ public class ReportsManagerImpl implements ReportsManager
             apps = UvmContextFactory.context().appManager().appInstances(appName, policyId, false);
         }
         if(apps != null && apps.size() > 0){
-            return ((AppBase)apps.get(0)).getReportInfo(key);
+            return ((AppBase)apps.get(0)).getReportInfo(key, arguments);
         }
 
         return null;
     }
 
+    /**
+     * Return application specific list of values throught
+     * the app's getReportInfo method, ensuring that the app explictly
+     * is allowing this informaiton.
+     *
+     * @param  appName  Name of app.
+     * @param  policyId Policy id.
+     * @param  key      Name of list to return.
+     * @return          JSONArray of result.
+     */
+    // public List<JSONObject> getReportInfo( String appName, Integer policyId, String key, String...arguments){
+    public JSONArray getReportInfo( String appName, Integer policyId, String key){
+        return getReportInfo(appName, policyId, key, (String[]) null);
+    }
 
     /**
      * Return list of policies if defined.
