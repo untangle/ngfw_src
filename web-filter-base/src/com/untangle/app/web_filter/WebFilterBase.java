@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
@@ -716,47 +717,53 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      * Return various list configurations from settings.
      *
      * @param  key String of key in settings.
-     * @return     List of JSON objects for the settings.
+     * @param arguments Array of String arguments to pass.
+     * @return     JSONArray of result.
      */
-    public ArrayList<JSONObject> getReportInfo(String key){
+    public JSONArray getReportInfo(String key, String... arguments){
 
-        ArrayList<JSONObject> result = null;
+        JSONArray result = null;
+        int index = 0;
 
-        if(key.equals("filterRules")){
-            result = new ArrayList<>();
-            for(WebFilterRule wfr : this.settings.getFilterRules()){
-                JSONObject jo = new JSONObject(wfr);
-                jo.remove("class");
-                result.add(jo);
-            }
-        }else{
-            List<GenericRule> genericRuleList = null;
-            switch(key){
-                case "passedClients":
-                    genericRuleList = this.settings.getPassedClients();
-                    break;
-                case "passedUrls":
-                    genericRuleList = this.settings.getPassedUrls();
-                    break;
-                case "blockedUrls":
-                    genericRuleList = this.settings.getBlockedUrls();
-                    break;
-                case "categories":
-                    genericRuleList = this.settings.getCategories();
-                    break;
-                case "searchTerms":
-                    genericRuleList = this.settings.getSearchTerms();
-                    break;
-            }
-            if(genericRuleList != null){
-                result = new ArrayList<>();
-                for(GenericRule gr : genericRuleList){
-                    JSONObject jo = new JSONObject(gr);
+        try{
+            if(key.equals("filterRules")){
+                result = new JSONArray();
+                for(WebFilterRule wfr : this.settings.getFilterRules()){
+                    JSONObject jo = new JSONObject(wfr);
                     jo.remove("class");
-                    result.add(jo);
+                    result.put(index++, jo);
                 }
+            }else{
+                List<GenericRule> genericRuleList = null;
+                switch(key){
+                    case "passedClients":
+                        genericRuleList = this.settings.getPassedClients();
+                        break;
+                    case "passedUrls":
+                        genericRuleList = this.settings.getPassedUrls();
+                        break;
+                    case "blockedUrls":
+                        genericRuleList = this.settings.getBlockedUrls();
+                        break;
+                    case "categories":
+                        genericRuleList = this.settings.getCategories();
+                        break;
+                    case "searchTerms":
+                        genericRuleList = this.settings.getSearchTerms();
+                        break;
+                }
+                if(genericRuleList != null){
+                    result = new JSONArray();
+                    for(GenericRule gr : genericRuleList){
+                        JSONObject jo = new JSONObject(gr);
+                        jo.remove("class");
+                        result.put(index++, jo);
+                    }
 
+                }
             }
+        }catch(Exception e){
+            logger.warn("getReportInfo: " + key, e);
         }
 
         return result;
