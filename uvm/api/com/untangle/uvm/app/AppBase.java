@@ -15,7 +15,7 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
@@ -628,9 +628,10 @@ public abstract class AppBase implements App
     /**
      * Return restricted list of JSONObjects from this app.
      * @param key String of key to return;
-     * @return List of apps.
+     * @param arguments Array of String arguments to pass.
+     * @return     JSONArray of result.
      */
-    public List<JSONObject> getReportInfo(String key){
+    public JSONArray getReportInfo(String key, String...arguments){
         return null;
     }
 
