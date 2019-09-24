@@ -810,6 +810,23 @@ Ext.define('Ung.util.Util', {
         return encodedUrl;
     },
 
+    /**
+     * Determine if passed IP matches network & netmask.
+     * @param  string ip      IP address to test.
+     * @param  string network Network in CIDR notation.
+     * @param  string netmask Netmask in CIDR notation.
+     * @return boolean         true if IP is on network, otherwise false.
+     */
+    ipMatchesNetwork: function(ip, network, netmask){
+        var dots = netmask.split('.');
+        var netmaskInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
+        dots = network.split('.');
+        var networkInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
+        dots = ip.split('.');
+        var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
+        return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
+    },
+
     constructor: function(cfg){
         var referenceMapping = {};
         Ext.Object.each(this.appDescription, function(key){
