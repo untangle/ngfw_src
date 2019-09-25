@@ -826,16 +826,4 @@ Ext.define('Ung.util.Util', {
         var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
     },
-
-    constructor: function(cfg){
-        var referenceMapping = {};
-        Ext.Object.each(this.appDescription, function(key){
-            // Not sure why need to special case ad-blocker.
-            var appFilename = (key=='ad-blocker'?'ab':key);
-            var appReference = 'Ung.common.'+key.replace(/\-/g, '');
-            referenceMapping[appReference] = '/script/common/app-'+appFilename+'-all.js';
-        });
-        Ext.Loader.addClassPathMappings(referenceMapping);
-    }
-
 });
