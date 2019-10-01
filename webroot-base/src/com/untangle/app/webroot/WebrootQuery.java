@@ -603,19 +603,19 @@ public class WebrootQuery
                     BCTI_API_DIRECT_REQUEST_IP_GETREPHISTORY
                         .replaceAll(BCTI_API_DIRECT_REQUEST_IPS_PARAMETER, key)
                 );
-                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+                answer.put(index++, directAnswer.get(0));
                 directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_IP,
                     BCTI_API_DIRECT_REQUEST_IP_GETTHREATHISTORY
                         .replaceAll(BCTI_API_DIRECT_REQUEST_IPS_PARAMETER, key)
                 );
-                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+                answer.put(index++, directAnswer.get(0));
                 directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_IPTHREATINSIGHT,
                     BCTI_API_DIRECT_REQUEST_IPTHREATINSIGHT_GETIPEVIDENCE
                         .replaceAll(BCTI_API_DIRECT_REQUEST_IPS_PARAMETER, key)
                         .replaceAll(BCTI_API_DIRECT_REQUEST_STARTDATE_PARAMETER, BCTI_DATE_FORMATTER.format(startDate.getTime()) + BCTI_DATE_TIME)
                         .replaceAll(BCTI_API_DIRECT_REQUEST_ENDDATE_PARAMETER, BCTI_DATE_FORMATTER.format(endDate.getTime()) + BCTI_DATE_TIME)
                 );
-                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+                answer.put(index++, directAnswer.get(0));
             }catch(Exception e){
                 logger.warn("getIpHistory: ", e);
             }
@@ -655,14 +655,14 @@ public class WebrootQuery
                     BCTI_API_DIRECT_REQUEST_URL_GETREPINFO
                         .replaceAll(BCTI_API_DIRECT_REQUEST_URLS_PARAMETER, key)
                 );
-                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+                answer.put(index++, directAnswer.get(0));
                 directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_URLTHREATINSIGHT, 
                     BCTI_API_DIRECT_REQUEST_URLTHREATINSIGHT_GETURLINFO
                         .replaceAll(BCTI_API_DIRECT_REQUEST_URLS_PARAMETER, key)
                         .replaceAll(BCTI_API_DIRECT_REQUEST_STARTDATE_PARAMETER, BCTI_DATE_FORMATTER.format(startDate.getTime()) + BCTI_DATE_TIME)
                         .replaceAll(BCTI_API_DIRECT_REQUEST_ENDDATE_PARAMETER, BCTI_DATE_FORMATTER.format(endDate.getTime()) + BCTI_DATE_TIME)
                 );
-                answer.put(index++, ((JSONObject) directAnswer.get(0)).getJSONObject(BCTI_API_DIRECT_RESPONSE_QUERIES_KEY));
+                answer.put(index++, directAnswer.get(0));
             }catch(Exception e){
                 logger.warn("getUrlHistory: ", e);
             }
