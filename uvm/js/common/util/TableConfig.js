@@ -1,6 +1,19 @@
+Ext.syncRequire('Ung.common.ipreputation');
 Ext.define('TableConfig', {
     alternateClassName: 'TableConfig',
     singleton: true,
+
+    initialized: false,
+    initialize: function(){
+        if(this.initialized){
+            return;
+        }
+        var me = this;
+        Ext.Object.each(Ung.common.TableConfig, function(key, value){
+            Ung.common.TableConfig[key].initialize(me);
+        });
+        this.initialized = true;
+    },
 
     getConfig: function(tableName) {
         if(TableConfig.validated == false){
@@ -405,24 +418,6 @@ Ext.define('TableConfig', {
             }, {
                 name: 'firewall_rule_index'
             }, {
-                name: 'ip_reputation_blocked'
-            }, {
-                name: 'ip_reputation_firewall_flagged'
-            }, {
-                name: 'ip_reputation_rule_index'
-            }, {
-                name: 'ip_reputation_client_reputation',
-                fromType: 'ip_reputation'
-            }, {
-                name: 'ip_reputation_client_threatmask',
-                fromType: 'ip_threat'
-            }, {
-                name: 'ip_reputation_server_reputation',
-                fromType: 'ip_reputation'
-            }, {
-                name: 'ip_reputation_server_threatmask',
-                fromType: 'ip_threat'
-            }, {
                 name: 'application_control_lite_blocked'
             }, {
                 name: 'application_control_lite_protocol',
@@ -470,6 +465,8 @@ Ext.define('TableConfig', {
                 sortType: 'asUnString'
             }, {
                 name: 'ssl_inspector_ruleid'
+            }, {
+                name: 'info'
             }],
             columns: [{
                 header: 'Session Id'.t(),
@@ -776,57 +773,6 @@ Ext.define('TableConfig', {
                 dataIndex: 'firewall_rule_index',
                 filter: Renderer.numericFilter
             }, {
-                header: 'Blocked'.t() + ' (IP Reputation)',
-                width: Renderer.booleanWidth,
-                sortable: true,
-                dataIndex: 'ip_reputation_blocked',
-                filter: Renderer.booleanFilter
-            }, {
-                header: 'Flagged'.t() + ' (IP Reputation)',
-                width: Renderer.booleanWidth,
-                sortable: true,
-                dataIndex: 'ip_reputation_flagged',
-                filter: Renderer.booleanFilter
-            }, {
-                header: 'Rule Id'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_rule_index',
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Client Reputation'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_client_reputation',
-                renderer: Renderer.ipReputation,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Client Threatmask'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_client_threatmask',
-                renderer: Renderer.ipThreatmask,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Server Reputation'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_server_reputation',
-                renderer: Renderer.ipReputation,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Server Threatmask'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_server_threatmask',
-                renderer: Renderer.ipThreatmask,
-                filter: Renderer.numericFilter
-            }, {
                 header: 'Captured'.t() + ' (Captive Portal)',
                 width: Renderer.messageWidth,
                 sortable: true,
@@ -858,13 +804,6 @@ Ext.define('TableConfig', {
                 width: Renderer.sizeWidth,
                 sortable: true,
                 dataIndex: 'p2c_bytes',
-                renderer: Renderer.datasize,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'From-Client Bytes'.t(),
-                width: Renderer.sizeWidth,
-                sortable: true,
-                dataIndex: 'c2p_bytes',
                 renderer: Renderer.datasize,
                 filter: Renderer.numericFilter
             }]
@@ -959,24 +898,6 @@ Ext.define('TableConfig', {
                 name: 'firewall_flagged'
             }, {
                 name: 'firewall_rule_index'
-            }, {
-                name: 'ip_reputation_blocked'
-            }, {
-                name: 'ip_reputation_flagged'
-            }, {
-                name: 'ip_reputation_rule_index'
-            }, {
-                name: 'ip_reputation_client_reputation',
-                fromType: 'ip_reputation'
-            }, {
-                name: 'ip_reputation_client_threatmask',
-                fromType: 'fromType.ip_threat'
-            }, {
-                name: 'ip_reputation_server_reputation',
-                fromType: 'fromType.ip_reputation'
-            }, {
-                name: 'ip_reputation_server_threatmask',
-                fromType: 'fromType.ip_threat'
             }, {
                 name: 'application_control_lite_blocked'
             }, {
@@ -1317,57 +1238,6 @@ Ext.define('TableConfig', {
                 sortable: true,
                 flex:1,
                 dataIndex: 'firewall_rule_index',
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Blocked'.t() + ' (IP Reputation)',
-                width: Renderer.booleanWidth,
-                sortable: true,
-                dataIndex: 'ip_reputation_blocked',
-                filter: Renderer.booleanFilter
-            }, {
-                header: 'Flagged'.t() + ' (IP Reputation)',
-                width: Renderer.booleanWidth,
-                sortable: true,
-                dataIndex: 'ip_reputation_flagged',
-                filter: Renderer.booleanFilter
-            }, {
-                header: 'Rule Id'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_rule_index',
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Client Reputation'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_client_reputation',
-                renderer: Renderer.ipReputation,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Client Threatmask'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_client_threatmask',
-                renderer: Renderer.ipThreatmask,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Server Reputation'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_server_reputation',
-                renderer: Renderer.ipReputation,
-                filter: Renderer.numericFilter
-            }, {
-                header: 'Server Threatmask'.t() + ' (IP Reputation)',
-                width: Renderer.idWidth,
-                sortable: true,
-                flex:1,
-                dataIndex: 'ip_reputation_server_threatmask',
-                renderer: Renderer.ipThreatmask,
                 filter: Renderer.numericFilter
             }, {
                 header: 'Captured'.t() + ' (Captive Portal)',
@@ -4356,3 +4226,4 @@ Ext.define('TableConfig', {
         }
     }
 });
+TableConfig.initialize();
