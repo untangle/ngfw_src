@@ -12,7 +12,6 @@ Ext.define('Ung.cmp.GridController', {
         },
         'checkcolumn':{
             beforecheckchange: 'onBeforeCheckChange'
-
         }
     },
 

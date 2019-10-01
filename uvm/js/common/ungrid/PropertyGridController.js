@@ -61,30 +61,12 @@ Ext.define('Ung.cmp.PropertyGridController', {
             masterGrid.getView().on('select', 'masterGridSelect', me );
         }
 
+        me.getView().getStore().setFields(['name', 'value', 'category']);
+        me.getView().getStore().setGroupField('category');
+
         v.sourceConfig = Ext.apply({}, sourceConfig);
         v.configure(sourceConfig);
         v.reconfigure();
-
-        // this.getStore().sort('group');
-        // this.getStore().group('group');
-
-        // this.getStore().on({
-        //     datachanged: Ext.bind(function( store ){
-        //         var columns = this.up().down('grid').getColumns();
-        //         store.each(function(record){
-        //             var groupName = '';
-        //             var recordName = record.get('name');
-        //             columns.find( function(column){
-        //                 if( column.dataIndex == recordName ){
-        //                     if( column.ownerCt.text ){
-        //                         groupName = column.ownerCt.text;
-        //                     }
-        //                 }
-        //             });
-        //             record.set('group', groupName);
-        //         });
-        //     },this)
-        // });
     },
 
     /*
@@ -106,34 +88,18 @@ Ext.define('Ung.cmp.PropertyGridController', {
         delete propertyRecord.attachments;
         delete propertyRecord.tags;
 
-        for( var k in propertyRecord ){
-            if( propertyRecord[k] == null ){
-                continue;
-            }
-            /* If object only contains a JavaClass and one other
-            /* field, use that field as the new non-object value.
-            /* It works for timestamp...it should work for others. */
-            if( ( typeof( propertyRecord[k] ) == 'object' ) &&
-                 ( Object.keys(propertyRecord[k]).length == 2 ) &&
-                 ( 'javaClass' in propertyRecord[k] ) ){
-                var value = '';
-                Object.keys(propertyRecord[k]).forEach( function(key){
-                    if( key != 'javaClass' ){
-                        value = propertyRecord[k][key];
-                    }
+        var data = [];
+        Ext.Object.each( propertyRecord, function(key, value){
+            if(value != null){
+                data.push({
+                    name: key,
+                    value: value,
+                    category: 'Event'.t()
                 });
-                propertyRecord[k] = value;
             }
-            /*
-             * Encode objects and arrays for details
-             */
-            if( ( typeof( propertyRecord[k] ) == 'object' ) ||
-                ( typeof( propertyRecord[k] ) == 'array' ) ){
-                propertyRecord[k] = Ext.encode( propertyRecord[k] );
-            }
-        }
+        });
 
-        vm.set( me.getBindRecordName(), propertyRecord );
+        me.getView().getStore().loadData(data);
     },
 
     /**
