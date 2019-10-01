@@ -1251,7 +1251,7 @@ Ext.define('Ung.util.Renderer', {
         80: 'Low Risk'.t(),
         100: 'Trustworthy'.t()
     },
-    ipReputation: function(value){
+    ipReputation: function(value, cell, record){
         if(value == 0 || value == null){
             return null;
         }
@@ -1264,11 +1264,6 @@ Ext.define('Ung.util.Renderer', {
             }
 
         }
-        // return Ext.String.format(
-        //         Renderer.mapValueFormat,
-        //         description,
-        //         value
-        // );
         return description;
     },
 
@@ -1293,14 +1288,6 @@ Ext.define('Ung.util.Renderer', {
         if(value == 0){
             return null;
         }
-        // look for Ung.apps.ipreputation.Main.threats
-        Ext.Loader.loadScript({
-            url: '/admin/script/apps/ip-reputation.js',
-            onError: function(){
-                console.log("error!");
-            },
-            scope: window
-        });
         var descriptions = [];
         var threatBits = Object.keys(Renderer.ipThreatMap);
         for(var i = 0; i < threatBits.length; i++){
@@ -1309,6 +1296,24 @@ Ext.define('Ung.util.Renderer', {
             }
         }
         return descriptions.join(', ');
+    },
+
+    ipPopularityMap:{
+        1: 'Top 100,000'.t(),
+        2: 'Top 1M'.t(),
+        3: 'Top 10M'.t(),
+        4: 'Lower than 10M'.t(),
+        5: 'Unranked'.t()
+    },
+    ipPopularity: function(value){
+        if(value == 0){
+            return null;
+        }
+        return Ext.String.format(
+                Renderer.mapValueFormat,
+                ( value in Renderer.ipPopularityMap ) ? Renderer.ipPopularityMap[value] : Renderer.ipPopularity[5],
+                value
+        );
     }
 
 });
