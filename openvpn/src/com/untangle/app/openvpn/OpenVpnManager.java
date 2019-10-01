@@ -973,12 +973,12 @@ public class OpenVpnManager
 
             if (settings.getServerEnabled() && settings.getNatOpenVpnTraffic()) {
                 iptablesScript.write("# NAT traffic from the server openvpn interface" + "\n");
-                iptablesScript.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\"" + "\n");
+                iptablesScript.write("${IPTABLES} -t nat -A nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\"" + "\n");
             } else {
                 for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
                     if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan()) {
                         iptablesScript.write("# Always NAT wan bound traffic" + "\n");
-                        iptablesScript.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fa) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\"" + "\n");
+                        iptablesScript.write("${IPTABLES} -t nat -A nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fa) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\"" + "\n");
                     }
                 }
             }
