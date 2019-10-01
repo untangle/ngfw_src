@@ -2,15 +2,6 @@ Ext.define('Ung.view.reports.EventReport', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.eventreport',
 
-    viewModel: {
-        data: { propsData: [] },
-        stores: {
-            props: {
-                data: '{propsData}'
-            }
-        }
-    },
-
     config: {
         widget: null
     },
@@ -44,15 +35,16 @@ Ext.define('Ung.view.reports.EventReport', {
         xtype: 'unpropertygrid',
         itemId: 'eventsProperties',
         reference: 'eventsProperties',
+        features: [{
+            ftype: 'grouping',
+            groupHeaderTpl: ['{name}']
+        }],
         region: 'east',
         title: 'Details'.t(),
         collapsible: true,
         collapsed: true,
         animCollapse: false,
         titleCollapse: true,
-        bind: {
-            source: '{eventProperty}',
-        }
     }],
 
     controller: {
@@ -274,19 +266,14 @@ Ext.define('Ung.view.reports.EventReport', {
 
             if (me.isWidget) { return; }
 
-            Ext.Array.each(me.tableConfig.columns, function (column) {
-                propsData.push({
-                    name: column.header,
-                    value: record.get(column.dataIndex)
-                });
-            });
-
-            vm.set('propsData', propsData);
             // when selecting an event hide Settings if open
             if (me.getView().up('entry')) {
                 me.getView().up('entry').lookupReference('settingsBtn').setPressed(false);
             }
 
+            if(me.tableConfig.listeners && me.tableConfig.listeners.select){
+                me.tableConfig.listeners.select.apply(me, arguments);
+            }
         },
 
         onDataChanged: function(){
