@@ -3,7 +3,9 @@
  */
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -37,6 +39,12 @@ public class IntMatcher implements java.io.Serializable
     private static final String MARKER_RANGE = "-";
 
     private static IntMatcher ANY_MATCHER = new IntMatcher(MARKER_ANY);
+
+    private static Map<String,IntMatcher> MatcherCache;
+
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+    }
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -191,6 +199,21 @@ public class IntMatcher implements java.io.Serializable
             logger.warn("Unknown num matcher type: " + this.type);
             return false;
         }
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  value String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized IntMatcher getMatcher(String value){
+        IntMatcher matcher = MatcherCache.get(value);
+        if(matcher == null){
+            matcher = new IntMatcher(value);
+            MatcherCache.put(value, matcher);
+        }
+        return matcher;
     }
 
     /**
