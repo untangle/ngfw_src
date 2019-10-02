@@ -21,6 +21,7 @@ import com.untangle.jvector.Vector;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.app.SessionNatEvent;
@@ -43,6 +44,7 @@ public abstract class NetcapHook implements Runnable
     private static final int UDP_HEADER_SIZE = 8;
 
     private static final SessionTableImpl sessionTable = SessionTableImpl.getInstance();
+    private static PolicyManager policyManager = null;
 
     /**
      * List of all of the apps( PipelineConnectorImpls )
@@ -69,7 +71,20 @@ public abstract class NetcapHook implements Runnable
     protected boolean cleanupSessionOnExit = true;
 
     protected static final PipelineFoundryImpl pipelineFoundry = (PipelineFoundryImpl)UvmContextFactory.context().pipelineFoundry();
-    
+
+    private static final HookCallback PolicyManagerInstantiatedHook;
+    private static final HookCallback PolicyManagerAppDestroyedHook;
+    private static Object PolicyManagerSync = new Object();
+    private static PolicyManager PolicyManagerApp = null;
+
+    static {
+        PolicyManagerInstantiatedHook = new AppInstantiatedHook();
+        PolicyManagerAppDestroyedHook = new AppDestroyedHook();
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.APPLICATION_INSTANTIATE, PolicyManagerInstantiatedHook );
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.APPLICATION_DESTROY, PolicyManagerAppDestroyedHook );
+        PolicyManagerApp = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
+    }
+
     /**
      * State of the session
      */
@@ -232,14 +247,17 @@ public abstract class NetcapHook implements Runnable
             /**
              * Determine the policy to process this session
              */
-            PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
-            if ( policyManager != null && entitled ) {
-                PolicyManager.PolicyManagerResult result = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
+            if(entitled){
+                synchronized(PolicyManagerSync){
+                    if(PolicyManagerApp != null){
+                        PolicyManager.PolicyManagerResult result = PolicyManagerApp.findPolicyId( sessionGlobalState.getProtocol(),
                                                                                        netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),
                                                                                        netcapSession.clientSide().client().host(), netcapSession.serverSide().server().host(),
                                                                                        netcapSession.clientSide().client().port(), netcapSession.serverSide().server().port());
-                this.policyId  = result.policyId;
-                this.policyRuleId  = result.policyRuleId;
+                        this.policyId  = result.policyId;
+                        this.policyRuleId  = result.policyRuleId;
+                    }
+                }
             }
             if ( this.policyId == null )
                 this.policyId = 1; /* Default Policy */
@@ -997,5 +1015,73 @@ public abstract class NetcapHook implements Runnable
      * Only supported in UDP
      */
     protected abstract void releaseToBypass();
+
+    /**
+     * Hook into application instantiations.
+     */
+    static private class AppInstantiatedHook implements HookCallback
+    {
+        /**
+        * @return Name of callback hook
+        */
+        public String getName()
+        {
+            return "netcap-hook-application-instantiate-hook";
+        }
+
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
+        public void callback( Object... args )
+        {
+            String appName = (String) args[0];
+            PolicyManager app = (PolicyManager) args[1];
+
+            if(appName == null){
+                return;
+            }
+            if(appName.equals("policy-manager")){
+                synchronized(PolicyManagerSync){
+                    PolicyManagerApp = app;
+                }
+            }
+        }
+    }
+
+    /**
+     * Hook into application destroys.
+     */
+    static private class AppDestroyedHook implements HookCallback
+    {
+        /**
+        * @return Name of callback hook
+        */
+        public String getName()
+        {
+            return "netcap-hook-application-destroy-hook";
+        }
+
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
+        public void callback( Object... args )
+        {
+            String appName = (String) args[0];
+
+            if(appName == null){
+                return;
+            }
+            if(appName.equals("policy-manager")){
+                synchronized(PolicyManagerSync){
+                    PolicyManagerApp = null;
+                }
+            }
+        }
+    }
+
 
 }
