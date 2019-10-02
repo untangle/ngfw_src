@@ -569,6 +569,8 @@ public class AppManagerImpl implements AppManager
         // Full System GC so the JVM gives memory back
         UvmContextFactory.context().gc();
 
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.APPLICATION_INSTANTIATE, appName, app);
+
         return app;
     }
 
@@ -597,6 +599,8 @@ public class AppManagerImpl implements AppManager
             throw new Exception("App " + app + " not found");
         }
 
+        String appName = app.getAppSettings().getAppName();
+
         synchronized (this) {
             AppBase appBase = (AppBase) app;
             appBase.destroyClass();
@@ -616,6 +620,8 @@ public class AppManagerImpl implements AppManager
         // This is necessary because the G1 does not actually account for MaxHeapFreeRatio
         // except during an full GC.
         UvmContextFactory.context().gc();
+
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.APPLICATION_DESTROY, appName);
 
         return;
     }
