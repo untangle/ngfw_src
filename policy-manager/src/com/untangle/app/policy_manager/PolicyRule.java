@@ -82,7 +82,7 @@ public class PolicyRule implements JSONString, Serializable
          * IF any matcher doesn't match - return false
          */
         for ( PolicyRuleCondition matcher : conditions ) {
-            if (!matcher.matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort ))
+            if (!matcher.matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, null))
                 return false;
         }
 
