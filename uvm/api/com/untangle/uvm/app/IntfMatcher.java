@@ -3,7 +3,9 @@
  */
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -43,6 +45,12 @@ public class IntfMatcher
     {
         ANY, NONE, ANY_WAN, ANY_NON_WAN, SINGLE, LIST
     };
+
+    private static Map<String,IntfMatcher> MatcherCache;
+
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+    }
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -142,6 +150,21 @@ public class IntfMatcher
             logger.warn("Unknown intf matcher type: " + this.type);
             return false;
         }
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  value String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized IntfMatcher getMatcher(String value){
+        IntfMatcher matcher = MatcherCache.get(value);
+        if(matcher == null){
+            matcher = new IntfMatcher(value);
+            MatcherCache.put(value, matcher);
+        }
+        return matcher;
     }
 
     /**

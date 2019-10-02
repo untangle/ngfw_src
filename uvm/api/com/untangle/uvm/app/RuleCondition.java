@@ -330,24 +330,24 @@ public class RuleCondition implements JSONString, Serializable
              */
             switch (this.matcherType) {
             case DST_ADDR:
-            case SRC_ADDR: 
-                this.ipMatcher = new IPMatcher(this.value);
+            case SRC_ADDR:
+                this.ipMatcher = IPMatcher.getMatcher(this.value);
                 break;
 
             case DST_PORT:
             case SRC_PORT: 
             case IP_REPUTATION_SRC_REPUTATION:
             case IP_REPUTATION_DST_REPUTATION:
-                this.intMatcher = new IntMatcher(this.value);
+                this.intMatcher = IntMatcher.getMatcher(this.value);
                 break;
 
             case DST_INTF:
             case SRC_INTF: 
-                this.intfMatcher = new IntfMatcher(this.value);
+                this.intfMatcher = IntfMatcher.getMatcher(this.value);
                 break;
 
             case PROTOCOL:
-                this.protocolMatcher = new ProtocolMatcher(this.value);
+                this.protocolMatcher = ProtocolMatcher.getMatcher(this.value);
                 break;
             
             case USERNAME:
@@ -368,11 +368,11 @@ public class RuleCondition implements JSONString, Serializable
                 break;
 
             case TIME_OF_DAY:
-                this.timeOfDayMatcher = new TimeOfDayMatcher(this.value);
+                this.timeOfDayMatcher = TimeOfDayMatcher.getMatcher(this.value);
                 break;
 
             case DAY_OF_WEEK:
-                this.dayOfWeekMatcher = new DayOfWeekMatcher(this.value);
+                this.dayOfWeekMatcher = DayOfWeekMatcher.getMatcher(this.value);
                 break;
 
             case HOST_ENTITLED:

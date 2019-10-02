@@ -3,7 +3,9 @@
  */
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -38,6 +40,12 @@ public class ProtocolMatcher
     private static ProtocolMatcher ANY_MATCHER = new ProtocolMatcher(MARKER_ANY);
     private static ProtocolMatcher TCP_MATCHER = new ProtocolMatcher(MARKER_TCP);
     private static ProtocolMatcher UDP_MATCHER = new ProtocolMatcher(MARKER_UDP);
+
+    private static Map<String,ProtocolMatcher> MatcherCache;
+
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+    }
 
     private final Logger logger = Logger.getLogger(getClass());
     
@@ -116,6 +124,21 @@ public class ProtocolMatcher
             logger.warn("Unknown port matcher type: " + this.type);
             return false;
         }
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  value String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized ProtocolMatcher getMatcher(String value){
+        ProtocolMatcher matcher = MatcherCache.get(value);
+        if(matcher == null){
+            matcher = new ProtocolMatcher(value);
+            MatcherCache.put(value, matcher);
+        }
+        return matcher;
     }
 
     /**
