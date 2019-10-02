@@ -5,6 +5,8 @@ package com.untangle.uvm;
 
 public interface HookManager
 {
+    public static String APPLICATION_INSTANTIATE = "application-instantiate";
+    public static String APPLICATION_DESTROY = "application-destroy";
     public static String SETTINGS_CHANGE = "settings-change";
     public static String NETWORK_SETTINGS_CHANGE = "network-settings-change";
     public static String REPORTS_EVENT_LOGGED = "reports-event-logged";
