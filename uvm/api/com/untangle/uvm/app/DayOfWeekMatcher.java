@@ -4,7 +4,9 @@
 
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Date;
 import java.util.Calendar;
 
@@ -39,6 +41,12 @@ public class DayOfWeekMatcher
     private static final String MARKER_SATURDAY2 = "7";
 
     private static DayOfWeekMatcher ANY_MATCHER = new DayOfWeekMatcher(MARKER_ANY);
+
+    private static Map<String,DayOfWeekMatcher> MatcherCache;
+
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+    }
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -156,6 +164,21 @@ public class DayOfWeekMatcher
             logger.warn("Unknown dayOfWeek matcher type: " + this.type);
             return false;
         }
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  value String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized DayOfWeekMatcher getMatcher(String value){
+        DayOfWeekMatcher matcher = MatcherCache.get(value);
+        if(matcher == null){
+            matcher = new DayOfWeekMatcher(value);
+            MatcherCache.put(value, matcher);
+        }
+        return matcher;
     }
 
     /**

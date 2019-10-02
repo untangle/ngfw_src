@@ -4,7 +4,9 @@
 
 package com.untangle.uvm.app;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Date;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
@@ -33,6 +35,12 @@ public class TimeOfDayMatcher
     private static final String MARKER_RANGE = "-";
 
     private static TimeOfDayMatcher ANY_MATCHER = new TimeOfDayMatcher(MARKER_ANY);
+
+    private static Map<String,TimeOfDayMatcher> MatcherCache;
+
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+    }
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -171,6 +179,21 @@ public class TimeOfDayMatcher
             logger.warn("Unknown port matcher type: " + this.type);
             return false;
         }
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  value String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized TimeOfDayMatcher getMatcher(String value){
+        TimeOfDayMatcher matcher = MatcherCache.get(value);
+        if(matcher == null){
+            matcher = new TimeOfDayMatcher(value);
+            MatcherCache.put(value, matcher);
+        }
+        return matcher;
     }
 
     /**

@@ -5,7 +5,9 @@
 package com.untangle.uvm.app;
 
 import java.net.InetAddress;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -27,6 +29,11 @@ public class IPMatcher
 
     /* Number of bytes in an IPv4 address */
     private static final int INADDRSZ = 4; /* XXX IPv6 */
+
+    private static Map<String,IPMatcher> MatcherCache;
+    static {
+        MatcherCache = new ConcurrentHashMap<>();
+    }
 
 // THIS IS FOR ECLIPSE - @formatter:off
     
@@ -136,8 +143,7 @@ public class IPMatcher
             return false;
 
         case SINGLE:
-            if (this.single.equals(address)) return true;
-            return false;
+            return this.single.equals(address);
 
         case RANGE:
             tmp = addrToLong(address);
@@ -161,6 +167,21 @@ public class IPMatcher
             return false;
         }
 
+    }
+
+    /**
+     * Maintain cache of matchers.
+     *
+     * @param  value String to match.
+     * @return         Return already defined matcher from cache.  If not found, create new matcher intsance and add to cache.
+     */
+    public static synchronized IPMatcher getMatcher(String value){
+        IPMatcher matcher = MatcherCache.get(value);
+        if(matcher == null){
+            matcher = new IPMatcher(value);
+            MatcherCache.put(value, matcher);
+        }
+        return matcher;
     }
 
     /**
