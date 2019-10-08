@@ -255,21 +255,20 @@ Ext.define('Ung.common.TableConfig.ipreputation', {
         var me = this,
             v = me.getView(),
             vm = this.getViewModel(),
-            // propertyRecord = vm.get('propsData'),
             clientAddress = record.get('c_client_addr'),
             serverAddress = record.get('s_server_addr'),
             policyId = record.get('policy_id');
-            // source = table.getColumnManager().getColumns()[cellIndex]['dataIndex'],
-            // sourceType = (source == 's_server_addr' ? 'server' : 'client'),
-            // vm = view.getViewModel(),
-            // detailsGridId = 'threatDetail_' + sourceType,
-            // detailsGrid = view.down('[itemId='+detailsGridId+']'),
-            // detailsGridRecord = 'threatDetail_' + sourceType + '_record',
-            // address = record.get(source),
-            // reputation = record.get('ip_reputation_' +sourceType+'_reputation');
 
-        // console.log('onSelectDetails: propertyRecord');
-        // console.log(propertyRecord);
+        var policy = Ext.getStore('policies').findRecord('policyId', policyId);
+        if(policy == null){
+            return;
+        }
+        var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
+            return inst.appName === "ip-reputation";
+        });
+        if(appInstance == null){
+            return;
+        }
 
         var localNetworks = Rpc.directData('rpc.reportsManager.getReportInfo', "ip-reputation", policyId, "localNetworks");
         var ipAddresses = [];
@@ -306,12 +305,6 @@ Ext.define('Ung.common.TableConfig.ipreputation', {
         // console.log(ipAddresses);
         // console.log(urlAddresses);
 
-        // make appInstanceid a util method?
-        var policy = Ext.getStore('policies').findRecord('policyId', record.get('policy_id'));
-        var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-            return inst.appName === "ip-reputation";
-        });
-        // console.log(appInstance);
         var app = Rpc.directData('rpc.appManager.app', appInstance.id);
 
         var rpcSequence = [];
