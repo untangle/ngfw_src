@@ -30,6 +30,13 @@ Ext.define('Ung.apps.ipreputation.MainController', {
             }
             Util.handleException(ex);
         });
+
+        vm.set('threatList', 'tl');
+        var threatList = [];
+        Ung.common.ipreputation.references.threats.each( function(threat){
+            threatList.push(threat.get('description'));
+        });
+        vm.set('threatList', "Match may be one or more of the following categories:".t()+'<br>'+'<i>'+threatList.join(", ")+'</i>');
     },
 
     setSettings: function () {
@@ -122,35 +129,35 @@ Ext.define('Ung.ThreatSlider', {
 
 });
 
-Ext.define('Ung.Threats', {
-    extend: 'Ext.form.CheckboxGroup',
-    alias: 'widget.threats',
+// Ext.define('Ung.Threats', {
+//     extend: 'Ext.form.CheckboxGroup',
+//     alias: 'widget.threats',
 
-    constructor: function(config) {
-        var me = this;
-        var items = [];
-        Ung.common.ipreputation.references.threats.each( function(threat){
-            items.push({
-                inputValue: threat.get('bit'),
-                boxLabel: threat.get('description'),
-                autoEl: {
-                    tag: 'div',
-                    // 'data-qtip': condition.storeTip(record.get(condition.storeValue), null, record)
-                    'data-qtip': threat.get('details')
-                }
-            });
-        });
-        config.items = items;
-        me.callParent(arguments);
-    }
-    // initComponent: function(){
-    //     // Build list of checkboxes
-    //     // 
-    //     this.initialConfig.items = items;
+//     constructor: function(config) {
+//         var me = this;
+//         var items = [];
+//         Ung.common.ipreputation.references.threats.each( function(threat){
+//             items.push({
+//                 inputValue: threat.get('bit'),
+//                 boxLabel: threat.get('description'),
+//                 autoEl: {
+//                     tag: 'div',
+//                     // 'data-qtip': condition.storeTip(record.get(condition.storeValue), null, record)
+//                     'data-qtip': threat.get('details')
+//                 }
+//             });
+//         });
+//         config.items = items;
+//         me.callParent(arguments);
+//     }
+//     // initComponent: function(){
+//     //     // Build list of checkboxes
+//     //     // 
+//     //     this.initialConfig.items = items;
 
-    //     console.log(this);
-    //     this.callParent();
-    // }
+//     //     console.log(this);
+//     //     this.callParent();
+//     // }
 
-});
+// });
 
