@@ -7,11 +7,13 @@ import java.util.List;
 import java.io.Serializable;
 import java.net.InetAddress;
 
+
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.SessionAttachments;
+import com.untangle.uvm.vnet.AppSession;
 
 /**
  * This in the implementation of an IP Reputation Pass Rule
@@ -107,6 +109,37 @@ public class IpReputationPassRule implements JSONString, Serializable
          */
         return false;
     }
+
+    public boolean isMatch( AppSession session)
+    {
+        if (!getEnabled())
+            return false;
+
+        //logger.debug("Checking rule " + getRuleId() + " against [" + protocol + " " + srcAddress + ":" + srcPort + " -> " + dstAddress + ":" + dstPort + "]");
+            
+        /**
+         * If no matchers return true
+         */
+        if (this.matchers == null) {
+            logger.warn("Null matchers - assuming true");
+            return true;
+        }
+
+        /**
+         * It match, return true.
+         */
+        for ( IpReputationPassRuleCondition matcher : matchers ) {
+            if (matcher.matches(session) ){
+                return true;
+            }
+        }
+
+        /**
+         * Otherwise no match.
+         */
+        return false;
+    }
+
     
 }
 
