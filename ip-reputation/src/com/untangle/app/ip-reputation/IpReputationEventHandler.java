@@ -5,6 +5,7 @@ package com.untangle.app.ip_reputation;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -33,6 +34,9 @@ public class IpReputationEventHandler extends AbstractEventHandler
 
     /* IP Reputation App */
     private final IpReputationApp app;
+
+    private Map<String, String> i18nMap;
+    Long i18nMapLastUpdated = 0L;
 
     /**
      * Create a new EventHandler.
@@ -70,86 +74,34 @@ public class IpReputationEventHandler extends AbstractEventHandler
      */
     private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
-        boolean block = app.getSettings().getAction().equals("block");
-        boolean flag = app.getSettings().getFlag();
-        int ruleIndex     = 0;
+
+        if( protocol == Protocol.TCP &&
+            ( request.getNewServerPort() == 80 ) ||
+            ( request.getNewServerPort() == 443) ){
+            // Would be better to rework pipeline to not even gett here
+            return;
+        }
 
         if ( Boolean.TRUE == request.globalAttachment( AppSession.KEY_FTP_DATA_SESSION) ) {
             logger.info("Passing FTP related session: " + request);
             return;
         }
 
-        boolean localSrc = false;
-        boolean localDst = false;
-        for(IPMaskedAddress address : app.localNetworks){
-            localSrc = address.contains(request.getOrigClientAddr());
-            localDst = address.contains(request.getNewServerAddr());
-        }
-
-        long lookupTimeBegin = System.currentTimeMillis();
-        JSONArray answer = null;
-        if(!localSrc && !localDst){
-            answer = app.webrootQuery.ipGetInfo(request.getOrigClientAddr().getHostAddress(), request.getNewServerAddr().getHostAddress());
-        }else if(!localSrc){
-            answer = app.webrootQuery.ipGetInfo(request.getOrigClientAddr().getHostAddress());
-        }else if(!localDst){
-            answer = app.webrootQuery.urlGetInfo(request.getNewServerAddr().getHostAddress());
-        }
-        app.adjustLookupAverage(System.currentTimeMillis() - lookupTimeBegin);
-
-        JSONObject ipInfo = null;
-        if(answer != null){
-            String ip = null;
-            try{
-                for(int i = 0; i < answer.length(); i++){
-                    ipInfo = answer.getJSONObject(i);
-                    if(ipInfo.has(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_IP_KEY)){
-                        ip = ipInfo.getString(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_IP_KEY);
-                        if(!localSrc && ip.equals(request.getOrigClientAddr().getHostAddress())){
-                            request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
-                            request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
-                        }else if(!localDst && ip.equals(request.getNewServerAddr().getHostAddress())){
-                            request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
-                            request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
-                        }
-                    }else if(ipInfo.has(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY)){
-                        ip = ipInfo.getString(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY);
-                        int threatmask = 0;
-
-                        JSONArray catids = ipInfo.getJSONArray(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_LIST_KEY);
-                        for(int j = 0; j < catids.length(); j++){
-                            Integer cat = catids.getJSONObject(i).getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_ID_KEY);
-                            if(IpReputationApp.UrlCatThreatMap.get(cat) != null){
-                                threatmask += IpReputationApp.UrlCatThreatMap.get(cat);
-                            }
-                        }
-
-                        if(!localSrc && ip.equals(request.getOrigClientAddr().getHostAddress())){
-                            request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
-                            request.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK, threatmask);
-                        }else if(!localDst && ip.equals(request.getNewServerAddr().getHostAddress())){
-                            request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
-                            request.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, threatmask);
-                        }
-                    }
-                }
-            }catch(Exception e){
-                logger.warn("Cannot pull IP information ", e);
-            }
-        }
-
-        Object clientReputation = request.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION);
-        Object clientThreatmask = request.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK);
-        Object serverReputation = request.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION);
-        Object serverThreatmask = request.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK);
+        boolean block = app.getSettings().getAction().equals("block");
+        boolean flag = app.getSettings().getFlag();
+        Integer ruleIndex = null;
 
         Boolean match = false;
+        if(app.getDecisionEngine().addressQuery(request.getOrigClientAddr(), request.getNewServerAddr(), request)){
+            match = app.getDecisionEngine().isMatch(request);
+        }
 
-        match = ( ( ( serverReputation != null ) && (Integer) serverReputation > 0 && (Integer) serverReputation <= app.getSettings().getThreatLevel() ) )
-                ||
-                ( ( ( clientReputation != null ) && (Integer) clientReputation > 0 && (Integer) clientReputation <= app.getSettings().getThreatLevel() ) );
+        Integer clientReputation = (Integer) request.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION);
+        Integer clientThreatmask = (Integer) request.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK);
+        Integer serverReputation = (Integer) request.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION);
+        Integer serverThreatmask = (Integer) request.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK);
 
-        for (IpReputationPassRule rule : ipReputationPassRuleList) {
+        for (IpReputationPassRule rule : app.getSettings().getPassRules()){
             if( rule.isMatch(request.getProtocol(),
                             request.getClientIntf(), request.getServerIntf(),
                             request.getOrigClientAddr(), request.getNewServerAddr(),
@@ -161,6 +113,16 @@ public class IpReputationEventHandler extends AbstractEventHandler
                 break;
             }
         }
+
+        // log method?
+        IpReputationEvent fwe = new IpReputationEvent(request.sessionEvent(), block && match, match && flag, 
+            ruleIndex != null ? ruleIndex : 0, 
+            clientReputation != null ? clientReputation : 0, 
+            clientThreatmask != null ? clientThreatmask : 0, 
+            serverReputation != null ? serverReputation : 0, 
+            serverThreatmask != null ? serverThreatmask : 0
+            );
+        app.logEvent(fwe);
 
         // !!!! VERIFY NO MATCH IF BCTID NOT RUNNING
 
@@ -187,9 +149,6 @@ public class IpReputationEventHandler extends AbstractEventHandler
             if (flag) app.incrementFlagCount();
 
             /* We just blocked, so we have to log too, regardless of what the rule actually says */
-            IpReputationEvent fwe = new IpReputationEvent(request.sessionEvent(), block && match, match && flag, ruleIndex, clientReputation != null ? (Integer) clientReputation : 0, clientThreatmask != null ? (Integer) clientThreatmask : 0, serverReputation != null ? (Integer) serverReputation : 0, serverThreatmask != null ? (Integer) serverThreatmask : 0);
-            app.logEvent(fwe);
-
         } else { /* not blocked */
             if (logger.isDebugEnabled()) {
                 logger.debug("Releasing session: " + request);
@@ -203,20 +162,7 @@ public class IpReputationEventHandler extends AbstractEventHandler
             if (match && flag){
                 app.incrementFlagCount();
             }
-
-            /* If necessary log the event */
-            IpReputationEvent fwe = new IpReputationEvent(request.sessionEvent(), false, flag && match, ruleIndex, clientReputation != null ? (Integer) clientReputation : 0, clientThreatmask != null ? (Integer) clientThreatmask : 0, serverReputation != null ? (Integer) serverReputation : 0, serverThreatmask != null ? (Integer) serverThreatmask : 0);
-            app.logEvent(fwe);
         }
-    }
-
-    /**
-     * Configure this event handler with the provided settings
-     * @param settings
-     */
-    public void configure(IpReputationSettings settings)
-    {
-        this.ipReputationPassRuleList = settings.getPassRules();
     }
 
 }
