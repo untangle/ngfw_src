@@ -11,16 +11,16 @@ Ext.define('Ung.apps.ipreputation.view.Reputation', {
 
     items: [{
         xtype: 'fieldset',
-        title: 'IP Reputation'.t(),
+        title: 'IP Address Threats'.t(),
         layout: 'vbox',
         items:[{
             xtype: 'container',
             layout: 'hbox',
-            margin: '0 10 20 0',
+            margin: '0 0 20 0',
             items: [{
                 xtype: 'label',
                 text: 'Reputation'.t(),
-                margin: '0 10 0 0',
+                margin: '0 5 0 0',
                 width: 100
             },{
                 xtype: 'container',
@@ -40,9 +40,9 @@ Ext.define('Ung.apps.ipreputation.view.Reputation', {
                     bind:{
                         value: '{settings.threatLevel}'
                     },
-                    labelTpl: 'Match {0} or worse'.t(),
+                    labelTpl: 'Match <i>{0}</i> or worse'.t(),
                     tipTpl: '{0} - {1}'.t(),
-                    rangeTpl: '<table style="width:400px; height:75px;border-collapse:collapse;"><tr>' + 
+                    rangeTpl: '<table style="width:400px; height:75px;border-collapse:collapse; margin-top: -13px;"><tr>' + 
                         '<td>High Risk</td>'+
                         '<td>Suspicious</td>'+
                         '<td>Moderate Risk</td>'+
@@ -60,18 +60,14 @@ Ext.define('Ung.apps.ipreputation.view.Reputation', {
                     itemId: 'threatLabel'
                 }]
             }]
-        // },{
-        //     xtype: 'threats',
-        //     fieldLabel: 'Threats'.t(),
-        //     labelWidth: 100,
-        //     bind: {
-        //         value: '{settings.threats}'
-        //     },
-        //     columns: 3,
-        //     vertical: true,
-        //     defaults: {
-        //         padding: '0 10'
-        //     }
+        },{
+            xtype: 'displayfield',
+            fieldLabel: 'Categories'.t(),
+            labelWidth: 100,
+            bind: {
+                value: '{threatList}'
+            },
+            padding: '0 0 10 0'
         },{
             xtype: 'combo',
             fieldLabel: 'Action'.t(),
