@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.net.InetAddress;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.log4j.Logger;
 
 import org.json.JSONArray;
@@ -17,6 +19,12 @@ import org.json.JSONObject;
 
 import com.untangle.app.webroot.WebrootQuery;
 import com.untangle.app.webroot.WebrootDaemon;
+
+import com.untangle.uvm.vnet.Protocol;
+import com.untangle.uvm.app.PortRange;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.vnet.Subscription;
+
 
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.HookManager;
@@ -30,11 +38,14 @@ import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.Fitting;
+import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.SessionAttachments;
+import com.untangle.uvm.vnet.Token;
+import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.app.IntMatcher;
 
 /** FirewalApp is the IP Reputation Application implementation */
@@ -45,18 +56,34 @@ public class IpReputationApp extends AppBase
     public List<IPMaskedAddress> localNetworks = null;
     public WebrootQuery webrootQuery = null;
 
+    private static AtomicInteger AppCount = new AtomicInteger();
+    private final IpReputationDecisionEngine engine = new IpReputationDecisionEngine(this);
+
     private static final String STAT_BLOCK = "block";
     private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
     private static final String STAT_LOOKUP_AVG = "lookup_avg";
+
+    protected final IpReputationReplacementGenerator replacementGenerator;
     
-    private final IpReputationEventHandler handler;
-    private final PipelineConnector connector;
-    private final PipelineConnector[] connectors;
+    private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
+
+    // For converse, it it a bad idea to have multiple subscripitions?
+    // UDP, all
+    // TCP,1-79, 
+    // TCP 81-442
+    // TCP 443+
+
+    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-http", this, null, new IpReputationHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, -2000, true);
+    private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-https-sni", this, httpsSub, new IpReputationHttpsSniHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, true);
+    private final PipelineConnector otherConnector = UvmContextFactory.context().pipelineFoundry().create("ip_reputation", this, null, new IpReputationEventHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false);
+    private final PipelineConnector[] connectors = new PipelineConnector[] { httpConnector, httpsSniConnector, otherConnector };
 
     private static final HookCallback WebrootQueryGetUrlInfoHook;
 
+
     public static final Map<Integer, Integer> UrlCatThreatMap;
+    public static final Map<Integer, String> ReputationThreatMap;
     static {
         WebrootQueryGetUrlInfoHook = new IpReputationWebrootQueryGetUrlInfoHook();
         UvmContextFactory.context().hookManager().registerCallback( HookManager.WEBFILTER_BASE_CATEGORIZE_SITE, WebrootQueryGetUrlInfoHook );
@@ -69,6 +96,14 @@ public class IpReputationApp extends AppBase
         UrlCatThreatMap.put(49, 655362);    // Keyloggers
         UrlCatThreatMap.put(56, 131072);    // Malware
         UrlCatThreatMap.put(59, 262144);    // Spyware
+
+        ReputationThreatMap = new HashMap<>();
+        ReputationThreatMap.put(0, "No reputation");
+        ReputationThreatMap.put(20, "High Risk");
+        ReputationThreatMap.put(40, "Suspicious");
+        ReputationThreatMap.put(60, "Moderate Risk");
+        ReputationThreatMap.put(80, "Low Risk");
+        ReputationThreatMap.put(100, "Trustworthy");
     }
 
     private IpReputationSettings settings = null;
@@ -96,10 +131,9 @@ public class IpReputationApp extends AppBase
                                     int clientPort, int serverPort,
                                     SessionAttachments attachments )
             {
-                logger.warn("in isMatch");
-                logger.warn(handler);
-                if (handler == null)
-                    return false;
+                // logger.warn(handler);
+                // if (handler == null)
+                //     return false;
 
                 IpReputationPassRule matchedRule = null;
                 
@@ -139,6 +173,8 @@ public class IpReputationApp extends AppBase
     {
         super( appSettings, appProperties );
 
+        this.replacementGenerator = buildReplacementGenerator();
+
         // Calculate home networks as a uvm network function
         //  // Just pull context?  Would have to contentw with chnges, right?
         // this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
@@ -148,7 +184,7 @@ public class IpReputationApp extends AppBase
         //      this should just get local network list for us.
         localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
 
-        this.handler = new IpReputationEventHandler(this);
+        // this.handler = new IpReputationEventHandler(this);
 
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
@@ -157,9 +193,21 @@ public class IpReputationApp extends AppBase
         // this.addMirroredMetrics( WebrootDaemon );
         // this.addMirroredMetrics( WebrootQuery );
 
+
+
         // !!! underscore, single word, or dash?
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("ip_reputation", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false);
-        this.connectors = new PipelineConnector[] { connector };
+        // this.connector = UvmContextFactory.context().pipelineFoundry().create("ip_reputation", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false);
+        // this.connectors = new PipelineConnector[] { connector };
+    }
+
+    /**
+     * Called to get our decision engine instance
+     * 
+     * @return The decision engine
+     */
+    public IpReputationDecisionEngine getDecisionEngine()
+    {
+        return engine;
     }
 
     /**
@@ -307,6 +355,68 @@ public class IpReputationApp extends AppBase
     }
 
     /**
+     * Generate a response
+     * 
+     * @param nonce
+     *        The nonce
+     * @param session
+     *        The session
+     * @param uri
+     *        The URI
+     * @param header
+     *        The header
+     * @return The response token
+     */
+    public Token[] generateHttpResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
+    {
+        return replacementGenerator.generateResponse(nonce, session, uri, header);
+    }
+
+    /**
+     * [getThreatFromReputation description]
+     * @param  reputation [description]
+     * @return            [description]
+     */
+    String getThreatFromReputation(Integer reputation)
+    {
+        return ReputationThreatMap.get(reputation > 0 ? ( reputation - (reputation % 20) + 20 ) : 0);
+    }
+
+    /**
+     * Build a replacement generator
+     * 
+     * @return The replacement generator
+     */
+    protected IpReputationReplacementGenerator buildReplacementGenerator()
+    {
+        return new IpReputationReplacementGenerator(getAppSettings());
+    }
+
+    /**
+     * Get the block details for the argumented nonce
+     * 
+     * @param nonce
+     *        The nonce to search
+     * @return Block details
+     */
+    public IpReputationBlockDetails getDetails(String nonce)
+    {
+        return replacementGenerator.getNonceData(nonce);
+    }
+
+    /**
+     * Generate a nonce
+     * 
+     * @param details
+     *        The block details
+     * @return The nonce
+     */
+    protected String generateNonce(IpReputationBlockDetails details)
+    {
+        return replacementGenerator.generateNonce(details);
+    }
+
+    /**
      * Get the Pipeline connectors
      * @return the pipeline connectors array
      */
@@ -335,6 +445,7 @@ public class IpReputationApp extends AppBase
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
+        startServlet(logger);
         killAllSessions();
     }
 
@@ -347,6 +458,7 @@ public class IpReputationApp extends AppBase
     {
         webrootQuery = null;
         WebrootDaemon.getInstance().stop();
+        stopServlet(logger);
     }
 
     /**
@@ -447,7 +559,7 @@ public class IpReputationApp extends AppBase
         if (settings == null) {
             logger.warn("Invalid settings: null");
         } else {
-            handler.configure(settings);
+            // handler.configure(settings);
         }
     }
 
@@ -494,6 +606,47 @@ public class IpReputationApp extends AppBase
             sess.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, reputation);
             sess.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, threatmask);
 
+        }
+    }
+
+    /**
+     * Deploy the web app
+     *
+     * @param logger
+     *        The logger
+     */
+    private static synchronized void startServlet(Logger logger)
+    {
+        boolean firstIn = AppCount.get() == 0;
+        AppCount.incrementAndGet();
+        if(firstIn == false){
+            return;
+        }
+
+        if (UvmContextFactory.context().tomcatManager().loadServlet("/ip-reputation", "ip-reputation") != null) {
+            logger.debug("Deployed IpReputation WebApp");
+        } else {
+            logger.error("Unable to deploy IpReputation WebApp");
+        }
+    }
+
+    /**
+     * Undeploy the web app
+     * 
+     * @param logger
+     *        The logger
+     */
+    private static synchronized void stopServlet(Logger logger)
+    {
+        boolean lastOut = AppCount.decrementAndGet() == 0;
+        if(lastOut  == false){
+            return;
+        }
+
+        if (UvmContextFactory.context().tomcatManager().unloadServlet("/ip-reputation")) {
+            logger.debug("Unloaded IpReputation WebApp");
+        } else {
+            logger.warn("Unable to unload IpReputation WebApp");
         }
     }
 
