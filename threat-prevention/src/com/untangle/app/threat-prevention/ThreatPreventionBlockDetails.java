@@ -2,19 +2,19 @@
  * $Id$
  */
 
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.net.InetAddress;
 
 import com.untangle.app.http.BlockDetails;
 
 /**
- * BlockDetails for IpReputation.
+ * BlockDetails for ThreatPrevention.
  */
 @SuppressWarnings("serial")
-public class IpReputationBlockDetails extends BlockDetails
+public class ThreatPreventionBlockDetails extends BlockDetails
 {
-    private final IpReputationSettings settings;
+    private final ThreatPreventionSettings settings;
     private final String reason;
     private final InetAddress clientAddr;
     private final String appTitle;
@@ -33,14 +33,12 @@ public class IpReputationBlockDetails extends BlockDetails
      * @param clientAddr
      *        The client address
      */
-    // public IpReputationBlockDetails(IpReputationSettings settings, String host, String uri, String reason, InetAddress clientAddr, String appTitle)
-    public IpReputationBlockDetails(IpReputationSettings settings, String host, String uri, String reason, InetAddress clientAddr)
+    public ThreatPreventionBlockDetails(ThreatPreventionSettings settings, String host, String uri, String reason, InetAddress clientAddr)
     {
         super(host, uri);
         this.settings = settings;
         this.reason = reason;
         this.clientAddr = clientAddr;
-        // this.appTitle = appTitle;
         this.appTitle = getAppTitle();
     }
 
@@ -51,7 +49,7 @@ public class IpReputationBlockDetails extends BlockDetails
      */
     public String getHeader()
     {
-        return "IP Reputation";
+        return "Threat Prevention";
     }
 
     /**
@@ -71,8 +69,7 @@ public class IpReputationBlockDetails extends BlockDetails
      */
     public String getAppTitle()
     {
-        // return appTitle;
-        return "IP Reputation";
+        return "Threat Prevention";
     }
 
     /**
@@ -90,7 +87,7 @@ public class IpReputationBlockDetails extends BlockDetails
      * 
      * @return The settings
      */
-    public IpReputationSettings getSettings()
+    public ThreatPreventionSettings getSettings()
     {
         return settings;
     }

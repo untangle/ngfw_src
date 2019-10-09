@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.util.List;
 import java.io.Serializable;
@@ -16,17 +16,17 @@ import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.vnet.AppSession;
 
 /**
- * This in the implementation of an IP Reputation Pass Rule
+ * This in the implementation of an Threat Prevention Pass Rule
  *
- * A rule is basically a collection of IpReputationPassRuleConditions (matchers)
+ * A rule is basically a collection of ThreatPreventionPassRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
-public class IpReputationPassRule implements JSONString, Serializable
+public class ThreatPreventionPassRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<IpReputationPassRuleCondition> matchers;
+    private List<ThreatPreventionPassRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -34,11 +34,11 @@ public class IpReputationPassRule implements JSONString, Serializable
     private Boolean pass;
     private String description;
     
-    public IpReputationPassRule()
+    public ThreatPreventionPassRule()
     {
     }
 
-    public IpReputationPassRule(boolean enabled, List<IpReputationPassRuleCondition> matchers, boolean flag, boolean pass, String description)
+    public ThreatPreventionPassRule(boolean enabled, List<ThreatPreventionPassRuleCondition> matchers, boolean flag, boolean pass, String description)
     {
         this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
@@ -47,8 +47,8 @@ public class IpReputationPassRule implements JSONString, Serializable
         this.setDescription(description);
     }
     
-    public List<IpReputationPassRuleCondition> getConditions() { return this.matchers; }
-    public void setConditions( List<IpReputationPassRuleCondition> newValue ) { this.matchers = newValue; }
+    public List<ThreatPreventionPassRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<ThreatPreventionPassRuleCondition> newValue ) { this.matchers = newValue; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
@@ -93,7 +93,7 @@ public class IpReputationPassRule implements JSONString, Serializable
         /**
          * It match, return true.
          */
-        for ( IpReputationPassRuleCondition matcher : matchers ) {
+        for ( ThreatPreventionPassRuleCondition matcher : matchers ) {
             if (matcher.matches(protocol,
                             srcIntf, dstIntf,
                             srcAddress, dstAddress,
@@ -128,7 +128,7 @@ public class IpReputationPassRule implements JSONString, Serializable
         /**
          * It match, return true.
          */
-        for ( IpReputationPassRuleCondition matcher : matchers ) {
+        for ( ThreatPreventionPassRuleCondition matcher : matchers ) {
             if (matcher.matches(session) ){
                 return true;
             }

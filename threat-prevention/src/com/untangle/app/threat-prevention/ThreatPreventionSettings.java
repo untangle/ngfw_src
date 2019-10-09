@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import org.apache.log4j.Logger;
 
@@ -15,10 +15,10 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 /**
- * Settings for the IP Reputation app.
+ * Settings for the Threat Prevention application.
  */
 @SuppressWarnings("serial")
-public class IpReputationSettings implements Serializable, JSONString
+public class ThreatPreventionSettings implements Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
     private Integer version = Integer.valueOf(1);
@@ -30,14 +30,14 @@ public class IpReputationSettings implements Serializable, JSONString
 
     private Integer threatMask = null;
 
-    private List<IpReputationPassRule> passRules = null;
+    private List<ThreatPreventionPassRule> passRules = null;
     
-    public IpReputationSettings()
+    public ThreatPreventionSettings()
     {
         this.passRules = new LinkedList<>();
     }
 
-    public IpReputationSettings(List<IpReputationPassRule> passRules)
+    public ThreatPreventionSettings(List<ThreatPreventionPassRule> passRules)
     {
         this.passRules = passRules;
     }
@@ -60,8 +60,8 @@ public class IpReputationSettings implements Serializable, JSONString
     public Boolean getFlag() { return flag; }
     public void setFlag( Boolean newValue ) { this.flag = newValue; }
 
-    public List<IpReputationPassRule> getPassRules() { return passRules; }
-    public void setPassRules( List<IpReputationPassRule> newValue ) { this.passRules = newValue; }
+    public List<ThreatPreventionPassRule> getPassRules() { return passRules; }
+    public void setPassRules( List<ThreatPreventionPassRule> newValue ) { this.passRules = newValue; }
 
     public String toJSONString()
     {

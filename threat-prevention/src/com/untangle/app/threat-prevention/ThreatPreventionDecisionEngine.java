@@ -2,7 +2,7 @@
  * $Id$
  */
 
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.net.InetAddress;
 import java.net.URI;
@@ -42,8 +42,7 @@ import java.util.Iterator;
  * This is the core functionality of web filter It decides if a site should be
  * blocked, passed, logged, etc based on the settings and categorization.
  */
-// public abstract class IpReputationDecisionEngine
-public class IpReputationDecisionEngine
+public class ThreatPreventionDecisionEngine
 {
     private Map<String, String> i18nMap;
     Long i18nMapLastUpdated = 0L;
@@ -65,7 +64,7 @@ public class IpReputationDecisionEngine
     /**
      * This is the base app that owns this decision engine
      */
-    private final IpReputationApp app;
+    private final ThreatPreventionApp app;
 
     /**
      * Users are able to "unblock" sites if the admin allows it. Unblocked sites
@@ -80,7 +79,7 @@ public class IpReputationDecisionEngine
      * @param app
      *        The owner application
      */
-    public IpReputationDecisionEngine(IpReputationApp app)
+    public ThreatPreventionDecisionEngine(ThreatPreventionApp app)
     {
         this.app = app;
     }
@@ -152,11 +151,11 @@ public class IpReputationDecisionEngine
                     if(ipInfo.has(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_IP_KEY)){
                         ip = ipInfo.getString(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_IP_KEY);
                         if(!clientLocal && clientAddress != null && ip.equals(clientAddress.getHostAddress())){
-                            sessionAttachments.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
-                            sessionAttachments.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
                         }else if(!serverLocal && serverAddress != null && ip.equals(serverAddress.getHostAddress())){
-                            sessionAttachments.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
-                            sessionAttachments.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
                         }
                     }else if(ipInfo.has(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY)){
                         ip = ipInfo.getString(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY);
@@ -165,22 +164,22 @@ public class IpReputationDecisionEngine
                         JSONArray catids = ipInfo.getJSONArray(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_LIST_KEY);
                         for(int j = 0; j < catids.length(); j++){
                             Integer cat = catids.getJSONObject(i).getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_ID_KEY);
-                            if(IpReputationApp.UrlCatThreatMap.get(cat) != null){
-                                threatmask += IpReputationApp.UrlCatThreatMap.get(cat);
+                            if(ThreatPreventionApp.UrlCatThreatMap.get(cat) != null){
+                                threatmask += ThreatPreventionApp.UrlCatThreatMap.get(cat);
                             }
                             // !! Maybe also put into new web-filter/monitor categorized attachment to save lookup.
                         }
 
                         if(!clientLocal && clientAddress != null && ip.equals(clientAddress.getHostAddress())){
-                            sessionAttachments.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
-                            sessionAttachments.globalAttach(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK, threatmask);
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_THREATMASK, threatmask);
                         }else if(!serverLocal && 
                                 ( ( serverAddress != null && ip.equals(serverAddress.getHostAddress()) ) ||
                                   ( serverUrl != null && ip.equals(serverUrl) )
                                 ) 
                                 ){
-                            sessionAttachments.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
-                            sessionAttachments.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, threatmask);
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK, threatmask);
                         }
                     }
                 }
@@ -200,8 +199,8 @@ public class IpReputationDecisionEngine
      */
     public Boolean isMatch(SessionAttachments sessionAttachments)
     {
-        Integer clientReputation = (Integer) sessionAttachments.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION);
-        Integer serverReputation = (Integer) sessionAttachments.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION);
+        Integer clientReputation = (Integer) sessionAttachments.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
+        Integer serverReputation = (Integer) sessionAttachments.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
         Integer threatLevel = app.getSettings().getThreatLevel();
 
         // time of getSettings().getValue() vs synchronized values.
@@ -274,8 +273,8 @@ public class IpReputationDecisionEngine
         boolean flag = app.getSettings().getFlag();
         Integer ruleIndex = null;
 
-        IpReputationPassRule matchRule = null;
-        for (IpReputationPassRule rule : app.getSettings().getPassRules()){
+        ThreatPreventionPassRule matchRule = null;
+        for (ThreatPreventionPassRule rule : app.getSettings().getPassRules()){
             if( rule.isMatch(sess) ){
                 matchRule = rule;
                 block = !rule.getPass();
@@ -285,13 +284,13 @@ public class IpReputationDecisionEngine
             }
         }
 
-        Integer clientReputation = (Integer) sess.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION);
-        Integer clientThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK);
-        Integer serverReputation = (Integer) sess.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION);
-        Integer serverThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK);
+        Integer clientReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
+        Integer clientThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_THREATMASK);
+        Integer serverReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
+        Integer serverThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK);
 
         // should be logging url 0n http-events
-        IpReputationEvent fwe = new IpReputationEvent(sess.sessionEvent(), block && match, match && flag, 
+        ThreatPreventionEvent fwe = new ThreatPreventionEvent(sess.sessionEvent(), block && match, match && flag, 
             ruleIndex != null ? ruleIndex : 0, 
             clientReputation != null ? clientReputation : 0, 
             clientThreatmask != null ? clientThreatmask : 0, 
@@ -307,7 +306,7 @@ public class IpReputationDecisionEngine
             }
 
             updateI18nMap();
-            IpReputationBlockDetails bd = new IpReputationBlockDetails(app.getSettings(), host, uri.toString(), 
+            ThreatPreventionBlockDetails bd = new ThreatPreventionBlockDetails(app.getSettings(), host, uri.toString(), 
                 matchRule != null ? matchRule.getDescription() : I18nUtil.tr("Threat reputation {0}", app.getThreatFromReputation(serverReputation), i18nMap), 
                 clientIp);
             return app.generateNonce(bd);
