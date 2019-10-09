@@ -111,10 +111,10 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
             'SSL_INSPECTOR_ISSUER_DN',
             "CLIENT_COUNTRY",
             "SERVER_COUNTRY",
-            'IP_REPUTATION_SRC_REPUTATION',
-            'IP_REPUTATION_SRC_THREATMASK',
-            'IP_REPUTATION_DST_REPUTATION',
-            'IP_REPUTATION_DST_THREATMASK'
+            'THREAT_PREVENTION_SRC_REPUTATION',
+            'THREAT_PREVENTION_SRC_THREATMASK',
+            'THREAT_PREVENTION_DST_REPUTATION',
+            'THREAT_PREVENTION_DST_THREATMASK'
         ]), {
             xtype: 'combo',
             allowBlank: false,
