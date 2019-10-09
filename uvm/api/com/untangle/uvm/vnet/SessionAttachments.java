@@ -62,10 +62,10 @@ public interface SessionAttachments
     public static final String KEY_CAPTIVE_PORTAL_SSL_ENGINE = "captive-portal-ssl-engine"; /* CaptureSSLEngine */
     public static final String KEY_CAPTIVE_PORTAL_SESSION_CAPTURE = "captive-portal-session-capture"; /* String */
 
-    public static final String KEY_IP_REPUTATION_CLIENT_REPUTATION = "ip-reputation-client-reputation"; /* Integer */
-    public static final String KEY_IP_REPUTATION_CLIENT_THREATMASK = "ip-reputation-client-threatmask"; /* Integer */
-    public static final String KEY_IP_REPUTATION_SERVER_REPUTATION = "ip-reputation-server-reputation"; /* Integer */
-    public static final String KEY_IP_REPUTATION_SERVER_THREATMASK = "ip-reputation-server-threatmask"; /* Integer */
+    public static final String KEY_THREAT_PREVENTION_CLIENT_REPUTATION = "ip-reputation-client-reputation"; /* Integer */
+    public static final String KEY_THREAT_PREVENTION_CLIENT_THREATMASK = "ip-reputation-client-threatmask"; /* Integer */
+    public static final String KEY_THREAT_PREVENTION_SERVER_REPUTATION = "ip-reputation-server-reputation"; /* Integer */
+    public static final String KEY_THREAT_PREVENTION_SERVER_THREATMASK = "ip-reputation-server-threatmask"; /* Integer */
 
     /**
      * Attaches the given object to this session.

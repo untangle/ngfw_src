@@ -1,4 +1,4 @@
-Ext.syncRequire('Ung.common.ipreputation');
+Ext.syncRequire('Ung.common.threatprevention');
 Ext.define('TableConfig', {
     alternateClassName: 'TableConfig',
     singleton: true,
@@ -306,7 +306,7 @@ Ext.define('TableConfig', {
     },
 
     fromTypes: {
-        ip_reputation: {
+        threat_reputation: {
             type: 'RANGE',
             rangeValues: [
                 [1,20],
@@ -316,7 +316,7 @@ Ext.define('TableConfig', {
                 [81,100]
             ]
         },
-        ip_threat: {
+        threat_category: {
             type: 'BITMASK',
             length: 16
         }
