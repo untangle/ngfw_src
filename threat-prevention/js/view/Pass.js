@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.ipreputation.view.Pass', {
+Ext.define('Ung.apps.threatprevention.view.Pass', {
     extend: 'Ung.cmp.Grid',
-    alias: 'widget.app-ip-reputation-pass',
+    alias: 'widget.app-threat-prevention-pass',
     itemId: 'rules',
     title: 'Pass Rules'.t(),
     scrollable: true,
@@ -27,7 +27,7 @@ Ext.define('Ung.apps.ipreputation.view.Pass', {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.app.ip_reputation.IpReputationPassRule'
+        javaClass: 'com.untangle.app.threat_prevention.ThreatPreventionPassRule'
     },
 
     bind: '{passRules}',
@@ -50,7 +50,7 @@ Ext.define('Ung.apps.ipreputation.view.Pass', {
         Field.enableRule(),
         Field.description,
         Field.conditions(
-            'com.untangle.app.ip_reputation.IpReputationPassRuleCondition', [
+            'com.untangle.app.threat_prevention.ThreatPreventionPassRuleCondition', [
             'DST_ADDR',
             'DST_PORT',
             'DST_INTF',
@@ -88,10 +88,10 @@ Ext.define('Ung.apps.ipreputation.view.Pass', {
             // 'HTTP_USER_AGENT_OS',
             // 'CLIENT_COUNTRY',
             // 'SERVER_COUNTRY',
-            'IP_REPUTATION_SRC_REPUTATION',
-            'IP_REPUTATION_DST_REPUTATION',
-            'IP_REPUTATION_SRC_THREATMASK',
-            'IP_REPUTATION_DST_THREATMASK'
+            'THREAT_PREVENTION_SRC_REPUTATION',
+            'THREAT_PREVENTION_DST_REPUTATION',
+            'THREAT_PREVENTION_SRC_THREATMASK',
+            'THREAT_PREVENTION_DST_THREATMASK'
         ]), {
         xtype: 'checkbox',
         bind: '{record.pass}',

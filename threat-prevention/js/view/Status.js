@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.ipreputation.view.Status', {
+Ext.define('Ung.apps.threatprevention.view.Status', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app-ip-reputation-status',
+    alias: 'widget.app-threat-prevention-status',
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
@@ -14,7 +14,7 @@ Ext.define('Ung.apps.ipreputation.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/icons/apps/ip-reputation.svg" width="80" height="80"/>' +
+            html: '<img src="/icons/apps/threat-prevention.svg" width="80" height="80"/>' +
                 '<h3>IP Reputation</h3>' +
                 '<p>' + 'Firewall is a simple application that flags and blocks sessions based on rules.'.t() + '</p>'
         }, {

@@ -1,20 +1,20 @@
 {
-    "category": "IP Reputation",
+    "category": "Threat Prevention",
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
         {
-            "column": "ip_reputation_blocked",
+            "column": "threat_prevention_blocked",
             "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "is",
             "value": "NOT NULL"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","protocol","c_client_port","ip_reputation_blocked","ip_reputation_flagged","ip_reputation_rule_index","ip_reputation_client_reputation","ip_reputation_client_threatmask","ip_reputation_server_reputation","ip_reputation_server_threatmask","c_client_addr","s_server_addr","s_server_port"],
-    "description": "All events scanned by IP Reputation.",
+    "defaultColumns": ["time_stamp","username","hostname","protocol","c_client_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_index","threat_prevention_client_reputation","threat_prevention_client_threatmask","threat_prevention_server_reputation","threat_prevention_server_threatmask","c_client_addr","s_server_addr","s_server_port"],
+    "description": "All events scanned by Threat Prevention.",
     "displayOrder": 1000,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
     "title": "All Events",
-    "uniqueId": "ip-reputation-JWVPEDU3Y6"
+    "uniqueId": "threat-reputation-tpJWVPEDU3Y6"
 }

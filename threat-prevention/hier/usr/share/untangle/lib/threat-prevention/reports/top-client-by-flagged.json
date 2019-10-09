@@ -1,6 +1,6 @@
 {
-    "uniqueId": "ip-reputation-gsR2R5tGWwtcbf",
-    "category": "IP Reputation",
+    "uniqueId": "threat-prevention-tpgsR2R5tGWwtcbf",
+    "category": "Threat Prevention",
     "description": "The number of flagged session grouped by client.",
     "displayOrder": 501,
     "enabled": true,
@@ -13,12 +13,12 @@
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "ip_reputation_client_reputation",
+            "column": "threat_prevention_client_reputation",
             "operator": ">",
             "value": "0"            
         },{
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "ip_reputation_flagged",
+            "column": "threat_prevention_flagged",
             "operator": "=",
             "value": "true"
         }

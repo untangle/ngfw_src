@@ -1,6 +1,6 @@
 {
-    "uniqueId": "ip-reputation-Mpnd3b85xtsbs",
-    "category": "IP Reputation",
+    "uniqueId": "threat-prevention-tpMpnd3b85xtsbs",
+    "category": "Threat Prevention",
     "description": "The number of scanned session grouped by server.",
     "displayOrder": 400,
     "enabled": true,
@@ -13,7 +13,7 @@
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "ip_reputation_server_reputation",
+            "column": "threat_prevention_server_reputation",
             "operator": ">",
             "value": "0"            
         }

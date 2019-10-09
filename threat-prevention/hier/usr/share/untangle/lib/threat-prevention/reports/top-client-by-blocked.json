@@ -1,6 +1,6 @@
 {
-    "uniqueId": "ip-reputation-AsifWhYFaetcbb",
-    "category": "IP Reputation",
+    "uniqueId": "threat-prevention-tpAsifWhYFaetcbb",
+    "category": "Threat Prevention",
     "description": "The number of blocked session grouped by client.",
     "displayOrder": 502,
     "enabled": true,
@@ -13,13 +13,13 @@
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "ip_reputation_client_reputation",
+            "column": "threat_prevention_client_reputation",
             "operator": ">",
             "value": "0"            
         },
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "ip_reputation_blocked",
+            "column": "threat_prevention_blocked",
             "operator": "=",
             "value": "true"
         }

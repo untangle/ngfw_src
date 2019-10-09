@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.app.http.BlockPageUtil;
 import com.untangle.uvm.BrandingManager;
-import com.untangle.app.ip_reputation.IpReputationBlockDetails;
+import com.untangle.app.threat_prevention.ThreatPreventionBlockDetails;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -19,7 +19,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 
 @SuppressWarnings("serial")
-public class IpReputationBlockPageServlet extends com.untangle.app.ip_reputation.BlockPageServlet
+public class ThreatPreventionBlockPageServlet extends com.untangle.app.threat_prevention.BlockPageServlet
 {
     /**
      * Handler for GET requests
@@ -46,17 +46,17 @@ public class IpReputationBlockPageServlet extends com.untangle.app.ip_reputation
      *        Whitelist mode for the user
      * @return The BlockPageParameters
      */
-    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters(IpReputationBlockDetails blockDetails, String userWhitelistMode)
+    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters(ThreatPreventionBlockDetails blockDetails, String userWhitelistMode)
     {
-        return new IpReputationBlockPageParameters(blockDetails, userWhitelistMode);
+        return new ThreatPreventionBlockPageParameters(blockDetails, userWhitelistMode);
     }
 
     /**
      * Generates the parameters used to create a block page
      */
-    protected static class IpReputationBlockPageParameters implements BlockPageUtil.BlockPageParameters
+    protected static class ThreatPreventionBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
-        private final IpReputationBlockDetails blockDetails;
+        private final ThreatPreventionBlockDetails blockDetails;
         private final String unblockMode;
 
         /**
@@ -67,7 +67,7 @@ public class IpReputationBlockPageServlet extends com.untangle.app.ip_reputation
          * @param unblockMode
          *        Unblock mode
          */
-        public IpReputationBlockPageParameters(IpReputationBlockDetails blockDetails, String unblockMode)
+        public ThreatPreventionBlockPageParameters(ThreatPreventionBlockDetails blockDetails, String unblockMode)
         {
             this.blockDetails = blockDetails;
             this.unblockMode = unblockMode;
@@ -167,7 +167,7 @@ public class IpReputationBlockPageServlet extends com.untangle.app.ip_reputation
          * 
          * @return The block details
          */
-        public IpReputationBlockDetails getBlockDetails()
+        public ThreatPreventionBlockDetails getBlockDetails()
         {
             return this.blockDetails;
         }

@@ -1,4 +1,4 @@
-Ext.define('Ung.common.ipreputation.references', {
+Ext.define('Ung.common.threatprevention.references', {
     // alternateClassName: 'IpReputationReferences',
     singleton: true,
 
@@ -23,7 +23,7 @@ Ext.define('Ung.common.ipreputation.references', {
 
     reputatationConditionValues: function(){
         values = [];
-        Ung.common.ipreputation.references.reputations.each(function(record){
+        Ung.common.threatprevention.references.reputations.each(function(record){
             values.push([
                 record.get('rangeBegin') + '-' + record.get('rangeEnd'),
                 record.get('description'),
@@ -65,7 +65,7 @@ Ext.define('Ung.common.ipreputation.references', {
 
     threatsConditionValues: function(){
         values = [];
-        Ung.common.ipreputation.references.threats.each(function(record){
+        Ung.common.threatprevention.references.threats.each(function(record){
             if(record.get('bit') != 0){
                 values.push([
                     record.get('bit'),
