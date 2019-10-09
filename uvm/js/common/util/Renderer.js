@@ -1244,22 +1244,22 @@ Ext.define('Ung.util.Renderer', {
     },
 
     // !!! pull this list from bctid?
-    ipReputationMap:{
+    threatPreventionReputationMap:{
         20: 'High Risk'.t(),
         40: 'Suspicious'.t(),
         60: 'Moderate Risk'.t(),
         80: 'Low Risk'.t(),
         100: 'Trustworthy'.t()
     },
-    ipReputation: function(value, cell, record){
+    threatPreventionReputation: function(value, cell, record){
         if(value == 0 || value == null){
             return null;
         }
         var description = '';
-        var reputationMaxes = Object.keys(Renderer.ipReputationMap);
+        var reputationMaxes = Object.keys(Renderer.threatPreventionReputationMap);
         for(var i = 0; i < reputationMaxes.length; i++){
             if(value <= reputationMaxes[i]){
-                description = Renderer.ipReputationMap[reputationMaxes[i]];
+                description = Renderer.threatPreventionReputationMap[reputationMaxes[i]];
                 break;
             }
 
@@ -1268,7 +1268,7 @@ Ext.define('Ung.util.Renderer', {
     },
 
     // !!! pull this list from bctid
-    ipThreatMap:{
+    threatPreventionCategoryMap:{
         0: 'Spam Sources'.t(),
         1: 'Windows Exploits'.t(),
         2: 'Web Attacks'.t(),
@@ -1284,15 +1284,15 @@ Ext.define('Ung.util.Renderer', {
         17: 'Malware'.t(),
         18: 'Spyware'.t()
     },
-    ipThreatmask: function(value){
+    threatPreventionCategory: function(value){
         if(value == 0){
             return null;
         }
         var descriptions = [];
-        var threatBits = Object.keys(Renderer.ipThreatMap);
+        var threatBits = Object.keys(Renderer.threatPreventionCategoryMap);
         for(var i = 0; i < threatBits.length; i++){
             if(Math.pow(2,threatBits[i]) & value){
-                descriptions.push(Renderer.ipThreatMap[threatBits[i]]);
+                descriptions.push(Renderer.threatPreventionCategoryMap[threatBits[i]]);
             }
         }
         return descriptions.join(', ');

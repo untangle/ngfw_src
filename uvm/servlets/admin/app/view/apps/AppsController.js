@@ -454,7 +454,7 @@ Ext.define('Ung.view.apps.AppsController', {
                         { displayName: 'Application Control', name: 'application-control'},
                         { displayName: 'Captive Portal', name: 'captive-portal'},
                         { displayName: 'Firewall', name: 'firewall'},
-                        { displayName: 'IP Reputation', name: 'ip-reputation'},
+                        { displayName: 'Threat Prevention', name: 'threat-prevention'},
                         { displayName: 'Reports', name: 'reports'},
                         { displayName: 'Policy Manager', name: 'policy-manager'},
                         { displayName: 'Directory Connector', name: 'directory-connector'},

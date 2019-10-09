@@ -1,4 +1,4 @@
-Ext.syncRequire('Ung.common.ipreputation');
+Ext.syncRequire('Ung.common.threatprevention');
 Ext.define('Ung.cmp.ConditionsEditor', {
     extend: 'Ext.form.FieldSet',
     alias: 'widget.conditionseditor',
@@ -775,28 +775,28 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             displayName: 'Server Country'.t(),
             type: 'countryfield'
         },{
-            name:'IP_REPUTATION_SRC_REPUTATION',
-            displayName: 'IP Reputation: Source address reputation'.t(),
+            name:'THREAT_PREVENTION_SRC_REPUTATION',
+            displayName: 'Threat Prevention: Source address reputation'.t(),
             type: 'checkboxgroup',
             // Also, tips
-            values: Ung.common.ipreputation.references.reputatationConditionValues()
+            values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
-            name:'IP_REPUTATION_DST_REPUTATION',
-            displayName: 'IP Reputation: Destination address reputation'.t(),
+            name:'THREAT_PREVENTION_DST_REPUTATION',
+            displayName: 'Threat Prevention: Destination address reputation'.t(),
             type: 'checkboxgroup',
-            values: Ung.common.ipreputation.references.reputatationConditionValues()
+            values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
-            name:'IP_REPUTATION_SRC_THREATMASK',
-            displayName: 'IP Reputation: Source address category'.t(),
-            type: 'checkboxgroup',
-            // Also, tips
-            values: Ung.common.ipreputation.references.threatsConditionValues()
-        },{
-            name:'IP_REPUTATION_DST_THREATMASK',
-            displayName: 'IP Reputation: Destination address category'.t(),
+            name:'THREAT_PREVENTION_SRC_THREATMASK',
+            displayName: 'Threat Prevention: Source address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
-            values: Ung.common.ipreputation.references.threatsConditionValues()
+            values: Ung.common.threatprevention.references.threatsConditionValues()
+        },{
+            name:'THREAT_PREVENTION_DST_THREATMASK',
+            displayName: 'Threat Prevention: Destination address category'.t(),
+            type: 'checkboxgroup',
+            // Also, tips
+            values: Ung.common.threatprevention.references.threatsConditionValues()
         },{
             name:'SSL_INSPECTOR_SNI_HOSTNAME',
             displayName: 'SSL Inspector: SNI Host Name'.t(),
