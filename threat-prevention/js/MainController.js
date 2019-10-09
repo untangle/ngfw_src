@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.ipreputation.MainController', {
+Ext.define('Ung.apps.threatprevention.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.app-ip-reputation',
+    alias: 'controller.app-threat-prevention',
 
     control: {
         '#': {
@@ -33,7 +33,7 @@ Ext.define('Ung.apps.ipreputation.MainController', {
 
         vm.set('threatList', 'tl');
         var threatList = [];
-        Ung.common.ipreputation.references.threats.each( function(threat){
+        Ung.common.threatprevention.references.threats.each( function(threat){
             threatList.push(threat.get('description'));
         });
         vm.set('threatList', "Match may be one or more of the following categories:".t()+'<br>'+'<i>'+threatList.join(", ")+'</i>');
@@ -89,7 +89,7 @@ Ext.define('Ung.ThreatSlider', {
     useTips: true,
     tipText: function(thumb){
         var matchingThreat = null;
-        Ung.common.ipreputation.references.reputations.each( function(threat){
+        Ung.common.threatprevention.references.reputations.each( function(threat){
             if(thumb.value >= threat.get('rangeBegin') && thumb.value <= threat.get('rangeEnd')){
                 matchingThreat = threat;
             }
@@ -109,7 +109,7 @@ Ext.define('Ung.ThreatSlider', {
         var viewRangeComponent = this.up().down('[itemId='+this.rangeLabel+']');
         var matched = false;
         var rangeArguments = [slider.rangeTpl];
-        Ung.common.ipreputation.references.reputations.each( function(threat){
+        Ung.common.threatprevention.references.reputations.each( function(threat){
             if(matched == false && newValue > 0){
                 rangeArguments.push(threat.get('color'));
             }else{
@@ -136,7 +136,7 @@ Ext.define('Ung.ThreatSlider', {
 //     constructor: function(config) {
 //         var me = this;
 //         var items = [];
-//         Ung.common.ipreputation.references.threats.each( function(threat){
+//         Ung.common.threatprevention.references.threats.each( function(threat){
 //             items.push({
 //                 inputValue: threat.get('bit'),
 //                 boxLabel: threat.get('description'),

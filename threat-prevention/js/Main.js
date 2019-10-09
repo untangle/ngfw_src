@@ -1,8 +1,8 @@
-Ext.syncRequire('Ung.common.ipreputation');
-Ext.define('Ung.apps.ipreputation.Main', {
+Ext.syncRequire('Ung.common.threatprevention');
+Ext.define('Ung.apps.threatprevention.Main', {
     extend: 'Ung.cmp.AppPanel',
-    alias: 'widget.app-ip-reputation',
-    controller: 'app-ip-reputation',
+    alias: 'widget.app-threat-prevention',
+    controller: 'app-threat-prevention',
 
     viewModel: {
         stores: {
@@ -11,8 +11,8 @@ Ext.define('Ung.apps.ipreputation.Main', {
     },
 
     items: [
-        { xtype: 'app-ip-reputation-status' },
-        { xtype: 'app-ip-reputation-reputation' },
-        { xtype: 'app-ip-reputation-pass' }
+        { xtype: 'app-threat-prevention-status' },
+        { xtype: 'app-threat-prevention-reputation' },
+        { xtype: 'app-threat-prevention-pass' }
     ]
 });

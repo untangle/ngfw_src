@@ -5,18 +5,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0" metadata-complete="true">
          
-  <display-name>IP Reputation WebApp</display-name>
+  <display-name>Threat Prevention WebApp</display-name>
 
   <servlet>
-    <servlet-name>IpReputationBlockPageServlet</servlet-name>
-    <servlet-class>com.untangle.app.ip_reputation.IpReputationBlockPageServlet</servlet-class>
+    <servlet-name>ThreatPreventionBlockPageServlet</servlet-name>
+    <servlet-class>com.untangle.app.threat_prevention.ThreatPreventionBlockPageServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
  </servlet>
 
   @JSP_PRE_COMPILED_SERVLETS@
 
   <servlet-mapping>
-    <servlet-name>IpReputationBlockPageServlet</servlet-name>
+    <servlet-name>ThreatPreventionBlockPageServlet</servlet-name>
     <url-pattern>/blockpage</url-pattern>
   </servlet-mapping>
 

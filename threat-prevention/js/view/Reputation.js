@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.ipreputation.view.Reputation', {
+Ext.define('Ung.apps.threatprevention.view.Reputation', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app-ip-reputation-reputation',
+    alias: 'widget.app-threat-prevention-reputation',
     itemId: 'reputation',
     title: 'Reputation'.t(),
 
@@ -79,7 +79,7 @@ Ext.define('Ung.apps.ipreputation.view.Reputation', {
             bind:{
                 value: '{settings.action}'
             },
-            store: Ung.common.ipreputation.references.actions
+            store: Ung.common.threatprevention.references.actions
         },{
             xtype: 'checkbox',
             fieldLabel: 'Flag'.t(),

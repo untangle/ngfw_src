@@ -1,78 +1,78 @@
-Ext.define('Ung.common.TableConfig.ipreputation', {
+Ext.define('Ung.common.TableConfig.threatprevention', {
     singleton: true,
 
     sessionsFields: [{
-        name: 'ip_reputation_blocked'
+        name: 'threat_prevention_blocked'
     }, {
-        name: 'ip_reputation_firewall_flagged'
+        name: 'threat_prevention_firewall_flagged'
     }, {
-        name: 'ip_reputation_rule_index'
+        name: 'threat_prevention_rule_index'
     }, {
-        name: 'ip_reputation_client_reputation',
-        fromType: 'ip_reputation'
+        name: 'threat_prevention_client_reputation',
+        fromType: 'threat_reputation'
     }, {
-        name: 'ip_reputation_client_threatmask',
-        fromType: 'ip_threat'
+        name: 'threat_prevention_client_threatmask',
+        fromType: 'threat_category'
     }, {
-        name: 'ip_reputation_server_reputation',
-        fromType: 'ip_reputation'
+        name: 'threat_prevention_server_reputation',
+        fromType: 'threat_reputation'
     }, {
-        name: 'ip_reputation_server_threatmask',
-        fromType: 'ip_threat'
+        name: 'threat_prevention_server_threatmask',
+        fromType: 'threat_category'
     }],
 
     // To do categories, do nested. Then eventreport selection can construct.
     // Make sure that with thee groupings, export still works.  And reports in general.
     sessionsColumns: [{
-        header: 'Blocked'.t() + ' (IP Reputation)',
+        header: 'Blocked'.t() + ' (Threat Prevention)',
         width: Renderer.booleanWidth,
         sortable: true,
-        dataIndex: 'ip_reputation_blocked',
+        dataIndex: 'threat_prevention_blocked',
         filter: Renderer.booleanFilter
     }, {
-        header: 'Flagged'.t() + ' (IP Reputation)',
+        header: 'Flagged'.t() + ' (Threat Prevention)',
         width: Renderer.booleanWidth,
         sortable: true,
-        dataIndex: 'ip_reputation_flagged',
+        dataIndex: 'threat_prevention_flagged',
         filter: Renderer.booleanFilter
     }, {
-        header: 'Rule Id'.t() + ' (IP Reputation)',
+        header: 'Rule Id'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
-        dataIndex: 'ip_reputation_rule_index',
+        dataIndex: 'threat_prevention_rule_index',
         filter: Renderer.numericFilter
     }, {
-        header: 'Client Reputation'.t() + ' (IP Reputation)',
+        header: 'Client Reputation'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
-        dataIndex: 'ip_reputation_client_reputation',
-        renderer: Renderer.ipReputation,
+        dataIndex: 'threat_prevention_client_reputation',
+        renderer: Renderer.threatPreventionReputation,
         filter: Renderer.numericFilter
     }, {
-        header: 'Client Threatmask'.t() + ' (IP Reputation)',
+        header: 'Client Threatmask'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
-        dataIndex: 'ip_reputation_client_threatmask',
-        renderer: Renderer.ipThreatmask,
+        dataIndex: 'threat_prevention_client_threatmask',
+        renderer: Renderer.threatPreventionCategory,
         filter: Renderer.numericFilter
     }, {
-        header: 'Server Reputation'.t() + ' (IP Reputation)',
+        header: 'Server Reputation'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
-        dataIndex: 'ip_reputation_server_reputation',
-        renderer: Renderer.ipReputation,
+        dataIndex: 'threat_prevention_server_reputation',
+        renderer: Renderer.threatPreventionReputation,
         filter: Renderer.numericFilter,
     }, {
-        header: 'Server Threatmask'.t() + ' (IP Reputation)',
+        header: 'Server Threatmask'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
-        dataIndex: 'ip_reputation_server_threatmask',
-        renderer: Renderer.ipThreatmask,
+        dataIndex: 'threat_prevention_server_threatmask',
+        renderer: Renderer.threatPreventionCategory,
         filter: Renderer.numericFilter,
     }],
 
@@ -108,7 +108,7 @@ Ext.define('Ung.common.TableConfig.ipreputation', {
         );
 
         tableConfig.tableConfig.sessions.listeners = {
-            select: Ung.common.TableConfig.ipreputation.onSelectDetails
+            select: Ung.common.TableConfig.threatprevention.onSelectDetails
         };
 
         this.initialized = true;
@@ -264,28 +264,28 @@ Ext.define('Ung.common.TableConfig.ipreputation', {
             return;
         }
         var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-            return inst.appName === "ip-reputation";
+            return inst.appName === "threat-prevention";
         });
         if(appInstance == null){
             return;
         }
 
-        var localNetworks = Rpc.directData('rpc.reportsManager.getReportInfo', "ip-reputation", policyId, "localNetworks");
+        var localNetworks = Rpc.directData('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, "localNetworks");
         var ipAddresses = [];
         var urlAddresses = [];
-        Ung.common.TableConfig.ipreputation.sourceTypes.forEach( function(sourceType){
-            var reputation = record.get('ip_reputation_' +sourceType+'_reputation');
+        Ung.common.TableConfig.threatprevention.sourceTypes.forEach( function(sourceType){
+            var reputation = record.get('threat_prevention_' +sourceType+'_reputation');
             if(reputation != null && reputation > 0){
                 localNetworks.forEach(function(network){
                     var clientIsRemote = false;
                     if( (sourceType == 'client') &&
-                        (record.get('ip_reputation_client_reputation') > 0) &&
+                        (record.get('threat_prevention_client_reputation') > 0) &&
                         (false === Util.ipMatchesNetwork(clientAddress, network['maskedAddress'], network['netmaskString'] ))){
                         ipAddresses.push(clientAddress);
                         clientIsRemote = true;
                     }
                     if( (sourceType == 'server') &&
-                        (record.get('ip_reputation_server_reputation') > 0) &&
+                        (record.get('threat_prevention_server_reputation') > 0) &&
                         (false === Util.ipMatchesNetwork(serverAddress, network['maskedAddress'], network['netmaskString'] ))){
                         if(clientIsRemote == true){
                             ipAddresses.push(serverAddress);
@@ -310,12 +310,12 @@ Ext.define('Ung.common.TableConfig.ipreputation', {
         var rpcSequence = [];
         if(ipAddresses.length){
             ipAddresses.forEach(function(address){
-                rpcSequence.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "ip-reputation", policyId, 'getIpHistory', [address]));
+                rpcSequence.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getIpHistory', [address]));
             });
         }
         if(urlAddresses.length){
             urlAddresses.forEach(function(address){
-                rpcSequence.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "ip-reputation", policyId, 'getUrlHistory', [address]));
+                rpcSequence.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getUrlHistory', [address]));
             });
         }
 
@@ -341,7 +341,7 @@ Ext.define('Ung.common.TableConfig.ipreputation', {
                     // console.log('answer=');
                     // console.log(answer);
                     Ext.Object.each(
-                        Ung.common.TableConfig.ipreputation.detailMaps,
+                        Ung.common.TableConfig.threatprevention.detailMaps,
                         function(detail, detailMap){
                             if(detail in answer['queries']){
                                 // console.log('detail=' + detail);

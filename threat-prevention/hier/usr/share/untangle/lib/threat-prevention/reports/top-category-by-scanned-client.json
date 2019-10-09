@@ -1,6 +1,6 @@
 {
-    "uniqueId": "ip-reputation-AsifWhYFttbsc",
-    "category": "IP Reputation",
+    "uniqueId": "threat-prevention-tpAsifWhYFttbsc",
+    "category": "Threat Prevention",
     "description": "The number of scanned sessions from clients grouped by threat.",
     "displayOrder": 34,
     "enabled": true,
@@ -8,12 +8,12 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "ip_reputation_client_threatmask",
+    "pieGroupColumn": "threat_prevention_client_threatmask",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "ip_reputation_client_threatmask",
+            "column": "threat_prevention_client_threatmask",
             "operator": ">",
             "value": "0"
         }

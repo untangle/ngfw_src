@@ -1,6 +1,6 @@
 {
-    "uniqueId": "ip-reputation-h0jelsttGpiaas",
-    "category": "IP Reputation",
+    "uniqueId": "threat-prevention-tph0jelsttGpiaas",
+    "category": "Threat Preventon",
     "description": "The amount of total, flagged, and blocked sessions to servers over time.",
     "displayOrder": 11,
     "enabled": true,
@@ -11,13 +11,13 @@
     "table": "sessions",
     "timeDataColumns": [
         "count(*) as scanned",
-        "sum(ip_reputation_flagged::int) as flagged",
-        "sum(ip_reputation_blocked::int) as blocked"
+        "sum(threat_prevention_flagged::int) as flagged",
+        "sum(threat_prevention_blocked::int) as blocked"
     ],
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "ip_reputation_server_reputation",
+            "column": "threat_prevention_server_reputation",
             "operator": ">",
             "value": "0"
         }
@@ -29,6 +29,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "AREA",
-    "title": "IP Reputation Usage (server)",
+    "title": "Threat Prevention Usage (server)",
     "type": "TIME_GRAPH"
 }
