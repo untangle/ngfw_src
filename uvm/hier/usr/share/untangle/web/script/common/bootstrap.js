@@ -165,9 +165,9 @@ Ext.define('Bootstrap', {
 
         // Setup common library references.
         var referenceMapping = {};
-        rpc.appManager.getSettings().apps.list.forEach( function(appSetting){
-            var appReference = 'Ung.common.'+appSetting['appName'].replace(/\-/g, '');
-            var appFilename = appSetting['appName'];
+        rpc.appManager.getAllAppProperties().list.forEach( function(appProperties){
+            var appReference = 'Ung.common.'+appProperties['name'].replace(/\-/g, '');
+            var appFilename = appProperties['name'];
             referenceMapping[appReference] = '/script/common/app-'+appFilename+'-all.js';
         });
         Ext.Loader.addClassPathMappings(referenceMapping);
