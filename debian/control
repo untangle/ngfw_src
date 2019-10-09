@@ -259,14 +259,14 @@ Depends: ${misc:Depends}, untangle-vm
 Description: Firewall application
  The Firewall application.
 
-Package: untangle-app-ip-reputation
+Package: untangle-app-threat-prevention
 Architecture: all
-Conflicts: untangle-node-ip-reputation
-Replaces: untangle-node-ip-reputation
-Provides: untangle-node-ip-reputation
+Conflicts: untangle-node-threat-prevention
+Replaces: untangle-node-threat-prevention
+Provides: untangle-node-threat-prevention
 Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-app-license, untangle-bctid, untangle-app-webroot
-Description: IP reputation application
- The IP reputation application.
+Description: Threat Prevention application
+ The Threat Prevention application.
 
 Package: untangle-app-spam-blocker-lite
 Architecture: all
