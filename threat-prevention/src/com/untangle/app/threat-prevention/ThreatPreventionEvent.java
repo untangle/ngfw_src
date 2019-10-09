@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;
@@ -11,7 +11,7 @@ import com.untangle.uvm.util.I18nUtil;
  * Log event for ip reputation.
  */
 @SuppressWarnings("serial")
-public class IpReputationEvent extends LogEvent
+public class ThreatPreventionEvent extends LogEvent
 {
     private SessionEvent sessionEvent;
     private long    ruleId;
@@ -22,9 +22,9 @@ public class IpReputationEvent extends LogEvent
     private int     serverReputation;
     private int     serverThreatmask;
 
-    public IpReputationEvent() { }
+    public ThreatPreventionEvent() { }
 
-    public IpReputationEvent( SessionEvent sessionEvent, boolean blocked,  boolean flagged, int ruleId , int clientReputation, int clientThreatmask, int serverReputation, int serverThreatmask)
+    public ThreatPreventionEvent( SessionEvent sessionEvent, boolean blocked,  boolean flagged, int ruleId , int clientReputation, int clientThreatmask, int serverReputation, int serverThreatmask)
     {
         this.sessionEvent = sessionEvent;
         this.blocked = blocked;
@@ -65,13 +65,13 @@ public class IpReputationEvent extends LogEvent
     {
         String sql =
             "UPDATE " + schemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
-            "SET ip_reputation_blocked = ?, " +
-            "    ip_reputation_flagged = ?, " + 
-            "    ip_reputation_rule_index = ?, " + 
-            "    ip_reputation_client_reputation = ?, " + 
-            "    ip_reputation_client_threatmask = ?, " + 
-            "    ip_reputation_server_reputation = ?, " + 
-            "    ip_reputation_server_threatmask = ? " + 
+            "SET threat_prevention_blocked = ?, " +
+            "    threat_prevention_flagged = ?, " + 
+            "    threat_prevention_rule_index = ?, " + 
+            "    threat_prevention_client_reputation = ?, " + 
+            "    threat_prevention_client_threatmask = ?, " + 
+            "    threat_prevention_server_reputation = ?, " + 
+            "    threat_prevention_server_threatmask = ? " + 
             "WHERE session_id = ? ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -99,7 +99,7 @@ public class IpReputationEvent extends LogEvent
         else
             action = I18nUtil.marktr("password");
             
-        String summary = "Ip Reputation " + action + " " + sessionEvent.toSummaryString();
+        String summary = "Threat Prevention " + action + " " + sessionEvent.toSummaryString();
         return summary;
     }
 }

@@ -2,7 +2,7 @@
  * $Id$
  */
 
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import com.untangle.app.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
@@ -12,7 +12,7 @@ import com.untangle.uvm.app.AppSettings;
 /**
  * ReplacementGenerator for WebFilter.
  */
-public class IpReputationReplacementGenerator extends ReplacementGenerator<IpReputationBlockDetails>
+public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<ThreatPreventionBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -32,7 +32,7 @@ public class IpReputationReplacementGenerator extends ReplacementGenerator<IpRep
      * @param appId
      *      The application ID
      */
-    public IpReputationReplacementGenerator(AppSettings appId)
+    public ThreatPreventionReplacementGenerator(AppSettings appId)
     {
         super(appId);
     }
@@ -45,7 +45,7 @@ public class IpReputationReplacementGenerator extends ReplacementGenerator<IpRep
      * @return The replacement
      */
     @Override
-    protected String getReplacement(IpReputationBlockDetails details)
+    protected String getReplacement(ThreatPreventionBlockDetails details)
     {
         UvmContext uvm = UvmContextFactory.context();
 
@@ -69,7 +69,6 @@ public class IpReputationReplacementGenerator extends ReplacementGenerator<IpRep
     @Override
     protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
     {
-        // return "http://" + host + "/web-filter/blockpage?nonce=" + nonce + "&appid=" + appSettings.getId();
-        return "http://" + host + "/ip-reputation/blockpage?nonce=" + nonce + "&appid=" + appSettings.getId();
+        return "http://" + host + "/threat-prevention/blockpage?nonce=" + nonce + "&appid=" + appSettings.getId();
     }
 }

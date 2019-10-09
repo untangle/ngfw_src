@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,8 +48,8 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.app.IntMatcher;
 
-/** FirewalApp is the IP Reputation Application implementation */
-public class IpReputationApp extends AppBase
+/** Threat Prevention application */
+public class ThreatPreventionApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -57,14 +57,14 @@ public class IpReputationApp extends AppBase
     public WebrootQuery webrootQuery = null;
 
     private static AtomicInteger AppCount = new AtomicInteger();
-    private final IpReputationDecisionEngine engine = new IpReputationDecisionEngine(this);
+    private final ThreatPreventionDecisionEngine engine = new ThreatPreventionDecisionEngine(this);
 
     private static final String STAT_BLOCK = "block";
     private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
     private static final String STAT_LOOKUP_AVG = "lookup_avg";
 
-    protected final IpReputationReplacementGenerator replacementGenerator;
+    protected final ThreatPreventionReplacementGenerator replacementGenerator;
     
     private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
 
@@ -74,9 +74,9 @@ public class IpReputationApp extends AppBase
     // TCP 81-442
     // TCP 443+
 
-    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-http", this, null, new IpReputationHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, -2000, true);
-    private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-https-sni", this, httpsSub, new IpReputationHttpsSniHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, true);
-    private final PipelineConnector otherConnector = UvmContextFactory.context().pipelineFoundry().create("ip_reputation", this, null, new IpReputationEventHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false);
+    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-http", this, null, new ThreatPreventionHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, -2000, true);
+    private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-https-sni", this, httpsSub, new ThreatPreventionHttpsSniHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, true);
+    private final PipelineConnector otherConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-other", this, null, new ThreatPreventionEventHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false);
     private final PipelineConnector[] connectors = new PipelineConnector[] { httpConnector, httpsSniConnector, otherConnector };
 
     private static final HookCallback WebrootQueryGetUrlInfoHook;
@@ -85,7 +85,7 @@ public class IpReputationApp extends AppBase
     public static final Map<Integer, Integer> UrlCatThreatMap;
     public static final Map<Integer, String> ReputationThreatMap;
     static {
-        WebrootQueryGetUrlInfoHook = new IpReputationWebrootQueryGetUrlInfoHook();
+        WebrootQueryGetUrlInfoHook = new ThreatPreventionWebrootQueryGetUrlInfoHook();
         UvmContextFactory.context().hookManager().registerCallback( HookManager.WEBFILTER_BASE_CATEGORIZE_SITE, WebrootQueryGetUrlInfoHook );
 
         UrlCatThreatMap = new HashMap<>();
@@ -106,12 +106,12 @@ public class IpReputationApp extends AppBase
         ReputationThreatMap.put(100, "Trustworthy");
     }
 
-    private IpReputationSettings settings = null;
+    private ThreatPreventionSettings settings = null;
 
     /**
-     * This is used to reset sessions that are blocked by ip reputation when they switch policy
+     * This is used to reset sessions that are blocked by threat prevention when they switch policy
      */
-    private final SessionMatcher IP_REPUTATION_SESSION_MATCHER = new SessionMatcher() {
+    private final SessionMatcher THREAT_PREVENTION_SESSION_MATCHER = new SessionMatcher() {
             /**
              * isMatch returns true if the session matches a block rule
              * @param policyId
@@ -135,12 +135,12 @@ public class IpReputationApp extends AppBase
                 // if (handler == null)
                 //     return false;
 
-                IpReputationPassRule matchedRule = null;
+                ThreatPreventionPassRule matchedRule = null;
                 
                 /**
                  * Find the matching rule compute block/log verdicts
                  */
-                for (IpReputationPassRule rule : settings.getPassRules()) {
+                for (ThreatPreventionPassRule rule : settings.getPassRules()) {
                     if (rule.isMatch(protocol,
                                      clientIntf, serverIntf,
                                      clientAddr, serverAddr,
@@ -154,7 +154,7 @@ public class IpReputationApp extends AppBase
                 if (matchedRule == null)
                     return false;
 
-                logger.info("IP Reputation Save Setting Matcher: " +
+                logger.info("Threat Prevention Save Setting Matcher: " +
                             clientAddr.getHostAddress().toString() + ":" + clientPort + " -> " +
                             serverAddr.getHostAddress().toString() + ":" + serverPort +
                             " :: pass:" + matchedRule.getPass());
@@ -169,7 +169,7 @@ public class IpReputationApp extends AppBase
      * @param appSettings - the AppSettings
      * @param appProperties the AppProperties
      */
-    public IpReputationApp( AppSettings appSettings, AppProperties appProperties )
+    public ThreatPreventionApp( AppSettings appSettings, AppProperties appProperties )
     {
         super( appSettings, appProperties );
 
@@ -184,7 +184,7 @@ public class IpReputationApp extends AppBase
         //      this should just get local network list for us.
         localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
 
-        // this.handler = new IpReputationEventHandler(this);
+        // this.handler = new ThreatPreventionEventHandler(this);
 
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
@@ -192,12 +192,6 @@ public class IpReputationApp extends AppBase
         this.addMetric(new AppMetric(STAT_LOOKUP_AVG, I18nUtil.marktr("Lookup time average"), 0L, AppMetric.Type.AVG_TIME, I18nUtil.marktr("ms"), true));
         // this.addMirroredMetrics( WebrootDaemon );
         // this.addMirroredMetrics( WebrootQuery );
-
-
-
-        // !!! underscore, single word, or dash?
-        // this.connector = UvmContextFactory.context().pipelineFoundry().create("ip_reputation", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false);
-        // this.connectors = new PipelineConnector[] { connector };
     }
 
     /**
@@ -205,16 +199,16 @@ public class IpReputationApp extends AppBase
      * 
      * @return The decision engine
      */
-    public IpReputationDecisionEngine getDecisionEngine()
+    public ThreatPreventionDecisionEngine getDecisionEngine()
     {
         return engine;
     }
 
     /**
      * Get the current IP Reputation Settings
-     * @return IpReputationSettings
+     * @return ThreatPreventionSettings
      */
-    public IpReputationSettings getSettings()
+    public ThreatPreventionSettings getSettings()
     {
         return settings;
     }
@@ -223,16 +217,16 @@ public class IpReputationApp extends AppBase
      * Set the current IP Reputation settings
      * @param newSettings
      */
-    public void setSettings(final IpReputationSettings newSettings)
+    public void setSettings(final ThreatPreventionSettings newSettings)
     {
         /**
          * set the new ID of each rule
-         * We use 100,000 * appId as a starting point so rule IDs don't overlap with other ip reputation
+         * We use 100,000 * appId as a starting point so rule IDs don't overlap with other threat prevention
          *
          * Also set flag to true if rule is blocked
          */
         int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
-        for (IpReputationPassRule rule : newSettings.getPassRules()) {
+        for (ThreatPreventionPassRule rule : newSettings.getPassRules()) {
             rule.setRuleId(++idx);
 
             // if (rule.getBlock())
@@ -245,7 +239,7 @@ public class IpReputationApp extends AppBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "ip-reputation/" + "settings_"  + appID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "threat-prevention/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -264,7 +258,7 @@ public class IpReputationApp extends AppBase
      * Get the current ruleset
      * @return the list
      */
-    public List<IpReputationPassRule> getPassRules()
+    public List<ThreatPreventionPassRule> getPassRules()
     {
         if (getSettings() == null)
             return null;
@@ -276,9 +270,9 @@ public class IpReputationApp extends AppBase
      * Set the current ruleset
      * @param rules - the new rules
      */
-    public void setRules( List<IpReputationPassRule> rules )
+    public void setRules( List<ThreatPreventionPassRule> rules )
     {
-        IpReputationSettings set = getSettings();
+        ThreatPreventionSettings set = getSettings();
 
         if (set == null) {
             logger.warn("NULL settings");
@@ -387,9 +381,9 @@ public class IpReputationApp extends AppBase
      * 
      * @return The replacement generator
      */
-    protected IpReputationReplacementGenerator buildReplacementGenerator()
+    protected ThreatPreventionReplacementGenerator buildReplacementGenerator()
     {
-        return new IpReputationReplacementGenerator(getAppSettings());
+        return new ThreatPreventionReplacementGenerator(getAppSettings());
     }
 
     /**
@@ -399,7 +393,7 @@ public class IpReputationApp extends AppBase
      *        The nonce to search
      * @return Block details
      */
-    public IpReputationBlockDetails getDetails(String nonce)
+    public ThreatPreventionBlockDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
     }
@@ -411,7 +405,7 @@ public class IpReputationApp extends AppBase
      *        The block details
      * @return The nonce
      */
-    protected String generateNonce(IpReputationBlockDetails details)
+    protected String generateNonce(ThreatPreventionBlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
     }
@@ -479,11 +473,11 @@ public class IpReputationApp extends AppBase
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
-        IpReputationSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/ip-reputation/" + "settings_" + appID + ".js";
+        ThreatPreventionSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/threat-prevention/" + "settings_" + appID + ".js";
 
         try {
-            readSettings = settingsManager.load( IpReputationSettings.class, settingsFileName );
+            readSettings = settingsManager.load( ThreatPreventionSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
@@ -511,35 +505,35 @@ public class IpReputationApp extends AppBase
      * Create new default settings
      * @return the default settings
      */
-    private IpReputationSettings getDefaultSettings()
+    private ThreatPreventionSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");
 
         /* A few sample settings */
-        List<IpReputationPassRule> ruleList = new LinkedList<>();
-        LinkedList<IpReputationPassRuleCondition> matcherList = null;
+        List<ThreatPreventionPassRule> ruleList = new LinkedList<>();
+        LinkedList<ThreatPreventionPassRuleCondition> matcherList = null;
             
         // /* example rule 1 */
-        // IpReputationRuleCondition portMatch1 = new IpReputationRuleCondition(IpReputationRuleCondition.ConditionType.DST_PORT, "21");
+        // ThreatPreventionRuleCondition portMatch1 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.DST_PORT, "21");
         // matcherList = new LinkedList<>();
         // matcherList.add(portMatch1);
-        // ruleList.add(new IpReputationRule(false, matcherList, true, true, "Block and flag all traffic destined to port 21"));
+        // ruleList.add(new ThreatPreventionRule(false, matcherList, true, true, "Block and flag all traffic destined to port 21"));
                              
         // /* example rule 2 */
-        // IpReputationRuleCondition addrMatch2 = new IpReputationRuleCondition(IpReputationRuleCondition.ConditionType.SRC_ADDR, "1.2.3.4/255.255.255.0");
+        // ThreatPreventionRuleCondition addrMatch2 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.SRC_ADDR, "1.2.3.4/255.255.255.0");
         // matcherList = new LinkedList<>();
         // matcherList.add(addrMatch2);
-        // ruleList.add(new IpReputationRule(false, matcherList, true, true, "Block and flag all TCP traffic from 1.2.3.0 netmask 255.255.255.0"));
+        // ruleList.add(new ThreatPreventionRule(false, matcherList, true, true, "Block and flag all TCP traffic from 1.2.3.0 netmask 255.255.255.0"));
 
         // /* example rule 3 */
-        // IpReputationRuleCondition addrMatch3 = new IpReputationRuleCondition(IpReputationRuleCondition.ConditionType.DST_ADDR, "1.2.3.4/255.255.255.0");
-        // IpReputationRuleCondition portMatch3 = new IpReputationRuleCondition(IpReputationRuleCondition.ConditionType.DST_PORT, "1000-5000");
+        // ThreatPreventionRuleCondition addrMatch3 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.DST_ADDR, "1.2.3.4/255.255.255.0");
+        // ThreatPreventionRuleCondition portMatch3 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.DST_PORT, "1000-5000");
         // matcherList = new LinkedList<>();
         // matcherList.add(addrMatch3);
         // matcherList.add(portMatch3);
-        // ruleList.add(new IpReputationRule(false, matcherList, true, false, "Accept and flag all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
+        // ruleList.add(new ThreatPreventionRule(false, matcherList, true, false, "Accept and flag all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
 
-        IpReputationSettings settings = new IpReputationSettings(ruleList);
+        ThreatPreventionSettings settings = new ThreatPreventionSettings(ruleList);
         settings.setVersion(1);
         
         return settings;
@@ -554,7 +548,7 @@ public class IpReputationApp extends AppBase
         logger.info("Reconfigure()");
 
         /* check for any sessions that should be killed according to new rules */
-        this.killMatchingSessions(IP_REPUTATION_SESSION_MATCHER);
+        this.killMatchingSessions(THREAT_PREVENTION_SESSION_MATCHER);
 
         if (settings == null) {
             logger.warn("Invalid settings: null");
@@ -566,15 +560,15 @@ public class IpReputationApp extends AppBase
     /**
      * Hook into network setting saves.
      */
-    static private class IpReputationWebrootQueryGetUrlInfoHook implements HookCallback
+    static private class ThreatPreventionWebrootQueryGetUrlInfoHook implements HookCallback
     {
-        private static final Logger hookLogger = Logger.getLogger(IpReputationWebrootQueryGetUrlInfoHook.class);
+        private static final Logger hookLogger = Logger.getLogger(ThreatPreventionWebrootQueryGetUrlInfoHook.class);
         /**
         * @return Name of callback hook
         */
         public String getName()
         {
-            return "ip-reputation-categorize-site";
+            return "threat-prevention-categorize-site";
         }
 
         /**
@@ -603,8 +597,8 @@ public class IpReputationApp extends AppBase
                 }
             }
 
-            sess.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION, reputation);
-            sess.globalAttach(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK, threatmask);
+            sess.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION, reputation);
+            sess.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK, threatmask);
 
         }
     }
@@ -623,10 +617,10 @@ public class IpReputationApp extends AppBase
             return;
         }
 
-        if (UvmContextFactory.context().tomcatManager().loadServlet("/ip-reputation", "ip-reputation") != null) {
-            logger.debug("Deployed IpReputation WebApp");
+        if (UvmContextFactory.context().tomcatManager().loadServlet("/threat-prevention", "threat-prevention") != null) {
+            logger.debug("Deployed ThreatPrevention WebApp");
         } else {
-            logger.error("Unable to deploy IpReputation WebApp");
+            logger.error("Unable to deploy ThreatPrevention WebApp");
         }
     }
 
@@ -643,10 +637,10 @@ public class IpReputationApp extends AppBase
             return;
         }
 
-        if (UvmContextFactory.context().tomcatManager().unloadServlet("/ip-reputation")) {
-            logger.debug("Unloaded IpReputation WebApp");
+        if (UvmContextFactory.context().tomcatManager().unloadServlet("/threat-prevention")) {
+            logger.debug("Unloaded ThreatPrevention WebApp");
         } else {
-            logger.warn("Unable to unload IpReputation WebApp");
+            logger.warn("Unable to unload ThreatPrevention WebApp");
         }
     }
 

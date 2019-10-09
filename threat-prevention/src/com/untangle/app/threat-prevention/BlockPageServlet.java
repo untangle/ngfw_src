@@ -2,7 +2,7 @@
  * $Id$
  */
 
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.io.IOException;
 import java.util.Map;
@@ -46,13 +46,13 @@ public class BlockPageServlet extends HttpServlet
 
         Map<String, String> i18n_map = UvmContextFactory.context().languageManager().getTranslations("untangle");
 
-        IpReputationApp app = null;
+        ThreatPreventionApp app = null;
         if (app == null) try {
-            app = (IpReputationApp) nm.app(Long.parseLong(request.getParameter("tid")));
+            app = (ThreatPreventionApp) nm.app(Long.parseLong(request.getParameter("tid")));
         } catch (Exception e) {
         }
         if (app == null) try {
-            app = (IpReputationApp) nm.app(Long.parseLong(request.getParameter("appid")));
+            app = (ThreatPreventionApp) nm.app(Long.parseLong(request.getParameter("appid")));
         } catch (Exception e) {
         }
 
@@ -60,12 +60,12 @@ public class BlockPageServlet extends HttpServlet
             response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr("App ID not found.", i18n_map));
             return;
         }
-        if (!(app instanceof IpReputationApp)) {
+        if (!(app instanceof ThreatPreventionApp)) {
             response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr("Invalid App ID.", i18n_map));
             return;
         }
 
-        IpReputationBlockDetails blockDetails = null;
+        ThreatPreventionBlockDetails blockDetails = null;
         String nonce = request.getParameter("nonce");
 
         blockDetails = app.getDetails(nonce);
@@ -92,7 +92,7 @@ public class BlockPageServlet extends HttpServlet
      *        The unblock mode
      * @return The BlockPageParameters
      */
-    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters(IpReputationBlockDetails blockDetails, String unblockMode)
+    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters(ThreatPreventionBlockDetails blockDetails, String unblockMode)
     {
         return new WebFilterBlockPageParameters(blockDetails, unblockMode);
     }
@@ -102,7 +102,7 @@ public class BlockPageServlet extends HttpServlet
      */
     protected static class WebFilterBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
-        private final IpReputationBlockDetails blockDetails;
+        private final ThreatPreventionBlockDetails blockDetails;
         private final String unblockMode;
 
         /**
@@ -113,7 +113,7 @@ public class BlockPageServlet extends HttpServlet
          * @param unblockMode
          *        Unblock mode
          */
-        public WebFilterBlockPageParameters(IpReputationBlockDetails blockDetails, String unblockMode)
+        public WebFilterBlockPageParameters(ThreatPreventionBlockDetails blockDetails, String unblockMode)
         {
             this.blockDetails = blockDetails;
             this.unblockMode = unblockMode;
@@ -202,7 +202,7 @@ public class BlockPageServlet extends HttpServlet
          * 
          * @return The block details
          */
-        public IpReputationBlockDetails getBlockDetails()
+        public ThreatPreventionBlockDetails getBlockDetails()
         {
             return this.blockDetails;
         }
