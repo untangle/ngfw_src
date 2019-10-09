@@ -1,24 +1,24 @@
 /**
  * $Id$
  */
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import com.untangle.uvm.app.RuleCondition;
 
 
 /**
- * This is a matching criteria for a IpReputationPass Rule
+ * This is a matching criteria for a ThreatPreventionPass Rule
  * Example: "Destination Port" == "80"
  *
- * A IpReputationPassRule has a set of these to determine what traffic to match
+ * A ThreatPreventionPassRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class IpReputationPassRuleCondition extends RuleCondition
+public class ThreatPreventionPassRuleCondition extends RuleCondition
 {
     /**
      * Create a firewall rule condition
      */
-    public IpReputationPassRuleCondition( )
+    public ThreatPreventionPassRuleCondition( )
     {
         super();
     }
@@ -28,7 +28,7 @@ public class IpReputationPassRuleCondition extends RuleCondition
      * @param matcherType
      * @param value
      */
-    public IpReputationPassRuleCondition( ConditionType matcherType, String value )
+    public ThreatPreventionPassRuleCondition( ConditionType matcherType, String value )
     {
         super( matcherType, value );
     }
@@ -39,7 +39,7 @@ public class IpReputationPassRuleCondition extends RuleCondition
      * @param value
      * @param invert
      */
-    public IpReputationPassRuleCondition( ConditionType matcherType, String value, Boolean invert )
+    public ThreatPreventionPassRuleCondition( ConditionType matcherType, String value, Boolean invert )
     {
         super( matcherType, value, invert );
     }

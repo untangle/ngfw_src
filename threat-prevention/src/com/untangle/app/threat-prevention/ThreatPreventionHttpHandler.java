@@ -2,7 +2,7 @@
  * $Id: WebFilterHandler.java 42622 2016-03-08 23:00:30Z dmorris $
  */
 
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.net.URI;
 
@@ -22,11 +22,11 @@ import org.apache.log4j.Logger;
 /**
  * Blocks HTTP traffic that is on an active block list.
  */
-public class IpReputationHttpHandler extends HttpEventHandler
+public class ThreatPreventionHttpHandler extends HttpEventHandler
 {
-    private final Logger logger = Logger.getLogger(IpReputationHttpHandler.class);
+    private final Logger logger = Logger.getLogger(ThreatPreventionHttpHandler.class);
 
-    protected final IpReputationApp app;
+    protected final ThreatPreventionApp app;
 
     /**
      * Constructor
@@ -34,7 +34,7 @@ public class IpReputationHttpHandler extends HttpEventHandler
      * @param app
      *        The web filter base application
      */
-    public IpReputationHttpHandler(IpReputationApp app)
+    public ThreatPreventionHttpHandler(ThreatPreventionApp app)
     {
         this.app = app;
     }

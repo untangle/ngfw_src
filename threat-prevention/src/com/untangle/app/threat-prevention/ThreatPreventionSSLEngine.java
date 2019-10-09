@@ -2,7 +2,7 @@
  * $Id: WebFilterSSLEngine.java 43513 2016-05-31 18:44:31Z mahotz $
  */
 
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult;
@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  * @author mahotz
  * 
  */
-public class IpReputationSSLEngine
+public class ThreatPreventionSSLEngine
 {
     private final Logger logger = Logger.getLogger(getClass());
     private AppTCPSession session;
@@ -55,7 +55,7 @@ public class IpReputationSSLEngine
      * @param appStr
      *        The application name
      */
-    protected IpReputationSSLEngine(AppTCPSession session, String nonceStr, String appStr)
+    protected ThreatPreventionSSLEngine(AppTCPSession session, String nonceStr, String appStr)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
         this.session = session;
@@ -337,7 +337,7 @@ public class IpReputationSSLEngine
         }
 
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: http://" + hostStr + "/ip-reputation/blockpage?nonce=" + nonceStr + "&appid=" + appStr + "\r\n";
+        vector += "Location: http://" + hostStr + "/threat-prevention/blockpage?nonce=" + nonceStr + "&appid=" + appStr + "\r\n";
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";

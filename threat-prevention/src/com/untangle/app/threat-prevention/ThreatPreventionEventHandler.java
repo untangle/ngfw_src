@@ -1,7 +1,7 @@
 /**
  * $Id: EventHandler.java,v 1.00 2018/05/10 20:44:51 dmorris Exp $
  */
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,27 +22,27 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.app.webroot.WebrootQuery;
 
 /**
- * The ip reputation event handler
+ * The Threat Prevention (non HTTP, non HTTPS) event handler
  */
-public class IpReputationEventHandler extends AbstractEventHandler
+public class ThreatPreventionEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(IpReputationEventHandler.class);
+    private final Logger logger = Logger.getLogger(ThreatPreventionEventHandler.class);
 
-    private List<IpReputationPassRule> ipReputationPassRuleList = new LinkedList<>();
+    private List<ThreatPreventionPassRule> threatPreventionPassRuleList = new LinkedList<>();
 
     private boolean blockSilently = true;
 
-    /* IP Reputation App */
-    private final IpReputationApp app;
+    /* Threat Prevention App */
+    private final ThreatPreventionApp app;
 
     private Map<String, String> i18nMap;
     Long i18nMapLastUpdated = 0L;
 
     /**
      * Create a new EventHandler.
-     * @param app - the containing ip reputation app
+     * @param app - the containing threat prevention app
      */
-    public IpReputationEventHandler( IpReputationApp app )
+    public ThreatPreventionEventHandler( ThreatPreventionApp app )
     {
         super(app);
 
@@ -96,12 +96,12 @@ public class IpReputationEventHandler extends AbstractEventHandler
             match = app.getDecisionEngine().isMatch(request);
         }
 
-        Integer clientReputation = (Integer) request.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_REPUTATION);
-        Integer clientThreatmask = (Integer) request.globalAttachment(AppSession.KEY_IP_REPUTATION_CLIENT_THREATMASK);
-        Integer serverReputation = (Integer) request.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_REPUTATION);
-        Integer serverThreatmask = (Integer) request.globalAttachment(AppSession.KEY_IP_REPUTATION_SERVER_THREATMASK);
+        Integer clientReputation = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
+        Integer clientThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_THREATMASK);
+        Integer serverReputation = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
+        Integer serverThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK);
 
-        for (IpReputationPassRule rule : app.getSettings().getPassRules()){
+        for (ThreatPreventionPassRule rule : app.getSettings().getPassRules()){
             if( rule.isMatch(request.getProtocol(),
                             request.getClientIntf(), request.getServerIntf(),
                             request.getOrigClientAddr(), request.getNewServerAddr(),
@@ -115,7 +115,7 @@ public class IpReputationEventHandler extends AbstractEventHandler
         }
 
         // log method?
-        IpReputationEvent fwe = new IpReputationEvent(request.sessionEvent(), block && match, match && flag, 
+        ThreatPreventionEvent fwe = new ThreatPreventionEvent(request.sessionEvent(), block && match, match && flag, 
             ruleIndex != null ? ruleIndex : 0, 
             clientReputation != null ? clientReputation : 0, 
             clientThreatmask != null ? clientThreatmask : 0, 

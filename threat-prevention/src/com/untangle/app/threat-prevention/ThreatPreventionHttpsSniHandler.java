@@ -2,7 +2,7 @@
  * $Id: WebFilterHttpsSniHandler.java 42225 2016-01-24 01:25:31Z dmorris $
  */
 
-package com.untangle.app.ip_reputation;
+package com.untangle.app.threat_prevention;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -28,10 +28,10 @@ import org.apache.log4j.Logger;
  * @author mahotz
  * 
  */
-public class IpReputationHttpsSniHandler extends AbstractEventHandler
+public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private IpReputationApp app;
+    private ThreatPreventionApp app;
 
     // these are used while extracting the SNI from the SSL ClientHello packet
     private static int TLS_HANDSHAKE = 0x16;
@@ -45,12 +45,12 @@ public class IpReputationHttpsSniHandler extends AbstractEventHandler
      * @param app
      *        The web filter base application
      */
-    public IpReputationHttpsSniHandler(IpReputationApp app)
+    public ThreatPreventionHttpsSniHandler(ThreatPreventionApp app)
     {
         super(app);
 
         this.app = app;
-        logger.debug("Created IpReputationHttpSniHandler");
+        logger.debug("Created ThreatPreventionHttpSniHandler");
     }
 
     /**
@@ -94,8 +94,8 @@ public class IpReputationHttpsSniHandler extends AbstractEventHandler
         }
 
         // see if there is an SSL engine attached to the session
-        IpReputationSSLEngine engine = (IpReputationSSLEngine) session.globalAttachment(AppSession.KEY_WEB_FILTER_SSL_ENGINE);
-        // IpReputationSSLEngine engine = null;
+        ThreatPreventionSSLEngine engine = (ThreatPreventionSSLEngine) session.globalAttachment(AppSession.KEY_WEB_FILTER_SSL_ENGINE);
+        // ThreatPreventionSSLEngine engine = null;
 
         if (engine != null) {
             // found an engine which means we've decided to block so we pass
@@ -286,7 +286,7 @@ public class IpReputationHttpsSniHandler extends AbstractEventHandler
             logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
-            IpReputationSSLEngine engine = new IpReputationSSLEngine(sess, nonce, app.getAppSettings().getId().toString());
+            ThreatPreventionSSLEngine engine = new ThreatPreventionSSLEngine(sess, nonce, app.getAppSettings().getId().toString());
             sess.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
             engine.handleClientData(buff);
             return;
