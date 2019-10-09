@@ -1,26 +1,18 @@
 {
-    "uniqueId": "ip-reputation-upl31dqKb1",
-    "category": "IP Reputation",
-    "description": "A summary of IP Reputation actions.",
+    "uniqueId": "threat-prevention-tpupl31dqKb1",
+    "category": "Threat Prevention",
+    "description": "A summary of Threat Prevention actions.",
     "displayOrder": 11,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as scanned",
-        "sum(ip_reputation_flagged::int) as flagged",
-        "sum(ip_reputation_blocked::int) as blocked"
+        "sum(threat_prevention_flagged::int) as flagged",
+        "sum(threat_prevention_blocked::int) as blocked"
     ],
-    "conditions": [
-        {
-            "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "ip_reputation_rule_index",
-            "operator": "is",
-            "value": "not null"
-        }
-    ],
-    "textString": "IP Reputation scanned {0} sessions and flagged {1} sessions of which {2} were blocked.", 
+    "textString": "Threat Prevention scanned {0} sessions and flagged {1} sessions of which {2} were blocked.", 
     "readOnly": true,
     "table": "sessions",
-    "title": "IP Reputation Summary",
+    "title": "Threat Prevention Summary",
     "type": "TEXT"
 }

@@ -1,11 +1,11 @@
 # -*-ruby-*-
 http = BuildEnv::SRC['untangle-app-http']
 webroot = BuildEnv::SRC['untangle-app-webroot']
-ip_reputation = BuildEnv::SRC['untangle-app-ip-reputation']
+threat_prevention = BuildEnv::SRC['untangle-app-threat-prevention']
 
-AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-ip-reputation', 'ip-reputation', [http['src'], webroot['src']])
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-threat-prevention', 'threat-prevention', [http['src'], webroot['src']])
 
-deps = [ip_reputation['src'], http['src'], webroot['src']]
+deps = [threat_prevention['src'], http['src'], webroot['src']]
 
-ServletBuilder.new(ip_reputation, 'com.untangle.app.ip_reputation.jsp', "./ip-reputation/servlets/ip-reputation", [], deps, [], [BuildEnv::SERVLET_COMMON])
+ServletBuilder.new(threat_prevention, 'com.untangle.app.threat_prevention.jsp', "./threat-prevention/servlets/threat-prevention", [], deps, [], [BuildEnv::SERVLET_COMMON])
 
