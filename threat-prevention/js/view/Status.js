@@ -15,7 +15,7 @@ Ext.define('Ung.apps.threatprevention.view.Status', {
             xtype: 'component',
             cls: 'app-desc',
             html: '<img src="/icons/apps/threat-prevention.svg" width="80" height="80"/>' +
-                '<h3>IP Reputation</h3>' +
+                '<h3>Threat Prevention</h3>' +
                 '<p>' + 'Firewall is a simple application that flags and blocks sessions based on rules.'.t() + '</p>'
         }, {
             xtype: 'applicense',
