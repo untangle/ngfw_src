@@ -36,6 +36,7 @@ public class SearchEngine
         searchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*"));
         searchEngines.add(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
         searchEngines.add(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)p=([^&]+).*"));
+        searchEngines.add(Pattern.compile(".*duckduckgo\\.[a-z]+(\\.[a-z]+)?/.*(\\?|&)q=([^&]+).*"));
     };
 
     /**
