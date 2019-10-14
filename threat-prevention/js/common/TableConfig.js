@@ -4,22 +4,37 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
     sessionsFields: [{
         name: 'threat_prevention_blocked'
     }, {
-        name: 'threat_prevention_firewall_flagged'
+        name: 'threat_prevention_flagged'
     }, {
-        name: 'threat_prevention_rule_index'
+        name: 'threat_prevention_rule_id'
     }, {
         name: 'threat_prevention_client_reputation',
         fromType: 'threat_reputation'
     }, {
-        name: 'threat_prevention_client_threatmask',
+        name: 'threat_prevention_client_categories',
         fromType: 'threat_category'
     }, {
         name: 'threat_prevention_server_reputation',
         fromType: 'threat_reputation'
     }, {
-        name: 'threat_prevention_server_threatmask',
+        name: 'threat_prevention_server_categories',
         fromType: 'threat_category'
     }],
+
+    httpFields: [{
+        name: 'threat_prevention_blocked'
+    }, {
+        name: 'threat_prevention_flagged'
+    }, {
+        name: 'threat_prevention_rule_id'
+    }, {
+        name: 'threat_prevention_reputation',
+        fromType: 'threat_reputation'
+    }, {
+        name: 'threat_prevention_categories',
+        fromType: 'threat_category'
+    }],
+
 
     // To do categories, do nested. Then eventreport selection can construct.
     // Make sure that with thee groupings, export still works.  And reports in general.
@@ -40,7 +55,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
-        dataIndex: 'threat_prevention_rule_index',
+        dataIndex: 'threat_prevention_rule_id',
         filter: Renderer.numericFilter
     }, {
         header: 'Client Reputation'.t() + ' (Threat Prevention)',
@@ -51,11 +66,11 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         renderer: Renderer.threatPreventionReputation,
         filter: Renderer.numericFilter
     }, {
-        header: 'Client Threatmask'.t() + ' (Threat Prevention)',
+        header: 'Client Categories'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
-        dataIndex: 'threat_prevention_client_threatmask',
+        dataIndex: 'threat_prevention_client_categories',
         renderer: Renderer.threatPreventionCategory,
         filter: Renderer.numericFilter
     }, {
@@ -67,14 +82,52 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         renderer: Renderer.threatPreventionReputation,
         filter: Renderer.numericFilter,
     }, {
-        header: 'Server Threatmask'.t() + ' (Threat Prevention)',
+        header: 'Server Categories'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
-        dataIndex: 'threat_prevention_server_threatmask',
+        dataIndex: 'threat_prevention_server_categories',
         renderer: Renderer.threatPreventionCategory,
         filter: Renderer.numericFilter,
     }],
+
+    httpColumns: [{
+        header: 'Blocked'.t() + ' (Threat Prevention)',
+        width: Renderer.booleanWidth,
+        sortable: true,
+        dataIndex: 'threat_prevention_blocked',
+        filter: Renderer.booleanFilter
+    }, {
+        header: 'Flagged'.t() + ' (Threat Prevention)',
+        width: Renderer.booleanWidth,
+        sortable: true,
+        dataIndex: 'threat_prevention_flagged',
+        filter: Renderer.booleanFilter
+    }, {
+        header: 'Rule Id'.t() + ' (Threat Prevention)',
+        width: Renderer.idWidth,
+        sortable: true,
+        flex:1,
+        dataIndex: 'threat_prevention_rule_id',
+        filter: Renderer.numericFilter
+    }, {
+        header: 'Reputation'.t() + ' (Threat Prevention)',
+        width: Renderer.idWidth,
+        sortable: true,
+        flex:1,
+        dataIndex: 'threat_prevention_reputation',
+        renderer: Renderer.threatPreventionReputation,
+        filter: Renderer.numericFilter
+    }, {
+        header: 'Categories'.t() + ' (Threat Prevention)',
+        width: Renderer.idWidth,
+        sortable: true,
+        flex:1,
+        dataIndex: 'threat_prevention_categories',
+        renderer: Renderer.threatPreventionCategory,
+        filter: Renderer.numericFilter
+    }],
+
 
     initialized: false,
     initialize: function(tableConfig){
@@ -92,7 +145,6 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             tableConfig.tableConfig.sessions.fields,
             me.sessionsFields
         );
-
         Ext.Array.push(
             tableConfig.tableConfig.sessions.columns,
             me.sessionsColumns
@@ -106,6 +158,16 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             tableConfig.tableConfig.session_minutes.columns,
             me.sessionsColumns
         );
+
+        Ext.Array.push(
+            tableConfig.tableConfig.http_events.fields,
+            me.httpFields
+        );
+        Ext.Array.push(
+            tableConfig.tableConfig.http_events.columns,
+            me.httpColumns
+        );
+
 
         tableConfig.tableConfig.sessions.listeners = {
             select: Ung.common.TableConfig.threatprevention.onSelectDetails
