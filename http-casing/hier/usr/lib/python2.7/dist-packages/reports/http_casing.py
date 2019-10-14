@@ -47,7 +47,12 @@ CREATE TABLE reports.http_events (
     virus_blocker_lite_clean boolean,
     virus_blocker_lite_name text,
     virus_blocker_clean boolean,
-    virus_blocker_name text)""",
+    virus_blocker_name text,
+    threat_prevention_blocked boolean,
+    threat_prevention_flagged boolean,
+    threat_prevention_rule_id integer,
+    threat_prevention_reputation int2,
+    threat_prevention_categories integer)""",
                                 ["request_id"],
                                 ["session_id",
                                  "policy_id",
@@ -64,8 +69,11 @@ CREATE TABLE reports.http_events (
                                  "web_filter_category_id",
                                  "virus_blocker_clean",
                                  "virus_blocker_lite_clean",
+                                 "threat_prevention_flagged",
+                                 "threat_prevention_blocked",
                                  "ad_blocker_action"])
-    sql_helper.add_column('http_events','s2c_content_filename','text')   # 13.2
-    sql_helper.add_column('http_events','web_filter_category_id','int2')   # 14.2
-    sql_helper.add_column('http_events','web_filter_rule_id','int2')   # 14.2
-#    sql_helper.drop_column('http_events','web_filter_category')   # Drop in 14.3 
+    sql_helper.add_column('http_events','threat_prevention_blocked','boolean') # 15.0
+    sql_helper.add_column('http_events','threat_prevention_flagged','boolean') # 15.0
+    sql_helper.add_column('http_events','threat_prevention_rule_id','integer') # 15.0
+    sql_helper.add_column('http_events','threat_prevention_reputation','int2') # 15.0
+    sql_helper.add_column('http_events','threat_prevention_categories','integer') # 15.0

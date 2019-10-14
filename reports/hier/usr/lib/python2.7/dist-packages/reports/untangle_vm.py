@@ -83,11 +83,11 @@ CREATE TABLE reports.sessions (
         threat_prevention_blocked boolean,
         threat_prevention_flagged boolean,
         threat_prevention_reason character(1),
-        threat_prevention_rule_index integer,
+        threat_prevention_rule_id integer,
         threat_prevention_client_reputation int2,
-        threat_prevention_client_threatmask integer,
+        threat_prevention_client_categories integer,
         threat_prevention_server_reputation int2,
-        threat_prevention_server_threatmask integer,
+        threat_prevention_server_categories integer,
         application_control_lite_protocol text,
         application_control_lite_blocked boolean,
         captive_portal_blocked boolean,
@@ -125,11 +125,11 @@ CREATE TABLE reports.sessions (
     sql_helper.add_column('sessions','threat_prevention_blocked','boolean') # 15.0
     sql_helper.add_column('sessions','threat_prevention_flagged','boolean') # 15.0
     sql_helper.add_column('sessions','threat_prevention_reason','character') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_rule_index','integer') # 15.0
+    sql_helper.add_column('sessions','threat_prevention_rule_id','integer') # 15.0
     sql_helper.add_column('sessions','threat_prevention_client_reputation','int2') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_client_threatmask','integer') # 15.0
+    sql_helper.add_column('sessions','threat_prevention_client_categories','integer') # 15.0
     sql_helper.add_column('sessions','threat_prevention_server_reputation','int2') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_server_threatmask','integer') # 15.0
+    sql_helper.add_column('sessions','threat_prevention_server_categories','integer') # 15.0
 
 @sql_helper.print_timing
 def __create_session_minutes_table(  ):
@@ -174,11 +174,11 @@ CREATE TABLE reports.session_minutes (
         threat_prevention_blocked boolean,
         threat_prevention_flagged boolean,
         threat_prevention_reason character(1),
-        threat_prevention_rule_index integer,
+        threat_prevention_rule_id integer,
         threat_prevention_client_reputation int2,
-        threat_prevention_client_threatmask integer,
+        threat_prevention_client_categories integer,
         threat_prevention_server_reputation int2,
-        threat_prevention_server_threatmask integer,
+        threat_prevention_server_categories integer,
         application_control_lite_protocol text,
         application_control_lite_blocked boolean,
         captive_portal_blocked boolean,
@@ -212,11 +212,11 @@ CREATE TABLE reports.session_minutes (
     sql_helper.add_column('session_minutes','threat_prevention_blocked','boolean') # 15.0
     sql_helper.add_column('session_minutes','threat_prevention_flagged','boolean') # 15.0
     sql_helper.add_column('session_minutes','threat_prevention_reason','character') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_rule_index','integer') # 15.0
+    sql_helper.add_column('session_minutes','threat_prevention_rule_id','integer') # 15.0
     sql_helper.add_column('session_minutes','threat_prevention_client_reputation','int2') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_client_threatmask','integer') # 15.0
+    sql_helper.add_column('session_minutes','threat_prevention_client_categories','integer') # 15.0
     sql_helper.add_column('session_minutes','threat_prevention_server_reputation','int2') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_server_threatmask','integer') # 15.0
+    sql_helper.add_column('session_minutes','threat_prevention_server_categories','integer') # 15.0
         
 
 @sql_helper.print_timing
