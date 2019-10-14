@@ -218,11 +218,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 for(int i = 0; i < catids.length(); i++){
                     categories.add(catids.getJSONObject(i).getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_ID_KEY));
                 }
-
-                if( (sess != null) &&
-                    UvmContextFactory.context().hookManager().hooksExist(HookManager.WEBFILTER_BASE_CATEGORIZE_SITE)){
-                    UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.WEBFILTER_BASE_CATEGORIZE_SITE, sess, urlAnswer.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY), categories );
-                }
             }
         }catch(Exception e){
             logger.warn(e);

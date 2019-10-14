@@ -79,15 +79,9 @@ public class ThreatPreventionApp extends AppBase
     private final PipelineConnector otherConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-other", this, null, new ThreatPreventionEventHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false);
     private final PipelineConnector[] connectors = new PipelineConnector[] { httpConnector, httpsSniConnector, otherConnector };
 
-    private static final HookCallback WebrootQueryGetUrlInfoHook;
-
-
     public static final Map<Integer, Integer> UrlCatThreatMap;
     public static final Map<Integer, String> ReputationThreatMap;
     static {
-        WebrootQueryGetUrlInfoHook = new ThreatPreventionWebrootQueryGetUrlInfoHook();
-        UvmContextFactory.context().hookManager().registerCallback( HookManager.WEBFILTER_BASE_CATEGORIZE_SITE, WebrootQueryGetUrlInfoHook );
-
         UrlCatThreatMap = new HashMap<>();
         UrlCatThreatMap.put(71, 1);         // Spam
         UrlCatThreatMap.put(67, 16);        // Botnets
@@ -554,52 +548,6 @@ public class ThreatPreventionApp extends AppBase
             logger.warn("Invalid settings: null");
         } else {
             // handler.configure(settings);
-        }
-    }
-
-    /**
-     * Hook into network setting saves.
-     */
-    static private class ThreatPreventionWebrootQueryGetUrlInfoHook implements HookCallback
-    {
-        private static final Logger hookLogger = Logger.getLogger(ThreatPreventionWebrootQueryGetUrlInfoHook.class);
-        /**
-        * @return Name of callback hook
-        */
-        public String getName()
-        {
-            return "threat-prevention-categorize-site";
-        }
-
-        /**
-         * Callback documentation
-         *
-         * @param args  Args to pass
-         */
-        public void callback( Object... args )
-        {
-            AppTCPSession sess = (AppTCPSession) args[0];
-            Integer reputation = (Integer) args[1];
-            @SuppressWarnings("unchecked")
-            List<Integer> categories = (List<Integer>) args[2];
-
-            if(sess == null || reputation == null || categories == null){
-                return;
-            }
-            if ( ! (sess instanceof AppTCPSession) ) {
-                hookLogger.warn( "Invalid session: " + sess);
-                return;
-            }
-            int threatmask = 0;
-            for(Integer category : categories){
-                if(UrlCatThreatMap.get(category) != null){
-                    threatmask += UrlCatThreatMap.get(category);
-                }
-            }
-
-            sess.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION, reputation);
-            sess.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK, threatmask);
-
         }
     }
 
