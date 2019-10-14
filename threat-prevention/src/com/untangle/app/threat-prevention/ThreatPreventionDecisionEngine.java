@@ -22,7 +22,6 @@ import org.json.JSONObject;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.AppSession;
 
-
 import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.app.webroot.WebrootQuery;
@@ -284,16 +283,15 @@ public class ThreatPreventionDecisionEngine
             }
         }
 
-        Integer clientReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
-        Integer clientThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_THREATMASK);
         Integer serverReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
         Integer serverThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK);
 
-        // should be logging url 0n http-events
-        ThreatPreventionEvent fwe = new ThreatPreventionEvent(sess.sessionEvent(), block && match, match && flag, 
+        ThreatPreventionHttpEvent fwe = new ThreatPreventionHttpEvent(
+            requestLine.getRequestLine(),
+            sess.sessionEvent(),
+            match && block, 
+            match && flag, 
             ruleIndex != null ? ruleIndex : 0, 
-            clientReputation != null ? clientReputation : 0, 
-            clientThreatmask != null ? clientThreatmask : 0, 
             serverReputation != null ? serverReputation : 0, 
             serverThreatmask != null ? serverThreatmask : 0
             );
