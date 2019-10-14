@@ -18,22 +18,22 @@ public class ThreatPreventionEvent extends LogEvent
     private boolean blocked;
     private boolean flagged;
     private int     clientReputation;
-    private int     clientThreatmask;
+    private int     clientCategories;
     private int     serverReputation;
-    private int     serverThreatmask;
+    private int     serverCategories;
 
     public ThreatPreventionEvent() { }
 
-    public ThreatPreventionEvent( SessionEvent sessionEvent, boolean blocked,  boolean flagged, int ruleId , int clientReputation, int clientThreatmask, int serverReputation, int serverThreatmask)
+    public ThreatPreventionEvent( SessionEvent sessionEvent, boolean blocked,  boolean flagged, int ruleId , int clientReputation, int clientCategories, int serverReputation, int serverCategories)
     {
         this.sessionEvent = sessionEvent;
         this.blocked = blocked;
         this.flagged = flagged;
         this.ruleId  = ruleId;
         this.clientReputation  = clientReputation;
-        this.clientThreatmask  = clientThreatmask;
+        this.clientCategories  = clientCategories;
         this.serverReputation  = serverReputation;
-        this.serverThreatmask  = serverThreatmask;
+        this.serverCategories  = serverCategories;
     }
 
     public boolean getBlocked() { return blocked; }
@@ -48,14 +48,14 @@ public class ThreatPreventionEvent extends LogEvent
     public int getClientReputation() { return clientReputation; }
     public void setClientReputation( int reputation ) { this.clientReputation = reputation; }
 
-    public int getClientThreatmask() { return clientThreatmask; }
-    public void setClientThreatmask( int threatmask ) { this.clientThreatmask = threatmask; }
+    public int getClientCategories() { return clientCategories; }
+    public void setClientCategories( int categories ) { this.clientCategories = categories; }
 
     public int getServerReputation() { return serverReputation; }
     public void setServerReputation( int reputation ) { this.serverReputation = reputation; }
 
-    public int getServerThreatmask() { return serverThreatmask; }
-    public void setServerThreatmask( int threatmask ) { this.serverThreatmask = threatmask; }
+    public int getServerCategories() { return serverCategories; }
+    public void setServerCategories( int categories ) { this.serverCategories = categories; }
 
     public Long getSessionId() { return sessionEvent.getSessionId(); }
     public void setSessionId( Long sessionId ) { this.sessionEvent.setSessionId(sessionId); }
@@ -67,11 +67,11 @@ public class ThreatPreventionEvent extends LogEvent
             "UPDATE " + schemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             "SET threat_prevention_blocked = ?, " +
             "    threat_prevention_flagged = ?, " + 
-            "    threat_prevention_rule_index = ?, " + 
+            "    threat_prevention_rule_id = ?, " + 
             "    threat_prevention_client_reputation = ?, " + 
-            "    threat_prevention_client_threatmask = ?, " + 
+            "    threat_prevention_client_categories = ?, " + 
             "    threat_prevention_server_reputation = ?, " + 
-            "    threat_prevention_server_threatmask = ? " + 
+            "    threat_prevention_server_categories = ? " + 
             "WHERE session_id = ? ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -81,9 +81,9 @@ public class ThreatPreventionEvent extends LogEvent
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setLong(++i, getRuleId());
         pstmt.setInt(++i, getClientReputation());
-        pstmt.setInt(++i, getClientThreatmask());
+        pstmt.setInt(++i, getClientCategories());
         pstmt.setInt(++i, getServerReputation());
-        pstmt.setInt(++i, getServerThreatmask());
+        pstmt.setInt(++i, getServerCategories());
         pstmt.setLong(++i, getSessionId());
 
         pstmt.addBatch();
