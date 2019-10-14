@@ -5,6 +5,14 @@
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","hostname","username","host","uri","web_filter_blocked","web_filter_flagged","web_filter_reason","web_filter_category_id","web_filter_rule_id","c_client_addr","s_server_addr","s_server_port"],
+    "conditions": [
+        {
+            "column": "web_filter_category_id",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "operator": "is not",
+            "value": "NULL"
+        }
+    ],
     "description": "Shows all scanned web requests.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
