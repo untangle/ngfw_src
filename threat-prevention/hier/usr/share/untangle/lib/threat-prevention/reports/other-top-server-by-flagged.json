@@ -1,31 +1,31 @@
 {
-    "uniqueId": "threat-prevention-tpAsifWhYFttbfs",
+    "uniqueId": "threat-prevention-tpgsR2R5tGWwotsbf",
     "category": "Threat Prevention",
-    "description": "The number of flagged sessions to servers grouped by threat.",
-    "displayOrder": 32,
+    "description": "The number of other flagged session grouped by server.",
+    "displayOrder": 401,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "threat_prevention_server_threatmask",
+    "pieGroupColumn": "c_client_addr",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "threat_prevention_server_reputation",
+            "operator": ">",
+            "value": "0"            
+        },{
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "threat_prevention_flagged",
             "operator": "=",
             "value": "true"
-        },{
-            "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_server_threatmask",
-            "operator": ">",
-            "value": "0"
         }
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Top Flagged Threats (by server)",
+    "title": "Other Top Flagged Server",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

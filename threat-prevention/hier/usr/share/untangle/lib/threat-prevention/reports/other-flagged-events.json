@@ -15,6 +15,6 @@
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
-    "title": "Flagged Events",
-    "uniqueId": "threat-prevention-tpZO9RCJYVO2"
+    "title": "Other Flagged Events",
+    "uniqueId": "threat-prevention-tpZO9RCJYVO2o"
 }
