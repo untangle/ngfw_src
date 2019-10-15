@@ -129,12 +129,12 @@ public class ThreatPreventionApp extends AppBase
                 // if (handler == null)
                 //     return false;
 
-                ThreatPreventionPassRule matchedRule = null;
+                ThreatPreventionRule matchedRule = null;
                 
                 /**
                  * Find the matching rule compute block/log verdicts
                  */
-                for (ThreatPreventionPassRule rule : settings.getPassRules()) {
+                for (ThreatPreventionRule rule : settings.getRules()) {
                     if (rule.isMatch(protocol,
                                      clientIntf, serverIntf,
                                      clientAddr, serverAddr,
@@ -220,7 +220,7 @@ public class ThreatPreventionApp extends AppBase
          * Also set flag to true if rule is blocked
          */
         int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
-        for (ThreatPreventionPassRule rule : newSettings.getPassRules()) {
+        for (ThreatPreventionRule rule : newSettings.getRules()) {
             rule.setRuleId(++idx);
 
             // if (rule.getBlock())
@@ -252,19 +252,19 @@ public class ThreatPreventionApp extends AppBase
      * Get the current ruleset
      * @return the list
      */
-    public List<ThreatPreventionPassRule> getPassRules()
+    public List<ThreatPreventionRule> getRules()
     {
         if (getSettings() == null)
             return null;
         
-        return getSettings().getPassRules();
+        return getSettings().getRules();
     }
 
     /**
      * Set the current ruleset
      * @param rules - the new rules
      */
-    public void setRules( List<ThreatPreventionPassRule> rules )
+    public void setRules( List<ThreatPreventionRule> rules )
     {
         ThreatPreventionSettings set = getSettings();
 
@@ -273,7 +273,7 @@ public class ThreatPreventionApp extends AppBase
             return;
         }
 
-        set.setPassRules(rules);
+        set.setRules(rules);
         setSettings(set);
     }
     
@@ -504,8 +504,8 @@ public class ThreatPreventionApp extends AppBase
         logger.info("Creating the default settings...");
 
         /* A few sample settings */
-        List<ThreatPreventionPassRule> ruleList = new LinkedList<>();
-        LinkedList<ThreatPreventionPassRuleCondition> matcherList = null;
+        List<ThreatPreventionRule> ruleList = new LinkedList<>();
+        LinkedList<ThreatPreventionRuleCondition> matcherList = null;
             
         // /* example rule 1 */
         // ThreatPreventionRuleCondition portMatch1 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.DST_PORT, "21");

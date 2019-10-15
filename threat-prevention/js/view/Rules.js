@@ -1,8 +1,8 @@
-Ext.define('Ung.apps.threatprevention.view.Pass', {
+Ext.define('Ung.apps.threatprevention.view.Rules', {
     extend: 'Ung.cmp.Grid',
-    alias: 'widget.app-threat-prevention-pass',
+    alias: 'widget.app-threat-prevention-rules',
     itemId: 'rules',
-    title: 'Pass Rules'.t(),
+    title: 'Rules'.t(),
     scrollable: true,
 
     dockedItems: [{
@@ -13,9 +13,9 @@ Ext.define('Ung.apps.threatprevention.view.Pass', {
 
     recordActions: ['edit', 'delete', 'reorder'],
 
-    listProperty: 'settings.passRules.list',
+    listProperty: 'settings.rules.list',
 
-    emptyText: 'No Pass Rules defined'.t(),
+    emptyText: 'No Rules defined'.t(),
 
     emptyRow: {
         ruleId: 0,
@@ -27,10 +27,10 @@ Ext.define('Ung.apps.threatprevention.view.Pass', {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.app.threat_prevention.ThreatPreventionPassRule'
+        javaClass: 'com.untangle.app.threat_prevention.ThreatPreventionRule'
     },
 
-    bind: '{passRules}',
+    bind: '{rules}',
 
     columns: [
         Column.ruleId,
@@ -50,7 +50,7 @@ Ext.define('Ung.apps.threatprevention.view.Pass', {
         Field.enableRule(),
         Field.description,
         Field.conditions(
-            'com.untangle.app.threat_prevention.ThreatPreventionPassRuleCondition', [
+            'com.untangle.app.threat_prevention.ThreatPreventionRuleCondition', [
             'DST_ADDR',
             'DST_PORT',
             'DST_INTF',
