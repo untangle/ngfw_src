@@ -786,13 +786,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             type: 'checkboxgroup',
             values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
-            name:'THREAT_PREVENTION_SRC_THREATMASK',
+            name:'THREAT_PREVENTION_SRC_CATEGORIES',
             displayName: 'Threat Prevention: Source address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.threatprevention.references.threatsConditionValues()
         },{
-            name:'THREAT_PREVENTION_DST_THREATMASK',
+            name:'THREAT_PREVENTION_DST_CATEGORIES',
             displayName: 'Threat Prevention: Destination address category'.t(),
             type: 'checkboxgroup',
             // Also, tips

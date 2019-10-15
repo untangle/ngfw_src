@@ -63,9 +63,9 @@ public interface SessionAttachments
     public static final String KEY_CAPTIVE_PORTAL_SESSION_CAPTURE = "captive-portal-session-capture"; /* String */
 
     public static final String KEY_THREAT_PREVENTION_CLIENT_REPUTATION = "ip-reputation-client-reputation"; /* Integer */
-    public static final String KEY_THREAT_PREVENTION_CLIENT_THREATMASK = "ip-reputation-client-threatmask"; /* Integer */
+    public static final String KEY_THREAT_PREVENTION_CLIENT_CATEGORIES = "ip-reputation-client-categories"; /* Integer */
     public static final String KEY_THREAT_PREVENTION_SERVER_REPUTATION = "ip-reputation-server-reputation"; /* Integer */
-    public static final String KEY_THREAT_PREVENTION_SERVER_THREATMASK = "ip-reputation-server-threatmask"; /* Integer */
+    public static final String KEY_THREAT_PREVENTION_SERVER_CATEGORIES = "ip-reputation-server-categories"; /* Integer */
 
     /**
      * Attaches the given object to this session.
