@@ -97,9 +97,9 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
         }
 
         Integer clientReputation = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
-        Integer clientThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_THREATMASK);
+        Integer clientThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES);
         Integer serverReputation = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
-        Integer serverThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK);
+        Integer serverThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
 
         for (ThreatPreventionPassRule rule : app.getSettings().getPassRules()){
             if( rule.isMatch(request.getProtocol(),

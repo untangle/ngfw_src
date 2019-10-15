@@ -151,10 +151,10 @@ public class ThreatPreventionDecisionEngine
                         ip = ipInfo.getString(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_IP_KEY);
                         if(!clientLocal && clientAddress != null && ip.equals(clientAddress.getHostAddress())){
                             sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
-                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
                         }else if(!serverLocal && serverAddress != null && ip.equals(serverAddress.getHostAddress())){
                             sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_REPUTATION_KEY));
-                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_IPINFO_THREATMASK_KEY));
                         }
                     }else if(ipInfo.has(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY)){
                         ip = ipInfo.getString(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY);
@@ -171,14 +171,14 @@ public class ThreatPreventionDecisionEngine
 
                         if(!clientLocal && clientAddress != null && ip.equals(clientAddress.getHostAddress())){
                             sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
-                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_THREATMASK, threatmask);
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES, threatmask);
                         }else if(!serverLocal && 
                                 ( ( serverAddress != null && ip.equals(serverAddress.getHostAddress()) ) ||
                                   ( serverUrl != null && ip.equals(serverUrl) )
                                 ) 
                                 ){
                             sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION, ipInfo.getInt(WebrootQuery.BCTI_API_DAEMON_RESPONSE_URLINFO_REPUTATION_KEY));
-                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK, threatmask);
+                            sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES, threatmask);
                         }
                     }
                 }
@@ -284,7 +284,7 @@ public class ThreatPreventionDecisionEngine
         }
 
         Integer serverReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
-        Integer serverThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_THREATMASK);
+        Integer serverThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
 
         ThreatPreventionHttpEvent fwe = new ThreatPreventionHttpEvent(
             requestLine.getRequestLine(),
