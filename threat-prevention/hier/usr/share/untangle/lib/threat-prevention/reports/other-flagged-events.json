@@ -10,9 +10,9 @@
             "value": "true"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","protocol","c_client_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_index","threat_prevention_client_reputation","threat_prevention_client_threatmask","threat_prevention_server_reputation","threat_prevention_server_threatmask","c_client_addr","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","username","hostname","protocol","c_client_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_index","threat_prevention_client_reputation","threat_prevention_client_categories","threat_prevention_server_reputation","threat_prevention_server_categories","c_client_addr","s_server_addr","s_server_port"],
     "description": "Events flagged by Threat Prevention.",
-    "displayOrder": 1010,
+    "displayOrder": 1011,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
     "title": "Other Flagged Events",

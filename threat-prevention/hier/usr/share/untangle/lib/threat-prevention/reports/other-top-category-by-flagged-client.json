@@ -2,13 +2,13 @@
     "uniqueId": "threat-prevention-tpAsifWhYFtotbfc",
     "category": "Threat Prevention",
     "description": "The number of other flagged sessions from clients grouped by threat.",
-    "displayOrder": 35,
+    "displayOrder": 535,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "threat_prevention_client_threatmask",
+    "pieGroupColumn": "threat_prevention_client_categories",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
@@ -18,14 +18,14 @@
             "value": "true"
         },{
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_client_threatmask",
+            "column": "threat_prevention_client_categories",
             "operator": ">",
             "value": "0"
         }
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Other Top Flagged Threats (by client)",
+    "title": "Other Top Flagged Categories (by client)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
