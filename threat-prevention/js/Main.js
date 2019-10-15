@@ -6,13 +6,13 @@ Ext.define('Ung.apps.threatprevention.Main', {
 
     viewModel: {
         stores: {
-            passRules: { data: '{settings.passRules.list}' },
+            rules: { data: '{settings.rules.list}' },
         }
     },
 
     items: [
         { xtype: 'app-threat-prevention-status' },
         { xtype: 'app-threat-prevention-reputation' },
-        { xtype: 'app-threat-prevention-pass' }
+        { xtype: 'app-threat-prevention-rules' }
     ]
 });

@@ -272,8 +272,8 @@ public class ThreatPreventionDecisionEngine
         boolean flag = app.getSettings().getFlag();
         Integer ruleIndex = null;
 
-        ThreatPreventionPassRule matchRule = null;
-        for (ThreatPreventionPassRule rule : app.getSettings().getPassRules()){
+        ThreatPreventionRule matchRule = null;
+        for (ThreatPreventionRule rule : app.getSettings().getRules()){
             if( rule.isMatch(sess) ){
                 matchRule = rule;
                 block = !rule.getPass();

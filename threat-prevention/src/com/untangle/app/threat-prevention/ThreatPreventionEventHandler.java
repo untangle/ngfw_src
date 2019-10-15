@@ -28,7 +28,7 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(ThreatPreventionEventHandler.class);
 
-    private List<ThreatPreventionPassRule> threatPreventionPassRuleList = new LinkedList<>();
+    private List<ThreatPreventionRule> threatPreventionRuleList = new LinkedList<>();
 
     private boolean blockSilently = true;
 
@@ -101,7 +101,7 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
         Integer serverReputation = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
         Integer serverThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
 
-        for (ThreatPreventionPassRule rule : app.getSettings().getPassRules()){
+        for (ThreatPreventionRule rule : app.getSettings().getRules()){
             if( rule.isMatch(request.getProtocol(),
                             request.getClientIntf(), request.getServerIntf(),
                             request.getOrigClientAddr(), request.getNewServerAddr(),
