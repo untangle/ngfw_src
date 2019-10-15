@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpMpnd3b85xotsbs",
     "category": "Threat Prevention",
     "description": "The number of other scanned sessions grouped by server.",
-    "displayOrder": 400,
+    "displayOrder": 210,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",

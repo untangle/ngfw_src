@@ -1,32 +1,31 @@
 {
-    "uniqueId": "threat-prevention-tpAsifWhYFaeotsbb",
+    "uniqueId": "threat-prevention-tpgsR2R5tGWwotsbfwtf",
     "category": "Threat Prevention",
-    "description": "The number of other blocked session grouped by client.",
-    "displayOrder": 212,
+    "description": "The number of web flagged session grouped by server.",
+    "displayOrder": 201,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "c_client_addr",
+    "pieGroupColumn": "host",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_server_reputation",
+            "column": "threat_prevention_reputation",
             "operator": ">",
             "value": "0"            
-        },
-        {
+        },{
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_blocked",
+            "column": "threat_prevention_flagged",
             "operator": "=",
             "value": "true"
         }
     ],
     "readOnly": true,
-    "table": "sessions",
-    "title": "Other Top Blocked Server",
+    "table": "http_events",
+    "title": "Web Top Flagged Hosts",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

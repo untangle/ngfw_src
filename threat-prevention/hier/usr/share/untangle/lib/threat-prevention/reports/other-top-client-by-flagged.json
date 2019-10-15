@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpgsR2R5tGWwotcbf",
     "category": "Threat Prevention",
     "description": "The number of other flagged session grouped by client.",
-    "displayOrder": 501,
+    "displayOrder": 231,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",

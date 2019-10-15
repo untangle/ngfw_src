@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpAsifWhYotrbsc",
     "category": "Threat Prevention",
     "description": "The number of other scanned sessions from clients grouped by reputation.",
-    "displayOrder": 24,
+    "displayOrder": 424,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
