@@ -1,14 +1,14 @@
 {
-    "uniqueId": "threat-prevention-tpAsifWhYFttbbc",
+    "uniqueId": "threat-prevention-tpAsifWhYFotrbbs",
     "category": "Threat Prevention",
-    "description": "The number of blocked sessions from clients grouped by threat.",
-    "displayOrder": 36,
+    "description": "The number of other blocked sessions to servers grouped by reputation.",
+    "displayOrder": 23,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "threat_prevention_client_threatmask",
+    "pieGroupColumn": "threat_prevention_server_reputation",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
@@ -18,14 +18,14 @@
             "value": "true"
         },{
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_client_threatmask",
+            "column": "threat_prevention_server_reputation",
             "operator": ">",
             "value": "0"
         }
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Top Blocked Threats (by client)",
+    "title": "Other Top Blocked Reputations (by server)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

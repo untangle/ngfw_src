@@ -15,6 +15,6 @@
     "displayOrder": 1000,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
-    "title": "All Events",
-    "uniqueId": "threat-reputation-tpJWVPEDU3Y6"
+    "title": "Other All Events",
+    "uniqueId": "threat-reputation-tpJWVPEDU3Y6o"
 }
