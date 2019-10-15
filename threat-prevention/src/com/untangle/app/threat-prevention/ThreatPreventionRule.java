@@ -18,15 +18,15 @@ import com.untangle.uvm.vnet.AppSession;
 /**
  * This in the implementation of an Threat Prevention Pass Rule
  *
- * A rule is basically a collection of ThreatPreventionPassRuleConditions (matchers)
+ * A rule is basically a collection of ThreatPreventionRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
-public class ThreatPreventionPassRule implements JSONString, Serializable
+public class ThreatPreventionRule implements JSONString, Serializable
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<ThreatPreventionPassRuleCondition> matchers;
+    private List<ThreatPreventionRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
@@ -34,11 +34,11 @@ public class ThreatPreventionPassRule implements JSONString, Serializable
     private Boolean pass;
     private String description;
     
-    public ThreatPreventionPassRule()
+    public ThreatPreventionRule()
     {
     }
 
-    public ThreatPreventionPassRule(boolean enabled, List<ThreatPreventionPassRuleCondition> matchers, boolean flag, boolean pass, String description)
+    public ThreatPreventionRule(boolean enabled, List<ThreatPreventionRuleCondition> matchers, boolean flag, boolean pass, String description)
     {
         this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
@@ -47,8 +47,8 @@ public class ThreatPreventionPassRule implements JSONString, Serializable
         this.setDescription(description);
     }
     
-    public List<ThreatPreventionPassRuleCondition> getConditions() { return this.matchers; }
-    public void setConditions( List<ThreatPreventionPassRuleCondition> newValue ) { this.matchers = newValue; }
+    public List<ThreatPreventionRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions( List<ThreatPreventionRuleCondition> newValue ) { this.matchers = newValue; }
 
     public Integer getRuleId() { return this.ruleId; }
     public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
@@ -93,7 +93,7 @@ public class ThreatPreventionPassRule implements JSONString, Serializable
         /**
          * It match, return true.
          */
-        for ( ThreatPreventionPassRuleCondition matcher : matchers ) {
+        for ( ThreatPreventionRuleCondition matcher : matchers ) {
             if (matcher.matches(protocol,
                             srcIntf, dstIntf,
                             srcAddress, dstAddress,
@@ -128,7 +128,7 @@ public class ThreatPreventionPassRule implements JSONString, Serializable
         /**
          * It match, return true.
          */
-        for ( ThreatPreventionPassRuleCondition matcher : matchers ) {
+        for ( ThreatPreventionRuleCondition matcher : matchers ) {
             if (matcher.matches(session) ){
                 return true;
             }

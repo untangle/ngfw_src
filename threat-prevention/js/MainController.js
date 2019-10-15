@@ -19,7 +19,6 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             }
 
             vm.set('settings', result);
-            // console.log(result);
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -57,8 +56,6 @@ Ext.define('Ung.apps.threatprevention.MainController', {
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
             }
         });
-
-        console.log(vm.get('settings'));
 
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
