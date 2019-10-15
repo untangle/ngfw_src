@@ -1,7 +1,7 @@
 {
-    "uniqueId": "threat-prevention-tph0jelsttGpiaas",
+    "uniqueId": "threat-prevention-tph0jelsttGpoiaas",
     "category": "Threat Preventon",
-    "description": "The amount of total, flagged, and blocked sessions to servers over time.",
+    "description": "The amount of other total, flagged, and blocked sessions to servers over time.",
     "displayOrder": 11,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -29,6 +29,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "AREA",
-    "title": "Threat Prevention Usage (server)",
+    "title": "Other Threat Prevention Usage (server)",
     "type": "TIME_GRAPH"
 }

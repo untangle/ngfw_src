@@ -1,26 +1,26 @@
 {
-    "uniqueId": "threat-prevention-tpAsifWhYFttbsc",
+    "uniqueId": "threat-prevention-tpAsifWhYotrbsc",
     "category": "Threat Prevention",
-    "description": "The number of scanned sessions from clients grouped by threat.",
-    "displayOrder": 34,
+    "description": "The number of other scanned sessions from clients grouped by reputation.",
+    "displayOrder": 24,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "threat_prevention_client_threatmask",
+    "pieGroupColumn": "threat_prevention_client_reputation",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_client_threatmask",
+            "column": "threat_prevention_client_reputation",
             "operator": ">",
             "value": "0"
         }
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Top Scanned Threats (by client)",
+    "title": "Other Top Scanned Reputations (by client)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

@@ -15,6 +15,6 @@
     "displayOrder": 1020,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
-    "title": "Blocked Events",
-    "uniqueId": "threat-prevention-tpN195L7ZCAX"
+    "title": "Other Blocked Events",
+    "uniqueId": "threat-prevention-tpN195L7ZCAXo"
 }
