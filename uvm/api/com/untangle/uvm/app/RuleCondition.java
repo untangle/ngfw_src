@@ -136,8 +136,8 @@ public class RuleCondition implements JSONString, Serializable
 
         THREAT_PREVENTION_SRC_REPUTATION, /* Source IP address reputation */
         THREAT_PREVENTION_DST_REPUTATION, /* Source IP address reputation */
-        THREAT_PREVENTION_SRC_THREATMASK, /* Source IP threat mask */
-        THREAT_PREVENTION_DST_THREATMASK, /* Source IP threat mask */
+        THREAT_PREVENTION_SRC_CATEGORIES, /* Source IP categories bitmask */
+        THREAT_PREVENTION_DST_CATEGORIES, /* Source IP categories bitmask */
     }        
 
 
@@ -362,8 +362,8 @@ public class RuleCondition implements JSONString, Serializable
                 this.domainMatcher = DomainMatcher.isMatchable(this.value) ? DomainMatcher.getMatcher(this.value) : null;
                 break;
             
-            case THREAT_PREVENTION_SRC_THREATMASK:
-            case THREAT_PREVENTION_DST_THREATMASK:
+            case THREAT_PREVENTION_SRC_CATEGORIES:
+            case THREAT_PREVENTION_DST_CATEGORIES:
                 this.bitmaskMatcher = BitmaskMatcher.getMatcher(this.value);
                 break;
 
@@ -905,20 +905,20 @@ public class RuleCondition implements JSONString, Serializable
             tmpInt = (Integer) sess.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
             return this.intMatcher.isMatch(tmpInt);
 
-        case THREAT_PREVENTION_SRC_THREATMASK:
+        case THREAT_PREVENTION_SRC_CATEGORIES:
             if (this.bitmaskMatcher == null) {
-                logger.warn("Invalid IP Reputation source threatmask Matcher: " + this.bitmaskMatcher);
+                logger.warn("Invalid IP Reputation source categories Matcher: " + this.bitmaskMatcher);
                 return false;
             }
-            tmpInt = (Integer) sess.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_CLIENT_THREATMASK);
+            tmpInt = (Integer) sess.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES);
             return this.bitmaskMatcher.isMatch(tmpInt);
 
-        case THREAT_PREVENTION_DST_THREATMASK:
+        case THREAT_PREVENTION_DST_CATEGORIES:
             if (this.bitmaskMatcher == null) {
-                logger.warn("Invalid IP Reputation destination threatmask Matcher: " + this.bitmaskMatcher);
+                logger.warn("Invalid IP Reputation destination categories Matcher: " + this.bitmaskMatcher);
                 return false;
             }
-            tmpInt = (Integer) sess.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_SERVER_THREATMASK);
+            tmpInt = (Integer) sess.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
             return this.bitmaskMatcher.isMatch(tmpInt);
 
         case APPLICATION_CONTROL_APPLICATION:
@@ -1469,26 +1469,26 @@ public class RuleCondition implements JSONString, Serializable
             tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
             return this.intMatcher.isMatch(tmpInt);
 
-        case THREAT_PREVENTION_SRC_THREATMASK:
+        case THREAT_PREVENTION_SRC_CATEGORIES:
             if (this.bitmaskMatcher == null) {
-                logger.warn("Invalid IP Reputation source threatmask Matcher: " + this.bitmaskMatcher);
+                logger.warn("Invalid IP Reputation source categories Matcher: " + this.bitmaskMatcher);
                 return false;
             }
             if(sessionAttachments == null){
                 return false;
             }
-            tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_CLIENT_THREATMASK);
+            tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES);
             return this.bitmaskMatcher.isMatch(tmpInt);
 
-        case THREAT_PREVENTION_DST_THREATMASK:
+        case THREAT_PREVENTION_DST_CATEGORIES:
             if (this.bitmaskMatcher == null) {
-                logger.warn("Invalid IP Reputation destination threatmask Matcher: " + this.bitmaskMatcher);
+                logger.warn("Invalid IP Reputation destination categories Matcher: " + this.bitmaskMatcher);
                 return false;
             }
             if(sessionAttachments == null){
                 return false;
             }
-            tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_SERVER_THREATMASK);
+            tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
             return this.bitmaskMatcher.isMatch(tmpInt);
 
         default:

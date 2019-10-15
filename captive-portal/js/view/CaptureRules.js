@@ -112,9 +112,9 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
             "CLIENT_COUNTRY",
             "SERVER_COUNTRY",
             'THREAT_PREVENTION_SRC_REPUTATION',
-            'THREAT_PREVENTION_SRC_THREATMASK',
+            'THREAT_PREVENTION_SRC_CATEGORIES',
             'THREAT_PREVENTION_DST_REPUTATION',
-            'THREAT_PREVENTION_DST_THREATMASK'
+            'THREAT_PREVENTION_DST_CATEGORIES'
         ]), {
             xtype: 'combo',
             allowBlank: false,
