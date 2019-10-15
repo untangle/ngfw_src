@@ -1,0 +1,21 @@
+{
+    "category": "Threat Prevention",
+    "readOnly": true,
+    "type": "EVENT_LIST",
+    "conditions": [],
+    "defaultColumns": ["time_stamp","hostname","username","host","uri","c_client_addr","s_server_addr","s_server_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_id","threat_prevention_reputation","threat_prevention_categories"],
+    "conditions": [
+        {
+            "column": "threat_prevention_reputation",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "operator": "is not",
+            "value": "NULL"
+        }
+    ],
+    "description": "Shows all scanned web requests.",
+    "displayOrder": 1000,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "table": "http_events",
+    "title": "All Web Events",
+    "uniqueId": "threat-prevention-SRSZBBKXLNtp"
+}
