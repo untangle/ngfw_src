@@ -151,10 +151,9 @@ public class ThreatPreventionApp extends AppBase
                 logger.info("Threat Prevention Save Setting Matcher: " +
                             clientAddr.getHostAddress().toString() + ":" + clientPort + " -> " +
                             serverAddr.getHostAddress().toString() + ":" + serverPort +
-                            " :: pass:" + matchedRule.getPass());
-                
-                return matchedRule.getPass() == false;
-                // return false;
+                            " :: action:" + matchedRule.getAction());
+
+                return matchedRule.getAction() == "pass";
             }
     };
     
