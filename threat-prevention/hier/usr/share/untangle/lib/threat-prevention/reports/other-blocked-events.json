@@ -10,7 +10,7 @@
             "value": "TRUE"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","c_client_port","protocol","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_index","threat_prevention_client_reputation","threat_prevention_client_categories","threat_prevention_server_reputation","threat_prevention_server_categories","c_client_addr","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","username","hostname","c_client_port","protocol","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_id","threat_prevention_client_reputation","threat_prevention_client_categories","threat_prevention_server_reputation","threat_prevention_server_categories","c_client_addr","s_server_addr","s_server_port"],
     "description": "Events blocked by Threat Prevention.",
     "displayOrder": 1012,
     "javaClass": "com.untangle.app.reports.ReportEntry",
