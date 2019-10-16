@@ -30,7 +30,6 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             Util.handleException(ex);
         });
 
-        vm.set('threatList', 'tl');
         var threatList = [];
         Ung.common.threatprevention.references.threats.each( function(threat){
             threatList.push(threat.get('description'));

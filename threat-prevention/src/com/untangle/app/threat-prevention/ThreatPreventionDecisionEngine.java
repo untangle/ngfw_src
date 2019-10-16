@@ -200,13 +200,13 @@ public class ThreatPreventionDecisionEngine
     {
         Integer clientReputation = (Integer) sessionAttachments.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
         Integer serverReputation = (Integer) sessionAttachments.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
-        Integer threatLevel = app.getSettings().getThreatLevel();
+        Integer threatLevel = app.getSettings().getReputationThreshold();
 
         // time of getSettings().getValue() vs synchronized values.
 
-        return ( ( ( serverReputation != null ) && serverReputation > 0 && serverReputation <= app.getSettings().getThreatLevel() ) )
+        return ( ( ( serverReputation != null ) && serverReputation > 0 && serverReputation <= app.getSettings().getReputationThreshold() ) )
                 ||
-                ( ( ( clientReputation != null ) && clientReputation > 0 && clientReputation <= app.getSettings().getThreatLevel() ) );
+                ( ( ( clientReputation != null ) && clientReputation > 0 && clientReputation <= app.getSettings().getReputationThreshold() ) );
     }
 
     /**
