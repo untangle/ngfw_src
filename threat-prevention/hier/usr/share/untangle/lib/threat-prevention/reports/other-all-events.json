@@ -10,7 +10,7 @@
             "value": "NOT NULL"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","protocol","c_client_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_index","threat_prevention_client_reputation","threat_prevention_client_categories","threat_prevention_server_reputation","threat_prevention_server_categories","c_client_addr","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","username","hostname","protocol","c_client_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_id","threat_prevention_client_reputation","threat_prevention_client_categories","threat_prevention_server_reputation","threat_prevention_server_categories","c_client_addr","s_server_addr","s_server_port"],
     "description": "All events scanned by Threat Prevention.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
