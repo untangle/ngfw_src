@@ -224,9 +224,6 @@ public class ThreatPreventionApp extends AppBase
         int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
         for (ThreatPreventionRule rule : newSettings.getRules()) {
             rule.setRuleId(++idx);
-
-            // if (rule.getBlock())
-            //     rule.setFlag(true);
         }
 
         /**
