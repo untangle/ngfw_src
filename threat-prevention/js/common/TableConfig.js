@@ -56,14 +56,15 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         sortable: true,
         flex:1,
         dataIndex: 'threat_prevention_rule_id',
-        filter: Renderer.numericFilter
+        filter: Renderer.numericFilter,
+        renderer: Ung.common.Renderer.threatprevention.ruleId
     }, {
         header: 'Client Reputation'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
         dataIndex: 'threat_prevention_client_reputation',
-        renderer: Renderer.threatPreventionReputation,
+        renderer: Ung.common.Renderer.threatprevention.reputation,
         filter: Renderer.numericFilter
     }, {
         header: 'Client Categories'.t() + ' (Threat Prevention)',
@@ -71,7 +72,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         sortable: true,
         flex:1,
         dataIndex: 'threat_prevention_client_categories',
-        renderer: Renderer.threatPreventionCategory,
+        renderer: Ung.common.Renderer.threatprevention.category,
         filter: Renderer.numericFilter
     }, {
         header: 'Server Reputation'.t() + ' (Threat Prevention)',
@@ -79,7 +80,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         sortable: true,
         flex:1,
         dataIndex: 'threat_prevention_server_reputation',
-        renderer: Renderer.threatPreventionReputation,
+        renderer: Ung.common.Renderer.threatprevention.reputation,
         filter: Renderer.numericFilter,
     }, {
         header: 'Server Categories'.t() + ' (Threat Prevention)',
@@ -87,7 +88,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         sortable: true,
         flex:1,
         dataIndex: 'threat_prevention_server_categories',
-        renderer: Renderer.threatPreventionCategory,
+        renderer: Ung.common.Renderer.threatprevention.category,
         filter: Renderer.numericFilter,
     }],
 
@@ -109,14 +110,15 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         sortable: true,
         flex:1,
         dataIndex: 'threat_prevention_rule_id',
-        filter: Renderer.numericFilter
+        filter: Renderer.numericFilter,
+        renderer: Ung.common.Renderer.threatprevention.ruleId
     }, {
         header: 'Reputation'.t() + ' (Threat Prevention)',
         width: Renderer.idWidth,
         sortable: true,
         flex:1,
         dataIndex: 'threat_prevention_reputation',
-        renderer: Renderer.threatPreventionReputation,
+        renderer: Ung.common.Renderer.threatprevention.reputation,
         filter: Renderer.numericFilter
     }, {
         header: 'Categories'.t() + ' (Threat Prevention)',
@@ -124,7 +126,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         sortable: true,
         flex:1,
         dataIndex: 'threat_prevention_categories',
-        renderer: Renderer.threatPreventionCategory,
+        renderer: Ung.common.Renderer.threatprevention.category,
         filter: Renderer.numericFilter
     }],
 
@@ -196,7 +198,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 },
                 popularity: {
                     name: 'Popularity'.t(),
-                    renderer: Renderer.ipPopularity
+                    renderer: Ung.common.Renderer.threatprevention.ipPopularity
                 },
                 threathistory: {
                     name: 'Threat History'.t(),
@@ -206,7 +208,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 },
                 reputation: {
                     name: 'Reputation'.t(),
-                    renderer: Renderer.ipReputation
+                    renderer: Ung.common.Renderer.threatprevention.reputation
                 }
             }
         },
@@ -247,15 +249,15 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             fields: {
                 max_reputation: {
                     name: 'Maximum Reputation'.t(),
-                    renderer: Renderer.ipReputation
+                    renderer: Ung.common.Renderer.threatprevention.reputation
                 },
                 min_reputation: {
                     name: 'Minimum Reputation'.t(),
-                    renderer: Renderer.ipReputation
+                    renderer: Ung.common.Renderer.threatprevention.reputation
                 },
                 avg_reputation: {
                     name: 'Average Reputation'.t(),
-                    renderer: Renderer.ipReputation
+                    renderer: Ung.common.Renderer.threatprevention.reputation
                 },
                 history_count: {
                     name: 'Reputation History'.t(),
@@ -268,7 +270,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     renderer: function(value){
                         var history = [];
                         value.forEach( function(shistory){
-                            history.push(Renderer.timestamp(shistory['ts']) + ': ' + Renderer.ipReputation(shistory['reputation']));
+                            history.push(Renderer.timestamp(shistory['ts']) + ': ' + Ung.common.Renderer.threatprevention.reputation(shistory['reputation']));
                         });
                         return history.join('<br>\n');
                     }
@@ -289,7 +291,6 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     renderer: function(value){
                         var history = [];
                         value.forEach( function(shistory){
-                            // history.push(Renderer.timestamp(shistory['ts']) + ': ' + shistory['status'] + ': ' + shistory['threat_types'].join(',') );
                             history.push(Renderer.timestamp(shistory['ts']) + ': ' + shistory['status'] + ': '  );
                         });
                         return history.join('<br>\n');
@@ -386,8 +387,8 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             if(Util.isDestroyed(v)){
                 return;
             }
-            console.log("result=");
-            console.log(results);
+            // console.log("result=");
+            // console.log(results);
 
             var propertyRecord = [];
 
