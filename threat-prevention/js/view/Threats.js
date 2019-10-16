@@ -11,17 +11,18 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
 
     items: [{
         xtype: 'fieldset',
-        title: 'IP Address Threats'.t(),
+        title: 'IP Address and URL Threats'.t(),
         layout: 'vbox',
         items:[{
+            itemId: 'threatReputation',
             xtype: 'container',
             layout: 'hbox',
             margin: '0 0 20 0',
             items: [{
                 xtype: 'label',
-                text: 'Reputation'.t(),
+                text: 'Reputation Threshold'.t(),
                 margin: '0 5 0 0',
-                width: 100
+                width: 125
             },{
                 xtype: 'container',
                 layout: 'vbox',
@@ -32,7 +33,7 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                     xtype: 'threatslider',
                     viewLabel: 'threatLabel',
                     rangeLabel: 'threatRange',
-                    width: 400,
+                    width: 450,
                     height: 20,
                     maxValue: 100,
                     minValue: 0,
@@ -41,13 +42,18 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                         value: '{settings.threatLevel}'
                     },
                     labelTpl: 'Match <i>{0}</i> or worse'.t(),
+                    thresholdWarning: {
+                        maxBlockValue: 80,
+                        minPassValue: 60,
+                        labelTpl: '<br><b>' + 'Warning: Reputation Threshold and Action combination are not recommended.'.t() + '</b>'
+                    },
                     tipTpl: '{0} - {1}'.t(),
-                    rangeTpl: '<table style="width:400px; height:75px;border-collapse:collapse; margin-top: -13px;"><tr>' + 
-                        '<td>High Risk</td>'+
-                        '<td>Suspicious</td>'+
-                        '<td>Moderate Risk</td>'+
-                        '<td>Low Risk</td>'+
-                        '<td>Trustworthy</td>'+
+                    rangeTpl: '<table style="width:450px; height:75px;border-collapse:collapse; margin-top: -29px;"><tr>' + 
+                        '<td style="vertical-align:bottom; width:20%;">High Risk</td>'+
+                        '<td style="vertical-align:bottom; width:20%;">Suspicious</td>'+
+                        '<td style="vertical-align:bottom; width:20%;">Moderate Risk</td>'+
+                        '<td style="vertical-align:bottom; width:20%;">Low Risk</td>'+
+                        '<td style="vertical-align:bottom; width:20%;">Trustworthy</td>'+
                         '</tr><tr>' + 
                         '<td style="background-color:#{0};"></td>'+
                         '<td style="background-color:#{1};"></td>'+
@@ -63,14 +69,16 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
         },{
             xtype: 'displayfield',
             fieldLabel: 'Categories'.t(),
-            labelWidth: 100,
+            labelWidth: 125,
             bind: {
                 value: '{threatList}'
             },
-            padding: '0 0 10 0'
+            padding: '0 10 10 0'
         },{
-            xtype: 'combo',
+            xtype: 'threatcomboaction',
+            itemId: 'action',
             fieldLabel: 'Action'.t(),
+            labelWidth: 125,
             editable: false,
             matchFieldWidth: false,
             queryMode: 'local',
@@ -83,6 +91,7 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
         },{
             xtype: 'checkbox',
             fieldLabel: 'Flag'.t(),
+            labelWidth: 125,
             bind:{
                 value: '{settings.flag}'
             }

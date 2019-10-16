@@ -102,6 +102,8 @@ Ext.define('Ung.ThreatSlider', {
         });
     },
     showValue: function(slider, newValue){
+        var me = this, vm = this.getViewModel();
+
         var viewLabelComponent = this.up().down('[itemId='+this.viewLabel+']');
         var viewRangeComponent = this.up().down('[itemId='+this.rangeLabel+']');
         var matched = false;
@@ -112,49 +114,58 @@ Ext.define('Ung.ThreatSlider', {
             }else{
                 rangeArguments.push('dddddd');
             }
-            if(newValue == 0){
-                viewLabelComponent.setHtml('No matches'.t());
-            }else{
-                if(newValue >= threat.get('rangeBegin') && newValue <= threat.get('rangeEnd')){
-                    matched = true;
-                    viewLabelComponent.setHtml(Ext.String.format(slider.labelTpl, threat.get('description')));
-                }
+            if(newValue >= threat.get('rangeBegin') && newValue <= threat.get('rangeEnd')){
+                matched = true;
             }
         });
         viewRangeComponent.setHtml( Ext.String.format.apply(null, rangeArguments) );
-    }
+        me.updateDescription();
+        me.up('panel').down('fieldset').items.each( 
+            function(item){
+                if(item.itemId != 'threatReputation'){
+                    if(newValue == 0){
+                        item.disable();
+                    }else{
+                        item.enable();
+                    }
+                }
+            }
+        );
+    },
 
+    updateDescription: function(){
+        var me = this,
+            vm = me.up('panel').getViewModel(),
+            viewLabelComponent = this.up().down('[itemId='+this.viewLabel+']');
+        if(vm == null){
+            return;
+        }
+        var sliderValue = me.getValue();
+        var actionValue = this.up('panel').down('[itemId=action]').getValue();
+        var thresholdWarning = me.thresholdWarning;
+        Ung.common.threatprevention.references.reputations.each( function(threat){
+            if(sliderValue == 0){
+                viewLabelComponent.setHtml('No matches'.t());
+            }else{
+                if(sliderValue >= threat.get('rangeBegin') && sliderValue <= threat.get('rangeEnd')){
+                    viewLabelComponent.setHtml(
+                        Ext.String.format(me.labelTpl, threat.get('description')) +
+                        ( ( actionValue == 'block' && sliderValue >= thresholdWarning.maxBlockValue ) ? Ext.String.format(thresholdWarning.labelTpl) : '' ) +
+                        ( ( actionValue == 'pass' && sliderValue <= thresholdWarning.minPassValue ) ? Ext.String.format(thresholdWarning.labelTpl) : '' )
+                    );
+                }
+            }
+        });
+    }
 });
 
-// Ext.define('Ung.Threats', {
-//     extend: 'Ext.form.CheckboxGroup',
-//     alias: 'widget.threats',
-
-//     constructor: function(config) {
-//         var me = this;
-//         var items = [];
-//         Ung.common.threatprevention.references.threats.each( function(threat){
-//             items.push({
-//                 inputValue: threat.get('bit'),
-//                 boxLabel: threat.get('description'),
-//                 autoEl: {
-//                     tag: 'div',
-//                     // 'data-qtip': condition.storeTip(record.get(condition.storeValue), null, record)
-//                     'data-qtip': threat.get('details')
-//                 }
-//             });
-//         });
-//         config.items = items;
-//         me.callParent(arguments);
-//     }
-//     // initComponent: function(){
-//     //     // Build list of checkboxes
-//     //     // 
-//     //     this.initialConfig.items = items;
-
-//     //     console.log(this);
-//     //     this.callParent();
-//     // }
-
-// });
-
+Ext.define('Ung.ThreatComboAction', {
+    extend: 'Ext.form.field.ComboBox',
+    alias: 'widget.threatcomboaction',
+    listeners:{
+        change: function(combo, newValue, oldValue){
+            var me = this;
+            me.up('panel').down('threatslider').updateDescription();
+        }
+    }
+});
