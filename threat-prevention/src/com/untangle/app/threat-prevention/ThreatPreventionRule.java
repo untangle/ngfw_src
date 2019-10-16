@@ -16,7 +16,7 @@ import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.vnet.AppSession;
 
 /**
- * This in the implementation of an Threat Prevention Pass Rule
+ * This in the implementation of an Threat Prevention Action Rule
  *
  * A rule is basically a collection of ThreatPreventionRuleConditions (matchers)
  * and what to do if the matchers match (block, log, etc)
@@ -31,19 +31,19 @@ public class ThreatPreventionRule implements JSONString, Serializable
     private Integer ruleId;
     private Boolean enabled;
     private Boolean flag;
-    private Boolean pass;
+    private String action;
     private String description;
     
     public ThreatPreventionRule()
     {
     }
 
-    public ThreatPreventionRule(boolean enabled, List<ThreatPreventionRuleCondition> matchers, boolean flag, boolean pass, String description)
+    public ThreatPreventionRule(boolean enabled, List<ThreatPreventionRuleCondition> matchers, boolean flag, String action, String description)
     {
         this.setConditions(matchers);
         this.setEnabled(Boolean.valueOf(enabled));
         this.setFlag(Boolean.valueOf(flag));
-        this.setPass(Boolean.valueOf(pass));
+        this.setAction(action);
         this.setDescription(description);
     }
     
@@ -56,8 +56,8 @@ public class ThreatPreventionRule implements JSONString, Serializable
     public Boolean getEnabled() { return enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
 
-    public Boolean getPass() { return pass; }
-    public void setPass( Boolean newValue ) { this.pass = newValue; }
+    public String getAction() { return action; }
+    public void setAction( String newValue ) { this.action = newValue; }
 
     public Boolean getFlag() { return flag; }
     public void setFlag( Boolean newValue ) { this.flag = newValue; }

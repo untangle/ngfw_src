@@ -20,7 +20,7 @@ Ext.define('Ung.apps.threatprevention.view.Rules', {
     emptyRow: {
         ruleId: 0,
         enabled: true,
-        pass: false,
+        action: "pass",
         flag: false,
         description: '',
         conditions: {
@@ -36,14 +36,22 @@ Ext.define('Ung.apps.threatprevention.view.Rules', {
         Column.ruleId,
         Column.enabled,
         Column.description,
-        Column.conditions, {
-            xtype: 'checkcolumn',
-            header: 'Pass'.t(),
-            dataIndex: 'pass',
-            resizable: false,
-            width: Renderer.booleanWidth
+        Column.conditions,
+        {
+        header: "Action".t(),
+        dataIndex: 'action',
+        width: Renderer.messageWidth,
+        flex: 2,
+        editor: {
+            xtype: 'combo',
+            editable: false,
+            matchFieldWidth: false,
+            queryMode: 'local',
+            valueField: 'value',
+            displayField: 'description',
+            store: Ung.common.threatprevention.references.actions
         }
-    ],
+    }],
 
     // todo: continue this stuff
     editorFields: [
@@ -82,20 +90,23 @@ Ext.define('Ung.apps.threatprevention.view.Rules', {
             'CLIENT_QUOTA_ATTAINMENT',
             'SERVER_QUOTA_ATTAINMENT',
             'HOST_ENTITLED',
-            // 'DIRECTORY_CONNECTOR_GROUP',
-            // 'DIRECTORY_CONNECTOR_DOMAIN',
-            // 'HTTP_USER_AGENT',
-            // 'HTTP_USER_AGENT_OS',
-            // 'CLIENT_COUNTRY',
-            // 'SERVER_COUNTRY',
             'THREAT_PREVENTION_SRC_REPUTATION',
             'THREAT_PREVENTION_DST_REPUTATION',
             'THREAT_PREVENTION_SRC_CATEGORIES',
             'THREAT_PREVENTION_DST_CATEGORIES'
-        ]), {
-        xtype: 'checkbox',
-        bind: '{record.pass}',
-        fieldLabel: 'Pass'.t()
+        ]),
+    {
+        xtype: 'combo',
+        fieldLabel: 'Action'.t(),
+        editable: false,
+        matchFieldWidth: false,
+        queryMode: 'local',
+        valueField: 'value',
+        displayField: 'description',
+        bind:{
+            value: '{record.action}'
+        },
+        store: Ung.common.threatprevention.references.actions
     },{
         xtype: 'checkbox',
         bind: '{record.flag}',

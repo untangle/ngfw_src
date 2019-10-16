@@ -276,7 +276,7 @@ public class ThreatPreventionDecisionEngine
         for (ThreatPreventionRule rule : app.getSettings().getRules()){
             if( rule.isMatch(sess) ){
                 matchRule = rule;
-                block = !rule.getPass();
+                block = rule.getAction().equals("block");
                 flag = rule.getFlag();
                 ruleIndex = rule.getRuleId();
                 break;
