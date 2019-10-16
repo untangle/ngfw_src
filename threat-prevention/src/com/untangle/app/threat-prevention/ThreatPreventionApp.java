@@ -56,6 +56,9 @@ public class ThreatPreventionApp extends AppBase
     public List<IPMaskedAddress> localNetworks = null;
     public WebrootQuery webrootQuery = null;
 
+    public static final String ACTION_BLOCK = "block";
+    public static final String ACTION_PASS = "pass";
+
     private static AtomicInteger AppCount = new AtomicInteger();
     private final ThreatPreventionDecisionEngine engine = new ThreatPreventionDecisionEngine(this);
 
