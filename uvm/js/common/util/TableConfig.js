@@ -305,22 +305,7 @@ Ext.define('TableConfig', {
         return values;
     },
 
-    fromTypes: {
-        threat_reputation: {
-            type: 'RANGE',
-            rangeValues: [
-                [1,20],
-                [21,40],
-                [41,60],
-                [61,80],
-                [81,100]
-            ]
-        },
-        threat_category: {
-            type: 'BITMASK',
-            length: 16
-        }
-    },
+    fromTypes: {},
 
     tableConfig: {
         sessions: {

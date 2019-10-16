@@ -50,7 +50,6 @@ Ext.define('Ung.common.Renderer.threatprevention', {
                 description = Ung.common.Renderer.threatprevention.reputationMap[reputationMaxes[i]];
                 break;
             }
-
         }
         return description;
     },
