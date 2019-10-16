@@ -61,11 +61,6 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
      */
     public void handleTCPNewSessionRequest(TCPNewSessionRequest req)
     {
-        // if (!app.isHttpsEnabledSni()) {
-        //     req.release();
-        //     return;
-        // }
-
         if (req.getNewServerPort() != 443) {
             req.release();
             return;
@@ -220,10 +215,9 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
          * If we didn't get a hostname from SNI or the certificate CN then we
          * revert to IP-based if its enabled
          */
-        // if ((domain == null) && (app.isHttpsEnabledSniIpFallback())) {
-        // if (domain == null) {
-        //     domain = sess.getServerAddr().getHostAddress();
-        // }
+        if (domain == null) {
+            domain = sess.getServerAddr().getHostAddress();
+        }
 
         if (domain == null) {
             logger.debug("No SNI information was found.");
