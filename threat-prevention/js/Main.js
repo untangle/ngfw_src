@@ -12,7 +12,7 @@ Ext.define('Ung.apps.threatprevention.Main', {
 
     items: [
         { xtype: 'app-threat-prevention-status' },
-        { xtype: 'app-threat-prevention-reputation' },
+        { xtype: 'app-threat-prevention-threats' },
         { xtype: 'app-threat-prevention-rules' }
     ]
 });
