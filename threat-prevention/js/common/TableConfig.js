@@ -1,6 +1,23 @@
 Ext.define('Ung.common.TableConfig.threatprevention', {
     singleton: true,
 
+    fromTypes: {
+        threat_reputation: {
+            type: 'RANGE',
+            rangeValues: [
+                [1,20],
+                [21,40],
+                [41,60],
+                [61,80],
+                [81,100]
+            ]
+        },
+        threat_category: {
+            type: 'BITMASK',
+            length: 16
+        }
+    },
+
     sessionsFields: [{
         name: 'threat_prevention_blocked'
     }, {
@@ -170,10 +187,14 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             me.httpColumns
         );
 
-
         tableConfig.tableConfig.sessions.listeners = {
             select: Ung.common.TableConfig.threatprevention.onSelectDetails
         };
+
+        Ext.Object.each( me.fromTypes, function(key, value){
+            tableConfig.fromTypes[key] = value;
+        });
+
 
         this.initialized = true;
     },
