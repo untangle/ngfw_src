@@ -336,6 +336,18 @@ public class ThreatPreventionApp extends AppBase
             return webrootQuery.getUrlHistory(arguments);
         }else if(key.equals("getIpHistory")){
             return webrootQuery.getIpHistory(arguments);
+        }else if(key.equals("rules")){
+            logger.warn("rules");
+            result = new JSONArray();
+            try{
+                for(ThreatPreventionRule rule : getSettings().getRules()){
+                    JSONObject jo = new JSONObject(rule);
+                    jo.remove("class");
+                    result.put(index++, jo);
+                }
+            }catch(Exception e){
+                logger.warn("getReportnfo:", e);
+            }
         }
 
         return result;
