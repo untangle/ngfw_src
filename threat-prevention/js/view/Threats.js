@@ -1,8 +1,8 @@
-Ext.define('Ung.apps.threatprevention.view.Reputation', {
+Ext.define('Ung.apps.threatprevention.view.Threats', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app-threat-prevention-reputation',
-    itemId: 'reputation',
-    title: 'Reputation'.t(),
+    alias: 'widget.app-threat-prevention-threats',
+    itemId: 'threats',
+    title: 'Threats'.t(),
 
     viewModel: true,
     scrollable: true,
