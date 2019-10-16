@@ -776,13 +776,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             type: 'countryfield'
         },{
             name:'THREAT_PREVENTION_SRC_REPUTATION',
-            displayName: 'Threat Prevention: Source address reputation'.t(),
+            displayName: 'Threat Prevention: Source address reputation threshold'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
             name:'THREAT_PREVENTION_DST_REPUTATION',
-            displayName: 'Threat Prevention: Destination address reputation'.t(),
+            displayName: 'Threat Prevention: Destination address reputation threshold'.t(),
             type: 'checkboxgroup',
             values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
