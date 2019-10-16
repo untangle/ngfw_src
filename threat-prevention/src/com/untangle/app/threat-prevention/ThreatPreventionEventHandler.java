@@ -87,7 +87,7 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
             return;
         }
 
-        boolean block = app.getSettings().getAction().equals("block");
+        boolean block = app.getSettings().getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
         boolean flag = app.getSettings().getFlag();
         Integer ruleIndex = null;
 
@@ -107,7 +107,7 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
                             request.getOrigClientAddr(), request.getNewServerAddr(),
                             request.getOrigClientPort(), request.getNewServerPort(),
                             request) ){
-                block = rule.getAction().equals("block");
+                block = rule.getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
                 flag = rule.getFlag();
                 ruleIndex = rule.getRuleId();
                 break;
