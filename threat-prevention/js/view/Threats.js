@@ -39,7 +39,7 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                     minValue: 0,
                     increment: 20,
                     bind:{
-                        value: '{settings.threatLevel}'
+                        value: '{settings.reputationThreshold}'
                     },
                     labelTpl: 'Match <i>{0}</i> or worse'.t(),
                     thresholdWarning: {

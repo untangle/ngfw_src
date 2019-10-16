@@ -23,11 +23,9 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     private final Logger logger = Logger.getLogger(getClass());
     private Integer version = Integer.valueOf(1);
 
-    private Integer threatLevel = 60;
+    private Integer reputationThreshold = 60;
     private String action = "block";
     private Boolean flag = false;
-
-    private Integer threatMask = null;
 
     private List<ThreatPreventionRule> rules = null;
     
@@ -44,8 +42,8 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     public Integer getVersion() { return this.version; }
     public void setVersion(Integer newValue) { this.version = newValue; }
 
-    public Integer getThreatLevel() { return this.threatLevel; }
-    public void setThreatLevel(Integer newValue) { this.threatLevel = newValue; }
+    public Integer getReputationThreshold() { return this.reputationThreshold; }
+    public void setReputationThreshold(Integer newValue) { this.reputationThreshold = newValue; }
 
     public String getAction() { return this.action; }
     public void setAction(String newValue) { this.action = newValue; }
