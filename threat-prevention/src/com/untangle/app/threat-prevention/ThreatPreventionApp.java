@@ -337,7 +337,6 @@ public class ThreatPreventionApp extends AppBase
         }else if(key.equals("getIpHistory")){
             return webrootQuery.getIpHistory(arguments);
         }else if(key.equals("rules")){
-            logger.warn("rules");
             result = new JSONArray();
             try{
                 for(ThreatPreventionRule rule : getSettings().getRules()){
