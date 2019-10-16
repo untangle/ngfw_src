@@ -107,7 +107,7 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
                             request.getOrigClientAddr(), request.getNewServerAddr(),
                             request.getOrigClientPort(), request.getNewServerPort(),
                             request) ){
-                block = !rule.getPass();
+                block = rule.getAction().equals("block");
                 flag = rule.getFlag();
                 ruleIndex = rule.getRuleId();
                 break;
