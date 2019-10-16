@@ -14,7 +14,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         },
         threat_category: {
             type: 'BITMASK',
-            length: 16
+            length: 31
         }
     },
 
