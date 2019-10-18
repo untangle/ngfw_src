@@ -23,9 +23,9 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     private final Logger logger = Logger.getLogger(getClass());
     private Integer version = Integer.valueOf(1);
 
-    private Integer reputationThreshold = 60;
+    private Integer reputationThreshold = 40;
     private String action = ThreatPreventionApp.ACTION_BLOCK;
-    private Boolean flag = false;
+    private Boolean flag = true;
 
     private List<ThreatPreventionRule> rules = null;
     
