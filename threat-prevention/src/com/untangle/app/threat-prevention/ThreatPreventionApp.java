@@ -22,7 +22,6 @@ import com.untangle.app.webroot.WebrootDaemon;
 
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.app.PortRange;
-import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.vnet.Subscription;
 
 
@@ -179,6 +178,9 @@ public class ThreatPreventionApp extends AppBase
         // this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
         //      this should just get local network list for us.
         localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
+        localNetworks.add(new IPMaskedAddress("192.168.0.0/16"));
+        localNetworks.add(new IPMaskedAddress("172.16.0.0/12"));
+        localNetworks.add(new IPMaskedAddress("10.0.0.0/8"));
 
         // this.handler = new ThreatPreventionEventHandler(this);
 
