@@ -21,7 +21,7 @@ Ext.define('Ung.apps.threatprevention.view.Rules', {
         ruleId: 0,
         enabled: true,
         action: "pass",
-        flag: false,
+        flag: true,
         description: '',
         conditions: {
             javaClass: 'java.util.LinkedList',
