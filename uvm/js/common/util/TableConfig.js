@@ -1293,6 +1293,18 @@ Ext.define('TableConfig', {
                 name: 's_server_port',
                 sortType: 'asInt'
             }, {
+                name: 'client_country'
+            }, {
+                name: 'client_latitude'
+            }, {
+                name: 'client_longitude'
+            }, {
+                name: 'server_country'
+            }, {
+                name: 'server_latitude'
+            }, {
+                name: 'server_longitude'
+            }, {
                 name: 'username',
                 type: 'string'
             }, {
@@ -1445,6 +1457,44 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 's_server_port'
+            }, {
+                header: 'Client Country'.t() ,
+                width: Renderer.messageWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'client_country',
+                renderer: Renderer.country 
+            }, {
+                header: 'Client Latitude'.t() ,
+                width: Renderer.locationWidth,
+                sortable: true,
+                dataIndex: 'client_latitude',
+                filter: Renderer.numericFilter
+            }, {
+                header: 'Client Longitude'.t() ,
+                width: Renderer.locationWidth,
+                sortable: true,
+                dataIndex: 'client_longitude',
+                filter: Renderer.numericFilter
+            }, {
+                header: 'Server Country'.t() ,
+                width: Renderer.messageWidth,
+                sortable: true,
+                filter: Renderer.stringFilter,
+                dataIndex: 'server_country',
+                renderer: Renderer.country 
+            }, {
+                header: 'Server Latitude'.t() ,
+                width: Renderer.locationWidth,
+                sortable: true,
+                dataIndex: 'server_latitude',
+                filter: Renderer.numericFilter
+            }, {
+                header: 'Server Longitude'.t() ,
+                width: Renderer.locationWidth,
+                sortable: true,
+                dataIndex: 'server_longitude',
+                filter: Renderer.numericFilter
             }, {
                 header: 'Username'.t(),
                 width: Renderer.usernameWidth,
