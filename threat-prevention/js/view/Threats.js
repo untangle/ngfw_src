@@ -41,7 +41,8 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                     bind:{
                         value: '{settings.reputationThreshold}'
                     },
-                    labelTpl: 'Match <i>{0}</i> or worse'.t(),
+                    labelTplSingle: 'Match <i>{0}</i>'.t(),
+                    labelTplMultiple: 'Match <i>{0}</i> or worse'.t(),
                     thresholdWarning: {
                         maxBlockValue: 80,
                         labelTpl: '<br><b>' + 'Warning: This Reputation Threshold is not recommended.'.t() + '</b>'

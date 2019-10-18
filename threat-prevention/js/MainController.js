@@ -108,7 +108,8 @@ Ext.define('Ung.ThreatSlider', {
         var thresholdWarning = me.thresholdWarning;
         var matched = false;
         var rangeArguments = [slider.rangeTpl];
-        Ung.common.threatprevention.references.reputations.each( function(threat){
+        var matchingIndex = -1;
+        Ung.common.threatprevention.references.reputations.each( function(threat, index){
             if(matched == false && newValue > 0){
                 rangeArguments.push(threat.get('color'));
             }else{
@@ -119,8 +120,9 @@ Ext.define('Ung.ThreatSlider', {
             }else{
                 if(newValue >= threat.get('rangeBegin') && newValue <= threat.get('rangeEnd')){
                     matched = true;
+                    matchingIndex = index;
                     viewLabelComponent.setHtml(
-                        Ext.String.format(me.labelTpl, threat.get('description')) +
+                        Ext.String.format(matchingIndex == 0 ? me.labelTplSingle : me.labelTplMultiple, threat.get('description')) +
                         ( ( newValue >= thresholdWarning.maxBlockValue ) ? Ext.String.format(thresholdWarning.labelTpl) : '' )
                     );
                 }
