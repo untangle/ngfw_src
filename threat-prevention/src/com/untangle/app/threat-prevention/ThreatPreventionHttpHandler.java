@@ -141,27 +141,7 @@ public class ThreatPreventionHttpHandler extends HttpEventHandler
     @Override
     protected HeaderToken doResponseHeader(AppTCPSession sess, HeaderToken responseHeader)
     {
-        if (getStatusLine(sess).getStatusCode() == 100) {
-            releaseResponse(sess);
-        // } else {
-            // String nonce = app.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest(sess), responseHeader);
-
-            // if (logger.isDebugEnabled()) {
-            //     logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + nonce);
-            // }
-
-            // if (nonce == null) {
-            //     app.incrementPassCount();
-
-            //     releaseResponse(sess);
-            // } else {
-            //     app.incrementBlockCount();
-
-            //     Token[] response = app.generateResponse(nonce, sess);
-            //     blockResponse(sess, response);
-            // }
-        }
-
+        releaseResponse(sess);
         return responseHeader;
     }
 
