@@ -16,7 +16,7 @@
             "value": "443"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","host","uri","web_filter_blocked","web_filter_flagged","web_filter_reason","web_filter_category_id","web_filter_rule_id","c_client_addr","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","client_country","server_country","hostname","username","host","uri","web_filter_blocked","web_filter_flagged","web_filter_reason","web_filter_category_id","web_filter_rule_id","c_client_addr","s_server_addr","s_server_port"],
     "description": "Shows all encrypted HTTPS requests.",
     "displayOrder": 1004,
     "javaClass": "com.untangle.app.reports.ReportEntry",
