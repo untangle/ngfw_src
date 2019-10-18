@@ -164,12 +164,16 @@ public class HttpRequestEvent extends LogEvent
             "session_id, client_intf, server_intf, " +
             "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 
             "s_client_addr, s_client_port, s_server_addr, s_server_port, " + 
+
+            "client_country, client_latitude, client_longitude, " + 
+            "server_country, server_latitude, server_longitude, " +
+
             "policy_id, username, " + 
             "request_id, method, uri, " + 
             "host, domain, referer, c2s_content_length, " + 
             "hostname) " + 
             "values " +
-            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+            "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
@@ -186,6 +190,14 @@ public class HttpRequestEvent extends LogEvent
         pstmt.setInt(++i, getSessionEvent().getSClientPort());
         pstmt.setObject(++i, getSessionEvent().getSServerAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getSessionEvent().getSServerPort());
+
+        pstmt.setString(++i, getSessionEvent().getClientCountry());
+        pstmt.setDouble(++i, (getSessionEvent().getClientLatitude() == null ? 0 : getSessionEvent().getClientLatitude()) );
+        pstmt.setDouble(++i, (getSessionEvent().getClientLongitude() == null ? 0 : getSessionEvent().getClientLongitude()) );
+        pstmt.setString(++i, getSessionEvent().getServerCountry());
+        pstmt.setDouble(++i, (getSessionEvent().getServerLatitude() == null ? 0 : getSessionEvent().getServerLatitude()) );
+        pstmt.setDouble(++i, (getSessionEvent().getServerLongitude() == null ? 0 : getSessionEvent().getServerLongitude()) );
+
         pstmt.setLong(++i, getSessionEvent().getPolicyId());
         pstmt.setString(++i, getSessionEvent().getUsername());
         pstmt.setLong(++i, getRequestId());
