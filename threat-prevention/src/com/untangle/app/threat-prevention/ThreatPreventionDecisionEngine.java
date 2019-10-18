@@ -264,7 +264,7 @@ public class ThreatPreventionDecisionEngine
         uri = CONSECUTIVE_SLASHES_PATH_PATTERN.matcher(uri).replaceAll("/");
 
         Boolean match = false;
-        if(addressQuery(clientIp, host + uri, sess)){
+        if(addressQuery(clientIp, sess.getServerAddr(), host + uri, sess)){
             match = isMatch(sess);
         }
 
