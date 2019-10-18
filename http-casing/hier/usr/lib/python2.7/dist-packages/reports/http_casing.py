@@ -25,6 +25,12 @@ CREATE TABLE reports.http_events (
     s_client_port integer,
     c_server_port integer,
     s_server_port integer,
+    client_country text,
+    client_latitude real,
+    client_longitude real,
+    server_country text,
+    server_latitude real,
+    server_longitude real,
     policy_id int2,
     username text,
     hostname text,
@@ -77,3 +83,11 @@ CREATE TABLE reports.http_events (
     sql_helper.add_column('http_events','threat_prevention_rule_id','integer') # 15.0
     sql_helper.add_column('http_events','threat_prevention_reputation','int2') # 15.0
     sql_helper.add_column('http_events','threat_prevention_categories','integer') # 15.0
+    sql_helper.add_column('http_events','client_country','text') # 15.0
+    sql_helper.add_column('http_events','client_latitude','real') # 15.0
+    sql_helper.add_column('http_events','client_longitude','real') # 15.0
+    sql_helper.add_column('http_events','server_country','text') # 15.0
+    sql_helper.add_column('http_events','server_latitude','real') # 15.0
+    sql_helper.add_column('http_events','server_longitude','real') # 15.0
+
+
