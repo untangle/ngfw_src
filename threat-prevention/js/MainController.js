@@ -105,6 +105,7 @@ Ext.define('Ung.ThreatSlider', {
 
         var viewLabelComponent = this.up().down('[itemId='+this.viewLabel+']');
         var viewRangeComponent = this.up().down('[itemId='+this.rangeLabel+']');
+        var thresholdWarning = me.thresholdWarning;
         var matched = false;
         var rangeArguments = [slider.rangeTpl];
         Ung.common.threatprevention.references.reputations.each( function(threat){
@@ -113,12 +114,19 @@ Ext.define('Ung.ThreatSlider', {
             }else{
                 rangeArguments.push('dddddd');
             }
-            if(newValue >= threat.get('rangeBegin') && newValue <= threat.get('rangeEnd')){
-                matched = true;
+            if(newValue == 0){
+                viewLabelComponent.setHtml('No matches'.t());
+            }else{
+                if(newValue >= threat.get('rangeBegin') && newValue <= threat.get('rangeEnd')){
+                    matched = true;
+                    viewLabelComponent.setHtml(
+                        Ext.String.format(me.labelTpl, threat.get('description')) +
+                        ( ( newValue >= thresholdWarning.maxBlockValue ) ? Ext.String.format(thresholdWarning.labelTpl) : '' )
+                    );
+                }
             }
         });
         viewRangeComponent.setHtml( Ext.String.format.apply(null, rangeArguments) );
-        me.updateDescription();
         me.up('panel').down('fieldset').items.each( 
             function(item){
                 if(item.itemId != 'threatReputation'){
@@ -130,41 +138,5 @@ Ext.define('Ung.ThreatSlider', {
                 }
             }
         );
-    },
-
-    updateDescription: function(){
-        var me = this,
-            vm = me.up('panel').getViewModel(),
-            viewLabelComponent = this.up().down('[itemId='+this.viewLabel+']');
-        if(vm == null){
-            return;
-        }
-        var sliderValue = me.getValue();
-        var actionValue = this.up('panel').down('[itemId=action]').getValue();
-        var thresholdWarning = me.thresholdWarning;
-        Ung.common.threatprevention.references.reputations.each( function(threat){
-            if(sliderValue == 0){
-                viewLabelComponent.setHtml('No matches'.t());
-            }else{
-                if(sliderValue >= threat.get('rangeBegin') && sliderValue <= threat.get('rangeEnd')){
-                    viewLabelComponent.setHtml(
-                        Ext.String.format(me.labelTpl, threat.get('description')) +
-                        ( ( actionValue == 'block' && sliderValue >= thresholdWarning.maxBlockValue ) ? Ext.String.format(thresholdWarning.labelTpl) : '' ) +
-                        ( ( actionValue == 'pass' && sliderValue <= thresholdWarning.minPassValue ) ? Ext.String.format(thresholdWarning.labelTpl) : '' )
-                    );
-                }
-            }
-        });
-    }
-});
-
-Ext.define('Ung.ThreatComboAction', {
-    extend: 'Ext.form.field.ComboBox',
-    alias: 'widget.threatcomboaction',
-    listeners:{
-        change: function(combo, newValue, oldValue){
-            var me = this;
-            me.up('panel').down('threatslider').updateDescription();
-        }
     }
 });
