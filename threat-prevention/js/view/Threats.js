@@ -44,8 +44,7 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                     labelTpl: 'Match <i>{0}</i> or worse'.t(),
                     thresholdWarning: {
                         maxBlockValue: 80,
-                        minPassValue: 60,
-                        labelTpl: '<br><b>' + 'Warning: Reputation Threshold and Action combination are not recommended.'.t() + '</b>'
+                        labelTpl: '<br><b>' + 'Warning: This Reputation Threshold is not recommended.'.t() + '</b>'
                     },
                     tipTpl: '{0} - {1}'.t(),
                     rangeTpl: '<table style="width:450px; height:75px;border-collapse:collapse; margin-top: -29px;"><tr>' + 
@@ -75,26 +74,9 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
             },
             padding: '0 10 10 0'
         },{
-            xtype: 'threatcomboaction',
-            itemId: 'action',
-            fieldLabel: 'Action'.t(),
-            labelWidth: 125,
-            editable: false,
-            matchFieldWidth: false,
-            queryMode: 'local',
-            valueField: 'value',
-            displayField: 'description',
-            bind:{
-                value: '{settings.action}'
-            },
-            store: Ung.common.threatprevention.references.actions
-        },{
-            xtype: 'checkbox',
-            fieldLabel: 'Flag'.t(),
-            labelWidth: 125,
-            bind:{
-                value: '{settings.flag}'
-            }
+            xtype: 'displayfield',
+            value: 'Matching traffic will be blocked'.t(),
+            padding: '0 10 10 0'
         }]
     }]
 });
