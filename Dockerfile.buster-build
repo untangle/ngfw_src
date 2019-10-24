@@ -1,0 +1,35 @@
+FROM untangleinc/ngfw:buster-base
+LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
+
+ENV PKGTOOLS_BRANCH master
+
+RUN apt update -q
+RUN apt install --yes build-essential
+RUN apt install --yes devscripts
+RUN apt install --yes git
+RUN apt install --yes untangle-development-build
+
+# cleanup
+RUN apt clean
+RUN rm -rf /var/lib/apt/lists/*
+
+# do not use official Debian mirrors during build
+RUN rm /etc/apt/sources.list
+
+# base dir
+ENV UNTANGLE=/opt/untangle
+RUN mkdir -p ${UNTANGLE}
+
+# pkgtools
+ENV PKGTOOLS=${UNTANGLE}/ngfw_pkgtools
+
+# source to build
+ENV SRC=/opt/untangle/build
+RUN mkdir -p ${SRC}
+VOLUME ${SRC}
+WORKDIR ${SRC}
+
+CMD [ "bash", \
+      "-c", \
+      "git clone -b ${PKGTOOLS_BRANCH} https://github.com/untangle/ngfw_pkgtools ${PKGTOOLS} && \
+       ${PKGTOOLS}/build.sh" ]

@@ -1,0 +1,22 @@
+FROM debian:buster
+LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
+
+ENV REPOSITORY=buster
+ENV STABLE_VERSION=15.0.0
+
+USER root
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-recommends && \
+    echo 'APT::Install-Suggests "false";' >> /etc/apt/apt.conf.d/no-recommends
+
+RUN apt update -q
+
+RUN apt install -y gnupg dirmngr
+
+# cleanup
+RUN apt clean
+RUN rm -rf /var/lib/apt/lists/*
+
+RUN echo "deb http://foo:foo@updates.untangle.com/public/${REPOSITORY} ${STABLE_VERSION} main non-free" > /etc/apt/sources.list.d/${STABLE_VERSION}.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 735A9E18E8F62EDF413592460B9D6AE3627BF103

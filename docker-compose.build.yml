@@ -1,6 +1,25 @@
 version: '2'
 services:
-    build:
-      image: untangleinc/ngfw:build
+    stretch-build:
+      image: untangleinc/ngfw:stretch-build
+      environment:
+        - REPOSITORY=stretch
+        - DISTRIBUTION=current
+        - PKGTOOLS_BRANCH=master
+        - PACKAGE=
+      extra_hosts:
+        - "package-server:10.112.11.105"
+      volumes:
+        - ./:/opt/untangle/build
+
+    buster-build:
+      image: untangleinc/ngfw:buster-build
+      environment:
+        - REPOSITORY=buster
+        - DISTRIBUTION=current
+        - PKGTOOLS_BRANCH=master
+        - PACKAGE=
+      extra_hosts:
+        - "package-server:10.112.11.105"
       volumes:
         - ./:/opt/untangle/build
