@@ -11,7 +11,7 @@ jvm = case arch
       when "armhf"
         File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "jdk-7-oracle-arm-vfp-hflt"
       else
-        File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "j2sdk1.7-oracle"
+        File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "java-11-openjdk-#{arch}"
       end
 warn "JVM = #{jvm}"
 ENV['JAVA_HOME'] = "/usr/lib/jvm/#{jvm}"
