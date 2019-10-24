@@ -6,7 +6,7 @@ diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
  
    <target name="compile" depends="init,init-build" description="Compiles the source into the build directory">
 -    <javac debug="true" source="1.4" srcdir="${src}" destdir="${build}">
-+    <javac debug="true" source="1.5" srcdir="${src}" destdir="${build}">
++    <javac debug="true" source="1.6" srcdir="${src}" destdir="${build}">
        <classpath refid="default-classpath" />
      </javac>
    </target>
@@ -23,7 +23,7 @@ diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
  
    <target name="compile.test" depends="test.init, dist, init" description="Compiles the testing classes">
 -    <javac debug="true" source="1.4" srcdir="${test.src}" destdir="${test.classes}">
-+    <javac debug="true" source="1.5" srcdir="${test.src}" destdir="${test.classes}">
++    <javac debug="true" source="1.6" srcdir="${test.src}" destdir="${test.classes}">
        <classpath>
        	<path refid="jarClasspath" />
          <fileset dir="${lib-test}">
