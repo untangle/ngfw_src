@@ -184,8 +184,9 @@ class SslInspectorManager
      * certificate with a CN that matches the CN in the cert received on the
      * server side of the casing. We load these certs from a common shared
      * directory so they can be re-used by all instances once they have been
-     * created. If the cert file doesn't yet exist we call the
-     * generateFakeCertificate() function to create it.
+     * created. If the cert file does not yet exist, or is invalid or more than
+     * one year old, we call the generateFakeCertificate() function to create
+     * it.
      * 
      * @param baseCert
      *        The certificate received from the actual server
@@ -230,17 +231,24 @@ class SslInspectorManager
             // being generated multiple times when several threads all attempt
             // to create a certificate that doesn't yet exist.
             synchronized (keyStorePath) {
-                // see if the cert file already exists
+                long currStamp = (System.currentTimeMillis() / 86400000);
+                long certStamp = 0;
+
                 File tester = new File(certPathFile);
 
-                // file not found so call the external script to generate a new cert
-                if ((tester.exists() == false) || (tester.length() == 0)) {
-                    logger.info("Creating new certificate for " + certHostName + " in " + certFileName);
+                // if the file exists get the last modified time converted to days
+                if (tester.exists() == true) {
+                    certStamp = (tester.lastModified() / 86400000);
+                }
+
+                // if file not found, invalid, or stale we call the external script to generate a new cert
+                if ((tester.exists() == false) || (tester.length() == 0) || ((currStamp - certStamp) > 365)) {
+                    logger.info("Creating new MitM certificate for " + certHostName + " in " + certFileName);
                     generateFakeCertificate(baseCert, certFileName);
                 }
 
                 else {
-                    logger.debug("Loading existing certificate " + certPathFile);
+                    logger.debug("Loading existing MitM certificate " + certPathFile);
                 }
             }
 
