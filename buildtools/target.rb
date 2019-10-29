@@ -329,7 +329,11 @@ class JsBuilder < Target
     @relativeDestPath = "#{@@WEB_DEST}/#{@webDestDir}/#{@name}.js"
 
     @deps = @path.map do |p|
-      File::directory?(p) ? FileList["#{p}/**/*.js"].exclude(/\/#{excludeDir}\//) : p
+     if excludeDir.empty? then
+        File::directory?(p) ? FileList["#{p}/**/*.js"] : p
+     else
+       File::directory?(p) ? FileList["#{p}/**/*.js"].exclude(/\/#{excludeDir}\//) : p
+     end
     end
     @deps.flatten!
 
