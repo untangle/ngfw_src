@@ -7,6 +7,13 @@ TEMP="/dev/shm"
 
 UT_ROOT_PATH="@PREFIX@/usr/share/untangle/settings/untangle-certificates"
 
+# Start with the current epoch time
+# Subtract one day to avoid not-yet-valid errors from minor clock differences
+# Put the adjusted date in YYMMDDHHMMSSZ format required by openssl
+CURRDATE=`date +%s`
+PREVDATE=$(($CURRDATE-86400))
+CERTDATE=`date --date=@$PREVDATE +%y%m%d%H%M%S`'Z'
+
 # Since we call this script to generate mitm certificates on the fly we must
 # use a random source that will not block.  All the security articles I found
 # indicate /dev/urandom has plenty of entropy given what we're doing here.
@@ -115,7 +122,7 @@ case $1 in
             echo "APACHE: Error generating certificate signing request"
             exit 5
         fi
-        $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_host -startdate 100102030405Z -enddate 380102030405Z -out $TEMP/server.crt -outdir $TEMP -infiles $UT_ROOT_PATH/apache.csr
+        $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_host -startdate $CERTDATE -days 820 -out $TEMP/server.crt -outdir $TEMP -infiles $UT_ROOT_PATH/apache.csr
         if [ $? != 0 ]; then
             echo "APACHE: Error generating signed certificate"
             exit 6
@@ -136,7 +143,7 @@ case $1 in
             echo "SERVER: Error generating certificate signing request"
             exit 8
         fi
-        $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_host -startdate 100102030405Z -enddate 380102030405Z -out $TEMP/server.crt -outdir $TEMP -infiles $UT_ROOT_PATH/$4.csr
+        $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_host -startdate $CERTDATE -days 820 -out $TEMP/server.crt -outdir $TEMP -infiles $UT_ROOT_PATH/$4.csr
         if [ $? != 0 ]; then
             echo "SERVER: Error generating signed certificate"
             exit 9
@@ -158,7 +165,7 @@ case $1 in
             echo "MITM: Error generating certificate signing request"
             exit 11
         fi
-        $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_fake -startdate 100102030405Z -enddate 380102030405Z -out $TEMP/server.crt -outdir $TEMP -infiles $TEMP/server.csr
+        $OPENSSL_TOOL ca -batch -config $OPENSSL_CONF -extensions v3_fake -startdate $CERTDATE -days 820 -out $TEMP/server.crt -outdir $TEMP -infiles $TEMP/server.csr
         if [ $? != 0 ]; then
             echo "MITM: Error generating signed certificate"
             exit 12
