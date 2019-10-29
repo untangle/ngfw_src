@@ -248,7 +248,7 @@ class SslInspectorManager
                 }
 
                 else {
-                    logger.info("Loading existing MitM certificate " + certPathFile);
+                    logger.debug("Loading existing MitM certificate " + certPathFile);
                 }
             }
 
