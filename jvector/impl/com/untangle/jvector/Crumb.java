@@ -18,6 +18,8 @@ public abstract class Crumb
     public static final int TYPE_SHUTDOWN    = SHUTDOWN_MASK | 1;  // Shutdown
     public static final int TYPE_RESET       = SHUTDOWN_MASK | 2;  // Reset
 
+    protected native boolean force_jni_header_generation();
+
     /**
      * raze
      */

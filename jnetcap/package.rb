@@ -16,7 +16,7 @@ headerClasses = [
   'com.untangle.jnetcap.NetcapTCPSession',
   'com.untangle.jnetcap.Conntrack' ]
 
-javah = JavahTarget.new(jnetcap, j, headerClasses)
+javah = JavahTarget.new(jnetcap, j, Jars::Base, headerClasses)
 
 compilerEnv = CCompilerEnv.new({'pkg' => "#{CCompilerEnv::JNetcap}" })
 
