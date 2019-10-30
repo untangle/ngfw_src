@@ -159,7 +159,7 @@ class JavaCompiler
   JarCommand   = "#{ENV['JAVA_HOME']}/bin/jar"
   JarSignerCommand = "#{ENV['JAVA_HOME']}/bin/jarsigner"
   JavaCommand  = "#{ENV['JAVA_HOME']}/bin/java"
-  JavahCommand = "#{ENV['JAVA_HOME']}/bin/javah"
+  JavahCommand = "#{ENV['JAVA_HOME']}/bin/javac"
   KeyToolCommand = "#{ENV['JAVA_HOME']}/bin/keytool"
 
   @@JavadocCommand = "#{ENV['JAVA_HOME']}/bin/javadoc"
@@ -219,11 +219,20 @@ class JavaCompiler
     end
   end
 
-  def JavaCompiler.javah(jar, destination, classes)
+  def JavaCompiler.javah(jar, cp, destination, classes)
     info "[javah   ]"			      
     ensureDirectory destination
+
+    files = classes.map do |c|
+      # ext.company.pkg.class -> pkg/impl/ext/company/pkg/class.java
+      pkg, name = c.split('.')[-2..-1]
+      "#{pkg}/impl/com/untangle/#{pkg}/#{name}.java"
+    end
+    
+    cp << jar
+
     raise "javah failed" unless
-      Kernel.system(JavahCommand, "-d", destination, "-classpath", jar, *classes)
+      Kernel.system(JavahCommand, "-h", destination, "-classpath", cp.join(":"), *files)
   end
 
   def JavaCompiler.run(classpath, classname, silent = false, *args)

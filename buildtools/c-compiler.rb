@@ -268,15 +268,16 @@ class ArchiveTarget < Target
 end
 
 class JavahTarget < Target
-  def initialize(package, jar, classes)
+  def initialize(package, jar, cp, classes)
     @jar = jar
+    @cp = cp
     @classes = classes
     @javahDirectory = "#{package.buildEnv.staging}/#{package.name}/jni_headers"
     super(package,[ jar ])
   end
 
   def build
-    JavaCompiler.javah(@jar.filename,@javahDirectory, @classes)
+    JavaCompiler.javah(@jar.filename,@cp,@javahDirectory, @classes)
   end
 
   def javahDirectory
