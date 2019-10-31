@@ -34,8 +34,8 @@
             // if (Ung.Util.handleException(exception)) { return; }
             Ext.applyIf(rpc, result);
 
-            if (!rpc.wizardSettings.steps) {
-                rpc.wizardSettings.steps = ['Welcome', 'ServerSettings', 'Interfaces', 'Internet', 'InternalNetwork', 'AutoUpgrades', 'Complete'];
+            if (!rpc.wizardSettings.steps || rpc.wizardSettings.steps.length == 0) {
+                rpc.wizardSettings.steps = ['Welcome', 'License', 'ServerSettings', 'Interfaces', 'Internet', 'InternalNetwork', 'AutoUpgrades', 'Complete'];
             }
 
             // transform timezones string to array
