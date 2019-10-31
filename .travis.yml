@@ -1,14 +1,30 @@
 sudo: required
+
 services:
 - docker
+
+env:
+  - REPOSITORY: stretch
+    DISTRIBUTION: release-142
+    PKGTOOLS_COMMIT: origin/release-14.2
+  - REPOSITORY: stretch
+    DISTRIBUTION: current
+    PKGTOOLS_COMMIT: origin/master
+  - REPOSITORY: buster
+    DISTRIBUTION: current
+    PKGTOOLS_COMMIT: origin/master
+
 before_install:
-- docker pull untangleinc/ngfw:build
+- docker pull untangleinc/ngfw:${REPOSITORY}-build
+
 script:
+- docker-compose -f docker-compose.build.yml run pkgtools
 - docker-compose -f docker-compose.build.yml run build
+
 notifications:
   email: false
   slack:
     rooms:
-      secure: ZRNoMZDLaGKCmBUak7xoNYW2Vv9vZq1utH1K+fYrRXXzEA2aQ1w/UUaWWWHmmHcOLSNvdj2IlS3y5WFZbgOfAmMnw+DnEGIRVrNx4jLYlN1i2GF9tMLWVrcnsDnaH5X0gvxRtUCTUNDthvuUbKEZMdxJ89ZF5FBIcd9jC6qmFHuGED3Cg2Z9NUXvzl6Wo254XZIjvKL1P5RtlMBfiTWdPOtQ/wloPvLhMe1bFQjkr6k9WQimWZ3Kt+pKEBtcFKi8kzZu9Bkj68SJ4NYHPOe1BtfT4Kbk6GegkqFjqN0jank7OX/b/NF9RvvHGUnhTHMw2Lu2YxFgrDfWZIPZzjpg1+Zya2Z7ehS2FJoT5da5XNy84P9AS3C5iFx0yDWgouMjvp2fcP+SujCfN9BP8qVC/zbKocxK6thpM2TPKPgp55Cr12GsQGAlkUxTmoaWiZeyHmSfBAwT0tH0iVuO2fuLsXLuM+W8bMAJ90Kk8eB1uYrZ63hxW+dL57Ab/mU5ZvnLJdAFd9YGgFlbzW2pvIHDzQWjHLdaYm9ujE4JuQ3UIJQGcIhGIKwLrOi90qVaXWc5UX9Lq4wOCIY5ifgPlWybzXZi6TGQE0AtYB3Ty58Mndy2fyPhu/pW47xSk9aXDEKYEQUYyvgz+0M1SoUZB5sBmLrysEIYb/Vo0MkG/CLlpd4=
+      secure: DbM9BVgio9I0Wj4CzAhWvQp0x35zge4zRcwrh8OFGfJAB6AO0jHFHyGIZm0L2KzTm1PogxpaoQbvRC2kcqtbMfRCPSrtLRcaMjemH0h8nQsmsgaBwwM//rxl95WBUNQuoo6ytO/bFw+fRgxobjnYN704urxBhH1o4kGaXvMnCNJbJzEk7gqQVChVy8fzqcYgeNhYYQPx95Hy0VcCcEpBYXYd2fR2SA1b2/ZXNaPlMX5Cg6prVko1OmkPD1qQE5W5HyOHrlDW11kA+8nHCTxvdWqPp1ZjmPCEFIAbXnkiJQgIntl1vrpVRFRwcixzFfwb81w1Bvds2mF21Csxv5kpuZAHd5720lk7iqXLUXKcRptzltrtLvccID086jGxjao3i6jC2XiAJXP8cruxBcXv+0JU1Y3OsuMOEuq4dxeph+ie6Ou9scWFFwsyALwLpe/h1tXvILSqzmLvm3ZI91xUiMYUgR1WPMgd1zRC/QkwosN7so18RePSzOOAAUO1D7OHPkUc2wmOOp/xclncTg2FPyLPWrV6WSus1dwdfH6+mn5VJFqJ+/I1nft4Uidm1/InWiUINImRLxDxJHVwTZtD5z1Klz2fQr4v/0dmRD0doAdcaMBAAF1uC+vkfh/obxQ8aq09/0g8lGpYoHqHbGn0V9Ntm5gdrSyl7JmX1jQ1H00=
     on_success: change
     on_failure: always
