@@ -10,8 +10,6 @@ Ext.define('Ung.Setup.Wizard', {
         }
     },
 
-    steps: [],
-
     frame: true,
     header: false,
     border: false,
@@ -106,6 +104,7 @@ Ext.define('Ung.Setup.Wizard', {
     }],
 
     items: [
+        { xtype: 'License' },
         { xtype: 'ServerSettings' },
         { xtype: 'Interfaces' },
         // the rest of steps are added after network settings are fetched
@@ -123,7 +122,7 @@ Ext.define('Ung.Setup.Wizard', {
                 cardIndex = Ext.Array.indexOf(rpc.wizardSettings.steps, rpc.wizardSettings.completedStep);
 
                 // if resuming from a step after Network Cards settings, need to fetch network settings
-                if (cardIndex >= 1) {
+                if (cardIndex >= 2) {
                     Ung.app.loading('Loading interfaces...'.t());
                     rpc.networkManager.getNetworkSettings(function (result, ex) {
                         Ung.app.loading(false);
@@ -180,6 +179,11 @@ Ext.define('Ung.Setup.Wizard', {
                 stepInd = view.down('#stepIndicator'),
                 stepIndHtml = '';
 
+            if(layout.getActiveItem().getViewModel() &&
+                layout.getActiveItem().getViewModel().get('nextStep') !== null){
+                nextStep = layout.getActiveItem().getViewModel().get('nextStep');
+            }
+
             vm.set({
                 activeStep: layout.getActiveItem().getXType(),
                 activeStepDesc: layout.getActiveItem().description,
@@ -201,7 +205,9 @@ Ext.define('Ung.Setup.Wizard', {
             stepInd.setHtml(stepIndHtml);
 
             if (rpc.jsonrpc) {
-                rpc.wizardSettings.steps = view.steps;
+                if(view.steps && view.steps.length > 0){
+                    rpc.wizardSettings.steps = view.steps;
+                }
                 rpc.wizardSettings.completedStep = prevStep ? prevStep.getXType() : null;
                 rpc.wizardSettings.wizardComplete = nextStep ? false : true;
 
@@ -230,7 +236,7 @@ Ext.define('Ung.Setup.Wizard', {
                     return intf.isWirelessInterface;
                 });
 
-            wizard.steps = ['ServerSettings', 'Interfaces'];
+            wizard.steps = ['License', 'ServerSettings', 'Interfaces'];
 
             if (firstWan) {
                 wizard.steps.push('Internet');
