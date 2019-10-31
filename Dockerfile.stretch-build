@@ -3,15 +3,19 @@ LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
 
 ENV PKGTOOLS_BRANCH master
 
+# do not gzip apt lists files (for apt-show-versions)
+RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes
+
 RUN apt update -q
 RUN apt install --yes build-essential
 RUN apt install --yes devscripts
-RUN apt install --yes equivs
+RUN apt install --yes git
+RUN apt install --yes apt-show-versions
 RUN apt install --yes untangle-development-build
 
 # cleanup
 RUN apt clean
-RUN rm -rf /var/lib/apt/lists/*
+RUN rm -rf /var/lib/apt/lists/* /var/cache/apt-show-versions/*
 
 # do not use official Debian mirrors during build
 RUN rm /etc/apt/sources.list
