@@ -93,9 +93,9 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
             valueField: 'id',
             editable: false,
             bind: {
-                store: '{categories}',
-                value: '{siteLookupSuggest}'
-            }
+                value: '{siteLookupSuggest}',
+                store: '{categoriesNames}'
+            },
         }, {
             xtype: 'button',
             text: 'Suggest'.t(),
