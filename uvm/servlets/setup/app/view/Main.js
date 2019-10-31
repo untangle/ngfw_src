@@ -77,7 +77,6 @@ Ext.define('Ung.Setup.Main', {
             vm.set('resuming', false);
 
             rpc.wizardSettings.completedStep = null;
-            rpc.wizardSettings.steps = [];
             rpc.wizardSettings.wizardComplete = false;
             me.openSetup();
         },
