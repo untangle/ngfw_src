@@ -263,22 +263,25 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public int recategorizeSite(String url, int category)
     {
-        // String[] urlSplit = splitUrl(url);
-        // String question = encodeDnsQuery(urlSplit[0], urlSplit[2], Integer.toString(category) + "_a");
-        // String[] answers = lookupDns(question);
-        // int answerCategory = -1;
-        // if (answers.length > 0) {
-        //     /**
-        //      * The only way this can fail is if zvelo removes the submit
-        //      * functionality.
-        //      */
-        //     String[] split = answers[0].split("\\s+");
-        //     if (-1 != url.indexOf(split[1])) {
-        //         answerCategory = category;
-        //     }
-        // }
-        // return (category == answerCategory ? category : -1);
-        return -1;
+        int result = -1;
+        try{
+            JSONArray directAnswer = webrootQuery.apiDirect(
+                WebrootQuery.BCTI_API_DIRECT_REQUEST_URL,
+                WebrootQuery.BCTI_API_DIRECT_REQUEST_URL_SUBMITNEWURICATS
+                        .replaceAll(WebrootQuery.BCTI_API_DIRECT_REQUEST_URL_PARAMETER, url)
+            );
+            if(directAnswer != null){
+                if( 1 == directAnswer.getJSONObject(0)
+                    .getJSONObject(WebrootQuery.BCTI_API_DIRECT_RESPONSE_QUERIES_KEY)
+                    .getJSONObject(WebrootQuery.BCTI_API_DIRECT_RESPONSE_URL_SUBMITNEWURICATS_KEY)
+                    .getInt(WebrootQuery.BCTI_API_DIRECT_RESPONSE_URL_SUBMITNEWURICATS_SUCCESS_KEY) ){
+                    result = category;
+                }
+            }
+        }catch(Exception e){
+            logger.warn("recategorizeSite: ", e);
+        }
+        return result;
     }
 
     /**
