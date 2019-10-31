@@ -22,15 +22,13 @@ RUN mkdir -p ${UNTANGLE}
 
 # pkgtools
 ENV PKGTOOLS=${UNTANGLE}/ngfw_pkgtools
+VOLUME ${PKGTOOLS}
 
 # source to build
 ENV SRC=/opt/untangle/build
 RUN mkdir -p ${SRC}
 VOLUME ${SRC}
+
 WORKDIR ${SRC}
 
-CMD [ "bash", \
-      "-c", \
-      "git clone -b ${PKGTOOLS_BRANCH} https://github.com/untangle/ngfw_pkgtools ${PKGTOOLS} && \
-       ${PKGTOOLS}/build.sh" ]
-
+CMD [ "bash", "-c", "${PKGTOOLS}/build.sh" ]
