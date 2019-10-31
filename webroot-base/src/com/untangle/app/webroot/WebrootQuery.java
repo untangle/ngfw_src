@@ -58,6 +58,7 @@ public class WebrootQuery
     public static final String BCTI_API_ERROR_KEY="ERROR";
 
     public static final String BCTI_API_DIRECT_REQUEST_IPS_PARAMETER = "%ips%";
+    public static final String BCTI_API_DIRECT_REQUEST_URL_PARAMETER = "%url%";
     public static final String BCTI_API_DIRECT_REQUEST_URLS_PARAMETER = "%urls%";
     public static final String BCTI_API_DIRECT_REQUEST_STARTDATE_PARAMETER = "%startdate%";
     public static final String BCTI_API_DIRECT_REQUEST_ENDDATE_PARAMETER = "%enddate%";
@@ -65,11 +66,16 @@ public class WebrootQuery
     public static final String BCTI_API_DIRECT_RESPONSE_QUERIES_KEY = "queries";
 
     public static final String BCTI_API_DIRECT_URL_PREFIX_TEMPLATE = "%protocol%://%server%/1.0/";
+
     public static final String BCTI_API_DIRECT_REQUEST_PREFIX_TEMPLATE = "{\"requestid\": \"%requestid%\", \"oemid\": \"%oemid%\",\"deviceid\": \"%deviceid%\",\"uid\": \"%uid%\",";
     public static final String BCTI_API_DIRECT_REQUEST_SUFFIX_TEMPLATE = ",\"xml\": 0}";
 
     public static final String BCTI_API_DIRECT_REQUEST_URL = "url";
     public static final String BCTI_API_DIRECT_REQUEST_URL_GETREPINFO = "\"queries\": [\"getrepinfo\",],\"urls\": [\"%urls%\"]";
+
+    public static final String BCTI_API_DIRECT_REQUEST_URL_SUBMITNEWURICATS = "\"queries\": [\"submitnewuricats\",],\"urls\": [{\"url\": \"%url%\"}]";
+    public static final String BCTI_API_DIRECT_RESPONSE_URL_SUBMITNEWURICATS_KEY = "submitnewuricats";
+    public static final String BCTI_API_DIRECT_RESPONSE_URL_SUBMITNEWURICATS_SUCCESS_KEY = "success";
 
     public static final String BCTI_API_DIRECT_REQUEST_URLTHREATINSIGHT = "urlthreatinsight";
     public static final String BCTI_API_DIRECT_REQUEST_URLTHREATINSIGHT_GETURLINFO = "\"queries\": [\"geturlhistory\",], \"startdate\": \"%startdate%\",\"enddate\": \"%enddate%\",\"values\": [\"%urls%\"]";
