@@ -1,25 +1,31 @@
-version: '2'
+version: '3'
 services:
-    stretch-build:
-      image: untangleinc/ngfw:stretch-build
+    pkgtools:
+      image: untangleinc/pkgtools
       environment:
-        - REPOSITORY=stretch
-        - DISTRIBUTION=current
-        - PKGTOOLS_BRANCH=master
-        - PACKAGE=
-      extra_hosts:
-        - "package-server:10.112.11.105"
+        - PKGTOOLS_URL=${PKGTOOLS_URL:-https://github.com/untangle/ngfw_pkgtools}
+        - PKGTOOLS_COMMIT=${PKGTOOLS_COMMIT:-origin/master}
       volumes:
-        - ./:/opt/untangle/build
+        - pkgtools:/opt/untangle/ngfw_pkgtools
+      entrypoint: >
+        bash -c "
+        git remote set-url origin $${PKGTOOLS_URL} &&
+        git fetch -a &&
+        git clean -f -d &&
+        git reset --hard &&
+        git checkout $${PKGTOOLS_COMMIT}"
 
-    buster-build:
-      image: untangleinc/ngfw:buster-build
+    build:
+      image: untangleinc/ngfw:${REPOSITORY:-stretch}-build
       environment:
-        - REPOSITORY=buster
-        - DISTRIBUTION=current
-        - PKGTOOLS_BRANCH=master
-        - PACKAGE=
+        - REPOSITORY=${REPOSITORY:-stretch}
+        - DISTRIBUTION=${DISTRIBUTION:-current}
+        - PACKAGE=${PACKAGE} # default to empty
       extra_hosts:
         - "package-server:10.112.11.105"
       volumes:
-        - ./:/opt/untangle/build
+        - .:/opt/untangle/build
+        - pkgtools:/opt/untangle/ngfw_pkgtools:ro
+
+volumes:
+  pkgtools:
