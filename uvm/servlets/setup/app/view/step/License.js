@@ -69,10 +69,16 @@ Ext.define('Ung.Setup.License', {
             },
             items: [{
                 text: 'Disagree',
-                handler: 'onDisagree'
+                handler: 'onDisagree',
+                bind: {
+                    disabled: '{!eulaLoaded}'
+                }
             }, {
                 text: 'Agree',
-                handler: 'onContinue'
+                handler: 'onContinue',
+                bind: {
+                    disabled: '{!eulaLoaded}'
+                }
             }]
         }]
     }],
@@ -86,41 +92,54 @@ Ext.define('Ung.Setup.License', {
             Util.setRpcJsonrpc();
             cb();
         },
+
+        timer: null,
+        remoteEulaSrc: 'https://www.untangle.com/legal',
+        localEulaSrc: '/setup/legal.html',
+        remoteImage: 'https://www.untangle.com/favicon.ico',
+        clearTimer: function(){
+            if (this.timer) {
+                clearTimeout(this.timer);
+                this.timer = null;
+                var iframe = document.getElementById('eula-src');
+                iframe.src = this.remoteEulaSrc;
+            }
+        },
+
+        handleFail: function(){
+            this.onload = this.onabort = this.onerror = function() {};
+            this.ownerCmp.clearTimer();
+            var iframe = document.getElementById('eula-src');
+            iframe.src = this.ownerCmp.localEulaSrc;
+        },
+
         afterRender: function( view ){
-            var vm = this.getViewModel(),
-                remoteEulaSrc = 'https://www.untangle.com/legal',
-                localEulaSrc = '/setup/legal.html',
+            var me = this,
+                vm = this.getViewModel(),
                 iframe = document.getElementById('eula-src'),
                 iframeCmp = view.down('[itemId=eula]'),
-                img = new Image(0,0); // 0 width and height
-                
-            iframeCmp.mask();
+                timer = null,
+                img = new Image(0,0);
 
+            iframeCmp.mask();
+            img.ownerCmp = me;
             vm.set('nextStep', "");
 
-            // if eula already loaded no connection check required
-            if (iframe.src) {
-                vm.set('eulaLoaded', true);
-                return;
-            }
+            img.onerror = img.onabort = me.handleFail;
+            img.onload = function(){
+                me.clearTimer();
+            };
+            img.src = me.remoteImage;
+            me.timer = setTimeout( function(image){
+                return function(){
+                    me.handleFail.call(image);
+                };
+            }(img), 1000);
 
-            img.src = 'https://www.untangle.com/favicon.ico';
-
-            img.addEventListener('error', function () {
-                iframe.src = localEulaSrc;
-            });
-            img.addEventListener('load', function () {
-                iframe.src = remoteEulaSrc;
-            });
-
-            // unmask eula container, remove image and show agreement buttons after license content loaded
             iframe.addEventListener('load', function () {
-                // img.parentNode.removeChild(img);
                 iframeCmp.unmask();
                 vm.set('eulaLoaded', true);
             });
-            // append the test image wich will trigger the load/error events
-            document.body.appendChild(img);
         },
         onContinue: function(){
             this.getView().up('setupwizard').getController().onNext();
