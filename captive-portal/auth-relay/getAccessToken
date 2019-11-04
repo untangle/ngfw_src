@@ -45,7 +45,7 @@ def handle_google(logfile,authcode):
 
 	if ("emails" in userjson):
 		for item in userjson['emails']:
-			if (item['type'] == 'account'):
+			if (item['type'].upper() == 'ACCOUNT'):
 				return(item['value'])
 
 	if ("displayName" in userjson):
