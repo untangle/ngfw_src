@@ -20,6 +20,7 @@ public abstract class Crumb
 
     /**
      * force_jni_header_generation
+     * @return
      */
     protected native boolean force_jni_header_generation();
 
