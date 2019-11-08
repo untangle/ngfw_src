@@ -20,7 +20,9 @@ services:
       environment:
         - REPOSITORY=${REPOSITORY:-stretch}
         - DISTRIBUTION=${DISTRIBUTION:-current}
-        - PACKAGE=${PACKAGE} # default to empty
+        - UPLOAD=${UPLOAD} # default to empty: "no upload"
+        - VERBOSE=${VERBOSE} # default to empty: "not verbose"
+        - PACKAGE=${PACKAGE} # default to empty: "all packages"
       extra_hosts:
         - "package-server:10.112.11.105"
       volumes:
