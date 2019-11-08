@@ -38,6 +38,7 @@ class Jars
     const_set(:Json, [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')])
     const_set(:GetText, [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ])
     const_set(:JakartaActivation, [ Jars.downloadTarget('jakarta.activation-1.2.1/jakarta.activation-1.2.1.jar') ])
+    const_set(:JavaTransaction, [ Jars.downloadTarget('jta-1.1/jta-1.1.jar') ])
     const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'), 
                         Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ])
 
@@ -102,7 +103,7 @@ class Jars
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, Jstl, Json, Jabsorb,
                                    Slf4j, DnsJava, Selenium, GeoIP, SqlLite,
-                                   JakartaActivation))
+                                   JakartaActivation, JavaTransaction))
 
     const_set(:JDKTools, [ ThirdpartyJar.get("#{ENV['JAVA_HOME']}/lib/tools.jar") ])
   end

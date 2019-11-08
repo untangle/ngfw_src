@@ -32,7 +32,7 @@ zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip \
 
 jars=gettext-commons-0.9.1.jar postgresql-9.4-1201.jdbc4.jar \
 	dnsjava-2.1.6.jar sqlite-jdbc-3.15.1.jar \
-	jakarta.activation-1.2.1.jar
+	jakarta.activation-1.2.1.jar jta-1.1.jar
 
 ###############################################################################
 ###############################################################################
