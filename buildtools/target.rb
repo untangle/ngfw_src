@@ -121,7 +121,11 @@ class InstallTarget < Target
       is = []
 
       [jarTargets].flatten.compact.each do |jt|
-        is << MoveSpec.fileMove(jt.filename, dest, name)
+        begin
+          is << MoveSpec.fileMove(jt.filename, dest, name)
+        rescue NoMethodError
+          # since java11 we also pass plain strings
+        end
       end
 
       register_install_targets(is)
