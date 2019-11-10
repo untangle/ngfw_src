@@ -2,6 +2,19 @@ Ext.define('Ung.Setup.Util', {
     alternateClassName: 'Util',
     singleton: true,
 
+    setRpcJsonrpc: function(){
+        var setupInfo;
+        rpc.jsonrpc = new JSONRpcClient('/admin/JSON-RPC');
+        try {
+            setupInfo = rpc.jsonrpc.UvmContext.getSetupStartupInfo();
+        } catch (e) {
+            Util.handleException(e);
+            // Ung.Util.handleException(e);
+        }
+        Ext.applyIf(rpc, setupInfo);
+
+    },
+
     authenticate: function (password, cb) {
         // Ung.app.loading('Authenticating...'.t());
         Ext.Ajax.request({
@@ -21,15 +34,8 @@ Ext.define('Ung.Setup.Util', {
                     Ext.MessageBox.alert('Authentication failed'.t(), 'Invalid password.'.t());
                     return;
                 }
-                var setupInfo;
-                rpc.jsonrpc = new JSONRpcClient('/admin/JSON-RPC');
-                try {
-                    setupInfo = rpc.jsonrpc.UvmContext.getSetupStartupInfo();
-                } catch (e) {
-                    Util.handleException(e);
-                    // Ung.Util.handleException(e);
-                }
-                Ext.applyIf(rpc, setupInfo);
+
+                Util.setRpcJsonrpc();
 
                 rpc.tolerateKeepAliveExceptions = false;
                 rpc.keepAlive = function() {
