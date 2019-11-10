@@ -23,20 +23,7 @@ public class WizardSettings implements Serializable, JSONString
      */
     private boolean passwordRequired = false;
     private String completedStep;
-
-    /**
-     * XXX DEPRECATED
-     * Can be removed after 14.0
-     */
-    private String[] steps = new String[] {
-        "Welcome",
-        "ServerSettings",
-        "Interfaces",
-        "Internet",
-        "InternalNetwork",
-        "AutoUpgrades",
-        "Complete"
-    };
+    private String[] steps = null;
 
     public WizardSettings() { }
 
