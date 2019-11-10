@@ -182,7 +182,7 @@ Ext.define('Ung.apps.webfilter.MainController', {
             var checkBox = v.down("[fieldIndex='siteLookupCheckbox']");
 
             if (result == suggestBox.getValue()) {
-                Ext.MessageBox.alert('Suggestion Submitted'.t(), showAddress.getValue() + ' - ' + vm.get('categories').findRecord('string', result).get('name'));
+                Ext.MessageBox.alert('Suggestion Submitted'.t(), showAddress.getValue() + ' - ' + vm.get('categories').findRecord('id', result, 0, false, false, true).get('name'));
             } else {
                 Ext.MessageBox.alert('Unable to submit suggestion.'.t(), 'Please try again later.'.t());
             }
