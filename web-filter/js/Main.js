@@ -5,9 +5,16 @@ Ext.define('Ung.apps.webfilter.Main', {
 
     viewModel: {
         stores: {
-            categories:    { 
+            categories: {
                 data: '{settings.categories.list}',
                 groupField: 'category'
+            },
+            categoriesNames: {
+                data: '{settings.categories.list}',
+                sorters: [{
+                    property: 'name',
+                    direction: 'ASC'
+                }],
             },
             searchTerms:   { data: '{settings.searchTerms.list}' },
             blockedUrls:   { data: '{settings.blockedUrls.list}' },
