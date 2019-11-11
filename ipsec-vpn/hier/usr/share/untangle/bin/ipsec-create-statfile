@@ -12,10 +12,12 @@ import sys
 # Read the L2TP virtual address pool from the IPsec app settings file
 addressPool = get_app_settings_item("ipsec-vpn", "virtualAddressPool")
 
-# If not found we remove any existing interface status file and exit
+# If not found we remove any existing interface status files and exit
 if addressPool == None:
     if os.path.exists("/var/lib/interface-status/interface-251-status.js"):
         os.remove("/var/lib/interface-status/interface-251-status.js")
+    if os.path.exists("/var/lib/interface-status/interface-252-status.js"):
+        os.remove("/var/lib/interface-status/interface-252-status.js")
     sys.exit(0)
 
 # We have good config data so use the first address for the server
@@ -24,6 +26,7 @@ serverAddress = str(network[1])
 blockSize = str(network.prefixlen)
 blockMask = str(network.netmask)
 
+# Write the interface status file for the L2TP interface
 file = open("/var/lib/interface-status/interface-251-status.js", "w");
 file.write("{");
 file.write("\"javaClass\": \"com.untangle.uvm.network.InterfaceStatus\", ");
@@ -31,6 +34,21 @@ file.write("\"v4Address\": \"" + serverAddress + "\", ");
 file.write("\"v4Netmask\": \"" + blockMask + "\", ");
 file.write("\"v4PrefixLength\": \"" + blockSize + "\", ");
 file.write("\"interfaceId\": 251");
+file.write("}");
+file.close()
+
+# We need to create an interface status file for the Xauth interface as well
+# Since there isn't a real interface involved, the Xauth connmark gets set
+# for traffic in the 711-xauth rules by matching the address pool configured
+# for Xauth. Since there is also no server address in that pool, we use the
+# server address from the L2TP pool when writing redirects for Xauth clients.
+file = open("/var/lib/interface-status/interface-252-status.js", "w");
+file.write("{");
+file.write("\"javaClass\": \"com.untangle.uvm.network.InterfaceStatus\", ");
+file.write("\"v4Address\": \"" + serverAddress + "\", ");
+file.write("\"v4Netmask\": \"" + blockMask + "\", ");
+file.write("\"v4PrefixLength\": \"" + blockSize + "\", ");
+file.write("\"interfaceId\": 252");
 file.write("}");
 file.close()
 
