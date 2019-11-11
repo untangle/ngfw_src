@@ -43,7 +43,7 @@ Ext.define('Ung.Setup.License', {
             xtype: 'container',
             itemId: 'eula',
             style: 'background: #FFF; border-radius: 3px; border: 1px #EEE solid; line-height: 0;',
-            html: '<iframe id="eula-src" style="border: none; width: 100%; height: 350px;"></iframe>',
+            html: '<iframe id="eula-src" style="border: none; width: 100%; height: 340px;"></iframe>',
             masked: {
                 xtype: 'loadmask',
                 message: 'Loading ...'
