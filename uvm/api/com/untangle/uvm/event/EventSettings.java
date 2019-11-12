@@ -18,7 +18,7 @@ import com.untangle.uvm.event.SyslogRule;
 @SuppressWarnings("serial")
 public class EventSettings implements Serializable, JSONString
 {
-    private Integer version = 1;
+    private Integer version = 3;
 
     private LinkedList<AlertRule> alertRules = null;
     private LinkedList<SyslogRule> syslogRules = null;
@@ -28,6 +28,10 @@ public class EventSettings implements Serializable, JSONString
     private String syslogHost;
     private int syslogPort = 514;
     private String syslogProtocol = "UDP";
+
+    private String emailSubject = null;
+    private String emailBody = null;
+    private boolean emailConvert = false;
 
     public EventSettings() { }
 
@@ -57,6 +61,18 @@ public class EventSettings implements Serializable, JSONString
 
     public LinkedList<TriggerRule> getTriggerRules() { return this.triggerRules; }
     public void setTriggerRules( LinkedList<TriggerRule> newValue ) { this.triggerRules = newValue; }
+
+    /**
+     * Email template
+     */
+    public String getEmailSubject() { return emailSubject; }
+    public void setEmailSubject( String emailSubject ) { this.emailSubject = emailSubject; }
+
+    public String getEmailBody() { return emailBody; }
+    public void setEmailBody( String emailBody ) { this.emailBody = emailBody; }
+
+    public boolean getEmailConvert() { return emailConvert; }
+    public void setEmailConvert( boolean emailConvert ) { this.emailConvert = emailConvert; }
 
     public String toJSONString()
     {
