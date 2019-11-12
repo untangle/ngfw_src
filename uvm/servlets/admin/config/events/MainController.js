@@ -16,7 +16,8 @@ Ext.define('Ung.config.events.MainController', {
 
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.eventManager.getSettings'),
-            Rpc.asyncPromise('rpc.eventManager.getClassFields')
+            Rpc.asyncPromise('rpc.eventManager.getClassFields'),
+            Rpc.asyncPromise('rpc.eventManager.getTemplateParameters')
         ], this).then(function(result) {
             if(Util.isDestroyed(v, vm)){
                 return;
@@ -121,6 +122,12 @@ Ext.define('Ung.config.events.MainController', {
                 }) 
             });
 
+            var templateParameters = [];
+            result[2].forEach(function(parameter){
+                templateParameters.push(parameter.name + ' = ' + parameter.description);
+            });
+            vm.set('templateParameters', templateParameters.join("<br>"));
+
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
         }, function(ex) {
@@ -175,6 +182,90 @@ Ext.define('Ung.config.events.MainController', {
             if(!Util.isDestroyed(v, vm)){
                 vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
+            }
+        });
+    },
+
+    getPreviewTask: null,
+    templateChange: function(cmp, newValue, oldValue, eOpts){
+        var v = this.getView(),
+            vm = this.getViewModel();
+
+        var alertRule = {
+            javaClass: 'com.untangle.uvm.event.AlertRule',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: [{
+                    comparator: '=',
+                    field: 'class',
+                    fieldValue: '*SystemStatEvent*',
+                    javaClass: 'com.untangle.uvm.event.EventRuleCondition'
+                }]
+            },
+            description: 'Preview Rule'.t(),
+            ruleId: -1,
+            enabled: true,
+            thresholdEnabled: false,
+            thresholdTimeframeSec: 60,
+            thresholdGroupingField: null,
+            email: true,
+            emailLimitFrequency: false,
+            emailLimitFrequencyMinutes: 0,
+
+        };
+
+        var event = {
+            javaClass: 'com.untangle.uvm.logging.SystemStatEvent',
+            load15: 0.08,
+            load5: 0.02,
+            load1: 0
+        };
+
+        var me = this;
+        var meChange = me;
+        if(me.getPreviewTask == null){
+            me.getPreviewTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                var me = this,
+                    vm = me.getViewModel();
+
+                    Ext.Deferred.sequence([
+                        Rpc.asyncPromise('rpc.eventManager.emailAlertFormatPreview', alertRule, event, v.down('[itemId=emailSubject]').getValue(), v.down('[itemId=emailBody]').getValue(), v.down('[itemId=emailConvert]').getValue()),
+                    ], this).then(function(result) {
+                        if(Util.isDestroyed(vm)){
+                            return;
+                        }
+
+                        vm.set('previewSubject', result[0].map['emailSubject']);
+                        vm.set('previewBody', result[0].map['emailBody']);
+                        meChange.getPreviewTask = null;
+
+                    }, function(ex) {
+                        if(!Util.isDestroyed(vm)){
+                            vm.set('panel.saveDisabled', true);
+                            v.setLoading(false);
+                        }
+                        meChange.getPreviewTask = null;
+                    });
+            }, me) );
+        }
+        me.getPreviewTask.delay( 500 );
+
+    },
+
+    templateDefaults: function(){
+        var me = this,
+            vm = this.getViewModel();
+
+        Rpc.asyncData('rpc.eventManager.defaultEmailSettings', vm.get('settings.version'))
+        .then(function(result) {
+            if(Util.isDestroyed(me, vm)){
+                return;
+            }
+            for(var key in result.map){
+                var value = result.map[key];
+                value = (value ==- "true") ? true : value;
+                value = (value ==- "false") ? false : value;
+                vm.set("settings."+key, value);
             }
         });
     },

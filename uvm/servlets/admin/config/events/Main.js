@@ -19,6 +19,7 @@ Ext.define('Ung.config.events.Main', {
     items: [
         { xtype: 'config-events-alerts' },
         { xtype: 'config-events-triggers' },
-        { xtype: 'config-events-syslog' }
+        { xtype: 'config-events-syslog' },
+        { xtype: 'config-events-email-template' }
     ]
 });
