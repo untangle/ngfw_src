@@ -7,7 +7,7 @@ package com.untangle.uvm.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * String utility class
@@ -23,7 +23,7 @@ public class StringUtil
     private static final Pattern HUMAN_READABLE_PATTERN = Pattern.compile("([-+]?[0-9]*\\.?[0-9]+)\\s*(.)");
     private static final Map<String,Long> humanReadableMap;
     static {
-        humanReadableMap = new HashMap<>();
+        humanReadableMap = new LinkedHashMap<>();
         humanReadableMap.put("P", 1125899906842624L);
         humanReadableMap.put("T", 1099511627776L);
         humanReadableMap.put("G", 1073741824L);
@@ -109,5 +109,22 @@ public class StringUtil
             }
         }
         return Math.round(bytes);
+    }
+
+    /**
+     * Convert a long value into a human readable string, like 1024 as "1k"
+     * @param  value Long value to convert.
+     * @return       String value in human readable format.
+     */
+    public static String longToHumanReadable(long value){
+        String humanValue = Long.toString(value);
+
+        for(String key : humanReadableMap.keySet()){
+            if(value > (humanReadableMap.get(key)) ){
+                humanValue = Integer.toString(Math.round(value / humanReadableMap.get(key))) + key;
+                break;
+            }
+        }
+        return humanValue;
     }
 }
