@@ -126,8 +126,9 @@ Ext.define('Ung.config.events.MainController', {
                 fields: ['name', 'description'],
                 data: result[2]
             });
-            console.log(templateParametersStore);
             vm.set('templateParametersStore',templateParametersStore);
+
+            vm.set('templateUnmatched', '');
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -187,6 +188,27 @@ Ext.define('Ung.config.events.MainController', {
         });
     },
 
+    /**
+     * Format the template preview for display in HTML contexT:
+     *     -    If any unmatched %paramters% are found, highlight with cite.
+     *     -    Replace spaces wth &nbsp;
+     * @param  template to modify.
+     * @return Modified template.
+     */
+    templateFormat: function(template){
+        var vm = this.getViewModel();
+        template = template.replace( /\%[^\%\s]*\%/gm, function(parameter){
+            vm.set('templateUnmatched', 'One or more customization parameters are unknown'.t() );
+            return '<cite>' + parameter+ '</cite>';
+        });
+        template = template.replace( /\s/g, '&nbsp;');
+        return template;
+    },
+
+    /**
+     * On template fields change, set a preview task to fire in 500ms.
+     * After fired, display results in preview.
+     */
     getPreviewTask: null,
     templateChange: function(cmp, newValue, oldValue, eOpts){
         var v = this.getView(),
@@ -236,8 +258,9 @@ Ext.define('Ung.config.events.MainController', {
                             return;
                         }
 
-                        vm.set('previewSubject', result[0].map['emailSubject']);
-                        vm.set('previewBody', result[0].map['emailBody']);
+                        vm.set('templateUnmatched', '');
+                        vm.set('previewSubject', me.templateFormat(result[0].map['emailSubject']));
+                        vm.set('previewBody', me.templateFormat(result[0].map['emailBody']));
                         meChange.getPreviewTask = null;
 
                     }, function(ex) {
@@ -253,6 +276,9 @@ Ext.define('Ung.config.events.MainController', {
 
     },
 
+    /**
+     * Pull default templates and populate.
+     */
     templateDefaults: function(){
         var me = this,
             vm = this.getViewModel();

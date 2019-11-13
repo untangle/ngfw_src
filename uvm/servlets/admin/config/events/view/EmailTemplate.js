@@ -58,6 +58,13 @@ Ext.define('Ung.config.events.view.EmailTemplate', {
                 change: 'templateChange'
             }
         },{
+            xtype: "displayfield",
+            margin: '0 0 0 155',
+            bind: {
+                hidden: '{templateUnmatched == ""}',
+                value: '{templateUnmatched}'
+            }
+        },{
             xtype: "checkbox",
             itemId: 'emailConvert',
             allowBlank: false,
