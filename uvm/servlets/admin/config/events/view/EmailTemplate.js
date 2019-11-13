@@ -18,9 +18,18 @@ Ext.define('Ung.config.events.view.EmailTemplate', {
             collapsible: true,
             collapsed: true,
             items:[{
-                xtype: 'displayfield',
-                bind: {
-                    value: '{templateParameters}'
+                xtype: 'grid',
+                columns:[{
+                    text: 'Name'.t(),
+                    dataIndex: 'name',
+                    flex: 1
+                },{
+                    text: 'Description'.t(),
+                    dataIndex: 'description',
+                    flex: 2
+                }],
+                bind:{
+                    store: '{templateParametersStore}'
                 }
             }],
         },{

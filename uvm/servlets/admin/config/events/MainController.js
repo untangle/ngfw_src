@@ -17,7 +17,7 @@ Ext.define('Ung.config.events.MainController', {
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.eventManager.getSettings'),
             Rpc.asyncPromise('rpc.eventManager.getClassFields'),
-            Rpc.asyncPromise('rpc.eventManager.getTemplateParameters')
+            Rpc.asyncPromise('rpc.eventManager.getTemplateParameters'),
         ], this).then(function(result) {
             if(Util.isDestroyed(v, vm)){
                 return;
@@ -122,11 +122,12 @@ Ext.define('Ung.config.events.MainController', {
                 }) 
             });
 
-            var templateParameters = [];
-            result[2].forEach(function(parameter){
-                templateParameters.push(parameter.name + ' = ' + parameter.description);
+            var templateParametersStore = new Ext.data.JsonStore({
+                fields: ['name', 'description'],
+                data: result[2]
             });
-            vm.set('templateParameters', templateParameters.join("<br>"));
+            console.log(templateParametersStore);
+            vm.set('templateParametersStore',templateParametersStore);
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
