@@ -13,38 +13,53 @@ import com.untangle.uvm.event.TriggerRule;
 import com.untangle.uvm.event.EventRuleCondition;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.Reporting;
+import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.SyslogManagerImpl;
 import com.untangle.uvm.util.GlobUtil;
+import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.StringUtil;
 
 import com.untangle.uvm.AdminUserSettings;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.Serializable;
+
+import java.lang.Class;
+import java.lang.reflect.Method;
+
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.Collection;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONString;
 
 /**
  * Event prcessor
  */
 public class EventManagerImpl implements EventManager
 {
-    private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
-
     private static final Integer SETTINGS_CURRENT_VERSION = 3;
+
+    private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
 
     private static EventManagerImpl instance = null;
 
@@ -53,6 +68,15 @@ public class EventManagerImpl implements EventManager
 
     private LocalEventWriter localEventWriter = new LocalEventWriter();
     private RemoteEventWriter remoteEventWriter = new RemoteEventWriter();
+
+    private Map<String, String> i18nMap;
+
+    private static String DefaultEmailSubject = "";
+    private static String DefaultEmailBody = "";
+    private static Map<String,EventTemplateVariable> eventTemplateVariables;
+
+    private static final String PREVIEW_EVENT_CLASS_NAME = "SystemStatEvent";
+    private LogEvent mostRecentPreviewEvent = null;
 
     /**
      * The current event settings
@@ -71,6 +95,7 @@ public class EventManagerImpl implements EventManager
      */
     protected EventManagerImpl()
     {
+        i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         EventSettings readSettings = null;
 
@@ -79,6 +104,9 @@ public class EventManagerImpl implements EventManager
         } catch ( SettingsManager.SettingsException e ) {
             logger.warn( "Failed to load settings:", e );
         }
+
+        buildEmailTemplateDefaults();
+        buildEmailTemplateVariables();
 
         /**
          * If there are still no settings, just initialize
@@ -217,6 +245,85 @@ public class EventManagerImpl implements EventManager
         }
         return classFields;
     }
+
+    /**
+     * Return template parameters
+     *
+     * @return     List of JSON objects for template parameters
+     */
+    public JSONArray getTemplateParameters(){
+        JSONArray result = null;
+        int index = 0;
+
+        result = new JSONArray();
+        try{
+            SortedSet<String> sortedKeys = new TreeSet<>(eventTemplateVariables.keySet());
+
+            for(String variable : sortedKeys){
+                JSONObject jo = new JSONObject(EventManagerImpl.eventTemplateVariables.get(variable));
+                jo.remove("class");
+                result.put(index++, jo);
+            }
+        }catch(Exception e){
+            logger.warn("getTemplateParameters:", e);
+        }
+
+        return result;
+    }
+
+    /**
+     * Generate a preview of the email format alert with passed
+     * templates and conversion.  Also convert whitepace characters for UI display.
+     * @param  rule            AlertRule to process.
+     * @param  event           LogEvent to process.
+     * @param  subjectTemplate Email subject template.
+     * @param  bodyTemplate    Email body template
+     * @param  convert         If true, pass convert to human readable.  Otherwise, don't.
+     * @return                 Map containing emailSubject and emailBody.
+     */
+    public Map<String, String> emailAlertFormatPreview(AlertRule rule, LogEvent event, String subjectTemplate, String bodyTemplate, boolean convert){
+        if(mostRecentPreviewEvent != null){
+            event = mostRecentPreviewEvent;
+        }
+        Map<String,String> email = emailAlertFormat(rule, event, subjectTemplate, bodyTemplate, convert);
+        for(String key : email.keySet() ){
+            email.put(key, email.get(key).replaceAll("\n", "<br>"));
+            email.put(key, email.get(key).replaceAll("\n", "<br>"));
+        }
+
+        return email;
+    }
+
+    /**
+     * Generate email subject, body from rule, event, and templates.
+     * @param  rule            AlertRule to process.
+     * @param  event           LogEvent to process.
+     * @param  subjectTemplate Email subject template.
+     * @param  bodyTemplate    Email body template
+     * @param  convert         If true, pass convert to human readable.  Otherwise, don't.
+     * @return                 Map containing emailSubject and emailBody.
+     */
+    public static Map<String, String> emailAlertFormat(AlertRule rule, LogEvent event, String subjectTemplate, String bodyTemplate, boolean convert)
+    {
+        String subject = subjectTemplate == null ? DefaultEmailSubject : subjectTemplate;
+        String body = bodyTemplate == null ? DefaultEmailBody : bodyTemplate;
+
+        for(EventTemplateVariable variable : EventManagerImpl.eventTemplateVariables.values() ){
+            if(variable.getNameMatcher().matcher(subject).find()){
+                subject = subject.replaceAll(variable.getName(), variable.getValue(rule, event, convert));
+            }
+            if(variable.getNameMatcher().matcher(body).find()){
+                body = body.replaceAll(variable.getName(), variable.getValue(rule, event, convert));
+            }
+        }
+
+        Map<String, String> email = new HashMap<>();
+        email.put( "emailSubject", subject);
+        email.put( "emailBody", body );
+
+        return email;
+    }
+
 
     /**
      * Update passed settings to latest verson.
@@ -566,6 +673,246 @@ public class EventManagerImpl implements EventManager
     }
 
     /**
+     * Return default email settings values.
+     * @return Map of string mapping email values to their defaults.
+     */
+    public Map<String,String> defaultEmailSettings()
+    {
+        Map<String, String> emailSettings = new HashMap<>();
+        emailSettings.put( "emailSubject", DefaultEmailSubject );
+        emailSettings.put( "emailBody", DefaultEmailBody );
+        emailSettings.put( "emailConvert", "true");
+        return emailSettings;
+    }
+
+    /**
+     * Construct the email subject and body templates using localizaiton.
+     */
+    private void buildEmailTemplateDefaults(){
+        DefaultEmailSubject = I18nUtil.tr("%system.company% Alert \"%alert.description%\" [%system.host%]", i18nMap);
+        DefaultEmailBody = I18nUtil.tr("System: %system.company% [%system.host%]", i18nMap) +
+                            "\r\n\r\n" +
+                            I18nUtil.tr("Event: %event.class%", i18nMap) +
+                            "\r\n\r\n" +
+                            I18nUtil.tr("Event Time: %event.timestamp%.", i18nMap) +
+                            "\r\n\r\n" +
+                            I18nUtil.tr("Event Summary:", i18nMap) +
+                            "\r\n" +
+                            I18nUtil.tr("%event.summary%", i18nMap) +
+                            "\r\n\r\n" +
+                            I18nUtil.tr("Event Details:", i18nMap) +
+                            "\r\n" +
+                            I18nUtil.tr("%event.values.keyvalue%", i18nMap) +
+                            "\r\n\r\n" +
+                            I18nUtil.tr("This is an automated message sent because this event matched Alerts Rule \"%alert.description%\".", i18nMap);
+    }
+
+    /**
+     * Construct email template variables.
+     */
+    @SuppressWarnings("serial")
+    private void buildEmailTemplateVariables()
+    {
+        eventTemplateVariables = new HashMap<>();
+
+        EventTemplateVariable etv;
+        etv = new EventTemplateVariable("system.company", I18nUtil.tr("System company or organization name", i18nMap))
+        {
+            /**
+             * Get company name value.
+             * @param  rule  Matching AlertRule
+             * @param  event Matching LogEvent
+             * @param convert if true, attempt to convert to human readable
+             * @return       String of company name.
+             */
+            @Override
+            public String getValue(AlertRule rule, LogEvent event, boolean convert)
+            {
+                return UvmContextFactory.context().brandingManager().getCompanyName();
+            }
+        };
+        eventTemplateVariables.put(etv.getName(), etv);
+
+        etv = new EventTemplateVariable("system.host", I18nUtil.tr("System hostname", i18nMap)){
+            /**
+             * Get hostname + domain.
+             * @param  rule  Matching AlertRule
+             * @param  event Matching LogEvent
+             * @param convert if true, attempt to convert to human readable
+             * @return       String of hostname + domain.
+             */
+            @Override
+            public String getValue(AlertRule rule, LogEvent event, boolean convert)
+            {
+                String systemHost = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+                String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+                return systemHost + (  domainName == null ? "" : ( "." + domainName ) );
+            }
+        };
+        eventTemplateVariables.put(etv.getName(), etv);
+
+        etv = new EventTemplateVariable("alert.description", I18nUtil.tr("Alert rule description", i18nMap)){
+            /**
+             * Get alert rule description.
+             * @param  rule  Matching AlertRule
+             * @param  event Matching LogEvent
+             * @param convert if true, attempt to convert to human readable
+             * @return       String of alert rule description.
+             */
+            @Override
+            public String getValue(AlertRule rule, LogEvent event, boolean convert)
+            {
+                return rule.getDescription();
+            }
+        };
+        eventTemplateVariables.put(etv.getName(), etv);
+
+        etv = new EventTemplateVariable("event.class", "Event class"){
+            /**
+             * Get event class name.
+             * @param  rule  Matching AlertRule
+             * @param  event Matching LogEvent
+             * @param convert if true, attempt to convert to human readable
+             * @return       String of class event name.
+             */
+            @Override
+            public String getValue(AlertRule rule, LogEvent event, boolean convert)
+            {
+                return event.getClass().getSimpleName();
+            }
+        };
+        eventTemplateVariables.put(etv.getName(), etv);
+
+        etv = new EventTemplateVariable("event.timestamp", I18nUtil.tr("Event timestamp", i18nMap)){
+            /**
+             * Get event timestamp.
+             * @param  rule  Matching AlertRule
+             * @param  event Matching LogEvent
+             * @param convert if true, attempt to convert to human readable
+             * @return       String of Timestamp.
+             */
+            @Override
+            public String getValue(AlertRule rule, LogEvent event, boolean convert)
+            {
+                return event.getTimeStamp().toString();
+            }
+        };
+        eventTemplateVariables.put(etv.getName(), etv);
+
+        etv = new EventTemplateVariable("event.summary", I18nUtil.tr("Event summary", i18nMap)){
+            /**
+             * Get event timestamp.
+             * @param  rule  Matching AlertRule
+             * @param  event Matching LogEvent
+             * @param convert if true, attempt to convert to human readable
+             * @return       String of Timestamp.
+             */
+            @Override
+            public String getValue(AlertRule rule, LogEvent event, boolean convert)
+            {
+                return event.toSummaryString();
+            }
+        };
+        eventTemplateVariables.put(etv.getName(), etv);
+
+        etv = new EventTemplateVariable("event.values.json", I18nUtil.tr("Event details in JSON format", i18nMap)){
+            /**
+             * Get event timestamp.
+             * @param  rule  Matching AlertRule
+             * @param  event Matching LogEvent
+             * @param convert if true, attempt to convert to human readable
+             * @return       String of Timestamp.
+             */
+            @Override
+            public String getValue(AlertRule rule, LogEvent event, boolean convert)
+            {
+                JSONObject jsonObject = event.toJSONObject();
+                cleanupJsonObject( jsonObject, convert );
+                String jsonString = "";
+
+                try {
+                    jsonString = jsonObject.toString(4);
+                } catch (org.json.JSONException e) {
+                    logger.warn("Failed to pretty print.",e);
+                    jsonString = jsonObject.toString();
+                }
+                return jsonString;
+            }
+        };
+        eventTemplateVariables.put(etv.getName(), etv);
+
+        etv = new EventTemplateVariable("event.values.keyvalue", I18nUtil.tr("Event details in key=value format", i18nMap)){
+            /**
+             * Get event timestamp.
+             * @param  rule  Matching AlertRule
+             * @param  event Matching LogEvent
+             * @param convert if true, attempt to convert to human readable
+             * @return       String of Timestamp.
+             */
+            @Override
+            public String getValue(AlertRule rule, LogEvent event, boolean convert)
+            {
+                JSONObject jsonObject = event.toJSONObject();
+                cleanupJsonObject( jsonObject, convert );
+                String jsonString = "";
+
+                try {
+                    jsonString = jsonObject.toString(4);
+                } catch (org.json.JSONException e) {
+                    logger.warn("Failed to pretty print.",e);
+                    jsonString = jsonObject.toString();
+                }
+
+                Map<String,String> kvPairs = new HashMap<>();
+
+                int maxKeyLength = 0;
+                String[] kv;
+                String key;
+                String subKey = null;
+                for(String line: jsonString.split("\n")){
+                    line = line.substring(0, line.length() - 1).replaceAll("\"", "");
+                    if( line.trim().equals("{") ||
+                        line.trim().equals("}") ||
+                        line.trim().equals("")) {
+                        subKey = null;
+                        continue;
+                    }
+                    kv = line.trim().split(":", 2);
+                    key = kv[0].trim();
+                    if(kv.length > 1 && kv[1].equals("")){
+                        subKey = key;
+                    }else if(subKey != null){
+                        key = subKey + " " + key;
+                    }
+                    if(key.length() > maxKeyLength){
+                        maxKeyLength = key.length();
+                    }
+                    kvPairs.put(key, kv.length > 1 ? kv[1].trim() : "");
+                }
+                SortedSet<String> sortedKeys = new TreeSet<>(kvPairs.keySet());
+
+                List<String> kvStrings = new LinkedList<>();
+                for(String k : sortedKeys){
+                    String kvString;
+                    if(kvPairs.get(k).equals("")){
+                        kvString = String.format("%-" + maxKeyLength+ "s", k);
+                    }else{
+                        String showKey = k;
+                        if(showKey.indexOf(' ') != -1){
+                            showKey = k.substring(showKey.indexOf(' '));
+                        }
+                        kvString = String.format("%-" + maxKeyLength+ "s = %s", showKey, kvPairs.get(k));
+                    }
+                    kvStrings.add(kvString);
+                }
+
+                return String.join("\n", kvStrings);
+            }
+        };
+        eventTemplateVariables.put(etv.getName(), etv);
+    }
+
+    /**
      * Add event to writer queue.
      * @param event LogEvent to add to writer queue.
      */
@@ -585,6 +932,12 @@ public class EventManagerImpl implements EventManager
      */
     private void runEvent( LogEvent event )
     {
+        if(event.getClass().getSimpleName().equals(PREVIEW_EVENT_CLASS_NAME)){
+            synchronized( this ) {
+                mostRecentPreviewEvent = event;
+            }
+        }
+
         try {
             runAlertRules( event );
         } catch ( Exception e ) {
@@ -910,38 +1263,7 @@ public class EventManagerImpl implements EventManager
             return false;
         }
 
-        String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
-        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
-        String fullName = hostName + (  domainName == null ? "" : ("."+domainName));
-        String serverName = companyName + " " + I18nUtil.marktr("Server");
-        JSONObject jsonObject = event.toJSONObject();
-        String jsonString;
-
-        cleanupJsonObject( jsonObject );
-
-        try {
-            jsonString = jsonObject.toString(4);
-        } catch (org.json.JSONException e) {
-            logger.warn("Failed to pretty print.",e);
-            jsonString = jsonObject.toString();
-        }
-
-        String subject = serverName + " " +
-            I18nUtil.marktr("Event!") +
-            " [" + fullName + "] ";
-
-        String messageBody = I18nUtil.marktr("The following event occurred on the") + " " + serverName + " @ " + event.getTimeStamp() +
-            "\r\n\r\n" +
-            rule.getDescription() + ":" + "\r\n" +
-            event.toSummaryString() +
-            "\r\n\r\n" +
-            I18nUtil.marktr("Causal Event:") + " " + event.getClass().getSimpleName() + 
-            "\r\n" +
-            jsonString +
-            "\r\n\r\n" +
-            I18nUtil.marktr("This is an automated message sent because the event matched the configured Event Rules.");
-
+        Map<String, String> email = emailAlertFormat(rule, event, UvmContextFactory.context().eventManager().getSettings().getEmailSubject(), UvmContextFactory.context().eventManager().getSettings().getEmailBody(), UvmContextFactory.context().eventManager().getSettings().getEmailConvert());
         LinkedList<String> alertRecipients = new LinkedList<>();
 
         /*
@@ -972,7 +1294,7 @@ public class EventManagerImpl implements EventManager
             try {
                 String[] recipients = null;
                 recipients = new String[]{ emailAddress };
-                UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
+                UvmContextFactory.context().mailSender().sendMessage( recipients, email.get("emailSubject"), email.get("emailBody"));
             } catch ( Exception e) {
                 logger.warn("Failed to send mail.",e);
             }
@@ -982,12 +1304,23 @@ public class EventManagerImpl implements EventManager
     }
 
     /**
+     * Make json formatted event more suitable for users.
+     * By default, leave values as-is.
+     * @param jsonObject JSONObject to process.
+     */
+    private static void cleanupJsonObject( JSONObject jsonObject )
+    {
+        cleanupJsonObject( jsonObject, false);
+    }
+
+    /**
      * Make json formatted event more suitable for users:
      * * Remove unncessessary fields.
      * * Recursively clean.
      * @param jsonObject JSONObject to process.
+     * @param human
      */
-    private static void cleanupJsonObject( JSONObject jsonObject )
+    private static void cleanupJsonObject( JSONObject jsonObject, boolean human )
     {
         if ( jsonObject == null )
             return;
@@ -1008,6 +1341,28 @@ public class EventManagerImpl implements EventManager
             if ("partitionTablePostfix".equals(key)) {
                 keys.remove();
                 continue;
+            }
+
+            try{
+                String ipAddress = jsonObject.getString(key);
+                if(IPMatcher.JAVA_IPADDR_REGEX.matcher(ipAddress).matches()){
+                    jsonObject.put(key, ipAddress.substring(1));
+                }
+            }catch(Exception e){}
+
+            if(human){
+                if(key.indexOf("Percent") > -1){
+                    try{
+                        jsonObject.put(key, Integer.toString((int)Math.round(jsonObject.getDouble(key) * 100)) + "%");
+                    }catch(Exception e){}
+                }else{
+                    try{
+                        long value = jsonObject.getLong(key);
+                        if(value > 0){
+                            jsonObject.put(key, StringUtil.longToHumanReadable(value));
+                        }
+                    }catch(Exception e){}
+                }
             }
 
             /**
@@ -1157,6 +1512,48 @@ public class EventManagerImpl implements EventManager
             if (tmp != null) {
                 tmp.interrupt();
             }
+        }
+    }
+
+    /**
+     * Class for event template variables.
+     */
+    @SuppressWarnings("serial")
+    public class EventTemplateVariable implements Serializable, JSONString
+    {
+        private static final char NAME_PREFIX_SUFFIX = '%';
+        private String name;
+        private String description;
+        private Pattern nameMatcher = null;
+
+        public EventTemplateVariable(String name, String description)
+        {
+            // this.name = NAME_PREFIX_SUFFIX + name + NAME_PREFIX_SUFFIX;
+            this.setName(name);
+            this.description = description;
+        }
+
+        public String getName() { return name; }
+        public void setName( String name ) {
+            this.name = NAME_PREFIX_SUFFIX + name + NAME_PREFIX_SUFFIX;
+            this.nameMatcher = Pattern.compile(this.name);
+        }
+
+        public Pattern getNameMatcher(){ return nameMatcher; };
+
+        public String getDescription() { return description; }
+        public void setDescription( String description ) { this.description = description; }
+
+        /**
+         * [getValue description]
+         * @return [description]
+         */
+        public String getValue(AlertRule rule, LogEvent event, boolean convert){ return ""; }
+
+        public String toJSONString()
+        {
+            JSONObject jO = new JSONObject(this);
+            return jO.toString();
         }
     }
 
