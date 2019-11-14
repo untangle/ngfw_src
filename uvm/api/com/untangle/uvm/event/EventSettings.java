@@ -31,7 +31,7 @@ public class EventSettings implements Serializable, JSONString
 
     private String emailSubject = null;
     private String emailBody = null;
-    private boolean emailConvert = false;
+    private boolean emailConvert = true;
 
     public EventSettings() { }
 
