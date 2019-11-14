@@ -89,7 +89,7 @@ Ext.define('Ung.Setup.License', {
 
     controller: {
         onSave: function(cb){
-            Util.setRpcJsonrpc();
+            Util.setRpcJsonrpc("setup");
             cb();
         },
 
@@ -101,9 +101,10 @@ Ext.define('Ung.Setup.License', {
             if (this.timer) {
                 clearTimeout(this.timer);
                 this.timer = null;
-                var iframe = document.getElementById('eula-src');
-                iframe.src = this.remoteEulaSrc;
             }
+            var iframe = document.getElementById('eula-src');
+            iframe.src = this.localEulaSrc;
+            iframe.src = this.remoteEulaSrc;
         },
 
         handleFail: function(){
