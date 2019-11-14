@@ -18,6 +18,7 @@ Ext.define('Ung.config.events.MainController', {
             Rpc.asyncPromise('rpc.eventManager.getSettings'),
             Rpc.asyncPromise('rpc.eventManager.getClassFields'),
             Rpc.asyncPromise('rpc.eventManager.getTemplateParameters'),
+            Rpc.asyncPromise('rpc.eventManager.defaultEmailSettings')
         ], this).then(function(result) {
             if(Util.isDestroyed(v, vm)){
                 return;
@@ -92,6 +93,11 @@ Ext.define('Ung.config.events.MainController', {
             var allClasses = Ext.clone(classes);
             allClasses.push(['All', allClassFields['All']['description']]);
 
+            var templateParametersStore = new Ext.data.JsonStore({
+                fields: ['name', 'description'],
+                data: result[2]
+            });
+
             vm.set({
                 settings: result[0],
                 classFields: classFields,
@@ -119,16 +125,12 @@ Ext.define('Ung.config.events.MainController', {
                         direction: 'ASC'
                     }],
                     data: []
-                }) 
+                }),
+                templateParametersStore: templateParametersStore,
+                templateDefaults: result[3].map,
+                templateUnmatched: ''
             });
 
-            var templateParametersStore = new Ext.data.JsonStore({
-                fields: ['name', 'description'],
-                data: result[2]
-            });
-            vm.set('templateParametersStore',templateParametersStore);
-
-            vm.set('templateUnmatched', '');
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -283,16 +285,18 @@ Ext.define('Ung.config.events.MainController', {
         var me = this,
             vm = this.getViewModel();
 
-        Rpc.asyncData('rpc.eventManager.defaultEmailSettings', vm.get('settings.version'))
+        Rpc.asyncData('rpc.eventManager.defaultEmailSettings')
         .then(function(result) {
             if(Util.isDestroyed(me, vm)){
                 return;
             }
             for(var key in result.map){
                 var value = result.map[key];
-                value = (value ==- "true") ? true : value;
-                value = (value ==- "false") ? false : value;
-                vm.set("settings."+key, value);
+                if(value == "true" || value == "false"){
+                    vm.set("settings." + key, (value == "true") ? true : false);
+                }else{
+                    vm.set("settings." + key, null);
+                }
             }
         });
     },
