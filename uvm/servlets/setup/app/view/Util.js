@@ -2,11 +2,11 @@ Ext.define('Ung.Setup.Util', {
     alternateClassName: 'Util',
     singleton: true,
 
-    setRpcJsonrpc: function(){
+    setRpcJsonrpc: function(root){
         var setupInfo;
-        rpc.jsonrpc = new JSONRpcClient('/admin/JSON-RPC');
+        rpc.jsonrpc = new JSONRpcClient('/' + root + '/JSON-RPC');
         try {
-            setupInfo = rpc.jsonrpc.UvmContext.getSetupStartupInfo();
+            setupInfo = rpc.jsonrpc.UvmContext ? rpc.jsonrpc.UvmContext.getSetupStartupInfo() : rpc.jsonrpc.SetupContext.getSetupWizardStartupInfo();
         } catch (e) {
             Util.handleException(e);
             // Ung.Util.handleException(e);
@@ -35,7 +35,7 @@ Ext.define('Ung.Setup.Util', {
                     return;
                 }
 
-                Util.setRpcJsonrpc();
+                Util.setRpcJsonrpc("admin");
 
                 rpc.tolerateKeepAliveExceptions = false;
                 rpc.keepAlive = function() {
