@@ -158,9 +158,11 @@ Ext.define('Ung.Setup.Wizard', {
             layout.getActiveItem().fireEvent('save', function () {
                 if (!rpc.wizardSettings.wizardComplete) {
                     rpc.wizardSettings.completedStep = layout.getActiveItem().getXType();
-                    rpc.jsonrpc.UvmContext.setWizardSettings(function (result, ex) {
-                        if (ex) { Util.handleException(ex); return; }
-                    }, rpc.wizardSettings);
+                    if(rpc.jsonrpc.UvmContext){
+                        rpc.jsonrpc.UvmContext.setWizardSettings(function (result, ex) {
+                            if (ex) { Util.handleException(ex); return; }
+                        }, rpc.wizardSettings);
+                    }
                 }
                 layout.next(); // move to next step
                 me.updateNav(); // update navigation
@@ -211,9 +213,11 @@ Ext.define('Ung.Setup.Wizard', {
                 rpc.wizardSettings.completedStep = prevStep ? prevStep.getXType() : null;
                 rpc.wizardSettings.wizardComplete = nextStep ? false : true;
 
-                rpc.jsonrpc.UvmContext.setWizardSettings(function (result, ex) {
-                    if (ex) { Util.handleException(ex); return; }
-                }, rpc.wizardSettings);
+                if(rpc.jsonrpc.UvmContext){
+                    rpc.jsonrpc.UvmContext.setWizardSettings(function (result, ex) {
+                        if (ex) { Util.handleException(ex); return; }
+                    }, rpc.wizardSettings);
+                }
             }
         },
 
