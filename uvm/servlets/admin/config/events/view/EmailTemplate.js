@@ -37,8 +37,8 @@ Ext.define('Ung.config.events.view.EmailTemplate', {
             fieldLabel: 'Subject'.t(),
             itemId: 'emailSubject',
             labelWidth: 150,
-            width: 500,
-            bind: '{settings.emailSubject}',
+            width: 550,
+            bind: '{templateEmailSubject}',
             allowBlank: false,
             blankText: 'Subject must be specified.'.t(),
             listeners: {
@@ -51,9 +51,9 @@ Ext.define('Ung.config.events.view.EmailTemplate', {
             blankText: 'Body must be specified.'.t(),
             allowBlank: false,
             labelWidth: 150,
-            width: 500,
+            width: 550,
             height: 200,
-            bind: '{settings.emailBody}',
+            bind: '{templateEmailBody}',
             listeners: {
                 change: 'templateChange'
             }
