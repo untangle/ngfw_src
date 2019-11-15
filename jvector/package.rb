@@ -22,7 +22,7 @@ headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',
   'com.untangle.jvector.UDPSink',
   'com.untangle.jvector.Crumb' ]
 
-javah = JavahTarget.new(jvector, j, headerClasses)
+javah = JavahTarget.new(jvector, j, Jars::Base + ['jnetcap/impl'], headerClasses)
 
 compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::JVector}" })
 
