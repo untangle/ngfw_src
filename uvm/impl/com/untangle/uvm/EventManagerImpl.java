@@ -882,13 +882,17 @@ public class EventManagerImpl implements EventManager
                     if(kv.length > 1 && kv[1].equals("")){
                         subKey = key;
                     }else if(subKey != null){
-                        key = subKey + " " + key;
+                        key = subKey + "\t" + key;
                     }
+
+                    key = key.replaceAll("(.)(\\p{Upper})", "$1 $2").toLowerCase();
+
                     if(key.length() > maxKeyLength){
                         maxKeyLength = key.length();
                     }
                     kvPairs.put(key, kv.length > 1 ? kv[1].trim() : "");
                 }
+                maxKeyLength += 3;
                 SortedSet<String> sortedKeys = new TreeSet<>(kvPairs.keySet());
 
                 List<String> kvStrings = new LinkedList<>();
@@ -898,10 +902,10 @@ public class EventManagerImpl implements EventManager
                         kvString = String.format("%-" + maxKeyLength+ "s", k);
                     }else{
                         String showKey = k;
-                        if(showKey.indexOf(' ') != -1){
+                        if(showKey.indexOf('\t') != -1){
                             showKey = k.substring(showKey.indexOf(' '));
                         }
-                        kvString = String.format("%-" + maxKeyLength+ "s = %s", showKey, kvPairs.get(k));
+                        kvString = String.format("%-" + maxKeyLength+ "s %s", showKey + " = ", kvPairs.get(k));
                     }
                     kvStrings.add(kvString);
                 }
