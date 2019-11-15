@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -23,6 +24,7 @@ public class IPMatcher
     private static final String MARKER_RANGE = "-";
     private static final String MARKER_SUBNET = "/";
     private static final String IPADDR_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+    public static final Pattern JAVA_IPADDR_REGEX = Pattern.compile("^/(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
 
     private static IPMatcher ANY_MATCHER = new IPMatcher(MARKER_ANY);
     private static IPMatcher NIL_MATCHER = new IPMatcher(MARKER_NONE);
