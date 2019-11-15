@@ -43,7 +43,7 @@ Ext.define('Ung.Setup.License', {
             xtype: 'container',
             itemId: 'eula',
             style: 'background: #FFF; border-radius: 3px; border: 1px #EEE solid; line-height: 0;',
-            html: '<iframe id="eula-src" style="border: none; width: 100%; height: 350px;"></iframe>',
+            html: '<iframe id="eula-src" style="border: none; width: 100%; height: 340px;"></iframe>',
             masked: {
                 xtype: 'loadmask',
                 message: 'Loading ...'
@@ -89,7 +89,7 @@ Ext.define('Ung.Setup.License', {
 
     controller: {
         onSave: function(cb){
-            Util.setRpcJsonrpc();
+            Util.setRpcJsonrpc("setup");
             cb();
         },
 
@@ -101,9 +101,10 @@ Ext.define('Ung.Setup.License', {
             if (this.timer) {
                 clearTimeout(this.timer);
                 this.timer = null;
-                var iframe = document.getElementById('eula-src');
-                iframe.src = this.remoteEulaSrc;
             }
+            var iframe = document.getElementById('eula-src');
+            iframe.src = this.localEulaSrc;
+            iframe.src = this.remoteEulaSrc;
         },
 
         handleFail: function(){
