@@ -1375,7 +1375,7 @@ public class EventManagerImpl implements EventManager
             try {
                 JSONObject subObject = jsonObject.getJSONObject(key);
                 if (subObject != null) {
-                    cleanupJsonObject( subObject );
+                    cleanupJsonObject( subObject, human );
                 }
             } catch (Exception e) {
                 /* ignore */
@@ -1390,7 +1390,7 @@ public class EventManagerImpl implements EventManager
                     Object o = jsonObject.get(key);
                     if ( o instanceof org.json.JSONString ) {
                         JSONObject newObj = new JSONObject( o );
-                        cleanupJsonObject( newObj );
+                        cleanupJsonObject( newObj, human );
                         jsonObject.put( key, newObj );
                     }
                 }
