@@ -664,6 +664,29 @@ public class OpenVpnAppImpl extends AppBase
                 highestKnownGroupId++;
             }
         }
+
+        /**
+         * Fix up the "compress lz4" compression settings for the server
+         */
+
+        for (OpenVpnConfigItem serverConfig : newSettings.getServerConfiguration()) {
+            if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "compress lz4")) {
+                serverConfig.setOptionName("compress");
+                serverConfig.setOptionValue("lz4");
+            }
+        }
+
+        
+        /**
+         * Fix up the "compress lz4" compression settings for the client
+         */
+        for (OpenVpnConfigItem clientConfig : newSettings.getClientConfiguration()) {
+            if ( clientConfig.getOptionName() != null && Objects.equals(clientConfig.getOptionName(), "compress lz4")) {
+                clientConfig.setOptionName("compress");
+                clientConfig.setOptionValue("lz4");
+            }
+        }
+
     }
 
     /**
