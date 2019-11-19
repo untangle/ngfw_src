@@ -870,7 +870,7 @@ public class EventManagerImpl implements EventManager
                 String key;
                 String subKey = null;
                 for(String line: jsonString.split("\n")){
-                    line = line.substring(0, line.length() - 1).replaceAll("\"", "");
+                    line = line.replaceAll(",\\s*$", "").replaceAll("\"", "");
                     if( line.trim().equals("{") ||
                         line.trim().equals("}") ||
                         line.trim().equals("")) {
