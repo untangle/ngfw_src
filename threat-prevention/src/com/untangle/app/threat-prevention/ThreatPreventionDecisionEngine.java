@@ -192,9 +192,9 @@ public class ThreatPreventionDecisionEngine
     }
 
     /**
-     * [getMatch description]
-     * @param  sessionAttachments [description]
-     * @return                    [description]
+     * Determine if cliient/server reputations match settings threashold.
+     * @param  sessionAttachments SessionAttachments containing KEY_THREAT_PREVENTION_CLIENT_REPUTATION and/or KEY_THREAT_PREVENTION_CLIENT_REPUTATION.
+     * @return                    true if match is within threshold, otherwise false.
      */
     public Boolean isMatch(SessionAttachments sessionAttachments)
     {
@@ -285,7 +285,15 @@ public class ThreatPreventionDecisionEngine
         }
 
         Integer serverReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
+        if(serverReputation == null){
+            serverReputation = 0;
+        }
         Integer serverThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
+        if(serverThreatmask == null){
+            serverThreatmask = 0;
+        }
+
+        app.incrementThreatCount(serverReputation);
 
         ThreatPreventionHttpEvent fwe = new ThreatPreventionHttpEvent(
             requestLine.getRequestLine(),
@@ -293,8 +301,8 @@ public class ThreatPreventionDecisionEngine
             match && block, 
             match && flag, 
             ruleIndex != null ? ruleIndex : 0, 
-            serverReputation != null ? serverReputation : 0, 
-            serverThreatmask != null ? serverThreatmask : 0
+            serverReputation,
+            serverThreatmask
             );
         app.logEvent(fwe);
 
