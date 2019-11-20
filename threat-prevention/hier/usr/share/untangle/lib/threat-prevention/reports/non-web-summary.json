@@ -1,7 +1,7 @@
 {
     "uniqueId": "threat-prevention-tpupl31dqKb1o",
     "category": "Threat Prevention",
-    "description": "A summary of other Threat Prevention actions.",
+    "description": "A summary of non-web Threat Prevention actions.",
     "displayOrder": 11,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -10,9 +10,9 @@
         "sum(threat_prevention_flagged::int) as flagged",
         "sum(threat_prevention_blocked::int) as blocked"
     ],
-    "textString": "Threat Prevention scanned {0} other sessions and flagged {1} sessions of which {2} were blocked.", 
+    "textString": "Threat Prevention scanned {0} non-web sessions and flagged {1} sessions of which {2} were blocked.", 
     "readOnly": true,
     "table": "sessions",
-    "title": "Other Traffic Summary",
+    "title": "Non-Web Traffic Summary",
     "type": "TEXT"
 }
