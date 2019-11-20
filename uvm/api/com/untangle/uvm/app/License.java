@@ -37,6 +37,7 @@ public class License implements Serializable
     public static final String APPLICATION_CONTROL = "application-control";
     public static final String SSL_INSPECTOR = "ssl-inspector";
     public static final String LIVE_SUPPORT = "live-support";
+    public static final String THREAT_PREVENTION = "threat-prevention";
 
     /** Identifier for the product this license is for */
     private String name;
@@ -261,6 +262,8 @@ public class License implements Serializable
             return "live-support";
         case "untangle-node-live-support":
             return "live-support";
+        case "untangle-node-threat-prevention":
+            return "threat-prevention";
         default:
             break;
         }
