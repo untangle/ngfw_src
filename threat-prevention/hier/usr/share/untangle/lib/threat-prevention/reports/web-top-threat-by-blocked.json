@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpAsifWhYFwtrbbs",
     "category": "Threat Prevention",
     "description": "The number of web blocked sessions to servers grouped by threats reputation.",
-    "displayOrder": 403,
+    "displayOrder": 102,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",

@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpAsifWhYotrbsc",
     "category": "Threat Prevention",
     "description": "The number of non-web scanned sessions from clients grouped by threat reputation.",
-    "displayOrder": 424,
+    "displayOrder": 301,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",

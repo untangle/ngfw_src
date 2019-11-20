@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpMpnd3b85xotcbs",
     "category": "Threat Prevention",
     "description": "The number of non-web scanned session grouped by client.",
-    "displayOrder": 230,
+    "displayOrder": 501,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",

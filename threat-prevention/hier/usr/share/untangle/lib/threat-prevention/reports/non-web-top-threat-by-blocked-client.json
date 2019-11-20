@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpAsifWhYFotrbbc",
     "category": "Threat Prevention",
     "description": "The number of non-web blocked sessions from clients grouped by threat reputation.",
-    "displayOrder": 426,
+    "displayOrder": 302,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
