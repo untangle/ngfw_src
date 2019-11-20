@@ -1,8 +1,8 @@
 {
-    "uniqueId": "threat-prevention-tpAsifWhYFtotbss",
-    "category": "Threat Prevention",
-    "description": "The number of other scanned sessions to servers grouped by threat.",
-    "displayOrder": 531,
+    "uniqueId": "threat-prevention-tpAsifWhYFtotbbs",
+    "category": "Threat Pevention",
+    "description": "The number of non-web blocked sessions to servers grouped by threat.",
+    "displayOrder": 533,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -13,6 +13,11 @@
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "threat_prevention_blocked",
+            "operator": "=",
+            "value": "true"
+        },{
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "threat_prevention_server_categories",
             "operator": ">",
             "value": "0"
@@ -20,7 +25,7 @@
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Other Top Scanned Categories (by server)",
+    "title": "Non-Web Top Blocked Categories (by server)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

@@ -11,10 +11,10 @@
         }
     ],
     "defaultColumns": ["time_stamp","username","hostname","c_client_port","protocol","client_country","server_country","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_id","threat_prevention_client_reputation","threat_prevention_client_categories","threat_prevention_server_reputation","threat_prevention_server_categories","c_client_addr","s_server_addr","s_server_port"],
-    "description": "Events blocked by Threat Prevention.",
+    "description": "Non-web events blocked by Threat Prevention.",
     "displayOrder": 1012,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
-    "title": "Other Blocked Events",
+    "title": "Non-Web Blocked Events",
     "uniqueId": "threat-prevention-tpN195L7ZCAXo"
 }
