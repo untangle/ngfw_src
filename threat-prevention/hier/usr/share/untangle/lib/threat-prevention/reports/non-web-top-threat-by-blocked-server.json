@@ -1,0 +1,31 @@
+{
+    "uniqueId": "threat-prevention-tpAsifWhYFotrbbs",
+    "category": "Threat Prevention",
+    "description": "The number of non-web blocked sessions to servers grouped by threat reputation.",
+    "displayOrder": 423,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "hits",
+    "pieGroupColumn": "threat_prevention_server_reputation",
+    "pieSumColumn": "count(*)",
+    "conditions": [
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "threat_prevention_blocked",
+            "operator": "=",
+            "value": "true"
+        },{
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "threat_prevention_server_reputation",
+            "operator": ">",
+            "value": "0"
+        }
+    ],
+    "readOnly": true,
+    "table": "sessions",
+    "title": "Non-Web Top Blocked Threats (by server)",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

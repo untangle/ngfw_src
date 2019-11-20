@@ -1,8 +1,8 @@
 {
-    "uniqueId": "threat-prevention-tpAsifWhYFotrbbc",
+    "uniqueId": "threat-prevention-tpAsifWhYotrbsc",
     "category": "Threat Prevention",
-    "description": "The number of non-web blocked sessions from clients grouped by reputation.",
-    "displayOrder": 426,
+    "description": "The number of non-web scanned sessions from clients grouped by threat reputation.",
+    "displayOrder": 424,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -13,11 +13,6 @@
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_blocked",
-            "operator": "=",
-            "value": "true"
-        },{
-            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "threat_prevention_client_reputation",
             "operator": ">",
             "value": "0"
@@ -25,7 +20,7 @@
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Non-Web Top Blocked Reputations (by client)",
+    "title": "Non-Web Top Scanned Threats (by client)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

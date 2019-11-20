@@ -1,7 +1,7 @@
 {
     "uniqueId": "threat-prevention-tpsAsiftrbsss",
     "category": "Threat Prevention",
-    "description": "The number of web scanned sessions to servers grouped by reputation.",
+    "description": "The number of web scanned sessions to servers grouped by threat reputation.",
     "displayOrder": 401,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -20,7 +20,7 @@
     ],
     "readOnly": true,
     "table": "http_events",
-    "title": "Web Top Scanned Reputations",
+    "title": "Web Top Scanned Threats",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
