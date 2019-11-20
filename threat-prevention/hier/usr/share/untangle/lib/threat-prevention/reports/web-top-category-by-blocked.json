@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpAsifWhYFtwtbbs",
     "category": "Threat Prevention",
     "description": "The number of other blocked sessions to servers grouped by threat.",
-    "displayOrder": 503,
+    "displayOrder": 104,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",

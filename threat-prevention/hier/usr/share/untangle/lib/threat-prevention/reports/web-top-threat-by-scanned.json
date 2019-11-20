@@ -2,7 +2,7 @@
     "uniqueId": "threat-prevention-tpsAsiftrbsss",
     "category": "Threat Prevention",
     "description": "The number of web scanned sessions to servers grouped by threat reputation.",
-    "displayOrder": 401,
+    "displayOrder": 101,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
