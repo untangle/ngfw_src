@@ -1,7 +1,7 @@
 {
     "uniqueId": "threat-prevention-tpAsifWhYotrbss",
     "category": "Threat Pevention",
-    "description": "The number of non-web scanned sessions to servers grouped by reputation.",
+    "description": "The number of non-web scanned sessions to servers grouped by threat reputation.",
     "displayOrder": 421,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -20,7 +20,7 @@
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Non-Web Top Scanned Reputations (by server)",
+    "title": "Non-Web Top Scanned Threats (by server)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
