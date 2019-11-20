@@ -335,7 +335,7 @@ public class OpenVpnAppImpl extends AppBase
              * Fix up the "compress lz4" compression settings for the server
              */
 
-            for (OpenVpnConfigItem serverConfig : newSettings.getServerConfiguration()) {
+            for (OpenVpnConfigItem serverConfig : settings.getServerConfiguration()) {
                 if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "compress lz4")) {
                     serverConfig.setOptionName("compress");
                     serverConfig.setOptionValue("lz4");
@@ -345,7 +345,7 @@ public class OpenVpnAppImpl extends AppBase
             /**
              * Fix up the "compress lz4" compression settings for the client
              */
-            for (OpenVpnConfigItem clientConfig : newSettings.getClientConfiguration()) {
+            for (OpenVpnConfigItem clientConfig : settings.getClientConfiguration()) {
                 if ( clientConfig.getOptionName() != null && Objects.equals(clientConfig.getOptionName(), "compress lz4")) {
                     clientConfig.setOptionName("compress");
                     clientConfig.setOptionValue("lz4");
