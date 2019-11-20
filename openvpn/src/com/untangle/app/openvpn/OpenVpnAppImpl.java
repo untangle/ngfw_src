@@ -41,6 +41,9 @@ import com.untangle.uvm.vnet.PipelineConnector;
  */
 public class OpenVpnAppImpl extends AppBase
 {
+
+    private static final Integer SETTINGS_CURRENT_VERSION = 1;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String GENERATE_CERTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-generate-certs";
@@ -124,6 +127,7 @@ public class OpenVpnAppImpl extends AppBase
 
             this.initializeSettings();
         } else {
+            updateSettings(readSettings);
             logger.info("Loading Settings...");
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
@@ -313,6 +317,43 @@ public class OpenVpnAppImpl extends AppBase
             cleanServerSettings();
         } catch (Exception exn) {
             logger.warn("Exception during client/server cleanup", exn);
+        }
+    }
+
+    
+    /**
+     * Verifies current OpenVpnSettings version, and updates to latest verson.
+     *
+     * @param  settings Current OpenVpnSettings
+     * @return          Nothing
+     */
+    private void updateSettings(OpenVpnSettings settings){
+        if(settings.getVersion() < SETTINGS_CURRENT_VERSION){
+            logger.info("OpenVPN Settings require an update...");
+
+            /**
+             * Fix up the "compress lz4" compression settings for the server
+             */
+
+            for (OpenVpnConfigItem serverConfig : newSettings.getServerConfiguration()) {
+                if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "compress lz4")) {
+                    serverConfig.setOptionName("compress");
+                    serverConfig.setOptionValue("lz4");
+                }
+            }
+
+            /**
+             * Fix up the "compress lz4" compression settings for the client
+             */
+            for (OpenVpnConfigItem clientConfig : newSettings.getClientConfiguration()) {
+                if ( clientConfig.getOptionName() != null && Objects.equals(clientConfig.getOptionName(), "compress lz4")) {
+                    clientConfig.setOptionName("compress");
+                    clientConfig.setOptionValue("lz4");
+                }
+            }
+
+            settings.setVersion(SETTINGS_CURRENT_VERSION);
+            this.setSettings( settings );
         }
     }
 
@@ -665,29 +706,6 @@ public class OpenVpnAppImpl extends AppBase
                 highestKnownGroupId++;
             }
         }
-
-        /**
-         * Fix up the "compress lz4" compression settings for the server
-         */
-
-        for (OpenVpnConfigItem serverConfig : newSettings.getServerConfiguration()) {
-            if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "compress lz4")) {
-                serverConfig.setOptionName("compress");
-                serverConfig.setOptionValue("lz4");
-            }
-        }
-
-        
-        /**
-         * Fix up the "compress lz4" compression settings for the client
-         */
-        for (OpenVpnConfigItem clientConfig : newSettings.getClientConfiguration()) {
-            if ( clientConfig.getOptionName() != null && Objects.equals(clientConfig.getOptionName(), "compress lz4")) {
-                clientConfig.setOptionName("compress");
-                clientConfig.setOptionValue("lz4");
-            }
-        }
-
     }
 
     /**

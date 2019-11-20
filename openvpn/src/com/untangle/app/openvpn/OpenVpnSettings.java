@@ -18,6 +18,9 @@ import com.untangle.uvm.app.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class OpenVpnSettings implements java.io.Serializable, JSONString
 {
+
+    private Integer version = 0;
+
     public static enum AuthenticationType
     {
         NONE, LOCAL_DIRECTORY, RADIUS, ACTIVE_DIRECTORY, ANY_DIRCON
@@ -127,6 +130,9 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         /* device */
         clientConfiguration.add(new OpenVpnConfigItem("dev", "tun", true));
     }
+
+    public Integer getVersion() { return version; }
+    public void setVersion( Integer newValue ) { this.version = newValue; }
 
     public LinkedList<OpenVpnConfigItem> getClientConfiguration() { return this.clientConfiguration; }
     public void setClientConfiguration( LinkedList<OpenVpnConfigItem> argList) { this.clientConfiguration = argList; }
