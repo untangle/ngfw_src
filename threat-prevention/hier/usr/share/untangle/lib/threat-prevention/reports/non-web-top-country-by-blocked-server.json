@@ -1,14 +1,14 @@
 {
-    "uniqueId": "threat-prevention-tpAsifWhYFtwtbbs",
+    "uniqueId": "threat-prevention-tpAsifWhYFtotbsscs",
     "category": "Threat Prevention",
-    "description": "The number of web sessions blocked grouped by threat.",
-    "displayOrder": 104,
+    "description": "Top non-web blockedd sessions to servers grouped by threat.",
+    "displayOrder": 452,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "threat_prevention_categories",
+    "pieGroupColumn": "server_country",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
@@ -16,16 +16,11 @@
             "column": "threat_prevention_blocked",
             "operator": "=",
             "value": "true"
-        },{
-            "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_categories",
-            "operator": ">",
-            "value": "0"
         }
     ],
     "readOnly": true,
-    "table": "http_events",
-    "title": "Web Top Blocked Categories",
+    "table": "sessions",
+    "title": "Non-Web Top Blocked Countries (by server)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
