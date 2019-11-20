@@ -137,7 +137,11 @@ public class ThreatPreventionDecisionEngine
         }else if(!clientLocal){
             answer = app.webrootQuery.ipGetInfo(clientAddress.getHostAddress());
         }else if(!serverLocal){
-            answer = app.webrootQuery.urlGetInfo(serverAddress != null ? serverAddress.getHostAddress() : serverUrl);
+            if(serverUrl != null){
+                answer = app.webrootQuery.urlGetInfo(serverUrl);
+            }else{
+                answer = app.webrootQuery.urlGetInfo(serverAddress != null ? serverAddress.getHostAddress() : null);
+            }
         }
         app.adjustLookupAverage(System.currentTimeMillis() - lookupTimeBegin);
 
