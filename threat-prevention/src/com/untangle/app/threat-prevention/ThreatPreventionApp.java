@@ -64,17 +64,17 @@ public class ThreatPreventionApp extends AppBase
     private static final String STAT_BLOCK = "block";
     private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
+    private static final String STAT_THREAT_NO_REPUTATION = "none";
+    private static final String STAT_THREAT_HIGH_RISK = "high";
+    private static final String STAT_THREAT_SUSPICIOUS = "suspicious";
+    private static final String STAT_THREAT_MODERATE_RISK = "moderate";
+    private static final String STAT_THREAT_LOW_RISK = "low";
+    private static final String STAT_THREAT_TRUSTWORTHY = "trustworthy";
     private static final String STAT_LOOKUP_AVG = "lookup_avg";
 
     protected final ThreatPreventionReplacementGenerator replacementGenerator;
     
     private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
-
-    // For converse, it it a bad idea to have multiple subscripitions?
-    // UDP, all
-    // TCP,1-79, 
-    // TCP 81-442
-    // TCP 443+
 
     private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-http", this, null, new ThreatPreventionHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, -2000, true);
     private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-https-sni", this, httpsSub, new ThreatPreventionHttpsSniHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, true);
@@ -93,6 +93,7 @@ public class ThreatPreventionApp extends AppBase
         UrlCatThreatMap.put(56, 131072);    // Malware
         UrlCatThreatMap.put(59, 262144);    // Spyware
 
+        // !!! translate
         ReputationThreatMap = new HashMap<>();
         ReputationThreatMap.put(0, "No reputation");
         ReputationThreatMap.put(20, "High Risk");
@@ -187,7 +188,14 @@ public class ThreatPreventionApp extends AppBase
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
         this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new AppMetric(STAT_THREAT_NO_REPUTATION, I18nUtil.marktr("Threat: None")));
+        this.addMetric(new AppMetric(STAT_THREAT_HIGH_RISK, I18nUtil.marktr("Threat: High Risk")));
+        this.addMetric(new AppMetric(STAT_THREAT_SUSPICIOUS, I18nUtil.marktr("Threat: Suspicious")));
+        this.addMetric(new AppMetric(STAT_THREAT_MODERATE_RISK, I18nUtil.marktr("Threat: Moderate Risk")));
+        this.addMetric(new AppMetric(STAT_THREAT_LOW_RISK, I18nUtil.marktr("Threat: Low Risk")));
+        this.addMetric(new AppMetric(STAT_THREAT_TRUSTWORTHY, I18nUtil.marktr("Threat: Trustworthy Sessions")));
         this.addMetric(new AppMetric(STAT_LOOKUP_AVG, I18nUtil.marktr("Lookup time average"), 0L, AppMetric.Type.AVG_TIME, I18nUtil.marktr("ms"), true));
+
         // this.addMirroredMetrics( WebrootDaemon );
         // this.addMirroredMetrics( WebrootQuery );
     }
@@ -277,8 +285,7 @@ public class ThreatPreventionApp extends AppBase
         set.setRules(rules);
         setSettings(set);
     }
-    
-    
+
     /**
      * Increment the block stat
      */
@@ -301,6 +308,36 @@ public class ThreatPreventionApp extends AppBase
     public void incrementFlagCount() 
     {
         this.incrementMetric(STAT_FLAG);
+    }
+
+    /**
+     * Increment high risk stat counter.
+     * @param reputation integer of Reputation.
+     */
+    public void incrementThreatCount(int reputation) 
+    {
+        if(reputation == 0){
+            this.incrementMetric(STAT_THREAT_NO_REPUTATION);
+        }else{
+            reputation = reputation - (reputation % 20) + 20;
+            switch(reputation){
+                case 100:
+                    this.incrementMetric(STAT_THREAT_TRUSTWORTHY);
+                    break;
+                case 80:
+                    this.incrementMetric(STAT_THREAT_LOW_RISK);
+                    break;
+                case 60:
+                    this.incrementMetric(STAT_THREAT_MODERATE_RISK);
+                    break;
+                case 40:
+                    this.incrementMetric(STAT_THREAT_SUSPICIOUS);
+                    break;
+                case 20:
+                    this.incrementMetric(STAT_THREAT_HIGH_RISK);
+                    break;
+            }
+        }
     }
 
     /**

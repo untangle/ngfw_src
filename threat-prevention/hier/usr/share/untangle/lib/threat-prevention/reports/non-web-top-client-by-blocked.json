@@ -1,8 +1,8 @@
 {
-    "uniqueId": "threat-prevention-tpgsR2R5tGWwotcbf",
+    "uniqueId": "threat-prevention-tpAsifWhYFaeotcbb",
     "category": "Threat Prevention",
-    "description": "The number of other flagged session grouped by client.",
-    "displayOrder": 231,
+    "description": "The number of non-web blocked session grouped by client.",
+    "displayOrder": 502,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -16,16 +16,17 @@
             "column": "threat_prevention_client_reputation",
             "operator": ">",
             "value": "0"            
-        },{
+        },
+        {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_flagged",
+            "column": "threat_prevention_blocked",
             "operator": "=",
             "value": "true"
         }
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Other Top Flagged Clients",
+    "title": "Non-Web Top Blocked Clients",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

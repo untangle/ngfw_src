@@ -1,31 +1,26 @@
 {
-    "uniqueId": "threat-prevention-tpgsR2R5tGWwotsbfwtf",
+    "uniqueId": "threat-prevention-tpAsifWhYFtwtbbsc",
     "category": "Threat Prevention",
-    "description": "The number of web flagged session grouped by server.",
-    "displayOrder": 201,
+    "description": "Top blocked web sessions to servers grouped by country.",
+    "displayOrder": 104,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "host",
+    "pieGroupColumn": "server_country",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_reputation",
-            "operator": ">",
-            "value": "0"            
-        },{
-            "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_flagged",
+            "column": "threat_prevention_blocked",
             "operator": "=",
             "value": "true"
         }
     ],
     "readOnly": true,
     "table": "http_events",
-    "title": "Web Top Flagged Hosts",
+    "title": "Web Top Blocked Countries",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

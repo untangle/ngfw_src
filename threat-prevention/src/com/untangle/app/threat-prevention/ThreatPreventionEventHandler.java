@@ -101,6 +101,9 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
         Integer serverReputation = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
         Integer serverThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
 
+        app.incrementThreatCount(clientReputation);
+        app.incrementThreatCount(serverReputation);
+
         for (ThreatPreventionRule rule : app.getSettings().getRules()){
             if( rule.isMatch(request.getProtocol(),
                             request.getClientIntf(), request.getServerIntf(),

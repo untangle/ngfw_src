@@ -41,21 +41,18 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                     bind:{
                         value: '{settings.reputationThreshold}'
                     },
-                    labelTplSingle: 'Match <i>{0}</i>'.t(),
-                    labelTplMultiple: 'Match <i>{0}</i> or worse'.t(),
-                    thresholdWarning: {
-                        maxBlockValue: 80,
-                        labelTpl: '<br><b>' + 'Warning: This Reputation Threshold is not recommended.'.t() + '</b>'
-                    },
+                    labelTpl: 'Block traffic assessed as <i>{0}</i>'.t(),
+                    labelNoneTpl: '<br><b>' + 'Warning: No traffic will be blocked'.t() + '</b>',
+                    labelAllTpl: '<br><b>' + 'Warning: All traffic will be blocked'.t() + '</b>',
                     tipTpl: '{0} - {1}'.t(),
-                    rangeTpl: '<table style="width:450px; height:75px;border-collapse:collapse; margin-top: -29px;"><tr>' + 
-                        '<td style="vertical-align:bottom; width:20%;">High Risk</td>'+
-                        '<td style="vertical-align:bottom; width:20%;">Suspicious</td>'+
-                        '<td style="vertical-align:bottom; width:20%;">Moderate Risk</td>'+
-                        '<td style="vertical-align:bottom; width:20%;">Low Risk</td>'+
+                    rangeTpl: '<table style="width:450px; height:75px;border-collapse:collapse; margin-top: -29px"><tr>' + 
                         '<td style="vertical-align:bottom; width:20%;">Trustworthy</td>'+
+                        '<td style="vertical-align:bottom; width:20%;">Low Risk</td>'+
+                        '<td style="vertical-align:bottom; width:20%;">Moderate Risk</td>'+
+                        '<td style="vertical-align:bottom; width:20%;">Suspicious</td>'+
+                        '<td style="vertical-align:bottom; width:20%;">High Risk</td>'+
                         '</tr><tr>' + 
-                        '<td style="background-color:#{0};"></td>'+
+                        '<td style="background-color:#{0}; height:32px;"></td>'+
                         '<td style="background-color:#{1};"></td>'+
                         '<td style="background-color:#{2};"></td>'+
                         '<td style="background-color:#{3};"></td>'+
@@ -74,10 +71,10 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                 value: '{threatList}'
             },
             padding: '0 10 10 0'
-        },{
-            xtype: 'displayfield',
-            value: 'Matching traffic will be blocked'.t(),
-            padding: '0 10 10 0'
+        // },{
+        //     xtype: 'displayfield',
+        //     value: 'Matching traffic will be blocked'.t(),
+        //     padding: '0 10 10 0'
         }]
     }]
 });

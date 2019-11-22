@@ -34,7 +34,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
         Ung.common.threatprevention.references.threats.each( function(threat){
             threatList.push(threat.get('description'));
         });
-        vm.set('threatList', "Match may be one or more of the following categories:".t()+'<br>'+'<i>'+threatList.join(", ")+'</i>');
+        vm.set('threatList', "Match may contain one or more of the following categories:".t()+'<br>'+'<i>'+threatList.join(", ")+'</i>');
     },
 
     setSettings: function () {
@@ -100,45 +100,109 @@ Ext.define('Ung.ThreatSlider', {
             change: this.showValue
         });
     },
+    /**
+     * Override to support reverse slider.
+     */
+    calculateThumbPosition: function(v) {
+        var me = this,
+            minValue = me.minValue,
+            maxValue = me.maxValue,
+            pos = ((maxValue - v) / me.getRange() * 100);
+        if (isNaN(pos)) {
+            pos = 0;
+        }
+        return pos;
+    },
+    /**
+     * Override to support reverse slider.
+     */
+    reversePixelValue : function(pos) {
+        return this.maxValue - (pos / this.getRatio());
+    },
+    /**
+     * Override to support reverse slider.
+     */
+    onKeyDown: function(e) {
+        var me = this,
+            ariaDom = me.ariaEl.dom,
+            k, val;
+        
+        k = e.getKey();
+ 
+        /*
+         * The behaviour for keyboard handling with multiple thumbs is currently undefined.
+         * There's no real sane default for it, so leave it like this until we come up
+         * with a better way of doing it.
+         */
+        if (me.disabled || me.thumbs.length !== 1) {
+            // Must not mingle with the Tab key!
+            if (k !== e.TAB) {
+                e.preventDefault();
+            }
+            
+            return;
+        }
+ 
+        switch (k) {
+            case e.UP:
+            case e.RIGHT:
+                val = e.ctrlKey ? me.minValue : me.getValue(0) - me.keyIncrement;
+                break;
+            
+            case e.DOWN:
+            case e.LEFT:
+                val = e.ctrlKey ? me.maxValue : me.getValue(0) + me.keyIncrement;
+                break;
+            
+            case e.HOME:
+                val = me.minValue;
+                break;
+            
+            case e.END:
+                val = me.maxValue;
+                break;
+            
+            case e.PAGE_UP:
+                val = me.getValue(0) + me.pageSize;
+                break;
+            
+            case e.PAGE_DOWN:
+                val = me.getValue(0) - me.pageSize;
+                break;
+        }
+        
+        if (val !== undefined) {
+            e.stopEvent();
+            
+            val = me.normalizeValue(val);
+            
+            me.setValue(0, val, undefined, true);
+            
+            if (ariaDom) {
+                ariaDom.setAttribute('aria-valuenow', val);
+            }
+        }
+    },
     showValue: function(slider, newValue){
         var me = this, vm = this.getViewModel();
 
         var viewLabelComponent = this.up().down('[itemId='+this.viewLabel+']');
         var viewRangeComponent = this.up().down('[itemId='+this.rangeLabel+']');
         var thresholdWarning = me.thresholdWarning;
-        var matched = false;
         var rangeArguments = [slider.rangeTpl];
-        var matchingIndex = -1;
+        var matchingThreats = [];
         Ung.common.threatprevention.references.reputations.each( function(threat, index){
-            if(matched == false && newValue > 0){
-                rangeArguments.push(threat.get('color'));
-            }else{
-                rangeArguments.push('dddddd');
-            }
-            if(newValue == 0){
-                viewLabelComponent.setHtml('No matches'.t());
-            }else{
-                if(newValue >= threat.get('rangeBegin') && newValue <= threat.get('rangeEnd')){
-                    matched = true;
-                    matchingIndex = index;
-                    viewLabelComponent.setHtml(
-                        Ext.String.format(matchingIndex == 0 ? me.labelTplSingle : me.labelTplMultiple, threat.get('description')) +
-                        ( ( newValue >= thresholdWarning.maxBlockValue ) ? Ext.String.format(thresholdWarning.labelTpl) : '' )
-                    );
-                }
+            rangeArguments.push(threat.get('color'));
+            if(newValue > 0 &&
+                ( newValue >= threat.get('rangeBegin') ) ){
+                matchingThreats.push(threat.get('description'));
             }
         });
-        viewRangeComponent.setHtml( Ext.String.format.apply(null, rangeArguments) );
-        me.up('panel').down('fieldset').items.each( 
-            function(item){
-                if(item.itemId != 'threatReputation'){
-                    if(newValue == 0){
-                        item.disable();
-                    }else{
-                        item.enable();
-                    }
-                }
-            }
+        viewLabelComponent.setHtml(
+            Ext.String.format(me.labelTpl, matchingThreats.join(", ") ) +
+            ( matchingThreats.length == 0 ? Ext.String.format(me.labelNoneTpl) : '') +
+            ( matchingThreats.length == Ung.common.threatprevention.references.reputations.getCount() ? Ext.String.format(me.labelAllTpl) : '' )
         );
+        viewRangeComponent.setHtml( Ext.String.format.apply(null, rangeArguments) );
     }
 });
