@@ -188,12 +188,12 @@ public class ThreatPreventionApp extends AppBase
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
         this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
-        this.addMetric(new AppMetric(STAT_THREAT_NO_REPUTATION, I18nUtil.marktr("Threat Reputation: None")));
-        this.addMetric(new AppMetric(STAT_THREAT_HIGH_RISK, I18nUtil.marktr("Threat Reputation: High Risk")));
-        this.addMetric(new AppMetric(STAT_THREAT_SUSPICIOUS, I18nUtil.marktr("Threat Reputation: Suspicious")));
-        this.addMetric(new AppMetric(STAT_THREAT_MODERATE_RISK, I18nUtil.marktr("Threat Reputation: Moderate Risk")));
-        this.addMetric(new AppMetric(STAT_THREAT_LOW_RISK, I18nUtil.marktr("Threat Reputation: Low Risk")));
-        this.addMetric(new AppMetric(STAT_THREAT_TRUSTWORTHY, I18nUtil.marktr("Threat Reputation: Trustworthy Sessions")));
+        this.addMetric(new AppMetric(STAT_THREAT_NO_REPUTATION, I18nUtil.marktr("Threat: None")));
+        this.addMetric(new AppMetric(STAT_THREAT_HIGH_RISK, I18nUtil.marktr("Threat: High Risk")));
+        this.addMetric(new AppMetric(STAT_THREAT_SUSPICIOUS, I18nUtil.marktr("Threat: Suspicious")));
+        this.addMetric(new AppMetric(STAT_THREAT_MODERATE_RISK, I18nUtil.marktr("Threat: Moderate Risk")));
+        this.addMetric(new AppMetric(STAT_THREAT_LOW_RISK, I18nUtil.marktr("Threat: Low Risk")));
+        this.addMetric(new AppMetric(STAT_THREAT_TRUSTWORTHY, I18nUtil.marktr("Threat: Trustworthy Sessions")));
         this.addMetric(new AppMetric(STAT_LOOKUP_AVG, I18nUtil.marktr("Lookup time average"), 0L, AppMetric.Type.AVG_TIME, I18nUtil.marktr("ms"), true));
 
         // this.addMirroredMetrics( WebrootDaemon );
