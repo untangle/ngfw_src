@@ -1,26 +1,26 @@
 {
-    "uniqueId": "threat-prevention-tpMpnd3b85xotcbs",
+    "uniqueId": "threat-prevention-tpAsifWhYFtotbsscs",
     "category": "Threat Prevention",
-    "description": "The number of other scanned session grouped by client.",
-    "displayOrder": 230,
+    "description": "Top non-web blockedd sessions to servers grouped by threat.",
+    "displayOrder": 452,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "c_client_addr",
+    "pieGroupColumn": "server_country",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_client_reputation",
-            "operator": ">",
-            "value": "0"            
+            "column": "threat_prevention_blocked",
+            "operator": "=",
+            "value": "true"
         }
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Other Top Scanned Clients",
+    "title": "Non-Web Top Blocked Countries (by server)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

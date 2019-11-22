@@ -7,10 +7,9 @@
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as scanned",
-        "sum(threat_prevention_flagged::int) as flagged",
         "sum(threat_prevention_blocked::int) as blocked"
     ],
-    "textString": "Threat Prevention scanned {0} web sessions and flagged {1} sessions of which {2} were blocked.", 
+    "textString": "Threat Prevention scanned {0} web sessions of which {1} were blocked.", 
     "readOnly": true,
     "table": "http_events",
     "title": "Web Traffic Summary",

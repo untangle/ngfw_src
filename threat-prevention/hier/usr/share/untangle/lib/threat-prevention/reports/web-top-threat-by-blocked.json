@@ -1,8 +1,8 @@
 {
     "uniqueId": "threat-prevention-tpAsifWhYFwtrbbs",
     "category": "Threat Prevention",
-    "description": "The number of web blocked sessions to servers grouped by reputation.",
-    "displayOrder": 403,
+    "description": "The number of web blocked sessions to servers grouped by threats reputation.",
+    "displayOrder": 102,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
@@ -25,7 +25,7 @@
     ],
     "readOnly": true,
     "table": "http_events",
-    "title": "Web Top Blocked Reputations",
+    "title": "Web Top Blocked Threats",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

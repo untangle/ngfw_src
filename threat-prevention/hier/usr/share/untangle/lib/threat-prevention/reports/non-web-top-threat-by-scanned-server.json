@@ -1,31 +1,26 @@
 {
-    "uniqueId": "threat-prevention-tpgsR2R5tGWwotsbf",
+    "uniqueId": "threat-prevention-tpAsifWhYotrbss",
     "category": "Threat Prevention",
-    "description": "The number of other flagged session grouped by server.",
-    "displayOrder": 211,
+    "description": "The number of non-web scanned sessions to servers grouped by threat reputation.",
+    "displayOrder": 303,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "c_client_addr",
+    "pieGroupColumn": "threat_prevention_server_reputation",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "threat_prevention_server_reputation",
             "operator": ">",
-            "value": "0"            
-        },{
-            "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_flagged",
-            "operator": "=",
-            "value": "true"
+            "value": "0"
         }
     ],
     "readOnly": true,
     "table": "sessions",
-    "title": "Other Top Flagged Server",
+    "title": "Non-Web Top Scanned Threats (by server)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
