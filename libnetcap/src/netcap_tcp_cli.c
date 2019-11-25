@@ -48,7 +48,7 @@
 int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt );
 
 /* Util functions */
-int _netcap_tcp_setsockopt_cli( int sock );
+int _netcap_tcp_setsockopt_cli( int sock , u_int mark );
 
 static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 static int  _send_icmp_response ( netcap_session_t* netcap_sess, netcap_pkt_t* syn );
@@ -182,7 +182,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
 
     netcap_nfconntrack_update_mark( netcap_sess, nfmark & 0x00ffffff ); // first two bytes unused in connmark currently
                                     
-    if (_netcap_tcp_setsockopt_cli(fd)<0)
+    if (_netcap_tcp_setsockopt_cli(fd,nfmark&0x00ffffff)<0)
         perrlog("_netcap_tcp_setsockopt_cli");
 
     return 0;
@@ -225,7 +225,7 @@ int  _netcap_tcp_callback_cli_reject( netcap_session_t* netcap_sess, netcap_call
     return 0;
 }
 
-int  _netcap_tcp_setsockopt_cli( int sock )
+int  _netcap_tcp_setsockopt_cli( int sock , u_int mark )
 {
     int one        = 1;
     int thirty     = 30;
@@ -244,6 +244,14 @@ int  _netcap_tcp_setsockopt_cli( int sock )
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_KEEPCNT,&nine,sizeof(nine)) < 0 )
         perrlog("setsockopt");
+
+    struct ip_sendnfmark_opts nfmark = {
+        .on = 1,
+        .mark = mark
+    };
+
+    if ( setsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,sizeof(nfmark)) < 0 )
+        return perrlog( "setsockopt" );
 
     return 0;
 }
