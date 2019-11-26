@@ -245,9 +245,16 @@ int  _netcap_tcp_setsockopt_cli( int sock , u_int mark )
     if (setsockopt(sock,SOL_TCP,TCP_KEEPCNT,&nine,sizeof(nine)) < 0 )
         perrlog("setsockopt");
 
+    // we have to swap the src and dst interfaces on the client side
+    u_char lo = (mark & 0x000000ff);
+    u_char hi = ((mark & 0x0000ff00) >> 16);
+    u_int fixer = mark & 0xffff0000;
+    fixer |= (lo << 16);
+    fixer |= hi;
+
     struct ip_sendnfmark_opts nfmark = {
         .on = 1,
-        .mark = mark
+        .mark = fixer
     };
 
     if ( setsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,sizeof(nfmark)) < 0 )
