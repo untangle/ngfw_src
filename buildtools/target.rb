@@ -349,7 +349,7 @@ class JsBuilder < Target
   def all
     info "[jsbuild ] #{@name}: #{@path} -> #{@relativeDestPath}"
     # read all deps into memory, as an array of content
-    data = @deps.map { |d| File.open(d).read() }
+    data = @deps.map { |d| File.open(d, "r:ASCII").read() }
 
     # start pipe'ing operations on that array
     data = remove_comment(data)
