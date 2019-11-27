@@ -16,7 +16,7 @@ Ext.define('Ung.apps.threatprevention.view.Status', {
             cls: 'app-desc',
             html: '<img src="/icons/apps/threat-prevention.svg" width="80" height="80"/>' +
                 '<h3>Threat Prevention</h3>' +
-                '<p>' + 'Threat Prevention prevents threats associated with  untrustworthy IP Addresses and Websites based on their reputation.'.t() + '</p>'
+                '<p>' + 'Threat Prevention prevents threats associated with  untrustworthy IP Addresses and Websites based on their reputation.'.t() + '</p>'
         }, {
             xtype: 'applicense',
             hidden: true,
