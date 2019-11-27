@@ -1,0 +1,4 @@
+FROM untangleinc/ngfw:buster-build
+LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
+
+RUN echo "deb http://package-server.untangle.int/public/buster current main non-free" > /etc/apt/sources.list.d/current.list
