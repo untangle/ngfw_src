@@ -24,7 +24,8 @@ services:
         - VERBOSE=${VERBOSE} # default to empty: "not verbose"
         - PACKAGE=${PACKAGE} # default to empty: "all packages"
       extra_hosts:
-        - "package-server:10.112.11.105"
+        # from the inside, pass package-server's internal IP instead
+        - "package-server:${PACKAGE_SERVER_IP:-173.14.28.193}"
       volumes:
         - .:/opt/untangle/build
         - pkgtools:/opt/untangle/ngfw_pkgtools:ro
