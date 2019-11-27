@@ -2,7 +2,7 @@ FROM debian:stretch
 LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
 
 ENV REPOSITORY=stretch
-ENV STABLE_VERSION=14.2.1
+ENV STABLE_VERSION=14.2.2
 
 USER root
 ENV DEBIAN_FRONTEND=noninteractive
