@@ -6,6 +6,7 @@ package com.untangle.app.openvpn;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.*;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -134,9 +135,17 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     public Integer getVersion() { return version; }
     public void setVersion( Integer newValue ) { this.version = newValue; }
 
+    public LinkedList<OpenVpnConfigItem> getClientConfiguration(List<String> specificConfigItems) {
+        return this.clientConfiguration.stream()
+        .filter(t -> specificConfigItems.contains(t.getOptionName()))
+        .collect(Collectors.toCollection(LinkedList::new));}
     public LinkedList<OpenVpnConfigItem> getClientConfiguration() { return this.clientConfiguration; }
     public void setClientConfiguration( LinkedList<OpenVpnConfigItem> argList) { this.clientConfiguration = argList; }
 
+    public LinkedList<OpenVpnConfigItem> getServerConfiguration(List<String> specificConfigItems) {
+        return this.serverConfiguration.stream()
+        .filter(t -> specificConfigItems.contains(t.getOptionName()))
+        .collect(Collectors.toCollection(LinkedList::new));}
     public LinkedList<OpenVpnConfigItem> getServerConfiguration() { return this.serverConfiguration; }
     public void setServerConfiguration( LinkedList<OpenVpnConfigItem> argList) { this.serverConfiguration = argList; }
 
