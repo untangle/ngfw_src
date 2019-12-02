@@ -20,7 +20,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
 public class OpenVpnSettings implements java.io.Serializable, JSONString
 {
 
-    private Integer version = 0;
+    private Integer version = 1;
 
     public static enum AuthenticationType
     {
