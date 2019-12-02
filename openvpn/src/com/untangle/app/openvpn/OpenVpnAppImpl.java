@@ -347,6 +347,7 @@ public class OpenVpnAppImpl extends AppBase
                 if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "dev") && serverConfig.getReadOnly() && Objects.equals(serverConfig.getOptionValue(), "tun0")) {
                     serverConfig.setOptionValue("tun");
                 }
+            }
 
             /**
              * Fix up the "compress lz4" compression settings for the client
