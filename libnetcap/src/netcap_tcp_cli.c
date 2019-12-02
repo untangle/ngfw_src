@@ -247,9 +247,9 @@ int  _netcap_tcp_setsockopt_cli( int sock , u_int mark )
 
     // we have to swap the src and dst interfaces on the client side
     u_char lo = (mark & 0x000000ff);
-    u_char hi = ((mark & 0x0000ff00) >> 16);
+    u_char hi = ((mark & 0x0000ff00) >> 8);
     u_int fixer = mark & 0xffff0000;
-    fixer |= (lo << 16);
+    fixer |= (lo << 8);
     fixer |= hi;
 
     struct ip_sendnfmark_opts nfmark = {
