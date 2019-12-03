@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.app.http.BlockPageUtil;
 import com.untangle.uvm.BrandingManager;
-import com.untangle.app.web_filter.WebFilterBlockDetails;
+import com.untangle.app.web_filter.WebFilterRedirectDetails;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -46,7 +46,7 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
      *        Whitelist mode for the user
      * @return The BlockPageParameters
      */
-    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters(WebFilterBlockDetails blockDetails, String userWhitelistMode)
+    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters(WebFilterRedirectDetails blockDetails, String userWhitelistMode)
     {
         return new WebFilterBlockPageParameters(blockDetails, userWhitelistMode);
     }
@@ -56,7 +56,7 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
      */
     protected static class WebFilterBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
-        private final WebFilterBlockDetails blockDetails;
+        private final WebFilterRedirectDetails blockDetails;
         private final String unblockMode;
 
         /**
@@ -67,7 +67,7 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
          * @param unblockMode
          *        Unblock mode
          */
-        public WebFilterBlockPageParameters(WebFilterBlockDetails blockDetails, String unblockMode)
+        public WebFilterBlockPageParameters(WebFilterRedirectDetails blockDetails, String unblockMode)
         {
             this.blockDetails = blockDetails;
             this.unblockMode = unblockMode;
@@ -166,7 +166,7 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
          * 
          * @return The block details
          */
-        public WebFilterBlockDetails getBlockDetails()
+        public WebFilterRedirectDetails getBlockDetails()
         {
             return this.blockDetails;
         }
