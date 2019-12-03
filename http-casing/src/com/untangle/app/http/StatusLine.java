@@ -57,17 +57,27 @@ public class StatusLine implements Token
     }
 
     /**
+     * Get the ByteBuffer equivalent of the HeaderToken
+     * @return the ByteBuffer
+     */
+    public String getString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(httpVersion).append(" ").append(statusCode)
+            .append(" ").append(reasonPhrase).append("\r\n");
+        return sb.toString();
+    }
+
+    /**
      * Get the ByteBuffer equivalent of this StatusLine
      * @return the ByteBuffer
      */
     @Override
     public ByteBuffer getBytes()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append(httpVersion).append(" ").append(statusCode)
-            .append(" ").append(reasonPhrase).append("\r\n");
-        byte[] buf = sb.toString().getBytes();
+        byte[] buf = getString().getBytes();
 
         return ByteBuffer.wrap(buf);
     }
+
 }
