@@ -56,7 +56,8 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     protected enum Mode {
         QUEUEING,
         RELEASED,
-        BLOCKED
+        BLOCKED,
+        REDIRECTED
     };
 
     private enum Task {
@@ -370,6 +371,25 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     }
 
     /**
+     * Redirect the with the specified response
+     * @param session
+     * @param response
+     */
+    protected void redirectRequest( AppTCPSession session, Token[] response)
+    {
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
+        if ( state.task != Task.REQUEST ) {
+            throw new IllegalStateException("redirectedRequest in: " + state.task);
+        } else if ( state.requestMode != Mode.QUEUEING ) {
+            throw new IllegalStateException("redirectedRequest in: " + state.requestMode);
+        }
+
+        state.requestMode = Mode.REDIRECTED;
+        state.requestResponse = response;
+    }
+
+    /**
      * Release the session
      * @param session
      */
@@ -402,6 +422,25 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
 
         state.responseMode = Mode.BLOCKED;
+        state.responseResponse = response;
+    }
+
+    /**
+     * Redirect the response with the specified response
+     * @param session
+     * @param response
+     */
+    protected void redirectResponse( AppTCPSession session, Token[] response )
+    {
+        HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
+
+        if ( state.task != Task.RESPONSE ) {
+            throw new IllegalStateException("redirectResponse in: " + state.task);
+        } else if ( state.responseMode != Mode.QUEUEING ) {
+            throw new IllegalStateException("redirectResponse in: " + state.responseMode);
+        }
+
+        state.responseMode = Mode.REDIRECTED;
         state.responseResponse = response;
     }
 
@@ -529,6 +568,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 return;
 
             case BLOCKED:
+            case REDIRECTED:
                 if ( state.requests.size() == 0 ) {
                     session.sendObjectsToClient( state.requestResponse );
                     state.requestResponse = null;
@@ -545,7 +585,8 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             }
 
         case REQ_HEADER_STATE:
-            if ( state.requestMode != Mode.BLOCKED ) {
+            if ( state.requestMode != Mode.BLOCKED &&
+                 state.requestMode != Mode.REDIRECTED ) {
                 HeaderToken h = (HeaderToken)token;
                 state.requestPersistent = isPersistent(h);
                 Mode preMode = state.requestMode;
@@ -573,6 +614,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                     return;
 
                 case BLOCKED:
+                case REDIRECTED:
                     state.requestQueue.clear();
 
                     if ( state.requests.size() == 0 ) {
@@ -594,7 +636,8 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             }
 
         case REQ_BODY_STATE:
-            if ( state.requestMode != Mode.BLOCKED ) {
+            if ( state.requestMode != Mode.BLOCKED &&
+                 state.requestMode != Mode.REDIRECTED ) {
                 ChunkToken c = (ChunkToken) token;
                 Mode preMode = state.requestMode;
                 c = doRequestBody( session, c );
@@ -621,6 +664,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                     return;
 
                 case BLOCKED:
+                case REDIRECTED:
                     state.requestQueue.clear();
 
                     if ( state.requests.size() == 0 ) {
@@ -643,7 +687,8 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             }
 
         case REQ_BODY_END_STATE:
-            if ( state.requestMode != Mode.BLOCKED ) {
+            if ( state.requestMode != Mode.BLOCKED &&
+                 state.requestMode != Mode.REDIRECTED ) {
                 Mode preMode = state.requestMode;
                 doRequestBodyEnd( session );
 
@@ -668,6 +713,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                     return;
 
                 case BLOCKED:
+                case REDIRECTED:
                     state.requestQueue.clear();
 
                     if ( state.requests.size() == 0 ) {
@@ -745,12 +791,21 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 state.responseResponse = null;
                 return;
 
+            case REDIRECTED:
+                if ( state.responseQueue.size() != 0 )
+                    logger.warn("Invalid response queue size on redirect: " + state.responseQueue.size());
+
+                session.sendObjectsToClient( state.responseResponse );
+                state.responseResponse = null;
+                return;
+
             default:
                 throw new IllegalStateException("programmer malfunction");
             }
 
         case RESP_HEADER_STATE:
-            if ( state.responseMode != Mode.BLOCKED ) {
+            if ( state.responseMode != Mode.BLOCKED &&
+                 state.responseMode != Mode.REDIRECTED ){
                 HeaderToken h = (HeaderToken)token;
                 state.responsePersistent = isPersistent(h);
                 h = doResponseHeader( session, h );
@@ -769,6 +824,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                     return;
 
                 case BLOCKED:
+                case REDIRECTED:
                     state.responseQueue.clear();
                     session.sendObjectsToClient( state.responseResponse );
                     state.responseResponse = null;
@@ -782,7 +838,8 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             }
 
         case RESP_BODY_STATE:
-            if ( state.responseMode != Mode.BLOCKED ) {
+            if ( state.responseMode != Mode.BLOCKED &&
+                 state.responseMode != Mode.REDIRECTED ) {
                 ChunkToken c = (ChunkToken)token;
                 c = doResponseBody( session, c );
 
@@ -804,6 +861,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                     return;
 
                 case BLOCKED:
+                case REDIRECTED:
                     state.responseQueue.clear();
                     session.sendObjectsToClient( state.responseResponse );
                     state.responseResponse = null;
@@ -817,7 +875,8 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             }
 
         case RESP_BODY_END_STATE:
-            if ( state.responseMode != Mode.BLOCKED ) {
+            if ( state.responseMode != Mode.BLOCKED &&
+                 state.responseMode != Mode.REDIRECTED ) {
                 EndMarkerToken em = (EndMarkerToken)token;
 
                 doResponseBodyEnd( session );
@@ -840,6 +899,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                     return;
 
                 case BLOCKED:
+                case REDIRECTED:
                     state.responseQueue.clear();
                     session.sendObjectsToClient( state.responseResponse );
                     state.responseResponse = null;
