@@ -111,7 +111,7 @@ public interface WebFilter extends App
      *        The nonce
      * @return The details for the nonce
      */
-    WebFilterBlockDetails getDetails(String nonce);
+    WebFilterRedirectDetails getDetails(String nonce);
 
     /**
      * Unblock a site
