@@ -47,6 +47,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
         }]
     }, {
         xtype: 'fieldset',
+        title: 'Safe browsing options'.t(),
         padding: '10 15',
         cls: 'app-section',
         layout: {
@@ -63,16 +64,8 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             bind: '{settings.restrictYoutube}'
         }, {
             xtype: 'checkbox',
-            boxLabel: 'Block QUIC (UDP port 443)'.t(),
-            bind: '{settings.blockQuic}'
-        }, {
-            xtype: 'checkbox',
-            boxLabel: 'Block pages from IP only hosts'.t(),
-            bind: '{settings.blockAllIpHosts}'
-        }, {
-            xtype: 'checkbox',
-            boxLabel: 'Pass if referrer matches any Pass Sites'.t(),
-            bind: '{settings.passReferers}'
+            boxLabel: 'Force searches through kid-friendly search engine'.t(),
+            bind: '{settings.forceKidFriendly}'
         }]
     }, {
         xtype: 'fieldset',
@@ -124,11 +117,60 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
         }
     }, {
         xtype: 'fieldset',
-        title: 'Unblock'.t(),
+        title: 'Block options'.t(),
         padding: 10,
         cls: 'app-section',
         layout: {
             type: 'vbox'
+        },
+        items: [{
+            xtype: 'checkbox',
+            boxLabel: 'Block QUIC (UDP port 443)'.t(),
+            bind: '{settings.blockQuic}'
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Block pages from IP only hosts'.t(),
+            bind: '{settings.blockAllIpHosts}'
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Pass if referrer matches any Pass Sites'.t(),
+            bind: '{settings.passReferers}'
+        }]
+    }, {
+        xtype: 'fieldset',
+        title: 'Custom block page'.t(),
+        checkboxToggle: true,
+        checkbox: {
+            bind: '{settings.customBlockPageEnabled}'
+        },
+        collapsible: true,
+        collapsed: true,
+        padding: 10,
+        cls: 'app-section',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+        items: [{
+            xtype: 'displayfield',
+            value: 'NOTE:'.t() + ' ' + 'Unblock operations are not available for custom block page'.t()
+        },{
+            xtype: 'textfield',
+            fieldLabel: 'Custom block page URL'.t(),
+            labelAlign: 'top',
+            bind: '{settings.customBlockPageUrl}'
+        }]
+    }, {
+        xtype: 'fieldset',
+        title: 'Unblock Options'.t(),
+        padding: 10,
+        cls: 'app-section',
+        layout: {
+            type: 'vbox'
+        },
+        bind:{
+            hidden: '{settings.customBlockPageEnabled}',
+            disabled: '{settings.customBlockPageEnabled}',
         },
         items: [{
             xtype: 'container',
