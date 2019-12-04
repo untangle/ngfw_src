@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -28,15 +29,22 @@ public class SearchEngine
 {
     private static final Logger logger = Logger.getLogger(SearchEngine.class);
 
-    private static final List<Pattern> searchEngines;
+    private static final List<Pattern> SearchEngines;
+    public static final String KidFriendlySearchEngineIgnoreHost = "search.kidzsearch.com";
+    public static final String KidFriendlySearchEngineRedirectUrl = "https://search.kidzsearch.com/kzsearchlmt.php";
+    public static final HashMap<String,Object> KidFriendlyRedirectParameters;
     static {
-        searchEngines = new ArrayList<Pattern>();
-        searchEngines.add(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/results\\?search_query=([^&]+).*"));
-        searchEngines.add(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
-        searchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*"));
-        searchEngines.add(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
-        searchEngines.add(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)p=([^&]+).*"));
-        searchEngines.add(Pattern.compile(".*duckduckgo\\.[a-z]+(\\.[a-z]+)?/.*(\\?|&)q=([^&]+).*"));
+        SearchEngines = new ArrayList<Pattern>();
+        SearchEngines.add(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/results\\?search_query=([^&]+).*"));
+        SearchEngines.add(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/(complete/|)search.*(\\?|&)q=([^&]+).*"));
+        SearchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*"));
+        SearchEngines.add(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
+        SearchEngines.add(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)p=([^&]+).*"));
+        SearchEngines.add(Pattern.compile(".*duckduckgo\\.[a-z]+(\\.[a-z]+)?/.*(\\?|&)q=([^&]+).*"));
+        SearchEngines.add(Pattern.compile(".*kidzsearch\\.[a-z]+(\\.[a-z]+)?/.*(\\?|&)q=([^&]+).*"));
+
+        KidFriendlyRedirectParameters = new HashMap<>();
+        KidFriendlyRedirectParameters.put("q", null);
     };
 
     /**
@@ -71,12 +79,9 @@ public class SearchEngine
 
         String url = host + uri.toString();
 
-        logger.debug("getQueryTerms: trying to match string '" + url + "'");
-        for (Pattern p : searchEngines) {
-            logger.debug("getQueryTerms: ... with pattern '" + p.pattern() + "'");
+        for (Pattern p : SearchEngines) {
             Matcher m = p.matcher(url);
             if (m.matches()) {
-                logger.debug("getQueryTerms: ...... match !");
                 String term = "";
                 try {
                     term = m.group(m.groupCount());
