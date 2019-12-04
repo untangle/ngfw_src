@@ -21,6 +21,8 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.vnet.Token;
+
 /**
  * Extracts the SNI information from HTTPS ClientHello messages and does block
  * and pass checking
@@ -273,16 +275,23 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         h.addField("host", domain);
 
         // pass the info to the decision engine to see if we should block
-        String nonce = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
+        WebFilterRedirectDetails redirectDetails = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
 
         // we have decided to block so we create the SSL engine and start
         // by passing it all the client data received thus far
-        if (nonce != null) {
-            app.incrementBlockCount();
+        if (redirectDetails != null) {
             logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
-            WebFilterSSLEngine engine = new WebFilterSSLEngine(sess, nonce, app.getAppSettings().getId().toString());
+            Token[] response = null;
+            if(redirectDetails.getBlocked()){
+                app.incrementBlockCount();
+                response = app.generateBlockResponse( redirectDetails, sess);
+            }else{
+                app.incrementRedirectCount();
+                response = app.generateRedirectResponse( redirectDetails, sess );
+            }
+            WebFilterSSLEngine engine = new WebFilterSSLEngine(sess, response);
             sess.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
             engine.handleClientData(buff);
             return;
