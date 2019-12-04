@@ -26,6 +26,10 @@ import com.untangle.uvm.UvmContextFactory;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.vnet.Token;
+import com.untangle.app.http.HeaderToken;
+import com.untangle.app.http.StatusLine;
+
 /**
  * We do just enough processing of HTTPS sessions using SSLEngine so we can
  * return a block page when required. It will always cause a browser warning,
@@ -42,25 +46,21 @@ public class WebFilterSSLEngine
     private AppTCPSession session;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
-    private String nonceStr;
-    private String appStr;
+    private Token[] response;
 
     /**
      * Constructor
      * 
      * @param session
      *        The session
-     * @param nonceStr
-     *        The nonce
-     * @param appStr
-     *        The application name
+     * @param response
+     *        Token[] of https response to send.
      */
-    protected WebFilterSSLEngine(AppTCPSession session, String nonceStr, String appStr)
+    protected WebFilterSSLEngine(AppTCPSession session, Token[] response)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
         this.session = session;
-        this.nonceStr = nonceStr;
-        this.appStr = appStr;
+        this.response = response;
 
         FileInputStream fis = null;
         try {
@@ -329,22 +329,13 @@ public class WebFilterSSLEngine
         // when unwrap finally returns some data it will be the client request
         logger.debug("CLIENT REQUEST = " + new String(target.array(), 0, target.position()));
 
-        InetAddress host = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
-        String hostStr = host.getHostAddress().toString();
-        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-        if ( httpPort != 80 ) {
-            hostStr = hostStr + ":" + httpPort;
+        for(Token token : this.response){
+            if( token instanceof StatusLine ){
+                vector += ((StatusLine) token).getString();
+            }else if( token instanceof HeaderToken){
+                vector += ((HeaderToken) token).getString();
+            }
         }
-
-        vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: http://" + hostStr + "/web-filter/blockpage?nonce=" + nonceStr + "&appid=" + appStr + "\r\n";
-        vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
-        vector += "Pragma: no-cache\r\n";
-        vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";
-        vector += "Content-Type: text/plain\r\n";
-        vector += "Content-Length: 0\r\n";
-        vector += "Connection: Close\r\n";
-        vector += "\r\n";
 
         logger.debug("CLIENT REPLY = " + vector);
 
