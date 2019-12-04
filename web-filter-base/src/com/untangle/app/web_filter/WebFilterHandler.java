@@ -43,12 +43,12 @@ public class WebFilterHandler extends WebFilterBaseHandler
     {
         app.incrementScanCount();
 
-        String nonce = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
+        WebFilterRedirectDetails redirectDetails= app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
         if (logger.isDebugEnabled()) {
-            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
+            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirectDetails);
         }
 
-        if (nonce == null) {
+        if (redirectDetails == null) {
             String host = requestHeader.getValue("Host");
             URI uri = getRequestLine(session).getRequestUri();
 
@@ -64,11 +64,17 @@ public class WebFilterHandler extends WebFilterBaseHandler
 
             releaseRequest(session);
         } else {
-            app.incrementBlockCount();
             String uri = getRequestLine(session).getRequestUri().toString();
-            Token[] response = app.generateResponse(nonce, session, uri, requestHeader);
 
-            blockRequest(session, response);
+            if(redirectDetails.getBlocked()){
+                app.incrementBlockCount();
+                Token[] response = app.generateBlockResponse( redirectDetails, session, uri, requestHeader);
+                blockRequest(session, response);
+            }else{
+                app.incrementRedirectCount();
+                Token[] response = app.generateRedirectResponse( redirectDetails, session, uri, requestHeader);
+                redirectRequest(session, response);
+            }
         }
 
         return requestHeader;
