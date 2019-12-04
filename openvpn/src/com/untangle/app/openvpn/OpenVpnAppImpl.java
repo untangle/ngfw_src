@@ -769,7 +769,7 @@ public class OpenVpnAppImpl extends AppBase
          * Compare kvps that should be matching between client and server configuration settings
          * verify they match, or throw an error
          */
-        List<String> matchedSettings = new ArrayList<>(Arrays.asList("dev", "proto", "tls-auth", "cipher", "compress"));
+        List<String> matchedSettings = new ArrayList<>(Arrays.asList("proto", "tls-auth", "cipher", "compress"));
         List<OpenVpnConfigItem> clientSettings = newSettings.getClientConfiguration(matchedSettings);
         List<OpenVpnConfigItem> serverSettings = newSettings.getServerConfiguration(matchedSettings);
 
