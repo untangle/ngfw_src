@@ -44,7 +44,7 @@ import com.untangle.uvm.vnet.PipelineConnector;
 public class OpenVpnAppImpl extends AppBase
 {
 
-    private static final Integer SETTINGS_CURRENT_VERSION = 2;
+    private static final Integer SETTINGS_CURRENT_VERSION = 1;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -335,17 +335,12 @@ public class OpenVpnAppImpl extends AppBase
 
             /**
              * Fix up the "compress lz4" compression settings for the server
-             * Also fix the "dev" tunnel default config item
              */
 
             for (OpenVpnConfigItem serverConfig : settings.getServerConfiguration()) {
                 if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "compress lz4")) {
                     serverConfig.setOptionName("compress");
                     serverConfig.setOptionValue("lz4");
-                }
-
-                if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "dev") && serverConfig.getReadOnly() && Objects.equals(serverConfig.getOptionValue(), "tun0")) {
-                    serverConfig.setOptionValue("tun");
                 }
             }
 
