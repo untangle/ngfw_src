@@ -245,7 +245,11 @@ int  _netcap_tcp_setsockopt_cli( int sock , u_int mark )
     if (setsockopt(sock,SOL_TCP,TCP_KEEPCNT,&nine,sizeof(nine)) < 0 )
         perrlog("setsockopt");
 
-    // we have to swap the src and dst interfaces on the client side
+    // NGFW-12726 For Citrix we want to set the source and destination
+    // interfaces in the packet mark for packets that are sent back to the
+    // client. We do this by setting our custom kernel extension
+    // IP_SENDNFMARK on the client socket and reversing the interfaces
+    // to reflect the traffic is flowing SERVER-to-CLIENT.
     u_char lo = (mark & 0x000000ff);
     u_char hi = ((mark & 0x0000ff00) >> 8);
     u_int fixer = mark & 0xffff0000;
@@ -258,7 +262,7 @@ int  _netcap_tcp_setsockopt_cli( int sock , u_int mark )
     };
 
     if ( setsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,sizeof(nfmark)) < 0 )
-        return perrlog( "setsockopt" );
+        perrlog( "setsockopt" );
 
     return 0;
 }
