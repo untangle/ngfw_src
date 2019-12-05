@@ -1,7 +1,7 @@
 {
     "uniqueId": "threat-prevention-tpAsifWhYFtotbsscs",
     "category": "Threat Prevention",
-    "description": "Top non-web blockedd sessions to servers grouped by threat.",
+    "description": "Top non-web blocked sessions to servers grouped by threat.",
     "displayOrder": 452,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
