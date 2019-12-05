@@ -48,7 +48,12 @@ public class WebFilterQuicHandler extends AbstractEventHandler
             return;
         }
 
-        logger.info("Block QUIC: " + request);
+        app.incrementQuicBlock();
+
+        Boolean logQuic = app.getSettings().getLogQuic();
+        if(logQuic != null && logQuic){
+            logger.info("Block QUIC: " + request);
+        }
         request.rejectReturnUnreachable(IPNewSessionRequest.PORT_UNREACHABLE);
         return;
     }
