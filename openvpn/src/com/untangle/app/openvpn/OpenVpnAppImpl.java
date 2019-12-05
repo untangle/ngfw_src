@@ -8,6 +8,8 @@ import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.Random;
 import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.io.File;
 import java.io.FileReader;
@@ -759,6 +761,24 @@ public class OpenVpnAppImpl extends AppBase
                 if (export == export2) continue;
                 if (export.isIntersecting(export2)) {
                     throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + export + " " + I18nUtil.marktr("conflicts with address") + " " + export2);
+                }
+            }
+        }
+
+        /**
+         * Compare kvps that should be matching between client and server configuration settings
+         * verify they match, or throw an error
+         */
+        List<String> matchedSettings = new ArrayList<>(Arrays.asList("proto", "tls-auth", "cipher", "compress"));
+        List<OpenVpnConfigItem> clientSettings = newSettings.getClientConfiguration(matchedSettings);
+        List<OpenVpnConfigItem> serverSettings = newSettings.getServerConfiguration(matchedSettings);
+
+        for (OpenVpnConfigItem serverCfgItem : serverSettings) {
+            for (OpenVpnConfigItem clientCfgItem : clientSettings) {
+                if (serverCfgItem.getOptionName().equals(clientCfgItem.getOptionName())) {
+                    if (!serverCfgItem.getOptionValue().equals(clientCfgItem.getOptionValue())) {
+                        throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + I18nUtil.marktr("OpenVPN Configuration Option: ") + serverCfgItem.getOptionName() + " " + I18nUtil.marktr("does not match between server configuration:") + " " + serverCfgItem.getOptionValue()+ " "  + I18nUtil.marktr("and client configuration:") + " " + clientCfgItem.getOptionValue());
+                    }
                 }
             }
         }
