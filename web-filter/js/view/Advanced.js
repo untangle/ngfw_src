@@ -63,8 +63,16 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             bind: '{settings.restrictYoutube}'
         }, {
             xtype: 'checkbox',
-            boxLabel: 'Block QUIC (UDP port 443)'.t(),
+            boxLabel: 'Block QUIC Sessions (UDP port 443)'.t(),
             bind: '{settings.blockQuic}'
+        }, {
+            xtype: 'checkbox',
+            margin: '0 0 5 20',
+            boxLabel: 'Log blocks'.t(),
+            bind: {
+                hidden: '{!isExpertMode || !settings.blockQuic}',
+                value: '{settings.logQuic}'
+            }
         }, {
             xtype: 'checkbox',
             boxLabel: 'Block pages from IP only hosts'.t(),
