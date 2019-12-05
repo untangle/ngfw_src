@@ -53,6 +53,9 @@ psql -U postgres -d uvm -t -c "SELECT tablename FROM pg_catalog.pg_tables WHERE 
         echo "Creating csv: ${tablename}.csv ..." 
         # psql -U postgres -d uvm -A -F"," -c "select * from reports.${tablename}" > $TMPDIR/$DIR/${tablename}.csv
         psql -U postgres -d uvm -A -F"," -c "\copy reports.${tablename} to '${TMPDIR}/${DIR}/${tablename}.csv' csv header" 
+
+        # escape -, ", @, +, and = with a leading single quote to prevent formula injection
+        sed -ri "s/(^|,)([-\"@+=])/\1'\2/g" ${TMPDIR}/${DIR}/${tablename}.csv
     done
                                                                                                                                                 
 cd $TMPDIR
