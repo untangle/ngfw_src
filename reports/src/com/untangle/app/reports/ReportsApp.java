@@ -1094,7 +1094,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                         }
                         String oStr = "";
                         if (o != null)
-                            oStr = o.toString().replaceAll(",","");
+                            /**
+                             * remove any commas in the string, and escape leading -, ", @, +, and =
+                             * with a single quote to prevent formula injections
+                             */
+                            oStr = o.toString().replaceAll(",","").replaceAll("(^|,)([-\"@+=])","$1'$2");
                     
                         if (writtenColumnCount != 0)
                             resp.getWriter().write(",");
