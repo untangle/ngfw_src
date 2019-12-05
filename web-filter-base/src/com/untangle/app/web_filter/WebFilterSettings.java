@@ -38,6 +38,7 @@ public class WebFilterSettings implements Serializable, JSONString
     private Boolean forceKidFriendly = false;
     private Boolean restrictYoutube = false;
     private Boolean blockQuic = true;
+    private Boolean logQuic = false;
     private Boolean blockAllIpHosts = false;
     private Boolean passReferers = true;
     private Boolean restrictGoogleApps = false;
@@ -122,6 +123,9 @@ public class WebFilterSettings implements Serializable, JSONString
     
     public Boolean getBlockQuic() { return blockQuic; }
     public void setBlockQuic( Boolean newValue ) { this.blockQuic = newValue; }
+    
+    public Boolean getLogQuic() { return logQuic; }
+    public void setLogQuic( Boolean newValue ) { this.logQuic = newValue; }
     
     public Boolean getUnblockPasswordEnabled() { return this.unblockPasswordEnabled; }
     public void setUnblockPasswordEnabled( Boolean newValue ) { this.unblockPasswordEnabled = newValue; }
