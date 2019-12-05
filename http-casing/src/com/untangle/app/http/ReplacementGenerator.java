@@ -32,10 +32,6 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
     private final Logger logger = Logger.getLogger(getClass());
 
     private static HashMap<Class<?>,Map<String,Method>> ParameterClassMethodMap = new HashMap<>();
-    private static final String PARAMETER_NAME_NONCE = "nonce";
-    private static final String PARAMETER_NAME_APPID = "appid";
-    private static final String PARAMETER_NAME_APPTITLE = "appTitle";
-    private static final String PARAMETER_PREFIX_GET = "get";
 
     private static final byte[] WHITE_GIF = new byte[]
         {
@@ -260,11 +256,11 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
                     if(redirectDetails.getRedirectParameters().get(key) != null){
                         value = redirectDetails.getRedirectParameters().get(key).toString();
                     }else{
-                        if(key.equals(PARAMETER_NAME_NONCE)){
+                        if(key.equals("nonce")){
                             value = generateNonce(redirectDetails);
-                        }else if(key.equals(PARAMETER_NAME_APPID)){
+                        }else if(key.equals("appid")){
                             value = appSettings.getId().toString();
-                        }else if(key.equals(PARAMETER_NAME_APPTITLE)){
+                        }else if(key.equals("appname")){
                             value = appSettings.getAppName();
                         }else{
                             Class<?> cls = redirectDetails.getClass();
@@ -273,9 +269,8 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
                             }
                             Method method = ParameterClassMethodMap.get(cls).get(key);
                             if(method == null){
-                                method = cls.getMethod(PARAMETER_PREFIX_GET + key.substring(0, 1).toUpperCase() + key.substring(1));
+                                method = cls.getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
                                 ParameterClassMethodMap.get(cls).put(key, method);
-                            }else{
                             }
                             try{
                                 value = method.invoke(redirectDetails).toString();
