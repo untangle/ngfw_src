@@ -64,7 +64,7 @@ public class BlockPageUtil
         request.setAttribute( "description", params.getDescription( bm, i18n_map ));
 
         /* Register the block detail with the page */
-        BlockDetails bd = params.getBlockDetails();
+        RedirectDetails bd = params.getBlockDetails();
         request.setAttribute( "bd", bd );
 
         String contactHtml = I18nUtil.marktr("your network administrator");
@@ -154,7 +154,7 @@ public class BlockPageUtil
          * Get the BlockDetails for this block page
          * @return the BlockDetails
          */
-        public BlockDetails getBlockDetails();
+        public RedirectDetails getBlockDetails();
 
         public static final String UNBLOCK_MODE_NONE   = "none";
         public static final String UNBLOCK_MODE_HOST   = "host";

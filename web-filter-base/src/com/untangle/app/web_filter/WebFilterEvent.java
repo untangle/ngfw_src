@@ -70,25 +70,28 @@ public class WebFilterEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
+        String columns = "";
+        if( getBlocked() != null) columns += _getDatabaseColumnNamePrefix() + "_blocked  = ?";
+        if( getFlagged() != null) columns += ( columns.length() > 0 ? "," : "" ) + _getDatabaseColumnNamePrefix() + "_flagged  = ?";
+        columns += ( columns.length() > 0 ? "," : "" ) + _getDatabaseColumnNamePrefix() + "_reason   = ?";
+        if( getCategoryId() != null) columns += ( columns.length() > 0 ? "," : "" ) + _getDatabaseColumnNamePrefix() + "_category_id = ?";
+        if( getRuleId() != null) columns += ( columns.length() > 0 ? "," : "" ) +  _getDatabaseColumnNamePrefix() + "_rule_id = ?";
+
         String sql =
             "UPDATE " + schemaPrefix() + "http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
-            _getDatabaseColumnNamePrefix() + "_blocked  = ?, " + 
-            _getDatabaseColumnNamePrefix() + "_flagged  = ?, " +
-            _getDatabaseColumnNamePrefix() + "_reason   = ?, " +
-            _getDatabaseColumnNamePrefix() + "_category_id = ?, " +
-            _getDatabaseColumnNamePrefix() + "_rule_id = ? " +
-            "WHERE " +
+            columns +
+            " WHERE " +
             "request_id = ? ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
-        pstmt.setBoolean(++i, getBlocked());
-        pstmt.setBoolean(++i, getFlagged());
+        if(getBlocked() != null) pstmt.setBoolean(++i, getBlocked());
+        if(getFlagged() != null ) pstmt.setBoolean(++i, getFlagged());
         pstmt.setString(++i, ((getReason() == null) ? "" : Character.toString(getReason().getKey())));
-        pstmt.setInt(++i, getCategoryId());
-        pstmt.setInt(++i, getRuleId());
+        if(getCategoryId() != null) pstmt.setInt(++i, getCategoryId());
+        if(getRuleId() != null) pstmt.setInt(++i, getRuleId());
         pstmt.setLong(++i, requestLine.getRequestId());
 
         pstmt.addBatch();

@@ -42,8 +42,10 @@ import com.untangle.app.http.HeaderToken;
  */
 public abstract class WebFilterBase extends AppBase implements WebFilter
 {
+    private static final String WEB_FILTER_APP_NAME = "web-filter";
     private static final String STAT_SCAN = "scan";
     private static final String STAT_BLOCK = "block";
+    private static final String STAT_REDIRECT = "redirect";
     private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
     private static final String STAT_CACHE_COUNT = "cache_count";
@@ -51,6 +53,8 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     private static final String STAT_IP_ERROR_COUNT = "ip_error_count";
     private static final Integer SETTINGS_CURRENT_VERSION = 4;
     private static int web_filter_deployCount = 0;
+
+    protected Boolean isWebFilterApp;
 
     protected static final Logger logger = Logger.getLogger(WebFilterBase.class);
     private final int policyId = getAppSettings().getPolicyId().intValue();
@@ -230,8 +234,11 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
         this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
 
-        if (getAppName().equals("web-filter")) {
+        this.isWebFilterApp = getAppName().equals(WEB_FILTER_APP_NAME);
+
+        if (this.isWebFilterApp) {
             this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+            this.addMetric(new AppMetric(STAT_REDIRECT, I18nUtil.marktr("Pages redirected")));
         }
 
         this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Pages flagged")));
@@ -367,7 +374,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        The nonce to search
      * @return Block details
      */
-    public WebFilterBlockDetails getDetails(String nonce)
+    public WebFilterRedirectDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
     }
@@ -383,7 +390,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     public boolean unblockSite(String nonce, boolean global)
     {
-        WebFilterBlockDetails bd = replacementGenerator.removeNonce(nonce);
+        WebFilterRedirectDetails bd = replacementGenerator.removeNonce(nonce);
 
         if (WebFilterSettings.UNBLOCK_MODE_NONE.equals(settings.getUnblockMode())) {
             logger.debug("attempting to unblock in WebFilterSettings.UNBLOCK_MODE_NONE");
@@ -400,7 +407,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
 
         if (null == bd) {
-            logger.debug("no BlockDetails for nonce");
+            logger.debug("no RedirectDetails for nonce");
             return false;
         } else if (global) {
             String site = bd.getUnblockHost();
@@ -608,10 +615,10 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     public abstract boolean isPremium();
 
     /**
-     * Generate a response
-     * 
-     * @param nonce
-     *        The nonce
+     * Generate a block response
+     *
+     * @param details
+     *        WebFilter Redirect details
      * @param session
      *        The session
      * @param uri
@@ -620,9 +627,55 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        The header
      * @return The response token
      */
-    public Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
+    public Token[] generateBlockResponse(WebFilterRedirectDetails details, AppTCPSession session, String uri, HeaderToken header)
     {
-        return replacementGenerator.generateResponse(nonce, session, uri, header);
+        return replacementGenerator.generateResponseFromDetails(details, session, uri, header);
+    }
+
+    /**
+     * Generate a block response
+     *
+     * @param details
+     *        The nonce
+     * @param session
+     *        The session
+     * @return The response
+     */
+    protected Token[] generateBlockResponse(WebFilterRedirectDetails details, AppTCPSession session)
+    {
+        return replacementGenerator.generateResponseFromDetails(details, session);
+    }
+
+    /**
+     * Generate a redirect response
+     *
+     * @param details
+     *        WebFilter Redirect details
+     * @param session
+     *        The session
+     * @param uri
+     *        The URI
+     * @param header
+     *        The header
+     * @return The response token
+     */
+    public Token[] generateRedirectResponse(WebFilterRedirectDetails details, AppTCPSession session, String uri, HeaderToken header)
+    {
+        return replacementGenerator.generateResponseFromDetails(details, session, uri, header);
+    }
+
+    /**
+     * Generate a redirect response
+     *
+     * @param details
+     *        WebFilter Redirect details
+     * @param session
+     *        The session
+     * @return The response token
+     */
+    public Token[] generateRedirectResponse(WebFilterRedirectDetails details, AppTCPSession session)
+    {
+        return replacementGenerator.generateResponseFromDetails(details, session);
     }
 
     /**
@@ -669,8 +722,18 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     public void incrementBlockCount()
     {
-        if (getAppName().equals("web-filter")) {
+        if (this.isWebFilterApp) {
             this.incrementMetric(STAT_BLOCK);
+        }
+    }
+
+    /**
+     * Increment the redirect counter.
+     */
+    public void incrementRedirectCount()
+    {
+        if (this.isWebFilterApp) {
+            this.incrementMetric(STAT_REDIRECT);
         }
     }
 
@@ -910,32 +973,6 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     {
         unblockedSitesMonitor.stop();
         getDecisionEngine().removeAllUnblockedSites();
-    }
-
-    /**
-     * Generate a nonce
-     * 
-     * @param details
-     *        The block details
-     * @return The nonce
-     */
-    protected String generateNonce(WebFilterBlockDetails details)
-    {
-        return replacementGenerator.generateNonce(details);
-    }
-
-    /**
-     * Generate a response
-     * 
-     * @param nonce
-     *        The nonce
-     * @param session
-     *        The session
-     * @return The response
-     */
-    protected Token[] generateResponse(String nonce, AppTCPSession session)
-    {
-        return replacementGenerator.generateResponse(nonce, session);
     }
 
     /**

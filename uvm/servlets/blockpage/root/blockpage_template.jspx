@@ -5,12 +5,12 @@
 
   <jsp:directive.page import="java.net.URLEncoder"/>
   <jsp:directive.page import="java.util.Random"/>
-  <jsp:directive.page import="com.untangle.app.http.BlockDetails"/>
+  <jsp:directive.page import="com.untangle.app.http.RedirectDetails"/>
 
 
   <jsp:scriptlet>
     <![CDATA[
-             BlockDetails blockDetails = (BlockDetails)request.getAttribute( "bd" );
+             RedirectDetails blockDetails = (RedirectDetails)request.getAttribute( "bd" );
              StringBuilder urlParams = new StringBuilder();
              urlParams.append( "&c=" );
              urlParams.append( URLEncoder.encode( String.valueOf( new Random().nextInt(Integer.MAX_VALUE)), "UTF-8" ));

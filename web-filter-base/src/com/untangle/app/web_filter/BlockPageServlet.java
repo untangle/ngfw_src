@@ -65,7 +65,7 @@ public class BlockPageServlet extends HttpServlet
             return;
         }
 
-        WebFilterBlockDetails blockDetails = null;
+        WebFilterRedirectDetails blockDetails = null;
         String nonce = request.getParameter("nonce");
 
         blockDetails = app.getDetails(nonce);
@@ -91,7 +91,7 @@ public class BlockPageServlet extends HttpServlet
      *        The unblock mode
      * @return The BlockPageParameters
      */
-    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters(WebFilterBlockDetails blockDetails, String unblockMode)
+    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters(WebFilterRedirectDetails blockDetails, String unblockMode)
     {
         return new WebFilterBlockPageParameters(blockDetails, unblockMode);
     }
@@ -101,7 +101,7 @@ public class BlockPageServlet extends HttpServlet
      */
     protected static class WebFilterBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
-        private final WebFilterBlockDetails blockDetails;
+        private final WebFilterRedirectDetails blockDetails;
         private final String unblockMode;
 
         /**
@@ -112,7 +112,7 @@ public class BlockPageServlet extends HttpServlet
          * @param unblockMode
          *        Unblock mode
          */
-        public WebFilterBlockPageParameters(WebFilterBlockDetails blockDetails, String unblockMode)
+        public WebFilterBlockPageParameters(WebFilterRedirectDetails blockDetails, String unblockMode)
         {
             this.blockDetails = blockDetails;
             this.unblockMode = unblockMode;
@@ -201,7 +201,7 @@ public class BlockPageServlet extends HttpServlet
          * 
          * @return The block details
          */
-        public WebFilterBlockDetails getBlockDetails()
+        public WebFilterRedirectDetails getBlockDetails()
         {
             return this.blockDetails;
         }

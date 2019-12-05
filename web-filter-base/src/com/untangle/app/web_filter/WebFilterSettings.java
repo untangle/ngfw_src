@@ -35,12 +35,16 @@ public class WebFilterSettings implements Serializable, JSONString
     private String  unblockMode = UNBLOCK_MODE_NONE;
     private Integer unblockTimeout = 60*60; /* 1 hour */
     private Boolean enforceSafeSearch = true;
+    private Boolean forceKidFriendly = false;
     private Boolean restrictYoutube = false;
     private Boolean blockQuic = true;
     private Boolean blockAllIpHosts = false;
     private Boolean passReferers = true;
     private Boolean restrictGoogleApps = false;
     private String restrictGoogleAppsDomain = "";
+
+    private Boolean customBlockPageEnabled = false;
+    private String customBlockPageUrl = "";
 
     private List<WebFilterRule> filterRules = new LinkedList<WebFilterRule>();
     private List<GenericRule> passedClients = new LinkedList<GenericRule>();
@@ -110,6 +114,9 @@ public class WebFilterSettings implements Serializable, JSONString
     public Boolean getEnforceSafeSearch() { return enforceSafeSearch; }
     public void setEnforceSafeSearch( Boolean newValue ) { this.enforceSafeSearch = newValue; }
 
+    public Boolean getForceKidFriendly() { return forceKidFriendly; }
+    public void setForceKidFriendly( Boolean newValue ) { this.forceKidFriendly = newValue; }
+
     public Boolean getRestrictYoutube() { return restrictYoutube; }
     public void setRestrictYoutube( Boolean newValue ) { this.restrictYoutube = newValue; }
     
@@ -130,6 +137,13 @@ public class WebFilterSettings implements Serializable, JSONString
 
     public Integer getUnblockTimeout() { return this.unblockTimeout; }
     public void setUnblockTimeout( Integer unblockTimeout ) { this.unblockTimeout = unblockTimeout; }
+
+    public Boolean getCustomBlockPageEnabled() { return customBlockPageEnabled; }
+    public void setCustomBlockPageEnabled( Boolean customBlockPageEnabled ) { this.customBlockPageEnabled = customBlockPageEnabled; }
+
+    public String getCustomBlockPageUrl() { return this.customBlockPageUrl; }
+    public void setCustomBlockPageUrl( String customBlockPageUrl ) { this.customBlockPageUrl = customBlockPageUrl; }
+
     
     public GenericRule getCategory(Integer id)
     {

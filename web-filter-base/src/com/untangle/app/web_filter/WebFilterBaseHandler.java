@@ -62,22 +62,27 @@ public class WebFilterBaseHandler extends HttpEventHandler
     {
         app.incrementScanCount();
 
-        String nonce = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), sess.getServerPort(), getRequestLine(sess), requestHeader);
+        WebFilterRedirectDetails redirectDetails = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), sess.getServerPort(), getRequestLine(sess), requestHeader);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
+            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirectDetails);
         }
 
-        if (nonce == null) {
+        if (redirectDetails  == null) {
             app.incrementPassCount();
 
             releaseRequest(sess);
         } else {
-            app.incrementBlockCount();
-
             String uri = getRequestLine(sess).getRequestUri().toString();
-            Token[] response = app.generateResponse(nonce, sess, uri, requestHeader);
-            blockRequest(sess, response);
+            if(redirectDetails.getBlocked()){
+                app.incrementBlockCount();
+                Token[] response = app.generateBlockResponse( redirectDetails, sess, uri, requestHeader);
+                blockRequest(sess, response);
+            }else{
+                app.incrementRedirectCount();
+                Token[] response = app.generateRedirectResponse( redirectDetails, sess, uri, requestHeader);
+                redirectRequest(sess, response);
+            }
         }
 
         return requestHeader;
@@ -139,21 +144,26 @@ public class WebFilterBaseHandler extends HttpEventHandler
         if (getStatusLine(sess).getStatusCode() == 100) {
             releaseResponse(sess);
         } else {
-            String nonce = app.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest(sess), responseHeader);
+            WebFilterRedirectDetails redirectDetails = app.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest(sess), responseHeader);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + nonce);
+                logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + redirectDetails);
             }
 
-            if (nonce == null) {
+            if (redirectDetails == null) {
                 app.incrementPassCount();
 
                 releaseResponse(sess);
             } else {
-                app.incrementBlockCount();
-
-                Token[] response = app.generateResponse(nonce, sess);
-                blockResponse(sess, response);
+                if(redirectDetails.getBlocked()){
+                    app.incrementBlockCount();
+                    Token[] response = app.generateBlockResponse(redirectDetails, sess);
+                    blockResponse(sess, response);
+                }else{
+                    app.incrementRedirectCount();
+                    Token[] response = app.generateRedirectResponse(redirectDetails, sess);
+                    redirectResponse(sess, response);
+                }
             }
         }
 

@@ -3,9 +3,17 @@
  */
 package com.untangle.app.http;
 
+import java.lang.Class;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
@@ -19,8 +27,12 @@ import com.untangle.uvm.vnet.AppTCPSession;
 /**
  * Generates a replacement page for Apps that block traffic.
  */
-public abstract class ReplacementGenerator<T extends BlockDetails>
+public abstract class ReplacementGenerator<T extends RedirectDetails>
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
+    private static HashMap<Class<?>,Map<String,Method>> ParameterClassMethodMap = new HashMap<>();
+
     private static final byte[] WHITE_GIF = new byte[]
         {
             0x47, 0x49, 0x46, 0x38,
@@ -37,7 +49,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     private static final Pattern IMAGE_PATTERN = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))", Pattern.CASE_INSENSITIVE);
 
     private final NonceFactory<T> nonceFactory = new NonceFactory<>();
-    private final AppSettings appSettings;
+    protected final AppSettings appSettings;
 
     /**
      * Create a ReplacementGenerator
@@ -83,18 +95,6 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
      * for the specified BlockDetails and session
      * @param o - the BlockDetails
      * @param session
-     * @return the token array
-     */
-    public Token[] generateResponse( T o, AppTCPSession session )
-    {
-        return generateResponse(o, session, null, null );
-    }
-
-    /**
-     * Generate a response (as a token array)
-     * for the specified BlockDetails and session
-     * @param o - the BlockDetails
-     * @param session
      * @param uri
      * @param requestHeader
      * @return the token array
@@ -103,6 +103,19 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     {
         String n = generateNonce(o);
         return generateResponse(n, session, uri, requestHeader );
+    }
+
+    /**
+     * Generate a response (as a token array)
+     * for the specified nonce and session
+     * @param o - Details
+     * @param session
+     * @return the token array
+     */
+    public Token[] generateResponse( T o, AppTCPSession session )
+    {
+        String n = generateNonce(o);
+        return generateResponse(n, session, null, null );
     }
 
     /**
@@ -129,12 +142,12 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     public Token[] generateResponse( String nonce, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
         if (imagePreferred(uri, requestHeader)) {
-            return generateSimplePage(nonce, true);
+            return generateSimplePage(nonce, null, true);
         } else {
             InetAddress addr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress( session.getClientIntf() );
                 
             if (addr == null) {
-                return generateSimplePage(nonce, false);
+                return generateSimplePage(nonce, null, false);
             } else {
                 String host = addr.getHostAddress();
                 int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
@@ -142,9 +155,46 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
                     host = host + ":" + httpPort;
                 }
                 
-                return generateRedirect( nonce, host );
+                return generateRedirect( nonce, null, host );
             }
         }
+    }
+
+    /**
+     * Generate a response (as a token array)
+     * for the specified nonce and session
+     * @param details
+     * @param session
+     * @return the token array
+     */
+    public Token[] generateResponseFromDetails( T details, AppTCPSession session )
+    {
+        return generateResponseFromDetails(details, session, null, null );
+    }
+
+    /**
+     * Generate a response (as a token array)
+     * for the specified nonce and session
+     * @param details
+     * @param session
+     * @param uri
+     * @param requestHeader
+     * @return the token array
+     */
+    public Token[] generateResponseFromDetails( T details, AppTCPSession session, String uri, HeaderToken requestHeader )
+    {
+        String host = "";
+        InetAddress addr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress( session.getClientIntf() );
+
+        if (addr != null) {
+            host = addr.getHostAddress();
+            int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+            if ( httpPort != 80 ) {
+                host = host + ":" + httpPort;
+            }
+        }
+
+        return generateRedirect( null, details, host );
     }
 
     /**
@@ -158,7 +208,19 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
      */
     public Token[] generateSimpleResponse( String nonce, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
-        return generateSimplePage(nonce, imagePreferred(uri, requestHeader));
+        return generateSimplePage(nonce, null, imagePreferred(uri, requestHeader));
+    }
+
+    /**
+     * Generate the "Simple" (text-only) response for the specified
+     * nonce and session
+     * @param redirectDetails
+     * @param session
+     * @return the token array
+     */
+    public Token[] generateSimpleResponse( T redirectDetails, AppTCPSession session)
+    {
+        return generateSimplePage(null, redirectDetails, false);
     }
     
     /**
@@ -179,6 +241,56 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     protected abstract String getRedirectUrl( String nonce, String host, AppSettings appSettings );
 
     /**
+     * getRedirectUrl for the details using the redirectUrl and redirectParams
+     * @param redirectDetails
+     * @param host
+     * @param appSettings
+     * @return the URL
+     */
+    protected String getRedirectUrl(T redirectDetails, String host, AppSettings appSettings){
+        String parameters = "";
+        if(redirectDetails.getRedirectParameters() != null){
+            String value = null;
+            try{
+                for( String key : redirectDetails.getRedirectParameters().keySet()){
+                    if(redirectDetails.getRedirectParameters().get(key) != null){
+                        value = redirectDetails.getRedirectParameters().get(key).toString();
+                    }else{
+                        if(key.equals("nonce")){
+                            value = generateNonce(redirectDetails);
+                        }else if(key.equals("appid")){
+                            value = appSettings.getId().toString();
+                        }else if(key.equals("appname")){
+                            value = appSettings.getAppName();
+                        }else{
+                            Class<?> cls = redirectDetails.getClass();
+                            if(ParameterClassMethodMap.get(cls) == null){
+                                ParameterClassMethodMap.put(cls, new HashMap<>());
+                            }
+                            Method method = ParameterClassMethodMap.get(cls).get(key);
+                            if(method == null){
+                                method = cls.getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
+                                ParameterClassMethodMap.get(cls).put(key, method);
+                            }
+                            try{
+                                value = method.invoke(redirectDetails).toString();
+                            }catch(Exception ve){
+                                logger.warn("Unable to retrieve value for key=" + key, ve);
+                                value = "";
+                            }
+                        }
+                    }
+                    parameters += ( parameters.length() > 0 ? "&" : "" ) + URLEncoder.encode(key, StandardCharsets.UTF_8.name()) + "=" + URLEncoder.encode(value,StandardCharsets.UTF_8.name());
+                }
+            }catch(Exception e){
+                logger.warn("Failed to encode value=" + value, e);
+            }
+
+        }
+        return redirectDetails.getRedirectUrl() + (parameters.length() > 0 ? "?" + parameters: "");
+    }
+
+    /**
      * Get the AppSettings
      * @return AppSettings
      */
@@ -190,10 +302,11 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     /**
      * Create a "simple" (text-only) replacement page for the specified nonce and gif
      * @param nonce
+     * @param redirectDetails
      * @param gif
      * @return the token array
      */
-    private Token[] generateSimplePage( String nonce, boolean gif )
+    private Token[] generateSimplePage( String nonce, T redirectDetails, boolean gif )
     {
         ChunkToken chunk;
         if (gif) {
@@ -202,7 +315,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
             ByteBuffer bb = ByteBuffer.wrap(buf);
             chunk = new ChunkToken(bb);
         } else {
-            String replacement = getReplacement(nonceFactory.getNonceData(nonce));
+            String replacement = getReplacement(nonce != null ? nonceFactory.getNonceData(nonce) : redirectDetails);
             ByteBuffer buf = ByteBuffer.allocate(replacement.length());
             buf.put(replacement.getBytes()).flip();
             chunk = new ChunkToken(buf);
@@ -229,10 +342,11 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     /**
      * Create a redirect replacement page to redirect to a blockpage
      * @param nonce
+     * @param redirectDetails
      * @param host
      * @return the token array
      */
-    private Token[] generateRedirect( String nonce, String host )
+    private Token[] generateRedirect( String nonce, T redirectDetails, String host )
     {
         Token response[] = new Token[4];
 
@@ -240,7 +354,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         response[0] = sl;
 
         HeaderToken h = new HeaderToken();
-        h.addField("Location", getRedirectUrl(nonce, host, appSettings));
+        h.addField("Location", nonce != null ? getRedirectUrl(nonce, host, appSettings) : getRedirectUrl(redirectDetails, host, appSettings) );
         h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
         h.addField("Pragma", "no-cache");
         h.addField("Expires", "Mon, 10 Jan 2000 00:00:00 GMT");

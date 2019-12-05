@@ -101,10 +101,9 @@ public abstract class DecisionEngine
      *        The request line token
      * @param header
      *        The header token
-     * @return an HTML response (null means the site is passed and no response
-     *         is given).
+     * @return WebFilterRedirectDetails for blocks and redirects, null of site is passed.
      */
-    public String checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
+    public WebFilterRedirectDetails checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         /*
          * this stores whether this visit should be flagged for any reason
@@ -222,8 +221,7 @@ public abstract class DecisionEngine
                 app.logEvent(hbe);
                 app.incrementFlagCount();
 
-                WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle());
-                return app.generateNonce(bd);
+                return (new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle()));
             }
         }
 
@@ -236,8 +234,7 @@ public abstract class DecisionEngine
                 app.logEvent(hbe);
                 app.incrementFlagCount();
 
-                WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle());
-                return app.generateNonce(bd);
+                return (new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle()));
             } else {
                 if (urlRule.getFlagged()) isFlagged = true;
 
@@ -261,8 +258,7 @@ public abstract class DecisionEngine
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, bestCategory.getId(), filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
-                WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
-                return app.generateNonce(bd);
+                return (new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle()));
             } else if ((filterRule != null) && (filterRule.getFlagged())) {
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, bestCategory.getId(), filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
@@ -294,13 +290,12 @@ public abstract class DecisionEngine
             if (isFlagged) app.incrementFlagCount();
 
             /**
-             * If the site was blocked return the nonce
+             * If the site was blocked return the details.
              */
             if (bestCategory.getBlocked()) {
                 updateI18nMap();
                 String blockReason = I18nUtil.tr(bestCategory.getName(), i18nMap) + " - " + I18nUtil.tr(bestCategory.getDescription(), i18nMap);
-                WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), blockReason, clientIp, app.getAppTitle());
-                return app.generateNonce(bd);
+                return (new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), blockReason, clientIp, app.getAppTitle()));
             } else {
                 return null;
             }
@@ -318,7 +313,7 @@ public abstract class DecisionEngine
     /**
      * 
      * This checks a given response (some items such as mime-type are only known
-     * when the response comes) If for any reason the visit is block a nonce is
+     * when the response comes) If for any reason the visit is block a detail object is
      * returned. Otherwise null is return and the response is passed
      * 
      * @param sess
@@ -329,9 +324,9 @@ public abstract class DecisionEngine
      *        Request line token
      * @param header
      *        Header token
-     * @return Returns a nonce if the visit is blocked, otherwise null
+     * @return Returns WebFilterRedirectDetails if the visit is blocked or redirected, otherwise null
      */
-    public String checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    public WebFilterRedirectDetails checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
         String catStr = null;
 
@@ -364,14 +359,12 @@ public abstract class DecisionEngine
 
         if (filterRule != null){
             if(filterRule.getBlocked()) {
-                // if (catStr == null) catStr = filterRule.getDescription();
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, 0, filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
-                WebFilterBlockDetails bd = new WebFilterBlockDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
-                return app.generateNonce(bd);
+                WebFilterRedirectDetails bd = new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
+                return(bd);
             } else if (filterRule.getFlagged()) {
-                // if (catStr == null) catStr = filterRule.getDescription();
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, 0, filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
                 app.incrementFlagCount();

@@ -9,7 +9,9 @@ import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.json.JSONArray;
@@ -82,14 +84,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
      * @return The result
      */
     @Override
-    public String checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
+    public WebFilterRedirectDetails checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         Boolean isFlagged = false;
         if (!isLicenseValid()) {
             return null;
         } else {
-            String result = super.checkRequest(sess, clientIp, port, requestLine, header);
-            if (result == null) {
+            WebFilterRedirectDetails result = super.checkRequest(sess, clientIp, port, requestLine, header);
+            if(result != null){
+                return result;
+            }else{
                 String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
 
                 if (term != null) {
@@ -113,16 +117,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
                         }
 
                         if (matcher.isMatch(term)) {
-                            logger.warn("LOG: " + term + " matches " + rule.getString());
                             matchingRule = rule;
                             break;
                         }
                     }
 
-                    WebFilterQueryEvent hbe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, getApp().getName());
-                    getApp().logEvent(hbe);
+                    WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, getApp().getName());
+                    getApp().logEvent(hbqe);
 
-                    if(matchingRule != null){
+                    if( matchingRule != null ||
+                        ourApp.getSettings().getForceKidFriendly()){
                         URI uri = null;
 
                         try {
@@ -141,16 +145,26 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                         host = UrlMatchingUtil.normalizeHostname(host);
 
-                        if (matchingRule.getBlocked()) {
-                            ourApp.incrementFlagCount();
+                        if(matchingRule != null){
 
-                            WebFilterBlockDetails bd = new WebFilterBlockDetails(ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle());
-                            return ourApp.generateNonce(bd);
-                        } else {
-                            if (matchingRule.getFlagged()) isFlagged = true;
+                            if (matchingRule.getBlocked()) {
+                                ourApp.incrementFlagCount();
 
-                            if (isFlagged) ourApp.incrementFlagCount();
-                            return null;
+                                return (new WebFilterRedirectDetails(ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle()));
+                            } else {
+                                if (matchingRule.getFlagged()) isFlagged = true;
+
+                                if (isFlagged) ourApp.incrementFlagCount();
+                                return null;
+                            }
+                        }else if(ourApp.getSettings().getForceKidFriendly()){
+                            if(!host.equals(SearchEngine.KidFriendlySearchEngineIgnoreHost)){
+                                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), null, null, Reason.REDIRECT_KIDS, null, null, null, ourApp.getName());
+                                ourApp.logEvent(hbe);
+                                HashMap<String,Object> parameters = new HashMap<String,Object>(SearchEngine.KidFriendlyRedirectParameters);
+                                parameters.put("q", term);
+                                return (new WebFilterRedirectDetails(ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle(), false, SearchEngine.KidFriendlySearchEngineRedirectUrl, parameters));
+                            }
                         }
                     }
                 }
@@ -159,8 +173,8 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     addYoutubeRestrictCookie(sess, header);
                 }
            }
-            return result;
         }
+        return null;
     }
 
     /**
@@ -177,18 +191,18 @@ public class WebFilterDecisionEngine extends DecisionEngine
      * @return The result
      */
     @Override
-    public String checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    public WebFilterRedirectDetails checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
         if (!isLicenseValid()) {
             return null;
         } else {
-            String result = super.checkResponse(sess, clientIp, requestLine, header);
-            if(result == null){
+            WebFilterRedirectDetails redirectDetails = super.checkResponse(sess, clientIp, requestLine, header);
+            if(redirectDetails == null){
                 if(ourApp.getSettings().getBlockQuic()){
                     removeQuicCookie(header);
                 }
             }
-            return result;
+            return redirectDetails;
        }
     }
 

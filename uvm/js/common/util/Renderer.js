@@ -524,20 +524,26 @@ Ext.define('Ung.util.Renderer', {
         C: 'in Clients Pass list'.t(),
         B: 'in Temporary Unblocked list'.t(),
         F: 'in Rules list'.t(),
+        K: 'Kid-friendly redirect'.t(),
         default: 'no rule applied'.t()
     },
-    httpReason: function( value ) {
+    httpReason: function( value, metaData ) {
         if(Ext.isEmpty(value)) {
             return '';
         }
         if(value == Renderer.listKey){
             return Renderer.httpReasonMap;
         }else{
-            return Ext.String.format(
+            var renderValue = Ext.String.format(
                     Renderer.mapValueFormat,
                     ( value in Renderer.httpReasonMap ) ? Renderer.httpReasonMap[value] : Renderer.httpReasonMap['default'],
                     value
             );
+            if (metaData) {
+                metaData.tdAttr = 'data-qtip="' + renderValue + '"';
+                metaData.tdCls = 'tag-cell';
+            }
+            return renderValue;
         }
     },
 
@@ -711,13 +717,14 @@ Ext.define('Ung.util.Renderer', {
      *     policy->source->key=value
      */
     webRuleMap: {},
-    webRule: function(value, row, record){
+    webRule: function(value, metaData, record){
         var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
         var webFilterReason = record && record.get && record.get('web_filter_reason') ? record.get('web_filter_reason') : 'N';
         var reasonSource = "categories";
         switch(webFilterReason){
             case 'D':
             case 'N':
+            case 'K':
                 return '';
             case 'U':
                 reasonSource = "blockedUrls";
@@ -762,7 +769,12 @@ Ext.define('Ung.util.Renderer', {
         if(value == Renderer.listKey){
             return Renderer.webRuleMap[policyId][reasonSource];
         }else{
-            return Renderer.webRuleMap[policyId][reasonSource][value];
+            var renderValue = Renderer.webRuleMap[policyId][reasonSource][value];
+                if (metaData) {
+                    metaData.tdAttr = 'data-qtip="' + renderValue + '"';
+                    metaData.tdCls = 'tag-cell';
+                }
+            return renderValue;
         }
     },
 
