@@ -23,20 +23,4 @@ public class WebFilterReplacementGenerator extends WebFilterBaseReplacementGener
         super(appSettings);
     }
 
-    /**
-     * Get the redirect URL
-     * 
-     * @param nonce
-     *        The nonce
-     * @param host
-     *        The host
-     * @param appSettings
-     *        The application settings
-     * @return The redirect URL
-     */
-    @Override
-    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
-    {
-        return "http://" + host + "/web-filter/blockpage?nonce=" + nonce + "&appid=" + appSettings.getId();
-    }
 }

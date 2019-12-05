@@ -184,7 +184,7 @@ public class HeaderToken implements Token
      * Get the ByteBuffer equivalent of the HeaderToken
      * @return the ByteBuffer
      */
-    public ByteBuffer getBytes()
+    public String getString()
     {
         StringBuilder sb = new StringBuilder();
         for (Iterator<String> i = keyIterator(); i.hasNext(); ) {
@@ -197,9 +197,18 @@ public class HeaderToken implements Token
             }
         }
         sb.append("\r\n");
+        return sb.toString();
+    }
 
-        byte[] buf = sb.toString().getBytes();
+    /**
+     * Get the ByteBuffer equivalent of the HeaderToken
+     * @return the ByteBuffer
+     */
+    public ByteBuffer getBytes()
+    {
+        byte[] buf = getString().getBytes();
 
         return ByteBuffer.wrap(buf);
     }
+
 }

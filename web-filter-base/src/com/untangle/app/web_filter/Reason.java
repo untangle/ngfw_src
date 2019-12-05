@@ -20,6 +20,7 @@ public enum Reason
     PASS_CLIENT('C', "in Clients Pass list"),
     PASS_UNBLOCK('B', "in Bypass list"),
     FILTER_RULE('F', "matched Rule list"),
+    REDIRECT_KIDS('K', "redirected to kid-friendly search engine"),
     DEFAULT('N', "no rule applied");
 
 // THIS IS FOR ECLIPSE - @formatter:on
