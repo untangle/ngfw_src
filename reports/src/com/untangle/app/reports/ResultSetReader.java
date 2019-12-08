@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -139,6 +140,11 @@ public class ResultSetReader implements Runnable
                             o = o.toString();
                         }
 
+                        // if its a string, escape any javascript
+                        if (o instanceof String) {
+                            o = StringEscapeUtils.escapeHtml4(o.toString());
+                        }
+
                         row.put( metadata.getColumnName(columnIter), o );
                     }
                     
@@ -188,6 +194,11 @@ public class ResultSetReader implements Runnable
                         // if its a special Postgres type - change it to string
                         if (o instanceof org.postgresql.util.PGobject) {
                             o = o.toString();
+                        }
+
+                        // if its a string, escape any javascript
+                        if (o instanceof String) {
+                            o = StringEscapeUtils.escapeHtml4(o.toString());
                         }
                         //logger.info( "getEvents( " + queryStr + " ) column[ " + metadata.getColumnName(i) + " ] = " + o);
 
