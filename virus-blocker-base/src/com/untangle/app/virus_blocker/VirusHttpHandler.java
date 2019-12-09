@@ -158,8 +158,7 @@ class VirusHttpHandler extends HttpEventHandler
                 app.incrementBlockCount();
 
                 VirusBlockDetails bd = new VirusBlockDetails(state.host, state.uri, null, app.getName());
-                String nonce = app.generateNonce(bd);
-                Token[] response = app.generateResponse(nonce, session, state.uri, requestHeader);
+                Token[] response = app.generateResponse(bd, session, state.uri, requestHeader);
                 blockRequest(session, response);
 
                 RequestLine requestLine = getRequestLine(session).getRequestLine();
@@ -362,8 +361,7 @@ class VirusHttpHandler extends HttpEventHandler
                 logger.info("Virus found: " + host + uri + " = " + result.getVirusName());
                 VirusBlockDetails bd = new VirusBlockDetails(host, uri, null, app.getName());
 
-                String nonce = app.generateNonce(bd);
-                Token[] response = app.generateResponse(nonce, session, uri);
+                Token[] response = app.generateResponse(bd, session, uri);
 
                 blockResponse(session, response);
             } else {

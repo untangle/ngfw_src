@@ -9,12 +9,26 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
+import java.util.HashMap;
+
+
 /**
  * ReplacementGenerator for Virus.
  */
 class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
 {
 // THIS IS FOR ECLIPSE - @formatter:off
+    public static final HashMap<String,Object> BLOCK_PARAMETERS;
+    static {
+        BLOCK_PARAMETERS = new HashMap<>();
+        BLOCK_PARAMETERS.put("nonce", null);
+        BLOCK_PARAMETERS.put("appid", null);
+    };
+
+    private String uriBase = null;
+    private String urlBase = null;
+
+    private static final String BLOCK_URI = "/virus/blockpage";
     
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -70,5 +84,19 @@ class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
     protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
     {
         return "http://" + host + "/virus/blockpage?nonce=" + nonce + "&tid=" + appSettings.getId();
+    }
+
+    /**
+     * Get redirect URL using details redirectUrl and redirectParameters.
+     *
+     * @param details VirusBlockDetails.
+     * @param host Host address for url if defined.
+     * @param appSettings Application settings.
+     * @return         Formatted URL with parameters
+     */
+    protected String getRedirectUrl(VirusBlockDetails details, String host, AppSettings appSettings){
+        details.setRedirectUrl("http://" + host + BLOCK_URI );
+        details.setRedirectParameters(new HashMap<String,Object>(BLOCK_PARAMETERS));
+        return super.getRedirectUrl(details, host, appSettings);
     }
 }
