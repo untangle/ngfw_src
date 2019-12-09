@@ -197,26 +197,16 @@ public class AdBlockerApp extends AppBase
     }
 
     /**
-     * Generate a nonce for the block page
-     * @param details The BlockDetails
-     * @return the nonce string
-     */
-    protected String generateNonce(BlockDetails details)
-    {
-        return replacementGenerator.generateNonce(details);
-    }
-
-    /**
      * Generate a response for a block
-     * @param nonce The nonce
+     * @param redirectDetails Block details.
      * @param session The session
      * @param uri The URI being blocked
      * @param header The HeaderToken of the request being blocked
      * @return the token response array
      */
-    protected Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
+    protected Token[] generateResponse(BlockDetails redirectDetails, AppTCPSession session, String uri, HeaderToken header)
     {
-        return replacementGenerator.generateSimpleResponse(nonce, session, uri, header);
+        return replacementGenerator.generateSimpleResponse(redirectDetails, session, uri, header);
     }
 
     /**

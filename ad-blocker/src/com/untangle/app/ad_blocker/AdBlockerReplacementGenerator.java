@@ -19,16 +19,6 @@ public class AdBlockerReplacementGenerator extends ReplacementGenerator<BlockDet
         + "</HEAD><BODY>"
         + "</BODY></HTML>";
 
-    //     private static final String BLOCK_TEMPLATE
-    //         = "<HTML><HEAD>"
-    //         + "<TITLE>403 Forbidden</TITLE>"
-    //         + "</HEAD><BODY>"
-    //         + "<p>This site was blocked because it contains ad content</p>"
-    //         + "<p>Host: %s</p>"
-    //         + "<p>URI: %s</p>"
-    //         + "</BODY></HTML>";
-
-
     /**
      * Generate a new AdBlockerReplacementGenerator
      * @param appSettings the AppSettings
