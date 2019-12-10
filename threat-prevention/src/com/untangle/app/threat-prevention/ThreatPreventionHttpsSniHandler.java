@@ -18,6 +18,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import org.apache.log4j.Logger;
 
@@ -271,16 +272,18 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         h.addField("host", domain);
 
         // pass the info to the decision engine to see if we should block
-        String nonce = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
+        ThreatPreventionBlockDetails redirectDetails = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
 
         // we have decided to block so we create the SSL engine and start
         // by passing it all the client data received thus far
-        if (nonce != null) {
+        if (redirectDetails != null) {
             app.incrementBlockCount();
             logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
-            ThreatPreventionSSLEngine engine = new ThreatPreventionSSLEngine(sess, nonce, app.getAppSettings().getId().toString());
+            Token[] response = null;
+            response = app.generateHttpResponse( redirectDetails, sess);
+            ThreatPreventionSSLEngine engine = new ThreatPreventionSSLEngine(sess, response);
             sess.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
             engine.handleClientData(buff);
             return;

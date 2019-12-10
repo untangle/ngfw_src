@@ -68,12 +68,12 @@ public class ThreatPreventionHttpHandler extends HttpEventHandler
     {
         // app.incrementScanCount();
 
-        String nonce = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
+        ThreatPreventionBlockDetails redirectDetails = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
         if (logger.isDebugEnabled()) {
-            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
+            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirectDetails);
         }
 
-        if (nonce == null) {
+        if (redirectDetails == null) {
             String host = requestHeader.getValue("Host");
             URI uri = getRequestLine(session).getRequestUri();
 
@@ -81,7 +81,7 @@ public class ThreatPreventionHttpHandler extends HttpEventHandler
         } else {
             app.incrementBlockCount();
             String uri = getRequestLine(session).getRequestUri().toString();
-            Token[] response = app.generateHttpResponse(nonce, session, uri, requestHeader);
+            Token[] response = app.generateHttpResponse( redirectDetails, session, uri, requestHeader);
 
             blockRequest(session, response);
         }
