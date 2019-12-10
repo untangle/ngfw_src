@@ -223,10 +223,9 @@ public class ThreatPreventionDecisionEngine
      *        The request line token
      * @param header
      *        The header token
-     * @return an HTML response (null means the site is passed and no response
-     *         is given).
+     * @return ThreatPreventionBlockDetails object if redirect to block, null if no block.
      */
-    public String checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
+    public ThreatPreventionBlockDetails checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         /*
          * this stores whether this visit should be flagged for any reason
@@ -305,10 +304,9 @@ public class ThreatPreventionDecisionEngine
             }
 
             updateI18nMap();
-            ThreatPreventionBlockDetails bd = new ThreatPreventionBlockDetails(app.getSettings(), host, uri.toString(), 
-                matchRule != null ? matchRule.getDescription() : I18nUtil.tr("Threat reputation {0}", app.getThreatFromReputation(serverReputation), i18nMap), 
-                clientIp);
-            return app.generateNonce(bd);
+            return (new ThreatPreventionBlockDetails(app.getSettings(), host, uri.toString(),
+                matchRule != null ? matchRule.getDescription() : I18nUtil.tr("Threat reputation {0}", app.getThreatFromReputation(serverReputation), i18nMap),
+                clientIp));
         } else {
             if (flag){
                 app.incrementFlagCount();

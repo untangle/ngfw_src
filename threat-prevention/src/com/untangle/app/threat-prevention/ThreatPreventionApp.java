@@ -357,8 +357,8 @@ public class ThreatPreventionApp extends AppBase
     /**
      * Generate a response
      * 
-     * @param nonce
-     *        The nonce
+     * @param redirectDetails
+     *        ThreatPreventionBlockDetails to build rediect.
      * @param session
      *        The session
      * @param uri
@@ -367,15 +367,30 @@ public class ThreatPreventionApp extends AppBase
      *        The header
      * @return The response token
      */
-    public Token[] generateHttpResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
+    public Token[] generateHttpResponse(ThreatPreventionBlockDetails redirectDetails, AppTCPSession session, String uri, HeaderToken header)
     {
-        return replacementGenerator.generateResponse(nonce, session, uri, header);
+        return replacementGenerator.generateResponse(redirectDetails, session, uri, header);
     }
 
     /**
-     * [getThreatFromReputation description]
-     * @param  reputation [description]
-     * @return            [description]
+     * Generate a response
+     *
+     * @param redirectDetails
+     *        ThreatPreventionBlockDetails to build rediect.
+     * @param session
+     *        The session
+     * @return The response token
+     */
+    public Token[] generateHttpResponse(ThreatPreventionBlockDetails redirectDetails, AppTCPSession session)
+    {
+        return replacementGenerator.generateResponse(redirectDetails, session);
+    }
+
+
+    /**
+     * Get the upper bound of numeric threat from specified threat.
+     * @param  reputation Integer of threat.
+     * @return            The highest band of reputation that this threat belongs to.
      */
     String getThreatFromReputation(Integer reputation)
     {
@@ -402,18 +417,6 @@ public class ThreatPreventionApp extends AppBase
     public ThreatPreventionBlockDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
-    }
-
-    /**
-     * Generate a nonce
-     * 
-     * @param details
-     *        The block details
-     * @return The nonce
-     */
-    protected String generateNonce(ThreatPreventionBlockDetails details)
-    {
-        return replacementGenerator.generateNonce(details);
     }
 
     /**
