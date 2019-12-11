@@ -48,7 +48,7 @@
 int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt );
 
 /* Util functions */
-int _netcap_tcp_setsockopt_cli( int sock , u_int mark );
+int _netcap_tcp_setsockopt_cli( int sock );
 
 static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 static int  _send_icmp_response ( netcap_session_t* netcap_sess, netcap_pkt_t* syn );
@@ -182,7 +182,7 @@ int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_ca
 
     netcap_nfconntrack_update_mark( netcap_sess, nfmark & 0x00ffffff ); // first two bytes unused in connmark currently
                                     
-    if (_netcap_tcp_setsockopt_cli(fd,nfmark&0x00ffffff)<0)
+    if (_netcap_tcp_setsockopt_cli(fd)<0)
         perrlog("_netcap_tcp_setsockopt_cli");
 
     return 0;
@@ -225,7 +225,7 @@ int  _netcap_tcp_callback_cli_reject( netcap_session_t* netcap_sess, netcap_call
     return 0;
 }
 
-int  _netcap_tcp_setsockopt_cli( int sock , u_int mark )
+int  _netcap_tcp_setsockopt_cli( int sock )
 {
     int one        = 1;
     int thirty     = 30;
@@ -244,25 +244,6 @@ int  _netcap_tcp_setsockopt_cli( int sock , u_int mark )
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_KEEPCNT,&nine,sizeof(nine)) < 0 )
         perrlog("setsockopt");
-
-    // NGFW-12726 For Citrix we want to set the source and destination
-    // interfaces in the packet mark for packets that are sent back to the
-    // client. We do this by setting our custom kernel extension
-    // IP_SENDNFMARK on the client socket and reversing the interfaces
-    // to reflect the traffic is flowing SERVER-to-CLIENT.
-    u_char lo = (mark & 0x000000ff);
-    u_char hi = ((mark & 0x0000ff00) >> 8);
-    u_int fixer = mark & 0xffff0000;
-    fixer |= (lo << 8);
-    fixer |= hi;
-
-    struct ip_sendnfmark_opts nfmark = {
-        .on = 1,
-        .mark = fixer
-    };
-
-    if ( setsockopt(sock,SOL_IP,IP_SENDNFMARK_VALUE(),&nfmark,sizeof(nfmark)) < 0 )
-        perrlog( "setsockopt" );
 
     return 0;
 }
