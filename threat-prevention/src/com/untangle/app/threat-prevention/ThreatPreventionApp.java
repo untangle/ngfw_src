@@ -61,6 +61,9 @@ public class ThreatPreventionApp extends AppBase
     private static AtomicInteger AppCount = new AtomicInteger();
     private final ThreatPreventionDecisionEngine engine = new ThreatPreventionDecisionEngine(this);
 
+    private final ThreatPreventionEventHandler otherHandler;
+    private final PipelineConnector[] connectors;
+
     private static final String STAT_BLOCK = "block";
     private static final String STAT_FLAG = "flag";
     private static final String STAT_PASS = "pass";
@@ -75,11 +78,6 @@ public class ThreatPreventionApp extends AppBase
     protected final ThreatPreventionReplacementGenerator replacementGenerator;
     
     private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
-
-    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-http", this, null, new ThreatPreventionHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, -2000, true);
-    private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-https-sni", this, httpsSub, new ThreatPreventionHttpsSniHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, true);
-    private final PipelineConnector otherConnector = UvmContextFactory.context().pipelineFoundry().create("threat-prevention-other", this, null, new ThreatPreventionEventHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false);
-    private final PipelineConnector[] connectors = new PipelineConnector[] { httpConnector, httpsSniConnector, otherConnector };
 
     public static final Map<Integer, Integer> UrlCatThreatMap;
     public static final Map<Integer, String> ReputationThreatMap;
@@ -171,6 +169,7 @@ public class ThreatPreventionApp extends AppBase
 
         this.replacementGenerator = buildReplacementGenerator();
 
+        this.otherHandler = new ThreatPreventionEventHandler(this);
         // Calculate home networks as a uvm network function
         //  // Just pull context?  Would have to contentw with chnges, right?
         // this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
@@ -198,6 +197,11 @@ public class ThreatPreventionApp extends AppBase
 
         // this.addMirroredMetrics( WebrootDaemon );
         // this.addMirroredMetrics( WebrootQuery );
+        this.connectors = new PipelineConnector[] {
+            UvmContextFactory.context().pipelineFoundry().create("threat-prevention-http", this, null, new ThreatPreventionHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, -2000, true),
+            UvmContextFactory.context().pipelineFoundry().create("threat-prevention-https-sni", this, httpsSub, new ThreatPreventionHttpsSniHandler(this), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, true),
+            UvmContextFactory.context().pipelineFoundry().create("threat-prevention-other", this, null, otherHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2000, false)
+        };
     }
 
     /**
@@ -596,7 +600,7 @@ public class ThreatPreventionApp extends AppBase
         if (settings == null) {
             logger.warn("Invalid settings: null");
         } else {
-            // handler.configure(settings);
+            otherHandler.configure(settings);
         }
     }
 
