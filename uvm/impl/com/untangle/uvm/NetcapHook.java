@@ -1037,14 +1037,14 @@ public abstract class NetcapHook implements Runnable
         public void callback( Object... args )
         {
             String appName = (String) args[0];
-            PolicyManager app = (PolicyManager) args[1];
+            Object app = args[1];
 
             if(appName == null){
                 return;
             }
             if(appName.equals("policy-manager")){
                 synchronized(PolicyManagerSync){
-                    PolicyManagerApp = app;
+                    PolicyManagerApp = (PolicyManager) app;
                 }
             }
         }
