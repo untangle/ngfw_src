@@ -163,7 +163,7 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
                 if(redirectUri.getHost() == null){
                     redirectUri.setHost(addr.getHostAddress());
                 }
-                if(redirectUri.getPort() == 0){
+                if(redirectUri.getPort() <= 0){
                     int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
                     if ( httpPort != 80 ) {
                         redirectUri.setPort(httpPort);
@@ -364,7 +364,6 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
                 }
                 Method method = ParameterClassMethodMap.get(cls).get(key);
                 if(!ParameterClassMethodMap.get(cls).containsKey(key) && method == null){
-                    logger.warn("search for method for key="+key);
                     try{
                         ParameterClassMethodMap.get(cls).put(key, null);
                         method = cls.getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
@@ -433,7 +432,6 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
      */
     protected String buildRedirectUri(T redirectDetails, URIBuilder redirectUri, Map<String,Object> redirectParameters){
         redirectUri.setParameters(buildRedirectParameters(redirectDetails, redirectParameters));
-        logger.warn("buildRedirectUri:" + redirectUri.toString());
         return redirectUri.toString();
     }
 
