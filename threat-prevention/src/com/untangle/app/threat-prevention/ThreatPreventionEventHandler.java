@@ -28,7 +28,7 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(ThreatPreventionEventHandler.class);
 
-    private List<ThreatPreventionRule> threatPreventionRuleList = new LinkedList<>();
+    private List<ThreatPreventionRule> threatPreventionRuleList = null;
 
     private boolean blockSilently = true;
 
@@ -101,24 +101,29 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
         Integer serverReputation = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
         Integer serverThreatmask = (Integer) request.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
 
-        app.incrementThreatCount(clientReputation);
-        app.incrementThreatCount(serverReputation);
+        if(clientReputation != null){
+            app.incrementThreatCount(clientReputation);
+        }
+        if(serverReputation != null){
+            app.incrementThreatCount(serverReputation);
+        }
 
-        for (ThreatPreventionRule rule : app.getSettings().getRules()){
-            if( rule.isMatch(request.getProtocol(),
+        if(threatPreventionRuleList != null){
+            for (ThreatPreventionRule rule : threatPreventionRuleList){
+                if( rule.isMatch(request.getProtocol(),
                             request.getClientIntf(), request.getServerIntf(),
                             request.getOrigClientAddr(), request.getNewServerAddr(),
                             request.getOrigClientPort(), request.getNewServerPort(),
                             request) ){
-                match = true;
-                block = rule.getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
-                flag = rule.getFlag();
-                ruleIndex = rule.getRuleId();
-                break;
+                    match = true;
+                    block = rule.getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
+                    flag = rule.getFlag();
+                    ruleIndex = rule.getRuleId();
+                    break;
+                }
             }
         }
 
-        // log method?
         ThreatPreventionEvent fwe = new ThreatPreventionEvent(request.sessionEvent(), block && match, match && flag, 
             ruleIndex != null ? ruleIndex : 0, 
             clientReputation != null ? clientReputation : 0, 
@@ -127,8 +132,6 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
             serverThreatmask != null ? serverThreatmask : 0
             );
         app.logEvent(fwe);
-
-        // !!!! VERIFY NO MATCH IF BCTID NOT RUNNING
 
         /**
          * Take the appropriate actions
@@ -167,6 +170,15 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
                 app.incrementFlagCount();
             }
         }
+    }
+
+    /**
+     * Configure this event handler with the provided settings
+     * @param settings
+     */
+    public void configure(ThreatPreventionSettings settings)
+    {
+        this.threatPreventionRuleList = settings.getRules();
     }
 
 }
