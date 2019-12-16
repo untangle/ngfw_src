@@ -34,6 +34,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
+import com.untangle.app.http.HttpRedirect;
 
 import java.util.Iterator;
 
@@ -223,9 +224,9 @@ public class ThreatPreventionDecisionEngine
      *        The request line token
      * @param header
      *        The header token
-     * @return ThreatPreventionBlockDetails object if redirect to block, null if no block.
+     * @return HttpRedirect object if redirect to block, null if no block.
      */
-    public ThreatPreventionBlockDetails checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
+    public HttpRedirect checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         /*
          * this stores whether this visit should be flagged for any reason
@@ -304,9 +305,14 @@ public class ThreatPreventionDecisionEngine
             }
 
             updateI18nMap();
-            return (new ThreatPreventionBlockDetails(app.getSettings(), host, uri.toString(),
-                matchRule != null ? matchRule.getDescription() : I18nUtil.tr("Threat reputation {0}", app.getThreatFromReputation(serverReputation), i18nMap),
-                clientIp));
+            return (
+                new HttpRedirect(
+                    app.generateResponse(
+                        new ThreatPreventionBlockDetails( app.getSettings(), host, uri.toString(), 
+                            matchRule != null ? matchRule.getDescription() : I18nUtil.tr("Threat reputation {0}", app.getThreatFromReputation(serverReputation), i18nMap), clientIp),
+                            sess, uri.toString(), header),
+                        HttpRedirect.RedirectType.BLOCK)
+            );
         } else {
             if (flag){
                 app.incrementFlagCount();
