@@ -24,6 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
+import com.untangle.app.http.HttpRedirect;
 
 import java.util.Iterator;
 
@@ -101,9 +102,9 @@ public abstract class DecisionEngine
      *        The request line token
      * @param header
      *        The header token
-     * @return WebFilterRedirectDetails for blocks and redirects, null of site is passed.
+     * @return HttpRedirect for blocks and redirects, null of site is passed.
      */
-    public WebFilterRedirectDetails checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
+    public HttpRedirect checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         /*
          * this stores whether this visit should be flagged for any reason
@@ -221,7 +222,12 @@ public abstract class DecisionEngine
                 app.logEvent(hbe);
                 app.incrementFlagCount();
 
-                return (new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle()));
+                return (
+                    new HttpRedirect(
+                        app.generateBlockResponse(
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle()), 
+                            sess, uri.toString(), header),
+                        HttpRedirect.RedirectType.BLOCK));
             }
         }
 
@@ -234,7 +240,12 @@ public abstract class DecisionEngine
                 app.logEvent(hbe);
                 app.incrementFlagCount();
 
-                return (new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle()));
+                return (
+                    new HttpRedirect(
+                        app.generateBlockResponse(
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle()), 
+                            sess, uri.toString(), header),
+                        HttpRedirect.RedirectType.BLOCK));
             } else {
                 if (urlRule.getFlagged()) isFlagged = true;
 
@@ -258,7 +269,12 @@ public abstract class DecisionEngine
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, bestCategory.getId(), filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
-                return (new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle()));
+                return (
+                    new HttpRedirect(
+                        app.generateBlockResponse(
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle()), 
+                            sess, uri.toString(), header),
+                        HttpRedirect.RedirectType.BLOCK));
             } else if ((filterRule != null) && (filterRule.getFlagged())) {
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, bestCategory.getId(), filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
@@ -295,7 +311,12 @@ public abstract class DecisionEngine
             if (bestCategory.getBlocked()) {
                 updateI18nMap();
                 String blockReason = I18nUtil.tr(bestCategory.getName(), i18nMap) + " - " + I18nUtil.tr(bestCategory.getDescription(), i18nMap);
-                return (new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), blockReason, clientIp, app.getAppTitle()));
+                return (
+                    new HttpRedirect(
+                        app.generateBlockResponse(
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), blockReason, clientIp, app.getAppTitle()), 
+                            sess, uri.toString(), header),
+                        HttpRedirect.RedirectType.BLOCK));
             } else {
                 return null;
             }
@@ -324,9 +345,9 @@ public abstract class DecisionEngine
      *        Request line token
      * @param header
      *        Header token
-     * @return Returns WebFilterRedirectDetails if the visit is blocked or redirected, otherwise null
+     * @return Returns HttpRedirect if the visit is blocked or redirected, otherwise null
      */
-    public WebFilterRedirectDetails checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    public HttpRedirect checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
         String catStr = null;
 
@@ -362,8 +383,12 @@ public abstract class DecisionEngine
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, 0, filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
-                WebFilterRedirectDetails bd = new WebFilterRedirectDetails(app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle());
-                return(bd);
+                return (
+                    new HttpRedirect(
+                        app.generateBlockResponse(
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle()), 
+                            sess, uri.toString(), header),
+                        HttpRedirect.RedirectType.BLOCK));
             } else if (filterRule.getFlagged()) {
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, 0, filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
