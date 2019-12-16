@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.app.http.HttpMethod;
 import com.untangle.app.http.HttpEventHandler;
+import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.RequestLine;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.StatusLine;
@@ -157,9 +158,7 @@ class VirusHttpHandler extends HttpEventHandler
                 app.incrementScanCount();
                 app.incrementBlockCount();
 
-                VirusBlockDetails bd = new VirusBlockDetails(state.host, state.uri, null, app.getName());
-                Token[] response = app.generateResponse(bd, session, state.uri, requestHeader);
-                blockRequest(session, response);
+                blockRequest(session, app.generateResponse(new VirusBlockDetails(state.host, state.uri, null, app.getName()), session, state.uri, requestHeader));
 
                 RequestLine requestLine = getRequestLine(session).getRequestLine();
                 app.logEvent(new VirusHttpEvent(requestLine, session.sessionEvent(), false, virusName, app.getName()));
@@ -359,11 +358,8 @@ class VirusHttpHandler extends HttpEventHandler
                 String uri = null != rl ? rl.getRequestUri().toString() : "";
                 String host = getResponseHost(session);
                 logger.info("Virus found: " + host + uri + " = " + result.getVirusName());
-                VirusBlockDetails bd = new VirusBlockDetails(host, uri, null, app.getName());
 
-                Token[] response = app.generateResponse(bd, session, uri);
-
-                blockResponse(session, response);
+                blockResponse(session, app.generateResponse(new VirusBlockDetails(host, uri, null, app.getName()), session, uri));
             } else {
                 logger.info("Virus found: " + result.getVirusName());
                 session.shutdownClient();
