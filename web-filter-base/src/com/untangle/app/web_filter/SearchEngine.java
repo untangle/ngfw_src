@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 
 import com.untangle.app.http.RequestLineToken;
@@ -30,8 +31,7 @@ public class SearchEngine
     private static final Logger logger = Logger.getLogger(SearchEngine.class);
 
     private static final List<Pattern> SearchEngines;
-    public static final String KidFriendlySearchEngineIgnoreHost = "search.kidzsearch.com";
-    public static final String KidFriendlySearchEngineRedirectUrl = "https://search.kidzsearch.com/kzsearchlmt.php";
+    public static final URIBuilder KidFriendlySearchEngineRedirectUri;
     public static final HashMap<String,Object> KidFriendlyRedirectParameters;
     static {
         SearchEngines = new ArrayList<Pattern>();
@@ -42,6 +42,15 @@ public class SearchEngine
         SearchEngines.add(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)p=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*duckduckgo\\.[a-z]+(\\.[a-z]+)?/.*(\\?|&)q=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*kidzsearch\\.[a-z]+(\\.[a-z]+)?/.*(\\?|&)q=([^&]+).*"));
+
+        URIBuilder k = null;
+        try{
+            k = new URIBuilder();
+            k = new URIBuilder("https://search.kidzsearch.com/kzsearchlmt.php");
+        }catch(Exception e){
+            logger.warn("Unable to create kid friendly search uri:", e);
+        }
+        KidFriendlySearchEngineRedirectUri = k;
 
         KidFriendlyRedirectParameters = new HashMap<>();
         KidFriendlyRedirectParameters.put("q", null);
@@ -93,5 +102,17 @@ public class SearchEngine
             }
         }
         return null;
+    }
+
+    /**
+     * Build a new hash of parameters for kid friendly redirect using the specified search term.
+     * @param  term Search term to use as kid friendly key search value.
+     * @return      New hash with populated term.
+     */
+    public static Map<String,Object> getKidFriendlyRedirectParameters(String term)
+    {
+        Map<String,Object> parameters = new HashMap<String,Object>(SearchEngine.KidFriendlyRedirectParameters);
+        parameters.put("q", term);
+        return parameters;
     }
 }
