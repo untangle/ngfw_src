@@ -46,6 +46,8 @@ public class CaptivePortalBlockDetails extends BlockDetails
      *        The URI for the block page
      * @param method
      *        The request method for the block page
+     * @param nonce
+     *        Nonce value.
      */
     public CaptivePortalBlockDetails(String host, String uri, String method, String nonce)
     {
