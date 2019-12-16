@@ -17,10 +17,12 @@ public class WebFilterReplacementGenerator extends WebFilterBaseReplacementGener
      * 
      * @param appSettings
      *        The application settings
+     * @param app
+     *        The application
      */
-    public WebFilterReplacementGenerator(AppSettings appSettings)
+    public WebFilterReplacementGenerator(AppSettings appSettings, WebFilterBase app)
     {
-        super(appSettings);
+        super(appSettings, app);
     }
 
 }
