@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
+import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.webroot.WebrootQuery;
 import com.untangle.app.webroot.WebrootDaemon;
 import com.untangle.app.web_filter.DecisionEngine;
@@ -33,6 +34,7 @@ import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.Token;
 
 /**
  * Does blacklist lookups from zvelo API.
@@ -84,15 +86,15 @@ public class WebFilterDecisionEngine extends DecisionEngine
      * @return The result
      */
     @Override
-    public WebFilterRedirectDetails checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
+    public HttpRedirect checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         Boolean isFlagged = false;
         if (!isLicenseValid()) {
             return null;
         } else {
-            WebFilterRedirectDetails result = super.checkRequest(sess, clientIp, port, requestLine, header);
-            if(result != null){
-                return result;
+            HttpRedirect redirect = super.checkRequest(sess, clientIp, port, requestLine, header);
+            if(redirect != null){
+                return redirect;
             }else{
                 String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
 
@@ -150,7 +152,11 @@ public class WebFilterDecisionEngine extends DecisionEngine
                             if (matchingRule.getBlocked()) {
                                 ourApp.incrementFlagCount();
 
-                                return (new WebFilterRedirectDetails(ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle()));
+                                return ( new HttpRedirect(
+                                    ourApp.generateBlockResponse(
+                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle()), 
+                                        sess, uri.toString(), header),
+                                    HttpRedirect.RedirectType.BLOCK));
                             } else {
                                 if (matchingRule.getFlagged()) isFlagged = true;
 
@@ -158,12 +164,17 @@ public class WebFilterDecisionEngine extends DecisionEngine
                                 return null;
                             }
                         }else if(ourApp.getSettings().getForceKidFriendly()){
-                            if(!host.equals(SearchEngine.KidFriendlySearchEngineIgnoreHost)){
+                            if(!host.equals(SearchEngine.KidFriendlySearchEngineRedirectUri.getHost())){
                                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), null, null, Reason.REDIRECT_KIDS, null, null, null, ourApp.getName());
                                 ourApp.logEvent(hbe);
-                                HashMap<String,Object> parameters = new HashMap<String,Object>(SearchEngine.KidFriendlyRedirectParameters);
-                                parameters.put("q", term);
-                                return (new WebFilterRedirectDetails(ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle(), false, SearchEngine.KidFriendlySearchEngineRedirectUrl, parameters));
+
+
+                                return ( new HttpRedirect(
+                                    ourApp.generateRedirectResponse(
+                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle()), 
+                                            sess, uri.toString(), header, 
+                                            SearchEngine.KidFriendlySearchEngineRedirectUri, SearchEngine.getKidFriendlyRedirectParameters(term)),
+                                    HttpRedirect.RedirectType.REDIRECT));
                             }
                         }
                     }
@@ -191,18 +202,18 @@ public class WebFilterDecisionEngine extends DecisionEngine
      * @return The result
      */
     @Override
-    public WebFilterRedirectDetails checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    public HttpRedirect checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
         if (!isLicenseValid()) {
             return null;
         } else {
-            WebFilterRedirectDetails redirectDetails = super.checkResponse(sess, clientIp, requestLine, header);
-            if(redirectDetails == null){
+            HttpRedirect redirect = super.checkResponse(sess, clientIp, requestLine, header);
+            if(redirect == null){
                 if(ourApp.getSettings().getBlockQuic()){
                     removeQuicCookie(header);
                 }
             }
-            return redirectDetails;
+            return redirect;
        }
     }
 
