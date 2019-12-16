@@ -16,18 +16,6 @@ import java.util.HashMap;
  */
 public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<ThreatPreventionBlockDetails>
 {
-    public static final HashMap<String,Object> BLOCK_PARAMETERS;
-    static {
-        BLOCK_PARAMETERS = new HashMap<>();
-        BLOCK_PARAMETERS.put("nonce", null);
-        BLOCK_PARAMETERS.put("appid", null);
-    };
-
-    private String uriBase = null;
-    private String urlBase = null;
-
-    private static final String BLOCK_URI = "/threat-prevention/blockpage";
-
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
@@ -49,6 +37,7 @@ public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<T
     public ThreatPreventionReplacementGenerator(AppSettings appId)
     {
         super(appId);
+        this.redirectUri.setPath("/threat-prevention/blockpage");
     }
 
     /**
@@ -67,36 +56,5 @@ public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<T
                              details.getHost(), details.getUri(),
                              details.getReason(),
                              uvm.brandingManager().getContactHtml());
-    }
-
-    /**
-     * Get the redirect URL
-     * 
-     * @param nonce
-     *      The nonce
-     * @param host
-     *      The host
-     * @param appSettings
-     *      The application settings
-     * @return The redirect URL
-     */
-    @Override
-    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
-    {
-        return "http://" + host + "/threat-prevention/blockpage?nonce=" + nonce + "&appid=" + appSettings.getId();
-    }
-
-    /**
-     * Get redirect URL using details redirectUrl and redirectParameters.
-     *
-     * @param details WebFilterRedirectDetails.
-     * @param host Host address for url if defined.
-     * @param appSettings Application settings.
-     * @return         Formatted URL with parameters
-     */
-    protected String getRedirectUrl(ThreatPreventionBlockDetails details, String host, AppSettings appSettings){
-        details.setRedirectUrl("http://" + host + BLOCK_URI );
-        details.setRedirectParameters(new HashMap<String,Object>(BLOCK_PARAMETERS));
-        return super.getRedirectUrl(details, host, appSettings);
     }
 }
