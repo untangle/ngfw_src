@@ -367,25 +367,10 @@ public class ThreatPreventionApp extends AppBase
      *        The header
      * @return The response token
      */
-    public Token[] generateHttpResponse(ThreatPreventionBlockDetails redirectDetails, AppTCPSession session, String uri, HeaderToken header)
+    public Token[] generateResponse(ThreatPreventionBlockDetails redirectDetails, AppTCPSession session, String uri, HeaderToken header)
     {
         return replacementGenerator.generateResponse(redirectDetails, session, uri, header);
     }
-
-    /**
-     * Generate a response
-     *
-     * @param redirectDetails
-     *        ThreatPreventionBlockDetails to build rediect.
-     * @param session
-     *        The session
-     * @return The response token
-     */
-    public Token[] generateHttpResponse(ThreatPreventionBlockDetails redirectDetails, AppTCPSession session)
-    {
-        return replacementGenerator.generateResponse(redirectDetails, session);
-    }
-
 
     /**
      * Get the upper bound of numeric threat from specified threat.
