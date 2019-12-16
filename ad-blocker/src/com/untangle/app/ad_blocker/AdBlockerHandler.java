@@ -17,6 +17,7 @@ import com.untangle.app.ad_blocker.cookies.CookieEvent;
 import com.untangle.app.ad_blocker.cookies.CookieParser;
 import com.untangle.app.http.BlockDetails;
 import com.untangle.app.http.HttpEventHandler;
+import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.StatusLine;
 import com.untangle.uvm.vnet.ChunkToken;
@@ -97,19 +98,16 @@ public class AdBlockerHandler extends HttpEventHandler
 
         app.incrementScanCount();
 
-        BlockDetails redirectDetails = checkRequest( session, session.getClientAddr(), getRequestLine( session ), requestHeader );
+        HttpRedirect redirect = checkRequest( session, session.getClientAddr(), getRequestLine( session ), requestHeader );
         if (logger.isDebugEnabled()) {
-            logger.debug("in doRequestHeader(): " + requestHeader + "check request redirectDetails: " + redirectDetails);
+            logger.debug("in doRequestHeader(): " + requestHeader + "check request redirectDetails: " + redirect);
         }
 
-        if ( redirectDetails == null ) {
+        if ( redirect == null ) {
             releaseRequest( session );
         } else {
             app.incrementBlockCount();
-            String uri = getRequestLine( session ).getRequestUri().toString();
-            Token[] response = app.generateResponse( redirectDetails, session, uri, requestHeader );
-
-            blockRequest( session, response );
+            blockRequest( session, redirect.getResponse() );
         }
 
         return requestHeader;
@@ -206,7 +204,7 @@ public class AdBlockerHandler extends HttpEventHandler
      *            The header token
      * @return BlockDetails to force simple page redirect or null it pass.
      */
-    private BlockDetails checkRequest( AppTCPSession session, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header )
+    private HttpRedirect checkRequest( AppTCPSession session, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header )
     {
         if (!app.getSettings().getScanAds()){
             clientCookie( session, requestLine, header );
@@ -254,7 +252,11 @@ public class AdBlockerHandler extends HttpEventHandler
                 // block
                 AdBlockerEvent event = new AdBlockerEvent(Action.BLOCK, rule.getString(), requestLine.getRequestLine());
                 app.logEvent(event);
-                return ( new BlockDetails(host, uri.toString()) );
+                return (
+                    new HttpRedirect(
+                        app.generateResponse( new BlockDetails(host, uri.toString()), session, uri.toString(), header ),
+                        HttpRedirect.RedirectType.BLOCK
+                ));
             }
         }
 
