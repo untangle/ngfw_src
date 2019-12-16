@@ -396,7 +396,7 @@ public class CaptivePortalSSLEngine
         String methodStr = null;
         String hostStr = null;
         String uriStr = null;
-        String vector = null;
+        String vector = new String();
         int top, end;
 
         // we call unwrap for all data we receive from the client 
