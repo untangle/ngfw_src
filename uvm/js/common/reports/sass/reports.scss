@@ -13,6 +13,22 @@ span.fa:before {
     font-family: tahoma, arial, verdana, sans-serif;
 }
 
+// fix for Mac Safari buttons issue
+.x-btn-icon-right > .x-btn-inner-default-small,
+.x-btn-icon-left > .x-btn-inner-default-small,
+.x-btn-icon-right > .x-btn-inner-default-toolbar-small,
+.x-btn-icon-left > .x-btn-inner-default-toolbar-small {
+    // max-width: calc(100% - 15px);
+    max-width: none;
+}
+
+.x-btn-icon-right > .x-btn-inner-default-medium,
+.x-btn-icon-left > .x-btn-inner-default-medium,
+.x-btn-icon-right > .x-btn-inner-default-toolbar-medium,
+.x-btn-icon-left > .x-btn-inner-default-toolbar-medium {
+    max-width: none;
+}
+
 .reports-all {
     .charts-bar {
         text-align: center;
