@@ -20,7 +20,7 @@ Ext.define('Ung.view.Main', {
         },
         layout: 'hbox',
         items: [{
-            xtype: 'button',
+            xtype: 'component',
             padding: '6 7 2 7',
             border: false,
             html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
@@ -28,8 +28,8 @@ Ext.define('Ung.view.Main', {
             href: '#'
         }, {
             xtype: 'component',
-            style: { color: '#CCC' },
-            html: '<h2>' + 'Reports'.t() + '</h2>'
+            flex: 1,
+            html: '<h2 style="text-align: center; color: #CCC;">' + 'Reports'.t() + '</h2>'
         }]
     }],
     items: [{
