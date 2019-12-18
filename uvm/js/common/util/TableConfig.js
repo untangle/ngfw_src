@@ -1,4 +1,3 @@
-Ext.syncRequire('Ung.common.threatprevention');
 Ext.define('TableConfig', {
     alternateClassName: 'TableConfig',
     singleton: true,
@@ -9,9 +8,14 @@ Ext.define('TableConfig', {
             return;
         }
         var me = this;
-        Ext.Object.each(Ung.common.TableConfig, function(key, value){
-            Ung.common.TableConfig[key].initialize(me);
-        });
+
+        // NGFW-12730 - avoid exception in /reports servlet
+        if (Ung.common) {
+            Ext.syncRequire('Ung.common.threatprevention');
+            Ext.Object.each(Ung.common.TableConfig, function(key, value){
+                Ung.common.TableConfig[key].initialize(me);
+            });
+        }
         this.initialized = true;
     },
 
@@ -261,7 +265,7 @@ Ext.define('TableConfig', {
                 if(field['name'] == fieldName){
                     table = tableName;
                     return false;
-                }                
+                }
             });
             if(table != null){
                 return false;
@@ -534,7 +538,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -553,7 +557,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'server_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1008,7 +1012,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1027,7 +1031,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'server_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1463,7 +1467,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1482,7 +1486,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'server_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -3414,7 +3418,7 @@ Ext.define('TableConfig', {
                 var me = TableConfig.tableConfig.intrusion_prevention_events;
                 if(!me.settings){
                     me.refresh();
-                }  
+                }
                 if(me.settings){
                     me.settings.rules.list.forEach(function(rule){
                         if(value == rule['id']){

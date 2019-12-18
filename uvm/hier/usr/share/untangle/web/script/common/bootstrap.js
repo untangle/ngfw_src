@@ -163,13 +163,15 @@ Ext.define('Bootstrap', {
             cb(err);
         });
 
-        // Setup common library references.
-        var referenceMapping = {};
-        rpc.appManager.getAllAppProperties().list.forEach( function(appProperties){
-            var appReference = 'Ung.common.'+appProperties['name'].replace(/\-/g, '');
-            var appFilename = appProperties['name'];
-            referenceMapping[appReference] = '/script/common/app-'+appFilename+'-all.js';
-        });
-        Ext.Loader.addClassPathMappings(referenceMapping);
+        // Setup common library references only if ADMIN context
+        if (me.servletContext === 'ADMIN') {
+            var referenceMapping = {};
+            rpc.appManager.getAllAppProperties().list.forEach( function(appProperties){
+                var appReference = 'Ung.common.'+appProperties['name'].replace(/\-/g, '');
+                var appFilename = appProperties['name'];
+                referenceMapping[appReference] = '/script/common/app-'+appFilename+'-all.js';
+            });
+            Ext.Loader.addClassPathMappings(referenceMapping);
+        }
     }
 });
