@@ -1130,6 +1130,8 @@ public class EventManagerImpl implements EventManager
             return;
 
         JSONObject jsonObject = event.toJSONObject();
+        cleanupJsonObject( jsonObject, true );
+
         for ( SyslogRule rule : rules ) {
             if ( ! rule.getEnabled() )
                 continue;
