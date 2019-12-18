@@ -20,15 +20,19 @@ services:
       environment:
         - REPOSITORY=${REPOSITORY:-stretch}
         - DISTRIBUTION=${DISTRIBUTION:-current}
-        - UPLOAD=${UPLOAD} # default to empty: "no upload"
-        - VERBOSE=${VERBOSE} # default to empty: "not verbose"
-        - PACKAGE=${PACKAGE} # default to empty: "all packages"
+        - VERBOSE=${VERBOSE} # defaults to empty: "not verbose"
+        - PACKAGE=${PACKAGE} # defaults to empty: "all packages"
+        # empty: "no upload" (default)
+        # scp: use scp method for dput
+        # ftp: use ftp method for dput
+        - UPLOAD=${UPLOAD}
       extra_hosts:
         # from the inside, pass package-server's internal IP instead
         - "package-server:${PACKAGE_SERVER_IP:-173.14.28.193}"
       volumes:
         - .:/opt/untangle/build
         - pkgtools:/opt/untangle/ngfw_pkgtools:ro
+        - /tmp/travis-buildbot.rsa:/tmp/travis-buildbot.rsa
 
 volumes:
   pkgtools:
