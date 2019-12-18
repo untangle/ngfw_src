@@ -2317,10 +2317,10 @@ Ext.define('TableConfig', {
                 type: 'string'
             }, {
                 name: 'succeeded',
-                type: 'string'
+                type: 'boolean'
             }, {
                 name: 'local',
-                type: 'string'
+                type: 'boolean'
             }, {
                 name: 'client_address',
                 type: 'string'
