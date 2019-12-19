@@ -29,7 +29,7 @@ Ext.define('Ung.view.reports.EventReport', {
         // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Records!</p>',
         enableColumnHide: true,
         listeners: {
-            select: 'onEventSelect'
+            // select: 'onEventSelect'
         }
     }, {
         xtype: 'unpropertygrid',
@@ -99,51 +99,99 @@ Ext.define('Ung.view.reports.EventReport', {
         },
 
         setupGrid: function () {
-            var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
-            var entry = vm.get('eEntry') || vm.get('entry');
+            var me = this,
+                vm = me.getViewModel(),
+                grid = me.getView().down('grid'),
+                entry = vm.get('eEntry') || vm.get('entry'),
+                columns = [], // computed grid columns
+                fieldIds = [], // field ids of the entry table
+                defaultColumns; // default columns to show for report
 
             if (!entry) { return; }
+
+            defaultColumns = entry.get('defaultColumns');
 
             if (me.getView().up('reportwidget')) {
                 me.isWidget = true;
             }
 
-            me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
-
-            if(me.tableConfig.setupGrid){
-                me.tableConfig.setupGrid(me);
+            // set the model for the grid store matching the report entry table
+            if (entry.get('table') === 'http_events') {
+                grid.getStore().setModel('Ung.model.HttpEvents');
             }
 
-            me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : entry.get('defaultColumns'); // widget or report columns
-
-            Ext.Array.each(me.tableConfig.fields, function (field) {
-                if (!field.sortType) {
-                    field.sortType = 'asUnString';
-                }
+            // generate array of field ids matching sql fields
+            Ext.Object.each(grid.getStore().getModel().getFieldsMap(), function (key, val) {
+                fieldIds.push(key);
             });
 
-            Ext.Array.each(me.tableConfig.columns, function (column) {
-                if (me.defaultColumns && !Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
-                    column.hidden = true;
+            /**
+             * iterate field ids and generate columns
+             */
+            Ext.Array.each(fieldIds, function (field) {
+                var _dataIndex = field, // the column data index, matching a field id
+                    _col = Map.columns[field] // the column definition from the Map
+                    _hidden = !Ext.Array.contains(defaultColumns, field); // hide non default columns
+
+                // all fields starting with '_' are ommited, except the converted fields used for rendering
+                if (field.startsWith('_')) { return; };
+
+                /**
+                 * if there is a converted (rendering) field mathing a column, use that field instead
+                 * converted fields start with '_r_', see HttpEvents model
+                 */
+                if (Ext.Array.contains(fieldIds, '_r_' + field)) {
+                    _dataIndex = '_r_' + field;
                 }
-                if(!column.renderer && column.xtype != 'actioncolumn'){
-                    column.renderer = Ung.view.reports.EventReport.renderer;
-                }
-                // TO REVISIT THIS BECASE OF STATEFUL
-                // grid.initComponentColumn(column);
+
+                // add the column with above computed values
+
+                // if (field === 'web_filter_rule_id') {
+                //     var _renderer = Renderer.webRule;
+                // }
+
+                columns.push({
+                    text: _col.text || field,
+                    width: _col.colWidth || '',
+                    dataIndex: _dataIndex,
+                    hidden: _hidden,
+                    // renderer: _renderer
+                });
             });
 
-            grid.reconfigure(me.tableConfig.columns);
+            grid.reconfigure(columns);
 
-            var propertygrid = me.getView().down('#eventsProperties');
-            vm.set('eventProperty', null);
-            propertygrid.fireEvent('beforerender');
-            propertygrid.fireEvent('beforeexpand');
+            // me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
 
-            // me.fetchData();
-            // if (!me.getView().up('reportwidget')) {
-            //     me.fetchData();
+            // if(me.tableConfig.setupGrid){
+            //     me.tableConfig.setupGrid(me);
             // }
+
+            // me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : entry.get('defaultColumns'); // widget or report columns
+
+            // Ext.Array.each(me.tableConfig.fields, function (field) {
+            //     if (!field.sortType) {
+            //         field.sortType = 'asUnString';
+            //     }
+            // });
+
+            // Ext.Array.each(me.tableConfig.columns, function (column) {
+            //     if (me.defaultColumns && !Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
+            //         column.hidden = true;
+            //     }
+            //     if(!column.renderer && column.xtype != 'actioncolumn'){
+            //         column.renderer = Ung.view.reports.EventReport.renderer;
+            //     }
+            //     // TO REVISIT THIS BECASE OF STATEFUL
+            //     // grid.initComponentColumn(column);
+            // });
+
+            // grid.reconfigure(me.tableConfig.columns);
+
+            // var propertygrid = me.getView().down('#eventsProperties');
+            // vm.set('eventProperty', null);
+            // propertygrid.fireEvent('beforerender');
+            // propertygrid.fireEvent('beforeexpand');
         },
 
         onDefaultColumn: function (defaultColumn) {
@@ -243,8 +291,8 @@ Ext.define('Ung.view.reports.EventReport', {
         loadResultSet: function (reader) {
             var me = this, grid = me.getView().down('grid');
 
-            // this.getView().setLoading(true);
-            grid.getStore().setFields( me.tableConfig.fields );
+            this.getView().setLoading(true);
+            // grid.getStore().setFields( me.tableConfig.fields );
             var eventData = [];
             var result = [];
             while( true ){
