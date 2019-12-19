@@ -27,8 +27,8 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         NONE, LOCAL_DIRECTORY, RADIUS, ACTIVE_DIRECTORY, ANY_DIRCON
     };
 
-    private static final int DEFAULT_PING_TIME    = 10;
-    private static final int DEFAULT_PING_TIMEOUT = 60;
+    private static final int DEFAULT_PING_TIME    = 2;
+    private static final int DEFAULT_PING_TIMEOUT = 10;
     private static final int DEFAULT_VERBOSITY    = 1;
     static final int MANAGEMENT_PORT              = 1195;
 
