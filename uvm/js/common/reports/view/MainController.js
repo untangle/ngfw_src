@@ -19,6 +19,8 @@ Ext.define('Ung.view.reports.MainController', {
             view = me.getView(),
             tree = me.lookup('tree');
 
+        Map.init(); // init map
+
         // me.getView().setLoading(false);
         // set the reports view context (ADMIN or REPORTS)
         vm.set('context', Ung.app.context);
@@ -92,7 +94,7 @@ Ext.define('Ung.view.reports.MainController', {
                 catNode.eachChild(function (repNode) { // report node
                     if (conditions.length > 0) {
                         if (TableConfig.containsColumns(
-                                repNode.get('table'), 
+                                repNode.get('table'),
                                 Ext.Array.map(conditions, function(condition){
                                     return condition.get('column');
                                 })
