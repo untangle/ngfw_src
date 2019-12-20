@@ -826,4 +826,22 @@ Ext.define('Ung.util.Util', {
         var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
     },
-});
+
+    /*
+     * Convert multi-level json object into a single-level key-pair flattened json object.
+     */
+    jsonFlatten: function(obj, prefix, current) {
+        prefix = prefix || [];
+        current = current || {};
+
+        if (typeof (obj) === 'object' && obj !== null) {
+            Ext.Object.each( obj, function(key, value){
+                Util.jsonFlatten(value, prefix.concat(key), current);
+            });
+        } else {
+            current[prefix.join(':')] = obj;
+        }
+
+        return current;
+      }
+  });
