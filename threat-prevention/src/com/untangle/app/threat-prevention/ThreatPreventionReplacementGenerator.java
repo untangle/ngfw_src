@@ -9,6 +9,8 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
+import java.util.HashMap;
+
 /**
  * ReplacementGenerator for WebFilter.
  */
@@ -35,6 +37,7 @@ public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<T
     public ThreatPreventionReplacementGenerator(AppSettings appId)
     {
         super(appId);
+        this.redirectUri.setPath("/threat-prevention/blockpage");
     }
 
     /**
@@ -53,22 +56,5 @@ public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<T
                              details.getHost(), details.getUri(),
                              details.getReason(),
                              uvm.brandingManager().getContactHtml());
-    }
-
-    /**
-     * Get the redirect URL
-     * 
-     * @param nonce
-     *      The nonce
-     * @param host
-     *      The host
-     * @param appSettings
-     *      The application settings
-     * @return The redirect URL
-     */
-    @Override
-    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
-    {
-        return "http://" + host + "/threat-prevention/blockpage?nonce=" + nonce + "&appid=" + appSettings.getId();
     }
 }

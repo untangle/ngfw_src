@@ -4,13 +4,16 @@
 
 package com.untangle.app.captive_portal;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.log4j.Logger;
-
 import com.untangle.app.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.log4j.Logger;
 
 /**
  * This is the implementation of the replacement generator that creates the HTTP
@@ -44,14 +47,40 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     protected static final String GOOGLE_AUTH_HOST = "accounts.google.com";
     protected static final String GOOGLE_AUTH_PATH = "/o/oauth2/v2/auth";
     protected static final String GOOGLE_CLIENT_ID = "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com";
+    protected static final Map<String,Object> GOOGLE_PARAMETERS;
 
     protected static final String FACEBOOK_AUTH_HOST = "www.facebook.com";
     protected static final String FACEBOOK_AUTH_PATH = "/v2.9/dialog/oauth";
     protected static final String FACEBOOK_CLIENT_ID = "1840471182948119";
+    protected static final Map<String,Object> FACEBOOK_PARAMETERS;
 
     protected static final String MICROSOFT_AUTH_HOST = "login.microsoftonline.com";
     protected static final String MICROSOFT_AUTH_PATH = "/common/oauth2/v2.0/authorize";
     protected static final String MICROSOFT_CLIENT_ID = "f963a9b1-4d6c-4970-870d-3a75014e1364";
+    protected static final Map<String,Object> MICROSOFT_PARAMETERS;
+
+    static {
+        GOOGLE_PARAMETERS = new HashMap<>();
+        GOOGLE_PARAMETERS.put("client_id", GOOGLE_CLIENT_ID);
+        GOOGLE_PARAMETERS.put("redirect_uri", AUTH_REDIRECT_URI);
+        GOOGLE_PARAMETERS.put("response_type", "code");
+        GOOGLE_PARAMETERS.put("scope", "email");
+        GOOGLE_PARAMETERS.put("state", null);
+
+        FACEBOOK_PARAMETERS = new HashMap<>();
+        FACEBOOK_PARAMETERS.put("client_id", FACEBOOK_CLIENT_ID);
+        FACEBOOK_PARAMETERS.put("redirect_uri", AUTH_REDIRECT_URI);
+        FACEBOOK_PARAMETERS.put("response_type", "code");
+        FACEBOOK_PARAMETERS.put("scope", "email");
+        FACEBOOK_PARAMETERS.put("state", null);
+
+        MICROSOFT_PARAMETERS = new HashMap<>();
+        MICROSOFT_PARAMETERS.put("client_id", MICROSOFT_CLIENT_ID);
+        MICROSOFT_PARAMETERS.put("redirect_uri", AUTH_REDIRECT_URI);
+        MICROSOFT_PARAMETERS.put("response_type", "code");
+        MICROSOFT_PARAMETERS.put("scope", "openid User.Read");
+        MICROSOFT_PARAMETERS.put("state", null);
+    }
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
@@ -67,6 +96,12 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     {
         super(appId);
         this.captureApp = app;
+
+        this.redirectUri.setPath("/capture/handler.py/index");
+
+        redirectParameters.put("method", null);
+        redirectParameters.put("host", null);
+        redirectParameters.put("uri", null);
     }
 
     /**
@@ -87,102 +122,67 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     }
 
     /**
-     * Creates an HTTP redirect to the login page for unauthenticated clients.
-     * 
-     * @param nonce
-     *        A random nonce used to prevent issues with browser caching
-     * @param host
-     *        The IP used by the client to reach this server
-     * @param appSettings
-     *        The settings object for the associated application instance
-     * @return
+     * getRedirectUri for the details using the redirectUrl and redirectParams
+     * @param redirectDetails
+     * @param redirectUri
+     * @param redirectParameters
+     * @return the URL
      */
-    @Override
-    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
-    {
-        URIBuilder target = new URIBuilder();
-        URIBuilder exauth = new URIBuilder();
-        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
+    protected String buildRedirectUri(CaptivePortalBlockDetails redirectDetails, URIBuilder redirectUri, Map<String,Object> redirectParameters){
 
-        CaptivePortalBlockDetails details = getNonceData(nonce);
-        logger.debug("getRedirectUrl " + details.toString());
+        if (captureApp.getSettings().getRedirectUsingHostname() == true) {
+            redirectUri.setHost(UvmContextFactory.context().networkManager().getFullyQualifiedHostname());
+        }
 
         // if the redirectUsingHostname flag is set we use the configured
         // hostname otherwise we use the passed host which should be the IP
         // address of the appropriate interface for the client
-        if (captureApp.getSettings().getRedirectUsingHostname() == true) {
-            target.setHost(UvmContextFactory.context().networkManager().getFullyQualifiedHostname());
-        } else {
-            target.setHost(host.split(":")[0]);
-        }
 
-        // set the path of the capture handler
-        target.setPath("/capture/handler.py/index");
-
-        // set the scheme and port appropriately
         if (captureApp.getSettings().getAlwaysUseSecureCapture() == true) {
-            target.setScheme("https");
-            if (httpsPort != 443) target.setPort(httpsPort);
-        } else {
-            target.setScheme("http");
-            if (httpPort != 80) target.setPort(httpPort);
+            // Http is already configured.  Change to https.
+            redirectUri.setScheme("https");
+            int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
+            if (httpsPort != 443){
+                redirectUri.setPort(httpsPort);
+            }
         }
 
-        // add all off the parameters needed by the capture handler
-        target.addParameter("nonce", nonce);
-        target.addParameter("method", details.getMethod());
-        target.addParameter("appid", Long.toString(appSettings.getId()));
-        target.addParameter("host", details.getHost());
-        target.addParameter("uri", details.getUri());
+        URIBuilder externalAuthenticationUri = null;
+        Map<String,Object> externalAuthenticationParameters = null;
+        CaptivePortalSettings.AuthenticationType authenticationType = captureApp.getSettings().getAuthenticationType();
 
-        // if using Google authentication setup the authentication redirect
-        // and pass the target as the OAuth state
-        if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.GOOGLE) {
-            exauth.setScheme("https");
-            exauth.setHost(GOOGLE_AUTH_HOST);
-            exauth.setPath(GOOGLE_AUTH_PATH);
-            exauth.addParameter("client_id", GOOGLE_CLIENT_ID);
-            exauth.addParameter("redirect_uri", AUTH_REDIRECT_URI);
-            exauth.addParameter("response_type", "code");
-            exauth.addParameter("scope", "email");
-            exauth.addParameter("state", target.toString());
-            logger.debug("CLIENT REPLY = " + exauth.toString());
-            return (exauth.toString());
+        if(authenticationType == CaptivePortalSettings.AuthenticationType.GOOGLE ||
+           authenticationType == CaptivePortalSettings.AuthenticationType.FACEBOOK ||
+           authenticationType == CaptivePortalSettings.AuthenticationType.MICROSOFT){
+            /**
+             * Authentication type requires redirect to provider.
+             */
+            redirectUri.setParameters(buildRedirectParameters(redirectDetails, redirectParameters));
+            externalAuthenticationUri = new URIBuilder();
+            externalAuthenticationUri.setScheme("https");
+
+            switch(authenticationType){
+                case GOOGLE:
+                    externalAuthenticationUri.setHost(GOOGLE_AUTH_HOST);
+                    externalAuthenticationUri.setPath(GOOGLE_AUTH_PATH);
+                    externalAuthenticationParameters = new HashMap<>(GOOGLE_PARAMETERS);
+                    break;
+                case FACEBOOK:
+                    externalAuthenticationUri.setHost(FACEBOOK_AUTH_HOST);
+                    externalAuthenticationUri.setPath(FACEBOOK_AUTH_PATH);
+                    externalAuthenticationParameters = new HashMap<>(FACEBOOK_PARAMETERS);
+                    break;
+                case MICROSOFT:
+                    externalAuthenticationUri.setHost(MICROSOFT_AUTH_HOST);
+                    externalAuthenticationUri.setPath(MICROSOFT_AUTH_PATH);
+                    externalAuthenticationParameters = new HashMap<>(MICROSOFT_PARAMETERS);
+                    break;
+            }
+            externalAuthenticationParameters.put("state", redirectUri.toString());
+            redirectUri = externalAuthenticationUri;
+            redirectParameters = externalAuthenticationParameters;
         }
 
-        // if using Facebook authentication setup the authentication redirect
-        // and pass the target as the OAuth state
-        if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
-            exauth.setScheme("https");
-            exauth.setHost(FACEBOOK_AUTH_HOST);
-            exauth.setPath(FACEBOOK_AUTH_PATH);
-            exauth.addParameter("client_id", FACEBOOK_CLIENT_ID);
-            exauth.addParameter("redirect_uri", AUTH_REDIRECT_URI);
-            exauth.addParameter("response_type", "code");
-            exauth.addParameter("scope", "email");
-            exauth.addParameter("state", target.toString());
-            logger.debug("CLIENT REPLY = " + exauth.toString());
-            return (exauth.toString());
-        }
-
-        // if using Microsoft authentication setup the authentication redirect
-        // and pass the target as the OAuth state
-        if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.MICROSOFT) {
-            exauth.setScheme("https");
-            exauth.setHost(MICROSOFT_AUTH_HOST);
-            exauth.setPath(MICROSOFT_AUTH_PATH);
-            exauth.addParameter("client_id", MICROSOFT_CLIENT_ID);
-            exauth.addParameter("redirect_uri", AUTH_REDIRECT_URI);
-            exauth.addParameter("response_type", "code");
-            exauth.addParameter("scope", "openid User.Read");
-            exauth.addParameter("state", target.toString());
-            logger.debug("CLIENT REPLY = " + exauth.toString());
-            return (exauth.toString());
-        }
-
-        // local authentication so return the target directly
-        logger.debug("CLIENT REPLY = " + target);
-        return (target.toString());
+        return super.buildRedirectUri(redirectDetails, redirectUri, redirectParameters);
     }
 }
