@@ -18,6 +18,9 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         }
     },
 
+    /**
+     * Extended report sessions table fields.
+     */
     sessionsFields: [{
         name: 'threat_prevention_blocked'
     }, {
@@ -38,23 +41,12 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         fromType: 'threat_category'
     }],
 
-    httpFields: [{
-        name: 'threat_prevention_blocked'
-    }, {
-        name: 'threat_prevention_flagged'
-    }, {
-        name: 'threat_prevention_rule_id'
-    }, {
-        name: 'threat_prevention_reputation',
-        fromType: 'threat_reputation'
-    }, {
-        name: 'threat_prevention_categories',
-        fromType: 'threat_category'
-    }],
-
-
     // To do categories, do nested. Then eventreport selection can construct.
     // Make sure that with thee groupings, export still works.  And reports in general.
+
+    /**
+     * Extended report sessions table columns
+     */
     sessionsColumns: [{
         header: 'Blocked'.t() + ' (Threat Prevention)',
         width: Renderer.booleanWidth,
@@ -109,7 +101,27 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         filter: Renderer.numericFilter,
     }],
 
-    httpColumns: [{
+    /**
+     * Extended report events table fields.
+     */
+    httpEventsFields: [{
+        name: 'threat_prevention_blocked'
+    }, {
+        name: 'threat_prevention_flagged'
+    }, {
+        name: 'threat_prevention_rule_id'
+    }, {
+        name: 'threat_prevention_reputation',
+        fromType: 'threat_reputation'
+    }, {
+        name: 'threat_prevention_categories',
+        fromType: 'threat_category'
+    }],
+
+    /**
+     * Extended report http_events table columns
+     */
+    httpEventsColumns: [{
         header: 'Blocked'.t() + ' (Threat Prevention)',
         width: Renderer.booleanWidth,
         sortable: true,
@@ -147,7 +159,6 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         filter: Renderer.numericFilter
     }],
 
-
     initialized: false,
     initialize: function(tableConfig){
         if(this.initialized){
@@ -168,42 +179,33 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             tableConfig.tableConfig.sessions.columns,
             me.sessionsColumns
         );
-        Ext.Array.push(
-            tableConfig.tableConfig.session_minutes.fields,
-            me.sessionsFields
-        );
-
-        Ext.Array.push(
-            tableConfig.tableConfig.session_minutes.columns,
-            me.sessionsColumns
-        );
+        tableConfig.tableConfig.sessions.listeners = {
+            select: Ung.common.TableConfig.threatprevention.getDetails
+        };
 
         Ext.Array.push(
             tableConfig.tableConfig.http_events.fields,
-            me.httpFields
+            me.httpEventsFields
         );
         Ext.Array.push(
             tableConfig.tableConfig.http_events.columns,
-            me.httpColumns
+            me.httpEventsColumns
         );
-
-        tableConfig.tableConfig.sessions.listeners = {
-            select: Ung.common.TableConfig.threatprevention.onSelectDetails
+        tableConfig.tableConfig.http_events.listeners = {
+            select: Ung.common.TableConfig.threatprevention.getDetails
         };
 
         Ext.Object.each( me.fromTypes, function(key, value){
             tableConfig.fromTypes[key] = value;
         });
 
-
         this.initialized = true;
     },
 
-    // columnRenderer: function(vaue, meta){
-    //     //meta.innerCls = 'fa fa-info-circle';
-    //     return value;
-    // },
-
+    /**
+     * Detail property details API fields and renderers.
+     * NOTE: Keys are flattened.
+     */
     detailMaps: {
         getrepinfo: {
             name: 'Reputation'.t(),
@@ -236,37 +238,50 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         geturlhistory:{
             name: 'History'.t(),
             fields: {
-                current_categorization: {
-                    name: 'Current Categories',
-                    renderer: function(value){
-                        var categories = [];
-                        value['categories'].forEach(function(cat){
-                                categories.push(Renderer.webCategory(cat['catid']) + ' : ' + cat['conf'] + '%');
-                        });
-                        return categories.join('<br>');
+                "current_categorization:categories": {
+                    name: 'Current Categorization: Cateories'.t()
+                },
+               "current_categorization:categories:catid": {
+                    name: 'Category'.t(),
+                    renderer: function(value, metaData){
+                        return Renderer.webCategory(value);
                     }
                 },
-                security_history: {
-                    name: 'Security'.t(),
-                    renderer: function(value){
-                        var history = [];
-                        value.forEach( function(shistory){
-                            var categories = [];
-                            shistory['categories'].forEach(function(cat){
-                                categories.push(Renderer.webCategory(cat['catid']) + ' : ' + cat['conf'] + '%');
-                            });
-                            history.push(Renderer.timestamp(shistory['timestamp']) + ': ' + categories.join('<br>'));
-                        });
-                        return history.join('<br>');
+                "current_categorization:categories:conf": {
+                    name: 'Confidence'.t(),
+                    renderer: function(value, metaData){
+                        return value + '%';
                     }
+                },
+                "security_history": {
+                    name: 'Security History'.t()
+                },
+                "security_history:categories": {
+                    name: 'Categories'.t()
+                },
+                "security_history:categories:catid": {
+                    name: 'Category'.t(),
+                    renderer: function(value, metaData){
+                        return Renderer.webCategory(value);
+                    }
+                },
+                "security_history:categories:conf": {
+                    name: 'Confidence'.t(),
+                    renderer: function(value, metaData){
+                        return value + '%';
+                    }
+                },
+                "security_history:timestamp": {
+                    name: 'Timestamp'.t(),
+                    renderer: Renderer.timestamp
                 },
                 url: {
-                    name: 'IP Address'
+                    name: 'URL'
                 }
             }
         },
         getrephistory: {
-            name: 'Reputation'.t(),
+            name: 'Reputation History'.t(),
             fields: {
                 max_reputation: {
                     name: 'Maximum Reputation'.t(),
@@ -286,21 +301,42 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                         return Ext.String.format('{0} occurences'.t(), value);
                     }
                 },
-                history:{
-                    name: 'Reputation History'.t(),
-                    renderer: function(value){
-                        var history = [];
-                        value.forEach( function(shistory){
-                            history.push(Renderer.timestamp(shistory['ts']) + ': ' + Ung.common.Renderer.threatprevention.reputation(shistory['reputation']));
-                        });
-                        return history.join('<br>\n');
-                    }
+                history: {
+                    name: 'History'.t()
+                },
+                "history:reputation":{
+                    name: 'Reputation'.t(),
+                    renderer: Ung.common.Renderer.threatprevention.reputation
+                },
+                "history:ts":{
+                    name: 'Timestamp'.t(),
+                    renderer: Renderer.timestamp
                 }
             }
         },
         getthreathistory: {
-            name: 'Reputation'.t(),
+            name: 'Threat History'.t(),
             fields: {
+                "history:is_threat": {
+                    name: 'Threat?'.t(),
+                    renderer: function(value){
+                        return value ? 'Yes'.t() : 'No'.t();
+                    }
+                },
+                "history:threat_types": {
+                    name: 'Threat Types'.t(),
+                    renderer: function(value){
+                        if(value.indexOf("org.json") > -1){
+                            return 'None'.t();
+                        }else{
+                            return value;
+                        }
+                    }
+                },
+                "history:ts": {
+                    name: 'Timestamp'.t(),
+                    renderer: Renderer.timestamp
+                },
                 threat_count: {
                     name: 'Threat Count'.t(),
                     renderer: function(value){
@@ -308,95 +344,184 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     }
                 },
                 history:{
-                    name: 'Threat History'.t(),
-                    renderer: function(value){
-                        var history = [];
-                        value.forEach( function(shistory){
-                            history.push(Renderer.timestamp(shistory['ts']) + ': ' + shistory['status'] + ': '  );
-                        });
-                        return history.join('<br>\n');
-                    }
-                },
-                is_threat: {
-                    name: 'Is Threat?',
-                    renderer: function(value){
-                        return value ? 'Yes'.t() : 'No'.t();
-                    }
+                    name: 'History'.t()
                 }
             }
         },
         getipevidence: {
-            name: 'History'.t(),
+            name: 'Evidence'.t(),
             fields: {
-
+                "ipint": {
+                    name: 'IP Address'.t(),
+                    renderer: function(value){
+                        return ( (value>>>24) +'.' + (value>>16 & 255) +'.' + (value>>8 & 255) +'.' + (value & 255) );
+                    }
+                },
+                "evidence": {
+                    name: 'Evidence'.t()
+                },
+                "evidence:incidents": {
+                    name: 'Incident'.t()
+                },
+                "evidence:is_threat": {
+                    name: 'History: Threat?'.t(),
+                    renderer: function(value){
+                        return value ? 'Yes'.t() : 'No'.t();
+                    }
+                },
+                "evidence:event_type": {
+                    name: 'History: Event Type'.t(),
+                    renderer: function(value){
+                        if(value.indexOf("org.json") > -1){
+                            return 'None'.t();
+                        }else{
+                            return value;
+                        }
+                    }
+                },
+                "evidence:convicted_time": {
+                    name: 'History: Convinced Timestamp'.t(),
+                    renderer: Renderer.timestamp
+                },
+                "evidence:incidents:start_time": {
+                    name: 'History: Timestamp'.t(),
+                    renderer: Renderer.timestamp
+                },
+                "evidence:incidents:event_type": {
+                    name: 'History: Event Type'.t()
+                },
+                "evidence:incidents:event_desc": {
+                    name: 'History: Event Description'.t()
+                },
+                "evidence:incidents:number_of_attempts": {
+                    name: 'History: Attempt Count'.t()
+                },
+                "evidence:incidents:threat_type": {
+                    name: 'History: Threat Type'.t()
+                },
+                "evidence:incidents:timespan": {
+                    name: 'History: Time Span'.t()
+                },
+                "evidence:incidents:details:sources": {
+                    name: 'History: Sources'.t()
+                },
+                "evidence:incidents:details:total_attacks": {
+                    name: 'History: Attack Count'.t()
+                },
+                "evidence:incidents:details:events": {
+                    name: 'History: Events'.t()
+                },
+                "evidence:incidents:details:exploits": {
+                    name: 'History: Exploits'.t()
+                },
+                "evidence:incidents:details:hosted_urls": {
+                    name: 'History: Hosted Urls'.t()
+                },
             }
         }
     },
 
     sourceTypes: ['client', 'server'],
-    onSelectDetails: function(element, record){
-        // console.log(arguments);
+    /**
+     * Build property records for reputation detail apis.
+     *
+     * @param {*} element Currently selected grid row
+     * @param {*} record Current grid row record
+     */
+    getDetails: function(element, record){
         var me = this,
             v = me.getView(),
             vm = this.getViewModel(),
-            clientAddress = record.get('c_client_addr'),
-            serverAddress = record.get('s_server_addr'),
-            policyId = record.get('policy_id');
+            clientIpAddress = record.get('c_client_addr'),
+            serverIpAddress = record.get('s_server_addr'),
+            policyId = record.get('policy_id'),
+            uriAddress;
 
+        /**
+         * If host and uri are found (http_event), set the uriAddress.
+         */
+        uriAddress = record.get('host');
+        if(uriAddress != undefined){
+            uriAddress += record.get('uri');
+        }
+
+        /**
+         * Get Threat Prevention app instance.
+         */
         var policy = Ext.getStore('policies').findRecord('policyId', policyId);
         if(policy == null){
             return;
         }
-        var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
+        var app = Ext.Array.findBy(policy.get('instances').list, function (inst) {
             return inst.appName === "threat-prevention";
         });
-        if(appInstance == null){
+        if(app == null){
             return;
         }
 
+        /**
+         * Determine list of ip addresses and url addresses to lookup.
+         *
+         * Ignore any client or server IP address that is in system local networks.
+         */
         var localNetworks = Rpc.directData('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, "localNetworks");
         var ipAddresses = [];
         var urlAddresses = [];
         Ung.common.TableConfig.threatprevention.sourceTypes.forEach( function(sourceType){
+            // IP address reputation
             var reputation = record.get('threat_prevention_' +sourceType+'_reputation');
+            if(sourceType == 'server' && reputation == undefined){
+                // Try url reputation from http_events.
+                reputation = record.get('threat_prevention_reputation');
+            }
             if(reputation != null && reputation > 0){
+                var clientIsRemote = false;
                 localNetworks.forEach(function(network){
-                    var clientIsRemote = false;
                     if( (sourceType == 'client') &&
-                        (record.get('threat_prevention_client_reputation') > 0) &&
-                        (false === Util.ipMatchesNetwork(clientAddress, network['maskedAddress'], network['netmaskString'] ))){
-                        ipAddresses.push(clientAddress);
+                        (reputation > 0) &&
+                        (false === Util.ipMatchesNetwork(clientIpAddress, network['maskedAddress'], network['netmaskString'] ))){
+                        // Only consider if client IP address with a non-zero reputation, and not within this local network.
+                        if(ipAddresses.indexOf(clientIpAddress) == -1){
+                            // Only add to IP list if we haven't seen it already.
+                            ipAddresses.push(clientIpAddress);
+                        }
                         clientIsRemote = true;
                     }
                     if( (sourceType == 'server') &&
-                        (record.get('threat_prevention_server_reputation') > 0) &&
-                        (false === Util.ipMatchesNetwork(serverAddress, network['maskedAddress'], network['netmaskString'] ))){
-                        if(clientIsRemote == true){
-                            ipAddresses.push(serverAddress);
+                        (reputation > 0) &&
+                        (false === Util.ipMatchesNetwork(serverIpAddress, network['maskedAddress'], network['netmaskString'] ))){
+                        // Only consider if server IP address with a non-zero reputation, and not within this local network.
+                        if(clientIsRemote == true || uriAddress == undefined){
+                            // Only consider if client is remote or we don't have a uri.
+                            if(ipAddresses.indexOf(serverIpAddress) == -1){
+                                // Only add to IP list if we haven't seen it already.
+                                ipAddresses.push(serverIpAddress);
+                            }
                         }else{
-                            urlAddresses.push(serverAddress);
+                            if(urlAddresses.indexOf(uriAddress != undefined ? uriAddress : serverIpAddress) == -1){
+                                // Only add to uri list if we haven't seen it already.
+                                urlAddresses.push(uriAddress != undefined ? uriAddress : serverIpAddress);
+                            }
                         }
                     }
                 });
             }
         });
 
-        // // TEST FOR IP
-        // ipAddresses = urlAddresses;
-        // urlAddresses = [];
-
-        urlAddresses.push();
-        // console.log(ipAddresses);
-        // console.log(urlAddresses);
-
-        var app = Rpc.directData('rpc.appManager.app', appInstance.id);
+        var app = Rpc.directData('rpc.appManager.app', app.id);
 
         var rpcSequence = [];
+        /**
+         * Detail queries for each IP address.
+         */
         if(ipAddresses.length){
             ipAddresses.forEach(function(address){
                 rpcSequence.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getIpHistory', [address]));
             });
         }
+        /**
+         * Detail queries for each url.
+         */
         if(urlAddresses.length){
             urlAddresses.forEach(function(address){
                 rpcSequence.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getUrlHistory', [address]));
@@ -408,9 +533,6 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             if(Util.isDestroyed(v)){
                 return;
             }
-            // console.log("result=");
-            // console.log(results);
-
             var propertyRecord = [];
 
             var categories = [];
@@ -419,41 +541,96 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             var category = null;
             results.forEach( function(result){
                 result.forEach( function(answer){
+                    // Determine directional label.
                     var answerAddress = 'url' in answer ? answer['url'] : answer['value'];
-                    var addressType = answerAddress == clientAddress ? 'Client'.t() : 'Server'.t();
+                    var addressType = answerAddress == clientIpAddress ? 'Client'.t() : 'Server'.t();
 
-                    // console.log('answer=');
-                    // console.log(answer);
+                    /**
+                     * Walk detail maps for this answer.  Each call can make multiple API queries.
+                     */
                     Ext.Object.each(
                         Ung.common.TableConfig.threatprevention.detailMaps,
                         function(detail, detailMap){
                             if(detail in answer['queries']){
-                                // console.log('detail=' + detail);
                                 category = Ext.String.format('Threat Prevention {0}: {1}'.t(), detailMap.name, addressType); 
-                                // console.log('use detailMap');
-                                // console.log(detailMap);
-                                Ext.Object.each( answer['queries'][detail], function(key, value){
-                                    propertyRecord.push({
-                                        name: detailMap.fields[key] && detailMap.fields[key]['name'] ? detailMap.fields[key]['name'] : key,
-                                        value: detailMap.fields[key] && detailMap.fields[key]['renderer'] ? detailMap.fields[key]['renderer'].call(this,value) : value,
-                                        category: category
-                                    });
-                                });
+
+                                /**
+                                 * Flatten the object.  This makes it faster to do lookups.
+                                 */
+                                var flattened = Util.jsonFlatten(answer['queries'][detail]);
+                                var flattenedKeys = Object.keys(flattened);
+                                Ext.Object.each(
+                                    flattened,
+                                    function(key, value){
+                                        var keyPath = [];
+                                        var namePath = [];
+                                        var keyIndex = 0;
+                                        var useIndex= false;
+                                        var lastKeyNameIndex = 0;
+                                        var nameKey;
+                                        key.split(':').forEach(function(key){
+                                            if(isNaN(key) == false ){
+                                                /**
+                                                 * Found a numeric value indicating an index.  Determine
+                                                 * the resposnse has other indexes for this path since
+                                                 * flattened object will contain list indexes like 0 which are
+                                                 * not very pleasing to see if we also don't see others in sequence.
+                                                 */
+                                                keyIndex = parseInt(key,10);
+                                                var keyPathFlattened = keyPath.slice(lastKeyNameIndex).join(":");
+
+                                                if('_useIndex' in detailMap &&
+                                                    keyPathFlattened in detailMap['_useIndex']){
+                                                    // We've seen this keypath already, so pull useIndex from cache.
+                                                    useIndex = detailMap['_useIndex'][keyPathFlattened];
+                                                }else{
+                                                    // Determine if this keypath exists.  If so, use the index.
+                                                    var keySubstring = keyPathFlattened + ":" + (keyIndex + 1); 
+                                                    useIndex = flattenedKeys.filter( function(key){
+                                                        if(key.indexOf(keySubstring) > -1){
+                                                            return true;
+                                                        }
+                                                    }).length > 0 ? true : false;
+                                                    if(!('_useIndex' in detailMap)){
+                                                        detailMap['_useIndex'] = {};
+                                                    }
+                                                    detailMap['_useIndex'][keyPathFlattened] = useIndex;
+                                                }
+
+                                                /**
+                                                 * Create label based on the current path and whether to use index value.
+                                                 */
+                                                nameKey = keyPath.join(':');
+                                                namePath.push((nameKey in detailMap.fields && detailMap.fields[nameKey]['name'] ? detailMap.fields[nameKey]['name'] : nameKey) + ( useIndex ? ' ' + (keyIndex + 1): ''));
+                                                lastKeyNameIndex = keyPath.length;
+                                            }else{
+                                                keyPath.push(key);
+                                            }
+                                        });
+                                        key = keyPath.join(":");
+                                        if(lastKeyNameIndex < keyPath.length ){
+                                            namePath.push((key in detailMap.fields && detailMap.fields[key]['name'] ? detailMap.fields[key]['name'] : key));
+                                        }
+
+                                        /**
+                                         * Add new property record for this object.
+                                         */
+                                        if(keyPath[keyPath.length-1].indexOf('javaClass') == -1){
+                                            propertyRecord.push({
+                                                name: namePath.length ? namePath.join(': ') : detail + '::' + key,
+                                                value: key in detailMap.fields && detailMap.fields[key]['renderer'] ? detailMap.fields[key]['renderer'].call(this,value) : value,
+                                                category: category
+                                            });
+                                        }
+                                    }
+                                );
                             }
                         }
                     );
                 });
             });
-            // console.log('prop grid');
-            // console.log(v.up().down('unpropertygrid'));
             v.up().down('unpropertygrid').getStore().loadData(propertyRecord, true);
-            // vm.set('propsData', propertyRecord);
-            // vm.get('props').loadData(propertyRecord);
         }, function(ex) {
-            // if(!Util.isDestroyed(v, vm)){
-            //     vm.set('panel.saveDisabled', true);
-            //     v.setLoading(false);
-            // }
             console.log(ex);
         });
     },
