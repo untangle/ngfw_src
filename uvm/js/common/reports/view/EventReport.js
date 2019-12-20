@@ -154,7 +154,7 @@ Ext.define('Ung.view.reports.EventReport', {
                     text: _col.text || field,
                     width: _col.colWidth || '',
                     dataIndex: _dataIndex,
-                    hidden: _hidden,
+                    // hidden: _hidden,
                     // renderer: _renderer
                 });
             });
@@ -305,6 +305,7 @@ Ext.define('Ung.view.reports.EventReport', {
                 }
                 break;
             }
+            console.log(eventData);
             reader.closeConnection();
             grid.getStore().loadData(eventData);
         },
