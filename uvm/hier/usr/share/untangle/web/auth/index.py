@@ -172,14 +172,14 @@ def _reports_valid_login(req, realm, username, password, log=True):
         salt = pw_hash[len(pw_hash) - 8:]
         if raw_pw == md5.new(password + salt).digest():
             if log:
-                uvm_login.log_login(req, username, False, True, None)
+                uvm_login.log_login(req, username, True, None)
             return True
         else:
             if log:
-                uvm_login.log_login(req, username, False, False, 'P')
+                uvm_login.log_login(req, username, False, 'P')
             return False
     if log:
-        uvm_login.log_login(req, username, False, False, 'U')
+        uvm_login.log_login(req, username, False, 'U')
     return False
 
 def _admin_valid_login(req, realm, username, password, log=True):
@@ -197,14 +197,14 @@ def _admin_valid_login(req, realm, username, password, log=True):
         salt = pw_hash[len(pw_hash) - 8:]
         if raw_pw == md5.new(password + salt).digest():
             if log:
-                uvm_login.log_login(req, username, False, True, None)
+                uvm_login.log_login(req, username, True, None)
             return True
         else:
             if log:
-                uvm_login.log_login(req, username, False, False, 'P')
+                uvm_login.log_login(req, username, False, 'P')
             return False
     if log:
-        uvm_login.log_login(req, username, False, False, 'U')
+        uvm_login.log_login(req, username, False, 'U')
     return False
 
 def _write_login_form(req, title, host, error_msg):
