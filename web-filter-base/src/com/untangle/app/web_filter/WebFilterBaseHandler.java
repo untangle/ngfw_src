@@ -10,6 +10,7 @@ import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.StatusLine;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.app.http.HeaderToken;
+import com.untangle.app.http.HttpRedirect;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.AppTCPSession;
 
@@ -62,26 +63,24 @@ public class WebFilterBaseHandler extends HttpEventHandler
     {
         app.incrementScanCount();
 
-        WebFilterRedirectDetails redirectDetails = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), sess.getServerPort(), getRequestLine(sess), requestHeader);
+        HttpRedirect redirect = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), sess.getServerPort(), getRequestLine(sess), requestHeader);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirectDetails);
+            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirect);
         }
 
-        if (redirectDetails  == null) {
+        if (redirect  == null) {
             app.incrementPassCount();
 
             releaseRequest(sess);
         } else {
             String uri = getRequestLine(sess).getRequestUri().toString();
-            if(redirectDetails.getBlocked()){
+            if(redirect.getType() == HttpRedirect.RedirectType.BLOCK){
                 app.incrementBlockCount();
-                Token[] response = app.generateBlockResponse( redirectDetails, sess, uri, requestHeader);
-                blockRequest(sess, response);
+                blockRequest(sess, redirect.getResponse());
             }else{
                 app.incrementRedirectCount();
-                Token[] response = app.generateRedirectResponse( redirectDetails, sess, uri, requestHeader);
-                redirectRequest(sess, response);
+                redirectRequest(sess, redirect.getResponse());
             }
         }
 
@@ -144,25 +143,23 @@ public class WebFilterBaseHandler extends HttpEventHandler
         if (getStatusLine(sess).getStatusCode() == 100) {
             releaseResponse(sess);
         } else {
-            WebFilterRedirectDetails redirectDetails = app.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest(sess), responseHeader);
+            HttpRedirect redirect = app.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest(sess), responseHeader);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + redirectDetails);
+                logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + redirect);
             }
 
-            if (redirectDetails == null) {
+            if (redirect == null) {
                 app.incrementPassCount();
 
                 releaseResponse(sess);
             } else {
-                if(redirectDetails.getBlocked()){
+                if(redirect.getType() == HttpRedirect.RedirectType.BLOCK){
                     app.incrementBlockCount();
-                    Token[] response = app.generateBlockResponse(redirectDetails, sess);
-                    blockResponse(sess, response);
+                    blockResponse(sess, redirect.getResponse());
                 }else{
                     app.incrementRedirectCount();
-                    Token[] response = app.generateRedirectResponse(redirectDetails, sess);
-                    redirectResponse(sess, response);
+                    redirectResponse(sess, redirect.getResponse());
                 }
             }
         }

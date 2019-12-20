@@ -19,16 +19,6 @@ public class AdBlockerReplacementGenerator extends ReplacementGenerator<BlockDet
         + "</HEAD><BODY>"
         + "</BODY></HTML>";
 
-    //     private static final String BLOCK_TEMPLATE
-    //         = "<HTML><HEAD>"
-    //         + "<TITLE>403 Forbidden</TITLE>"
-    //         + "</HEAD><BODY>"
-    //         + "<p>This site was blocked because it contains ad content</p>"
-    //         + "<p>Host: %s</p>"
-    //         + "<p>URI: %s</p>"
-    //         + "</BODY></HTML>";
-
-
     /**
      * Generate a new AdBlockerReplacementGenerator
      * @param appSettings the AppSettings
@@ -46,22 +36,6 @@ public class AdBlockerReplacementGenerator extends ReplacementGenerator<BlockDet
     @Override
     protected String getReplacement(BlockDetails details)
     {
-        return String.format(BLOCK_TEMPLATE, details.getHost(), details.getUri());
-    }
-
-    /**
-     * Get the redirect URL for the this block
-     * Ad Blocker does not use redirects so this just returns null
-     *
-     * @param nonce The nonce
-     * @param host The host
-     * @param appSettings the AppSettings
-     * @return null
-     */
-    @Override
-    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
-    {
-        // no need to redirect; we generate a simple response page
-        return null;
+        return BLOCK_TEMPLATE;
     }
 }

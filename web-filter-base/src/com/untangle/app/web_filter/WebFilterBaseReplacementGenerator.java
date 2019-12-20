@@ -10,32 +10,27 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
 import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.http.client.utils.URIBuilder;
 
 /**
  * ReplacementGenerator for WebFilter.
  */
 public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebFilterRedirectDetails>
 {
-    public static final HashMap<String,Object> BLOCK_PARAMETERS;
-    public static final HashMap<String,Object> CUSTOM_BLOCK_PARAMETERS;
+    private static final HashMap<String,Object> CustomBlockRedirectParameters;
     static {
-        BLOCK_PARAMETERS = new HashMap<>();
-        BLOCK_PARAMETERS.put("nonce", null);
-        BLOCK_PARAMETERS.put("appid", null);
-
-        CUSTOM_BLOCK_PARAMETERS = new HashMap<>();
-        CUSTOM_BLOCK_PARAMETERS.put("reason", null);
-        CUSTOM_BLOCK_PARAMETERS.put("appid", null);
-        CUSTOM_BLOCK_PARAMETERS.put("appname", null);
-        CUSTOM_BLOCK_PARAMETERS.put("host", null);
-        CUSTOM_BLOCK_PARAMETERS.put("url", null);
-        CUSTOM_BLOCK_PARAMETERS.put("clientAddress", null);
+        CustomBlockRedirectParameters = new HashMap<>();
+        CustomBlockRedirectParameters.put("reason", null);
+        CustomBlockRedirectParameters.put("appid", null);
+        CustomBlockRedirectParameters.put("appname", null);
+        CustomBlockRedirectParameters.put("host", null);
+        CustomBlockRedirectParameters.put("url", null);
+        CustomBlockRedirectParameters.put("clientAddress", null);
     };
 
-    private String uriBase = null;
-    private String urlBase = null;
-
-    private static final String BLOCK_URI = "/web-filter/blockpage";
+    private WebFilterBase webfilterApp = null;
 
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -50,16 +45,18 @@ public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebF
         + "</BODY></HTML>";
 
     /**
-     * Constructor
-     *  
+     * Our constuctor
+     * 
      * @param appId
-     *      The application ID
+     *        The application ID
+     * @param app
+     *        The application instance that created us
      */
-    public WebFilterBaseReplacementGenerator(AppSettings appId)
+    WebFilterBaseReplacementGenerator(AppSettings appId, WebFilterBase app)
     {
         super(appId);
-
-        this.uriBase = BLOCK_URI;
+        this.redirectUri.setPath("/web-filter/blockpage");
+        this.webfilterApp = app;
     }
 
     /**
@@ -81,40 +78,34 @@ public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebF
     }
 
     /**
-     * Get the redirect URL
-     * 
-     * @param nonce
-     *      The nonce
-     * @param host
-     *      The host
-     * @param appSettings
-     *      The application settings
-     * @return The redirect URL
+     * If using a custom block page, use that uri instead of default.
+     * @return URIBuilder of uri to redirect client toward.
      */
-    @Override
-    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
+    protected URIBuilder getRedirectUri()
     {
-        return "http://" + host + BLOCK_URI + "?nonce=" + nonce + "&appid=" + appSettings.getId();
+        if(webfilterApp.getSettings().getCustomBlockPageEnabled()){
+            URIBuilder redirectUri = null;
+            try{
+                redirectUri = new URIBuilder();
+                redirectUri = new URIBuilder(webfilterApp.getSettings().getCustomBlockPageUrl());
+            }catch(Exception e){}
+            return redirectUri;
+        }else{
+            return super.getRedirectUri();
+        }
     }
 
     /**
-     * Get redirect URL using details redirectUrl and redirectParameters.
-     *
-     * @param details WebFilterRedirectDetails.
-     * @param host Host address for url if defined.
-     * @param appSettings Application settings.
-     * @return         Formatted URL with parameters
+     * If using a custom block page, use set of custom parameters instead of defaults.
+     * @return New copy of map for parameters.
      */
-    protected String getRedirectUrl(WebFilterRedirectDetails details, String host, AppSettings appSettings){
-        if(details.getBlocked()){
-            if(details.getSettings().getCustomBlockPageEnabled()){
-                details.setRedirectUrl(details.getSettings().getCustomBlockPageUrl());
-                details.setRedirectParameters(new HashMap<String,Object>(CUSTOM_BLOCK_PARAMETERS));
-            }else{
-                details.setRedirectUrl("http://" + host + BLOCK_URI );
-                details.setRedirectParameters(new HashMap<String,Object>(BLOCK_PARAMETERS));
-            }
+    protected Map<String,Object> getRedirectParameters()
+    {
+        if(webfilterApp.getSettings().getCustomBlockPageEnabled()){
+            return new HashMap<String,Object>(CustomBlockRedirectParameters);
+        }else{
+            return super.getRedirectParameters();
         }
-        return super.getRedirectUrl(details, host, appSettings);
     }
+
 }

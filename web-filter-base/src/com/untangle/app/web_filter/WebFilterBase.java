@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
+import org.apache.http.client.utils.URIBuilder;
 
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
@@ -629,7 +630,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     public Token[] generateBlockResponse(WebFilterRedirectDetails details, AppTCPSession session, String uri, HeaderToken header)
     {
-        return replacementGenerator.generateResponseFromDetails(details, session, uri, header);
+        return replacementGenerator.generateResponse(details, session, uri, header);
     }
 
     /**
@@ -643,39 +644,29 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     protected Token[] generateBlockResponse(WebFilterRedirectDetails details, AppTCPSession session)
     {
-        return replacementGenerator.generateResponseFromDetails(details, session);
+        return replacementGenerator.generateResponse(details, session);
     }
 
     /**
-     * Generate a redirect response
+     * Generate a redirect response.
      *
      * @param details
-     *        WebFilter Redirect details
+     *        The nonce
      * @param session
      *        The session
      * @param uri
      *        The URI
      * @param header
      *        The header
-     * @return The response token
+     * @param  redirectUri
+     *         URIBuilder of uri to redirect to.
+     * @param  redirectParameters
+     *         Map of parameters to add to redirectUri.
+     * @return The response
      */
-    public Token[] generateRedirectResponse(WebFilterRedirectDetails details, AppTCPSession session, String uri, HeaderToken header)
+    public Token[] generateRedirectResponse(WebFilterRedirectDetails details, AppTCPSession session, String uri, HeaderToken header, URIBuilder redirectUri, Map<String,Object> redirectParameters)
     {
-        return replacementGenerator.generateResponseFromDetails(details, session, uri, header);
-    }
-
-    /**
-     * Generate a redirect response
-     *
-     * @param details
-     *        WebFilter Redirect details
-     * @param session
-     *        The session
-     * @return The response token
-     */
-    public Token[] generateRedirectResponse(WebFilterRedirectDetails details, AppTCPSession session)
-    {
-        return replacementGenerator.generateResponseFromDetails(details, session);
+        return replacementGenerator.generateResponse(details, session, uri, header, redirectUri, redirectParameters);
     }
 
     /**
@@ -840,7 +831,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     protected WebFilterBaseReplacementGenerator buildReplacementGenerator()
     {
-        return new WebFilterBaseReplacementGenerator(getAppSettings());
+        return new WebFilterBaseReplacementGenerator(getAppSettings(), this);
     }
 
     /**

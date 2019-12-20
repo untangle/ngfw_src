@@ -7,6 +7,7 @@ package com.untangle.app.threat_prevention;
 import java.net.URI;
 
 import com.untangle.app.http.HttpEventHandler;
+import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.app.http.StatusLine;
@@ -68,22 +69,19 @@ public class ThreatPreventionHttpHandler extends HttpEventHandler
     {
         // app.incrementScanCount();
 
-        String nonce = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
+        HttpRedirect redirect = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
         if (logger.isDebugEnabled()) {
-            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
+            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirect);
         }
 
-        if (nonce == null) {
+        if (redirect == null) {
             String host = requestHeader.getValue("Host");
             URI uri = getRequestLine(session).getRequestUri();
 
             releaseRequest(session);
         } else {
             app.incrementBlockCount();
-            String uri = getRequestLine(session).getRequestUri().toString();
-            Token[] response = app.generateHttpResponse(nonce, session, uri, requestHeader);
-
-            blockRequest(session, response);
+            blockRequest(session, redirect.getResponse());
         }
 
         return requestHeader;

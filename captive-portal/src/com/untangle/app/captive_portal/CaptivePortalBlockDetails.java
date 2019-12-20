@@ -18,6 +18,7 @@ import com.untangle.app.http.BlockDetails;
 public class CaptivePortalBlockDetails extends BlockDetails
 {
     private final String method;
+    private final String nonce;
 
     /**
      * Our constructor.
@@ -33,6 +34,26 @@ public class CaptivePortalBlockDetails extends BlockDetails
     {
         super(host, uri);
         this.method = method;
+        this.nonce = null;
+    }
+
+    /**
+     * Our constructor.
+     * 
+     * @param host
+     *        The host for the block page
+     * @param uri
+     *        The URI for the block page
+     * @param method
+     *        The request method for the block page
+     * @param nonce
+     *        Nonce value.
+     */
+    public CaptivePortalBlockDetails(String host, String uri, String method, String nonce)
+    {
+        super(host, uri);
+        this.method = method;
+        this.nonce = nonce;
     }
 
     /**
@@ -41,6 +62,14 @@ public class CaptivePortalBlockDetails extends BlockDetails
     public String getMethod()
     {
         return method;
+    }
+
+    /**
+     * @return Special use of nonce variable for https connections.
+     */
+    public String getNonce()
+    {
+        return nonce;
     }
 
     /**
