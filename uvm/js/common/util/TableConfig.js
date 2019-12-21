@@ -1,3 +1,4 @@
+Ext.syncRequire('Ung.common.threatprevention');
 Ext.define('TableConfig', {
     alternateClassName: 'TableConfig',
     singleton: true,
@@ -9,13 +10,9 @@ Ext.define('TableConfig', {
         }
         var me = this;
 
-        // NGFW-12730 - avoid exception in /reports servlet
-        if (Ung.common) {
-            Ext.syncRequire('Ung.common.threatprevention');
-            Ext.Object.each(Ung.common.TableConfig, function(key, value){
-                Ung.common.TableConfig[key].initialize(me);
-            });
-        }
+        Ext.Object.each(Ung.common.TableConfig, function(key, value){
+            Ung.common.TableConfig[key].initialize(me);
+        });
         this.initialized = true;
     },
 
