@@ -163,10 +163,19 @@ Ext.define('Bootstrap', {
             cb(err);
         });
 
-        // Setup common library references only if ADMIN context
-        if (me.servletContext === 'ADMIN') {
+        /**
+         * Setup reference mapping to include js/common files as compiled to /script/common/app-APP-all.js
+         */
+        var reportsManager = null;
+        if (this.servletContext === 'ADMIN') {
+            reportsManager = rpc.appManager.app("reports").getReportsManager();
+        }else if (this.servletContext === 'REPORTS') {
+            reportsManager = rpc.ReportsContext.reportsManager();
+        }
+
+        if(reportsManager != null){
             var referenceMapping = {};
-            rpc.appManager.getAllAppProperties().list.forEach( function(appProperties){
+            reportsManager.getCurrentApplications().list.forEach( function(appProperties){
                 var appReference = 'Ung.common.'+appProperties['name'].replace(/\-/g, '');
                 var appFilename = appProperties['name'];
                 referenceMapping[appReference] = '/script/common/app-'+appFilename+'-all.js';
