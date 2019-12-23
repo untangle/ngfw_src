@@ -15,13 +15,19 @@ Ext.define('Ung.apps.webfilter.MainController', {
         var v = this.getView(), vm = this.getViewModel();
 
         v.setLoading(true);
-        Rpc.asyncData(v.appManager, 'getSettings')
-        .then( function(result){
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.directPromise('rpc.isExpertMode'),
+        ]).then(function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
 
-            vm.set('settings', result);
+            console.log(result);
+            vm.set({
+                settings: result[0],
+                isExpertMode: result[1]
+            });
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
