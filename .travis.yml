@@ -20,7 +20,7 @@ env:
 
 before_install:
 - docker pull untangleinc/ngfw:${REPOSITORY}-build
-- openssl aes-256-cbc -K $encrypted_4573965c4e34_key -iv $encrypted_4573965c4e34_iv -in .travis/buildbot.rsa.enc -out ${SSH_KEY} -d
+- openssl aes-256-cbc -K $encrypted_760a309a5163_key -iv $encrypted_760a309a5163_iv -in .travis/buildbot.rsa.enc -out ${SSH_KEY} -d
 - chmod 600 ${SSH_KEY}
 
 script:
