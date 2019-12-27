@@ -235,7 +235,15 @@ public interface ReportsManager
      *  List of JSONObject containing application information.
      */
     List<JSONObject> getCurrentApplications();
-    
+
+    /**
+     * Get all applications available.  Used for common includes.
+     *
+     * @return
+     *  List of JSONObject containing application information.
+     */
+    List<JSONObject> getAllAppProperties();
+
     /**
      * Get the map of unavailable Applications
      *
