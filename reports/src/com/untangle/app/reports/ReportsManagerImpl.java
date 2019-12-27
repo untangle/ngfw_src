@@ -232,6 +232,32 @@ public class ReportsManagerImpl implements ReportsManager
     }
 
     /** 
+     * Get all applications available.  Used for common includes.
+     *
+     * @return
+     *  List of JSON object for each application containing fields for application displayName, name, viewPosition.
+     */
+    public List<JSONObject> getAllAppProperties()
+    {
+        ArrayList<JSONObject> currentApplications = new ArrayList<>();
+
+        for ( AppProperties appProperties : this.appPropertiesList ) {
+            org.json.JSONObject json = new org.json.JSONObject();
+
+            try {
+                json.put("displayName", appProperties.getDisplayName());
+                json.put("name", appProperties.getName());
+                json.put("viewPosition", appProperties.getViewPosition());
+            } catch (Exception e) {
+                logger.error( "Error generating Current Applications list", e );
+            }
+            currentApplications.add(json);
+        }
+
+        return currentApplications;
+    }
+
+    /** 
      * Get all installed but not license-active NGFW applications
      *
      * @return

@@ -170,14 +170,14 @@ Ext.define('Bootstrap', {
         if (this.servletContext === 'ADMIN'){
             if(rpc.appManager.app("reports") != null) {
                 reportsManager = rpc.appManager.app("reports").getReportsManager();
-                appProperties = reportsManager.getCurrentApplications();
+                appProperties = reportsManager.getAllAppProperties();
             }
             if(appProperties == null){
                 appProperties = rpc.appManager.getAllAppProperties();
             }
         }else if (this.servletContext === 'REPORTS') {
             reportsManager = rpc.ReportsContext.reportsManager();
-            appProperties = reportsManager.getCurrentApplications();
+            appProperties = reportsManager.getAllAppProperties();
         }
 
         var referenceMapping = {};
