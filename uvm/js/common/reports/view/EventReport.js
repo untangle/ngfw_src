@@ -1,7 +1,7 @@
 Ext.define('Ung.view.reports.EventReport', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.eventreport',
-
+    
     config: {
         widget: null
     },
@@ -29,7 +29,8 @@ Ext.define('Ung.view.reports.EventReport', {
         // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Records!</p>',
         enableColumnHide: true,
         listeners: {
-            select: 'onEventSelect'
+            select: 'onEventSelect',
+            columnsChanged: 'onColumnsChanged'
         }
     }, {
         xtype: 'unpropertygrid',
@@ -98,7 +99,7 @@ Ext.define('Ung.view.reports.EventReport', {
             });
         },
 
-        setupGrid: function () {
+        setupGrid: function () {    
             var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
             var entry = vm.get('eEntry') || vm.get('entry');
 
@@ -284,6 +285,48 @@ Ext.define('Ung.view.reports.EventReport', {
             if( vm.get('eventProperty') == null ){
                 v.down('grid').getSelectionModel().select(0);
             }
+            
+            this.bindExportButtons();
+        },
+
+        onColumnsChanged: function() {
+            this.bindExportButtons();
+        },
+
+        bindExportButtons: function() {
+            var me = this,
+             csvButton = me.getView().up().up().down('#exportCsv'),
+             xlsButton = me.getView().up().up().down('#exportXls'),
+             grid = me.getView().down('grid'),
+             gridStore = grid.getStore();
+
+             if (!me.tableConfig) { return; }
+
+             var validColumns = me.tableConfig.columns;
+             var displayColumns = grid.down('headercontainer').getGridColumns();
+
+            // Iterate valid Cols and Display Cols, set valid col visibility to match the displayed columns
+
+            Ext.Array.each(validColumns, function(validCol) {
+                Ext.Array.each(displayColumns, function(test) {
+                    if (validCol.dataIndex == test.dataIndex) {
+                        if(!test.hidden) {
+                            validCol.hidden = test.hidden;
+                        }
+                    }
+                });
+            });
+
+            var tempExportGrid = Ext.create('Ext.grid.Panel', {
+                store: gridStore,
+                columns: validColumns
+            });
+
+            csvButton.component = tempExportGrid;
+            xlsButton.component = tempExportGrid;
+
+            csvButton.store = gridStore;
+            xlsButton.store = gridStore;
         }
     },
     statics:{
