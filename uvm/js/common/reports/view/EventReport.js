@@ -1,7 +1,7 @@
 Ext.define('Ung.view.reports.EventReport', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.eventreport',
-    
+
     config: {
         widget: null
     },
@@ -99,7 +99,7 @@ Ext.define('Ung.view.reports.EventReport', {
             });
         },
 
-        setupGrid: function () {    
+        setupGrid: function () {
             var me = this, vm = me.getViewModel(), grid = me.getView().down('grid');
             var entry = vm.get('eEntry') || vm.get('entry');
 
