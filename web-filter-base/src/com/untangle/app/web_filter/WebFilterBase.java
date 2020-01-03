@@ -709,6 +709,16 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     public void fixupSetSettings(WebFilterSettings settings)
     {
+        /**
+         * If the user supplied a custom block page url without http:// or https://
+         * then prepend http:// to the supplied url
+         */
+        if(settings.getCustomBlockPageEnabled()){
+            String redirectUrl = settings.getCustomBlockPageUrl();
+            if(!redirectUrl.startsWith("http://") && !redirectUrl.startsWith("https://")){
+                settings.setCustomBlockPageUrl("http://" + redirectUrl);
+            }
+        }
     }
 
     /**
