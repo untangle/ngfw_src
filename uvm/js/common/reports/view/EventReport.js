@@ -297,11 +297,11 @@ Ext.define('Ung.view.reports.EventReport', {
             var me = this,
              csvButton = me.getView().up().up().down('#exportCsv'),
              xlsButton = me.getView().up().up().down('#exportXls'),
-             grid = me.getView().down('grid'),
-             gridStore = grid.getStore();
+             grid = me.getView().down('grid');
 
-             if (!me.tableConfig) { return; }
+             if (!me.tableConfig || !csvButton || !xlsButton || !grid) { return; }
 
+             var gridStore = grid.getStore();
              var validColumns = me.tableConfig.columns;
              var displayColumns = grid.down('headercontainer').getGridColumns();
 
