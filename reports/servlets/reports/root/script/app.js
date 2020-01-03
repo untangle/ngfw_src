@@ -162,15 +162,6 @@ Ext.define('Ung.controller.Global', {
     }
 });
 
-Ext.Loader.setConfig({
-    enabled: true,
-    disableCaching: false,
-    paths: {
-        'Ext.ux.exporter': '/var/www/ext6/packages/Ext.ux.Exporter'
-    }
-
-});
-
 Ext.define('Ung.Application', {
     extend: 'Ext.app.Application',
     name: 'Ung',
