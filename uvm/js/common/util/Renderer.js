@@ -118,6 +118,46 @@ Ext.define('Ung.util.Renderer', {
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
+    timespanMap: [
+        [ 604800, 'w'.t() ],
+        [ 86400, 'd'.t() ],
+        [ 3600, 'h'.t() ] ,
+        [ 60, 'm'.t() ],
+        [ 1, 's'.t() ]
+    ],
+    /**
+     * From a value of seconds, return a text based span formatted like:
+     * 6h, 2m, 3s.
+     * @param {*} Value to convert to span in seconds.
+     * @returns Text of span.
+     */
+    timespan: function(value){
+        if( value === null){
+            value = 0;
+        }
+        var span = [];
+        value = parseInt( value, 10 );
+        if(value == 0){
+            /**
+             * No span.
+             */
+            span.push('None'.t());
+        }else{
+            /**
+             * Walk seconds and populate span.
+             */
+            var currentSpan;
+            for( var i = 0; i < Ung.util.Renderer.timespanMap.length; i++){
+                currentSpan = Ung.util.Renderer.timespanMap[i]; 
+                if(value >= currentSpan[0]){
+                    span.push(Math.floor(value / currentSpan[0]) + currentSpan[1]);
+                    value = value % currentSpan[0];
+                }
+            }
+        }
+        return span.join(', ');
+    },
+
     interfaceMap: null,
     interfaceLastUpdated: null,
     interfaceMaxAge: 30 * 1000,
