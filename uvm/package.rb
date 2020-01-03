@@ -116,6 +116,9 @@ end
   JsBuilder.new(uvm_lib, "#{n}-all", "uvm/js/common/#{n}", "script/common")
 end
 
+# Exporter packages
+JsBuilder.new(uvm_lib, "exporter", "./downloads/output/Ext.ux.Exporter/", "script/common/packages")
+
 # jslinting
 JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
 JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
