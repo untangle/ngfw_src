@@ -224,6 +224,18 @@ Ext.define('TableConfig', {
         return tableField;
     },
 
+    /**
+     * Add table fields to a table's field object.
+     * @param String identifier of table.
+     * @param Object (or Array of objects) of fields to add.
+     */
+    setTableField: function(table, field){
+        Ext.Array.push(
+            TableConfig.tableConfig[table]['fields'],
+            field
+        );
+    },
+
     getFromType: function(table, name){
         var fromType = null;
         if(TableConfig.tableConfig[table] &&
@@ -237,6 +249,16 @@ Ext.define('TableConfig', {
             });
         }
         return fromType;
+    },
+
+    /**
+     * Set from type for fields.
+     * @param Object of fromTypes to add.
+     */
+    setFromType: function(fromTypes){
+        Ext.Object.each( fromTypes, function(key, value){
+            TableConfig.fromTypes[key] = value;
+        });
     },
 
     getTableColumn: function(table, name){
@@ -253,6 +275,27 @@ Ext.define('TableConfig', {
             });
         }
         return tableColumn;
+    },
+
+    /**
+     * Add table columns to a table's column list.
+     * @param String identifier of table.
+     * @param Object (or Array of objects) of columns to add.
+     */
+    setTableColumn: function(table, column){
+        Ext.Array.push(
+            TableConfig.tableConfig[table]['columns'],
+            column
+        );
+    },
+
+    setTableListener: function(table, listener){
+        if(!("listeners" in TableConfig.tableConfig[table])){
+            TableConfig.tableConfig[table]["listeners"] = {};
+        }
+        Ext.Object.each( listener, function(key, value){
+            TableConfig.tableConfig[table]["listeners"][key] = value;
+        });
     },
 
     getFirstTableFromField: function(fieldName){
