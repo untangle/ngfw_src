@@ -116,8 +116,10 @@ end
   JsBuilder.new(uvm_lib, "#{n}-all", "uvm/js/common/#{n}", "script/common")
 end
 
-# Exporter packages
-JsBuilder.new(uvm_lib, "exporter", "./downloads/output/Ext.ux.Exporter/", "script/common/packages")
+# 3rd Party packages should be built into the /script/common/packages directory
+{"exporter" => "Ext.ux.Exporter"}.each do |k, v| 
+  JsBuilder.new(uvm_lib, "#{k}", "./downloads/output/#{v}/", "script/common/packages")
+end
 
 # jslinting
 JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')

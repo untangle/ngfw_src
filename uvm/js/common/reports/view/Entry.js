@@ -180,7 +180,6 @@ Ext.define('Ung.view.reports.Entry', {
                     component: this,
                     store: this,
                     bind: {
-                        hidden: '{entry.type !== "EVENT_LIST" || eEntry}',
                         disabled: '{fetching}'
                     }
                 }, {

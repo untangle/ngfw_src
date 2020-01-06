@@ -293,6 +293,11 @@ Ext.define('Ung.view.reports.EventReport', {
             this.bindExportButtons();
         },
 
+        /**
+         * bindExportButtons handles the binding of the ungrid component and store to the exportCsv and exportXls buttons
+         * Within this functionality we create an Ext.js default grid panel and set the current columns and store to the grid. 
+         * The grid is not rendered, but passed directly into the Exporter tools, which handle proper exporting of the data.
+         */
         bindExportButtons: function() {
             var me = this,
              csvButton = me.getView().up().up().down('#exportCsv'),
@@ -306,24 +311,41 @@ Ext.define('Ung.view.reports.EventReport', {
              var displayColumns = grid.down('headercontainer').getGridColumns();
 
             // Iterate valid Cols and Display Cols, set valid col visibility to match the displayed columns
-
             Ext.Array.each(validColumns, function(validCol) {
-                Ext.Array.each(displayColumns, function(test) {
-                    if (validCol.dataIndex == test.dataIndex) {
-                        if(!test.hidden) {
-                            validCol.hidden = test.hidden;
+                Ext.Array.each(displayColumns, function(displayCol) {
+                    if (validCol.dataIndex == displayCol.dataIndex) {
+                        if(!displayCol.hidden) {
+                            validCol.hidden = displayCol.hidden;
                         }
                     }
                 });
             });
 
-            var tempExportGrid = Ext.create('Ext.grid.Panel', {
+            // Build an exportGrid object to use with the csv/xls export buttons
+            var exportGrid = Ext.create('Ext.grid.Panel', {
                 store: gridStore,
                 columns: validColumns
             });
 
-            csvButton.component = tempExportGrid;
-            xlsButton.component = tempExportGrid;
+            /**
+             * remove any commas in the string, and escape leading -, ", @, +, and =
+             * with a single quote to prevent formula injections
+             * This was moved from the ReportsApp toCSV java function
+             */
+            gridStore.each(function(record, idx) {
+                console.log(record.fields);
+                record.fields.forEach(function(field, fieldIdx) {
+                    var recVal = record.get(field.name);
+                    if(typeof(recVal) === 'string') {
+                        var replaceVal = recVal.replace(new RegExp(",", 'gi'), "").replace(new RegExp("(^|,)([-\"@+=])", 'gi'), "$1'$2");
+                        console.log(replaceVal); 
+                        record.set(field.name, replaceVal); 
+                    }
+                });
+            });
+
+            csvButton.component = exportGrid;
+            xlsButton.component = exportGrid;
 
             csvButton.store = gridStore;
             xlsButton.store = gridStore;
