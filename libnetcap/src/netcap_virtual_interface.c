@@ -135,8 +135,15 @@ int netcap_virtual_interface_send_pkt( netcap_pkt_t* pkt )
          * We need to set the nfmark so that the SYN/ACK can be marked appropriately so it goes back out the correct interface.
          * So we hack it by encoding the desired src interface mark into the source MAC address of the packet
          * In iptables we will set the nfmark and connmark based off the source MAC address
-         */
+         *
+         * NGFW-12726 For Citrix we also need the destination interface which we now put in another octet of the source MAC
+         * address. This also required an update to the sync-settings interfaces_manager.py script to handle the fact
+         * that both interfaces are now encoded in the source MAC address. Since the stock iptables xt_mac.ko matcher
+         * module can only evaluate the entire address we also had to customize that to support a special syntax that
+         * allows rules that match by comparing individual bytes in the MAC address.
+        */
         mac_src[5] = nfmark & 0x00FF;
+        mac_src[4] = ((nfmark & 0xFF00) >> 8);
  
         memcpy(&(((unsigned char *)packet)[ETH_ALEN]), mac_src, sizeof( mac_src)); 
         ((unsigned char *)packet)[12] = 8;
