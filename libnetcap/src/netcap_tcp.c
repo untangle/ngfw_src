@@ -601,7 +601,14 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                       -1, -1,
                                       cli_intf, srv_intf );
 
-    sess->initial_mark = nfmark & 0x0000ff00;
+    // NGFW-12726 For Citrix we need to preserve the source and destination
+    // interface id values in the packet mark. Previously we used 0x0000ff00
+    // which preserved only the source interface. A Jan 16 2014 commit
+    // indicates the mask was added because using the entire mark caused
+    // issues with bandwith control. The belief is that preserving src and
+    // dst should not cause a problem, so we now use a mask that preserves
+    // both but clears everything else.
+    sess->initial_mark = nfmark & 0x0000ffff;
     
     if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, sess, IPPROTO_TCP,
                                         c_cli_addr, c_srv_addr,

@@ -96,7 +96,7 @@ Ext.define('Ung.common.Renderer.threatprevention', {
             return null;
         }
         return Ext.String.format(
-                Ung.common.Renderer.threatprevention.mapValueFormat,
+                Renderer.mapValueFormat,
                 ( value in Ung.common.Renderer.threatprevention.ipPopularityMap ) ? Ung.common.Renderer.threatprevention.ipPopularityMap[value] : Ung.common.Renderer.threatprevention.ipPopularity[5],
                 value
         );
