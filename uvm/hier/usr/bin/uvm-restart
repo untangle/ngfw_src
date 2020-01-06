@@ -6,6 +6,13 @@
 
 echo "`date -Iseconds` $0: $0 $@ $$"
 
+# default mode is to just restart
+if [ "$1" = "reboot" ]; then
+    mode=reboot
+else
+    mode=restart
+fi
+
 # If there is another uvm-restart running, just exit
 pidfile=/var/run/uvm-restart.pid
 if [ -e $pidfile ]; then
@@ -39,14 +46,16 @@ while true; do
 
     echo "`date -Iseconds` $0: upgrade appears complete"
     /bin/rm -f $pidfile
-    echo "`date -Iseconds` $0: starting untangle-vm"
-    systemctl restart untangle-vm
-    if [ -f /var/run/pyconnector.pid ] ; then
-        systemctl restart pyconnector
+
+    if [ "$mode" = "restart" ] ; then
+	echo "`date -Iseconds` $0: starting untangle-vm"
+	systemctl restart untangle-vm
+	if [ -f /var/run/pyconnector.pid ] ; then
+	    systemctl restart pyconnector
+	fi
+	exit
+    else
+	echo "`date -Iseconds` $0: rebooting"
+	reboot
     fi
-    exit
 done
-
-exit
-
-
