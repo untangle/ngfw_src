@@ -333,12 +333,10 @@ Ext.define('Ung.view.reports.EventReport', {
              * This was moved from the ReportsApp toCSV java function
              */
             gridStore.each(function(record, idx) {
-                console.log(record.fields);
                 record.fields.forEach(function(field, fieldIdx) {
                     var recVal = record.get(field.name);
                     if(typeof(recVal) === 'string') {
                         var replaceVal = recVal.replace(new RegExp(",", 'gi'), "").replace(new RegExp("(^|,)([-\"@+=])", 'gi'), "$1'$2");
-                        console.log(replaceVal); 
                         record.set(field.name, replaceVal); 
                     }
                 });
