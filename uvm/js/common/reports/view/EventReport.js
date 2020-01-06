@@ -109,6 +109,8 @@ Ext.define('Ung.view.reports.EventReport', {
 
             if (!entry) { return; }
 
+            console.log(entry);
+
             defaultColumns = entry.get('defaultColumns');
 
             if (me.getView().up('reportwidget')) {
@@ -116,9 +118,7 @@ Ext.define('Ung.view.reports.EventReport', {
             }
 
             // set the model for the grid store matching the report entry table
-            if (entry.get('table') === 'http_events') {
-                grid.getStore().setModel('Ung.model.HttpEvents');
-            }
+            grid.getStore().setModel('Ung.model.' + entry.get('table'));
 
             // generate array of field ids matching sql fields
             Ext.Object.each(grid.getStore().getModel().getFieldsMap(), function (key, val) {
@@ -130,31 +130,17 @@ Ext.define('Ung.view.reports.EventReport', {
              */
             Ext.Array.each(fieldIds, function (field) {
                 var _dataIndex = field, // the column data index, matching a field id
-                    _col = Map.columns[field] // the column definition from the Map
+                    _col = Map.columns[field], // the column definition from the Map
                     _hidden = !Ext.Array.contains(defaultColumns, field); // hide non default columns
 
-                // all fields starting with '_' are ommited, except the converted fields used for rendering
-                if (field.startsWith('_')) { return; };
-
-                /**
-                 * if there is a converted (rendering) field mathing a column, use that field instead
-                 * converted fields start with '_r_', see HttpEvents model
-                 */
-                if (Ext.Array.contains(fieldIds, '_r_' + field)) {
-                    _dataIndex = '_r_' + field;
-                }
-
-                // add the column with above computed values
-
-                // if (field === 'web_filter_rule_id') {
-                //     var _renderer = Renderer.webRule;
-                // }
+                // all fields starting with '_' are ommited
+                if (field.startsWith('_')) { return; }
 
                 columns.push({
                     text: _col.text || field,
                     width: _col.colWidth || '',
                     dataIndex: _dataIndex,
-                    // hidden: _hidden,
+                    hidden: _hidden
                     // renderer: _renderer
                 });
             });
@@ -305,7 +291,7 @@ Ext.define('Ung.view.reports.EventReport', {
                 }
                 break;
             }
-            console.log(eventData);
+            // console.log(eventData);
             reader.closeConnection();
             grid.getStore().loadData(eventData);
         },

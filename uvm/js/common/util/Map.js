@@ -38,6 +38,7 @@ Ext.define('Ung.util.Map', {
     },
 
     columns: {
+        // http_events
         'request_id': { text: 'Request Id'.t(), colWidth: 120 },
         'time_stamp': { text: 'Timestamp'.t(), colWidth: 160 },
         'session_id': { text: 'Session Id'.t(), colWidth: 120 },
@@ -84,7 +85,15 @@ Ext.define('Ung.util.Map', {
         'threat_prevention_flagged': { text: 'Flagged'.t() + ' (Threat Prevention)', colWidth: 120 },
         'threat_prevention_rule_id': { text: 'Rule'.t() + ' (Threat Prevention)', colWidth: 120 },
         'threat_prevention_reputation': { text: 'Reputation'.t() + ' (Threat Prevention)', colWidth: 120 },
-        'threat_prevention_categories': { text: 'Categories'.t() + ' (Threat Prevention)', colWidth: 120 }
+        'threat_prevention_categories': { text: 'Categories'.t() + ' (Threat Prevention)', colWidth: 120 },
+
+        // host_table_updates
+        'address': { text: 'Address'.t(), colWidth: 120 },
+        'key': { text: 'Key'.t(), colWidth: 120 },
+        'value': { text: 'Value'.t(), colWidth: 120 },
+        'old_value': { text: 'Old Value'.t(), colWidth: 120 },
+
+        'mac_address': { text: 'MAC Address'.t(), colWidth: 120 }
     },
 
     webReasons: {
