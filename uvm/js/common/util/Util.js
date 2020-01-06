@@ -825,5 +825,5 @@ Ext.define('Ung.util.Util', {
         dots = ip.split('.');
         var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
-    },
-});
+    }
+  });
