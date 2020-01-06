@@ -117,9 +117,9 @@ end
 end
 
 # jslinting
-JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
-JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
-JsLintTarget.new(uvm_lib, './uvm/servlets/setup', 'jslint-setupui')
+# JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
+# JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
+# JsLintTarget.new(uvm_lib, './uvm/servlets/setup', 'jslint-setupui')
 
 ## SCSS
 ScssBuilder.new(uvm_lib, "ung-all", "./uvm/servlets/admin/sass", "admin/styles")
