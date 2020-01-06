@@ -18,7 +18,7 @@ Ext.define('Ung.config.events.view.EmailTemplate', {
             collapsible: true,
             collapsed: true,
             items:[{
-                xtype: 'grid',
+                xtype: 'ungrid',
                 columns:[{
                     text: 'Name'.t(),
                     dataIndex: 'name',
