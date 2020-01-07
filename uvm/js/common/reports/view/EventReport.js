@@ -29,7 +29,8 @@ Ext.define('Ung.view.reports.EventReport', {
         // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Records!</p>',
         enableColumnHide: true,
         listeners: {
-            select: 'onEventSelect'
+            select: 'onEventSelect',
+            columnsChanged: 'onColumnsChanged'
         }
     }, {
         xtype: 'unpropertygrid',
@@ -284,6 +285,68 @@ Ext.define('Ung.view.reports.EventReport', {
             if( vm.get('eventProperty') == null ){
                 v.down('grid').getSelectionModel().select(0);
             }
+            
+            this.bindExportButtons();
+        },
+
+        onColumnsChanged: function() {
+            this.bindExportButtons();
+        },
+
+        /**
+         * bindExportButtons handles the binding of the ungrid component and store to the exportCsv and exportXls buttons
+         * Within this functionality we create an Ext.js default grid panel and set the current columns and store to the grid. 
+         * The grid is not rendered, but passed directly into the Exporter tools, which handle proper exporting of the data.
+         */
+        bindExportButtons: function() {
+            var me = this,
+             csvButton = me.getView().up().up().down('#exportCsv'),
+             xlsButton = me.getView().up().up().down('#exportXls'),
+             grid = me.getView().down('grid');
+
+             if (!me.tableConfig || !csvButton || !xlsButton || !grid) { return; }
+
+             var gridStore = grid.getStore();
+             var validColumns = me.tableConfig.columns;
+             var displayColumns = grid.down('headercontainer').getGridColumns();
+
+            // Iterate valid Cols and Display Cols, set valid col visibility to match the displayed columns
+            Ext.Array.each(validColumns, function(validCol) {
+                Ext.Array.each(displayColumns, function(displayCol) {
+                    if (validCol.dataIndex == displayCol.dataIndex) {
+                        if(!displayCol.hidden) {
+                            validCol.hidden = displayCol.hidden;
+                        }
+                    }
+                });
+            });
+
+            // Build an exportGrid object to use with the csv/xls export buttons
+            var exportGrid = Ext.create('Ext.grid.Panel', {
+                store: gridStore,
+                columns: validColumns
+            });
+
+            /**
+             * remove any commas in the string, and escape leading -, ", @, +, and =
+             * with a single quote to prevent formula injections
+             * This was moved from the ReportsApp toCSV java function
+             */
+            gridStore.each(function(record, idx) {
+                record.fields.forEach(function(field, fieldIdx) {
+                    var recVal = record.get(field.name);
+                    if(typeof(recVal) === 'string') {
+                        var replaceVal = recVal.replace(new RegExp(",", 'gi'), "").replace(new RegExp("(^|,)([-\"@+=])", 'gi'), "$1'$2");
+                        record.set(field.name, replaceVal); 
+                    }
+                });
+            });
+
+            csvButton.component = exportGrid;
+            xlsButton.component = exportGrid;
+
+            csvButton.store = gridStore;
+            xlsButton.store = gridStore;
         }
     },
     statics:{

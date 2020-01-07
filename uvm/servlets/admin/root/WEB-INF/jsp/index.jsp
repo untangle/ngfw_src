@@ -29,6 +29,10 @@
         <script src="/ext6.2/ext-all.js"></script>
             </c:otherwise>
         </c:choose>
+        
+        <!-- Ext.ux.Exporter resources -->
+        <script src="/script/common/packages/exporter.js"></script>
+
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
         <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" type="text/css" />
 
