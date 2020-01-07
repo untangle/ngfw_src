@@ -16,10 +16,13 @@ Ext.define('Ung.util.Converter', {
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
-    interface: function (v) { return Map.interfaces[v] || v; },
+    interface: function (v) {
+        return (Map.interfaces[v] || 'None'.t()) + ' [' + v + ']';
+    },
     country: function (v) { return Map.countries[v] || v; },
     policy: function (v) { return Map.policies[v] || v; },
     webReason: function (v) { return Map.webReasons[v] || v; },
-    webCategory: function (v) { return Map.webCategories[v] || v; }
+    webCategory: function (v) { return Map.webCategories[v] || v; },
+    protocol: function (v) { return Map.protocols[v] || v; }
 
 });

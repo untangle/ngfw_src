@@ -44,6 +44,11 @@ Ext.define('Ung.store.ReportsTree', {
                 if(entry.removedFrom){
                     return;
                 }
+                if (entry.get('type') === 'EVENT_LIST') {
+                    console.log(entry.get('table'));
+                }
+
+
                 category.children.push({
                     text: entry.get('localizedTitle'),
                     cat: storeCat.get('slug'),

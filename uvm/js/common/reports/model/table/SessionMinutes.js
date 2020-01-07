@@ -1,8 +1,8 @@
 /**
- * Sessions model definition
- * matching the sessions sql table fields
+ * SessionMinutes model definition
+ * matching the session_minutes sql table fields
  */
-Ext.define ('Ung.model.sessions', {
+Ext.define ('Ung.model.session_minutes', {
     extend: 'Ext.data.Model',
     proxy: {
         type: 'memory',
@@ -13,6 +13,9 @@ Ext.define ('Ung.model.sessions', {
     fields: [
         { name: 'session_id', type: 'string' },
         { name: 'time_stamp', type: 'auto', convert: Converter.timestamp },
+        { name: 'c2s_bytes', type: 'integer' },
+        { name: 's2c_bytes', type: 'integer' },
+        { name: 'start_time', type: 'auto', convert: Converter.timestamp },
         { name: 'end_time', type: 'auto', convert: Converter.timestamp },
         { name: 'bypassed', type: 'boolean' },
         { name: 'entitled', type: 'boolean' },
@@ -22,8 +25,8 @@ Ext.define ('Ung.model.sessions', {
         { name: 'username', type: 'string' },
         { name: 'policy_id', type: 'integer', convert: Converter.policy },
         { name: 'policy_rule_id', type: 'integer' },
-        { name: 'local_address', type: 'string' },
-        { name: 'remote_address', type: 'string' },
+        { name: 'local_addr', type: 'string' },
+        { name: 'remote_addr', type: 'string' },
         { name: 'c_client_addr', type: 'string' },
         { name: 'c_server_addr', type: 'string' },
         { name: 'c_client_port', type: 'integer' },
@@ -40,10 +43,7 @@ Ext.define ('Ung.model.sessions', {
         { name: 'server_country', type: 'string', convert: Converter.country },
         { name: 'server_latitude', type: 'string' },
         { name: 'server_longitude', type: 'string' },
-        { name: 'c2p_bytes', type: 'integer' },
-        { name: 'p2c_bytes', type: 'integer' },
-        { name: 's2p_bytes', type: 'integer' },
-        { name: 'p2s_bytes', type: 'integer' },
+
         { name: 'filter_prefix', type: 'string' },
 
         { name: 'firewall_blocked', type: 'boolean' },
