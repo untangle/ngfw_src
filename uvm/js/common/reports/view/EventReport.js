@@ -109,7 +109,7 @@ Ext.define('Ung.view.reports.EventReport', {
 
             if (!entry) { return; }
 
-            console.log(entry);
+            console.log(entry.get('table'));
 
             defaultColumns = entry.get('defaultColumns');
 
@@ -129,20 +129,12 @@ Ext.define('Ung.view.reports.EventReport', {
              * iterate field ids and generate columns
              */
             Ext.Array.each(fieldIds, function (field) {
-                var _dataIndex = field, // the column data index, matching a field id
-                    _col = Map.columns[field], // the column definition from the Map
-                    _hidden = !Ext.Array.contains(defaultColumns, field); // hide non default columns
-
+                var column = Map.columns[field];
                 // all fields starting with '_' are ommited
                 if (field.startsWith('_')) { return; }
-
-                columns.push({
-                    text: _col.text || field,
-                    width: _col.colWidth || '',
-                    dataIndex: _dataIndex,
-                    hidden: _hidden
-                    // renderer: _renderer
-                });
+                column.dataIndex = field;
+                // column.hidden = !Ext.Array.contains(defaultColumns, field);
+                columns.push(column);
             });
 
             grid.reconfigure(columns);
