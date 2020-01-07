@@ -38,26 +38,21 @@ Ext.define ('Ung.model.http_events', {
         { name: 'host', type: 'string' },
         { name: 'domain', type: 'string' },
         { name: 'referer', type: 'string' },
-
         { name: 'c2s_content_length', type: 'integer' },
         { name: 's2c_content_length', type: 'integer' },
         { name: 's2c_content_type', type: 'string' },
         { name: 's2c_content_filename', type: 'string' },
-
         { name: 'ad_blocker_cookie_ident', type: 'string' },
         { name: 'ad_blocker_action', type: 'string' },
-
         { name: 'web_filter_reason', type: 'string', convert: Converter.webReason },
         { name: 'web_filter_category_id', type: 'integer', convert: Converter.webCategory },
         { name: 'web_filter_rule_id', type: 'integer' },
         { name: 'web_filter_blocked', type: 'boolean' },
         { name: 'web_filter_flagged', type: 'boolean' },
-
         { name: 'virus_blocker_lite_clean', type: 'boolean' },
         { name: 'virus_blocker_lite_name', type: 'string' },
         { name: 'virus_blocker_clean', type: 'boolean' },
         { name: 'virus_blocker_name', type: 'string' },
-
         { name: 'threat_prevention_blocked', type: 'boolean' },
         { name: 'threat_prevention_flagged', type: 'boolean' },
         { name: 'threat_prevention_rule_id', type: 'integer' },
