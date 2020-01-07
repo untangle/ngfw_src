@@ -43,6 +43,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.StaticRoute;
@@ -218,7 +219,6 @@ public class IntrusionPreventionApp extends AppBase
         setSettings(newSettings, false);
     }
 
-
     /**
      * Set intrusion prevention settings.
      *
@@ -238,6 +238,11 @@ public class IntrusionPreventionApp extends AppBase
                 idx = ++idx;
                 rule.setId(Integer.toString(idx));
             }
+        }
+        idx = 0;
+        for (BypassRule bypass : newSettings.getBypassRules()) {
+            idx = ++idx;
+            bypass.setRuleId(idx);
         }
 
         /**
