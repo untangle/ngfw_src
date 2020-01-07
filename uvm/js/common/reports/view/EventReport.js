@@ -84,10 +84,12 @@ Ext.define('Ung.view.reports.EventReport', {
                     return;
                 }
 
+                console.log(entry.getData());
+
                 // if rendered as widget, add to dashboard queue
                 if (view.getWidget()) {
                     // if it's widgets it needs separate calls to setup the grid
-                    me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
+                    // me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
                     me.setupGrid();
                     // DashboardQueue.addFirst(view.getWidget());
                 }
@@ -109,8 +111,6 @@ Ext.define('Ung.view.reports.EventReport', {
 
             if (!entry) { return; }
 
-            console.log(entry.get('table'));
-
             defaultColumns = entry.get('defaultColumns');
 
             if (me.getView().up('reportwidget')) {
@@ -118,12 +118,9 @@ Ext.define('Ung.view.reports.EventReport', {
             }
 
             // set the model for the grid store matching the report entry table
-            grid.getStore().setModel('Ung.model.' + entry.get('table'));
+            grid.getStore().setModel('Ung.model.Fields');
+            fieldIds = Map.tables[entry.get('table')];
 
-            // generate array of field ids matching sql fields
-            Ext.Object.each(grid.getStore().getModel().getFieldsMap(), function (key, val) {
-                fieldIds.push(key);
-            });
 
             /**
              * iterate field ids and generate columns
@@ -133,7 +130,7 @@ Ext.define('Ung.view.reports.EventReport', {
                 // all fields starting with '_' are ommited
                 if (field.startsWith('_')) { return; }
                 column.dataIndex = field;
-                // column.hidden = !Ext.Array.contains(defaultColumns, field);
+                column.hidden = !Ext.Array.contains(defaultColumns, field);
                 columns.push(column);
             });
 
@@ -286,6 +283,9 @@ Ext.define('Ung.view.reports.EventReport', {
             // console.log(eventData);
             reader.closeConnection();
             grid.getStore().loadData(eventData);
+
+            // console.log(grid.getStore().first().getData());
+
         },
 
         onEventSelect: function (el, record) {

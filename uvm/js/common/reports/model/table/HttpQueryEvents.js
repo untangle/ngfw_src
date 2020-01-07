@@ -32,11 +32,9 @@ Ext.define ('Ung.model.http_query_events', {
         { name: 'uri', type: 'string' },
         { name: 'term', type: 'string' },
         { name: 'host', type: 'string' },
-
         { name: 'c2s_content_length', type: 'integer' },
         { name: 's2c_content_length', type: 'integer' },
         { name: 's2c_content_type', type: 'string' },
-
         { name: 'blocked', type: 'boolean' },
         { name: 'flagged', type: 'boolean' }
     ]
