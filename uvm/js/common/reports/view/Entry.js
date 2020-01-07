@@ -7,6 +7,8 @@ Ext.define('Ung.view.reports.Entry', {
         type: 'entry'
     },
 
+    requires: ['Ext.ux.exporter.Exporter'],
+
     layout: 'fit',
 
     items: [{
@@ -154,14 +156,30 @@ Ext.define('Ung.view.reports.Entry', {
                     },
                     handler: 'dashboardAddRemove'
                 }, {
-                    itemId: 'exportBtn',
+                    xtype: 'exporterbutton',
+                    itemId: 'exportCsv',
                     text: 'Export Data (csv)'.t(),
                     iconCls: 'fa fa-external-link-square',
-                    handler: 'exportEventsHandler',
                     hidden: true,
                     disabled: true,
+                    component: this,
+                    store: this,
                     bind: {
                         hidden: '{entry.type !== "EVENT_LIST" || eEntry}',
+                        disabled: '{fetching}'
+                    }
+                }, {
+                    xtype: 'exporterbutton',
+                    itemId: 'exportXls',
+                    text: 'Export (xls)'.t(),
+                    title: 'Export Template XLS',
+                    format: 'excel',
+                    iconCls: 'fa fa-external-link-square',
+                    hidden: true,
+                    disabled: true,
+                    component: this,
+                    store: this,
+                    bind: {
                         disabled: '{fetching}'
                     }
                 }, {
