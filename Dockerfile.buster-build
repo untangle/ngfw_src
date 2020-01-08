@@ -11,12 +11,13 @@ RUN [ "$ARCHITECTURE" = "amd64" ] || dpkg --add-architecture ${ARCHITECTURE}
 # install required packages
 RUN apt update -q
 RUN apt install --yes build-essential
+RUN [ "$ARCHITECTURE" = "amd64" ] || apt install --yes crossbuild-essential-${ARCHITECTURE}
 RUN apt install --yes debhelper
 RUN apt install --yes devscripts
 RUN apt install --yes git
 RUN apt install --yes apt-show-versions
 RUN apt install --yes openssh-client
-RUN [ "$ARCHITECTURE" = "amd64" ] || apt install --yes crossbuild-essential-${ARCHITECTURE}
+RUN apt install --yes dput
 
 # cleanup
 RUN apt clean
