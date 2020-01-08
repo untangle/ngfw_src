@@ -97,6 +97,7 @@ Ext.define('Ung.ThreatSlider', {
     initComponent: function() {
         this.callParent();
         this.on({
+            afterrender: this.showValue,
             change: this.showValue
         });
     },
