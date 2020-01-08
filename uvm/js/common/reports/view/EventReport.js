@@ -123,7 +123,7 @@ Ext.define('Ung.view.reports.EventReport', {
 
 
             /**
-             * iterate field ids and generate columns
+             * iterate table fields and generate columns
              */
             Ext.Array.each(fieldIds, function (field) {
                 var column = Map.columns[field];

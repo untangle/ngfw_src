@@ -38,190 +38,201 @@ Ext.define('Ung.util.Map', {
     },
 
     /**
-     * map containing all possible columns from all models/tables
+     * map containing all possible grid columns
+     * this are matching 1-1 with the model fields
      */
     columns: {
-        // http_events
-        'request_id': { text: 'Request Id'.t(), width: 120 },
-        'time_stamp': { text: 'Timestamp'.t(), width: 160 },
-        'start_time': { text: 'Start Time'.t(), width: 160 },
-        'end_time': { text: 'End Time'.t(), width: 160 },
-        'session_id': { text: 'Session Id'.t(), width: 120 },
-        'client_intf': { text: 'Client Interface'.t(), width: 100 },
-        'server_intf': { text: 'Server Interface'.t(), width: 100 },
-        'c_client_addr': { text: 'Client'.t(), width: 120 },
-        's_client_addr': { text: 'New Client'.t(), width: 120 },
-        'c_server_addr': { text: 'Original Server'.t(), width: 120 },
-        's_server_addr': { text: 'Server'.t(), width: 120 },
-        'c_client_port': { text: 'Client Port'.t(), width: 120 },
-        's_client_port': { text: 'New Client Port'.t(), width: 120 },
-        'c_server_port': { text: 'Original Server Port'.t(), width: 120 },
-        's_server_port': { text: 'Server Port'.t(), width: 120 },
-        'client_country': { text: 'Client Country'.t(), width: 120 },
-        'client_latitude': { text: 'Client Latitude'.t(), width: 120 },
-        'client_longitude': { text: 'Client Longitude'.t(), width: 120 },
-        'server_country': { text: 'Server Country'.t(), width: 120 },
-        'server_latitude': { text: 'Server Latitude'.t(), width: 120 },
-        'server_longitude': { text: 'Server Longitude'.t(), width: 120 },
-        'policy_id': { text: 'Policy Id'.t(), width: 120 },
-        'policy_rule_id': { text: 'Policy Rule'.t(), width: 100 },
-        'username': { text: 'Username'.t(), width: 120 },
-        'hostname': { text: 'Hostname'.t(), width: 120 },
-        'method': { text: 'Method'.t(), width: 120 },
-        'uri': { text: 'URI'.t(), width: 120 },
-        'host': { text: 'Host'.t(), width: 250 },
-        'domain': { text: 'Domain'.t(), width: 120 },
-        'referer': { text: 'Referer'.t(), width: 120 },
-        'c2s_content_length'  : { text: 'Upload Content Length'.t(), width: 120 },
-        's2c_content_length'  : { text: 'Download Content Length'.t(), width: 120 },
-        's2c_content_type'    : { text: 'Content Type'.t(), width: 120 },
-        's2c_content_filename': { text: 'Content Filename'.t(), width: 120 },
+        'active_hosts':         { text: 'Active Hosts'.t(), width: 100 },
+        'addr':                 { text: 'Receiver'.t(), width: 120 },
+        'addr_kind':            { text: 'Address Kind'.t(), width: 120 },
+        'addr_name':            { text: 'Address Name'.t(), width: 120 },
+        'address':              { text: 'Address'.t(), width: 120 },
+        'blocked':              { text: 'Blocked'.t(), width: 80,  renderer: Renderer2.boolean },
+        'bypassed':             { text: 'Bypassed'.t(), width: 80, renderer: Renderer2.boolean },
+        'c2p_bytes':            { text: 'From-Client Bytes'.t(), width: 80, align: 'right', renderer: Renderer.datasize },
+        'c2s_bytes':            { text: 'From-Client Bytes'.t(), width: 80, align: 'right', renderer: Renderer.datasize },
+        'c2s_content_length':   { text: 'Upload Content Length'.t(), width: 120 },
+        'c_client_addr':        { text: 'Client'.t(), width: 120 },
+        'c_client_port':        { text: 'Client Port'.t(), width: 120 },
+        'c_server_addr':        { text: 'Original Server'.t(), width: 120 },
+        'c_server_port':        { text: 'Original Server Port'.t(), width: 120 },
+        'client_addr':          { text: 'Client Address'.t(), width: 120 },
+        'client_country':       { text: 'Client Country'.t(), width: 120 }, // converter
+        'client_intf':          { text: 'Client Interface'.t(), width: 100 }, // converter
+        'client_latitude':      { text: 'Client Latitude'.t(), width: 120 },
+        'client_longitude':     { text: 'Client Longitude'.t(), width: 120 },
+        'cpu_system':           { text: 'CPU System Utilization'.t(), width: 100 },
+        'cpu_user':             { text: 'CPU User Utilization'.t(), width: 100 },
+        'description':          { text: 'Description'.t(), width: 200 }, // multiple column names!!!
+        'disk_free':            { text: 'Disk Free'.t(), width: 100, align: 'right', renderer: Renderer2.disk },
+        'disk_total':           { text: 'Disk Total'.t(), width: 100, align: 'right', renderer: Renderer2.disk },
+        'domain':               { text: 'Domain'.t(), width: 120 },
+        'end_time':             { text: 'End Time'.t(), width: 160 }, // converter
+        'entitled':             { text: 'Entitled'.t(), width: 80, renderer: Renderer2.boolean },
+        'event_id':             { text: 'Event Id'.t(), width: 120 },
+        'filter_prefix':        { text: 'Filter Prefix'.t(), width: 80 },
+        'flagged':              { text: 'Flagged'.t(), width: 80, renderer: Renderer2.boolean },
+        'host':                 { text: 'Host'.t(), width: 250 },
+        'hostname':             { text: 'Hostname'.t(), width: 120 },
+        'icmp_type':            { text: 'ICMP Type'.t(), width: 150 }, // converter
+        'ipaddr':               { text: 'Sender'.t(), width: 200 }, // converter
+        'json':                 { text: 'JSON'.t(), flex: 1 },
+        'key':                  { text: 'Key'.t(), width: 120 },
+        'load_1':               { text: 'Load (1-minute)'.t(), width: 100, align: 'right' },
+        'load_5':               { text: 'Load (5-minute)'.t(), width: 80, align: 'right' },
+        'load_15':              { text: 'Load (15-minute)'.t(), width: 80, align: 'right' },
+        'local':                { text: 'Local'.t(), width: 100, renderer: Renderer2.localLogin },
+        'local_addr':           { text: 'Local Address'.t(), width: 120 },
+        'local_address':        { text: 'Local Address'.t(), width: 120 },
+        'login':                { text: 'Login'.t(), width: 100},
+        'mac_address':          { text: 'MAC Address'.t(), width: 120},
+        'mem_free':             { text: 'Memory Free'.t(), width: 100, align: 'right', renderer: Renderer2.memory },
+        'mem_total':            { text: 'Memory Total'.t(), width: 100, align: 'right', renderer: Renderer2.memory },
+        'method':               { text: 'Method'.t(), width: 120 }, // converter
+        'msg_id':               { text: 'Message Id'.t(), width: 120 },
+        'old_value':            { text: 'Old Value'.t(), width: 120 },
+        'p2c_bytes':            { text: 'To-Client Bytes'.t(), width: 80, align: 'right', renderer: Renderer.datasize },
+        'p2s_bytes':            { text: 'To-Server Bytes'.t(), width: 80, align: 'right', renderer: Renderer.datasize },
+        'policy_id':            { text: 'Policy Id'.t(), width: 120}, // converter
+        'policy_rule_id':       { text: 'Policy Rule'.t(), width: 100},
+        'protocol':             { text: 'Protocol'.t(), width: 80 }, // converter
+        'reason':               { text: 'Reason'.t(), width: 100 }, // converter
+        'referer':              { text: 'Referer'.t(), width: 120 },
+        'remote_addr':          { text: 'Remote Address'.t(), width: 120 },
+        'remote_address':       { text: 'Remote Address'.t(), width: 120 },
+        'request_id':           { text: 'Request Id'.t(), width: 120 },
+        's2c_bytes':            { text: 'From-Server Bytes'.t(), width: 80, align: 'right', renderer: Renderer.datasize },
+        's2c_content_filename': { text: 'Content Filename'.t(), width: 160 },
+        's2c_content_length':   { text: 'Download Content Length'.t(), width: 120 },
+        's2c_content_type':     { text: 'Content Type'.t(), width: 120 },
+        's2p_bytes':            { text: 'From-Server Bytes'.t(), width: 80, align: 'right', renderer: Renderer.datasize },
+        's_client_addr':        { text: 'New Client'.t(), width: 120 },
+        's_client_port':        { text: 'New Client Port'.t(), width: 120 },
+        's_server_addr':        { text: 'Server'.t(), width: 120 },
+        's_server_port':        { text: 'Server Port'.t(), width: 120 },
+        'sender':               { text: 'Sender'.t(), width: 120 },
+        'server_country':       { text: 'Server Country'.t(), width: 120 }, // converter
+        'server_intf':          { text: 'Server Interface'.t(), width: 100 }, // converter
+        'server_latitude':      { text: 'Server Latitude'.t(), width: 120 },
+        'server_longitude':     { text: 'Server Longitude'.t(), width: 120},
+        'session_id':           { text: 'Session Id'.t(), width: 120 },
+        'settings_file':        { text: 'Settings File'.t(), width: 200, renderer: Renderer2.settingsFile },
+        'start_time':           { text: 'Start Time'.t(), width: 160 }, // converter
+        'subject':              { text: 'Subject'.t(), width: 120 },
+        'succeeded':            { text: 'Succeeded'.t(), width: 100, renderer: Renderer2.boolean },
+        'summary_text':         { text: 'Summary'.t(), width: 200 },
+        'swap_free':            { text: 'Swap Free'.t(), width: 100, align: 'right', renderer: Renderer2.memory },
+        'swap_total':           { text: 'Swap Total'.t(), width: 100, align: 'right', renderer: Renderer2.memory },
+        'tags':                 { text: 'Tags'.t(), width: 160 },
+        'term':                 { text: 'Query Term'.t(), width: 160 },
+        'time_stamp':           { text: 'Timestamp'.t(), width: 160 }, // converter
+        'uri':                  { text: 'URI'.t(), width: 120 },
+        'username':             { text: 'Username'.t(), width: 120 },
+        'value':                { text: 'Value'.t(), width: 120 },
+        'vendor_name':          { text: 'Vendor Name'.t(), width: 200 },
 
-        'ad_blocker_cookie_ident': { text: 'Blocked Cookie'.t() + ' (Ad Blocker)', width: 120 },
-        'ad_blocker_action'      : { text: 'Action'.t() + ' (Ad Blocker)', width: 120 },
+        // applications related columns
+        'ad_blocker_action':                   { text: 'Action'.t() +  ' (Ad Blocker)', width: 80, renderer: Renderer2.adBlockerAction },
+        'ad_blocker_cookie_ident':             { text: 'Blocked Cookie'.t() + ' (Ad Blocker)', width: 120 },
 
-        'web_filter_reason'     : { text: 'Reason For Action'.t() + ' (Web Filter)', width: 120 },
-        'web_filter_category_id': { text: 'Web Category'.t() + ' (Web Filter)', width: 250 },
-        'web_filter_rule_id'    : { text: 'Web Rule'.t() + ' (Web Filter)', width: 120 },
-        'web_filter_blocked'    : { text: 'Blocked'.t() + ' (Web Filter)', width: 120 },
-        'web_filter_flagged'    : { text: 'Flagged'.t() + ' (Web Filter)', width: 120 },
+        'application_control_application':     { text: 'Application'.t() + ' (Application Control)', width: 120 },
+        'application_control_blocked':         { text: 'Blocked'.t() + ' (Application Control)', width: 120, renderer: Renderer2.boolean },
+        'application_control_category':        { text: 'Category'.t() + ' (Application Control)', width: 120 },
+        'application_control_confidence':      { text: 'Confidence'.t() + ' (Application Control)', width: 120 },
+        'application_control_detail':          { text: 'Detail'.t() + ' (Application Control)', width: 120 },
+        'application_control_flagged':         { text: 'Flagged'.t() + ' (Application Control)', width: 120 },
+        'application_control_protochain':      { text: 'Protochain'.t() + ' (Application Control)', width: 120 },
+        'application_control_ruleid':          { text: 'Rule'.t() + ' (Application Control)', width: 120 },
 
-        'virus_blocker_lite_clean': { text: 'Clean'.t() + ' (Virus Blocker Lite)', width: 120 },
-        'virus_blocker_lite_name' : { text: 'Virus Name'.t() + ' (Virus Blocker Lite)', width: 120 },
-        'virus_blocker_clean'     : { text: 'Clean'.t() + ' (Virus Blocker)', width: 120 },
-        'virus_blocker_name'      : { text: 'Virus Name'.t() + ' (Virus Blocker)', width: 120 },
+        'application_control_lite_blocked':    { text: 'Blocked'.t() + ' (Application Control Lite)', width: 120, renderer: Renderer2.boolean },
+        'application_control_lite_protocol':   { text: 'Protocol'.t() + ' (Application Control Lite)', width: 120 },
 
-        'threat_prevention_blocked'          : { text: 'Blocked'.t() + ' (Threat Prevention)', width: 120 },
-        'threat_prevention_flagged'          : { text: 'Flagged'.t() + ' (Threat Prevention)', width: 120 },
-        'threat_prevention_reason'           : { text: 'Reason'.t(), width: 100 },
-        'threat_prevention_rule_id'          : { text: 'Rule'.t() + ' (Threat Prevention)', width: 120 },
-        'threat_prevention_reputation'       : { text: 'Reputation'.t() + ' (Threat Prevention)', width: 120 },
-        'threat_prevention_categories'       : { text: 'Categories'.t() + ' (Threat Prevention)', width: 120 },
-        'threat_prevention_client_reputation': { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 100 },
+        'bandwidth_control_priority':          { text: 'Priority'.t() + ' (Bandwidth Control)', width: 120, renderer: Renderer2.priority },
+        'bandwidth_control_rule':              { text: 'Rule'.t() + ' (Bandwidth Control)', width: 120, renderer: Renderer2.bandwidthControlRule },
+
+        'captive_portal_blocked':              { text: 'Blocked'.t() + ' (Captive Portal)', width: 120, renderer: Renderer2.boolean },
+        'captive_portal_rule_index':           { text: 'Rule Id'.t() + ' (Captive Portal)', width: 120 },
+
+        'firewall_blocked':                    { text: 'Blocked'.t() + ' (Firewall)', width: 120, renderer: Renderer2.boolean },
+        'firewall_flagged':                    { text: 'Flagged'.t() + ' (Firewall)', width: 120, renderer: Renderer2.boolean },
+        'firewall_rule_index':                 { text: 'Rule'.t() + ' (Firewall)', width: 120 },
+
+        'phish_blocker_action':                { text: 'Action'.t() + ' (Phish Blocker)', width: 120 }, // converter
+        'phish_blocker_is_spam':               { text: 'Is Spam'.t() + ' (Phish Blocker)', width: 120, renderer: Renderer2.boolean },
+        'phish_blocker_score':                 { text: 'Score'.t() + ' (Phish Blocker)', width: 120 },
+        'phish_blocker_tests_string':          { text: 'Detail'.t() + ' (Phish Blocker)', width: 120 },
+
+        'spam_blocker_action':                 { text: 'Action'.t() + ' (Spam Blocker)', width: 120 },
+        'spam_blocker_is_spam':                { text: 'Is Spam'.t() + ' (Spam Blocker)', width: 120, renderer: Renderer2.boolean },
+        'spam_blocker_score':                  { text: 'Spam Score'.t() + ' (Spam Blocker)', width: 120 },
+        'spam_blocker_tests_string':           { text: 'Detail'.t() + ' (Spam Blocker)', width: 120 },
+
+        'spam_blocker_lite_action':            { text: 'Action'.t() + ' (Spam Blocker Lite)', width: 120},
+        'spam_blocker_lite_is_spam':           { text: 'Is Spam'.t() + ' (Spam Blocker Lite)', width: 120, renderer: Renderer2.boolean },
+        'spam_blocker_lite_score':             { text: 'Spam Score'.t() + ' (Spam Blocker Lite)', width: 120 },
+        'spam_blocker_lite_tests_string':      { text: 'Detail'.t() + ' (Spam Blocker Lite)', width: 120 },
+
+        'ssl_inspector_detail':                { text: 'Detail'.t() + ' (SSL Inspector)', width: 120 },
+        'ssl_inspector_ruleid':                { text: 'Rule Id'.t() + ' (SSL Inspector)', width: 120 },
+        'ssl_inspector_status':                { text: 'Status'.t() + ' (SSL Inspector)', width: 120 },
+
+        'threat_prevention_blocked':           { text: 'Blocked'.t() + ' (Threat Prevention)', width: 120, renderer: Renderer2.boolean },
+        'threat_prevention_categories':        { text: 'Categories'.t() + ' (Threat Prevention)', width: 120 },
         'threat_prevention_client_categories': { text: 'Client Categories'.t() + ' (Threat Prevention)', width: 100 },
-        'threat_prevention_server_reputation': { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 100 },
+        'threat_prevention_client_reputation': { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 100 },
+        'threat_prevention_flagged':           { text: 'Flagged'.t() + ' (Threat Prevention)', width: 120, renderer: Renderer2.boolean },
+        'threat_prevention_reason':            { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
+        'threat_prevention_reputation':        { text: 'Reputation'.t() + ' (Threat Prevention)', width: 120 },
+        'threat_prevention_rule_id':           { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120 },
         'threat_prevention_server_categories': { text: 'Server Categories'.t() + ' (Threat Prevention)', width: 100 },
+        'threat_prevention_server_reputation': { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 100 },
 
-        'application_control_lite_protocol': { text: 'Protocol'.t() + ' (Application Control Lite)', width: 120 },
-        'application_control_lite_blocked' : { text: 'Blocked'.t() + ' (Application Control Lite)', width: 120 },
-        'application_control_application'  : { text: 'Application'.t() + ' (Application Control)', width: 120 },
-        'application_control_protochain'   : { text: 'Protochain'.t() + ' (Application Control)', width: 120 },
-        'application_control_category'     : { text: 'Category'.t() + ' (Application Control)', width: 120 },
-        'application_control_blocked'      : { text: 'Blocked'.t() + ' (Application Control)', width: 120 },
-        'application_control_flagged'      : { text: 'Flagged'.t() + ' (Application Control)', width: 120 },
-        'application_control_confidence'   : { text: 'Confidence'.t() + ' (Application Control)', width: 120 },
-        'application_control_ruleid'       : { text: 'Rule'.t() + ' (Application Control)', width: 120 },
-        'application_control_detail'       : { text: 'Detail'.t() + ' (Application Control)', width: 120 },
+        'virus_blocker_clean':                 { text: 'Clean'.t() + ' (Virus Blocker)', width: 120 },
+        'virus_blocker_name':                  { text: 'Name'.t() + ' (Virus Blocker)', width: 120 },
 
-        'bandwidth_control_priority': { text: 'Priority'.t() + ' (Bandwidth Control)', width: 120 },
-        'bandwidth_control_rule'    : { text: 'Rule'.t() + ' (Bandwidth Control)', width: 120 },
+        'virus_blocker_lite_clean':            { text: 'Clean'.t() + ' (Virus Blocker Lite)', width: 120 },
+        'virus_blocker_lite_name':             { text: 'Name'.t() + ' (Virus Blocker Lite)', width: 120 },
 
-        'captive_portal_blocked'   :  { text: 'Blocked'.t() + ' (Captive Portal)', width: 120 },
-        'captive_portal_rule_index':  { text: 'Rule'.t() + ' (Captive Portal)', width: 120 },
-
-        'ssl_inspector_ruleid':       { text: 'Rule'.t() + ' (SSL Inspector)', width: 120 },
-        'ssl_inspector_status':       { text: 'Status'.t() + ' (SSL Inspector)', width: 120 },
-        'ssl_inspector_detail':       { text: 'Detail'.t() + ' (SSL Inspector)', width: 120 },
-
-        'firewall_blocked'   :        { text: 'Blocked'.t() + ' (Firewall)', width: 120 },
-        'firewall_flagged'   :        { text: 'Flagged'.t() + ' (Firewall)', width: 120 },
-        'firewall_rule_index':        { text: 'Rule'.t() + ' (Firewall)', width: 120 },
-
-
-        // host_table_updates
-        'address': { text: 'Address'.t(), width: 120 },
-        'key': { text: 'Key'.t(), width: 120 },
-        'value': { text: 'Value'.t(), width: 120 },
-        'old_value': { text: 'Old Value'.t(), width: 120 },
-
-        'mac_address': { text: 'MAC Address'.t(), width: 120 },
-
-        // sessions table
-        'bypassed': { text: 'Bypassed'.t(), width: 80 },
-        'entitled': { text: 'Entitled'.t(), width: 80 },
-
-        'protocol'      : { text: 'Protocol'.t(), width: 80 },
-        'icmp_type'     : { text: 'ICMP Type'.t(), width: 80 },
-        'local_addr'    : { text: 'Local Address'.t() , width: 120 },
-        'local_address' : { text: 'Local Address'.t() , width: 120 },
-        'remote_addr'   : { text: 'Remote Address'.t(), width: 120 },
-        'remote_address': { text: 'Remote Address'.t(), width: 120 },
-        'c2p_bytes'     : { text: 'From-Client Bytes'.t(), width: 80 },
-        'p2c_bytes'     : { text: 'To-Client Bytes'.t(), width: 80 },
-        's2p_bytes'     : { text: 'From-Server Bytes'.t(), width: 80 },
-        'p2s_bytes'     : { text: 'To-Server Bytes'.t(), width: 80 },
-
-        'c2s_bytes'     : { text: 'From-Client Bytes'.t(), width: 80 },
-        's2c_bytes'     : { text: 'From-Server Bytes'.t(), width: 80 },
-
-        'filter_prefix': { text: 'Filter Prefix'.t(), width: 80 },
-        'tags': { text: 'Tags'.t(), width: 160 },
-
-        // admin_logins table
-        'client_addr': { text: 'Client Address'.t(), width: 120 },
-        'login'      : { text: 'Login'.t(), width: 100 },
-        'local'      : { text: 'Local'.t(), width: 100 },
-        'succeeded'  : { text: 'Succeeded'.t(), width: 100 },
-        'reason'     : { text: 'Reason'.t(), width: 100 },
-
-        // settings_changes
-        'settings_file': { text: 'Settings File'.t(), width: 200 },
-
-        // alerts
-        'description': { text: 'Description'.t(), width: 200 },
-        'summary_text': { text: 'Summary'.t(), width: 200 },
-        'json': { text: 'JSON'.t(), width: 200 },
-
-        // server_events
-        'load_1'      : { text: 'Load (1-minute)'.t(), width: 100, align: 'right' },
-        'load_5'      : { text: 'Load (5-minute)'.t(), width: 80, align: 'right' },
-        'load_15'     : { text: 'Load (15-minute)'.t(), width: 80, align: 'right' },
-        'cpu_user'    : { text: 'CPU User Utilization'.t(), width: 100, align: 'right' },
-        'cpu_system'  : { text: 'CPU System Utilization'.t(), width: 100, align: 'right' },
-        'mem_total'   : { text: 'Memory Total'.t(), width: 100, align: 'right', renderer: Renderer2.memory },
-        'mem_free'    : { text: 'Memory Free'.t(), width: 100, align: 'right', renderer: Renderer2.memory },
-        'disk_total'  : { text: 'Disk Total'.t(), width: 100, align: 'right', renderer: Renderer2.disk },
-        'disk_free'   : { text: 'Disk Free'.t(), width: 100, align: 'right', renderer: Renderer2.disk },
-        'swap_total'  : { text: 'Swap Total'.t(), width: 100, align: 'right', renderer: Renderer2.memory },
-        'swap_free'   : { text: 'Swap Free'.t(), width: 100, align: 'right', renderer: Renderer2.memory },
-        'active_hosts': { text: 'Active Hosts'.t(), width: 100 },
-
-        // mail_addr
-        'msg_id'   : { text: 'Message Id'.t(), width: 120 },
-        'subject'  : { text: 'Subject'.t(), width: 120 },
-        'addr'     : { text: 'Receiver'.t(), width: 120 },
-        'addr_name': { text: 'Address Name'.t(), width: 120 },
-        'addr_kind': { text: 'Address Kind'.t(), width: 120 },
-        'event_id' : { text: 'Event Id'.t(), width: 120 },
-        'sender'   : { text: 'Sender'.t(), width: 120 },
-
-        'virus_blocker_lite_clean': { text: 'Clean'.t() + ' (Virus Blocker Lite)', width: 120 },
-        'virus_blocker_lite_name' : { text: 'Name'.t() + ' (Virus Blocker Lite)', width: 120 },
-        'virus_blocker_clean'     : { text: 'Clean'.t() + ' (Virus Blocker)', width: 120 },
-        'virus_blocker_name'      : { text: 'Name'.t() + ' (Virus Blocker)', width: 120 },
-
-        'spam_blocker_lite_score'       : { text: 'Spam Score'.t() + ' (Spam Blocker Lite)', width: 120 },
-        'spam_blocker_lite_is_spam'     : { text: 'Is Spam'.t() + ' (Spam Blocker Lite)', width: 120 },
-        'spam_blocker_lite_action'      : { text: 'Action'.t() + ' (Spam Blocker Lite)', width: 120 },
-        'spam_blocker_lite_tests_string': { text: 'Detail'.t() + ' (Spam Blocker Lite)', width: 120 },
-        'spam_blocker_score'            : { text: 'Spam Score'.t() + ' (Spam Blocker)', width: 120 },
-        'spam_blocker_is_spam'          : { text: 'Is Spam'.t() + ' (Spam Blocker)', width: 120 },
-        'spam_blocker_action'           : { text: 'Action'.t() + ' (Spam Blocker)', width: 120 },
-        'spam_blocker_tests_string'     : { text: 'Detail'.t() + ' (Spam Blocker)', width: 120 },
-
-        'phish_blocker_score'           : { text: 'Score'.t() + ' (Phish Blocker)', width: 120 },
-        'phish_blocker_is_spam'         : { text: 'Is Spam'.t() + ' (Phish Blocker)', width: 120 },
-        'phish_blocker_tests_string'    : { text: 'Detail'.t() + ' (Phish Blocker)', width: 120 },
-        'phish_blocker_action'          : { text: 'Action'.t() + ' (Phish Blocker)', width: 120 },
-
-        'ipaddr': { text: 'Sender'.t(), width: 200 },
-        'vendor_name': { text: 'Vendor Name'.t(), width: 200 }
+        'web_filter_blocked':                  { text: 'Blocked'.t() + ' (Web Filter)', width: 120 },
+        'web_filter_category_id':              { text: 'Web Category'.t() + ' (Web Filter)', width: 250 }, // converter
+        'web_filter_flagged':                  { text: 'Flagged'.t() + ' (Web Filter)', width: 120 },
+        'web_filter_reason':                   { text: 'Reason For Action'.t() + ' (Web Filter)', width: 120 },
+        'web_filter_rule_id':                  { text: 'Web Rule'.t() + ' (Web Filter)', width: 120 } // converter not implemented
     },
 
+
+
+
     tables: {
-        admin_logins: ['time_stamp', 'login', 'local', 'client_addr', 'succeeded', 'reason'],
-        alerts: ['time_stamp', 'description', 'summary_text', 'json'],
-        device_table_updates: ['time_stamp', 'mac_address', 'key', 'value', 'old_value'],
+        admin_logins: [
+            'time_stamp',
+            'login',
+            'local',
+            'client_addr',
+            'succeeded',
+            'reason'
+        ],
+        alerts: [
+            'time_stamp',
+            'description',
+            'summary_text',
+            'json'
+        ],
+        captive_portal_user_events: [
+            'time_stamp',
+            'policy_id',
+            'event_id',
+            'login_name',
+            'event_info',
+            'auth_type',
+            'client_addr'
+        ],
+        device_table_updates: [
+            'time_stamp',
+            'mac_address',
+            'key', 'value',
+            'old_value'
+        ],
         ftp_events: [
             'time_stamp',
             'event_id',
@@ -239,7 +250,13 @@ Ext.define('Ung.util.Map', {
             'method',
             'uri'
         ],
-        host_table_updates: ['time_stamp', 'address', 'key', 'value', 'old_value'],
+        host_table_updates: [
+            'time_stamp',
+            'address',
+            'key',
+            'value',
+            'old_value'
+        ],
         http_events: [
             'request_id',
             'time_stamp',
@@ -762,6 +779,96 @@ Ext.define('Ung.util.Map', {
         141: 'WESP [141]',
         142: 'ROHC [142]',
         default: 'Unknown'.t()
+    },
+
+    httpMethods: {
+        'O': 'OPTIONS (O)',
+        'G': 'GET (G)',
+        'H': 'HEAD (H)',
+        'P': 'POST (P)',
+        'U': 'PUT (U)',
+        'D': 'DELETE (D)',
+        'T': 'TRACE (T)',
+        'C': 'CONNECT (C)',
+        'X': 'NON-STANDARD (X)'
+    },
+
+    emailActions: {
+        'P': 'pass message'.t(),
+        'M': 'mark message'.t(),
+        'D': 'drop message'.t(),
+        'B': 'block message'.t(),
+        'Q': 'quarantine message'.t(),
+        'S': 'pass safelist message'.t(),
+        'Z': 'pass oversize message'.t(),
+        'O': 'pass outbound message'.t(),
+        'F': 'block message (scan failure)'.t(),
+        'G': 'pass message (scan failure)'.t(),
+        'Y': 'block message (greylist)'.t()
+    },
+
+    priorities: {
+        0: '',
+        1: 'Very High'.t(),
+        2: 'High'.t(),
+        3: 'Medium'.t(),
+        4: 'Low'.t(),
+        5: 'Limited'.t(),
+        6: 'Limited More'.t(),
+        7: 'Limited Severely'.t()
+    },
+
+    loginFailureReasons: {
+        U: 'invalid username'.t(),
+        P: 'invalid password'.t()
+    },
+
+    icmps: {
+        0: 'Echo Reply'.t(),
+        1: 'Unassigned'.t(),
+        2: 'Unassigned'.t(),
+        3: 'Destination Unreachable'.t(),
+        4: 'Source Quench (Deprecated)'.t(),
+        5: 'Redirect'.t(),
+        6: 'Alternate Host Address (Deprecated)'.t(),
+        7: 'Unassigned'.t(),
+        8: 'Echo'.t(),
+        9: 'Router Advertisement'.t(),
+        10: 'Router Solicitation'.t(),
+        11: 'Time Exceeded'.t(),
+        12: 'Parameter Problem'.t(),
+        13: 'Timestamp'.t(),
+        14: 'Timestamp Reply'.t(),
+        15: 'Information Request (Deprecated)'.t(),
+        16: 'Information Reply (Deprecated)'.t(),
+        17: 'Address Mask Request (Deprecated)'.t(),
+        18: 'Address Mask Reply (Deprecated)'.t(),
+        19: 'Reserved (for Security)'.t(),
+        20: 'Reserved (for Robustness Experiment)'.t(),
+        21: 'Reserved (for Robustness Experiment)'.t(),
+        22: 'Reserved (for Robustness Experiment)'.t(),
+        23: 'Reserved (for Robustness Experiment)'.t(),
+        24: 'Reserved (for Robustness Experiment)'.t(),
+        25: 'Reserved (for Robustness Experiment)'.t(),
+        26: 'Reserved (for Robustness Experiment)'.t(),
+        27: 'Reserved (for Robustness Experiment)'.t(),
+        28: 'Reserved (for Robustness Experiment)'.t(),
+        29: 'Reserved (for Robustness Experiment)'.t(),
+        30: 'Traceroute (Deprecated)'.t(),
+        31: 'Datagram Conversion Error (Deprecated)'.t(),
+        32: 'Mobile Host Redirect (Deprecated)'.t(),
+        33: 'IPv6 Where-Are-You (Deprecated)'.t(),
+        34: 'IPv6 I-Am-Here (Deprecated)'.t(),
+        35: 'Mobile Registration Request (Deprecated)'.t(),
+        36: 'Mobile Registration Reply (Deprecated)'.t(),
+        37: 'Domain Name Request (Deprecated)'.t(),
+        38: 'Domain Name Reply (Deprecated)'.t(),
+        39: 'SKIP (Deprecated)'.t(),
+        40: 'Photuris'.t(),
+        41:  'ICMP messages utilized by experimental mobility protocols'.t(),
+        253: 'RFC3692-style Experiment 1'.t(),
+        254: 'RFC3692-style Experiment 2'.t(),
+        255: 'Reserved'.t()
     },
 
     countries: {

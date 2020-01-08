@@ -20,9 +20,18 @@ Ext.define('Ung.util.Converter', {
         return (Map.interfaces[v] || 'None'.t()) + ' [' + v + ']';
     },
     country: function (v) { return Map.countries[v] || v; },
-    policy: function (v) { return Map.policies[v] || v; },
-    webReason: function (v) { return Map.webReasons[v] || v; },
+    policy: function (v) { return Map.policies[v] || 'None'.t(); },
+    webReason: function (v) { return Map.webReasons[v] || 'no rule applied'.t(); },
     webCategory: function (v) { return Map.webCategories[v] || v; },
-    protocol: function (v) { return Map.protocols[v] || v; }
+    protocol: function (v) { return Map.protocols[v] || v; },
+
+    icmp: function (v) { return Map.icmps[v] || 'Unasigned'.t(); },
+    ipaddr: function (v) { return v || ''; },
+
+    httpMethod: function (v) { return Map.httpMethods[v] || v; },
+    loginFailure: function (v) { return Map.loginFailureReasons[v] || ''; },
+
+    priority: function (v) { return Map.httpMethods[v] || v; },
+    emailAction: function (v) { return Map.emailActions[v] || 'unknown action'.t(); }
 
 });
