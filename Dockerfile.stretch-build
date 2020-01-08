@@ -1,8 +1,6 @@
 FROM untangleinc/ngfw:stretch-base
 LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
 
-ENV PKGTOOLS_BRANCH master
-
 # do not gzip apt lists files (for apt-show-versions)
 RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes
 
