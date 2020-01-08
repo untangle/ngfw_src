@@ -261,7 +261,7 @@ Ext.define('TableConfig', {
                 if(field['name'] == fieldName){
                     table = tableName;
                     return false;
-                }                
+                }
             });
             if(table != null){
                 return false;
@@ -534,7 +534,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -553,7 +553,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'server_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1008,7 +1008,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1027,7 +1027,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'server_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1463,7 +1463,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'client_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Client Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -1482,7 +1482,7 @@ Ext.define('TableConfig', {
                 sortable: true,
                 filter: Renderer.stringFilter,
                 dataIndex: 'server_country',
-                renderer: Renderer.country 
+                renderer: Renderer.country
             }, {
                 header: 'Server Latitude'.t() ,
                 width: Renderer.locationWidth,
@@ -3414,7 +3414,7 @@ Ext.define('TableConfig', {
                 var me = TableConfig.tableConfig.intrusion_prevention_events;
                 if(!me.settings){
                     me.refresh();
-                }  
+                }
                 if(me.settings){
                     me.settings.rules.list.forEach(function(rule){
                         if(value == rule['id']){
