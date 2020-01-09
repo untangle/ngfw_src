@@ -13,7 +13,7 @@ override_dh_gencontrol:
 override_dh_clean:
 	rm -f *-stamp
 	dh_clean
-	rake clean
+	rake clean || true
 
 override_dh_build-arch:
 	rake builduvmcore
