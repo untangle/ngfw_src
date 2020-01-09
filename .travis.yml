@@ -13,8 +13,15 @@ env:
     - REPOSITORY: stretch
       DISTRIBUTION: current
       PKGTOOLS_COMMIT: origin/master
+      ARCHITECTURE: amd64
     - REPOSITORY: buster
       DISTRIBUTION: current
+      ARCHITECTURE: amd64
+      PKGTOOLS_COMMIT: origin/master
+      UPLOAD: scp
+    - REPOSITORY: buster
+      DISTRIBUTION: current
+      ARCHITECTURE: i386
       PKGTOOLS_COMMIT: origin/master
       UPLOAD: scp
 
