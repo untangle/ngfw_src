@@ -1,6 +1,17 @@
-Ext.define('Ung.util.Renderer2', {
+Ext.define('Ung.util.Rndr', {
     singleton: true,
-    alternateClassName: 'Renderer2',
+    alternateClassName: 'Rndr',
+
+    colW: {
+        boolean: 80
+    },
+
+    filters: {
+        boolean: { type: 'boolean', yesText: 'true'.t(), noText: 'false'.t() },
+        numeric: { type: 'numeric' },
+        string: { type: 'string' },
+        date: { type: 'date' },
+    },
 
     boolean: function (value) {
         return (value == true || value == 'true') ? 'true' : 'false';
