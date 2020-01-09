@@ -27,6 +27,9 @@ services:
         # scp: use scp method for dput
         # ftp: use ftp method for dput
         - UPLOAD=${UPLOAD}
+        # empty: "do not force the build when that version is already
+        # present on the target mirror (default)"
+        - FORCE=${FORCE}
       extra_hosts:
         # from the inside, pass package-server's internal IP instead
         - "package-server:${PACKAGE_SERVER_IP:-173.14.28.193}"
