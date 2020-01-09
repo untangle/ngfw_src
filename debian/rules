@@ -4,6 +4,9 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/default.mk
 
+DPKG_EXPORT_BUILDTOOLS = 1
+include /usr/share/dpkg/buildtools.mk
+
 %:
 	dh $@ 
 
