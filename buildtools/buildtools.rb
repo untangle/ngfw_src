@@ -1,7 +1,7 @@
 # Sebastien Delafond <seb@untangle.com>
 # Dirk Morris <dmorris@untangle.com>
 
-arch = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
+arch = `dpkg-architecture -qDEB_TARGET_ARCH_CPU`.strip()
 openjdk8 = "java-8-openjdk-#{arch}"
 
 jvm = case arch
