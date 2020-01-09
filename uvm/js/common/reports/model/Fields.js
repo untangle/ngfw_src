@@ -10,6 +10,7 @@ Ext.define ('Ung.model.Fields', {
         { name: 'addr_kind',            type: 'string'  },
         { name: 'addr_name',            type: 'string'  },
         { name: 'address',              type: 'string'  },
+        { name: 'auth_type',            type: 'string'  }, // captive_portal_user
         { name: 'blocked',              type: 'boolean' },
         { name: 'bypassed',             type: 'boolean' },
         { name: 'c2p_bytes',            type: 'integer' },
@@ -27,12 +28,14 @@ Ext.define ('Ung.model.Fields', {
         { name: 'cpu_system',           type: 'number'  },
         { name: 'cpu_user',             type: 'number'  },
         { name: 'description',          type: 'string'  },
+        { name: 'destination',          type: 'string'  }, // configuration_backup
         { name: 'disk_free',            type: 'integer' },
         { name: 'disk_total',           type: 'integer' },
         { name: 'domain',               type: 'string'  },
         { name: 'end_time',             type: 'auto',    convert: Converter.timestamp },
         { name: 'entitled',             type: 'boolean' },
         { name: 'event_id',             type: 'string'  },
+        { name: 'event_info',           type: 'string'  }, // captive_portal_user
         { name: 'filter_prefix',        type: 'string'  },
         { name: 'flagged',              type: 'boolean' },
         { name: 'host',                 type: 'string'  },
@@ -48,6 +51,7 @@ Ext.define ('Ung.model.Fields', {
         { name: 'local_addr',           type: 'string'  },
         { name: 'local_address',        type: 'string'  },
         { name: 'login',                type: 'string'  },
+        { name: 'login_name',           type: 'string'  }, // captive_portal_user
         { name: 'mac_address',          type: 'string'  },
         { name: 'mem_free',             type: 'integer' },
         { name: 'mem_total',            type: 'integer' },
@@ -83,12 +87,14 @@ Ext.define ('Ung.model.Fields', {
         { name: 'start_time',           type: 'auto',    convert: Converter.timestamp },
         { name: 'subject',              type: 'string'  },
         { name: 'succeeded',            type: 'boolean' },
+        { name: 'success',              type: 'boolean' }, // configuration_backup
         { name: 'summary_text',         type: 'string'  },
         { name: 'swap_free',            type: 'integer' },
         { name: 'swap_total',           type: 'integer' },
         { name: 'tags',                 type: 'string'  },
         { name: 'term',                 type: 'string'  },
         { name: 'time_stamp',           type: 'auto',    convert: Converter.timestamp },
+        { name: 'type',                 type: 'string'  }, // directory_connector
         { name: 'uri',                  type: 'string'  },
         { name: 'username',             type: 'string'  },
         { name: 'value',                type: 'string'  },
