@@ -46,7 +46,6 @@ JMVUTIL_PKG   = 212
 
 BINDIR        = $(src_root)/buildtools
 
-CC	      = gcc
 DEFINES       = -D_GNU_SOURCE -D_REENTRANT
 WARNINGS      = -Wall
 #OPTIMIZATIONS = -fomit-frame-pointer
