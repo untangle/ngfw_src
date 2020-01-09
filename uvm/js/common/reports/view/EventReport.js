@@ -84,8 +84,6 @@ Ext.define('Ung.view.reports.EventReport', {
                     return;
                 }
 
-                console.log(entry.getData());
-
                 // if rendered as widget, add to dashboard queue
                 if (view.getWidget()) {
                     // if it's widgets it needs separate calls to setup the grid
@@ -104,7 +102,9 @@ Ext.define('Ung.view.reports.EventReport', {
             var me = this,
                 vm = me.getViewModel(),
                 grid = me.getView().down('grid'),
+                model = grid.getStore().getModel(),
                 entry = vm.get('eEntry') || vm.get('entry'),
+                fields = [],
                 columns = [], // computed grid columns
                 fieldIds = [], // field ids of the entry table
                 defaultColumns; // default columns to show for report
@@ -117,51 +117,26 @@ Ext.define('Ung.view.reports.EventReport', {
                 me.isWidget = true;
             }
 
-            // set the model for the grid store matching the report entry table
-            grid.getStore().setModel('Ung.model.Fields');
             fieldIds = Map.tables[entry.get('table')];
-
-
             /**
              * iterate table fields and generate columns
              */
-            Ext.Array.each(fieldIds, function (field) {
-                var column = Map.columns[field];
-                // all fields starting with '_' are ommited
-                if (field.startsWith('_')) { return; }
-                column.dataIndex = field;
-                column.hidden = !Ext.Array.contains(defaultColumns, field);
+            Ext.Array.each(fieldIds, function (fieldId) {
+                var field = Map.fields[fieldId];
+                var column = Map.columns[fieldId];
+
+                column.dataIndex = fieldId;
+                column.hidden = !Ext.Array.contains(defaultColumns, fieldId);
                 columns.push(column);
+
+                field.name = fieldId;
+                fields.push(field);
             });
 
+            // see how to update fields, even if it works still as it is
+            model.removeFields(Ext.Array.remove(Ext.Object.getKeys(model.getFieldsMap()), '_id'));
+            model.addFields(fields);
             grid.reconfigure(columns);
-
-            // me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
-
-            // if(me.tableConfig.setupGrid){
-            //     me.tableConfig.setupGrid(me);
-            // }
-
-            // me.defaultColumns = me.isWidget ? vm.get('widget.displayColumns') : entry.get('defaultColumns'); // widget or report columns
-
-            // Ext.Array.each(me.tableConfig.fields, function (field) {
-            //     if (!field.sortType) {
-            //         field.sortType = 'asUnString';
-            //     }
-            // });
-
-            // Ext.Array.each(me.tableConfig.columns, function (column) {
-            //     if (me.defaultColumns && !Ext.Array.contains(me.defaultColumns, column.dataIndex)) {
-            //         column.hidden = true;
-            //     }
-            //     if(!column.renderer && column.xtype != 'actioncolumn'){
-            //         column.renderer = Ung.view.reports.EventReport.renderer;
-            //     }
-            //     // TO REVISIT THIS BECASE OF STATEFUL
-            //     // grid.initComponentColumn(column);
-            // });
-
-            // grid.reconfigure(me.tableConfig.columns);
 
             // var propertygrid = me.getView().down('#eventsProperties');
             // vm.set('eventProperty', null);
@@ -280,12 +255,8 @@ Ext.define('Ung.view.reports.EventReport', {
                 }
                 break;
             }
-            // console.log(eventData);
             reader.closeConnection();
             grid.getStore().loadData(eventData);
-
-            // console.log(grid.getStore().first().getData());
-
         },
 
         onEventSelect: function (el, record) {
