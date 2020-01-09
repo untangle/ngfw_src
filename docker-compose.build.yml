@@ -16,10 +16,11 @@ services:
         git checkout $${PKGTOOLS_COMMIT}"
 
     build:
-      image: untangleinc/ngfw:${REPOSITORY:-stretch}-build
+      image: untangleinc/ngfw:${REPOSITORY:-stretch}-build-${ARCHITECTURE:-amd64}
       environment:
         - REPOSITORY=${REPOSITORY:-stretch}
         - DISTRIBUTION=${DISTRIBUTION:-current}
+        - ARCHITECTURE=${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         - VERBOSE=${VERBOSE} # defaults to empty: "not verbose"
         - PACKAGE=${PACKAGE} # defaults to empty: "all packages"
         # empty: "no upload" (default)
