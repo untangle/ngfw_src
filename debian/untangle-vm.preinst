@@ -1,5 +1,12 @@
 #! /bin/bash
 
+# 15.0 upgrade
+if dpkg --compare-versions "$oldVersion" le 15.0~ ; then
+  # reboot to new 4.9.0-11 kernel (NGFW-12661)
+  nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &
+  exit 0
+fi
+
 # If untangle-vm PID file exist and the process exists
 # stop the untangle-vm, launch the splash screen, and
 # launch uvm-restart to restart it after apt-get is done
