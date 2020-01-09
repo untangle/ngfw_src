@@ -127,6 +127,8 @@ Ext.define('Ung.view.reports.EventReport', {
 
                 column.dataIndex = fieldId;
                 column.hidden = !Ext.Array.contains(defaultColumns, fieldId);
+                // if filter not set, default to string filter
+                if (!column.filter) { column.filter = Rndr.filters.string };
                 columns.push(column);
 
                 field.name = fieldId;
