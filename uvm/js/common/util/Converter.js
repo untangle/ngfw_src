@@ -29,9 +29,72 @@ Ext.define('Ung.util.Converter', {
     ipaddr: function (v) { return v || ''; },
 
     httpMethod: function (v) { return Map.httpMethods[v] || v; },
-    loginFailure: function (v) { return Map.loginFailureReasons[v] || ''; },
+    loginFailureReason: function (v) { return Map.loginFailureReasons[v] || ''; },
 
     priority: function (v) { return Map.httpMethods[v] || v; },
-    emailAction: function (v) { return Map.emailActions[v] || 'unknown action'.t(); }
+    emailAction: function (v) { return Map.emailActions[v] || 'unknown action'.t(); },
 
+    authType: function (v) {
+        var types = {
+            NONE: 'None'.t(),
+            LOCAL_DIRECTORY: 'Local Directory'.t(),
+            ACTIVE_DIRECTORY: 'Active Directory'.t(),
+            RADIUS: 'RADIUS'.t(),
+            GOOGLE: 'Google Account'.t(),
+            FACEBOOK: 'Facebook Account'.t(),
+            MICROSOFT: 'Microsoft Account'.t(),
+            CUSTOM: 'Custom'.t()
+        };
+        if (Ext.isEmpty(v)) { return ''; }
+        return types[v] || 'Unknown'.t();
+    },
+
+    directoryConnectorAction: function (v) {
+        var actions = {
+            I: 'login'.t(),
+            U: 'update'.t(),
+            O: 'logout'.t(),
+            A: 'authenticate'.t()
+        };
+        if (Ext.isEmpty(v)) { return ''; }
+        return actions[v] || 'unknown'.t();
+    },
+
+    captivePortalEventInfo: function (v) {
+        var events = {
+            LOGIN: 'Login Success'.t(),
+            FAILED: 'Login Failure'.t(),
+            TIMEOUT: 'Session Timeout'.t(),
+            INACTIVE: 'Idle Timeout'.t(),
+            USER_LOGOUT: 'User Logout'.t(),
+            ADMIN_LOGOUT: 'Admin Logout'.t(),
+            HOST_CHANGE: 'Host Change Logout'.t(),
+        };
+        if (Ext.isEmpty(v)) { return ''; }
+        return events[v] || 'Unknown'.t();
+    },
+
+    quotaAction: function (v) {
+        var actions = {
+            1: 'Given'.t(),
+            2: 'Exceeded'.t()
+        };
+        if (Ext.isEmpty(v)) { return ''; }
+        return actions[v] || 'Unknown'.t();
+    },
+
+    // login_type is a non existant field
+    // directoryConnectorActionSource: function (v) {
+    //     var sources = {
+    //         W: 'client'.t(),
+    //         A: 'active directory'.t(),
+    //         R: 'radius'.t(),
+    //         T: 'test'.t(),
+    //     }
+    //     if (Ext.isEmpty(v)) { return ''; }
+    //     return sources[v] || 'unknown'.t();
+    // },
+
+    // not implemented, see old Renderer
+    webRule: function () {}
 });

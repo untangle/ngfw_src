@@ -64,13 +64,14 @@ Ext.define('Ung.view.reports.EventReport', {
         },
 
         onAfterRender: function (view) {
-            var me = this, vm = this.getViewModel();
+            var me = this, vm = this.getViewModel(),
+                store = view.down('grid').getStore();
 
             // find and set the widget component if report is rendered inside a widget
             view.setWidget(view.up('reportwidget'));
 
             // add store datachange listener here, as it won't work in view definition
-            view.down('grid').getStore().on('datachanged', function () { me.onDataChanged(); } );
+            store.on('datachanged', function () { me.onDataChanged(); } );
 
             // hide property grid if rendered inside widget
             if (view.getWidget() || view.up('new-widget')) {
@@ -82,7 +83,9 @@ Ext.define('Ung.view.reports.EventReport', {
                     return;
                 }
                 // clear grid data on report change
-                view.down('grid').getStore().setData([]);
+                store.setData([]);
+                // clear sorters
+                store.sorters.clear();
 
                 if (!entry || entry.get('type') !== 'EVENT_LIST') {
                     return;
@@ -129,13 +132,13 @@ Ext.define('Ung.view.reports.EventReport', {
                 var field = Map.fields[fieldId].fld;
                 var column = Map.fields[fieldId].col;
 
-                column.dataIndex = fieldId;
+                column.dataIndex = column.dataIndex || fieldId;
                 column.hidden = !Ext.Array.contains(defaultColumns, fieldId);
                 // if filter not set, default to string filter
-                if (!column.filter) { column.filter = Rndr.filters.string };
+                if (!column.filter) { column.filter = Rndr.filters.string; }
                 columns.push(column);
 
-                field.name = fieldId;
+                field.name = field.name || fieldId;
                 fields.push(field);
             });
 

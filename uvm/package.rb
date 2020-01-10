@@ -117,14 +117,14 @@ end
 end
 
 # 3rd Party packages should be built into the /script/common/packages directory
-{"exporter" => "Ext.ux.Exporter"}.each do |k, v| 
+{"exporter" => "Ext.ux.Exporter"}.each do |k, v|
   JsBuilder.new(uvm_lib, "#{k}", "./downloads/output/#{v}/", "script/common/packages")
 end
 
 # jslinting
-# JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
-# JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
-# JsLintTarget.new(uvm_lib, './uvm/servlets/setup', 'jslint-setupui')
+JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
+JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
+JsLintTarget.new(uvm_lib, './uvm/servlets/setup', 'jslint-setupui')
 
 ## SCSS
 ScssBuilder.new(uvm_lib, "ung-all", "./uvm/servlets/admin/sass", "admin/styles")
