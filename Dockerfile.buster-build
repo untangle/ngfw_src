@@ -1,24 +1,22 @@
 FROM untangleinc/ngfw:buster-base
 LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
 
-ENV PKGTOOLS_BRANCH master
-
 # do not gzip apt lists files (for apt-show-versions)
 RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes
 
-# add supported foreign architectures
-RUN dpkg --add-architecture i386
-RUN dpkg --add-architecture armhf
-RUN dpkg --add-architecture arm64
+# add foreign architecture if needed
+ARG ARCHITECTURE=amd64
+RUN [ "$ARCHITECTURE" = "amd64" ] || dpkg --add-architecture ${ARCHITECTURE}
 
 # install required packages
 RUN apt update -q
-RUN apt install --yes build-essential
+RUN [ "$ARCHITECTURE" = "amd64" ] || apt install --yes crossbuild-essential-${ARCHITECTURE}
+RUN apt install --yes debhelper
 RUN apt install --yes devscripts
 RUN apt install --yes git
 RUN apt install --yes apt-show-versions
-RUN apt install --yes untangle-development-build
 RUN apt install --yes openssh-client
+RUN apt install --yes dput
 
 # cleanup
 RUN apt clean
@@ -41,5 +39,6 @@ RUN mkdir -p ${SRC}
 VOLUME ${SRC}
 
 WORKDIR ${SRC}
+
 
 CMD [ "bash", "-c", "${PKGTOOLS}/build.sh" ]
