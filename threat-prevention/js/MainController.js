@@ -76,6 +76,11 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             Util.handleException(ex);
         });
     },
+
+    /**
+     * showSliderInfo will display the Threat Temperature Gauge above the slider, as well as the label below the slider with the current threat description information.
+     * @param {Ung.ThreatSlider} slider - The threat reputation slider object 
+     */
     showSliderInfo: function(slider) {
         var me = this, vm = this.getViewModel(), view = this.getView();
 
