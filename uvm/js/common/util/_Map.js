@@ -38,463 +38,1026 @@ Ext.define('Ung.util.Map', {
     },
 
     /**
-     * used for setting the grid columns
-     * map containing all possible grid columns with db tables fields as key
-     * this are matching 1-1 with the model fields
-     */
-    columns: {
-        action:               { text: 'Action'.t(), width: 100 },
-        active_hosts:         { text: 'Active Hosts'.t(), filter: Rndr.filters.numeric, width: 100 },
-        addr:                 { text: 'Receiver'.t(), width: 120 },
-        addr_kind:            { text: 'Address Kind'.t(), width: 120 },
-        addr_name:            { text: 'Address Name'.t(), width: 120 },
-        address:              { text: 'Address'.t(), width: 120 },
-        auth_type:            { text: 'Auth Type'.t(), width: 120 },
-        blocked:              { text: 'Blocked'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean,  renderer: Rndr.boolean },
-        bypassed:             { text: 'Bypassed'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        bypasses:             { text: 'Bypass Count'.t(), filter: Rndr.filters.numeric, width: 80 },
-        c2p_bytes:            { text: 'From-Client Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
-        c2s_bytes:            { text: 'From-Client Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
-        c2s_content_length:   { text: 'Upload Content Length'.t(), filter: Rndr.filters.numeric, width: 120 },
-        c_client_addr:        { text: 'Client'.t(), filter: Rndr.filters.string, width: 120 },
-        c_client_port:        { text: 'Client Port'.t(), filter: Rndr.filters.numeric, width: 120 },
-        c_server_addr:        { text: 'Original Server'.t(), filter: Rndr.filters.string, width: 120 },
-        c_server_port:        { text: 'Original Server Port'.t(), filter: Rndr.filters.numeric, width: 120 },
-        category:             { text: 'Category'.t(), width: 100 },
-        classtype:            { text: 'Classtype'.t(), width: 100 },
-        class_id:             { text: 'Cid'.t(), filter: Rndr.filters.numeric, width: 100 },
-        client_addr:          { text: 'Client Address'.t(), width: 120 },
-        client_address:       { text: 'Client Address'.t(), width: 120 },
-        client_country:       { text: 'Client Country'.t(), width: 120 }, // converter
-        client_intf:          { text: 'Client Interface'.t(), width: 100 }, // converter
-        client_latitude:      { text: 'Client Latitude'.t(), filter: Rndr.filters.numeric, width: 120 },
-        client_longitude:     { text: 'Client Longitude'.t(), filter: Rndr.filters.numeric, width: 120 },
-        client_name:          { text: 'Client Name'.t(), width: 120 },
-        client_protocol:      { text: 'Client Protocol'.t(), width: 120 },
-        client_username:      { text: 'Client Username'.t(), width: 120 },
-        connect_stamp:        { text: 'Login Time'.t(), filter: Rndr.filters.date, width: 120 },
-        cpu_system:           { text: 'CPU System Utilization'.t(), filter: Rndr.filters.numeric, width: 100 },
-        cpu_user:             { text: 'CPU User Utilization'.t(), filter: Rndr.filters.numeric, width: 100 },
-        description:          { text: 'Description'.t(), width: 200 }, // multiple column names!!!
-        destination:          { text: 'Destination'.t(), width: 200 },
-        dest_addr:            { text: 'Destination Address'.t(), width: 200 },
-        dest_port:            { text: 'Destination Port'.t(), filter: Rndr.filters.numeric, width: 200 },
-        disk_free:            { text: 'Disk Free'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.disk },
-        disk_total:           { text: 'Disk Total'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.disk },
-        domain:               { text: 'Domain'.t(), width: 120 },
-        elapsed_time:         { text: 'Elapsed'.t(), filter: Rndr.filters.numeric, width: 160 }, // converter
-        end_time:             { text: 'End Time'.t(), filter: Rndr.filters.date, width: 160 }, // converter
-        entitled:             { text: 'Entitled'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        entity:               { text: 'Address'.t(), width: 80 },
-        event_id:             { text: 'Event Id'.t(), filter: Rndr.filters.numeric, width: 120 },
-        event_info:           { text: 'Event Info'.t(), width: 120 },
-        event_type:           { text: 'Type'.t(), width: 120 },
-        filter_prefix:        { text: 'Filter Prefix'.t(), width: 80 },
-        flagged:              { text: 'Flagged'.t(), filter: Rndr.filters.boolean, filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        gen_id:               { text: 'Gid'.t(), filter: Rndr.filters.numeric, width: 100 },
-        goodbye_stamp:        { text: 'Logout Time'.t(), filter: Rndr.filters.date, width: 100 },
-        hits:                 { text: 'Hit Count'.t(), filter: Rndr.filters.numeric, width: 250 },
-        hit_bytes:            { text: 'Hit Bytes'.t(), filter: Rndr.filters.numeric, width: 250 },
-        host:                 { text: 'Host'.t(), width: 250 },
-        hostname:             { text: 'Hostname'.t(), width: 120 },
-        icmp_type:            { text: 'ICMP Type'.t(), width: 150 }, // converter
-        in_bytes:             { text: 'In Bytes'.t(), filter: Rndr.filters.numeric, width: 200 },
-        ipaddr:               { text: 'Sender'.t(), width: 200 }, // converter
-        json:                 { text: 'JSON'.t(), flex: 1 },
-        key:                  { text: 'Key'.t(), width: 120 },
-        load_1:               { text: 'Load (1-minute)'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right' },
-        load_5:               { text: 'Load (5-minute)'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right' },
-        load_15:              { text: 'Load (15-minute)'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right' },
-        local:                { text: 'Local'.t(), filter: Rndr.filters.boolean, width: 100, renderer: Rndr.localLogin },
-        local_addr:           { text: 'Local Address'.t(), width: 120 },
-        local_address:        { text: 'Local Address'.t(), width: 120 },
-        login:                { text: 'Login'.t(), width: 100},
-        login_name:           { text: 'Login'.t(), width: 100},
-        mac_address:          { text: 'MAC Address'.t(), width: 120},
-        mem_free:             { text: 'Memory Free'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.memory },
-        mem_total:            { text: 'Memory Total'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.memory },
-        method:               { text: 'Method'.t(), width: 120 }, // converter
-        misses:               { text: 'Miss Count'.t(), filter: Rndr.filters.numeric, width: 100 },
-        miss_bytes:           { text: 'Miss Bytes'.t(), filter: Rndr.filters.numeric, width: 120 },
-        msg:                  { text: 'Msg'.t(), width: 120 },
-        msg_id:               { text: 'Message Id'.t(), width: 120 },
-        name:                 { text: 'Interface Name'.t(), width: 120 },
-        net_interface:        { text: 'Interface'.t(), width: 120 },
-        net_process:          { text: 'Process'.t(), width: 120 },
-        old_value:            { text: 'Old Value'.t(), width: 120 },
-        os_name:              { text: 'Interface OS'.t(), width: 120 },
-        out_bytes:            { text: 'Out Bytes'.t(), filter: Rndr.filters.numeric, width: 100 },
-        p2c_bytes:            { text: 'To-Client Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
-        p2s_bytes:            { text: 'To-Server Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
-        policy_id:            { text: 'Policy Id'.t(), width: 120}, // converter
-        policy_rule_id:       { text: 'Policy Rule'.t(), width: 100},
-        pool_address:         { text: 'Pool Address'.t(), width: 100},
-        protocol:             { text: 'Protocol'.t(), filter: Rndr.filters.numeric, width: 80 }, // converter
-        reason:               { text: 'Reason'.t(), width: 100 }, // converter
-        receiver:             { text: 'Receiver'.t(), width: 100 },
-        referer:              { text: 'Referer'.t(), width: 120 },
-        remote_addr:          { text: 'Remote Address'.t(), width: 120 },
-        remote_address:       { text: 'Remote Address'.t(), width: 120 },
-        remote_port:          { text: 'Remote Port'.t(), filter: Rndr.filters.numeric, width: 120 },
-        request_id:           { text: 'Request Id'.t(), filter: Rndr.filters.numeric, width: 120 },
-        rid:                  { text: 'Rid'.t(), width: 120 },
-        rx_bytes:             { text: 'RX Bytes'.t(), filter: Rndr.filters.numeric, width: 120 },
-        rx_rate:              { text: 'RX Rate'.t(), filter: Rndr.filters.numeric, width: 120 },
-        s2c_bytes:            { text: 'From-Server Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
-        s2c_content_filename: { text: 'Content Filename'.t(), width: 160 },
-        s2c_content_length:   { text: 'Download Content Length'.t(), filter: Rndr.filters.numeric, width: 120 },
-        s2c_content_type:     { text: 'Content Type'.t(), width: 120 },
-        s2p_bytes:            { text: 'From-Server Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
-        s_client_addr:        { text: 'New Client'.t(), filter: Rndr.filters.string, width: 120 },
-        s_client_port:        { text: 'New Client Port'.t(), filter: Rndr.filters.numeric, width: 120 },
-        s_server_addr:        { text: 'Server'.t(), filter: Rndr.filters.string, width: 120 },
-        s_server_port:        { text: 'Server Port'.t(), filter: Rndr.filters.numeric, width: 120 },
-        sender:               { text: 'Sender', width: 100 },
-        server_address:       { text: 'Server Address'.t(), width: 120 },
-        server_country:       { text: 'Server Country'.t(), width: 120 }, // converter
-        server_intf:          { text: 'Server Interface'.t(), width: 100 }, // converter
-        server_latitude:      { text: 'Server Latitude'.t(), filter: Rndr.filters.numeric, width: 120 },
-        server_longitude:     { text: 'Server Longitude'.t(), filter: Rndr.filters.numeric, width: 120},
-        session_id:           { text: 'Session Id'.t(), filter: Rndr.filters.numeric, width: 120 },
-        settings_file:        { text: 'Settings File'.t(), width: 200, renderer: Rndr.settingsFile },
-        sig_id:               { text: 'Sid', filter: Rndr.filters.numeric, width: 100 },
-        size:                 { text: 'Size', filter: Rndr.filters.numeric, width: 100 },
-        source_addr:          { text: 'Source Address'.t(), width: 120 },
-        source_port:          { text: 'Source Port'.t(), filter: Rndr.filters.numeric, width: 120 },
-        start_time:           { text: 'Start Time'.t(), filter: Rndr.filters.date, width: 160 }, // converter
-        subject:              { text: 'Subject'.t(), width: 120 },
-        succeeded:            { text: 'Succeeded'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        success:              { text: 'Success'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        summary_text:         { text: 'Summary'.t(), width: 200 },
-        swap_free:            { text: 'Swap Free'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.memory },
-        swap_total:           { text: 'Swap Total'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.memory },
-        systems:              { text: 'System Count'.t(), filter: Rndr.filters.numeric, width: 160 },
-        tags:                 { text: 'Tags'.t(), width: 160 },
-        term:                 { text: 'Query Term'.t(), width: 160 },
-        time_stamp:           { text: 'Timestamp'.t(), filter: Rndr.filters.date, width: 160 }, // converter
-        tunnel_description:   { text: 'Tunnel Description'.t(), width: 160 },
-        tunnel_name:          { text: 'Tunnel Name'.t(), width: 160 },
-        tx_bytes:             { text: 'TX Bytes'.t(), filter: Rndr.filters.numeric, width: 80 },
-        tx_rate:              { text: 'TX Rate'.t(), filter: Rndr.filters.numeric, width: 80 },
-        type:                 { text: 'Type'.t(), width: 160 },
-        uri:                  { text: 'URI'.t(), width: 120 },
-        username:             { text: 'Username'.t(), width: 120 },
-        value:                { text: 'Value'.t(), width: 120 },
-        vendor_name:          { text: 'Vendor Name'.t(), width: 200 },
-
-        // applications related columns
-        ad_blocker_action:                   { text: 'Action'.t() +  ' (Ad Blocker)', width: 80, renderer: Rndr.adBlockerAction },
-        ad_blocker_cookie_ident:             { text: 'Blocked Cookie'.t() + ' (Ad Blocker)', width: 120 },
-
-        application_control_application:     { text: 'Application'.t() + ' (Application Control)', width: 120 },
-        application_control_blocked:         { text: 'Blocked'.t() + ' (Application Control)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        application_control_category:        { text: 'Category'.t() + ' (Application Control)', width: 120 },
-        application_control_confidence:      { text: 'Confidence'.t() + ' (Application Control)', filter: Rndr.filters.numeric, width: 120 },
-        application_control_detail:          { text: 'Detail'.t() + ' (Application Control)', width: 120 },
-        application_control_flagged:         { text: 'Flagged'.t() + ' (Application Control)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean },
-        application_control_protochain:      { text: 'Protochain'.t() + ' (Application Control)', width: 120 },
-        application_control_ruleid:          { text: 'Rule'.t() + ' (Application Control)', filter: Rndr.filters.numeric, width: 120 },
-
-        application_control_lite_blocked:    { text: 'Blocked'.t() + ' (Application Control Lite)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        application_control_lite_protocol:   { text: 'Protocol'.t() + ' (Application Control Lite)', width: 120 },
-
-        bandwidth_control_priority:          { text: 'Priority'.t() + ' (Bandwidth Control)', width: 120, renderer: Rndr.priority },
-        bandwidth_control_rule:              { text: 'Rule'.t() + ' (Bandwidth Control)', width: 120, renderer: Rndr.bandwidthControlRule },
-
-        captive_portal_blocked:              { text: 'Blocked'.t() + ' (Captive Portal)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        captive_portal_rule_index:           { text: 'Rule Id'.t() + ' (Captive Portal)', filter: Rndr.filters.numeric, width: 120 },
-
-        firewall_blocked:                    { text: 'Blocked'.t() + ' (Firewall)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        firewall_flagged:                    { text: 'Flagged'.t() + ' (Firewall)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        firewall_rule_index:                 { text: 'Rule'.t() + ' (Firewall)', filter: Rndr.filters.numeric, width: 120 },
-
-        phish_blocker_action:                { text: 'Action'.t() + ' (Phish Blocker)', width: 120 }, // converter
-        phish_blocker_is_spam:               { text: 'Is Spam'.t() + ' (Phish Blocker)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        phish_blocker_score:                 { text: 'Score'.t() + ' (Phish Blocker)', filter: Rndr.filters.numeric, width: 120 },
-        phish_blocker_tests_string:          { text: 'Detail'.t() + ' (Phish Blocker)', width: 120 },
-
-        spam_blocker_action:                 { text: 'Action'.t() + ' (Spam Blocker)', width: 120 },
-        spam_blocker_is_spam:                { text: 'Is Spam'.t() + ' (Spam Blocker)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        spam_blocker_score:                  { text: 'Spam Score'.t() + ' (Spam Blocker)', filter: Rndr.filters.numeric, width: 120 },
-        spam_blocker_tests_string:           { text: 'Detail'.t() + ' (Spam Blocker)', width: 120 },
-
-        spam_blocker_lite_action:            { text: 'Action'.t() + ' (Spam Blocker Lite)', width: 120},
-        spam_blocker_lite_is_spam:           { text: 'Is Spam'.t() + ' (Spam Blocker Lite)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        spam_blocker_lite_score:             { text: 'Spam Score'.t() + ' (Spam Blocker Lite)', filter: Rndr.filters.numeric, width: 120 },
-        spam_blocker_lite_tests_string:      { text: 'Detail'.t() + ' (Spam Blocker Lite)', width: 120 },
-
-        ssl_inspector_detail:                { text: 'Detail'.t() + ' (SSL Inspector)', width: 120 },
-        ssl_inspector_ruleid:                { text: 'Rule Id'.t() + ' (SSL Inspector)', filter: Rndr.filters.numeric, width: 120 },
-        ssl_inspector_status:                { text: 'Status'.t() + ' (SSL Inspector)', width: 120 },
-
-        threat_prevention_blocked:           { text: 'Blocked'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        threat_prevention_categories:        { text: 'Categories'.t() + ' (Threat Prevention)', width: 120 },
-        threat_prevention_client_categories: { text: 'Client Categories'.t() + ' (Threat Prevention)', width: 100 },
-        threat_prevention_client_reputation: { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 100 },
-        threat_prevention_flagged:           { text: 'Flagged'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        threat_prevention_reason:            { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
-        threat_prevention_reputation:        { text: 'Reputation'.t() + ' (Threat Prevention)', width: 120 },
-        threat_prevention_rule_id:           { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120 },
-        threat_prevention_server_categories: { text: 'Server Categories'.t() + ' (Threat Prevention)', width: 100 },
-        threat_prevention_server_reputation: { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 100 },
-
-        virus_blocker_clean:                 { text: 'Clean'.t() + ' (Virus Blocker)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        virus_blocker_name:                  { text: 'Name'.t() + ' (Virus Blocker)', width: 120 },
-
-        virus_blocker_lite_clean:            { text: 'Clean'.t() + ' (Virus Blocker Lite)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        virus_blocker_lite_name:             { text: 'Name'.t() + ' (Virus Blocker Lite)', width: 120 },
-
-        web_filter_blocked:                  { text: 'Blocked'.t() + ' (Web Filter)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        web_filter_category_id:              { text: 'Web Category'.t() + ' (Web Filter)', width: 250 }, // converter
-        web_filter_flagged:                  { text: 'Flagged'.t() + ' (Web Filter)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-        web_filter_reason:                   { text: 'Reason For Action'.t() + ' (Web Filter)', width: 120 },
-        web_filter_rule_id:                  { text: 'Web Rule'.t() + ' (Web Filter)', width: 120 } // converter not implemented
-    },
-
-    /**
-     * used for setting the grid store model
-     * map containing all possible store fields with db tables fields as key
-     * this are matching 1-1 with the columns above
+     * all possible fields matching all possible db tables fields
+     * having a grid column definition (col) and a store field definition (fld)
+     * field_id: {
+     *      col: {
+     *          text: 'Column header text'.t(),
+     *          filter: Rndr.filters.numeric, // the filter type e.g. 'numeric'/ 'boolean', defaults to 'string'
+     *          width: 100, // the column width
+     *          renderer: Rndr.boolean // the renderer method if needed, see Rndr class,
+     *          dataIndex: // matching field_id and set in grid setup (not set here)
+     *          hidden: // true or false depending if found in report defaultColumns (not set here)
+     *      },
+     *      fld: {
+     *          type: 'string', // model field type
+     *          convert: Converter.icmp // the converter method if needed, see Converter class
+     *          name: // matching field_id and set in grid setup (not defined here)
+     *      }
+     * }
+     *
+     * This definitions are used when setting up grid for a specific report
+     * applying a store model matching report entry db table reference
+     * and setting corresponding grid columns based on that
      */
     fields: {
-        action: {               type: 'string' },
-        active_hosts: {         type: 'integer' },
-        addr: {                 type: 'string'  },
-        addr_kind: {            type: 'string'  },
-        addr_name: {            type: 'string'  },
-        address: {              type: 'string'  },
-        auth_type: {            type: 'string'  }, // captive_portal_user
-        blocked: {              type: 'boolean' },
-        bypassed: {             type: 'boolean' },
-        bypasses: {             type: 'integer' },
-        c2p_bytes: {            type: 'integer' },
-        c2s_bytes: {            type: 'integer' },
-        c2s_content_length: {   type: 'integer' },
-        c_client_addr: {        type: 'string'  },
-        c_client_port: {        type: 'integer' },
-        c_server_addr: {        type: 'string'  },
-        c_server_port: {        type: 'integer' },
-        category: {             type: 'string'  },
-        classtype: {            type: 'string' },
-        class_id: {             type: 'integer'  },
-        client_addr: {          type: 'string'  },
-        client_address: {       type: 'string'  },
-        client_country: {       type: 'string',  convert: Converter.country },
-        client_intf: {          type: 'integer', convert: Converter.interface },
-        client_latitude: {      type: 'string'  },
-        client_longitude: {     type: 'string'  },
-        client_name: {          type: 'string'  },
-        client_protocol: {      type: 'string'  },
-        client_username: {      type: 'string'  },
-        connect_stamp: {        type: 'auto',    convert: Converter.timestamp },
-        cpu_system: {           type: 'number'  },
-        cpu_user: {             type: 'number'  },
-        description: {          type: 'string'  },
-        destination: {          type: 'string'  }, // configuration_backup
-        dest_addr: {            type: 'string'  },
-        dest_port: {            type: 'integer'  },
-        disk_free: {            type: 'integer' },
-        disk_total: {           type: 'integer' },
-        domain: {               type: 'string'  },
-        elapsed_time: {         type: 'auto',    convert: Converter.timestamp },
-        end_time: {             type: 'auto',    convert: Converter.timestamp },
-        entitled: {             type: 'boolean' },
-        entity: {               type: 'string' },
-        event_id: {             type: 'integer'  },
-        event_info: {           type: 'string'  }, // captive_portal_user
-        event_type: {           type: 'string'  },
-        filter_prefix: {        type: 'string'  },
-        flagged: {              type: 'boolean' },
-        gen_id: {               type: 'integer'  },
-        goodbye_stamp: {        type: 'auto',    convert: Converter.timestamp },
-        hits: {                 type: 'integer'  },
-        hit_bytes: {            type: 'integer'  },
-        host: {                 type: 'string'  },
-        hostname: {             type: 'string'  },
-        icmp_type: {            type: 'integer', convert: Converter.icmp },
-        in_bytes: {             type: 'string'  },
-        ipaddr: {               type: 'string'  },
-        json: {                 type: 'string'  },
-        key: {                  type: 'string'  },
-        load_1: {               type: 'number'  },
-        load_5: {               type: 'number'  },
-        load_15: {              type: 'number'  },
-        local: {                type: 'boolean' },
-        local_addr: {           type: 'string'  },
-        local_address: {        type: 'string'  },
-        login: {                type: 'string'  },
-        login_name: {           type: 'string'  }, // captive_portal_user
-        mac_address: {          type: 'string'  },
-        mem_free: {             type: 'integer' },
-        mem_total: {            type: 'integer' },
-        method: {               type: 'string',  convert: Converter.httpMethod },
-        misses: {               type: 'integer'  },
-        miss_bytes: {           type: 'integer'  },
-        msg: {                  type: 'string'  },
-        msg_id: {               type: 'string'  },
-        name: {                 type: 'string'  },
-        net_interface: {        type: 'string'  },
-        net_process: {          type: 'string'  },
-        old_value: {            type: 'string'  },
-        os_name: {              type: 'string'  },
-        out_bytes: {            type: 'integer'  },
-        p2c_bytes: {            type: 'integer' },
-        p2s_bytes: {            type: 'integer' },
-        policy_id: {            type: 'integer', convert: Converter.policy },
-        policy_rule_id: {       type: 'integer' },
-        pool_address: {         type: 'string'  },
-        protocol: {             type: 'integer', convert: Converter.protocol },
-        reason: {               type: 'string',  convert: Converter.loginFailure },
-        receiver: {             type: 'string'  },
-        referer: {              type: 'string'  },
-        remote_addr: {          type: 'string'  },
-        remote_address: {       type: 'string'  },
-        remote_port: {          type: 'integer'  },
-        request_id: {           type: 'number'  },
-        rid: {                  type: 'string'  },
-        rx_bytes: {             type: 'string'  },
-        rx_rate: {              type: 'number'  },
-        s2c_bytes: {            type: 'integer' },
-        s2c_content_filename: { type: 'string'  },
-        s2c_content_length: {   type: 'integer' },
-        s2c_content_type: {     type: 'string'  },
-        s2p_bytes: {            type: 'integer' },
-        s_client_addr: {        type: 'string'  },
-        s_client_port: {        type: 'integer' },
-        s_server_addr: {        type: 'string'  },
-        s_server_port: {        type: 'integer' },
-        sender: {               type: 'string'  },
-        server_address: {       type: 'string' },
-        server_country: {       type: 'string',  convert: Converter.country },
-        server_intf: {          type: 'integer', convert: Converter.interface },
-        server_latitude: {      type: 'string'  },
-        server_longitude: {     type: 'string'  },
-        session_id: {           type: 'number'  },
-        settings_file: {        type: 'string'  },
-        sig_id: {               type: 'integer' },
-        size: {                 type: 'integer' },
-        source_addr: {          type: 'string' },
-        source_port: {          type: 'integer' },
-        start_time: {           type: 'auto',    convert: Converter.timestamp },
-        subject: {              type: 'string'  },
-        succeeded: {            type: 'boolean' },
-        success: {              type: 'boolean' }, // configuration_backup
-        summary_text: {         type: 'string'  },
-        swap_free: {            type: 'integer' },
-        swap_total: {           type: 'integer' },
-        systems: {              type: 'integer' },
-        tags: {                 type: 'string'  },
-        term: {                 type: 'string'  },
-        time_stamp: {           type: 'auto',    convert: Converter.timestamp },
-        tunnel_description: {   type: 'string'  },
-        tunnel_name: {          type: 'string'  },
-        tx_bytes: {             type: 'string'  },
-        tx_rate: {              type: 'number'  },
-        type: {                 type: 'string'  }, // directory_connector
-        uri: {                  type: 'string'  },
-        username: {             type: 'string'  },
-        value: {                type: 'string'  },
-        vendor_name: {          type: 'string'  },
+        action: {
+            col: { text: 'Action'.t(), width: 100 },
+            fld: { type: 'string' }
+        },
+        active_hosts: {
+            col: { text: 'Active Hosts'.t(), filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'integer' }
+        },
+        addr: {
+            col: { text: 'Receiver'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        addr_kind: {
+            col: { text: 'Address Kind'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        addr_name: {
+            col: { text: 'Address Name'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        address: {
+            col: { text: 'Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        auth_type: {
+            col: { text: 'Auth Type'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        blocked: {
+            col: { text: 'Blocked'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean,  renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        bypassed: {
+            col: { text: 'Bypassed'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        bypasses: {
+            col: { text: 'Bypass Count'.t(), filter: Rndr.filters.numeric, width: 80 },
+            fld: { type: 'integer' }
+        },
+        c2p_bytes: {
+            col: { text: 'From-Client Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
+            fld: { type: 'number' }
+        },
+        c2s_bytes: {
+            col: { text: 'From-Client Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
+            fld: { type: 'number' }
+        },
+        c2s_content_length: {
+            col: { text: 'Upload Content Length'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        c_client_addr: {
+            col: { text: 'Client'.t(), filter: Rndr.filters.string, width: 120 },
+            fld: { type: 'string' }
+        },
+        c_client_port: {
+            col: { text: 'Client Port'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        c_server_addr: {
+            col: { text: 'Original Server'.t(), filter: Rndr.filters.string, width: 120 },
+            fld: { type: 'string' }
+        },
+        c_server_port: {
+            col: { text: 'Original Server Port'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        category: {
+            col: { text: 'Category'.t(), width: 100 },
+            fld: { type: 'string' }
+        },
+        classtype: {
+            col: { text: 'Classtype'.t(), width: 100 },
+            fld: { type: 'string' }
+        },
+        class_id: {
+            col: { text: 'Cid'.t(), filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'integer' }
+        },
+        client_addr: {
+            col: { text: 'Client Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        client_address: {
+            col: { text: 'Client Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        client_country: {
+            col: { text: 'Client Country'.t(), width: 120 }, // converter
+            fld: { type: 'string', convert: Converter.country }
+        },
+        client_intf: {
+            col: { text: 'Client Interface'.t(), width: 100 }, // converter
+            fld: { type: 'integer', convert: Converter.interface }
+        },
+        client_latitude: {
+            col: { text: 'Client Latitude'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        client_longitude: {
+            col: { text: 'Client Longitude'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        client_name: {
+            col: { text: 'Client Name'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        client_protocol: {
+            col: { text: 'Client Protocol'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        client_username: {
+            col: { text: 'Client Username'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        connect_stamp: {
+            col: { text: 'Login Time'.t(), filter: Rndr.filters.date, width: 120 },
+            fld: { type: 'integer', convert: Converter.timestamp }
+        },
+        cpu_system: {
+            col: { text: 'CPU System Utilization'.t(), filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'number' }
+        },
+        cpu_user: {
+            col: { text: 'CPU User Utilization'.t(), filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'number' }
+        },
+        description: {
+            col: { text: 'Description'.t(), width: 200 }, // multiple column names!!!
+            fld: { type: 'string' }
+        },
+        destination: {
+            col: { text: 'Destination'.t(), width: 200 },
+            fld: { type: 'string' }
+        },
+        dest_addr: {
+            col: { text: 'Destination Address'.t(), width: 200 },
+            fld: { type: 'string' }
+        },
+        dest_port: {
+            col: { text: 'Destination Port'.t(), filter: Rndr.filters.numeric, width: 200 },
+            fld: { type: 'integer' }
+        },
+        disk_free: {
+            col: { text: 'Disk Free'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.disk },
+            fld: { type: 'number' }
+        },
+        disk_total: {
+            col: { text: 'Disk Total'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.disk },
+            fld: { type: 'number' }
+        },
+        domain: {
+            col: { text: 'Domain'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        elapsed_time: {
+            col: { text: 'Elapsed'.t(), filter: Rndr.filters.numeric, width: 160 }, // converter
+            fld: { type: 'integer', convert: Converter.timestamp }
+        },
+        end_time: {
+            col: { text: 'End Time'.t(), filter: Rndr.filters.date, width: 160 }, // converter
+            fld: { type: 'integer', convert: Converter.timestamp }
+        },
+        entitled: {
+            col: { text: 'Entitled'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        entity: {
+            col: { text: 'Address'.t(), width: 80 },
+            fld: { type: 'string' }
+        },
+        event_id: {
+            col: { text: 'Event Id'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        event_info: {
+            col: { text: 'Event Info'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        event_type: {
+            col: { text: 'Type'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        filter_prefix: {
+            col: { text: 'Filter Prefix'.t(), width: 80 },
+            fld: { type: 'string' }
+        },
+        flagged: {
+            col: { text: 'Flagged'.t(), filter: Rndr.filters.boolean, filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        gen_id: {
+            col: { text: 'Gid'.t(), filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'integer' }
+        },
+        goodbye_stamp: {
+            col: { text: 'Logout Time'.t(), filter: Rndr.filters.date, width: 100 },
+            fld: { type: 'integer', convert: Converter.timestamp }
+        },
+        hits: {
+            col: { text: 'Hit Count'.t(), filter: Rndr.filters.numeric, width: 250 },
+            fld: { type: 'integer' }
+        },
+        hit_bytes: {
+            col: { text: 'Hit Bytes'.t(), filter: Rndr.filters.numeric, width: 250 },
+            fld: { type: 'number' }
+        },
+        host: {
+            col: { text: 'Host'.t(), width: 250 },
+            fld: { type: 'string' }
+        },
+        hostname: {
+            col: { text: 'Hostname'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        icmp_type: {
+            col: { text: 'ICMP Type'.t(), width: 150 }, // converter
+            fld: { type: 'integer', convert: Converter.icmp }
+        },
+        in_bytes: {
+            col: { text: 'In Bytes'.t(), filter: Rndr.filters.numeric, width: 200 },
+            fld: { type: 'number' }
+        },
+        ipaddr: {
+            col: { text: 'Sender'.t(), width: 200 }, // converter
+            fld: { type: 'string' }
+        },
+        json: {
+            col: { text: 'JSON'.t(), flex: 1 },
+            fld: { type: 'string' }
+        },
+        key: {
+            col: { text: 'Key'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        load_1: {
+            col: { text: 'Load (1-minute)'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right' },
+            fld: { type: 'number' }
+        },
+        load_5: {
+            col: { text: 'Load (5-minute)'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right' },
+            fld: { type: 'number' }
+        },
+        load_15: {
+            col: { text: 'Load (15-minute)'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right' },
+            fld: { type: 'number' }
+        },
+        local: {
+            col: { text: 'Local'.t(), filter: Rndr.filters.boolean, width: 100, renderer: Rndr.localLogin },
+            fld: { type: 'boolean' }
+        },
+        local_addr: {
+            col: { text: 'Local Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        local_address: {
+            col: { text: 'Local Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        login: {
+            col: { text: 'Login'.t(), width: 100},
+            fld: { type: 'string' }
+        },
+        login_name: {
+            col: { text: 'Login'.t(), width: 100},
+            fld: { type: 'string' }
+        },
+        mac_address: {
+            col: { text: 'MAC Address'.t(), width: 120},
+            fld: { type: 'string' }
+        },
+        mem_free: {
+            col: { text: 'Memory Free'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.memory },
+            fld: { type: 'number' }
+        },
+        mem_total: {
+            col: { text: 'Memory Total'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.memory },
+            fld: { type: 'number' }
+        },
+        method: {
+            col: { text: 'Method'.t(), width: 120 }, // converter
+            fld: { type: 'string', convert: Converter.httpMethod }
+        },
+        misses: {
+            col: { text: 'Miss Count'.t(), filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'number' }
+        },
+        miss_bytes: {
+            col: { text: 'Miss Bytes'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        msg: {
+            col: { text: 'Msg'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        msg_id: {
+            col: { text: 'Message Id'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        name: {
+            col: { text: 'Interface Name'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        net_interface: {
+            col: { text: 'Interface'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        net_process: {
+            col: { text: 'Process'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        old_value: {
+            col: { text: 'Old Value'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        os_name: {
+            col: { text: 'Interface OS'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        out_bytes: {
+            col: { text: 'Out Bytes'.t(), filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'number' }
+        },
+        p2c_bytes: {
+            col: { text: 'To-Client Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
+            fld: { type: 'number' }
+        },
+        p2s_bytes: {
+            col: { text: 'To-Server Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
+            fld: { type: 'number' }
+        },
+        policy_id: {
+            col: { text: 'Policy Id'.t(), width: 120}, // converter
+            fld: { type: 'integer', convert: Converter.policy }
+        },
+        policy_rule_id: {
+            col: { text: 'Policy Rule'.t(), width: 100},
+            fld: { type: 'integer' }
+        },
+        pool_address: {
+            col: { text: 'Pool Address'.t(), width: 100},
+            fld: { type: 'string' }
+        },
+        protocol: {
+            col: { text: 'Protocol'.t(), filter: Rndr.filters.numeric, width: 80 }, // converter
+            fld: { type: 'integer', convert: Converter.protocol }
+        },
+        reason: {
+            col: { text: 'Reason'.t(), width: 100 }, // converter
+            fld: { type: 'string', convert: Converter.loginFailure }
+        },
+        receiver: {
+            col: { text: 'Receiver'.t(), width: 100 },
+            fld: { type: 'string' }
+        },
+        referer: {
+            col: { text: 'Referer'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        remote_addr: {
+            col: { text: 'Remote Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        remote_address: {
+            col: { text: 'Remote Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        remote_port: {
+            col: { text: 'Remote Port'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        request_id: {
+            col: { text: 'Request Id'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        rid: {
+            col: { text: 'Rid'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        rx_bytes: {
+            col: { text: 'RX Bytes'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        rx_rate: {
+            col: { text: 'RX Rate'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        s2c_bytes: {
+            col: { text: 'From-Server Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
+            fld: { type: 'number' }
+        },
+        s2c_content_filename: {
+            col: { text: 'Content Filename'.t(), width: 160 },
+            fld: { type: 'string' }
+        },
+        s2c_content_length: {
+            col: { text: 'Download Content Length'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        s2c_content_type: {
+            col: { text: 'Content Type'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        s2p_bytes: {
+            col: { text: 'From-Server Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
+            fld: { type: 'number' }
+        },
+        s_client_addr: {
+            col: { text: 'New Client'.t(), filter: Rndr.filters.string, width: 120 },
+            fld: { type: 'string' }
+        },
+        s_client_port: {
+            col: { text: 'New Client Port'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        s_server_addr: {
+            col: { text: 'Server'.t(), filter: Rndr.filters.string, width: 120 },
+            fld: { type: 'string' }
+        },
+        s_server_port: {
+            col: { text: 'Server Port'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        sender: {
+            col: { text: 'Sender', width: 100 },
+            fld: { type: 'string' }
+        },
+        server_address: {
+            col: { text: 'Server Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        server_country: {
+            col: { text: 'Server Country'.t(), width: 120 }, // converter
+            fld: { type: 'string', convert: Converter.country }
+        },
+        server_intf: {
+            col: { text: 'Server Interface'.t(), width: 100 }, // converter
+            fld: { type: 'integer', convert: Converter.interface }
+        },
+        server_latitude: {
+            col: { text: 'Server Latitude'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        server_longitude: {
+            col: { text: 'Server Longitude'.t(), filter: Rndr.filters.numeric, width: 120},
+            fld: { type: 'number' }
+        },
+        session_id: {
+            col: { text: 'Session Id'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        settings_file: {
+            col: { text: 'Settings File'.t(), width: 200, renderer: Rndr.settingsFile },
+            fld: { type: 'string' }
+        },
+        sig_id: {
+            col: { text: 'Sid', filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'integer' }
+        },
+        size: {
+            col: { text: 'Size', filter: Rndr.filters.numeric, width: 100 },
+            fld: { type: 'number' }
+        },
+        source_addr: {
+            col: { text: 'Source Address'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        source_port: {
+            col: { text: 'Source Port'.t(), filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        start_time: {
+            col: { text: 'Start Time'.t(), filter: Rndr.filters.date, width: 160 }, // converter
+            fld: { type: 'integer', convert: Converter.timestamp }
+        },
+        subject: {
+            col: { text: 'Subject'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        succeeded: {
+            col: { text: 'Succeeded'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        success: {
+            col: { text: 'Success'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        summary_text: {
+            col: { text: 'Summary'.t(), width: 200 },
+            fld: { type: 'string' }
+        },
+        swap_free: {
+            col: { text: 'Swap Free'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.memory },
+            fld: { type: 'number' }
+        },
+        swap_total: {
+            col: { text: 'Swap Total'.t(), filter: Rndr.filters.numeric, width: 100, align: 'right', renderer: Rndr.memory },
+            fld: { type: 'number' }
+        },
+        systems: {
+            col: { text: 'System Count'.t(), filter: Rndr.filters.numeric, width: 160 },
+            fld: { type: 'integer' }
+        },
+        tags: {
+            col: { text: 'Tags'.t(), width: 160 },
+            fld: { type: 'string' }
+        },
+        term: {
+            col: { text: 'Query Term'.t(), width: 160 },
+            fld: { type: 'string' }
+        },
+        time_stamp: {
+            col: { text: 'Timestamp'.t(), filter: Rndr.filters.date, width: 160 }, // converter
+            fld: { type: 'auto', convert: Converter.timestamp }
+        },
+        tunnel_description: {
+            col: { text: 'Tunnel Description'.t(), width: 160 },
+            fld: { type: 'string' }
+        },
+        tunnel_name: {
+            col: { text: 'Tunnel Name'.t(), width: 160 },
+            fld: { type: 'string' }
+        },
+        tx_bytes: {
+            col: { text: 'TX Bytes'.t(), filter: Rndr.filters.numeric, width: 80 },
+            fld: { type: 'number' }
+        },
+        tx_rate: {
+            col: { text: 'TX Rate'.t(), filter: Rndr.filters.numeric, width: 80 },
+            fld: { type: 'number' }
+        },
+        type: {
+            col: { text: 'Type'.t(), width: 160 },
+            fld: { type: 'string' }
+        },
+        uri: {
+            col: { text: 'URI'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        username: {
+            col: { text: 'Username'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        value: {
+            col: { text: 'Value'.t(), width: 120 },
+            fld: { type: 'string' }
+        },
+        vendor_name: {
+            col: { text: 'Vendor Name'.t(), width: 200 },
+            fld: { type: 'string' }
+        },
 
-        // applications related fields
-        ad_blocker_action: {       type: 'string' },
-        ad_blocker_cookie_ident: { type: 'string' },
-
-        application_control_application: { type: 'string' },
-        application_control_blocked: {     type: 'boolean' },
-        application_control_category: {    type: 'string' },
-        application_control_confidence: {  type: 'integer' },
-        application_control_detail: {      type: 'string' },
-        application_control_flagged: {     type: 'boolean' },
-        application_control_protochain: {  type: 'string' },
-        application_control_ruleid: {      type: 'integer' },
-
-        application_control_lite_blocked: {  type: 'boolean' },
-        application_control_lite_protocol: { type: 'string' }, // ?? why as text in DB, no conversion
-
-        bandwidth_control_priority: { type: 'integer' },
-        bandwidth_control_rule: {     type: 'integer' },
-
-        captive_portal_blocked: {    type: 'boolean' },
-        captive_portal_rule_index: { type: 'integer' },
-
-        firewall_blocked: {    type: 'boolean' },
-        firewall_flagged: {    type: 'boolean' },
-        firewall_rule_index: { type: 'integer' },
-
-        phish_blocker_action: {       type: 'string', convert: Converter.emailAction },
-        phish_blocker_is_spam: {      type: 'boolean' },
-        phish_blocker_score: {        type: 'number' },
-        phish_blocker_tests_string: { type: 'string' },
-
-        spam_blocker_action: {       type: 'string', convert: Converter.emailAction },
-        spam_blocker_is_spam: {      type: 'boolean' },
-        spam_blocker_score: {        type: 'number' },
-        spam_blocker_tests_string: { type: 'string' },
-
-        spam_blocker_lite_action: {       type: 'string', convert: Converter.emailAction },
-        spam_blocker_lite_is_spam: {      type: 'boolean' },
-        spam_blocker_lite_score: {        type: 'number' },
-        spam_blocker_lite_tests_string: { type: 'string' },
-
-        ssl_inspector_detail: { type: 'string' },
-        ssl_inspector_ruleid: { type: 'integer' },
-        ssl_inspector_status: { type: 'string' },
-
-        threat_prevention_blocked: {           type: 'boolean' },
-        threat_prevention_categories: {        type: 'integer' },
-        threat_prevention_client_categories: { type: 'integer' },
-        threat_prevention_client_reputation: { type: 'integer' },
-        threat_prevention_flagged: {           type: 'boolean' },
-        threat_prevention_reason: {            type: 'string' },
-        threat_prevention_reputation: {        type: 'integer' },
-        threat_prevention_rule_id: {           type: 'integer' },
-        threat_prevention_server_categories: { type: 'integer' },
-        threat_prevention_server_reputation: { type: 'integer' },
-
-        virus_blocker_clean: { type: 'boolean' },
-        virus_blocker_name: {  type: 'string' },
-
-        virus_blocker_lite_clean: { type: 'boolean' },
-        virus_blocker_lite_name: {  type: 'string' },
-
-        web_filter_blocked: {     type: 'boolean' },
-        web_filter_category_id: { type: 'integer', convert: Converter.webCategory },
-        web_filter_flagged: {     type: 'boolean' },
-        web_filter_reason: {      type: 'string', convert: Converter.webReason },
-        web_filter_rule_id: {     type: 'integer' }
+        // applications related columns
+        ad_blocker_action: {
+            col: { text: 'Action'.t() +  ' (Ad Blocker)', width: 80, renderer: Rndr.adBlockerAction },
+            fld: { type: 'string' }
+        },
+        ad_blocker_cookie_ident: {
+            col: { text: 'Blocked Cookie'.t() + ' (Ad Blocker)', width: 120 },
+            fld: { type: 'string' }
+        },
+        application_control_application: {
+            col: { text: 'Application'.t() + ' (Application Control)', width: 120 },
+            fld: { type: 'string' }
+        },
+        application_control_blocked: {
+            col: { text: 'Blocked'.t() + ' (Application Control)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        application_control_category: {
+            col: { text: 'Category'.t() + ' (Application Control)', width: 120 },
+            fld: { type: 'string' }
+        },
+        application_control_confidence: {
+            col: { text: 'Confidence'.t() + ' (Application Control)', filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        application_control_detail: {
+            col: { text: 'Detail'.t() + ' (Application Control)', width: 120 },
+            fld: { type: 'string' }
+        },
+        application_control_flagged: {
+            col: { text: 'Flagged'.t() + ' (Application Control)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean },
+            fld: { type: 'boolean' }
+        },
+        application_control_protochain: {
+            col: { text: 'Protochain'.t() + ' (Application Control)', width: 120 },
+            fld: { type: 'string' }
+        },
+        application_control_ruleid: {
+            col: { text: 'Rule'.t() + ' (Application Control)', filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        application_control_lite_blocked: {
+            col: { text: 'Blocked'.t() + ' (Application Control Lite)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        application_control_lite_protocol: {
+            col: { text: 'Protocol'.t() + ' (Application Control Lite)', width: 120 },
+            fld: { type: 'string' } // ??? why text/string
+        },
+        bandwidth_control_priority: {
+            col: { text: 'Priority'.t() + ' (Bandwidth Control)', width: 120, renderer: Rndr.priority },
+            fld: { type: 'integer' }
+        },
+        bandwidth_control_rule: {
+            col: { text: 'Rule'.t() + ' (Bandwidth Control)', width: 120, renderer: Rndr.bandwidthControlRule },
+            fld: { type: 'integer' }
+        },
+        captive_portal_blocked: {
+            col: { text: 'Blocked'.t() + ' (Captive Portal)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        captive_portal_rule_index: {
+            col: { text: 'Rule Id'.t() + ' (Captive Portal)', filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        firewall_blocked: {
+            col: { text: 'Blocked'.t() + ' (Firewall)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        firewall_flagged: {
+            col: { text: 'Flagged'.t() + ' (Firewall)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        firewall_rule_index: {
+            col: { text: 'Rule'.t() + ' (Firewall)', filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        phish_blocker_action: {
+            col: { text: 'Action'.t() + ' (Phish Blocker)', width: 120 }, // converter
+            fld: { type: 'string', convert: Converter.emailAction }
+        },
+        phish_blocker_is_spam: {
+            col: { text: 'Is Spam'.t() + ' (Phish Blocker)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        phish_blocker_score: {
+            col: { text: 'Score'.t() + ' (Phish Blocker)', filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        phish_blocker_tests_string: {
+            col: { text: 'Detail'.t() + ' (Phish Blocker)', width: 120 },
+            fld: { type: 'string' }
+        },
+        spam_blocker_action: {
+            col: { text: 'Action'.t() + ' (Spam Blocker)', width: 120 },
+            fld: { type: 'string', convert: Converter.emailAction }
+        },
+        spam_blocker_is_spam: {
+            col: { text: 'Is Spam'.t() + ' (Spam Blocker)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        spam_blocker_score: {
+            col: { text: 'Spam Score'.t() + ' (Spam Blocker)', filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        spam_blocker_tests_string: {
+            col: { text: 'Detail'.t() + ' (Spam Blocker)', width: 120 },
+            fld: { type: 'string' }
+        },
+        spam_blocker_lite_action: {
+            col: { text: 'Action'.t() + ' (Spam Blocker Lite)', width: 120},
+            fld: { type: 'string', convert: Converter.emailAction }
+        },
+        spam_blocker_lite_is_spam: {
+            col: { text: 'Is Spam'.t() + ' (Spam Blocker Lite)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        spam_blocker_lite_score: {
+            col: { text: 'Spam Score'.t() + ' (Spam Blocker Lite)', filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'number' }
+        },
+        spam_blocker_lite_tests_string: {
+            col: { text: 'Detail'.t() + ' (Spam Blocker Lite)', width: 120 },
+            fld: { type: 'string' }
+        },
+        ssl_inspector_detail: {
+            col: { text: 'Detail'.t() + ' (SSL Inspector)', width: 120 },
+            fld: { type: 'string' }
+        },
+        ssl_inspector_ruleid: {
+            col: { text: 'Rule Id'.t() + ' (SSL Inspector)', filter: Rndr.filters.numeric, width: 120 },
+            fld: { type: 'integer' }
+        },
+        ssl_inspector_status: {
+            col: { text: 'Status'.t() + ' (SSL Inspector)', width: 120 },
+            fld: { type: 'string' }
+        },
+        threat_prevention_blocked: {
+            col: { text: 'Blocked'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        threat_prevention_categories: {
+            col: { text: 'Categories'.t() + ' (Threat Prevention)', width: 120 },
+            fld: { type: 'integer' }
+        },
+        threat_prevention_client_categories: {
+            col: { text: 'Client Categories'.t() + ' (Threat Prevention)', width: 100 },
+            fld: { type: 'integer' }
+        },
+        threat_prevention_client_reputation: {
+            col: { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 100 },
+            fld: { type: 'integer' }
+        },
+        threat_prevention_flagged: {
+            col: { text: 'Flagged'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        threat_prevention_reason: {
+            col: { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
+            fld: { type: 'string' }
+        },
+        threat_prevention_reputation: {
+            col: { text: 'Reputation'.t() + ' (Threat Prevention)', width: 120 },
+            fld: { type: 'integer' }
+        },
+        threat_prevention_rule_id: {
+            col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120 },
+            fld: { type: 'integer' }
+        },
+        threat_prevention_server_categories: {
+            col: { text: 'Server Categories'.t() + ' (Threat Prevention)', width: 100 },
+            fld: { type: 'integer' }
+        },
+        threat_prevention_server_reputation: {
+            col: { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 100 },
+            fld: { type: 'integer' }
+        },
+        virus_blocker_clean: {
+            col: { text: 'Clean'.t() + ' (Virus Blocker)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        virus_blocker_name: {
+            col: { text: 'Name'.t() + ' (Virus Blocker)', width: 120 },
+            fld: { type: 'string' }
+        },
+        virus_blocker_lite_clean: {
+            col: { text: 'Clean'.t() + ' (Virus Blocker Lite)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        virus_blocker_lite_name: {
+            col: { text: 'Name'.t() + ' (Virus Blocker Lite)', width: 120 },
+            fld: { type: 'string' }
+        },
+        web_filter_blocked: {
+            col: { text: 'Blocked'.t() + ' (Web Filter)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        web_filter_category_id: {
+            col: { text: 'Web Category'.t() + ' (Web Filter)', width: 250 }, // converter
+            fld: { type: 'integer', convert: Converter.webCategory }
+        },
+        web_filter_flagged: {
+            col: { text: 'Flagged'.t() + ' (Web Filter)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            fld: { type: 'boolean' }
+        },
+        web_filter_reason: {
+            col: { text: 'Reason For Action'.t() + ' (Web Filter)', width: 120 },
+            fld: { type: 'string', convert: Converter.webReason }
+        },
+        web_filter_rule_id: {
+            col: { text: 'Web Rule'.t() + ' (Web Filter)', width: 120 }, // converter not implemented
+            fld: { type: 'integer' }
+        }
     },
 
     /**
      * all tables with corresponding fields as defined in db
-     * the fields are used to determine the store model field and the grid column
+     * the fields are used to determine the store model field and the grid column defined above
      */
     tables: {
-        admin_logins: ['time_stamp', 'login', 'local', 'client_addr', 'succeeded', 'reason'],
-        alerts: ['time_stamp', 'description', 'summary_text', 'json'],
-        captive_portal_user_events: ['time_stamp', 'policy_id', 'event_id', 'login_name', 'event_info', 'auth_type', 'client_addr'],
-        configuration_backup_events: ['time_stamp', 'success', 'description', 'destination', 'event_id'],
-        device_table_updates: ['time_stamp', 'mac_address', 'key', 'value', 'old_value'],
-        directory_connector_login_events: ['time_stamp', 'login_name', 'domain', 'type', 'client_addr'],
-        ftp_events: ['time_stamp', 'event_id', 'session_id', 'client_intf', 'server_intf', 'c_client_addr', 's_client_addr', 'c_server_addr', 's_server_addr', 'policy_id', 'username', 'hostname', 'request_id', 'method', 'uri'],
-        host_table_updates: ['time_stamp', 'address', 'key', 'value', 'old_value'],
-        interface_stat_events: ['time_stamp', 'interface_id', 'rx_rate', 'rx_bytes', 'tx_rate', 'tx_bytes'],
-        ipsec_user_events: ['event_id', 'time_stamp', 'connect_stamp', 'goodbye_stamp', 'client_address', 'client_protocol', 'client_username', 'net_process', 'net_interface', 'elapsed_time', 'rx_bytes', 'tx_bytes'],
-        ipsec_vpn_events: ['event_id', 'time_stamp', 'local_address', 'remote_address', 'tunnel_description', 'event_type'],
-        ipsec_tunnel_stats: ['time_stamp', 'tunnel_name', 'in_bytes', 'out_bytes', 'event_id'],
-        intrusion_prevention_events: ['time_stamp', 'sig_id', 'gen_id', 'class_id', 'source_addr', 'source_port', 'dest_addr', 'dest_port', 'protocol', 'blocked', 'category', 'classtype', 'msg', 'rid',],
-        openvpn_events: ['time_stamp', 'remote_address', 'pool_address', 'client_name', 'type'],
-        openvpn_stats: ['time_stamp', 'start_time', 'end_time', 'rx_bytes', 'tx_bytes', 'remote_address', 'pool_address', 'remote_port', 'client_name', 'event_id'],
-        quotas: ['time_stamp', 'entity', 'action', 'size', 'reason'],
-        server_events: ['time_stamp', 'load_1', 'load_5', 'load_15', 'cpu_user', 'cpu_system', 'mem_total', 'mem_free', 'disk_total', 'disk_free', 'swap_total', 'swap_free', 'active_hosts'],
-        settings_changes: ['time_stamp', 'settings_file', 'username', 'hostname'],
-        smtp_tarpit_events: ['time_stamp', 'ipaddr', 'hostname', 'policy_id', 'vendor_name', 'event_id'],
-        tunnel_vpn_events: ['event_id', 'time_stamp', 'tunnel_name', 'server_address', 'local_address', 'event_type'],
-        tunnel_vpn_stats: ['time_stamp', 'tunnel_name', 'in_bytes', 'out_bytes', 'event_id'],
-        user_table_updates: ['time_stamp', 'username', 'key', 'value', 'old_value'],
-        wan_failover_action_events: ['time_stamp', 'interface_id', 'action', 'os_name', 'name', 'event_id'],
-        wan_failover_test_events: ['time_stamp', 'interface_id', 'name', 'description', 'success', 'event_id'],
-        web_cache_stats: ['time_stamp', 'hits', 'misses', 'bypasses', 'systems', 'hit_bytes', 'miss_bytes', 'event_id'],
+        admin_logins: [
+            'time_stamp',
+            'login',
+            'local',
+            'client_addr',
+            'succeeded',
+            'reason'
+        ],
+        alerts: [
+            'time_stamp',
+            'description',
+            'summary_text',
+            'json'
+        ],
+        captive_portal_user_events: [
+            'time_stamp',
+            'policy_id',
+            'event_id',
+            'login_name',
+            'event_info',
+            'auth_type',
+            'client_addr'
+        ],
+        configuration_backup_events: [
+            'time_stamp',
+            'success',
+            'description',
+            'destination',
+            'event_id'
+        ],
+        device_table_updates: [
+            'time_stamp',
+            'mac_address',
+            'key',
+            'value',
+            'old_value'
+        ],
+        directory_connector_login_events: [
+            'time_stamp',
+            'login_name',
+            'domain',
+            'type',
+            'client_addr'
+        ],
+        ftp_events: [
+            'time_stamp',
+            'event_id',
+            'session_id',
+            'client_intf',
+            'server_intf',
+            'c_client_addr',
+            's_client_addr',
+            'c_server_addr',
+            's_server_addr',
+            'policy_id',
+            'username',
+            'hostname',
+            'request_id',
+            'method',
+            'uri'
+        ],
+        host_table_updates: [
+            'time_stamp',
+            'address',
+            'key',
+            'value',
+            'old_value'
+        ],
+        interface_stat_events: [
+            'time_stamp',
+            'interface_id',
+            'rx_rate',
+            'rx_bytes',
+            'tx_rate',
+            'tx_bytes'
+        ],
+        ipsec_user_events: [
+            'event_id',
+            'time_stamp',
+            'connect_stamp',
+            'goodbye_stamp',
+            'client_address',
+            'client_protocol',
+            'client_username',
+            'net_process',
+            'net_interface',
+            'elapsed_time',
+            'rx_bytes',
+            'tx_bytes'
+        ],
+        ipsec_vpn_events: [
+            'event_id',
+            'time_stamp',
+            'local_address',
+            'remote_address',
+            'tunnel_description',
+            'event_type'
+        ],
+        ipsec_tunnel_stats: [
+            'time_stamp',
+            'tunnel_name',
+            'in_bytes',
+            'out_bytes',
+            'event_id'
+        ],
+        intrusion_prevention_events: [
+            'time_stamp',
+            'sig_id',
+            'gen_id',
+            'class_id',
+            'source_addr',
+            'source_port',
+            'dest_addr',
+            'dest_port',
+            'protocol',
+            'blocked',
+            'category',
+            'classtype',
+            'msg',
+            'rid',
+        ],
+        openvpn_events: [
+            'time_stamp',
+            'remote_address',
+            'pool_address',
+            'client_name',
+            'type'
+        ],
+        openvpn_stats: [
+            'time_stamp',
+            'start_time',
+            'end_time',
+            'rx_bytes',
+            'tx_bytes',
+            'remote_address',
+            'pool_address',
+            'remote_port',
+            'client_name',
+            'event_id'
+        ],
+        quotas: [
+            'time_stamp',
+            'entity',
+            'action',
+            'size',
+            'reason'
+        ],
+        server_events: [
+            'time_stamp',
+            'load_1',
+            'load_5',
+            'load_15',
+            'cpu_user',
+            'cpu_system',
+            'mem_total',
+            'mem_free',
+            'disk_total',
+            'disk_free',
+            'swap_total',
+            'swap_free',
+            'active_hosts'
+        ],
+        settings_changes: [
+            'time_stamp',
+            'settings_file',
+            'username',
+            'hostname'
+        ],
+        smtp_tarpit_events: [
+            'time_stamp',
+            'ipaddr',
+            'hostname',
+            'policy_id',
+            'vendor_name',
+            'event_id'
+        ],
+        tunnel_vpn_events: [
+            'event_id',
+            'time_stamp',
+            'tunnel_name',
+            'server_address',
+            'local_address',
+            'event_type'
+        ],
+        tunnel_vpn_stats: [
+            'time_stamp',
+            'tunnel_name',
+            'in_bytes',
+            'out_bytes',
+            'event_id'
+        ],
+        user_table_updates: [
+            'time_stamp',
+            'username',
+            'key',
+            'value',
+            'old_value'
+        ],
+        wan_failover_action_events: [
+            'time_stamp',
+            'interface_id',
+            'action',
+            'os_name',
+            'name',
+            'event_id'
+        ],
+        wan_failover_test_events: [
+            'time_stamp',
+            'interface_id',
+            'name',
+            'description',
+            'success',
+            'event_id'
+        ],
+        web_cache_stats: [
+            'time_stamp',
+            'hits',
+            'misses',
+            'bypasses',
+            'systems',
+            'hit_bytes',
+            'miss_bytes',
+            'event_id'
+        ],
         http_events: [
             'request_id',
             'time_stamp',
