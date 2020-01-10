@@ -363,6 +363,8 @@ public class SslInspectorApp extends AppBase
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Yahoo", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Yahoo*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Bing", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*bing.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Ask", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*ask.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Duck Duck Go", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*duckduckgo.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect KidzSearch", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*kidzsearch.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Other Traffic", null, null, null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
 
         return defaultRules;
