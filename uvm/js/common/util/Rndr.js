@@ -2,16 +2,19 @@ Ext.define('Ung.util.Rndr', {
     singleton: true,
     alternateClassName: 'Rndr',
 
+    // predefine columns widths, to add more
     colW: {
         boolean: 80
     },
 
+    // columns filter types
     filters: {
         boolean: { type: 'boolean', yesText: 'true'.t(), noText: 'false'.t() },
         numeric: { type: 'numeric' },
         string: { type: 'string' },
         date: { type: 'date' },
     },
+
 
     boolean: function (value) {
         return (value == true || value == 'true') ? 'true' : 'false';
@@ -29,6 +32,10 @@ Ext.define('Ung.util.Rndr', {
 
     localLogin: function (value) {
         return value ? 'local'.t() : 'remote'.t();
+    },
+
+    successLogin: function (value) {
+        return value ? 'success'.t() : 'failed'.t();
     },
 
     settingsFile: function (value) {

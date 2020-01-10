@@ -46,13 +46,14 @@ Ext.define('Ung.util.Map', {
      *          filter: Rndr.filters.numeric, // the filter type e.g. 'numeric'/ 'boolean', defaults to 'string'
      *          width: 100, // the column width
      *          renderer: Rndr.boolean // the renderer method if needed, see Rndr class,
-     *          dataIndex: // matching field_id and set in grid setup (not set here)
+     *          dataIndex: // matching field_id and set in grid setup
      *          hidden: // true or false depending if found in report defaultColumns (not set here)
      *      },
      *      fld: {
      *          type: 'string', // model field type
-     *          convert: Converter.icmp // the converter method if needed, see Converter class
-     *          name: // matching field_id and set in grid setup (not defined here)
+     *          convert: Converter.icmp // the converter method if needed, see Converter class,
+     *          sortType: 'asIp', // if requires a specific sort type
+     *          name: // matching field_id and set in grid setup
      *      }
      * }
      *
@@ -64,6 +65,10 @@ Ext.define('Ung.util.Map', {
         action: {
             col: { text: 'Action'.t(), width: 100 },
             fld: { type: 'string' }
+        },
+        action_quotas: {
+            col: { text: 'Action'.t(), dataIndex: 'action', width: 100 },
+            fld: { name: 'action', type: 'string', convert: Converter.quotaAction }
         },
         active_hosts: {
             col: { text: 'Active Hosts'.t(), filter: Rndr.filters.numeric, width: 100 },
@@ -83,11 +88,11 @@ Ext.define('Ung.util.Map', {
         },
         address: {
             col: { text: 'Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         auth_type: {
             col: { text: 'Auth Type'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', convert: Converter.authType }
         },
         blocked: {
             col: { text: 'Blocked'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean,  renderer: Rndr.boolean },
@@ -115,7 +120,7 @@ Ext.define('Ung.util.Map', {
         },
         c_client_addr: {
             col: { text: 'Client'.t(), filter: Rndr.filters.string, width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         c_client_port: {
             col: { text: 'Client Port'.t(), filter: Rndr.filters.numeric, width: 120 },
@@ -123,7 +128,7 @@ Ext.define('Ung.util.Map', {
         },
         c_server_addr: {
             col: { text: 'Original Server'.t(), filter: Rndr.filters.string, width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         c_server_port: {
             col: { text: 'Original Server Port'.t(), filter: Rndr.filters.numeric, width: 120 },
@@ -143,11 +148,11 @@ Ext.define('Ung.util.Map', {
         },
         client_addr: {
             col: { text: 'Client Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         client_address: {
             col: { text: 'Client Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         client_country: {
             col: { text: 'Client Country'.t(), width: 120 }, // converter
@@ -199,7 +204,7 @@ Ext.define('Ung.util.Map', {
         },
         dest_addr: {
             col: { text: 'Destination Address'.t(), width: 200 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         dest_port: {
             col: { text: 'Destination Port'.t(), filter: Rndr.filters.numeric, width: 200 },
@@ -239,7 +244,7 @@ Ext.define('Ung.util.Map', {
         },
         event_info: {
             col: { text: 'Event Info'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', convert: Converter.captivePortalEventInfo }
         },
         event_type: {
             col: { text: 'Type'.t(), width: 120 },
@@ -250,7 +255,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         flagged: {
-            col: { text: 'Flagged'.t(), filter: Rndr.filters.boolean, filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            col: { text: 'Flagged'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
             fld: { type: 'boolean' }
         },
         gen_id: {
@@ -315,11 +320,11 @@ Ext.define('Ung.util.Map', {
         },
         local_addr: {
             col: { text: 'Local Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         local_address: {
             col: { text: 'Local Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         login: {
             col: { text: 'Login'.t(), width: 100},
@@ -394,7 +399,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'number' }
         },
         policy_id: {
-            col: { text: 'Policy Id'.t(), width: 120}, // converter
+            col: { text: 'Policy Id'.t(), width: 120},
             fld: { type: 'integer', convert: Converter.policy }
         },
         policy_rule_id: {
@@ -403,15 +408,19 @@ Ext.define('Ung.util.Map', {
         },
         pool_address: {
             col: { text: 'Pool Address'.t(), width: 100},
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         protocol: {
-            col: { text: 'Protocol'.t(), filter: Rndr.filters.numeric, width: 80 }, // converter
+            col: { text: 'Protocol'.t(), filter: Rndr.filters.numeric, width: 80 },
             fld: { type: 'integer', convert: Converter.protocol }
         },
         reason: {
-            col: { text: 'Reason'.t(), width: 100 }, // converter
-            fld: { type: 'string', convert: Converter.loginFailure }
+            col: { text: 'Reason'.t(), width: 200 },
+            fld: { type: 'string' }
+        },
+        reason_admin_logins: {
+            col: { text: 'Reason'.t(), dataIndex: 'reason', width: 100 },
+            fld: { name: 'reason', type: 'string', convert: Converter.loginFailureReason }
         },
         receiver: {
             col: { text: 'Receiver'.t(), width: 100 },
@@ -423,11 +432,11 @@ Ext.define('Ung.util.Map', {
         },
         remote_addr: {
             col: { text: 'Remote Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         remote_address: {
             col: { text: 'Remote Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         remote_port: {
             col: { text: 'Remote Port'.t(), filter: Rndr.filters.numeric, width: 120 },
@@ -471,7 +480,7 @@ Ext.define('Ung.util.Map', {
         },
         s_client_addr: {
             col: { text: 'New Client'.t(), filter: Rndr.filters.string, width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         s_client_port: {
             col: { text: 'New Client Port'.t(), filter: Rndr.filters.numeric, width: 120 },
@@ -479,7 +488,7 @@ Ext.define('Ung.util.Map', {
         },
         s_server_addr: {
             col: { text: 'Server'.t(), filter: Rndr.filters.string, width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         s_server_port: {
             col: { text: 'Server Port'.t(), filter: Rndr.filters.numeric, width: 120 },
@@ -491,7 +500,7 @@ Ext.define('Ung.util.Map', {
         },
         server_address: {
             col: { text: 'Server Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         server_country: {
             col: { text: 'Server Country'.t(), width: 120 }, // converter
@@ -527,7 +536,7 @@ Ext.define('Ung.util.Map', {
         },
         source_addr: {
             col: { text: 'Source Address'.t(), width: 120 },
-            fld: { type: 'string' }
+            fld: { type: 'string', sortType: 'asIp' }
         },
         source_port: {
             col: { text: 'Source Port'.t(), filter: Rndr.filters.numeric, width: 120 },
@@ -542,7 +551,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         succeeded: {
-            col: { text: 'Succeeded'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+            col: { text: 'Succeeded'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.successLogin },
             fld: { type: 'boolean' }
         },
         success: {
@@ -596,6 +605,10 @@ Ext.define('Ung.util.Map', {
         type: {
             col: { text: 'Type'.t(), width: 160 },
             fld: { type: 'string' }
+        },
+        type_directory_connector: {
+            col: { text: 'Action'.t(), dataIndex: 'type', width: 160 },
+            fld: { name: 'type', type: 'string', convert: Converter.directoryConnectorAction }
         },
         uri: {
             col: { text: 'URI'.t(), width: 120 },
@@ -840,7 +853,7 @@ Ext.define('Ung.util.Map', {
             'local',
             'client_addr',
             'succeeded',
-            'reason'
+            'reason_admin_logins' // original: reason
         ],
         alerts: [
             'time_stamp',
@@ -875,7 +888,7 @@ Ext.define('Ung.util.Map', {
             'time_stamp',
             'login_name',
             'domain',
-            'type',
+            'type_directory_connector', // original = type
             'client_addr'
         ],
         ftp_events: [
@@ -977,7 +990,7 @@ Ext.define('Ung.util.Map', {
         quotas: [
             'time_stamp',
             'entity',
-            'action',
+            'action_quotas', // original: action
             'size',
             'reason'
         ],
