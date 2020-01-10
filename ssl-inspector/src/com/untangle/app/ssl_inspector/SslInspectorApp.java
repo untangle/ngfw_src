@@ -20,7 +20,11 @@ import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
@@ -71,6 +75,9 @@ public class SslInspectorApp extends AppBase
     protected ArrayList<oauthDomain> oauthConfigList;
     private TrustManagerFactory trustFactory;
     private SslInspectorSettings settings;
+
+    private static final File CRON_FILE = new File("/etc/cron.daily/ssl-inspector-cleanup");
+    private static String keyStorePath = "/var/cache/untangle-ssl";
 
     /**
      * Constructor
@@ -181,6 +188,15 @@ public class SslInspectorApp extends AppBase
     {
         // load the list of OAuth domains
         loadOAuthList();
+    }
+
+    /**
+     * Called when the application is uninstalled.
+     */
+    @Override
+    protected void uninstall()
+    {
+        removeCertCache();
     }
 
     /**
@@ -299,6 +315,14 @@ public class SslInspectorApp extends AppBase
         // enable th HTTPS connectors using the app enabled flag and HTTPS enabled flag 
         clientWebConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedWebTraffic());
         serverWebConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedWebTraffic());
+
+        // if any inspection is enabled, write out the cert cleanup cron job, otherwise remove it
+        if (serverWebConnector.isEnabled() || clientWebConnector.isEnabled() ||
+            serverMailConnector.isEnabled() || clientMailConnector.isEnabled()) {
+            writeCronFile();
+        } else {
+            removeCertCache();
+        }
 
         if (settings.getJavaxDebug() == true) System.setProperty("javax.net.debug", "all");
 
@@ -500,5 +524,49 @@ public class SslInspectorApp extends AppBase
         } catch (Exception exn) {
             logger.warn("Exception loading OAuth domains:" + OAUTH_DOMAIN_CONFIG, exn);
         }
+    }
+
+    /**
+     * Write ssl inspector's cert cache cleanup cronjob file.
+     */
+    private void writeCronFile()
+    {
+        /**
+         * write the cron file for nightly runs that will
+         * remove all files in /var/cache/untangle-ssl that are older than 6 months
+         */
+        String cronStr = "#!/bin/sh\n\n" +
+                         "if [ -d /var/cache/untangle-ssl ] ; then\n" +
+                         "    /usr/bin/find " + keyStorePath + " -mtime +182 -exec rm {} +\n" +
+                         "fi\n\n" +
+                         "exit 0\n";
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(CRON_FILE));
+            out.write(cronStr, 0, cronStr.length());
+            out.write("\n");
+        } catch (IOException ex) {
+            logger.error("Unable to write file", ex);
+            return;
+        }finally{
+            if(out != null){
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
+        }
+
+        // Make it executable
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + CRON_FILE );
+    }
+
+    /**
+     * Clear the cert cache and delete ssl inspector's cert cache cleanup cronjob file.
+     */
+    private void removeCertCache()
+    {
+        UvmContextFactory.context().execManager().execResult( "rm -rf " + keyStorePath + "/* ; rm -f " + CRON_FILE );
     }
 }

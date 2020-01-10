@@ -1,153 +1,6 @@
 Ext.define('Ung.common.TableConfig.threatprevention', {
     singleton: true,
 
-    fromTypes: {
-        threat_reputation: {
-            type: 'RANGE',
-            rangeValues: [
-                [1,20],
-                [21,40],
-                [41,60],
-                [61,80],
-                [81,100]
-            ]
-        },
-        threat_category: {
-            type: 'BITMASK',
-            length: 31
-        }
-    },
-
-    sessionsFields: [{
-        name: 'threat_prevention_blocked'
-    }, {
-        name: 'threat_prevention_flagged'
-    }, {
-        name: 'threat_prevention_rule_id'
-    }, {
-        name: 'threat_prevention_client_reputation',
-        fromType: 'threat_reputation'
-    }, {
-        name: 'threat_prevention_client_categories',
-        fromType: 'threat_category'
-    }, {
-        name: 'threat_prevention_server_reputation',
-        fromType: 'threat_reputation'
-    }, {
-        name: 'threat_prevention_server_categories',
-        fromType: 'threat_category'
-    }],
-
-    httpFields: [{
-        name: 'threat_prevention_blocked'
-    }, {
-        name: 'threat_prevention_flagged'
-    }, {
-        name: 'threat_prevention_rule_id'
-    }, {
-        name: 'threat_prevention_reputation',
-        fromType: 'threat_reputation'
-    }, {
-        name: 'threat_prevention_categories',
-        fromType: 'threat_category'
-    }],
-
-
-    // To do categories, do nested. Then eventreport selection can construct.
-    // Make sure that with thee groupings, export still works.  And reports in general.
-    sessionsColumns: [{
-        header: 'Blocked'.t() + ' (Threat Prevention)',
-        width: Renderer.booleanWidth,
-        sortable: true,
-        dataIndex: 'threat_prevention_blocked',
-        filter: Renderer.booleanFilter
-    }, {
-        header: 'Flagged'.t() + ' (Threat Prevention)',
-        width: Renderer.booleanWidth,
-        sortable: true,
-        dataIndex: 'threat_prevention_flagged',
-        filter: Renderer.booleanFilter
-    }, {
-        header: 'Rule Id'.t() + ' (Threat Prevention)',
-        width: Renderer.idWidth,
-        sortable: true,
-        flex:1,
-        dataIndex: 'threat_prevention_rule_id',
-        filter: Renderer.numericFilter,
-        renderer: Ung.common.Renderer.threatprevention.ruleId
-    }, {
-        header: 'Client Reputation'.t() + ' (Threat Prevention)',
-        width: Renderer.idWidth,
-        sortable: true,
-        flex:1,
-        dataIndex: 'threat_prevention_client_reputation',
-        renderer: Ung.common.Renderer.threatprevention.reputation,
-        filter: Renderer.numericFilter
-    }, {
-        header: 'Client Categories'.t() + ' (Threat Prevention)',
-        width: Renderer.idWidth,
-        sortable: true,
-        flex:1,
-        dataIndex: 'threat_prevention_client_categories',
-        renderer: Ung.common.Renderer.threatprevention.category,
-        filter: Renderer.numericFilter
-    }, {
-        header: 'Server Reputation'.t() + ' (Threat Prevention)',
-        width: Renderer.idWidth,
-        sortable: true,
-        flex:1,
-        dataIndex: 'threat_prevention_server_reputation',
-        renderer: Ung.common.Renderer.threatprevention.reputation,
-        filter: Renderer.numericFilter,
-    }, {
-        header: 'Server Categories'.t() + ' (Threat Prevention)',
-        width: Renderer.idWidth,
-        sortable: true,
-        flex:1,
-        dataIndex: 'threat_prevention_server_categories',
-        renderer: Ung.common.Renderer.threatprevention.category,
-        filter: Renderer.numericFilter,
-    }],
-
-    httpColumns: [{
-        header: 'Blocked'.t() + ' (Threat Prevention)',
-        width: Renderer.booleanWidth,
-        sortable: true,
-        dataIndex: 'threat_prevention_blocked',
-        filter: Renderer.booleanFilter
-    }, {
-        header: 'Flagged'.t() + ' (Threat Prevention)',
-        width: Renderer.booleanWidth,
-        sortable: true,
-        dataIndex: 'threat_prevention_flagged',
-        filter: Renderer.booleanFilter
-    }, {
-        header: 'Rule Id'.t() + ' (Threat Prevention)',
-        width: Renderer.idWidth,
-        sortable: true,
-        flex:1,
-        dataIndex: 'threat_prevention_rule_id',
-        filter: Renderer.numericFilter,
-        renderer: Ung.common.Renderer.threatprevention.ruleId
-    }, {
-        header: 'Reputation'.t() + ' (Threat Prevention)',
-        width: Renderer.idWidth,
-        sortable: true,
-        flex:1,
-        dataIndex: 'threat_prevention_reputation',
-        renderer: Ung.common.Renderer.threatprevention.reputation,
-        filter: Renderer.numericFilter
-    }, {
-        header: 'Categories'.t() + ' (Threat Prevention)',
-        width: Renderer.idWidth,
-        sortable: true,
-        flex:1,
-        dataIndex: 'threat_prevention_categories',
-        renderer: Ung.common.Renderer.threatprevention.category,
-        filter: Renderer.numericFilter
-    }],
-
-
     initialized: false,
     initialize: function(tableConfig){
         if(this.initialized){
@@ -155,58 +8,184 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         }
         var me = this;
 
-        // use TableConfig methods to alter fields and columns
-        // field order doesn't matter.
-        // column matter does; by default append but allow to insert if value is specified.
-        // TableConfig.insertColumns(mylist,TableConfig.getColumn({dataIndex:'hurfdurf'}))
-
-        Ext.Array.push(
-            tableConfig.tableConfig.sessions.fields,
-            me.sessionsFields
-        );
-        Ext.Array.push(
-            tableConfig.tableConfig.sessions.columns,
-            me.sessionsColumns
-        );
-        Ext.Array.push(
-            tableConfig.tableConfig.session_minutes.fields,
-            me.sessionsFields
-        );
-
-        Ext.Array.push(
-            tableConfig.tableConfig.session_minutes.columns,
-            me.sessionsColumns
-        );
-
-        Ext.Array.push(
-            tableConfig.tableConfig.http_events.fields,
-            me.httpFields
-        );
-        Ext.Array.push(
-            tableConfig.tableConfig.http_events.columns,
-            me.httpColumns
-        );
-
-        tableConfig.tableConfig.sessions.listeners = {
-            select: Ung.common.TableConfig.threatprevention.onSelectDetails
-        };
-
-        Ext.Object.each( me.fromTypes, function(key, value){
-            tableConfig.fromTypes[key] = value;
+        /**
+         * Set From types
+         */
+        tableConfig.setFromType({
+            threat_reputation: {
+                type: 'RANGE',
+                rangeValues: [
+                    [1,20],
+                    [21,40],
+                    [41,60],
+                    [61,80],
+                    [81,100]
+                ]
+            },
+            threat_category: {
+                type: 'BITMASK',
+                length: 31
+            }
         });
 
+        /**
+         * Extended report sessions table fields.
+         */
+        tableConfig.setTableField("sessions", [{
+            name: 'threat_prevention_blocked'
+        }, {
+            name: 'threat_prevention_flagged'
+        }, {
+            name: 'threat_prevention_rule_id'
+        }, {
+            name: 'threat_prevention_client_reputation',
+            fromType: 'threat_reputation'
+        }, {
+            name: 'threat_prevention_client_categories',
+            fromType: 'threat_category'
+        }, {
+            name: 'threat_prevention_server_reputation',
+            fromType: 'threat_reputation'
+        }, {
+            name: 'threat_prevention_server_categories',
+            fromType: 'threat_category'
+        }]);
+        /**
+         * Extended report sessions table columns
+         */
+        tableConfig.setTableColumn("sessions", [{
+            header: 'Blocked'.t() + ' (Threat Prevention)',
+            width: Renderer.booleanWidth,
+            sortable: true,
+            dataIndex: 'threat_prevention_blocked',
+            filter: Renderer.booleanFilter
+        }, {
+            header: 'Flagged'.t() + ' (Threat Prevention)',
+            width: Renderer.booleanWidth,
+            sortable: true,
+            dataIndex: 'threat_prevention_flagged',
+            filter: Renderer.booleanFilter
+        }, {
+            header: 'Rule Id'.t() + ' (Threat Prevention)',
+            width: Renderer.idWidth,
+            sortable: true,
+            flex:1,
+            dataIndex: 'threat_prevention_rule_id',
+            filter: Renderer.numericFilter,
+            renderer: Ung.common.Renderer.threatprevention.ruleId
+        }, {
+            header: 'Client Reputation'.t() + ' (Threat Prevention)',
+            width: Renderer.idWidth,
+            sortable: true,
+            flex:1,
+            dataIndex: 'threat_prevention_client_reputation',
+            renderer: Ung.common.Renderer.threatprevention.reputation,
+            filter: Renderer.numericFilter
+        }, {
+            header: 'Client Categories'.t() + ' (Threat Prevention)',
+            width: Renderer.idWidth,
+            sortable: true,
+            flex:1,
+            dataIndex: 'threat_prevention_client_categories',
+            renderer: Ung.common.Renderer.threatprevention.category,
+            filter: Renderer.numericFilter
+        }, {
+            header: 'Server Reputation'.t() + ' (Threat Prevention)',
+            width: Renderer.idWidth,
+            sortable: true,
+            flex:1,
+            dataIndex: 'threat_prevention_server_reputation',
+            renderer: Ung.common.Renderer.threatprevention.reputation,
+            filter: Renderer.numericFilter,
+        }, {
+            header: 'Server Categories'.t() + ' (Threat Prevention)',
+            width: Renderer.idWidth,
+            sortable: true,
+            flex:1,
+            dataIndex: 'threat_prevention_server_categories',
+            renderer: Ung.common.Renderer.threatprevention.category,
+            filter: Renderer.numericFilter,
+        }]);
+        /**
+         * Add get detail listener
+         */
+        tableConfig.setTableListener("sessions", {
+            select: Ung.common.TableConfig.threatprevention.getIpDetails
+        });
+
+        /**
+        * Extended report http_events table fields.
+        */
+        tableConfig.setTableField("http_events", [{
+            name: 'threat_prevention_blocked'
+        }, {
+            name: 'threat_prevention_flagged'
+        }, {
+            name: 'threat_prevention_rule_id'
+        }, {
+            name: 'threat_prevention_reputation',
+            fromType: 'threat_reputation'
+        }, {
+            name: 'threat_prevention_categories',
+            fromType: 'threat_category'
+        }]);
+        /**
+         * Extended report http_events table columns
+         */
+        tableConfig.setTableColumn("http_events",[{
+            header: 'Blocked'.t() + ' (Threat Prevention)',
+            width: Renderer.booleanWidth,
+            sortable: true,
+            dataIndex: 'threat_prevention_blocked',
+            filter: Renderer.booleanFilter
+        }, {
+            header: 'Flagged'.t() + ' (Threat Prevention)',
+            width: Renderer.booleanWidth,
+            sortable: true,
+            dataIndex: 'threat_prevention_flagged',
+            filter: Renderer.booleanFilter
+        }, {
+            header: 'Rule Id'.t() + ' (Threat Prevention)',
+            width: Renderer.idWidth,
+            sortable: true,
+            flex:1,
+            dataIndex: 'threat_prevention_rule_id',
+            filter: Renderer.numericFilter,
+            renderer: Ung.common.Renderer.threatprevention.ruleId
+        }, {
+            header: 'Reputation'.t() + ' (Threat Prevention)',
+            width: Renderer.idWidth,
+            sortable: true,
+            flex:1,
+            dataIndex: 'threat_prevention_reputation',
+            renderer: Ung.common.Renderer.threatprevention.reputation,
+            filter: Renderer.numericFilter
+        }, {
+            header: 'Categories'.t() + ' (Threat Prevention)',
+            width: Renderer.idWidth,
+            sortable: true,
+            flex:1,
+            dataIndex: 'threat_prevention_categories',
+            renderer: Ung.common.Renderer.threatprevention.category,
+            filter: Renderer.numericFilter
+        }]);
+        /**
+         * Add get detail listener
+         */
+        tableConfig.setTableListener("http_events", {
+            select: Ung.common.TableConfig.threatprevention.getUrlDetails
+        });
 
         this.initialized = true;
     },
 
-    // columnRenderer: function(vaue, meta){
-    //     //meta.innerCls = 'fa fa-info-circle';
-    //     return value;
-    // },
-
+    /**
+     * Detail property details API fields and renderers.
+     * NOTE: Keys are flattened.
+     */
     detailMaps: {
         getrepinfo: {
-            name: 'Reputation'.t(),
+            name: 'Reputation History'.t(),
             fields: {
                 age: {
                     name: 'Age'.t(),
@@ -222,9 +201,9 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     renderer: Ung.common.Renderer.threatprevention.ipPopularity
                 },
                 threathistory: {
-                    name: 'Threat History'.t(),
+                    name: 'Most Recent Threat History'.t(),
                     renderer: function(value){
-                        return Ext.String.format('{0} occurences'.t(), value);
+                        return Ext.String.format('{0} occurrences'.t(), value > Ung.common.TableConfig.threatprevention.maxKeyIndex ? Ung.common.TableConfig.threatprevention.maxKeyIndex : value);
                     }
                 },
                 reputation: {
@@ -234,39 +213,66 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             }
         },
         geturlhistory:{
-            name: 'History'.t(),
-            fields: {
+            name: 'Category History'.t(),
+            fields:{
                 current_categorization: {
-                    name: 'Current Categories',
-                    renderer: function(value){
-                        var categories = [];
-                        value['categories'].forEach(function(cat){
-                                categories.push(Renderer.webCategory(cat['catid']) + ' : ' + cat['conf'] + '%');
-                        });
-                        return categories.join('<br>');
+                    name: 'Current Categorization'.t(),
+                    fields:{
+                        url: {
+                            name: 'URL'
+                        },
+                        categories:{
+                            name: 'Cateories'.t(),
+                            fields: {
+                                catid: {
+                                    name: 'Category'.t(),
+                                    renderer: function(value, metaData){
+                                        return Renderer.webCategory(value);
+                                    }
+                                },
+                                conf: {
+                                    name: 'Confidence'.t(),
+                                    renderer: function(value, metaData){
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 security_history: {
-                    name: 'Security'.t(),
-                    renderer: function(value){
-                        var history = [];
-                        value.forEach( function(shistory){
-                            var categories = [];
-                            shistory['categories'].forEach(function(cat){
-                                categories.push(Renderer.webCategory(cat['catid']) + ' : ' + cat['conf'] + '%');
-                            });
-                            history.push(Renderer.timestamp(shistory['timestamp']) + ': ' + categories.join('<br>'));
-                        });
-                        return history.join('<br>');
+                    name: 'Security History'.t(),
+                    fields:{
+                        categories: {
+                            name: 'Categories'.t(),
+                            fields: {
+                                catid: {
+                                    name: 'Category'.t(),
+                                    renderer: function(value, metaData){
+                                        return Renderer.webCategory(value);
+                                    }
+                                },
+                                conf: {
+                                    name: 'Confidence'.t(),
+                                    renderer: function(value, metaData){
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        },
+                        timestamp: {
+                            name: 'Timestamp'.t(),
+                            renderer: Renderer.timestamp
+                        }
                     }
                 },
                 url: {
-                    name: 'IP Address'
+                    name: 'URL'.t()
                 }
             }
         },
         getrephistory: {
-            name: 'Reputation'.t(),
+            name: 'Reputation History'.t(),
             fields: {
                 max_reputation: {
                     name: 'Maximum Reputation'.t(),
@@ -281,180 +287,294 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     renderer: Ung.common.Renderer.threatprevention.reputation
                 },
                 history_count: {
-                    name: 'Reputation History'.t(),
+                    name: 'Most Recent Reputation History'.t(),
                     renderer: function(value){
-                        return Ext.String.format('{0} occurences'.t(), value);
+                        return Ext.String.format('{0} occurrences'.t(), value > Ung.common.TableConfig.threatprevention.maxKeyIndex ? Ung.common.TableConfig.threatprevention.maxKeyIndex : value);
                     }
                 },
-                history:{
-                    name: 'Reputation History'.t(),
-                    renderer: function(value){
-                        var history = [];
-                        value.forEach( function(shistory){
-                            history.push(Renderer.timestamp(shistory['ts']) + ': ' + Ung.common.Renderer.threatprevention.reputation(shistory['reputation']));
-                        });
-                        return history.join('<br>\n');
+                history: {
+                    name: 'History'.t(),
+                    fields: {
+                        reputation:{
+                            name: 'Reputation'.t(),
+                            renderer: Ung.common.Renderer.threatprevention.reputation
+                        },
+                        ts:{
+                            name: 'Timestamp'.t(),
+                            renderer: Renderer.timestamp
+                        }
                     }
-                }
+                },
             }
         },
         getthreathistory: {
-            name: 'Reputation'.t(),
+            name: 'Category History'.t(),
             fields: {
+                history: {
+                    name: 'History'.t(),
+                    fields: {
+                        is_threat: {
+                            name: 'Threat?'.t(),
+                            renderer: function(value){
+                                return value ? 'Yes'.t() : 'No'.t();
+                            }
+                        },
+                        threat_types: {
+                            name: 'Threat Categories'.t(),
+                            renderer: function(value){
+                                if(value.indexOf("org.json") > -1){
+                                    return 'None'.t();
+                                }else{
+                                    return value;
+                                }
+                            }
+                        },
+                        ts: {
+                            name: 'Timestamp'.t(),
+                            renderer: Renderer.timestamp
+                        }
+                    }
+                },
                 threat_count: {
-                    name: 'Threat Count'.t(),
-                    renderer: function(value){
-                        return Ext.String.format('{0} occurences'.t(), value);
-                    }
-                },
-                history:{
-                    name: 'Threat History'.t(),
-                    renderer: function(value){
-                        var history = [];
-                        value.forEach( function(shistory){
-                            history.push(Renderer.timestamp(shistory['ts']) + ': ' + shistory['status'] + ': '  );
-                        });
-                        return history.join('<br>\n');
-                    }
-                },
-                is_threat: {
-                    name: 'Is Threat?',
-                    renderer: function(value){
-                        return value ? 'Yes'.t() : 'No'.t();
-                    }
+                    name: 'Threat Count'.t()
                 }
             }
         },
         getipevidence: {
-            name: 'History'.t(),
+            name: 'Evidence History'.t(),
             fields: {
-
+                ipint: {
+                    name: 'IP Address'.t(),
+                    renderer: function(value){
+                        return ( (value>>>24) +'.' + (value>>16 & 255) +'.' + (value>>8 & 255) +'.' + (value & 255) );
+                    }
+                },
+                evidence: {
+                    name: 'Evidence'.t(),
+                    fields:{
+                        is_threat: {
+                            name: 'Threat?'.t(),
+                            renderer: function(value){
+                                return value ? 'Yes'.t() : 'No'.t();
+                            }
+                        },
+                        event_type: {
+                            name: 'Event Type'.t(),
+                            renderer: function(value){
+                                if(value.indexOf("org.json") > -1){
+                                    return 'None'.t();
+                                }else{
+                                    return value;
+                                }
+                            }
+                        },
+                        convicted_time: {
+                            name: 'Convinced Timestamp'.t(),
+                            renderer: Renderer.timestamp
+                        },
+                        incidents: {
+                            name: 'Incidents'.t(),
+                            fields: {
+                                start_time: {
+                                    name: 'Timestamp'.t(),
+                                    renderer: Renderer.timestamp
+                                },
+                                event_desc: {
+                                    name: 'Event Description'.t()
+                                },
+                                event_type: {
+                                    name: 'Event Type'.t()
+                                },
+                                number_of_attempts: {
+                                    name: 'History: Attempt Count'.t()
+                                },
+                                threat_type: {
+                                    name: 'History: Threat Type'.t()
+                                },
+                                timespan: {
+                                    name: 'History: Time Span'.t(),
+                                    renderer: Renderer.timespan
+                                },
+                                details: {
+                                    name: 'Details'.t(),
+                                    fields: {
+                                        sources: {
+                                            name: 'History: Sources'.t()
+                                        },
+                                        total_attacks: {
+                                            name: 'History: Attack Count'.t()
+                                        },
+                                        events: {
+                                            name: 'History: Events'.t()
+                                        },
+                                        exploits: {
+                                            name: 'History: Exploits'.t()
+                                        },
+                                        hosted_urls: {
+                                            name: 'History: Hosted Urls'.t()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
 
-    sourceTypes: ['client', 'server'],
-    onSelectDetails: function(element, record){
-        // console.log(arguments);
+    /**
+     * Build url-address based property records for reputation detail apis.
+     *
+     * @param {*} element Currently selected grid row
+     * @param {*} record Current grid row record
+     */
+    getUrlDetails: function( element, record){
         var me = this,
             v = me.getView(),
             vm = this.getViewModel(),
-            clientAddress = record.get('c_client_addr'),
-            serverAddress = record.get('s_server_addr'),
-            policyId = record.get('policy_id');
+            policyId = record.get('policy_id'),
+            uriAddress = record.get('host'),
+            reputation = record.get('threat_prevention_reputation');
 
-        var policy = Ext.getStore('policies').findRecord('policyId', policyId);
-        if(policy == null){
-            return;
-        }
-        var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-            return inst.appName === "threat-prevention";
-        });
-        if(appInstance == null){
+        if(reputation == null || reputation == 0){
             return;
         }
 
-        var localNetworks = Rpc.directData('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, "localNetworks");
-        var ipAddresses = [];
-        var urlAddresses = [];
-        Ung.common.TableConfig.threatprevention.sourceTypes.forEach( function(sourceType){
-            var reputation = record.get('threat_prevention_' +sourceType+'_reputation');
-            if(reputation != null && reputation > 0){
-                localNetworks.forEach(function(network){
-                    var clientIsRemote = false;
-                    if( (sourceType == 'client') &&
-                        (record.get('threat_prevention_client_reputation') > 0) &&
-                        (false === Util.ipMatchesNetwork(clientAddress, network['maskedAddress'], network['netmaskString'] ))){
-                        ipAddresses.push(clientAddress);
-                        clientIsRemote = true;
-                    }
-                    if( (sourceType == 'server') &&
-                        (record.get('threat_prevention_server_reputation') > 0) &&
-                        (false === Util.ipMatchesNetwork(serverAddress, network['maskedAddress'], network['netmaskString'] ))){
-                        if(clientIsRemote == true){
-                            ipAddresses.push(serverAddress);
-                        }else{
-                            urlAddresses.push(serverAddress);
-                        }
-                    }
-                });
-            }
-        });
-
-        // // TEST FOR IP
-        // ipAddresses = urlAddresses;
-        // urlAddresses = [];
-
-        urlAddresses.push();
-        // console.log(ipAddresses);
-        // console.log(urlAddresses);
-
-        var app = Rpc.directData('rpc.appManager.app', appInstance.id);
-
-        var rpcSequence = [];
-        if(ipAddresses.length){
-            ipAddresses.forEach(function(address){
-                rpcSequence.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getIpHistory', [address]));
-            });
-        }
-        if(urlAddresses.length){
-            urlAddresses.forEach(function(address){
-                rpcSequence.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getUrlHistory', [address]));
-            });
+        if(uriAddress != undefined){
+            uriAddress += record.get('uri');
         }
 
-        Ext.Deferred.sequence(rpcSequence, this)
+        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getUrlHistory', [uriAddress])], this)
         .then(function(results){
             if(Util.isDestroyed(v)){
                 return;
             }
-            // console.log("result=");
-            // console.log(results);
-
             var propertyRecord = [];
-
-            var categories = [];
-            var history = [];
-
-            var category = null;
+            var propertyCategory = null;
             results.forEach( function(result){
                 result.forEach( function(answer){
-                    var answerAddress = 'url' in answer ? answer['url'] : answer['value'];
-                    var addressType = answerAddress == clientAddress ? 'Client'.t() : 'Server'.t();
-
-                    // console.log('answer=');
-                    // console.log(answer);
+                    /**
+                     * Walk detail maps for this answer.  Each call can make multiple API queries.
+                     */
                     Ext.Object.each(
                         Ung.common.TableConfig.threatprevention.detailMaps,
                         function(detail, detailMap){
                             if(detail in answer['queries']){
-                                // console.log('detail=' + detail);
-                                category = Ext.String.format('Threat Prevention {0}: {1}'.t(), detailMap.name, addressType); 
-                                // console.log('use detailMap');
-                                // console.log(detailMap);
-                                Ext.Object.each( answer['queries'][detail], function(key, value){
-                                    propertyRecord.push({
-                                        name: detailMap.fields[key] && detailMap.fields[key]['name'] ? detailMap.fields[key]['name'] : key,
-                                        value: detailMap.fields[key] && detailMap.fields[key]['renderer'] ? detailMap.fields[key]['renderer'].call(this,value) : value,
-                                        category: category
-                                    });
-                                });
+                                propertyCategory = Ext.String.format('Threat Prevention: {0}: {1}'.t(), detailMap.name, 'Server'.t());
+                                Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, detailMap['fields'], answer['queries'][detail]);
                             }
                         }
                     );
                 });
             });
-            // console.log('prop grid');
-            // console.log(v.up().down('unpropertygrid'));
             v.up().down('unpropertygrid').getStore().loadData(propertyRecord, true);
-            // vm.set('propsData', propertyRecord);
-            // vm.get('props').loadData(propertyRecord);
         }, function(ex) {
-            // if(!Util.isDestroyed(v, vm)){
-            //     vm.set('panel.saveDisabled', true);
-            //     v.setLoading(false);
-            // }
+            console.log(ex);
+        });
+
+    },
+
+    /**
+     * Build IP-address based property records for reputation detail apis.
+     *
+     * @param {*} element Currently selected grid row
+     * @param {*} record Current grid row record
+     */
+    getIpDetails: function( element, record){
+        var me = this,
+            v = me.getView(),
+            vm = this.getViewModel(),
+            clientIpAddress = record.get('c_client_addr'),
+            serverIpAddress = record.get('s_server_addr'),
+            policyId = record.get('policy_id'),
+            clientReputation = record.get('threat_prevention_client_reputation'),
+            serverReputation = record.get('threat_prevention_server_reputation'),
+            ipAddresses = [];
+
+        if( clientReputation != null && clientReputation > 0 ){
+            ipAddresses.push(clientIpAddress);
+        }
+        if( serverReputation != null && serverReputation > 0){
+            ipAddresses.push(serverIpAddress);
+        }
+
+        if(ipAddresses.length == 0){
+            return;
+        }
+
+        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getIpHistory', ipAddresses)], this)
+         .then(function(results){
+            if(Util.isDestroyed(v)){
+                return;
+            }
+            var propertyRecord = [];
+            var propertyCategory = null;
+            results.forEach( function(result){
+                result.forEach( function(answer){
+                    /**
+                     * Walk detail maps for this answer.  Each call can make multiple API queries.
+                     */
+                    Ext.Object.each(
+                        Ung.common.TableConfig.threatprevention.detailMaps,
+                        function(detail, detailMap){
+                            if(detail in answer['queries']){
+                                var ipAddress = "ip" in answer ? answer["ip"] : answer["value"];
+                                propertyCategory = Ext.String.format('Threat Prevention: {0}: {1}'.t(), detailMap.name, ipAddress == serverIpAddress ? 'Server'.t() : 'Client'.t());
+                                Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, detailMap['fields'], answer['queries'][detail]);
+                            }
+                        }
+                    );
+                });
+            });
+            v.up().down('unpropertygrid').getStore().loadData(propertyRecord, true);
+        }, function(ex) {
             console.log(ex);
         });
     },
+
+    /*
+     * Convert multi-level json object into a single-level key-pair flattened json object.
+     */
+    maxKeyIndex: 10,
+    toPropertyRecord: function(propertyRecord, propertyCategory, fields, obj, fieldPath, namePath, currentIndex) {
+        fieldPath = fieldPath || [];
+        namePath = namePath || [];
+
+        if(currentIndex != undefined &&
+            (currentIndex + 1) > Ung.common.TableConfig.threatprevention.maxKeyIndex){
+            return propertyRecord;
+        }
+
+        if (typeof (obj) === 'object' && obj !== null) {
+            Ext.Object.each(obj, function(key, value){
+                if(Array.isArray(obj)){
+                    var newName = namePath[namePath.length - 1];
+                    var keyIndex = parseInt(key,10);
+                    if(obj.length > 1){
+                        newName += ' ' + ( keyIndex + 1 );
+                    }
+                    Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, fields, value, fieldPath, namePath.slice(0,namePath.length-2).concat(newName), keyIndex);
+                }else{
+                    Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, fields[key] && 'fields' in fields[key] ? fields[key]['fields'] : fields, value, fieldPath.concat(key), namePath.concat(fields[key] && 'name' in fields[key] ? fields[key]['name'] : key));
+                }
+            });
+        } else {
+            var field = fieldPath[fieldPath.length - 1];
+            var addProperty = true;
+            if(field == 'javaClass'){
+                addProperty = false;
+            }
+            if(addProperty == true){
+                // append to property record array
+                propertyRecord.push({
+                    category: propertyCategory,
+                    name: namePath.join(': '),
+                    value: field in fields && fields[field]['renderer'] ? fields[field]['renderer'].call(this,obj) : obj
+                });
+            }
+        }
+
+        return propertyRecord;
+    }
 });
