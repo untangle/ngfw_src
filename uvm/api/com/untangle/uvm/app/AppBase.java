@@ -62,8 +62,8 @@ public abstract class AppBase implements App
      * These store this app's metrics (for display in the UI) The hash map is
      * for fast lookups The list is to maintain order for the UI
      */
-    private Map<String, AppMetric> metrics = new ConcurrentHashMap<>();
-    private List<AppMetric> metricList = new ArrayList<>();
+    protected Map<String, AppMetric> metrics = new ConcurrentHashMap<>();
+    protected List<AppMetric> metricList = new ArrayList<>();
 
     private AppSettings.AppState currentState;
 

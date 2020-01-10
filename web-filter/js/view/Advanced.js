@@ -67,6 +67,36 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             boxLabel: 'Force searches through kid-friendly search engine'.t(),
             bind: '{settings.forceKidFriendly}'
         }]
+    },{
+        xtype: 'fieldset',
+        title: 'Block options'.t(),
+        padding: '10 15',
+        cls: 'app-section',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+        items: [{
+            xtype: 'checkbox',
+            boxLabel: 'Block QUIC Sessions (UDP port 443)'.t(),
+            bind: '{settings.blockQuic}'
+        }, {
+            xtype: 'checkbox',
+            margin: '0 0 5 20',
+            boxLabel: 'Log blocks'.t(),
+            bind: {
+                hidden: '{!isExpertMode || !settings.blockQuic}',
+                value: '{settings.logQuic}'
+            }
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Block pages from IP only hosts'.t(),
+            bind: '{settings.blockAllIpHosts}'
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Pass if referrer matches any Pass Sites'.t(),
+            bind: '{settings.passReferers}'
+        }]
     }, {
         xtype: 'fieldset',
         title: 'Restrict Google applications'.t(),
@@ -158,6 +188,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             xtype: 'textfield',
             fieldLabel: 'Custom block page URL'.t(),
             labelAlign: 'top',
+            emptyText: 'http://example.com',
             bind: '{settings.customBlockPageUrl}'
         }]
     }, {

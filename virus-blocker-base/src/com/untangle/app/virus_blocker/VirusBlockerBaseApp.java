@@ -266,37 +266,25 @@ public abstract class VirusBlockerBaseApp extends AppBase
     }
 
     /**
-     * Generate a nonce
-     * 
-     * @param details
-     *        The virus block details
-     * @return A nonce
-     */
-    public String generateNonce(VirusBlockDetails details)
-    {
-        return replacementGenerator.generateNonce(details);
-    }
-
-    /**
      * Generate a response
      * 
-     * @param nonce
-     *        The nonce
+     * @param redirectDetails
+     *        Block details
      * @param session
      *        The session
      * @param uri
      *        The URI
      * @return The response
      */
-    public Token[] generateResponse(String nonce, AppTCPSession session, String uri)
+    public Token[] generateResponse(VirusBlockDetails redirectDetails, AppTCPSession session, String uri)
     {
-        return replacementGenerator.generateResponse(nonce, session, uri, null);
+        return replacementGenerator.generateResponse(redirectDetails, session, uri, null);
     }
 
     /**
      * Generate a response
      * 
-     * @param nonce
+     * @param redirectDetails
      *        The nonce
      * @param session
      *        The session
@@ -306,9 +294,9 @@ public abstract class VirusBlockerBaseApp extends AppBase
      *        The header
      * @return The response
      */
-    public Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
+    public Token[] generateResponse(VirusBlockDetails redirectDetails, AppTCPSession session, String uri, HeaderToken header)
     {
-        return replacementGenerator.generateResponse(nonce, session, uri, header);
+        return replacementGenerator.generateResponse(redirectDetails, session, uri, header);
     }
 
     /**

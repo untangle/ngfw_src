@@ -15,7 +15,6 @@ import com.untangle.uvm.app.AppSettings;
 class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
 {
 // THIS IS FOR ECLIPSE - @formatter:off
-    
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
@@ -24,7 +23,6 @@ class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
         + "<p>This site is blocked because it contains a virus.</p>"
         + "<p>Host: %s</p>"
         + "<p>URI: %s</p>"
-        + "<p>Reason: %s</p>"
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 // THIS IS FOR ECLIPSE - @formatter:on
@@ -38,6 +36,7 @@ class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
     VirusReplacementGenerator(AppSettings tid)
     {
         super(tid);
+        this.redirectUri.setPath("/virus/blockpage");
     }
 
     /**
@@ -53,22 +52,5 @@ class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
         UvmContext uvm = UvmContextFactory.context();
 
         return String.format(BLOCK_TEMPLATE, details.getVendor(), details.getHost(), details.getUri(), details.getReason(), uvm.brandingManager().getContactHtml());
-    }
-
-    /**
-     * Get the redirect URL
-     * 
-     * @param nonce
-     *        The nonce
-     * @param host
-     *        The host
-     * @param appSettings
-     *        The application settings
-     * @return The redirect URL
-     */
-    @Override
-    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
-    {
-        return "http://" + host + "/virus/blockpage?nonce=" + nonce + "&tid=" + appSettings.getId();
     }
 }

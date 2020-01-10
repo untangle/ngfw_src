@@ -7,7 +7,7 @@ package com.untangle.app.web_filter;
 import java.net.URI;
 
 import com.untangle.app.http.HeaderToken;
-import com.untangle.uvm.vnet.Token;
+import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.web_filter.WebFilterBase;
 import com.untangle.app.web_filter.WebFilterHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
@@ -43,12 +43,13 @@ public class WebFilterHandler extends WebFilterBaseHandler
     {
         app.incrementScanCount();
 
-        WebFilterRedirectDetails redirectDetails= app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
+        HttpRedirect redirect = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
+        // instead of details, get Token[] response
         if (logger.isDebugEnabled()) {
-            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirectDetails);
+            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirect);
         }
 
-        if (redirectDetails == null) {
+        if (redirect == null) {
             String host = requestHeader.getValue("Host");
             URI uri = getRequestLine(session).getRequestUri();
 
@@ -66,14 +67,12 @@ public class WebFilterHandler extends WebFilterBaseHandler
         } else {
             String uri = getRequestLine(session).getRequestUri().toString();
 
-            if(redirectDetails.getBlocked()){
+            if(redirect.getType() == HttpRedirect.RedirectType.BLOCK){
                 app.incrementBlockCount();
-                Token[] response = app.generateBlockResponse( redirectDetails, session, uri, requestHeader);
-                blockRequest(session, response);
+                blockRequest(session, redirect.getResponse());
             }else{
                 app.incrementRedirectCount();
-                Token[] response = app.generateRedirectResponse( redirectDetails, session, uri, requestHeader);
-                redirectRequest(session, response);
+                redirectRequest(session, redirect.getResponse());
             }
         }
 

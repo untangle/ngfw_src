@@ -86,7 +86,7 @@ def headerparserhandler(req):
 
     if None == username and is_local_process_uid_authorized(req):
         username = 'localadmin'
-        log_login(req, username, True, True, None)
+        log_login(req, username, True, None)
         save_session_user(sess, realm, username)
 
     #if sess.has_key('apache_realms'):
@@ -293,8 +293,21 @@ def send_login_event(client_addr, login, local, succeeded, reason):
     except Exception, e:
         apache.log_error('error: %s' % repr(e))
 
-def log_login(req, login, local, succeeded, reason):
+def log_login(req, login, succeeded, reason):
+    """ Send a login event to the admin login log
+
+    Arguments:
+        req -- http request
+        login -- the username attempting to log in
+        succeeded -- true if the login was successful, false otherwise
+        reason -- string conveys the reason the login failed, or None if the login succeeded
+    """
+    local = False
     (client_addr, client_port) = req.connection.remote_addr
+
+    if client_addr == "127.0.0.1" or client_addr == "::1":
+        local = True
+
     threading.Thread(target=lambda: send_login_event(client_addr, login, local, succeeded, reason)).start()
 
 def write_error_page(req, msg):

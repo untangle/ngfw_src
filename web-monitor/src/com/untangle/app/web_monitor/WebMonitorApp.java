@@ -238,17 +238,6 @@ public class WebMonitorApp extends WebFilterBase
     }
 
     /**
-     * Create a replacement generator
-     * 
-     * @return Replacement generator
-     */
-    @Override
-    protected WebFilterReplacementGenerator buildReplacementGenerator()
-    {
-        return new WebFilterReplacementGenerator(getAppSettings());
-    }
-
-    /**
      * Called to get the application title
      * 
      * @return The application title
