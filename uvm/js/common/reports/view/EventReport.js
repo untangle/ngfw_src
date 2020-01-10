@@ -29,7 +29,8 @@ Ext.define('Ung.view.reports.EventReport', {
         // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Records!</p>',
         enableColumnHide: true,
         listeners: {
-            // select: 'onEventSelect'
+            select: 'onEventSelect',
+            columnsChanged: 'onColumnsChanged'
         }
     }, {
         xtype: 'unpropertygrid',
@@ -80,6 +81,9 @@ Ext.define('Ung.view.reports.EventReport', {
                 if(Util.isDestroyed(me, view)){
                     return;
                 }
+                // clear grid data on report change
+                view.down('grid').getStore().setData([]);
+
                 if (!entry || entry.get('type') !== 'EVENT_LIST') {
                     return;
                 }
@@ -122,8 +126,8 @@ Ext.define('Ung.view.reports.EventReport', {
              * iterate table fields and generate columns
              */
             Ext.Array.each(fieldIds, function (fieldId) {
-                var field = Map.fields[fieldId];
-                var column = Map.columns[fieldId];
+                var field = Map.fields[fieldId].fld;
+                var column = Map.fields[fieldId].col;
 
                 column.dataIndex = fieldId;
                 column.hidden = !Ext.Array.contains(defaultColumns, fieldId);
@@ -140,10 +144,10 @@ Ext.define('Ung.view.reports.EventReport', {
             model.addFields(fields);
             grid.reconfigure(columns);
 
-            // var propertygrid = me.getView().down('#eventsProperties');
-            // vm.set('eventProperty', null);
-            // propertygrid.fireEvent('beforerender');
-            // propertygrid.fireEvent('beforeexpand');
+            var propertygrid = me.getView().down('#eventsProperties');
+            vm.set('eventProperty', null);
+            propertygrid.fireEvent('beforerender');
+            propertygrid.fireEvent('beforeexpand');
         },
 
         onDefaultColumn: function (defaultColumn) {
@@ -271,9 +275,9 @@ Ext.define('Ung.view.reports.EventReport', {
                 me.getView().up('entry').lookupReference('settingsBtn').setPressed(false);
             }
 
-            if(me.tableConfig.listeners && me.tableConfig.listeners.select){
-                me.tableConfig.listeners.select.apply(me, arguments);
-            }
+            // if(me.tableConfig.listeners && me.tableConfig.listeners.select){
+            //     me.tableConfig.listeners.select.apply(me, arguments);
+            // }
         },
 
         onDataChanged: function(){
