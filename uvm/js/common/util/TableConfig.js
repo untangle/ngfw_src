@@ -9,6 +9,7 @@ Ext.define('TableConfig', {
             return;
         }
         var me = this;
+
         Ext.Object.each(Ung.common.TableConfig, function(key, value){
             Ung.common.TableConfig[key].initialize(me);
         });

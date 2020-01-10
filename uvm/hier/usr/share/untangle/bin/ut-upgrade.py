@@ -110,6 +110,10 @@ def autoremove():
     log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
     return cmd_to_log("apt-get autoremove %s" % AUTOREMOVE_OPTS)
 
+def clean():
+    log("apt-get clean")
+    return cmd_to_log("apt-get clean")
+
 log_date( os.path.basename( sys.argv[0]) )
 
 log("")
@@ -134,6 +138,11 @@ log_date("")
 log("")
 
 autoremove()
+
+log_date("")
+log("")
+
+clean()
 
 log_date("")
 log("")

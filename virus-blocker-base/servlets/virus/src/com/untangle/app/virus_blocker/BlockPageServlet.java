@@ -45,7 +45,7 @@ public class BlockPageServlet extends HttpServlet
 
         Map<String, String> i18n_map = UvmContextFactory.context().languageManager().getTranslations("untangle");
 
-        VirusBlockerBaseApp app = (VirusBlockerBaseApp) nm.app(Long.parseLong(request.getParameter("tid")));
+        VirusBlockerBaseApp app = (VirusBlockerBaseApp) nm.app(Long.parseLong(request.getParameter("appid")));
         if (app == null || !(app instanceof VirusBlockerBaseApp)) {
             response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr("Feature is not installed.", i18n_map));
             return;

@@ -6,14 +6,15 @@ package com.untangle.app.http;
 import java.lang.Class;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
@@ -23,6 +24,11 @@ import com.untangle.uvm.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.AppTCPSession;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.Logger;
 
 /**
  * Generates a replacement page for Apps that block traffic.
@@ -48,6 +54,9 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
 
     private static final Pattern IMAGE_PATTERN = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))", Pattern.CASE_INSENSITIVE);
 
+    protected URIBuilder redirectUri;
+    protected Map<String,Object> redirectParameters;
+
     private final NonceFactory<T> nonceFactory = new NonceFactory<>();
     protected final AppSettings appSettings;
 
@@ -55,9 +64,16 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
      * Create a ReplacementGenerator
      * @param appSettings - the app settings for the blocking app
      */
-    public ReplacementGenerator( AppSettings appSettings )
+    public ReplacementGenerator( AppSettings appSettings)
     {
         this.appSettings = appSettings;
+
+        try{
+            redirectUri = new URIBuilder();
+        }catch(Exception e){}
+        redirectParameters = new HashMap<String,Object>();
+        redirectParameters.put("nonce", null);
+        redirectParameters.put("appid", null);
     }
 
     /**
@@ -91,124 +107,111 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
     }
 
     /**
-     * Generate a response (as a token array)
-     * for the specified BlockDetails and session
-     * @param o - the BlockDetails
-     * @param session
-     * @param uri
-     * @param requestHeader
-     * @return the token array
+     * Generate response from details and TCP session.
+     * @param  details ReplacementDetails containing data to pull.
+     * @param  session AppTCPSesson
+     * @return         Token array of response to send back to client.
      */
-    public Token[] generateResponse( T o, AppTCPSession session, String uri, HeaderToken requestHeader )
+    public Token[] generateResponse(T details, AppTCPSession session)
     {
-        String n = generateNonce(o);
-        return generateResponse(n, session, uri, requestHeader );
+        return generateResponse(details, session, null, null, null, null);
     }
 
     /**
-     * Generate a response (as a token array)
-     * for the specified nonce and session
-     * @param o - Details
-     * @param session
-     * @return the token array
+     * Generate response from details and TCP session.
+     * @param  details ReplacementDetails containing data to pull.
+     * @param  session AppTCPSesson
+     * @param  uri           String of uri to reach.
+     * @param  requestHeader HeaderToken containing reuquest
+     * @return         Token array of response to send back to client.
      */
-    public Token[] generateResponse( T o, AppTCPSession session )
+    public Token[] generateResponse(T details, AppTCPSession session, String uri, HeaderToken requestHeader)
     {
-        String n = generateNonce(o);
-        return generateResponse(n, session, null, null );
+        return generateResponse(details, session, uri, requestHeader, null, null);
     }
 
     /**
-     * Generate a response (as a token array)
-     * for the specified nonce and session
-     * @param nonce
-     * @param session
-     * @return the token array
+     * Generate response from details and TCP session and overriding redirectUri and redirectParameters.
+     * @param  details ReplacementDetails containing data to pull.
+     * @param  session AppTCPSesson
+     * @param  uri           String of uri to reach.
+     * @param  requestHeader HeaderToken containing reuquest.
+     * @param  redirectUri        URIBuilder of redirect uri to use.  If null, use redirectUri from this generator.
+     * @param  redirectParameters Map of redirectparameters to use.  If null, use redirectParameters from this generator.
+     * @return         Token array of response to send back to client.
      */
-    public Token[] generateResponse( String nonce, AppTCPSession session )
-    {
-        return generateResponse(nonce, session, null, null );
-    }
-
-    /**
-     * Generate a response (as a token array)
-     * for the specified nonce and session
-     * @param nonce
-     * @param session
-     * @param uri
-     * @param requestHeader
-     * @return the token array
-     */
-    public Token[] generateResponse( String nonce, AppTCPSession session, String uri, HeaderToken requestHeader )
+    public Token[] generateResponse(T details, AppTCPSession session, String uri, HeaderToken requestHeader, URIBuilder redirectUri, Map<String,Object> redirectParameters)
     {
         if (imagePreferred(uri, requestHeader)) {
-            return generateSimplePage(nonce, null, true);
+            return generateSimplePage(details, true);
         } else {
+            if(redirectUri == null){
+                redirectUri = getRedirectUri();
+            }
+            if(redirectParameters == null){
+                redirectParameters = getRedirectParameters();
+            }
             InetAddress addr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress( session.getClientIntf() );
-                
+
             if (addr == null) {
-                return generateSimplePage(nonce, null, false);
+                return generateSimplePage(details, false);
             } else {
-                String host = addr.getHostAddress();
-                int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-                if ( httpPort != 80 ) {
-                    host = host + ":" + httpPort;
+                if(redirectUri.getScheme() == null){
+                    redirectUri.setScheme("http");
                 }
-                
-                return generateRedirect( nonce, null, host );
+                // if("".equals(redirectUri.getHost())){
+                if(redirectUri.getHost() == null){
+                    redirectUri.setHost(addr.getHostAddress());
+                }
+                if(redirectUri.getPort() <= 0){
+                    int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
+                    if ( httpPort != 80 ) {
+                        redirectUri.setPort(httpPort);
+                    }
+                }
+                return generateRedirect(details, redirectUri, redirectParameters);
             }
         }
     }
 
     /**
-     * Generate a response (as a token array)
-     * for the specified nonce and session
-     * @param details
-     * @param session
-     * @return the token array
+     * Retrieve uribuilder of uri to redirect to.
+     * @return URIBuilder of uri to redirect to..
+     * redirect uri.
      */
-    public Token[] generateResponseFromDetails( T details, AppTCPSession session )
+    protected URIBuilder getRedirectUri()
     {
-        return generateResponseFromDetails(details, session, null, null );
+        URIBuilder redirectUri = null;
+        try{
+            redirectUri = new URIBuilder();
+            redirectUri = new URIBuilder(this.redirectUri.build());
+        }catch(Exception e){
+            logger.warn("getRedirectUri: Unable to copy existing redirectUri", e);
+        }
+        return redirectUri;
     }
 
     /**
-     * Generate a response (as a token array)
-     * for the specified nonce and session
-     * @param details
-     * @param session
-     * @param uri
-     * @param requestHeader
-     * @return the token array
+     * Retrieve hash of redirect parameters to add to redirectUri.
+     * @return Map of string/objct of parameters.
      */
-    public Token[] generateResponseFromDetails( T details, AppTCPSession session, String uri, HeaderToken requestHeader )
+    protected Map<String,Object> getRedirectParameters()
     {
-        String host = "";
-        InetAddress addr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress( session.getClientIntf() );
-
-        if (addr != null) {
-            host = addr.getHostAddress();
-            int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-            if ( httpPort != 80 ) {
-                host = host + ":" + httpPort;
-            }
-        }
-
-        return generateRedirect( null, details, host );
+        return new HashMap<String,Object>(this.redirectParameters);
     }
 
     /**
      * Generate the "Simple" (text-only) response for the specified
      * nonce and session
-     * @param nonce
+     * @param redirectDetails
      * @param session
      * @param uri
      * @param requestHeader
      * @return the token array
      */
-    public Token[] generateSimpleResponse( String nonce, AppTCPSession session, String uri, HeaderToken requestHeader )
+    public Token[] generateSimpleResponse( T redirectDetails, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
-        return generateSimplePage(nonce, null, imagePreferred(uri, requestHeader));
+        return generateSimplePage(redirectDetails, imagePreferred(uri, requestHeader));
     }
 
     /**
@@ -220,7 +223,7 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
      */
     public Token[] generateSimpleResponse( T redirectDetails, AppTCPSession session)
     {
-        return generateSimplePage(null, redirectDetails, false);
+        return generateSimplePage(redirectDetails, false);
     }
     
     /**
@@ -229,66 +232,6 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
      * @return the string
      */
     protected abstract String getReplacement( T data );
-
-    /**
-     * getRedirectUrl for the specified nonce and host
-     * must be overridden by final class
-     * @param nonce 
-     * @param host
-     * @param appSettings
-     * @return the URL
-     */
-    protected abstract String getRedirectUrl( String nonce, String host, AppSettings appSettings );
-
-    /**
-     * getRedirectUrl for the details using the redirectUrl and redirectParams
-     * @param redirectDetails
-     * @param host
-     * @param appSettings
-     * @return the URL
-     */
-    protected String getRedirectUrl(T redirectDetails, String host, AppSettings appSettings){
-        String parameters = "";
-        if(redirectDetails.getRedirectParameters() != null){
-            String value = null;
-            try{
-                for( String key : redirectDetails.getRedirectParameters().keySet()){
-                    if(redirectDetails.getRedirectParameters().get(key) != null){
-                        value = redirectDetails.getRedirectParameters().get(key).toString();
-                    }else{
-                        if(key.equals("nonce")){
-                            value = generateNonce(redirectDetails);
-                        }else if(key.equals("appid")){
-                            value = appSettings.getId().toString();
-                        }else if(key.equals("appname")){
-                            value = appSettings.getAppName();
-                        }else{
-                            Class<?> cls = redirectDetails.getClass();
-                            if(ParameterClassMethodMap.get(cls) == null){
-                                ParameterClassMethodMap.put(cls, new HashMap<>());
-                            }
-                            Method method = ParameterClassMethodMap.get(cls).get(key);
-                            if(method == null){
-                                method = cls.getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
-                                ParameterClassMethodMap.get(cls).put(key, method);
-                            }
-                            try{
-                                value = method.invoke(redirectDetails).toString();
-                            }catch(Exception ve){
-                                logger.warn("Unable to retrieve value for key=" + key, ve);
-                                value = "";
-                            }
-                        }
-                    }
-                    parameters += ( parameters.length() > 0 ? "&" : "" ) + URLEncoder.encode(key, StandardCharsets.UTF_8.name()) + "=" + URLEncoder.encode(value,StandardCharsets.UTF_8.name());
-                }
-            }catch(Exception e){
-                logger.warn("Failed to encode value=" + value, e);
-            }
-
-        }
-        return redirectDetails.getRedirectUrl() + (parameters.length() > 0 ? "?" + parameters: "");
-    }
 
     /**
      * Get the AppSettings
@@ -301,12 +244,11 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
 
     /**
      * Create a "simple" (text-only) replacement page for the specified nonce and gif
-     * @param nonce
      * @param redirectDetails
      * @param gif
      * @return the token array
      */
-    private Token[] generateSimplePage( String nonce, T redirectDetails, boolean gif )
+    private Token[] generateSimplePage( T redirectDetails, boolean gif )
     {
         ChunkToken chunk;
         if (gif) {
@@ -315,7 +257,7 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
             ByteBuffer bb = ByteBuffer.wrap(buf);
             chunk = new ChunkToken(bb);
         } else {
-            String replacement = getReplacement(nonce != null ? nonceFactory.getNonceData(nonce) : redirectDetails);
+            String replacement = getReplacement(redirectDetails);
             ByteBuffer buf = ByteBuffer.allocate(replacement.length());
             buf.put(replacement.getBytes()).flip();
             chunk = new ChunkToken(buf);
@@ -341,12 +283,12 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
 
     /**
      * Create a redirect replacement page to redirect to a blockpage
-     * @param nonce
      * @param redirectDetails
-     * @param host
+     * @param redirectUri
+     * @param redirectParameters
      * @return the token array
      */
-    private Token[] generateRedirect( String nonce, T redirectDetails, String host )
+    private Token[] generateRedirect(T redirectDetails, URIBuilder redirectUri, Map<String,Object> redirectParameters)
     {
         Token response[] = new Token[4];
 
@@ -354,7 +296,7 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
         response[0] = sl;
 
         HeaderToken h = new HeaderToken();
-        h.addField("Location", nonce != null ? getRedirectUrl(nonce, host, appSettings) : getRedirectUrl(redirectDetails, host, appSettings) );
+        h.addField("Location", buildRedirectUri(redirectDetails, redirectUri, redirectParameters));
         h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
         h.addField("Pragma", "no-cache");
         h.addField("Expires", "Mon, 10 Jan 2000 00:00:00 GMT");
@@ -391,4 +333,106 @@ public abstract class ReplacementGenerator<T extends RedirectDetails>
             return false;
         }
     }
+
+    /**
+     * Crate parmaeters to add to redirectUri from map of parameters.
+     * @param  redirectDetails Details object.
+     * @param  redirectParameters Map of String (key) and Object (value).
+     * @return                    List of NameValuePair to be added to URIBuilder.
+     */
+    protected List<NameValuePair> buildRedirectParameters(T redirectDetails, Map<String,Object> redirectParameters)
+    {
+        List<NameValuePair> parameters = new ArrayList<>();
+        String value;
+        for( String key : redirectParameters.keySet()){
+            /**
+             * Pull the value as follows:
+             */
+            if(redirectParameters.get(key) != null){
+                /**
+                 * 1. Value is the non-null object of the map.
+                 */
+                value = redirectParameters.get(key).toString();
+            }else{
+                /**
+                 * See if getKeyname is in Details object and if so, cache the method.
+                 */
+                value = null;
+                Class<?> cls = redirectDetails.getClass();
+                if(ParameterClassMethodMap.get(cls) == null){
+                    ParameterClassMethodMap.put(cls, new HashMap<>());
+                }
+                Method method = ParameterClassMethodMap.get(cls).get(key);
+                if(!ParameterClassMethodMap.get(cls).containsKey(key) && method == null){
+                    try{
+                        ParameterClassMethodMap.get(cls).put(key, null);
+                        method = cls.getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
+                        ParameterClassMethodMap.get(cls).put(key, method);
+                    }catch(Exception e){}
+                }
+                if(method != null){
+                    /**
+                     * 2. Pull value from Details.
+                     */
+                    try{
+                        Object objValue = method.invoke(redirectDetails);
+                        if(objValue != null){
+                            if(objValue.getClass() == Inet4Address.class){
+                                value = ((Inet4Address) objValue).getHostAddress();
+                            }else{
+                                value = objValue.toString();
+                            }
+                        }
+                    }catch(Exception e){
+                        logger.warn("Unable to retrieve value for key=" + key, e);
+                    }
+                }
+
+                if(value == null){
+                    /**
+                     * 3. Special values.
+                     */
+                    if(key.equals("nonce")){
+                        /**
+                         * If the nonce is not otherwise overriden (CaptivePortal https),
+                         * then serialize here and return the value.
+                         */
+                        value = generateNonce(redirectDetails);
+                    }else if(key.equals("appid")){
+                        /**
+                         * Numeric applicaton id.
+                         */
+                        value = appSettings.getId().toString();
+                    }else if(key.equals("appname")){
+                        /**
+                         * Application name.
+                         */
+                        value = appSettings.getAppName();
+                    }
+                }
+
+                if(value == null){
+                    /**
+                     * 4. If we dont' have it here, set to epty string.
+                     */
+                    value = "";
+                }
+            }
+            parameters.add( new BasicNameValuePair(key,value));
+        }
+        return parameters;
+    }
+
+    /**
+     * getRedirectUri for the details using the redirectUrl and redirectParams
+     * @param redirectDetails
+     * @param redirectUri
+     * @param redirectParameters
+     * @return the URL
+     */
+    protected String buildRedirectUri(T redirectDetails, URIBuilder redirectUri, Map<String,Object> redirectParameters){
+        redirectUri.setParameters(buildRedirectParameters(redirectDetails, redirectParameters));
+        return redirectUri.toString();
+    }
+
 }

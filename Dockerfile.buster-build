@@ -6,6 +6,12 @@ ENV PKGTOOLS_BRANCH master
 # do not gzip apt lists files (for apt-show-versions)
 RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes
 
+# add supported foreign architectures
+RUN dpkg --add-architecture i386
+RUN dpkg --add-architecture armhf
+RUN dpkg --add-architecture arm64
+
+# install required packages
 RUN apt update -q
 RUN apt install --yes build-essential
 RUN apt install --yes devscripts

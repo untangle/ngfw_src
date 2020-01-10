@@ -4,7 +4,6 @@
 package com.untangle.app.http;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * Holds information about why a page was blocked.
@@ -16,8 +15,6 @@ public class RedirectDetails implements Serializable
 
     private String host;
     private String uri;
-    protected String redirectUrl;
-    protected Map<String,Object> redirectParameters;
 
     /**
      * Create a RedirectDetails instance for the following host and URI
@@ -28,23 +25,6 @@ public class RedirectDetails implements Serializable
     {
         this.host = host;
         this.uri = uri;
-        this.redirectUrl = null;
-        this.redirectParameters = null;
-    }
-
-    /**
-     * Create a RedirectDetails instance for the following host and URI
-     * @param host - the host (being redirected from)
-     * @param uri - the URI (being redirected from)
-     * @param redirectUrl - URL to redirect session to
-     * @param redirectParameters - Map of string names to object values.
-     */
-    public RedirectDetails(String host, String uri, String redirectUrl, Map<String,Object> redirectParameters)
-    {
-        this.host = host;
-        this.uri = uri;
-        this.redirectUrl = redirectUrl;
-        this.redirectParameters = redirectParameters;
     }
 
     /**
@@ -124,40 +104,6 @@ public class RedirectDetails implements Serializable
     }
 
     /**
-     * Return the redirectUrl
-     * @return String of redirectUrl or null if not defined.
-     */
-    public String getRedirectUrl()
-    {
-        return redirectUrl;
-    }
-
-    /**
-     * Set the redirectUrl
-     * @param redirectUrl String of redirect url.
-     */
-    public void setRedirectUrl(String redirectUrl){
-        this.redirectUrl = redirectUrl;
-    }
-
-    /**
-     * Return the redirectParameters
-     * @return Map of redirect parameters, string to value.
-     */
-    public Map<String,Object> getRedirectParameters()
-    {
-        return redirectParameters;
-    }
-
-    /**
-     * Set the redirectParameters
-     * @param redirectParameters Map of redirect parameters, string to value.
-     */
-    public void setRedirectParameters(Map<String,Object> redirectParameters){
-        this.redirectParameters = redirectParameters;
-    }
-    
-    /**
      * Truncate the provided strength to maxLen if it is longer
      * @param s - the original string
      * @param maxLen - the maximum length
@@ -165,7 +111,7 @@ public class RedirectDetails implements Serializable
      */
     private String truncateString(String s, int maxLen)
     {
-        return s.length() > maxLen ? s.substring(0, maxLen) : s;
+        return s.length() > maxLen ? s.substring(0, maxLen) + "..." : s;
     }
 
 }

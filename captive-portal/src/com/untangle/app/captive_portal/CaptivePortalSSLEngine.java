@@ -20,8 +20,11 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
 
+import com.untangle.app.http.HeaderToken;
+import com.untangle.app.http.StatusLine;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
@@ -388,11 +391,12 @@ public class CaptivePortalSSLEngine
      */
     private boolean doNotHandshaking(ByteBuffer data, ByteBuffer target) throws Exception
     {
+        Token[] response = null;
         SSLEngineResult result = null;
         String methodStr = null;
         String hostStr = null;
         String uriStr = null;
-        String vector = null;
+        String vector = new String();
         int top, end;
 
         // we call unwrap for all data we receive from the client 
@@ -438,89 +442,22 @@ public class CaptivePortalSSLEngine
 
         // now that we've parsed the client request we create the redirect
 
-        URIBuilder output = new URIBuilder();
-        URIBuilder exauth = new URIBuilder();
-        InetAddress hostAddr = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
-        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-        int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
-
-        // if the redirectUsingHostname flag is set we use the configured
-        // hostname otherwise we use the address of the client interface 
-        if (captureApp.getSettings().getRedirectUsingHostname() == true) {
-            output.setHost(UvmContextFactory.context().networkManager().getFullyQualifiedHostname());
-        } else {
-            output.setHost(hostAddr.getHostAddress().toString());
-        }
-
-        // set the path of the capture handler
-        output.setPath("/capture/handler.py/index");
-
-        // set the scheme and port appropriately
-        if (captureApp.getSettings().getAlwaysUseSecureCapture() == true) {
-            output.setScheme("https");
-            if (httpsPort != 443) output.setPort(httpsPort);
-        } else {
-            output.setScheme("http");
-            if (httpPort != 80) output.setPort(httpPort);
-        }
-
         // add all off the parameters needed by the capture handler
         // VERY IMPORTANT - the NONCE value must be a1b2c3d4e5f6 because the
         // handler.py script looks for this special value and uses it to
         // decide between http and https when redirecting to the originally
         // requested page after login.  Yes it's a hack but I didn't want to
         // add an additional form field and risk breaking existing custom pages
-        output.addParameter("nonce", "a1b2c3d4e5f6");
-        output.addParameter("method", methodStr);
-        output.addParameter("appid", appStr);
-        output.addParameter("host", hostStr);
-        output.addParameter("uri", uriStr);
+        CaptivePortalBlockDetails details = new CaptivePortalBlockDetails( hostStr, uriStr, methodStr, "a1b2c3d4e5f6");
+        response = captureApp.generateResponse(details, session);
 
-        vector = "HTTP/1.1 307 Temporary Redirect\r\n";
-
-        // if using Google authentication build the authentication redirect
-        // and pass the output as the OAuth state, otherwise use directly
-        if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.GOOGLE) {
-            exauth.setScheme("https");
-            exauth.setHost(CaptivePortalReplacementGenerator.GOOGLE_AUTH_HOST);
-            exauth.setPath(CaptivePortalReplacementGenerator.GOOGLE_AUTH_PATH);
-            exauth.addParameter("client_id", CaptivePortalReplacementGenerator.GOOGLE_CLIENT_ID);
-            exauth.addParameter("redirect_uri", CaptivePortalReplacementGenerator.AUTH_REDIRECT_URI);
-            exauth.addParameter("response_type", "code");
-            exauth.addParameter("scope", "email");
-            exauth.addParameter("state", output.toString());
-            vector += "Location: " + exauth.toString() + "\r\n";
-        } else if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.FACEBOOK) {
-            exauth.setScheme("https");
-            exauth.setHost(CaptivePortalReplacementGenerator.FACEBOOK_AUTH_HOST);
-            exauth.setPath(CaptivePortalReplacementGenerator.FACEBOOK_AUTH_PATH);
-            exauth.addParameter("client_id", CaptivePortalReplacementGenerator.FACEBOOK_CLIENT_ID);
-            exauth.addParameter("redirect_uri", CaptivePortalReplacementGenerator.AUTH_REDIRECT_URI);
-            exauth.addParameter("response_type", "code");
-            exauth.addParameter("scope", "email");
-            exauth.addParameter("state", output.toString());
-            vector += "Location: " + exauth.toString() + "\r\n";
-        } else if (captureApp.getSettings().getAuthenticationType() == CaptivePortalSettings.AuthenticationType.MICROSOFT) {
-            exauth.setScheme("https");
-            exauth.setHost(CaptivePortalReplacementGenerator.MICROSOFT_AUTH_HOST);
-            exauth.setPath(CaptivePortalReplacementGenerator.MICROSOFT_AUTH_PATH);
-            exauth.addParameter("client_id", CaptivePortalReplacementGenerator.MICROSOFT_CLIENT_ID);
-            exauth.addParameter("redirect_uri", CaptivePortalReplacementGenerator.AUTH_REDIRECT_URI);
-            exauth.addParameter("response_type", "code");
-            exauth.addParameter("scope", "openid User.Read");
-            exauth.addParameter("state", output.toString());
-            vector += "Location: " + exauth.toString() + "\r\n";
-        } else {
-            vector += "Location: " + output.toString() + "\r\n";
+        for(Token token : response){
+            if( token instanceof StatusLine ){
+                vector += ((StatusLine) token).getString();
+            }else if( token instanceof HeaderToken){
+                vector += ((HeaderToken) token).getString();
+            }
         }
-
-        vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
-        vector += "Pragma: no-cache\r\n";
-        vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";
-        vector += "Content-Type: text/plain\r\n";
-        vector += "Content-Length: 0\r\n";
-        vector += "Connection: Close\r\n";
-        vector += "\r\n";
 
         logger.debug("CLIENT REPLY = " + vector);
 

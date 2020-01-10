@@ -163,13 +163,31 @@ Ext.define('Bootstrap', {
             cb(err);
         });
 
-        // Setup common library references.
+        /**
+         * Setup reference mapping to include js/common files as compiled to /script/common/app-APP-all.js
+         */
+        var appProperties = null;
+        if (this.servletContext === 'ADMIN'){
+            if(rpc.appManager.app("reports") != null) {
+                reportsManager = rpc.appManager.app("reports").getReportsManager();
+                appProperties = reportsManager.getAllAppProperties();
+            }
+            if(appProperties == null){
+                appProperties = rpc.appManager.getAllAppProperties();
+            }
+        }else if (this.servletContext === 'REPORTS') {
+            reportsManager = rpc.ReportsContext.reportsManager();
+            appProperties = reportsManager.getAllAppProperties();
+        }
+
         var referenceMapping = {};
-        rpc.appManager.getAllAppProperties().list.forEach( function(appProperties){
-            var appReference = 'Ung.common.'+appProperties['name'].replace(/\-/g, '');
-            var appFilename = appProperties['name'];
-            referenceMapping[appReference] = '/script/common/app-'+appFilename+'-all.js';
-        });
-        Ext.Loader.addClassPathMappings(referenceMapping);
+        if(appProperties != null){
+            appProperties.list.forEach( function(appProperties){
+                var appReference = 'Ung.common.'+appProperties['name'].replace(/\-/g, '');
+                var appFilename = appProperties['name'];
+                referenceMapping[appReference] = '/script/common/app-'+appFilename+'-all.js';
+            });
+            Ext.Loader.addClassPathMappings(referenceMapping);
+        }
     }
 });
