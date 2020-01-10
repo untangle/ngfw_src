@@ -139,6 +139,7 @@ public class SslInspectorApp extends AppBase
                 logger.warn("No settings found... initializing with defaults");
                 SslInspectorSettings makeSettings = new SslInspectorSettings();
                 makeSettings.setIgnoreRules(generateDefaultRules());
+                makeSettings.setVersion(3);
                 setSettings(makeSettings);
             }
 
@@ -147,22 +148,34 @@ public class SslInspectorApp extends AppBase
                 logger.info("Loaded settings from " + settingsFile);
 
                 // no version really means version one
-                if (readSettings.getVersion() == null) readSettings.setVersion(new Integer(1));
+                if (readSettings.getVersion() == null) readSettings.setVersion(1);
 
                 // between v1 and v2 we added a new default rule to scan secure SMTP traffic
                 if (readSettings.getVersion().intValue() < 2) {
                     SslInspectorRule addRule = createDefaultRule(0, "Inspect SMTP + STARTTLS", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.SRC_INTF, "wan", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true);
                     readSettings.getIgnoreRules().addFirst(addRule);
+
                     int idx = 1;
                     for (SslInspectorRule rule : readSettings.getIgnoreRules()) {
                         rule.setRuleId(idx++);
                     }
 
-                    // calling the setter here will write our changes, update the version
-                    // and handle the reconfigure so we can return directly from here so
-                    // we don't call reconfigure twice in a row
+                    readSettings.setVersion(2);
                     setSettings(readSettings);
-                    return;
+                }
+
+                // between v1/v2 to v3 we need to add the default duckduckgo and kidzsearch rules
+                if (readSettings.getVersion().intValue() < 3) {
+                    readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect Duck Duck Go", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Duck Duck Go*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+                    readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect KidzSearch", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*kidzsearch*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+                    
+                    int idx = 1;
+                    for (SslInspectorRule rule : readSettings.getIgnoreRules()) {
+                        rule.setRuleId(idx++);
+                    }
+
+                    readSettings.setVersion(3);
+                    setSettings(readSettings);
                 }
 
                 this.settings = readSettings;
@@ -232,7 +245,6 @@ public class SslInspectorApp extends AppBase
         String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + appID + ".js";
 
         try {
-            newSettings.setVersion(new Integer(2));
             UvmContextFactory.context().settingsManager().save(settingsFile, newSettings);
         } catch (Exception exn) {
             logger.error("setSettings()", exn);
@@ -363,8 +375,8 @@ public class SslInspectorApp extends AppBase
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Yahoo", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Yahoo*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Bing", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*bing.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Ask", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*ask.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Duck Duck Go", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*duckduckgo.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect KidzSearch", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*kidzsearch.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Duck Duck Go", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Duck Duck Go*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect KidzSearch", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*kidzsearch*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Other Traffic", null, null, null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
 
         return defaultRules;
