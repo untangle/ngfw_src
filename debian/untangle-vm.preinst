@@ -27,14 +27,15 @@ if [ -f /var/run/uvm.pid ] ; then
 
 	if dpkg --compare-versions "$oldVersion" le 15.0~ ; then
 	  # reboot to new 4.9.0-11 kernel (NGFW-12661)
-          echo "Rebooting after apt-get completes..."
-	  mode="reboot"
+	  #
+          # we defer this to the postinst, because during preinst
+          # /usr/bin/uvm is still the 14.2 version... which doesn't
+          # have the reboot functionality
+	  echo "Deferring reboot to postinst"
 	else
           echo "Restarting untangle-vm after apt-get completes..."
-	  mode="restart"
+	  nohup /usr/bin/uvm-restart >> /var/log/uvm/restart.log 2>&1 &
 	fi
-
-	nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &
     fi
 fi
 

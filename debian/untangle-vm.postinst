@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -x
+
 oldVersion=""
 if [ "$1" = "configure" ] ; then
   # oldVersion will be non-empty if untangle-linux-config has been
@@ -87,6 +89,12 @@ sed -e 's/stable-141\s/stable-142 /g' -i /etc/apt/sources.list.d/untangle.list
 OLD_PYTHON_DIR=/usr/lib/python2.7/dist-packages/tests
 if [ -d $OLD_PYTHON_DIR ] ; then
     rm -rf $OLD_PYTHON_DIR
+fi
+
+if dpkg --compare-versions "$oldVersion" le 15.0~ ; then
+  # reboot to new 4.9.0-11 kernel (NGFW-12661)
+  echo "Rebooting after apt-get completes..."
+  nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &  
 fi
 
 exit 0
