@@ -1,7 +1,5 @@
 #! /bin/bash
 
-set -x
-
 oldVersion=""
 if [ "$1" = "configure" ] ; then
   # oldVersion will be non-empty if untangle-linux-config has been
