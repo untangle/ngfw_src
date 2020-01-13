@@ -257,7 +257,7 @@ def find_event( events, num_events, *args, **kwargs):
             expectedValue = args[i*2+1]
             actualValue = event.get(key)
             # HTML strings are escaped now.
-            if type(actualValue) is not bool:
+            if type(actualValue) is str:
                 actualValue = html.unescape(actualValue)
             alternateValue = expectedValue
             # If the type is a boolean, accept 1/0 also
