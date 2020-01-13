@@ -9,7 +9,13 @@ Ext.define('Ung.apps.threatprevention.MainModel', {
 
         threatMeter: null,
         currentThreatDescription: null,
-        threatList: null
+        threatList: null,
+
+        threatLookupInput: null,
+        threatLookupAddress: null,
+        threatLookupCategory: null,
+        threatLookupReputationScore: null,
+        threatLookupReputationLevel: null
     },
     stores: {
         rules: { data: '{settings.rules.list}' },
