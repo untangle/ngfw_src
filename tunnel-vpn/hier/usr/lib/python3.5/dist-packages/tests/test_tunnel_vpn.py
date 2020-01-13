@@ -49,6 +49,8 @@ def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Untangle",vpn_tunnel
 @pytest.mark.tunnel_vpn
 class TunnelVpnTests(NGFWTestCase):
 
+    force_start = True
+    
     @staticmethod
     def module_name():
         return "tunnel-vpn"

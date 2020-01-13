@@ -89,4 +89,10 @@ if [ -d $OLD_PYTHON_DIR ] ; then
     rm -rf $OLD_PYTHON_DIR
 fi
 
+if dpkg --compare-versions "$oldVersion" le 15.0~ ; then
+  # reboot to new 4.9.0-11 kernel (NGFW-12661)
+  echo "Rebooting after apt-get completes..."
+  nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &  
+fi
+
 exit 0
