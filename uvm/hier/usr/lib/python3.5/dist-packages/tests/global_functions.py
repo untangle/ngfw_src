@@ -8,6 +8,7 @@ import struct
 import datetime
 import random
 import string
+import html
 
 import runtests.remote_control as remote_control
 import runtests
@@ -254,7 +255,7 @@ def find_event( events, num_events, *args, **kwargs):
         for i in range(0, int(len(args)/2)):
             key = args[i*2]
             expectedValue = args[i*2+1]
-            actualValue = event.get(key)
+            actualValue = html.unescape(event.get(key))
             alternateValue = expectedValue
             # If the type is a boolean, accept 1/0 also
             if type(expectedValue) is bool:
