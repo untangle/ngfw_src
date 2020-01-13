@@ -103,6 +103,45 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
         vm.set('threatMeter', vRange);
         vm.set('currentThreatDescription', vLabel);
+    },
+    handleThreatLookup: function() {
+        var v = this.getView(), vm = this.getViewModel();
+        var lookupInput = vm.get('threatLookupInput');
+        if(!lookupInput) {return;}
+
+        vm.set('threatLookupAddress', lookupInput);
+
+        v.setLoading(true);
+        Rpc.asyncData(v.appManager, 'threatLookup', lookupInput)
+        .then(function(result){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+            v.setLoading(false);
+
+            for(var i in result) {
+
+                vm.set('threatLookupReputationScore', result[i].reputation);
+                var repLevel = Ung.common.threatprevention.references.getReputationLevel(result[i].reputation);
+                if(repLevel) {
+                    vm.set('threatLookupReputationLevel', repLevel.get('description') + " - " + repLevel.get('details'));
+                }
+  
+                var currentCategories = [];
+                for(var j in result[i].cats) {
+                    var threatShortDesc = Renderer.webCategory(result[i].cats[j].catid);
+                    currentCategories.push(result[i].cats[j].conf + "% Confidence : " + threatShortDesc);
+                }
+                
+                vm.set('threatLookupCategory', currentCategories.join(", "));
+            }
+        }, function(ex) {
+            if(!Util.isDestroyed(v)){
+                v.setLoading(false);
+                return;
+            }
+            Util.handleException(ex);
+        });
     }
 });
 
