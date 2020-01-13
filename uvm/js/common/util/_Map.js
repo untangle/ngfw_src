@@ -283,15 +283,19 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         icmp_type: {
-            col: { text: 'ICMP Type'.t(), width: 150 }, // converter
+            col: { text: 'ICMP Type'.t(), width: 150 },
             fld: { type: 'integer', convert: Converter.icmp }
         },
         in_bytes: {
             col: { text: 'In Bytes'.t(), filter: Rndr.filters.numeric, width: 200 },
             fld: { type: 'number' }
         },
+        interface_id: {
+            col: { text: 'Interface'.t(), width: 100 },
+            fld: { type: 'integer', convert: Converter.interface }
+        },
         ipaddr: {
-            col: { text: 'Sender'.t(), width: 200 }, // converter
+            col: { text: 'Sender'.t(), width: 200 },
             fld: { type: 'string' }
         },
         json: {
