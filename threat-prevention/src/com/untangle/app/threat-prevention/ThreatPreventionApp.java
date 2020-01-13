@@ -354,6 +354,24 @@ public class ThreatPreventionApp extends AppBase
     }
 
     /**
+     * threatLookup will call the webroot URL or IP endpoints and return a JSON array of the data
+     * 
+     * @param searchVal - The IP or URL to lookup
+     * 
+     * @return JSONArray info 
+     */
+    public JSONArray threatLookup(String searchVal)
+    {
+        JSONArray answer = null;
+        answer = webrootQuery.urlGetInfo(lookupUrl);
+        if(answer == null) {
+            answer = webrootQuery.ipGetInfo(lookupUrl);
+        }
+
+        return answer;
+    }
+
+    /**
      * Return various local valus for use with reports.
      *
      * @param  key String of key in settings.
