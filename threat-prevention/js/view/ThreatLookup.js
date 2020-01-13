@@ -30,7 +30,6 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             xtype: 'textfield',
             fieldLabel: 'Lookup Threat'.t(),
             fieldIndex: 'threatLookupInput',
-            allowBlank: false,
             bind: {
                 hidden: '{state.on == false}',
                 value: '{threatLookupInput}'
@@ -87,6 +86,15 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 bind: {
                     value: '{threatLookupReputationLevel}',
                     hidden: '{threatLookupReputationLevel.length === 0}'
+                }
+            }, {
+                xtype: 'displayfield',
+                labelWidth: 160,
+                fieldLabel: 'Reputation Level Details'.t(),
+                fieldIndex: 'threatLookupReputationLevelDetails',
+                bind: {
+                    value: '{threatLookupReputationLevelDetails}',
+                    hidden: '{threatLookupReputationLevelDetails.length === 0}'
                 }
             }]
         }]

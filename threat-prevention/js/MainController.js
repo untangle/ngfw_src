@@ -120,11 +120,12 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             v.setLoading(false);
 
             for(var i in result) {
-
                 vm.set('threatLookupReputationScore', result[i].reputation);
+
                 var repLevel = Ung.common.threatprevention.references.getReputationLevel(result[i].reputation);
                 if(repLevel) {
-                    vm.set('threatLookupReputationLevel', repLevel.get('description') + " - " + repLevel.get('details'));
+                    vm.set('threatLookupReputationLevel', repLevel.get('description'));
+                    vm.set('threatLookupReputationLevelDetails', repLevel.get('details'));
                 }
   
                 var currentCategories = [];
