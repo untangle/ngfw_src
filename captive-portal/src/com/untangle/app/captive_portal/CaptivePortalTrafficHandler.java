@@ -102,6 +102,16 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
             return;
         }
 
+        // Before any of the other SSL stuff we look for and block all HTTPS sessions if
+        // the "Block instead of capture and redirect HTTPS connections" option is enabled.
+        if ((sessreq.getNewServerPort() == 443) && (app.getSettings().getDisableSecureRedirect() == true)) {
+            CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
+            app.logEvent(logevt);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
+            sessreq.rejectReturnRst();
+            return;
+        }
+
         // If the traffic needs to be captured and ssl inspector is active then
         // we set a special flag to force it to inspect even if it would
         // otherwise be ignored. This will let us capture the HTTP session
@@ -136,9 +146,8 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
 
         // the traffic needs to be blocked but we have detected SSL traffic
         // so we add a special global attachment that the https handler uses
-        // to detect sessions that need https-->http redirection but only if
-        // that feature is not disabled.
-        if ((app.getSettings().getDisableSecureRedirect() == false) && (sessreq.getNewServerPort() == 443)) {
+        // to detect sessions that need https-->http redirection
+        if (sessreq.getNewServerPort() == 443) {
             sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_REDIRECT, sessreq.getOrigClientAddr());
             sessreq.release();
             return;
