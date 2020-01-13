@@ -1,5 +1,7 @@
 #! /bin/bash
 
+exec > /tmp/untangle-vm.preinst.log 2>&1
+
 # This script is launched by the untangle-vm.preinst
 # It will restart the untangle-vm after everything is complete (apt-get is no longer running)
 # If the untangle-vm was not running, it will not restart it
