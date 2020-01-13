@@ -363,9 +363,9 @@ public class ThreatPreventionApp extends AppBase
     public JSONArray threatLookup(String searchVal)
     {
         JSONArray answer = null;
-        answer = webrootQuery.urlGetInfo(lookupUrl);
+        answer = webrootQuery.urlGetInfo(searchVal);
         if(answer == null) {
-            answer = webrootQuery.ipGetInfo(lookupUrl);
+            answer = webrootQuery.ipGetInfo(searchVal);
         }
 
         return answer;
