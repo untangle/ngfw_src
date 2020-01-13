@@ -5,9 +5,7 @@ Ext.define('Ung.apps.threatprevention.Main', {
     controller: 'app-threat-prevention',
 
     viewModel: {
-        stores: {
-            rules: { data: '{settings.rules.list}' },
-        }
+        type: 'app-threat-prevention'
     },
 
     items: [
