@@ -85,7 +85,9 @@ Ext.define('Ung.view.reports.EventReport', {
                 // clear grid data on report change
                 store.setData([]);
                 // clear sorters
-                store.sorters.clear();
+                if (store.sorters) {
+                    store.sorters.clear();
+                }
 
                 if (!entry || entry.get('type') !== 'EVENT_LIST') {
                     return;
@@ -124,28 +126,16 @@ Ext.define('Ung.view.reports.EventReport', {
                 me.isWidget = true;
             }
 
-            fieldIds = Map.tables[entry.get('table')];
-            /**
-             * iterate table fields and generate columns
-             */
-            Ext.Array.each(fieldIds, function (fieldId) {
-                var field = Map.fields[fieldId].fld;
-                var column = Map.fields[fieldId].col;
-
-                column.dataIndex = column.dataIndex || fieldId;
-                column.hidden = !Ext.Array.contains(defaultColumns, fieldId);
-                // if filter not set, default to string filter
-                if (!column.filter) { column.filter = Rndr.filters.string; }
-                columns.push(column);
-
-                field.name = field.name || fieldId;
-                fields.push(field);
+            var table = TableConfig.tableConfig[entry.get('table')];
+            // hide non default columns
+            Ext.Array.each(table.columns, function (column) {
+                column.hidden = !Ext.Array.contains(defaultColumns, column.dataIndex);
             });
 
             // see how to update fields, even if it works still as it is
             model.removeFields(Ext.Array.remove(Ext.Object.getKeys(model.getFieldsMap()), '_id'));
-            model.addFields(fields);
-            grid.reconfigure(columns);
+            model.addFields(table.fields);
+            grid.reconfigure(table.columns);
 
             var propertygrid = me.getView().down('#eventsProperties');
             vm.set('eventProperty', null);
