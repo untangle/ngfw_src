@@ -136,6 +136,11 @@ static int _netcap_init()
         ip_sendnfmark = 25;
         is_new_kernel = 443;
     }
+    else if ( strstr(utsn.release,"4.19.0-6") != NULL ) {
+        ip_saddr = 26;
+        ip_sendnfmark = 27;
+        is_new_kernel = 443;
+    }
     else {
         errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
         errlog( ERR_WARNING, "Assuming 4.0.0\n" );
