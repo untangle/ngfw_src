@@ -30,9 +30,10 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             xtype: 'textfield',
             fieldLabel: 'Lookup Threat'.t(),
             fieldIndex: 'threatLookupInput',
+            margin: '10 0 0 0',
             bind: {
                 hidden: '{state.on == false}',
-                value: '{threatLookupInput}'
+                value: '{threatLookupInfo.inputVal}'
             },
         }, {
             xtype: 'button',
@@ -40,16 +41,19 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             text: 'Search'.t(),
             iconCls: 'fa fa-search',
             handler: 'handleThreatLookup',
+            margin: '10 0 10 0',
+            disabled: true,
             bind: {
                 hidden: '{state.on == false}',
-                disabled: '{threatLookupInput.length === 0}'
+                disabled: '{threatLookupInfo.inputVal.length === 0}'
             }
         }, {
             xtype: 'fieldset',
             title: 'Threat Results'.t(),
             layout: 'vbox',
+            hidden: true,
             bind: {
-                hidden: '{!threatLookupAddress}'
+                hidden: '{!threatLookupInfo.address.length === 0}'
             },
             items: [{
                 xtype: 'displayfield',
@@ -57,8 +61,8 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 fieldLabel: 'Address/URL'.t(),
                 fieldIndex: 'threatLookupAddress',
                 bind: {
-                    value: '{threatLookupAddress}',
-                    hidden: '{threatLookupAddress.length === 0}'
+                    value: '{threatLookupInfo.address}',
+                    hidden: '{threatLookupInfo.address.length === 0}'
                 }
             }, {
                 xtype: 'displayfield',
@@ -66,8 +70,8 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 fieldLabel: 'Category'.t(),
                 fieldIndex: 'threatLookupCategory',
                 bind: {
-                    value: '{threatLookupCategory}',
-                    hidden: '{threatLookupCategory.length === 0}'
+                    value: '{threatLookupInfo.category}',
+                    hidden: '{threatLookupInfo.category.length === 0}'
                 }
             }, {
                 xtype: 'displayfield',
@@ -75,8 +79,8 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 fieldLabel: 'Reputation Score'.t(),
                 fieldIndex: 'threatLookupReputationScore',
                 bind: {
-                    value: '{threatLookupReputationScore}',
-                    hidden: '{threatLookupReputationScore.length === 0}'
+                    value: '{threatLookupInfo.score}',
+                    hidden: '{threatLookupInfo.score.length === 0}'
                 }
             }, {
                 xtype: 'displayfield',
@@ -84,8 +88,8 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 fieldLabel: 'Reputation Level'.t(),
                 fieldIndex: 'threatLookupReputationLevel',
                 bind: {
-                    value: '{threatLookupReputationLevel}',
-                    hidden: '{threatLookupReputationLevel.length === 0}'
+                    value: '{threatLookupInfo.level}',
+                    hidden: '{threatLookupInfo.level.length === 0}'
                 }
             }, {
                 xtype: 'displayfield',
@@ -93,8 +97,8 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 fieldLabel: 'Reputation Level Details'.t(),
                 fieldIndex: 'threatLookupReputationLevelDetails',
                 bind: {
-                    value: '{threatLookupReputationLevelDetails}',
-                    hidden: '{threatLookupReputationLevelDetails.length === 0}'
+                    value: '{threatLookupInfo.levelDetails}',
+                    hidden: '{threatLookupInfo.levelDetails.length === 0}'
                 }
             }]
         }]
