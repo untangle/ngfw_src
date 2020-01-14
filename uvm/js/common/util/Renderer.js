@@ -1,3 +1,8 @@
+/**
+ * Should be replaced by the newer Rndr.js
+ * still kept for now for backward compatibility reasons
+ */
+
 Ext.define('Ung.util.Renderer', {
     singleton: true,
     alternateClassName: 'Renderer',
@@ -148,7 +153,7 @@ Ext.define('Ung.util.Renderer', {
              */
             var currentSpan;
             for( var i = 0; i < Ung.util.Renderer.timespanMap.length; i++){
-                currentSpan = Ung.util.Renderer.timespanMap[i]; 
+                currentSpan = Ung.util.Renderer.timespanMap[i];
                 if(value >= currentSpan[0]){
                     span.push(Math.floor(value / currentSpan[0]) + currentSpan[1]);
                     value = value % currentSpan[0];

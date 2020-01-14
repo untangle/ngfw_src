@@ -1,3 +1,13 @@
+/**
+ * new renderer Class
+ * should replace the current Renderer.js (still kept for backward compatibility)
+ *
+ * renderers are used when a specific value needs to be represented in a different way
+ * or some styles/markup are applied to the value
+ * e.g. bytes rendered as Kb, Mb etc...
+ * the sorting/filtering still remains done by the bytes value,
+ * the value is just represented in a more user readable way
+ */
 Ext.define('Ung.util.Rndr', {
     singleton: true,
     alternateClassName: 'Rndr',

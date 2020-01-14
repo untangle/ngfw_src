@@ -1,3 +1,8 @@
+/**
+ * contains all the necessary mappings
+ * _ (underscore) naming in front of the files required when minified to be concatenated last
+ *
+ */
 Ext.define('Ung.util.Map', {
     singleton: true,
     alternateClassName: 'Map',
@@ -849,6 +854,8 @@ Ext.define('Ung.util.Map', {
     /**
      * all tables with corresponding fields as defined in db
      * the fields are used to determine the store model field and the grid column defined above
+     * if there are tables having same field name but with different meaning,
+     * than use a different mapping for each and not the exact field name
      */
     tables: {
         admin_logins: [
