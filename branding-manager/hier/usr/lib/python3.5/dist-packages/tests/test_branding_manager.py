@@ -161,7 +161,6 @@ class BrandingManagerTests(NGFWTestCase):
         if cls._app != None:
             # Restore original settings to return to initial settings
             setDefaultBrandingManagerSettings(cls._app)
-            global_functions.uvmContextLongTimeout.appManager().destroy( app.getAppSettings()["id"] )
         if appWeb != None:
             global_functions.uvmContextLongTimeout.appManager().destroy( appWeb.getAppSettings()["id"] )
             appWeb = None
