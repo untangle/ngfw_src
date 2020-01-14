@@ -93,13 +93,8 @@ Ext.define('Ung.view.reports.EventReport', {
                     return;
                 }
 
-                // if rendered as widget, add to dashboard queue
-                if (view.getWidget()) {
-                    // if it's widgets it needs separate calls to setup the grid
-                    // me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
-                    me.setupGrid();
-                    // DashboardQueue.addFirst(view.getWidget());
-                }
+                me.setupGrid();
+
                 // if rendered in creating new widget dialog, fetch data
                 if (view.up('new-widget')) {
                     me.fetchData(true);
@@ -107,6 +102,9 @@ Ext.define('Ung.view.reports.EventReport', {
             });
         },
 
+        /**
+         * Reconfigures the grid by setting new model fields and grid columns
+         */
         setupGrid: function () {
             var me = this,
                 vm = me.getViewModel(),
@@ -182,10 +180,10 @@ Ext.define('Ung.view.reports.EventReport', {
 
             if (!entry) { return; }
 
-            if (reset) {
-                me.getView().down('grid').getStore().loadData([]);
-                me.setupGrid();
-            }
+            // if (reset) {
+            //     me.getView().down('grid').getStore().loadData([]);
+            //     me.setupGrid();
+            // }
 
 
             var limit = 1000;
