@@ -96,6 +96,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 labelWidth: 160,
                 fieldLabel: 'Reputation Level Details'.t(),
                 fieldIndex: 'threatLookupReputationLevelDetails',
+                width: '100%',
                 bind: {
                     value: '{threatLookupInfo.levelDetails}',
                     hidden: '{threatLookupInfo.levelDetails.length === 0}'

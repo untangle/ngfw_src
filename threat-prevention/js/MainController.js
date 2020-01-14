@@ -110,32 +110,63 @@ Ext.define('Ung.apps.threatprevention.MainController', {
         if(!lookupInput) {return;}
 
         v.setLoading(true);
-        Rpc.asyncData(v.appManager, 'threatLookup', lookupInput)
+        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput])], this)
         .then(function(result){
+            v.setLoading(false);
+
             if(Util.isDestroyed(v, vm)){
                 return;
             }
             v.setLoading(false);
 
             for(var i in result) {
-                vm.set('threatLookupInfo.address', result[i].hasOwnProperty('url') ? result[i].url : result[i].ip);
-                vm.set('threatLookupInfo.score', result[i].reputation);
+                for(var j in result[i]) {
 
-                var repLevel = Ung.common.threatprevention.references.getReputationLevel(result[i].reputation);
-                if(repLevel) {
-                    vm.set('threatLookupInfo.level', repLevel.get('description'));
-                    vm.set('threatLookupInfo.levelDetails', repLevel.get('details'));
-                }
-  
-                var currentCategories = [];
-                for(var j in result[i].cats) {
-                    var threatShortDesc = Renderer.webCategory(result[i].cats[j].catid);
-                    currentCategories.push(result[i].cats[j].conf + "% Confidence : " + threatShortDesc);
-                }
+                    if (vm.get('threatLookupInfo.address') == null) {
+                        vm.set('threatLookupInfo.address', result[i][j].hasOwnProperty('url') ? result[i][j].url : result[i][j].ip);
+                    }
+
+                    if(result[i][j].hasOwnProperty('queries')) {
+                            //Parse the getrepinfo data
+                            if(result[i][j].queries.hasOwnProperty('getrepinfo')) {
+
+                                vm.set('threatLookupInfo.score', result[i][j].queries.getrepinfo.reputation);
                 
-                vm.set('threatLookupInfo.category', currentCategories.join(", "));
-            }
-        }, function(ex) {
+                                var repLevel = Ung.common.threatprevention.references.getReputationLevel(result[i][j].queries.getrepinfo.reputation);
+                                if(repLevel) {
+                                    vm.set('threatLookupInfo.level', repLevel.get('description'));
+                                    vm.set('threatLookupInfo.levelDetails', repLevel.get('details'));
+                                }
+                
+                            }
+
+                            //parse the geturlhistory or getiphistory data
+                            if(result[i][j].queries.hasOwnProperty('geturlhistory')) {
+
+                                //current category info
+                                if(result[i][j].queries.geturlhistory.hasOwnProperty('current_categorization')) {
+                                    if(result[i][j].queries.geturlhistory.current_categorization.hasOwnProperty('categories')) {
+                                        var currentCategories = [];
+                                        for(var c in result[i][j].queries.geturlhistory.current_categorization.categories) {
+                                            var threatShortDesc = Renderer.webCategory(result[i][j].queries.geturlhistory.current_categorization.categories[c].catid);
+                                            currentCategories.push(result[i][j].queries.geturlhistory.current_categorization.categories[c].conf + "% Confidence : " + threatShortDesc);
+                                        }
+                                        
+                                        vm.set('threatLookupInfo.category', currentCategories.join(", "));
+                                    }
+                                }
+
+                                //security history
+                                if(result[i][j].queries.hasOwnProperty('security_history')) {
+                                    for(var sh in result[i][j].queries.geturlhistory.security_history) {
+                                        
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }, function(ex) {
             if(!Util.isDestroyed(v)){
                 v.setLoading(false);
                 return;
