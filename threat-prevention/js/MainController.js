@@ -75,8 +75,35 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             }
             Util.handleException(ex);
         });
-    }
+    },
 
+    /**
+     * showSliderInfo will display the Threat Temperature Gauge above the slider, as well as the label below the slider with the current threat description information.
+     * @param {Ung.ThreatSlider} slider - The threat reputation slider object 
+     */
+    showSliderInfo: function(slider) {
+        var me = this, vm = this.getViewModel(), view = this.getView();
+
+        var sliderVal = slider.getValue();
+
+        var rangeArguments = [slider.rangeTpl];
+        var matchingThreats = [];
+        Ung.common.threatprevention.references.reputations.each( function(threat, index){
+            rangeArguments.push(threat.get('color'));
+            if(sliderVal > 0 &&
+                ( sliderVal >= threat.get('rangeBegin') ) ){
+                matchingThreats.push(threat.get('description'));
+            }
+        });
+
+        var vLabel = Ext.String.format(slider.labelTpl, matchingThreats.length == 0 ? "None" : matchingThreats.join(", ") ) +
+        ( matchingThreats.length == 0 ? Ext.String.format(slider.labelNoneTpl) : '') +
+        ( matchingThreats.length == Ung.common.threatprevention.references.reputations.getCount() ? Ext.String.format(slider.labelAllTpl) : '' );
+        var vRange =  Ext.String.format.apply(null, rangeArguments);
+
+        vm.set('threatMeter', vRange);
+        vm.set('currentThreatDescription', vLabel);
+    }
 });
 
 Ext.define('Ung.ThreatSlider', {
@@ -96,9 +123,6 @@ Ext.define('Ung.ThreatSlider', {
     },
     initComponent: function() {
         this.callParent();
-        this.on({
-            change: this.showValue
-        });
     },
     /**
      * Override to support reverse slider.
@@ -182,27 +206,5 @@ Ext.define('Ung.ThreatSlider', {
                 ariaDom.setAttribute('aria-valuenow', val);
             }
         }
-    },
-    showValue: function(slider, newValue){
-        var me = this, vm = this.getViewModel();
-
-        var viewLabelComponent = this.up().down('[itemId='+this.viewLabel+']');
-        var viewRangeComponent = this.up().down('[itemId='+this.rangeLabel+']');
-        var thresholdWarning = me.thresholdWarning;
-        var rangeArguments = [slider.rangeTpl];
-        var matchingThreats = [];
-        Ung.common.threatprevention.references.reputations.each( function(threat, index){
-            rangeArguments.push(threat.get('color'));
-            if(newValue > 0 &&
-                ( newValue >= threat.get('rangeBegin') ) ){
-                matchingThreats.push(threat.get('description'));
-            }
-        });
-        viewLabelComponent.setHtml(
-            Ext.String.format(me.labelTpl, matchingThreats.join(", ") ) +
-            ( matchingThreats.length == 0 ? Ext.String.format(me.labelNoneTpl) : '') +
-            ( matchingThreats.length == Ung.common.threatprevention.references.reputations.getCount() ? Ext.String.format(me.labelAllTpl) : '' )
-        );
-        viewRangeComponent.setHtml( Ext.String.format.apply(null, rangeArguments) );
     }
 });

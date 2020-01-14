@@ -4,7 +4,6 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
     itemId: 'threats',
     title: 'Threats'.t(),
 
-    viewModel: true,
     scrollable: true,
 
     bodyPadding: 10,
@@ -27,10 +26,14 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                 xtype: 'container',
                 layout: 'vbox',
                 items:[{
-                    xtype: 'component',
-                    itemId: 'threatRange'
+                    xtype: 'label',
+                    itemId: 'threatRange',
+                    bind: {
+                        html: '{threatMeter}'
+                    }
                 },{
                     xtype: 'threatslider',
+                    referenceId: 'threatSlider',
                     viewLabel: 'threatLabel',
                     rangeLabel: 'threatRange',
                     width: 450,
@@ -40,6 +43,10 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                     increment: 20,
                     bind:{
                         value: '{settings.reputationThreshold}'
+                    },
+                    listeners: {
+                        afterrender: 'showSliderInfo',
+                        change: 'showSliderInfo'
                     },
                     labelTpl: 'Block traffic assessed as <i>{0}</i>'.t(),
                     labelNoneTpl: '<br><b>' + 'Warning: No traffic will be blocked'.t() + '</b>',
@@ -59,8 +66,11 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
                         '<td style="background-color:#{4};"></td>'+
                         '</tr></table>'
                 },{
-                    xtype: 'component',
-                    itemId: 'threatLabel'
+                    xtype: 'label',
+                    itemId: 'threatLabel',
+                    bind: {
+                        html: '{currentThreatDescription}'
+                    }    
                 }]
             }]
         },{
