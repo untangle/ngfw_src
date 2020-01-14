@@ -147,6 +147,8 @@ public class SslInspectorApp extends AppBase
             else {
                 logger.info("Loaded settings from " + settingsFile);
 
+                boolean renumberRules = false;
+
                 // no version really means version one
                 if (readSettings.getVersion() == null) readSettings.setVersion(1);
 
@@ -155,27 +157,26 @@ public class SslInspectorApp extends AppBase
                     SslInspectorRule addRule = createDefaultRule(0, "Inspect SMTP + STARTTLS", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.SRC_INTF, "wan", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true);
                     readSettings.getIgnoreRules().addFirst(addRule);
 
-                    int idx = 1;
-                    for (SslInspectorRule rule : readSettings.getIgnoreRules()) {
-                        rule.setRuleId(idx++);
-                    }
-
                     readSettings.setVersion(2);
                     setSettings(readSettings);
+                    renumberRules = true;
                 }
 
-                // between v1/v2 to v3 we need to add the default duckduckgo and kidzsearch rules
+                // between v1/v2 to v3 we need to add the default duckduckgo and kidzsearch rules - Added for NGFW version 15.0
                 if (readSettings.getVersion().intValue() < 3) {
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect Duck Duck Go", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Duck Duck Go*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect KidzSearch", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*kidzsearch*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
                     
+                    readSettings.setVersion(3);
+                    setSettings(readSettings);
+                    renumberRules = true;
+                }
+
+                if(renumberRules) {
                     int idx = 1;
                     for (SslInspectorRule rule : readSettings.getIgnoreRules()) {
                         rule.setRuleId(idx++);
                     }
-
-                    readSettings.setVersion(3);
-                    setSettings(readSettings);
                 }
 
                 this.settings = readSettings;
