@@ -106,10 +106,8 @@ Ext.define('Ung.apps.threatprevention.MainController', {
     },
     handleThreatLookup: function() {
         var v = this.getView(), vm = this.getViewModel();
-        var lookupInput = vm.get('threatLookupInput');
+        var lookupInput = vm.get('threatLookupInfo.inputVal');
         if(!lookupInput) {return;}
-
-        vm.set('threatLookupAddress', lookupInput);
 
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'threatLookup', lookupInput)
@@ -120,12 +118,13 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             v.setLoading(false);
 
             for(var i in result) {
-                vm.set('threatLookupReputationScore', result[i].reputation);
+                vm.set('threatLookupInfo.address', result[i].hasOwnProperty('url') ? result[i].url : result[i].ip);
+                vm.set('threatLookupInfo.score', result[i].reputation);
 
                 var repLevel = Ung.common.threatprevention.references.getReputationLevel(result[i].reputation);
                 if(repLevel) {
-                    vm.set('threatLookupReputationLevel', repLevel.get('description'));
-                    vm.set('threatLookupReputationLevelDetails', repLevel.get('details'));
+                    vm.set('threatLookupInfo.level', repLevel.get('description'));
+                    vm.set('threatLookupInfo.levelDetails', repLevel.get('details'));
                 }
   
                 var currentCategories = [];
@@ -134,7 +133,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
                     currentCategories.push(result[i].cats[j].conf + "% Confidence : " + threatShortDesc);
                 }
                 
-                vm.set('threatLookupCategory', currentCategories.join(", "));
+                vm.set('threatLookupInfo.category', currentCategories.join(", "));
             }
         }, function(ex) {
             if(!Util.isDestroyed(v)){
