@@ -1,3 +1,10 @@
+/**
+ * contains methods for converting the column values to a different form
+ * e.g. ids => strings found in mapping file
+ * converters help with column sorting and filtering options
+ * so instead of sorting by underlaying initial id value,
+ * column will be sorted/filtered by converted string value
+ */
 Ext.define('Ung.util.Converter', {
     singleton: true,
     alternateClassName: 'Converter',

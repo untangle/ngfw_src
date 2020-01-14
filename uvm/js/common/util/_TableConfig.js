@@ -7,14 +7,12 @@ Ext.define('TableConfig', {
 
     initialized: false,
     initialize: function() {
-        // generate tables from Map
+        /**
+         * generate the tables fields, columns configurations used for reports grids
+         * this replaces the older TableConfig.tableConfig definitions
+         */
         Ext.Object.each(Map.tables, function (table, fields) {
             var tFields = [], tColumns = [];
-
-            TableConfig.tableConfig[table] = {
-                fields: [],
-                columns: []
-            }
 
             Ext.Array.each(fields, function (key) {
                 var field = Map.fields[key].fld;
@@ -31,7 +29,7 @@ Ext.define('TableConfig', {
             TableConfig.tableConfig[table] = {
                 fields: tFields,
                 columns: tColumns
-            }
+            };
         });
 
         if(this.initialized){
