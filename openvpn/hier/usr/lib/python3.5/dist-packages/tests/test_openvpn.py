@@ -668,7 +668,7 @@ class OpenVpnTests(NGFWTestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_connect = global_functions.get_app_metric_value(app, "connect")
+        post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
 
         #remove Local Directory User
