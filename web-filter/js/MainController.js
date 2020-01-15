@@ -43,6 +43,19 @@ Ext.define('Ung.apps.webfilter.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
+        /**
+         * NGFW-12771
+         * haven't found a better way to check valid fields conditioned by other fields
+         * and prevent form submitting if invalid
+         */
+        if (vm.get('settings').customBlockPageEnabled) {
+            var isValidUrl = Util.urlValidator(vm.get('settings').customBlockPageUrl);
+            if (isValidUrl !== true) {
+                Ext.Msg.alert('Warning'.t(), isValidUrl);
+                return;
+            }
+        }
+
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
 

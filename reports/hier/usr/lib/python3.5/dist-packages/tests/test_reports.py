@@ -153,7 +153,9 @@ def fetch_email( filename, email_address, tries=40 ):
 
 @pytest.mark.reports
 class ReportsTests(NGFWTestCase):
-
+    do_not_install_app = True
+    do_not_remove_app = True
+    
     @staticmethod
     def module_name():
         global app
