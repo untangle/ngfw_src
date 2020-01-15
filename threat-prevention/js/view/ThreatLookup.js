@@ -19,7 +19,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
     items: [{
         xtype: 'fieldset',
         title: 'IP Address and URL Threats'.t(),
-        layout: 'vbox',
+        width: '100%',
         items: [{
             xtype: 'displayfield',
             value: 'Threat Prevention must be enabled to perform lookups'.t(),
@@ -29,6 +29,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
         }, {
             xtype: 'textfield',
             fieldLabel: 'Lookup Threat'.t(),
+            _neverDirty: true,
             fieldIndex: 'threatLookupInput',
             margin: '10 0 0 0',
             bind: {
@@ -67,11 +68,41 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             }, {
                 xtype: 'displayfield',
                 labelWidth: 160,
-                fieldLabel: 'Category'.t(),
-                fieldIndex: 'threatLookupCategory',
+                fieldLabel: 'Country'.t(),
+                fieldIndex: 'threatLookupCountry',
                 bind: {
-                    value: '{threatLookupInfo.category}',
-                    hidden: '{threatLookupInfo.category.length === 0}'
+                    value: '{threatLookupInfo.country}',
+                    hidden: '{threatLookupInfo.country.length === 0}'
+                }
+            }, {
+                xtype: 'displayfield',
+                labelWidth: 160,
+                fieldLabel: 'Popularity'.t(),
+                fieldIndex: 'threatLookupPopularity',
+                renderer: Ung.common.Renderer.threatprevention.ipPopularity,
+                bind: {
+                    value: '{threatLookupInfo.popularity}',
+                    hidden: '{threatLookupInfo.popularity.length === 0}'
+                }
+            }, {
+                xtype: 'displayfield',
+                labelWidth: 160,
+                fieldLabel: 'Category'.t(),
+                fieldIndex: 'threatLookupCategories',
+                renderer: Ung.common.Renderer.threatprevention.webCategories,
+                bind: {
+                    value: '{threatLookupInfo.categories}',
+                    hidden: '{threatLookupInfo.categories.length === 0}'
+                }
+            }, {
+                xtype: 'displayfield',
+                labelWidth: 160,
+                fieldLabel: 'Reputation Age'.t(),
+                fieldIndex: 'threatLookupReputationAge',
+                renderer: Ung.common.Renderer.threatprevention.age,
+                bind: {
+                    value: '{threatLookupInfo.age}',
+                    hidden: '{threatLookupInfo.age.length === 0}'
                 }
             }, {
                 xtype: 'displayfield',
@@ -82,11 +113,12 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                     value: '{threatLookupInfo.score}',
                     hidden: '{threatLookupInfo.score.length === 0}'
                 }
-            }, {
+            },{
                 xtype: 'displayfield',
                 labelWidth: 160,
                 fieldLabel: 'Reputation Level'.t(),
                 fieldIndex: 'threatLookupReputationLevel',
+                renderer: Ung.common.Renderer.threatprevention.reputation,
                 bind: {
                     value: '{threatLookupInfo.level}',
                     hidden: '{threatLookupInfo.level.length === 0}'
@@ -96,10 +128,22 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 labelWidth: 160,
                 fieldLabel: 'Reputation Level Details'.t(),
                 fieldIndex: 'threatLookupReputationLevelDetails',
+                renderer: Ung.common.Renderer.threatprevention.reputationDetails,
                 width: '100%',
                 bind: {
                     value: '{threatLookupInfo.levelDetails}',
                     hidden: '{threatLookupInfo.levelDetails.length === 0}'
+                }
+            }, {
+                xtype: 'displayfield',
+                labelWidth: 160,
+                fieldLabel: 'Reputation History'.t(),
+                fieldIndex: 'threatLookupReputationHistory',
+                renderer: Ung.common.Renderer.threatprevention.reputationHistory,
+                width: '100%',
+                bind: {
+                    value: '{threatLookupInfo.history}',
+                    hidden: '{threatLookupInfo.history.length === 0}'
                 }
             }]
         }]
