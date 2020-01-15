@@ -14,39 +14,38 @@
 # As much as we'd like to use a single table, it's just not possible at this time.
 # Let's keep checking with new Debian releases though!
 #
-
-IPTABLES_PROCESSING=$1
-IPTABLES_NFQ_NUMBER=$2
-IPTABLES_MAX_SCAN_SIZE=$3
-
 IPTABLES=${IPTABLES:-iptables}
-
-if [ "${IPTABLES_PROCESSING}" = "" ] ; then
-    SETTINGS=$(\
-python3.5 -c "\
-from uvm import Manager; \
-from uvm import AppManager; \
-from uvm import Uvm; \
-uvm_context = Uvm().getUvmContext(hostname='localhost', username=None, password=None, timeout=60); \
-app_manager = uvm_context.appManager();
-app = [ instance for instance in AppManager(uvm_context).get_instances() if instance[1] == 'intrusion-prevention' ][0]; \
-settings = app_manager.app(app[0]).getSettings();\
-print('%s %s %s' % (settings['iptablesProcessing'], settings['iptablesNfqNumber'], settings['iptablesMaxScanSize'])); \
-")
-    IPTABLES_PROCESSING=$(echo $SETTINGS | cut -d' ' -f 1)
-    IPTABLES_NFQ_NUMBER=$(echo $SETTINGS | cut -d' ' -f 2)
-    IPTABLES_MAX_SCAN_SIZE=$(echo $SETTINGS | cut -d' ' -f 3)
-fi;
-
 TABLE_NAME_MANGLE=mangle
 TABLE_NAME_RAW=raw
-
 CHAIN_NAME_SURICATA=suricata-scanning
+
+SETTINGS_INTRUSIONPREVENTION_IPTABLESPROCESSING=
+SETTINGS_INTRUSIONPREVENTION_IPTABLESNFQNUMBER=
+SETTINGS_INTRUSIONPREVENTION_IPTABLESMAXSCANSIZE=
+SETTINGS_INTRUSIONPREVENTION_BYPASSRULES=$(cat << SETTINGS_INTRUSIONPREVENTION_BYPASSRULES_EOF
+SETTINGS_INTRUSIONPREVENTION_BYPASSRULES_EOF
+)
+SETTINGS_NETWORK_BYPASSRULES=$(cat << SETTINGS_NETWORK_BYPASSRULES_EOF
+SETTINGS_NETWORK_BYPASSRULES_EOF
+)
+
+if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESPROCESSING" = "x" ]; then
+    echo "Missing iptablesProcessing!"
+    exit
+fi
+if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESNFQNUMBER" = "x" ]; then
+    echo "Missing iptablesNfqNumber!"
+    exit
+fi
+if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESMAXSCANSIZE" = "x" ]; then
+    echo "Missing iptablesMaxScanSize!"
+    exit
+fi
 
 SURICATA_RUNNING=$(ps -e -o command h | cut -f1 -d' ' | grep [s]uricata | wc -l)
 
-CONNBYTES="-m connbytes --connbytes 0:${IPTABLES_MAX_SCAN_SIZE} --connbytes-dir both --connbytes-mode bytes"
-if [ ${IPTABLES_MAX_SCAN_SIZE} -eq 0 ]; then
+CONNBYTES="-m connbytes --connbytes 0:${SETTINGS_INTRUSIONPREVENTION_IPTABLESMAXSCANSIZE} --connbytes-dir both --connbytes-mode bytes"
+if [ ${SETTINGS_INTRUSIONPREVENTION_IPTABLESMAXSCANSIZE} -eq 0 ]; then
     CONNBYTES=
 fi
 
@@ -93,17 +92,23 @@ flush_suricata_table_iptables()
     flush_suricata_table_iptables_table_chain "filter" "FORWARD"
 }
 
+#
+# Add suricata chain to target tabl eand chain.
+#
 insert_suricata_iptables_table_chain()
 {
-    local table=$1
-    local chain=$2
+    local table="$1"
+    local chain="$2"
 
     # We don't care about traffic to or from loopback addresses
     ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -s 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
     ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -d 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
 
-    # We also don't want to look at any bypassed traffic
+    # We also don't want to look at any already bypassed traffic
     ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -m mark --mark 0x1000000/0x1000000 -j RETURN -m comment --comment "Ignore bypassed traffic"
+
+    insert_suricata_iptables_table_chain_rule "$table" "$SETTINGS_INTRUSIONPREVENTION_BYPASSRULES"
+    insert_suricata_iptables_table_chain_rule "$table" "$SETTINGS_NETWORK_BYPASSRULES"
 
     # Ignore UDP/domain traffic
     ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -p udp --dport 53 -j RETURN -m comment --comment "Ignore UDP/domain traffic"
@@ -115,7 +120,7 @@ insert_suricata_iptables_table_chain()
     fi
 
     # all other traffic will be handed off to our netfilter queue
-    ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -j NFQUEUE --queue-num ${IPTABLES_NFQ_NUMBER} --queue-bypass ${CONNBYTES} -m comment --comment "queue for suricata"
+    ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -j NFQUEUE --queue-num ${SETTINGS_INTRUSIONPREVENTION_IPTABLESNFQNUMBER} --queue-bypass ${CONNBYTES} -m comment --comment "queue for suricata"
 
     # ----- now that we have created our table we need some rules to send us traffic
     # ----- these next rules will grab only traffic that we need to classify
@@ -124,12 +129,33 @@ insert_suricata_iptables_table_chain()
 }
 
 #
+# Add pre-build rules to suricata chain on specified table.
+#
+insert_suricata_iptables_table_chain_rule()
+{
+    local table="$1"
+    local rules="$2"
+
+    ${IFS+"false"} && unset oldifs || oldifs="$IFS" 
+IFS='
+'
+    for command in $rules; do
+        if [ -z "${command##*"-t $table"*}" ] ; then
+            if [ -z "${command##*"-A $CHAIN_NAME_SURICATA"*}" ] ; then
+                eval " $command"
+            fi
+        fi
+    done
+    ${oldifs+"false"} && unset IFS || IFS="$oldifs" 
+}
+
+#
 # Add rules to chains and rules to call chains
 #
 insert_suricata_iptables()
 {
 
-    if [ "${IPTABLES_PROCESSING}" = "pre" ] ; then
+    if [ "${SETTINGS_INTRUSIONPREVENTION_IPTABLESPROCESSING}" = "pre" ] ; then
         insert_suricata_iptables_table_chain "${TABLE_NAME_MANGLE}" "PREROUTING"
         insert_suricata_iptables_table_chain "${TABLE_NAME_RAW}" "PREROUTING"
     else

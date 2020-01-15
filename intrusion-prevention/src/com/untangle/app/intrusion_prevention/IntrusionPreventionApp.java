@@ -43,6 +43,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.StaticRoute;
@@ -81,7 +82,7 @@ public class IntrusionPreventionApp extends AppBase
     private IntrusionPreventionEventMonitor ipsEventMonitor = null;
 
     private static final String DAEMON_NAME = "suricata";
-    private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/740-suricata";
+    private static final String IPTABLES_SCRIPT = "/etc/untangle/iptables-rules.d/740-suricata";
     private static final String GET_CONFIG = System.getProperty("prefix") + "/usr/share/untangle/bin/intrusion-prevention-get-config.py";
     private static final String GET_LAST_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/intrusion-prevention-get-last-update-check";
     private static final String ENGINE_RULES_DIRECTORY = "/etc/suricata/rules";
@@ -111,6 +112,8 @@ public class IntrusionPreventionApp extends AppBase
     private long statScanCurrent = 0;
     private long statDetectCurrent = 0;
     private long statBlockCurrent = 0;
+
+    private String SettingsFileName = "";
 
     /**
      * Setup IPS application
@@ -161,12 +164,12 @@ public class IntrusionPreventionApp extends AppBase
         String appID = this.getAppSettings().getId().toString();
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         IntrusionPreventionSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/" + "settings_" + appID + ".js";
+        SettingsFileName = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/" + "settings_" + appID + ".js";
 
         readAppSettings();
 
         try {
-            readSettings = settingsManager.load(IntrusionPreventionSettings.class, settingsFileName);
+            readSettings = settingsManager.load(IntrusionPreventionSettings.class, SettingsFileName);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
         }
@@ -218,7 +221,6 @@ public class IntrusionPreventionApp extends AppBase
         setSettings(newSettings, false);
     }
 
-
     /**
      * Set intrusion prevention settings.
      *
@@ -238,6 +240,11 @@ public class IntrusionPreventionApp extends AppBase
                 idx = ++idx;
                 rule.setId(Integer.toString(idx));
             }
+        }
+        idx = 0;
+        for (BypassRule bypass : newSettings.getBypassRules()) {
+            idx = ++idx;
+            bypass.setRuleId(idx);
         }
 
         /**
@@ -645,11 +652,25 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
         }catch( Exception e ){
-            logger.warn( "Unable to generate suricata.configuration:", e );
+            logger.warn( "Unable to generate suricata configuration:", e );
         }
         reloadEventMonitorMap();
 
-        iptablesRules();
+        /**
+         * Update iptables config
+         * Callyng sync-settings will restart the iptables script.
+         */
+        result = UvmContextFactory.context().execManager().execOutput("/usr/bin/sync-settings -f " + SettingsFileName);
+        try {
+            String lines[] = result.split("\\r?\\n");
+            for ( String line : lines ){
+                if( line.trim().length() > 1 ){
+                    logger.warn("reconfigure: sync-settings: " + line);
+                }
+            }
+        } catch (Exception e) {
+            logger.warn( "Unable to generate iptables configuration:", e );
+        }
 
         try {
             if (getRunState() == AppSettings.AppState.RUNNING) {
@@ -840,12 +861,7 @@ public class IntrusionPreventionApp extends AppBase
             logger.warn("Cannot find init script:" + IPTABLES_SCRIPT);
         }
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(
-            IPTABLES_SCRIPT +
-            " " + this.settings.getIptablesProcessing() +
-            " " + this.settings.getIptablesNfqNumber() +
-            " " + this.settings.getIptablesMaxScanSize()
-        );
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(IPTABLES_SCRIPT);
         try {
             String[] lines = result.getOutput().split("\\r?\\n");
             logger.info( IPTABLES_SCRIPT + ": ");
