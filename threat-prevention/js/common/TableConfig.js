@@ -189,9 +189,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             fields: {
                 age: {
                     name: 'Age'.t(),
-                    renderer: function(value){
-                        return Ext.String.format('{0} months'.t(), value);
-                    }
+                    renderer: Ung.common.Renderer.threatprevention.age
                 },
                 country: {
                     name: 'Country'.t()
