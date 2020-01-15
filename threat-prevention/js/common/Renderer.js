@@ -93,8 +93,6 @@ Ext.define('Ung.common.Renderer.threatprevention', {
         }       
 
         if(Array.isArray(values)) {
-            var repHistory = [];
-
             var repTable = "<table><thead><td>Date</td><td>Categories</td></thead>";
 
             for(var i in values) {
@@ -102,7 +100,6 @@ Ext.define('Ung.common.Renderer.threatprevention', {
                 var date = Renderer.timestamp(values[i].timestamp);
 
                 repTable += "<tr><td>" + date + "</td><td>" + cats + "</td></tr>";
-                repHistory.push("Date: "+ date + " Categories: " + cats);
             }
 
             repTable += "</table>";
