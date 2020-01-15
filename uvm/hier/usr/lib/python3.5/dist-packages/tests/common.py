@@ -61,7 +61,7 @@ class NGFWTestCase(TestCase):
             name = cls.module_name()
             print("initial_setup for app %s" % name)
             if cls._app or uvmContext.appManager().isInstantiated(name):
-                if cls.skip_instantiated():
+                if cls.skip_instantiated() and name not in ["reports","shield"]:
                     pytest.skip('app %s already instantiated' % cls.module_name())
                 else:
                     if cls.do_not_install_app: # grab
