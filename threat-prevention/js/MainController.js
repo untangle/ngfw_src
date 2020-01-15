@@ -134,6 +134,8 @@ Ext.define('Ung.apps.threatprevention.MainController', {
                                 vm.set('threatLookupInfo.age', result[i][j].queries.getrepinfo.age);
                                 vm.set('threatLookupInfo.country', result[i][j].queries.getrepinfo.country);
                                 vm.set('threatLookupInfo.level', result[i][j].queries.getrepinfo.reputation);
+                                vm.set('threatLookupInfo.recentCount', result[i][j].queries.getrepinfo.threathistory);
+
                             }
 
                             //parse the geturlhistory or getiphistory data
