@@ -54,6 +54,65 @@ Ext.define('Ung.common.Renderer.threatprevention', {
         return description;
     },
 
+    reputationDetails: function(value) {
+        if(value == 0 || value == null){
+            return null;
+        }
+
+        return Ung.common.threatprevention.references.getReputationLevel(value).get('details');
+    },
+
+    age: function(value) {
+        return Ext.String.format('{0} months'.t(), value);
+    },
+
+    webCategories: function(values) {
+        if(values == 0 || values == null){
+            return null;
+        }
+
+        if(Array.isArray(values)) {
+            var currentCategories = [];
+
+            for(var i in values) {
+                var shortDesc = Renderer.webCategory(values[i].catid);
+                var conf = " (" + values[i].conf + " % Confidence)";
+
+                currentCategories.push(shortDesc + conf);
+            }
+
+            return currentCategories.join(", ");
+        }
+
+        return null;
+    },
+
+    reputationHistory: function(values) {
+        if(values == 0 || values == null){
+            return null;
+        }       
+
+        if(Array.isArray(values)) {
+            var repHistory = [];
+
+            var repTable = "<table><thead><td>Date</td><td>Categories</td></thead>";
+
+            for(var i in values) {
+                var cats = Ung.common.Renderer.threatprevention.webCategories(values[i].categories);
+
+                var date = Renderer.timestamp(values[i].timestamp);
+
+                repTable += "<tr><td>" + date + "</td><td>" + cats + "</td></tr>";
+
+                repHistory.push("Date: "+ date + " Categories: " + cats);
+            }
+
+            return repTable;
+        }
+
+        return null;
+    },
+
     categoryMap:{
         0: 'Spam Sources'.t(),
         1: 'Windows Exploits'.t(),

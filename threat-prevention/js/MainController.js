@@ -111,9 +111,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput])], this)
-        .then(function(result){
-            v.setLoading(false);
-
+        .then(function(result){           
             if(Util.isDestroyed(v, vm)){
                 return;
             }
@@ -121,46 +119,31 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
             for(var i in result) {
                 for(var j in result[i]) {
-
-                    if (vm.get('threatLookupInfo.address') == null) {
-                        vm.set('threatLookupInfo.address', result[i][j].hasOwnProperty('url') ? result[i][j].url : result[i][j].ip);
-                    }
-
                     if(result[i][j].hasOwnProperty('queries')) {
                             //Parse the getrepinfo data
                             if(result[i][j].queries.hasOwnProperty('getrepinfo')) {
 
+                                vm.set('threatLookupInfo.address', result[i][j].hasOwnProperty('url') ? result[i][j].url : result[i][j].ip);
                                 vm.set('threatLookupInfo.score', result[i][j].queries.getrepinfo.reputation);
-                
-                                var repLevel = Ung.common.threatprevention.references.getReputationLevel(result[i][j].queries.getrepinfo.reputation);
-                                if(repLevel) {
-                                    vm.set('threatLookupInfo.level', repLevel.get('description'));
-                                    vm.set('threatLookupInfo.levelDetails', repLevel.get('details'));
-                                }
-                
+                                vm.set('threatLookupInfo.popularity', result[i][j].queries.getrepinfo.popularity);
+                                vm.set('threatLookupInfo.age', result[i][j].queries.getrepinfo.age);
+                                vm.set('threatLookupInfo.country', result[i][j].queries.getrepinfo.country);
+                                vm.set('threatLookupInfo.level', result[i][j].queries.getrepinfo.reputation);
+                                vm.set('threatLookupInfo.levelDetails', result[i][j].queries.getrepinfo.reputation);                
                             }
 
                             //parse the geturlhistory or getiphistory data
                             if(result[i][j].queries.hasOwnProperty('geturlhistory')) {
-
                                 //current category info
                                 if(result[i][j].queries.geturlhistory.hasOwnProperty('current_categorization')) {
                                     if(result[i][j].queries.geturlhistory.current_categorization.hasOwnProperty('categories')) {
-                                        var currentCategories = [];
-                                        for(var c in result[i][j].queries.geturlhistory.current_categorization.categories) {
-                                            var threatShortDesc = Renderer.webCategory(result[i][j].queries.geturlhistory.current_categorization.categories[c].catid);
-                                            currentCategories.push(result[i][j].queries.geturlhistory.current_categorization.categories[c].conf + "% Confidence : " + threatShortDesc);
-                                        }
-                                        
-                                        vm.set('threatLookupInfo.category', currentCategories.join(", "));
+                                        vm.set('threatLookupInfo.categories', result[i][j].queries.geturlhistory.current_categorization.categories);
                                     }
                                 }
 
                                 //security history
-                                if(result[i][j].queries.hasOwnProperty('security_history')) {
-                                    for(var sh in result[i][j].queries.geturlhistory.security_history) {
-                                        
-                                    }
+                                if(result[i][j].queries.geturlhistory.hasOwnProperty('security_history')) {
+                                    vm.set('threatLookupInfo.history', result[i][j].queries.geturlhistory.security_history);
                                 }
                             }
                         }
