@@ -28,6 +28,7 @@ Ext.define('Ung.apps.threatprevention.ThreatLookupInfo', {
          {name: 'inputVal', type: 'string'},
          {name: 'address', type: 'string'},
          {name: 'score', type: 'int'},
+         {name: 'recentCount', type: 'string'},
          {name: 'level', type: 'int'},
          {name: 'popularity', type: 'int'},
          {name: 'threathistory', type: 'string'},

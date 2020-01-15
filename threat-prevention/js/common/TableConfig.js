@@ -200,9 +200,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 },
                 threathistory: {
                     name: 'Most Recent Threat History'.t(),
-                    renderer: function(value){
-                        return Ext.String.format('{0} occurrences'.t(), value > Ung.common.TableConfig.threatprevention.maxKeyIndex ? Ung.common.TableConfig.threatprevention.maxKeyIndex : value);
-                    }
+                    renderer: Ung.common.Renderer.threatprevention.recentOccurrences
                 },
                 reputation: {
                     name: 'Reputation'.t(),

@@ -98,7 +98,17 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             }, {
                 xtype: 'displayfield',
                 labelWidth: 160,
-                fieldLabel: 'Reputation Age'.t(),
+                fieldLabel: 'Recent Threat Count'.t(),
+                fieldIndex: 'threatLookupRecentCount',
+                renderer: Ung.common.Renderer.threatprevention.recentOccurrences,
+                bind: {
+                    value: '{threatLookupInfo.recentCount}',
+                    hidden: '{threatLookupInfo.recentCount.length === 0}'
+                }
+            }, {
+                xtype: 'displayfield',
+                labelWidth: 160,
+                fieldLabel: 'Age'.t(),
                 fieldIndex: 'threatLookupReputationAge',
                 renderer: Ung.common.Renderer.threatprevention.age,
                 bind: {
@@ -109,6 +119,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 xtype: 'displayfield',
                 labelWidth: 160,
                 fieldLabel: 'Reputation Score'.t(),
+                hidden: true,
                 fieldIndex: 'threatLookupReputationScore',
                 bind: {
                     value: '{threatLookupInfo.score}',
@@ -117,7 +128,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             },{
                 xtype: 'displayfield',
                 labelWidth: 160,
-                fieldLabel: 'Reputation Level'.t(),
+                fieldLabel: 'Reputation'.t(),
                 fieldIndex: 'threatLookupReputationLevel',
                 renderer: Ung.common.Renderer.threatprevention.reputation,
                 bind: {
@@ -127,7 +138,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             }, {
                 xtype: 'displayfield',
                 labelWidth: 160,
-                fieldLabel: 'Reputation Level Details'.t(),
+                fieldLabel: 'Details'.t(),
                 fieldIndex: 'threatLookupReputationLevelDetails',
                 renderer: Ung.common.Renderer.threatprevention.reputationDetails,
                 width: '100%',
@@ -138,7 +149,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             }, {
                 xtype: 'displayfield',
                 labelWidth: 160,
-                fieldLabel: 'Reputation History'.t(),
+                fieldLabel: 'Most Recent Threat History'.t(),
                 fieldIndex: 'threatLookupReputationHistory',
                 renderer: Ung.common.Renderer.threatprevention.reputationHistory,
                 width: '100%',

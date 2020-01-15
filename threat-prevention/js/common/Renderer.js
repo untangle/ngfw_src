@@ -84,6 +84,15 @@ Ext.define('Ung.common.Renderer.threatprevention', {
     },
 
     /**
+     * recentOccurrences render displays the number of occurrences the threat has occurred
+     * 
+     * @param {int} value - the number of recent occurrences 
+     */
+    recentOccurrences: function(value){
+        return Ext.String.format('{0} occurrences'.t(), value > Ung.common.TableConfig.threatprevention.maxKeyIndex ? Ung.common.TableConfig.threatprevention.maxKeyIndex : value);
+    },
+
+    /**
      * webCategories renderer displays the category and confidence % associated with that category
      * 
      * @param {Array} values - An array of JSON objects with category IDs to display the category and confidence levels
@@ -120,7 +129,7 @@ Ext.define('Ung.common.Renderer.threatprevention', {
         }       
 
         if(Array.isArray(values)) {
-            var repTable = "<table><thead><td>Date</td><td>Categories</td></thead>";
+            var repTable = "<table><thead><td>Timestamp</td><td>Categories</td></thead>";
 
             for(var i in values) {
                 var cats = Ung.common.Renderer.threatprevention.webCategories(values[i].categories);
