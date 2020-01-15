@@ -132,8 +132,8 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 renderer: Ung.common.Renderer.threatprevention.reputationDetails,
                 width: '100%',
                 bind: {
-                    value: '{threatLookupInfo.levelDetails}',
-                    hidden: '{threatLookupInfo.levelDetails.length === 0}'
+                    value: '{threatLookupInfo.level}',
+                    hidden: '{threatLookupInfo.level.length === 0}'
                 }
             }, {
                 xtype: 'displayfield',

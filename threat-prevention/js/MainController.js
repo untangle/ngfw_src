@@ -104,6 +104,11 @@ Ext.define('Ung.apps.threatprevention.MainController', {
         vm.set('threatMeter', vRange);
         vm.set('currentThreatDescription', vLabel);
     },
+
+    /**
+     * handleThreatLookup is the click event handler to retrieve threat prevention data on a URL or IP Address from the getUrlHistory API
+     * 
+     */
     handleThreatLookup: function() {
         var v = this.getView(), vm = this.getViewModel();
         var lookupInput = vm.get('threatLookupInfo.inputVal');
@@ -129,7 +134,6 @@ Ext.define('Ung.apps.threatprevention.MainController', {
                                 vm.set('threatLookupInfo.age', result[i][j].queries.getrepinfo.age);
                                 vm.set('threatLookupInfo.country', result[i][j].queries.getrepinfo.country);
                                 vm.set('threatLookupInfo.level', result[i][j].queries.getrepinfo.reputation);
-                                vm.set('threatLookupInfo.levelDetails', result[i][j].queries.getrepinfo.reputation);                
                             }
 
                             //parse the geturlhistory or getiphistory data
