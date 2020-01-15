@@ -17,6 +17,7 @@ RUN apt install --yes git
 RUN apt install --yes apt-show-versions
 RUN apt install --yes openssh-client
 RUN apt install --yes dput
+RUN apt install --yes curl
 
 # cleanup
 RUN apt clean
