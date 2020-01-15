@@ -3,8 +3,11 @@
  */
 package com.untangle.app.intrusion_prevention;
 
+import com.untangle.uvm.network.BypassRule;
+
 import org.json.JSONObject;
 import org.json.JSONString;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
@@ -22,6 +25,7 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     private List<IntrusionPreventionRule> rules = new LinkedList<>();
     private List<IntrusionPreventionSignature> signatures = new LinkedList<>();
     private List<IntrusionPreventionVariable> variables = new LinkedList<>();
+    private List<BypassRule> bypassRules = new LinkedList<>();
     private Integer iptablesNfqNumber = 2930;
     private Integer iptablesMaxScanSize = 1024;
     private String iptablesProcessing = "pre";
@@ -60,6 +64,9 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
 
     public List<IntrusionPreventionVariable> getVariables() { return variables; }
     public void setVariables(List<IntrusionPreventionVariable> variables) { this.variables = variables; }
+
+    public List<BypassRule> getBypassRules() { return this.bypassRules; }
+    public void setBypassRules( List<BypassRule> newValue ) { this.bypassRules = newValue; }
 
     public JSONObject getSuricataSettings() { return suricataSettings; }
     public void setSuricataSettings(JSONObject suricataSettings) { this.suricataSettings = suricataSettings; }

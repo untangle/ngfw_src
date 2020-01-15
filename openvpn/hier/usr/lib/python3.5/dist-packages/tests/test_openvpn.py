@@ -320,7 +320,7 @@ class OpenVpnTests(NGFWTestCase):
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest.SkipTest("No paried VPN client available")
 
-        pre_events_connect = global_functions.get_app_metric_value(app,"connect")
+        pre_events_connect = global_functions.get_app_metric_value(self._app,"connect")
         
         running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
         loopLimit = 5
@@ -384,7 +384,7 @@ class OpenVpnTests(NGFWTestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_connect = global_functions.get_app_metric_value(app, "connect")
+        post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
         
     def test_050_createClientVPNFullTunnel(self):
@@ -455,7 +455,7 @@ class OpenVpnTests(NGFWTestCase):
         if(vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest.SkipTest("No paried VPN client available")
         
-        pre_events_connect = global_functions.get_app_metric_value(app, "connect")
+        pre_events_connect = global_functions.get_app_metric_value(self._app, "connect")
 
         running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         loopLimit = 5
@@ -519,7 +519,7 @@ class OpenVpnTests(NGFWTestCase):
         assert( found )
 
         #check to see if the faceplate counters have incremented
-        post_events_connect = global_functions.get_app_metric_value(app, "connect")
+        post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
 
         #delete the user
@@ -589,7 +589,7 @@ class OpenVpnTests(NGFWTestCase):
         assert( found )
 
         #check to see if the faceplate counters have incremented
-        post_events_connect = global_functions.get_app_metric_value(app, "connect")
+        post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
 
     def test_070_createClientVPNTunnelLocalUserPass(self):
@@ -597,7 +597,7 @@ class OpenVpnTests(NGFWTestCase):
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest.SkipTest("No paried VPN client available")
 
-        pre_events_connect = global_functions.get_app_metric_value(app,"connect")
+        pre_events_connect = global_functions.get_app_metric_value(self._app,"connect")
         
         running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
         loopLimit = 5
@@ -668,7 +668,7 @@ class OpenVpnTests(NGFWTestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_connect = global_functions.get_app_metric_value(app, "connect")
+        post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
 
         #remove Local Directory User
@@ -679,7 +679,7 @@ class OpenVpnTests(NGFWTestCase):
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest.SkipTest("No paried VPN client available")
 
-        pre_events_connect = global_functions.get_app_metric_value(app,"connect")
+        pre_events_connect = global_functions.get_app_metric_value(self._app,"connect")
 
         if (radiusResult != 0):
             raise unittest.SkipTest("No RADIUS server available")
@@ -757,7 +757,7 @@ class OpenVpnTests(NGFWTestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_connect = global_functions.get_app_metric_value(app, "connect")
+        post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
 
 
@@ -766,7 +766,7 @@ class OpenVpnTests(NGFWTestCase):
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest.SkipTest("No paried VPN client available")
 
-        pre_events_connect = global_functions.get_app_metric_value(app,"connect")
+        pre_events_connect = global_functions.get_app_metric_value(self._app,"connect")
 
         if (adResult != 0):
             raise unittest.SkipTest("No AD server available")
@@ -844,7 +844,7 @@ class OpenVpnTests(NGFWTestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_connect = global_functions.get_app_metric_value(app, "connect")
+        post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
 
     def test_80_OpenVPNTunnelVPNConflict(self):
@@ -865,7 +865,7 @@ class OpenVpnTests(NGFWTestCase):
                     "description": "Route all traffic over any available Tunnel.",
                     "enabled": vpn_enabled,
                     "ipv6Enabled": vpn_ipv6,
-                    "javaClass": "com.untangle.self._app.tunnel_vpn.TunnelVpnRule",
+                    "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnRule",
                     "ruleId": rule_id,
                     "tunnelId": vpn_tunnel_id
             }
@@ -874,7 +874,7 @@ class OpenVpnTests(NGFWTestCase):
             return {
                     "allTraffic": False,
                     "enabled": vpn_enabled,
-                    "javaClass": "com.untangle.self._app.tunnel_vpn.TunnelVpnTunnelSettings",
+                    "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
                     "name": "tunnel-Untangle",
                     "provider": "Untangle",
                     "tags": {
