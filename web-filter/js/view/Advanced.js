@@ -147,27 +147,6 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
         }
     }, {
         xtype: 'fieldset',
-        title: 'Block options'.t(),
-        padding: 10,
-        cls: 'app-section',
-        layout: {
-            type: 'vbox'
-        },
-        items: [{
-            xtype: 'checkbox',
-            boxLabel: 'Block QUIC (UDP port 443)'.t(),
-            bind: '{settings.blockQuic}'
-        }, {
-            xtype: 'checkbox',
-            boxLabel: 'Block pages from IP only hosts'.t(),
-            bind: '{settings.blockAllIpHosts}'
-        }, {
-            xtype: 'checkbox',
-            boxLabel: 'Pass if referrer matches any Pass Sites'.t(),
-            bind: '{settings.passReferers}'
-        }]
-    }, {
-        xtype: 'fieldset',
         title: 'Custom block page'.t(),
         checkboxToggle: true,
         checkbox: {
