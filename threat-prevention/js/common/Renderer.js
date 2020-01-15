@@ -99,13 +99,13 @@ Ext.define('Ung.common.Renderer.threatprevention', {
 
             for(var i in values) {
                 var cats = Ung.common.Renderer.threatprevention.webCategories(values[i].categories);
-
                 var date = Renderer.timestamp(values[i].timestamp);
 
                 repTable += "<tr><td>" + date + "</td><td>" + cats + "</td></tr>";
-
                 repHistory.push("Date: "+ date + " Categories: " + cats);
             }
+
+            repTable += "</table>";
 
             return repTable;
         }
