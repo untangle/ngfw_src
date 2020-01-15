@@ -70,6 +70,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 labelWidth: 160,
                 fieldLabel: 'Country'.t(),
                 fieldIndex: 'threatLookupCountry',
+                renderer: Renderer.country,
                 bind: {
                     value: '{threatLookupInfo.country}',
                     hidden: '{threatLookupInfo.country.length === 0}'
