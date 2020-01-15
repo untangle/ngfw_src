@@ -865,7 +865,7 @@ class OpenVpnTests(NGFWTestCase):
                     "description": "Route all traffic over any available Tunnel.",
                     "enabled": vpn_enabled,
                     "ipv6Enabled": vpn_ipv6,
-                    "javaClass": "com.untangle.self._app.tunnel_vpn.TunnelVpnRule",
+                    "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnRule",
                     "ruleId": rule_id,
                     "tunnelId": vpn_tunnel_id
             }
@@ -874,7 +874,7 @@ class OpenVpnTests(NGFWTestCase):
             return {
                     "allTraffic": False,
                     "enabled": vpn_enabled,
-                    "javaClass": "com.untangle.self._app.tunnel_vpn.TunnelVpnTunnelSettings",
+                    "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
                     "name": "tunnel-Untangle",
                     "provider": "Untangle",
                     "tags": {
