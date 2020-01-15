@@ -353,42 +353,6 @@ public class ThreatPreventionApp extends AppBase
         this.adjustMetric(STAT_LOOKUP_AVG, time);
     }
 
-    // /**
-    //  * threatLookup will call the webroot URL or IP endpoints and return a JSON array of the data
-    //  * 
-    //  * @param searchVal - The IP or URL to lookup
-    //  * 
-    //  * @return JSONArray info 
-    //  */
-    // public JSONArray getReputationInfo(String searchVal)
-    // {
-    //     JSONArray answer = null;
-    //     answer = webrootQuery.urlGetInfo(searchVal);
-    //     if(answer == null) {
-    //         answer = webrootQuery.ipGetInfo(searchVal);
-    //     }
-
-    //     return answer;
-    // }
-
-    // /**
-    //  * threatHistory will call the webroot URL or IP endpoints and return a JSON array of the data
-    //  * 
-    //  * @param searchVal - The IP or URL to lookup
-    //  * 
-    //  * @return JSONArray info 
-    //  */
-    // public JSONArray getReputationHistory(String searchVal)
-    // {
-    //     JSONArray answer = null;
-    //     answer = webrootQuery.getUrlHistory(searchVal);
-    //     if(answer == null) {
-    //         answer = webrootQuery.getIpHistory(searchVal);
-    //     }
-
-    //     return answer;
-    // }
-
     /**
      * Return various local valus for use with reports.
      *
