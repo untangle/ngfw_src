@@ -18,6 +18,7 @@ RUN apt install --yes apt-show-versions
 RUN apt install --yes openssh-client
 RUN apt install --yes dput
 RUN apt install --yes curl
+RUN apt install --yes procps
 
 # cleanup
 RUN apt clean
