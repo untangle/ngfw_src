@@ -90,11 +90,11 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 xtype: 'displayfield',
                 labelWidth: 160,
                 fieldLabel: 'Category'.t(),
+                hidden: true,
                 fieldIndex: 'threatLookupCategories',
                 renderer: Ung.common.Renderer.threatprevention.webCategories,
                 bind: {
-                    value: '{threatLookupInfo.categories}',
-                    hidden: '{threatLookupInfo.categories.length === 0}'
+                    value: '{threatLookupInfo.categories}'
                 }
             }, {
                 xtype: 'displayfield',
