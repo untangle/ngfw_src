@@ -42,23 +42,13 @@ Ext.define('Ung.common.Renderer.threatprevention', {
     /**
      * reputation renderer will display the reputation level of the value
      * 
-     * @param {*} value - the reputation score
-     * @param {*} cell 
-     * @param {*} record 
+     * @param {int} value - the reputation score
      */
     reputation: function(value, cell, record){
         if(value == 0 || value == null){
             return null;
         }
-        var description = '';
-        var reputationMaxes = Object.keys(Ung.common.Renderer.threatprevention.reputationMap);
-        for(var i = 0; i < reputationMaxes.length; i++){
-            if(value <= reputationMaxes[i]){
-                description = Ung.common.Renderer.threatprevention.reputationMap[reputationMaxes[i]];
-                break;
-            }
-        }
-        return description;
+        return Ung.common.threatprevention.references.getReputationLevel(value).get('description');
     },
 
     /**
