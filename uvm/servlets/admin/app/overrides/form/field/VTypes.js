@@ -15,7 +15,8 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         ipNetmask: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
         openvpnName: /^[A-Za-z0-9]([-.0-9A-Za-z]*[0-9A-Za-z])?$/,
         positiveInteger: /^[0-9]+$/,
-        domainNameRe: /^[a-zA-Z0-9\-_.]+$/
+        domainNameRe: /^[a-zA-Z0-9\-_.]+$/,
+        urlAddrRe: /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/
     },
 
     isSinglePortValid: function(val) {
@@ -89,7 +90,25 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         return v == '*' || this.mask.email.test(v);
     },
     emailwildcardText: 'You must provide an email address or wildcard.'.t(),
+    
+    /**
+     * The ipOrUrl VType can validate IP addresses and also URLs
+     * 
+     * @param {string} val - the input URL or  IP Address
+     */
+    ipOrUrl: function(val) {
+        return this.ip4Address(val) || this.ip6Address(val) || this.url(val);
+    },
 
+    /**
+     * 
+     * the url VType can validate URL addresses with or without http/https
+     * 
+     * @param {string} val - the input url 
+     */
+    url: function(val) {
+        return this.mask.urlAddrRe.test(val);
+    },
 
     ipMatcher: function(val) {
         if (val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {

@@ -31,6 +31,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             fieldLabel: 'Lookup Threat'.t(),
             _neverDirty: true,
             fieldIndex: 'threatLookupInput',
+            vtype: 'ipOrUrl',
             margin: '10 0 0 0',
             bind: {
                 hidden: '{state.on == false}',
