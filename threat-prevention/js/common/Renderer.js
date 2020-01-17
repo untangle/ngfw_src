@@ -32,13 +32,6 @@ Ext.define('Ung.common.Renderer.threatprevention', {
         }
     },
 
-    reputationMap:{
-        20: 'High Risk'.t(),
-        40: 'Suspicious'.t(),
-        60: 'Moderate Risk'.t(),
-        80: 'Low Risk'.t(),
-        100: 'Trustworthy'.t()
-    },
     /**
      * reputation renderer will display the reputation level of the value
      * 
