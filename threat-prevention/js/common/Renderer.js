@@ -112,18 +112,17 @@ Ext.define('Ung.common.Renderer.threatprevention', {
         }       
 
         if(Array.isArray(values)) {
-            var repTable = "<table><thead><td>Timestamp</td><td>Categories</td></thead>";
 
+            var dates = [];
             for(var i in values) {
-                var cats = Ung.common.Renderer.threatprevention.webCategories(values[i].categories);
-                var date = Renderer.timestamp(values[i].timestamp);
-
-                repTable += "<tr><td>" + date + "</td><td>" + cats + "</td></tr>";
+                if(i <= Ung.common.TableConfig.threatprevention.maxKeyIndex) {
+                    dates.push(Renderer.timestamp(values[i].timestamp));
+                } else {
+                    break;
+                }
             }
 
-            repTable += "</table>";
-
-            return repTable;
+            return dates.join(", ");
         }
 
         return null;
