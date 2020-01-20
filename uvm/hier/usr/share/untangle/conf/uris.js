@@ -7,13 +7,13 @@
                 "uri": "https://ids.untangle.com/suricatasignatures.tar.gz",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "https://labs.untangle.com/",
+                "uri": "https://labs.untangle.com/Utility/v1/mac",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
                 "uri": "relay.untangle.com",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "https://telemetry.untangle.com",
+                "uri": "https://telemetry.untangle.com/ngfw/v1/infection",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
                 "uri": "https://updates.untangle.com",
