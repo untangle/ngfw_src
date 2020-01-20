@@ -6778,7 +6778,7 @@ msgid "Generate"
 msgstr "Generado"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:418
-msgid "Certificate Authority generation successfully completed. Click OK to continue."
+msgid "Certificate Authority generation successfully completed."
 msgstr ""
 "Generación de Autoridad de Certificación completada con éxito. Haga clic en "
 "Aceptar para continuar."

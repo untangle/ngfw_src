@@ -7874,7 +7874,7 @@ msgid "Success"
 msgstr ""
 
 #: /ngfw/work/src/uvm/servlets/webui/root/script/config/administration.js:851
-msgid "Certificate Authority generation successfully completed. Click OK to continue."
+msgid "Certificate Authority generation successfully completed."
 msgstr ""
 
 #: /ngfw/work/src/uvm/servlets/webui/root/script/config/administration.js:855

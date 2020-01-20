@@ -7977,7 +7977,7 @@ msgstr "Generuj"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:418
 #: Status: UNVERIFIED
-msgid "Certificate Authority generation successfully completed. Click OK to continue."
+msgid "Certificate Authority generation successfully completed."
 msgstr ""
 "Generowanie urzędu autoryzującego zakończone powodzeniem. Kliknij przycisk "
 "OK, aby kontynuować."
