@@ -6450,7 +6450,7 @@ msgid "Generate"
 msgstr "生成する"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:418
-msgid "Certificate Authority generation successfully completed. Click OK to continue."
+msgid "Certificate Authority generation successfully completed."
 msgstr "認証局の生成が正常に完了しました。続行するには、[OK]をクリックします。"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:423

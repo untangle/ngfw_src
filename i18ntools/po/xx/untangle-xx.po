@@ -4302,8 +4302,8 @@ msgid "Generate"
 msgstr "XGenerateX"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/administration/MainController.js:418
-msgid "Certificate Authority generation successfully completed. Click OK to continue."
-msgstr "XCertificate Authority generation successfully completed. Click OK to continue.X"
+msgid "Certificate Authority generation successfully completed."
+msgstr "XCertificate Authority generation successfully completed.X"
 
 #: /ngfw/ngfw_src/openvpn/js/MainController.js:247
 msgid "Failure"

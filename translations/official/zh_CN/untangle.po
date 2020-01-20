@@ -3482,7 +3482,7 @@ msgid "The Common Name field must not be empty"
 msgstr "通用名称字段不能为空"
 
 #: /ngfw/work/src/uvm/servlets/webui/root/script/config/administration.js:851
-msgid "Certificate Authority generation successfully completed. Click OK to continue."
+msgid "Certificate Authority generation successfully completed."
 msgstr "证书颁发机构代成功完成。单击确定继续。"
 
 #: /ngfw/work/src/uvm/servlets/webui/root/script/config/administration.js:855

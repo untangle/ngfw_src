@@ -415,7 +415,7 @@ Ext.define('Ung.config.administration.MainController', {
                 if(Util.isDestroyed(me)){
                     return;
                 }
-                Util.successToast('Certificate Authority generation successfully completed. Click OK to continue.'.t());
+                Util.successToast('Certificate Authority generation successfully completed.'.t());
                 me.certDialog.close();
                 me.refreshRootCertificate();
                 me.certDialog.setLoading(false);

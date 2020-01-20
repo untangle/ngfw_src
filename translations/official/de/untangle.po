@@ -3585,7 +3585,7 @@ msgid "The Common Name field must not be empty"
 msgstr "Das Feld Common Name darf nicht leer sein"
 
 #: /ngfw/work/src/uvm/servlets/webui/root/script/config/administration.js:851
-msgid "Certificate Authority generation successfully completed. Click OK to continue."
+msgid "Certificate Authority generation successfully completed."
 msgstr ""
 "Certificate Authority Generation erfolgreich abgeschlossen. Klicken Sie auf "
 "OK, um fortzufahren."
