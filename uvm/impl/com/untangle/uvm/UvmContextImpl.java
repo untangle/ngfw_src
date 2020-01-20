@@ -84,6 +84,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private GeographyManagerImpl geographyManager;
     private NetcapManagerImpl netcapManager;
     private EventManagerImpl eventManager;
+    private UriManagerImpl uriManager;
     private DaemonManagerImpl daemonManager;
     private HostsFileManagerImpl hostsFileManager;
     private BrandingManagerImpl brandingManager;
@@ -325,6 +326,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public EventManager eventManager()
     {
         return this.eventManager;
+    }
+
+    /**
+     * Get UriManager
+     * @return UriManager
+     */
+    public UriManager uriManager()
+    {
+        return this.uriManager;
     }
 
     /**
@@ -1111,6 +1121,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("notificationManager", this.notificationManager());
             json.put("adminManager", this.adminManager());
             json.put("eventManager", this.eventManager());
+            json.put("uriManager", this.uriManager());
             json.put("systemManager", this.systemManager());
             json.put("dashboardManager", this.dashboardManager());
             json.put("hostTable", this.hostTable());
@@ -1289,6 +1300,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.pluginManager = PluginManagerImpl.getInstance();
 
         this.eventManager = new EventManagerImpl();
+
+        this.uriManager = new UriManagerImpl();
 
         // start vectoring
         NetcapManagerImpl.getInstance().run();
