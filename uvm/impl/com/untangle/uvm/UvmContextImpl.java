@@ -1316,6 +1316,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.eventManager = new EventManagerImpl();
 
+        this.uriManager = new UriManagerImpl();
+
         // start vectoring
         NetcapManagerImpl.getInstance().run();
 
