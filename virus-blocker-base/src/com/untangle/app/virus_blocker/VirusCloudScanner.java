@@ -6,6 +6,7 @@ package com.untangle.app.virus_blocker;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
@@ -75,8 +76,13 @@ public class VirusCloudScanner extends Thread
         logger.debug("CloudScanner thread has started for: " + body);
 
         try {
-            URL myurl = new URL(CLOUD_SCANNER_URL);
-            HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
+            URL myurl = new URL(UvmContextFactory.context().uriManager().getUri(CLOUD_SCANNER_URL));
+            HttpURLConnection mycon;
+            if(myurl.getProtocol().equals("https")){
+                mycon = (HttpsURLConnection) myurl.openConnection();
+            }else{
+                mycon = (HttpURLConnection) myurl.openConnection();
+            }
             mycon.setRequestMethod("POST");
 
             mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
