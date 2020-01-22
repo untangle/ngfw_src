@@ -232,7 +232,7 @@ class JavaCompiler
     cp << jar
 
     raise "javah failed" unless
-      Kernel.system(JavahCommand, "-h", destination, "-classpath", cp.join(":"), *files)
+      Kernel.system(JavahCommand, "-h", destination, "-d", destination, "-classpath", cp.join(":"), *files)
   end
 
   def JavaCompiler.run(classpath, classname, silent = false, *args)
