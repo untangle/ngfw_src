@@ -11,6 +11,8 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.app.App;
 
+import org.json.JSONArray;
+
 /**
  * Compiles pipes based on subscriptions and interest sets.
  */
@@ -27,4 +29,6 @@ public interface PipelineFoundry
     PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium );
 
     PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy );
+
+    JSONArray getPipelineOrder( Integer policyId, short protocol, String clientIp, String serverIp, int clientPort, int serverPort);
 }
