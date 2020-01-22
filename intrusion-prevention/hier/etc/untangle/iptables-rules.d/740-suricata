@@ -31,15 +31,15 @@ SETTINGS_NETWORK_BYPASSRULES_EOF
 
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESPROCESSING" = "x" ]; then
     echo "Missing iptablesProcessing!"
-    exit
+    return 0
 fi
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESNFQNUMBER" = "x" ]; then
     echo "Missing iptablesNfqNumber!"
-    exit
+    return 0
 fi
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESMAXSCANSIZE" = "x" ]; then
     echo "Missing iptablesMaxScanSize!"
-    exit
+    return 0
 fi
 
 SURICATA_RUNNING=$(ps -e -o command h | cut -f1 -d' ' | grep [s]uricata | wc -l)
