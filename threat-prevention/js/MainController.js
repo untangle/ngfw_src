@@ -103,6 +103,65 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
         vm.set('threatMeter', vRange);
         vm.set('currentThreatDescription', vLabel);
+    },
+
+    /**
+     * handleThreatLookup is the click event handler to retrieve threat prevention data on a URL or IP Address from the getUrlHistory API
+     * 
+     */
+    handleThreatLookup: function() {
+        var v = this.getView(), vm = this.getViewModel();
+        var lookupInput = vm.get('threatLookupInfo.inputVal');
+        if(!lookupInput) {return;}
+
+        v.setLoading(true);
+        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput])], this)
+        .then(function(result){           
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+            v.setLoading(false);
+
+            for(var i in result) {
+                for(var j in result[i]) {
+                    if(result[i][j].hasOwnProperty('queries')) {
+                            //Parse the getrepinfo data
+                            if(result[i][j].queries.hasOwnProperty('getrepinfo')) {
+
+                                vm.set('threatLookupInfo.address', result[i][j].hasOwnProperty('url') ? result[i][j].url : result[i][j].ip);
+                                vm.set('threatLookupInfo.score', result[i][j].queries.getrepinfo.reputation);
+                                vm.set('threatLookupInfo.popularity', result[i][j].queries.getrepinfo.popularity);
+                                vm.set('threatLookupInfo.age', result[i][j].queries.getrepinfo.age);
+                                vm.set('threatLookupInfo.country', result[i][j].queries.getrepinfo.country);
+                                vm.set('threatLookupInfo.level', result[i][j].queries.getrepinfo.reputation);
+                                vm.set('threatLookupInfo.recentCount', result[i][j].queries.getrepinfo.threathistory);
+
+                            }
+
+                            //parse the geturlhistory or getiphistory data
+                            if(result[i][j].queries.hasOwnProperty('geturlhistory')) {
+                                //current category info
+                                if(result[i][j].queries.geturlhistory.hasOwnProperty('current_categorization')) {
+                                    if(result[i][j].queries.geturlhistory.current_categorization.hasOwnProperty('categories')) {
+                                        vm.set('threatLookupInfo.categories', result[i][j].queries.geturlhistory.current_categorization.categories);
+                                    }
+                                }
+
+                                //security history
+                                if(result[i][j].queries.geturlhistory.hasOwnProperty('security_history')) {
+                                    vm.set('threatLookupInfo.history', result[i][j].queries.geturlhistory.security_history);
+                                }
+                            }
+                        }
+                    }
+                }
+            }, function(ex) {
+            if(!Util.isDestroyed(v)){
+                v.setLoading(false);
+                return;
+            }
+            Util.handleException(ex);
+        });
     }
 });
 

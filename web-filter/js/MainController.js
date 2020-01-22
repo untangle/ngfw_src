@@ -23,7 +23,6 @@ Ext.define('Ung.apps.webfilter.MainController', {
                 return;
             }
 
-            console.log(result);
             vm.set({
                 settings: result[0],
                 isExpertMode: result[1]
