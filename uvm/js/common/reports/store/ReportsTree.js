@@ -44,6 +44,7 @@ Ext.define('Ung.store.ReportsTree', {
                 if(entry.removedFrom){
                     return;
                 }
+
                 category.children.push({
                     text: entry.get('localizedTitle'),
                     cat: storeCat.get('slug'),
