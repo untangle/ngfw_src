@@ -16,4 +16,19 @@ class UvmManager(Manager):
     def api_setjnetcapdebuglevel( self, debugLevel ):
         self.__uvmContext.netcapManager().setJNetcapDebugLevel( debugLevel )
 
+    def api_pipeline( self, policy_id, protocol, client_ip, server_ip, client_port, server_port):
+        """
+        Show application pipeline processing for this policy, IP protocol (e.g.,6=TCP,17=UDP), client ip, server ip, client port, server port.
+        """
+        pipelines = self.__uvmContext.pipelineFoundry().getPipelineOrder( policy_id, protocol, client_ip, server_ip, client_port, server_port )
+        for p in pipelines:
+            appName = p['name'] + '*'
+            try:
+                iterator = iter(p["app"])
+                if "appSettings" in p["app"] and "appName" in p["app"]["appSettings"]:
+                    appName = p["app"]["appSettings"]["appName"]
+            except TypeError:
+                pass
+            print("{inputFitting:15} {appName:40}({name})".format(inputFitting=p['inputFitting'], appName=appName, name=p['name']))
+
 Manager.managers.append( UvmManager )
