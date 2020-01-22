@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Comparator;
 import java.util.Collections;
@@ -14,6 +15,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.SessionTuple;
@@ -263,6 +267,36 @@ public class PipelineFoundryImpl implements PipelineFoundry
         logger.debug("Clearing Pipeline Foundry cache...");
         pipelineFoundryCache.clear();
         pipelineNonPremiumFoundryCache.clear();
+    }
+
+    /**
+     * Return JSONArray of application pipelines for this policyId.
+     * @param policyId Policy id to compare
+     * @param protocol short of IP protocol (6=TCP, 17=UDP)
+     * @param clientIp String of client IP address.
+     * @param serverIp String of server IP address.
+     * @param clientPort int of client port.
+     * @param serverPort int of server port
+     * @return String of application ids and their numeric order
+     */
+    public JSONArray getPipelineOrder(Integer policyId, short protocol, String clientIp, String serverIp, int clientPort, int serverPort)
+    {
+        JSONArray result = null;
+        int index = 0;
+        List<PipelineConnectorImpl> pipelineConnectors = null;
+        try{
+            SessionTuple sessionTuple = new SessionTuple(protocol, InetAddress.getByName(clientIp), InetAddress.getByName(serverIp), clientPort, serverPort);
+            pipelineConnectors = weld( 0L, sessionTuple, policyId, true );
+            result = new JSONArray();
+            for(PipelineConnectorImpl pci : pipelineConnectors){
+                JSONObject jo = new JSONObject(pci);
+                jo.remove("class");
+                result.put(index++, jo);
+            }
+        }catch( Exception e){
+            logger.warn("getPipelineOrder: Unable to calculate:", e);
+        }
+        return result;
     }
 
     /**
