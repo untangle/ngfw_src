@@ -33,6 +33,24 @@ Ext.define('Ung.common.threatprevention.references', {
         return values;
     },
 
+    /**
+     * getReputationLevel returns the reputation store item record within the Reputation Score's level range
+     * 
+     * @param {int} repScore - The reputation score
+     * @returns {reputations store item} - The reputation store item
+     */
+    getReputationLevel: function(repScore) {
+        var repLevel = null;
+
+        Ung.common.threatprevention.references.reputations.each(function(record){
+            if(repScore >= record.get('rangeBegin') && repScore <= record.get('rangeEnd')) {
+                repLevel = record;
+            }
+        });
+
+        return repLevel;
+    },
+
     // Move to renders
     threats: Ext.create('Ext.data.ArrayStore', {
         fields: [ 'bit', 'description', 'details' ],

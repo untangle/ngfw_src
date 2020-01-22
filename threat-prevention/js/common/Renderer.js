@@ -32,26 +32,100 @@ Ext.define('Ung.common.Renderer.threatprevention', {
         }
     },
 
-    reputationMap:{
-        20: 'High Risk'.t(),
-        40: 'Suspicious'.t(),
-        60: 'Moderate Risk'.t(),
-        80: 'Low Risk'.t(),
-        100: 'Trustworthy'.t()
-    },
+    /**
+     * reputation renderer will display the reputation level of the value
+     * 
+     * @param {int} value - the reputation score
+     */
     reputation: function(value, cell, record){
         if(value == 0 || value == null){
             return null;
         }
-        var description = '';
-        var reputationMaxes = Object.keys(Ung.common.Renderer.threatprevention.reputationMap);
-        for(var i = 0; i < reputationMaxes.length; i++){
-            if(value <= reputationMaxes[i]){
-                description = Ung.common.Renderer.threatprevention.reputationMap[reputationMaxes[i]];
-                break;
-            }
+        return Ung.common.threatprevention.references.getReputationLevel(value).get('description');
+    },
+
+    /**
+     * reputationDetails renderer displays the details of a reputation level
+     * 
+     * @param {int} value - the Reputation score to retrieve the threat level details for 
+     */
+    reputationDetails: function(value) {
+        if(value == 0 || value == null){
+            return null;
         }
-        return description;
+
+        return Ung.common.threatprevention.references.getReputationLevel(value).get('details');
+    },
+
+    /**
+     * age renderer displays the age in months
+     * 
+     * @param {int} value - the number of months the renderer should display 
+     */
+    age: function(value) {
+        return Ext.String.format('{0} months'.t(), value);
+    },
+
+    /**
+     * recentOccurrences render displays the number of occurrences the threat has occurred
+     * 
+     * @param {int} value - the number of recent occurrences 
+     */
+    recentOccurrences: function(value){
+        return Ext.String.format('{0} occurrences'.t(), value > Ung.common.TableConfig.threatprevention.maxKeyIndex ? Ung.common.TableConfig.threatprevention.maxKeyIndex : value);
+    },
+
+    /**
+     * webCategories renderer displays the category and confidence % associated with that category
+     * 
+     * @param {Array} values - An array of JSON objects with category IDs to display the category and confidence levels
+     */
+    webCategories: function(values) {
+        if(values == 0 || values == null){
+            return null;
+        }
+
+        if(Array.isArray(values)) {
+            var currentCategories = [];
+
+            for(var i in values) {
+                var shortDesc = Renderer.webCategory(values[i].catid);
+                var conf = " (" + values[i].conf + " % Confidence)";
+
+                currentCategories.push(shortDesc + conf);
+            }
+
+            return currentCategories.join(", ");
+        }
+
+        return null;
+    },
+
+    /**
+     * reputationHistory displays the history of a threat
+     * 
+     * @param {Array} values - An array of reputation history items to display
+     */
+    reputationHistory: function(values) {
+        if(values == 0 || values == null){
+            return null;
+        }       
+
+        if(Array.isArray(values)) {
+
+            var dates = [];
+            for(var i in values) {
+                if(i <= Ung.common.TableConfig.threatprevention.maxKeyIndex) {
+                    dates.push(Renderer.timestamp(values[i].timestamp));
+                } else {
+                    break;
+                }
+            }
+
+            return dates.join(", ");
+        }
+
+        return null;
     },
 
     categoryMap:{
@@ -91,6 +165,12 @@ Ext.define('Ung.common.Renderer.threatprevention', {
         4: 'Lower than 10M'.t(),
         5: 'Unranked'.t()
     },
+    
+    /**
+     * ipPopularity will return the IP popularity that should be displayed
+     * 
+     * @param {int} value - The popularity ID to be looked up in the popularity map
+     */
     ipPopularity: function(value){
         if(value == 0){
             return null;
