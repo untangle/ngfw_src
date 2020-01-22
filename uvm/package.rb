@@ -117,7 +117,7 @@ end
 end
 
 # 3rd Party packages should be built into the /script/common/packages directory
-{"exporter" => "Ext.ux.Exporter"}.each do |k, v| 
+{"exporter" => "Ext.ux.Exporter"}.each do |k, v|
   JsBuilder.new(uvm_lib, "#{k}", "./downloads/output/#{v}/", "script/common/packages")
 end
 
