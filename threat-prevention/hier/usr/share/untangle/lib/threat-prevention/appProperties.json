@@ -4,6 +4,13 @@
         "name" : "threat-prevention",
         "displayName" : "Threat Prevention",
         "type" : "FILTER",
-        "viewPosition" : 111
+        "viewPosition" : 111,
+        "parents" : {
+                "javaClass": "java.util.LinkedList",
+                "list": [
+                    "license",
+                    "http"
+                ]
+        }
 }
 
