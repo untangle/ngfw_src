@@ -11,7 +11,6 @@ import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 
-default_policy_id = 1
 app = None
 app_web_filter = None
 limited_acceptance_ratio = .3 # 30% - limited severly is 10% by default, anything under 30% will be accepted as successfull
@@ -206,12 +205,14 @@ class BandwidthControlTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global app_web_filter, orig_network_settings, orig_network_settings_with_qos, orig_network_settings_without_qos, pre_down_speed_kbit, wan_limit_kbit, wan_limit_mbit
+        global orig_network_settings, orig_network_settings_with_qos, orig_network_settings_without_qos, pre_down_speed_kbit, wan_limit_kbit, wan_limit_mbit
 
         settings = cls._app.getSettings()
         settings["configured"] = True
         cls._app.setSettings(settings)        
         cls._app.start()
+
+        cls._app_web_filter = uvmContext.appManager().instantiate(cls.appNameWF(), 1)
 
         if orig_network_settings == None:
             orig_network_settings = uvmContext.networkManager().getNetworkSettings()
@@ -268,7 +269,6 @@ class BandwidthControlTests(NGFWTestCase):
         assert (pre_down_speed_kbit >  post_down_speed_kbit)
 
     def test_013_qos_bypass_custom_rules_tcp(self):
-        global app
         nuke_rules(self._app)
         priority_level = 7
         # Record average speed without bandwidth control configured
@@ -323,7 +323,6 @@ class BandwidthControlTests(NGFWTestCase):
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
     def test_015_qos_nobpass_custom_rules_tcp(self):
-        global app
         nuke_rules(self._app)
         priority_level = 7
 
@@ -348,7 +347,6 @@ class BandwidthControlTests(NGFWTestCase):
         assert (not (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post))
 
     def test_020_severely_limited_tcp(self):
-        global app
         nuke_rules(self._app)
         priority_level = 7
         # Record average speed without bandwidth control configured
@@ -374,7 +372,7 @@ class BandwidthControlTests(NGFWTestCase):
 
 
     def test_021_severely_limited_udp(self):
-        global app, app_web_filter, wan_limit_mbit
+        global wan_limit_mbit
         # only use 30% because QoS will limit to 10% and we want to make sure it takes effect
         # really high levels will actually be limited by the untangle-vm throughput instead of QoS
         # which can interfere with the test
@@ -404,9 +402,8 @@ class BandwidthControlTests(NGFWTestCase):
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
     def test_050_severely_limited_web_filter_flagged(self):
-        global app, app_web_filter
         nuke_rules(self._app)
-        pre_count = global_functions.get_app_metric_value(app,"prioritize")
+        pre_count = global_functions.get_app_metric_value(self._app,"prioritize")
 
         priority_level = 7
         # This test might need web filter for http to start
@@ -417,14 +414,14 @@ class BandwidthControlTests(NGFWTestCase):
         append_rule(self._app, create_single_condition_rule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
 
         # Test.untangle.com is listed as Software, Hardware in web filter. As of 1/2014 its in Technology 
-        settingsWF = app_web_filter.getSettings()
+        settingsWF = self._app_web_filter.getSettings()
         i = 0
         untangleCats = ["Computer,", "Security"]
         for webCategories in settingsWF['categories']['list']:
             if any(x in webCategories['name'] for x in untangleCats):
                 settingsWF['categories']['list'][i]['flagged'] = "true"
             i += 1
-        app_web_filter.setSettings(settingsWF)
+        self._app_web_filter.setSettings(settingsWF)
 
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.get_download_speed(download_server="test.untangle.com")
@@ -448,7 +445,7 @@ class BandwidthControlTests(NGFWTestCase):
     def test_060_host_quota(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
-        global app
+
         nuke_rules(self._app)
         priority_level = 7 # Severely Limited 
         given_quota = 10000 # 10k 
@@ -608,13 +605,13 @@ class BandwidthControlTests(NGFWTestCase):
 
     @classmethod
     def final_extra_tear_down(cls):
-        global app_web_filter, orig_network_settings
+        global orig_network_settings
         # Restore original settings to return to initial settings
         if orig_network_settings != None:
             uvmContext.networkManager().setNetworkSettings( orig_network_settings )
-        if app_web_filter != None:
-            uvmContext.appManager().destroy( app_web_filter.getAppSettings()["id"] )
-            app_web_filter = None
+        if self._app_web_filter != None:
+            uvmContext.appManager().destroy( self._app_web_filter.getAppSettings()["id"] )
+            self._app_web_filter = None
 
 
 test_registry.register_module("bandwidth-control", BandwidthControlTests)
