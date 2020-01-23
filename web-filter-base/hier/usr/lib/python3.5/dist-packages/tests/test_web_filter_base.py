@@ -538,10 +538,10 @@ class WebFilterBaseTests(NGFWTestCase):
 
     def test_564_pass_url_works_with_https_sni(self):
         """verify that an entry in the pass list overrides a blocked category"""
-        self.pass_url_list_add("penthouse.com")
+        self.pass_url_list_add("pornhub.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
-        result1 = self.get_web_request_results(url="https://penthouse.com/test/testPage1.html", expected="blockpage")
-        result2 = self.get_web_request_results(url="https://www.penthouse.com/test/testPage1.html", expected="blockpage")
+        result1 = self.get_web_request_results(url="https://pornhub.com/test/testPage1.html", expected="blockpage")
+        result2 = self.get_web_request_results(url="https://www.pornhub.com/test/testPage1.html", expected="blockpage")
         self.pass_url_list_clear()
         assert (result1 != 0)
         assert (result2 != 0)
