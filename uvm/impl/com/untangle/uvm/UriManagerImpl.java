@@ -93,6 +93,26 @@ public class UriManagerImpl implements UriManager
         } catch (Exception e) {
         }
         buildMap();
+
+        /**
+         * Now actually sync the settings to the system
+         */
+        ExecManagerResult result;
+        boolean errorOccurred = false;
+        String errorStr = null;
+        String cmd = "/usr/bin/sync-settings -f " + SettingsFileName;
+        result = UvmContextFactory.context().execManager().exec( cmd );
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("Syncing settings to O/S: ");
+            for ( String line : lines )
+                logger.info("sync-settings: " + line);
+        } catch (Exception e) {}
+
+        if ( result.getResult() != 0 ) {
+            errorOccurred = true;
+            errorStr = "sync-settings failed: returned " + result.getResult();
+        }
     }
 
     /**
