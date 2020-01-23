@@ -146,7 +146,6 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         }
 
         logger.debug("HANDLE_CHUNK = " + buff.toString());
-        // app.incrementScanCount();
 
         // scan the buffer for the SNI hostname
         try {
@@ -278,7 +277,6 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         // we have decided to block so we create the SSL engine and start
         // by passing it all the client data received thus far
         if (redirect != null) {
-            app.incrementBlockCount();
             logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 

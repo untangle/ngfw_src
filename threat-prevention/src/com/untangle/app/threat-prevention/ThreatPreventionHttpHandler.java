@@ -13,8 +13,6 @@ import com.untangle.app.http.HeaderToken;
 import com.untangle.app.http.StatusLine;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.Token;
-// import com.untangle.app.web_filter.WebFilterBase;
-// import com.untangle.app.web_filter.WebFilterHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
 
 import org.apache.log4j.Logger;
@@ -67,20 +65,14 @@ public class ThreatPreventionHttpHandler extends HttpEventHandler
     @Override
     protected HeaderToken doRequestHeader(AppTCPSession session, HeaderToken requestHeader)
     {
-        // app.incrementScanCount();
-
         HttpRedirect redirect = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirect);
         }
 
         if (redirect == null) {
-            String host = requestHeader.getValue("Host");
-            URI uri = getRequestLine(session).getRequestUri();
-
             releaseRequest(session);
         } else {
-            app.incrementBlockCount();
             blockRequest(session, redirect.getResponse());
         }
 
