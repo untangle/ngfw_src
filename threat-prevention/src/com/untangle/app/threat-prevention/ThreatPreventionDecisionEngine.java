@@ -84,13 +84,12 @@ public class ThreatPreventionDecisionEngine
         this.app = app;
     }
 
-
     /**
-     * [addressQuery description]
-     * @param  clientAddress [description]
-     * @param  serverAddress [description]
-     * @param  sessionAttachments   [description]
-     * @return               [description]
+     * Perform threat lookup on specified addresses and attach results to sesesion.
+     * @param  clientAddress      Client IP address.
+     * @param  serverAddress      Server IP address.
+     * @param  sessionAttachments Sessions's attachments to attach results.
+     * @return                    boolean true if results were obtained, false if not.
      */
     public boolean addressQuery(InetAddress clientAddress, InetAddress serverAddress, SessionAttachments sessionAttachments)
     {
@@ -98,11 +97,11 @@ public class ThreatPreventionDecisionEngine
     }
 
     /**
-     * [addressQuery description]
-     * @param  clientAddress      [description]
-     * @param  url                [description]
-     * @param  sessionAttachments [description]
-     * @return                    [description]
+     * Perform threat lookup on specified addresses and attach results to sesesion.
+     * @param  clientAddress      Client IP address.
+     * @param  url                Server URL address.
+     * @param  sessionAttachments Sessions's attachments to attach results.
+     * @return                    boolean true if results were obtained, false if not.
      */
     public boolean addressQuery(InetAddress clientAddress, String url, SessionAttachments sessionAttachments)
     {
@@ -110,12 +109,12 @@ public class ThreatPreventionDecisionEngine
     }
 
     /**
-     * [addressQuery description]
-     * @param  clientAddress      [description]
-     * @param  serverAddress      [description]
-     * @param  serverUrl          [description]
-     * @param  sessionAttachments [description]
-     * @return                    [description]
+     * Perform threat lookup on specified addresses and attach results to sesesion.
+     * @param  clientAddress      Client IP address.
+     * @param  serverAddress      Server IP address.
+     * @param  serverUrl          Server URL address.
+     * @param  sessionAttachments Sessions's attachments to attach results.
+     * @return                    boolean true if results were obtained, false if not.
      */
     public boolean addressQuery(InetAddress clientAddress, InetAddress serverAddress, String serverUrl, SessionAttachments sessionAttachments)
     {
@@ -330,6 +329,7 @@ public class ThreatPreventionDecisionEngine
                 app.incrementFlagCount();
             }
         }
+        app.incrementPassCount();
         return null;
     }
 
