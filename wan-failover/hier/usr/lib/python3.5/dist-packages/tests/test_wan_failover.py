@@ -108,6 +108,7 @@ class WanFailoverTests(NGFWTestCase):
     @classmethod
     def initial_extra_setup(cls):
         global indexOfWans, appData, orig_netsettings
+        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
         appData = cls._app.getSettings()
         indexOfWans = global_functions.get_wan_tuples()
