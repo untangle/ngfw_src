@@ -609,9 +609,9 @@ class BandwidthControlTests(NGFWTestCase):
         # Restore original settings to return to initial settings
         if orig_network_settings != None:
             uvmContext.networkManager().setNetworkSettings( orig_network_settings )
-        if self._app_web_filter != None:
-            uvmContext.appManager().destroy( self._app_web_filter.getAppSettings()["id"] )
-            self._app_web_filter = None
+        if cls._app_web_filter != None:
+            uvmContext.appManager().destroy( cls._app_web_filter.getAppSettings()["id"] )
+            cls._app_web_filter = None
 
 
 test_registry.register_module("bandwidth-control", BandwidthControlTests)
