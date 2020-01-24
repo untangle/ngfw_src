@@ -84,11 +84,12 @@ class VirusBlockerBaseTests(NGFWTestCase):
         # download eicar and trojan files before installing virus blocker
         cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
         remote_control.run_command("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-        result = remote_control.run_command("wget --user=" + cls.ftp_user_name + " --password='" + cls.ftp_password + "' -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
+        remote_control.run_command("rm /tmp/temp_022_ftpVirusPassSite_file",host=global_functions.LIST_SYSLOG_SERVER)
+        result = remote_control.run_command("wget -q -O /tmp/eicar https://test.untangle.com/virus/eicar.com")  # use HTTPS to avoid the scannner
         assert (result == 0)
-        result = remote_control.run_command("wget --user=" + cls.ftp_user_name + " --password='" + cls.ftp_password + "' -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --user=" + cls.ftp_user_name + " --password='" + cls.ftp_password + "' -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip",host=global_functions.LIST_SYSLOG_SERVER)
         assert (result == 0)
-        md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
+        md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", host=global_functions.LIST_SYSLOG_SERVER, stdout=True)
         cls.md5StdNum = md5StdNum
         # print("md5StdNum <%s>" % md5StdNum)
         assert (result == 0)
@@ -198,10 +199,10 @@ class VirusBlockerBaseTests(NGFWTestCase):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
-        remote_control.run_command("rm -f /tmp/temp_022_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
+        remote_control.run_command("rm -f /tmp/temp_025_ftpVirusBlocked_file")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_025_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
-        md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
+        md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_025_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
         assert (md5StdNum != md5TestNum)
 
@@ -220,11 +221,11 @@ class VirusBlockerBaseTests(NGFWTestCase):
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         addPassSite(self._app, global_functions.ftp_server)
-        remote_control.run_command("rm -f /tmp/temp_022_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
+        remote_control.run_command("rm -f /tmp/temp_027_ftpVirusPassSite_file")
+        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_027_ftpVirusPassSite_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         nukePassSites(self._app)
         assert (result == 0)
-        md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
+        md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_027_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
         print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
         assert (md5StdNum == md5TestNum)
 
