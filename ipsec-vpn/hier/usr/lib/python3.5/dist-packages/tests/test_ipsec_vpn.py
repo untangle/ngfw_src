@@ -233,8 +233,13 @@ class IPsecTests(NGFWTestCase):
             raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        time.sleep(10) # wait for networking to restart
-        ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+        # wait for networking to restart
+        timeout = 60
+        ipsecHostLANResult = 1
+        while (ipsecHostLANResult != 0 and timeout > 0):
+            timeout -= 1
+            time.sleep(1)
+            ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
         # delete tunnel
         nukeIPSecTunnels()
