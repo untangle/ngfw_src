@@ -331,6 +331,16 @@ public class WanBalancerApp extends AppBase
      */
     private void syncToSystem(boolean enabled)
     {
+        // NGFW-12770
+        // if the enabled flag is false we remove the iptables and post-network-hook scripts and flush
+        // the balance table to put things back the way the were before wan-balancer was ever installed
+        if (enabled == false) {
+            UvmContextFactory.context().execManager().exec("rm -f /etc/untangle/iptables-rules.d/330-wan-balancer");
+            UvmContextFactory.context().execManager().exec("rm -f /etc/untangle/post-network-hook.d/040-wan-balancer");
+            UvmContextFactory.context().execManager().exec("ip route flush table balance");
+            return;
+        }
+
         /**
          * First we write a new 330-wan-balancer iptables script with the
          * current settings
@@ -340,7 +350,6 @@ public class WanBalancerApp extends AppBase
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/wan-balancer-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
         String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
-        if (!enabled) output += " -d";
         String lines[] = output.split("\\r?\\n");
         for (String line : lines)
             logger.info("Sync Settings: " + line);
@@ -362,7 +371,6 @@ public class WanBalancerApp extends AppBase
         lines = output.split("\\r?\\n");
         for (String line : lines)
             logger.info("Adding wan-balancer routes  : " + line);
-
     }
 
     /**
