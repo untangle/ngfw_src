@@ -240,16 +240,9 @@ class SslInspectorTests(NGFWTestCase):
         settings["enableHttpsSniCertFallback"] = False
         settings["restrictYoutube"] = True
         appWeb.setSettings(settings)
-        remote_control.run_command("rm /tmp/%s.out" % fname)
-        youtube_selenium = "http://10.111.56.29/youtube-client.py"
-
-        remote_control.run_command("wget -q -t 1 --timeout=3 " + youtube_selenium + " -O ./youtube-client.py" )
-        result = remote_control.run_command("python youtube-client.py > /tmp/%s.out" % fname)
-        if (result != 0):
-            raise unittest.SkipTest('Youtube scriped failed probably due to selenium package missing')
-        resultYoutube = remote_control.run_command("grep -q '>Age-restricted video' /tmp/%s.out" % fname)
-        print("youtube-client %s resultYoutube %s" % (result,resultYoutube))
-        assert( resultYoutube == 0 )
+        
+        result = remote_control.run_command("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://www.youtube.com/watch?v=esXGGdVL7ug 2>&1 | grep -q \'Loading icon\">'")
+        assert( result != 0 )
 
     @classmethod
     def final_extra_tear_down(cls):
