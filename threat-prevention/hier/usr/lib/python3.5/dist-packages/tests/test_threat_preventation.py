@@ -24,6 +24,14 @@ class ThreatpreventionTests(NGFWTestCase):
         app = ThreatpreventionTests._app
         return "threat-prevention"
 
+    @staticmethod
+    def eventAppName():
+        return "web_filter"
+
+    @staticmethod
+    def displayName():
+        return "Web Filter"
+
     @classmethod
     def initial_extra_setup(cls):
         global appData
@@ -37,7 +45,17 @@ class ThreatpreventionTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
-
+    def test_020_basic_block(self):
+        eventTime = datetime.datetime.now()
+        result = remote_control.run_command("wget -q -4 -t 2 -O - http://marbling.pe.kr  2>&1 | grep -q blocked")
+        assert (result == 0)
+        events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host","marbling.pe.kr",
+                                            self.eventAppName() + '_blocked', True,
+                                            self.eventAppName() + '_flagged', True )
+        
     @classmethod
     def final_extra_tear_down(cls):
         pass
