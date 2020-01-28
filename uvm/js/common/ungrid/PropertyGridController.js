@@ -1,3 +1,18 @@
+/**
+ * Note!
+ * Changed property grid to normal grid/store
+ * 
+ * PropertyGrid uses `source` and `sourceConfig` as props to set and populate data
+ * `source` can be only a { key: value } object
+ * - advantage: can be specified a renderer for each value from a row
+ * - disadvantage: inability to have more data than the { key: value } (e.g. category)
+ * 
+ * Normal store:
+ * - advantage: we can define multiple columns and extra properties allowing data grouping
+ * - disadvantage: the renderer is specified on entire column
+ *   (which cannot be applied in this case as each row represents a different column/value in master grid)
+ */
+
 Ext.define('Ung.cmp.PropertyGridController', {
     extend: 'Ext.app.ViewController',
 
@@ -33,40 +48,15 @@ Ext.define('Ung.cmp.PropertyGridController', {
 
     onBeforeRender: function(){
         var me = this,
-            v = me.getView();
-
-        var sourceConfig = v.initialConfig.sourceConfig ? v.initialConfig.sourceConfig : {};
+            propGrid = me.getView();
 
         /*
          * Build source list from accompanying grid's column definitions
          */
-        var masterGrid = v.up().down('grid');
-        if(masterGrid != v){
-            var columns = masterGrid.getColumns();
-
-            columns.forEach( function(column){
-                var displayName = column.text;
-                if( column.ownerCt.text ){
-                    displayName = column.ownerCt.text + ' ' + displayName;
-                }
-                var config = {
-                    displayName: displayName
-                };
-
-                config.renderer = column.renderer;
-
-                var key = column.dataIndex;
-                sourceConfig[key] = config;
-            });
+        var masterGrid = propGrid.up().down('grid');
+        if (masterGrid != propGrid){
             masterGrid.getView().on('select', 'masterGridSelect', me );
         }
-
-        me.getView().getStore().setFields(['name', 'value', 'category']);
-        me.getView().getStore().setGroupField('category');
-
-        v.sourceConfig = Ext.apply({}, sourceConfig);
-        v.configure(sourceConfig);
-        v.reconfigure();
     },
 
     /*
@@ -88,17 +78,34 @@ Ext.define('Ung.cmp.PropertyGridController', {
         delete propertyRecord.attachments;
         delete propertyRecord.tags;
 
-        var data = [];
+        var data = [], category;
+
         Ext.Object.each( propertyRecord, function(key, value){
-            if(value != null){
+            category = ' Event'.t();
+            if(value != null) {
+                // create grouping
+                if (key.startsWith('ad_blocker')) { category = 'Ad Blocker'; }
+                if (key.startsWith('application_control')) { category = 'Application Control'; }
+                if (key.startsWith('application_control_lite')) { category = 'Application Control Lite'; }
+                if (key.startsWith('bandwidth_control')) { category = 'Bandwidth Control'; }
+                if (key.startsWith('captive_portal')) { category = 'Captive Portal'; }
+                if (key.startsWith('firewall')) { category = 'Firewall'; }
+                if (key.startsWith('phish_blocker')) { category = 'Phish Blocker'; }
+                if (key.startsWith('spam_blocker')) { category = 'Spam Blocker'; }
+                if (key.startsWith('spam_blocker_lite')) { category = 'Spam Blocker Lite'; }
+                if (key.startsWith('ssl_inspector')) { category = 'SSL Inspector'; }
+                if (key.startsWith('virus_blocker')) { category = 'Virus Blocker'; }
+                if (key.startsWith('virus_blocker_lite')) { category = 'Virus Blocker Lite'; }
+                if (key.startsWith('vweb_filter')) { category = 'Web Filter'; }
+                if (key.startsWith('threat_prevention')) { category = 'Threat Prevention'; }
+
                 data.push({
-                    name: key,
+                    name: Map.fields[key] ? Map.fields[key].col.text : key,
                     value: value,
-                    category: 'Event'.t()
+                    category: category
                 });
             }
         });
-
         me.getView().getStore().loadData(data);
     },
 
