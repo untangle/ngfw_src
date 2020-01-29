@@ -47,7 +47,7 @@ class ThreatpreventionTests(NGFWTestCase):
 
     def test_020_basic_block(self):
         eventTime = datetime.datetime.now()
-        result = remote_control.run_command("wget -q -4 -t 2 -O - http://marbling.pe.kr  2>&1 | grep -q blocked")
+        result = remote_control.run_command("wget -q -4 -t 2 -O - http://account.paypal-inc.tribesiren.com 2>&1 | grep -q blocked")
         assert (result == 0)
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
