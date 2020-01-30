@@ -32,12 +32,12 @@ Ext.define('TableConfig', {
             };
         });
 
-        if(this.initialized){
+        if(this.initialized) {
             return;
         }
         var me = this;
 
-        Ext.Object.each(Ung.common.TableConfig, function(key, value){
+        Ext.Object.each(Ung.common.TableConfig, function(key, value) {
             Ung.common.TableConfig[key].initialize(me);
         });
         this.initialized = true;
@@ -185,9 +185,9 @@ Ext.define('TableConfig', {
 
         // generate checkboxes and menu
         Ext.Array.each(tableConfig.columns, function (column) {
-            checkboxes.push({ boxLabel: column.header, inputValue: column.dataIndex, name: 'cbGroup' });
+            checkboxes.push({ boxLabel: column.text, inputValue: column.dataIndex, name: 'cbGroup' });
             comboItems.push({
-                text: column.header,
+                text: column.text,
                 value: column.dataIndex
             });
         });

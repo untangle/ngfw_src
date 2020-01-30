@@ -220,13 +220,10 @@ Ext.define('Ung.view.extra.Devices', {
     }, {
         region: 'east',
         xtype: 'unpropertygrid',
+        reference: 'masterGrid',
         title: 'Device Details'.t(),
         itemId: 'details',
         collapsed: true,
-
-        bind: {
-            source: '{deviceDetails}'
-        }
     }],
     tbar: [{
         xtype: 'button',
