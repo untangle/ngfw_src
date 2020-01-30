@@ -1,10 +1,11 @@
 version: '3'
+
 services:
     pkgtools:
       image: untangleinc/pkgtools
       environment:
-        - PKGTOOLS_URL=${PKGTOOLS_URL:-https://github.com/untangle/ngfw_pkgtools}
-        - PKGTOOLS_COMMIT=${PKGTOOLS_COMMIT:-origin/master}
+        PKGTOOLS_URL: ${PKGTOOLS_URL:-https://github.com/untangle/ngfw_pkgtools}
+        PKGTOOLS_COMMIT: ${PKGTOOLS_COMMIT:-origin/master}
       volumes:
         - pkgtools:/opt/untangle/ngfw_pkgtools
       entrypoint: >
@@ -18,19 +19,21 @@ services:
     build:
       image: untangleinc/ngfw:${REPOSITORY:-stretch}-build-${ARCHITECTURE:-amd64}
       environment:
-        - REPOSITORY=${REPOSITORY:-stretch}
-        - DISTRIBUTION=${DISTRIBUTION:-current}
-        - ARCHITECTURE=${ARCHITECTURE} # defaults to empty: build.sh will use host arch
-        - VERBOSE=${VERBOSE} # defaults to empty: "not verbose"
-        - PACKAGE=${PACKAGE} # defaults to empty: "all packages"
-        - DEBUG=${DEBUG} # defaults to empty: "no debugging
+        REPOSITORY: ${REPOSITORY:-stretch}
+        DISTRIBUTION: ${DISTRIBUTION:-current}
+        ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
+        VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
+        PACKAGE: ${PACKAGE} # defaults to empty: "all packages"
+        DEBUG: ${DEBUG} # defaults to empty: "no debugging
         # empty: "no upload" (default)
         # scp: use scp method for dput
         # ftp: use ftp method for dput
-        - UPLOAD=${UPLOAD}
+        UPLOAD: ${UPLOAD}
         # empty: "do not force the build when that version is already
         # present on the target mirror (default)"
-        - FORCE=${FORCE}
+        FORCE: ${FORCE}
+        TRAVIS_BRANCH:
+        TRAVIS_PULL_REQUEST:
       extra_hosts:
         # from the inside, pass package-server's internal IP instead
         - "package-server:${PACKAGE_SERVER_IP:-173.14.28.193}"
