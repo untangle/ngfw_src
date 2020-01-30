@@ -20,7 +20,7 @@ Ext.define('Ung.cmp.PropertyGridController', {
      * @param {Ext.data.Model} record
      */
     masterGridSelect: function (record) {
-        var me = this;
+        var me = this, recordData, data = [], category;
 
         // empty the details view when no record selected
         if (!record) {
@@ -28,24 +28,19 @@ Ext.define('Ung.cmp.PropertyGridController', {
             return;
         }
 
-        var vm = me.getViewModel(),
-            propertyRecord = record.getData();
+        recordData = record.getData();
 
-        // hide these attributes always
-        delete propertyRecord._id;
-        delete propertyRecord.javaClass;
-        delete propertyRecord.state;
-        delete propertyRecord.attachments;
-        delete propertyRecord.tags;
+        // delete extra non relevant attributes
+        delete recordData._id;
+        delete recordData.javaClass;
+        delete recordData.state;
+        delete recordData.attachments;
+        delete recordData.tags;
 
-        var data = [], category;
-
-        console.log(propertyRecord);
-
-        Ext.Object.each( propertyRecord, function(key, value){
+        Ext.Object.each(recordData, function(key, value) {
             category = ' Event'.t();
             if(value != null) {
-                // create grouping
+                // set grouping category
                 if (key.startsWith('ad_blocker')) { category = 'Ad Blocker'; }
                 if (key.startsWith('application_control')) { category = 'Application Control'; }
                 if (key.startsWith('application_control_lite')) { category = 'Application Control Lite'; }
@@ -62,8 +57,11 @@ Ext.define('Ung.cmp.PropertyGridController', {
                 if (key.startsWith('threat_prevention')) { category = 'Threat Prevention'; }
 
                 data.push({
+                    // the human readable field name
                     name: Map.fields[key] ? Map.fields[key].col.text : key,
-                    value: value,
+                    // in case the value is rendered use the renderer in details view too
+                    value: (Map.fields[key] && Map.fields[key].col.renderer) ? Map.fields[key].col.renderer(value) : value,
+                    // use categories for grouping purposes
                     category: category
                 });
             }

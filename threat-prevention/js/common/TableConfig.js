@@ -1,182 +1,106 @@
 Ext.define('Ung.common.TableConfig.threatprevention', {
     singleton: true,
-
     initialized: false,
-    initialize: function(tableConfig){
-        if(this.initialized){
-            return;
-        }
-        var me = this;
 
+    /**
+     * extra map with fields, columns tables
+     * used to inject threat prevention info
+     * into sessions and http_events tables
+     */
+    map: {
+        fields: {
+            threat_prevention_blocked: {
+                col: { text: 'Blocked'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+                fld: { type: 'boolean' }
+            },
+            threat_prevention_categories: {
+                col: { text: 'Categories'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
+            },
+            threat_prevention_client_categories: {
+                col: { text: 'Client Categories'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
+            },
+            threat_prevention_client_reputation: {
+                col: { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
+                fld: { type: 'integer' }
+            },
+            threat_prevention_flagged: {
+                col: { text: 'Flagged'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+                fld: { type: 'boolean' }
+            },
+            threat_prevention_reason: {
+                col: { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
+                fld: { type: 'string' }
+            },
+            threat_prevention_reputation: {
+                col: { text: 'Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
+                fld: { type: 'integer' }
+            },
+            threat_prevention_rule_id: { // should use converter instead
+                col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120, renderer: Ung.common.Renderer.threatprevention.ruleId },
+                fld: { type: 'integer' }
+            },
+            threat_prevention_server_categories: {
+                col: { text: 'Server Categories'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
+            },
+            threat_prevention_server_reputation: {
+                col: { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
+                fld: { type: 'integer' }
+            }
+        },
+
+        tables: {
+            sessions: [
+                'threat_prevention_blocked',
+                'threat_prevention_flagged',
+                'threat_prevention_rule_id',
+                'threat_prevention_client_reputation',
+                'threat_prevention_client_categories',
+                'threat_prevention_server_reputation',
+                'threat_prevention_server_categories'
+            ],
+            http_events: [
+                'threat_prevention_blocked',
+                'threat_prevention_flagged',
+                'threat_prevention_rule_id',
+                'threat_prevention_reputation',
+                'threat_prevention_categories'
+            ]
+        }
+    },
+
+    initialize: function(tableConfig) {
+        var me = this, _map = me.map;
         /**
          * Set From types
          */
-        tableConfig.setFromType({
-            threat_reputation: {
-                type: 'RANGE',
-                rangeValues: [
-                    [1,20],
-                    [21,40],
-                    [41,60],
-                    [61,80],
-                    [81,100]
-                ]
-            },
-            threat_category: {
-                type: 'BITMASK',
-                length: 31
-            }
-        });
+        // tableConfig.setFromType({
+        //     threat_reputation: {
+        //         type: 'RANGE',
+        //         rangeValues: [
+        //             [1,20],
+        //             [21,40],
+        //             [41,60],
+        //             [61,80],
+        //             [81,100]
+        //         ]
+        //     },
+        //     threat_category: {
+        //         type: 'BITMASK',
+        //         length: 31
+        //     }
+        // });
 
         /**
-         * Extended report sessions table fields.
+         * Add threat prevention fields and tables configuration
+         * to the main Map
          */
-        tableConfig.setTableField("sessions", [{
-            name: 'threat_prevention_blocked'
-        }, {
-            name: 'threat_prevention_flagged'
-        }, {
-            name: 'threat_prevention_rule_id'
-        }, {
-            name: 'threat_prevention_client_reputation',
-            fromType: 'threat_reputation'
-        }, {
-            name: 'threat_prevention_client_categories',
-            fromType: 'threat_category'
-        }, {
-            name: 'threat_prevention_server_reputation',
-            fromType: 'threat_reputation'
-        }, {
-            name: 'threat_prevention_server_categories',
-            fromType: 'threat_category'
-        }]);
-        /**
-         * Extended report sessions table columns
-         */
-        tableConfig.setTableColumn("sessions", [{
-            header: 'Blocked'.t() + ' (Threat Prevention)',
-            width: Renderer.booleanWidth,
-            sortable: true,
-            dataIndex: 'threat_prevention_blocked',
-            filter: Renderer.booleanFilter
-        }, {
-            header: 'Flagged'.t() + ' (Threat Prevention)',
-            width: Renderer.booleanWidth,
-            sortable: true,
-            dataIndex: 'threat_prevention_flagged',
-            filter: Renderer.booleanFilter
-        }, {
-            header: 'Rule Id'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_rule_id',
-            filter: Renderer.numericFilter,
-            renderer: Ung.common.Renderer.threatprevention.ruleId
-        }, {
-            header: 'Client Reputation'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_client_reputation',
-            renderer: Ung.common.Renderer.threatprevention.reputation,
-            filter: Renderer.numericFilter
-        }, {
-            header: 'Client Categories'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_client_categories',
-            renderer: Ung.common.Renderer.threatprevention.category,
-            filter: Renderer.numericFilter
-        }, {
-            header: 'Server Reputation'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_server_reputation',
-            renderer: Ung.common.Renderer.threatprevention.reputation,
-            filter: Renderer.numericFilter,
-        }, {
-            header: 'Server Categories'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_server_categories',
-            renderer: Ung.common.Renderer.threatprevention.category,
-            filter: Renderer.numericFilter,
-        }]);
-        /**
-         * Add get detail listener
-         */
-        tableConfig.setTableListener("sessions", {
-            select: Ung.common.TableConfig.threatprevention.getIpDetails
+        Ext.apply(Map.fields, this.map.fields);
+        Ext.Object.each(this.map.tables, function (table, fields) {
+            Ext.Array.push(Map.tables[table], fields);
         });
-
-        /**
-        * Extended report http_events table fields.
-        */
-        tableConfig.setTableField("http_events", [{
-            name: 'threat_prevention_blocked'
-        }, {
-            name: 'threat_prevention_flagged'
-        }, {
-            name: 'threat_prevention_rule_id'
-        }, {
-            name: 'threat_prevention_reputation',
-            fromType: 'threat_reputation'
-        }, {
-            name: 'threat_prevention_categories',
-            fromType: 'threat_category'
-        }]);
-        /**
-         * Extended report http_events table columns
-         */
-        tableConfig.setTableColumn("http_events",[{
-            header: 'Blocked'.t() + ' (Threat Prevention)',
-            width: Renderer.booleanWidth,
-            sortable: true,
-            dataIndex: 'threat_prevention_blocked',
-            filter: Renderer.booleanFilter
-        }, {
-            header: 'Flagged'.t() + ' (Threat Prevention)',
-            width: Renderer.booleanWidth,
-            sortable: true,
-            dataIndex: 'threat_prevention_flagged',
-            filter: Renderer.booleanFilter
-        }, {
-            header: 'Rule Id'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_rule_id',
-            filter: Renderer.numericFilter,
-            renderer: Ung.common.Renderer.threatprevention.ruleId
-        }, {
-            header: 'Reputation'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_reputation',
-            renderer: Ung.common.Renderer.threatprevention.reputation,
-            filter: Renderer.numericFilter
-        }, {
-            header: 'Categories'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_categories',
-            renderer: Ung.common.Renderer.threatprevention.category,
-            filter: Renderer.numericFilter
-        }]);
-        /**
-         * Add get detail listener
-         */
-        tableConfig.setTableListener("http_events", {
-            select: Ung.common.TableConfig.threatprevention.getUrlDetails
-        });
-
-        this.initialized = true;
     },
 
     /**

@@ -5,8 +5,17 @@ Ext.define('TableConfig', {
 
     tableConfig: {},
 
-    initialized: false,
     initialize: function() {
+        var me = this;
+
+        /**
+         * attach extra tables configuration
+         * e.g. thareat prevention info
+         */
+        Ext.Object.each(Ung.common.TableConfig, function(key, value) {
+            Ung.common.TableConfig[key].initialize(me.tableConfig);
+        });
+
         /**
          * generate the tables fields, columns configurations used for reports grids
          * this replaces the older TableConfig.tableConfig definitions
@@ -31,16 +40,6 @@ Ext.define('TableConfig', {
                 columns: tColumns
             };
         });
-
-        if(this.initialized) {
-            return;
-        }
-        var me = this;
-
-        Ext.Object.each(Ung.common.TableConfig, function(key, value) {
-            Ung.common.TableConfig[key].initialize(me);
-        });
-        this.initialized = true;
     },
 
     getConfig: function(tableName) {
@@ -302,18 +301,6 @@ Ext.define('TableConfig', {
             });
         }
         return tableColumn;
-    },
-
-    /**
-     * Add table columns to a table's column list.
-     * @param String identifier of table.
-     * @param Object (or Array of objects) of columns to add.
-     */
-    setTableColumn: function(table, column){
-        Ext.Array.push(
-            TableConfig.tableConfig[table]['columns'],
-            column
-        );
     },
 
     setTableListener: function(table, listener){
