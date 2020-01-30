@@ -26,12 +26,16 @@ Ext.define('Ung.view.extra.Sessions', {
         region: 'center',
         xtype: 'ungrid',
         itemId: 'sessionsgrid',
-        reference: 'sessionsgrid',
+        reference: 'masterGrid',
         store: 'sessions',
         stateful: true,
         defaultSortable: true,
 
         enableColumnHide: true,
+
+        selModel: {
+            type: 'rowmodel'
+        },
 
         viewConfig: {
             stripeRows: true,
@@ -743,9 +747,9 @@ Ext.define('Ung.view.extra.Sessions', {
         title: 'Session Details'.t(),
         itemId: 'details',
 
-        bind: {
-            source: '{selectedSession}'
-        }
+        // bind: {
+        //     source: '{selectedSession}'
+        // }
     }],
     tbar: [{
         xtype: 'button',

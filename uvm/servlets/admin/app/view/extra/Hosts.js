@@ -402,12 +402,9 @@ Ext.define('Ung.view.extra.Hosts', {
     }, {
         region: 'east',
         xtype: 'unpropertygrid',
+        reference: 'masterGrid',
         title: 'Host Details'.t(),
         itemId: 'details',
-
-        bind: {
-            source: '{hostDetails}'
-        }
     }],
     tbar: [{
         xtype: 'button',

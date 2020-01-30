@@ -848,7 +848,18 @@ Ext.define('Ung.util.Map', {
         web_filter_rule_id: {
             col: { text: 'Web Rule'.t() + ' (Web Filter)', width: 120 }, // converter not implemented
             fld: { type: 'integer' }
+        },
+
+
+        /**
+         * merged sessions related fields definition which are not defined above
+         * this are "-" dash separated instead of "_"
+         * this are used in the record detauls view so they do not require but human readable text
+         */
+        'application-control-application': {
+            col: { text: 'Application'.t() }
         }
+
     },
 
     /**

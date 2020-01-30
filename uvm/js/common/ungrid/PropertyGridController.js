@@ -1,74 +1,34 @@
-/**
- * Note!
- * Changed property grid to normal grid/store
- * 
- * PropertyGrid uses `source` and `sourceConfig` as props to set and populate data
- * `source` can be only a { key: value } object
- * - advantage: can be specified a renderer for each value from a row
- * - disadvantage: inability to have more data than the { key: value } (e.g. category)
- * 
- * Normal store:
- * - advantage: we can define multiple columns and extra properties allowing data grouping
- * - disadvantage: the renderer is specified on entire column
- *   (which cannot be applied in this case as each row represents a different column/value in master grid)
- */
-
 Ext.define('Ung.cmp.PropertyGridController', {
     extend: 'Ext.app.ViewController',
 
     alias: 'controller.unpropertygrid',
 
-    getBindRecordName: function(){
-        var me = this,
-            v = me.getView();
-
-        var bindRecordName = 'propertyRecord';
-        if( v.initialConfig.bind &&
-            ( typeof( v.initialConfig.bind ) == 'object' ) &&
-            v.initialConfig.bind.source ){
-            bindRecordName = v.initialConfig.bind.source.substring( 1, v.initialConfig.bind.source.length - 1);
-        }
-
-        return bindRecordName;
-    },
-
-    /*
-     * If property grid started collapsed it will have no data.
-     * On expansion, force population based on first row in master grid
+    /**
+     * Listen when mastergrid selection change than update the details view
+     * @param {Ext.grid.Panel} propgrid
      */
-    onBeforeExpand: function(){
-        var me = this,
-            v = me.getView(),
-            vm = me.getViewModel();
-
-        if( vm.get(me.getBindRecordName()) == null ){
-            v.up().down('grid').getView().getSelectionModel().select(0);
-        }
+    init: function (propgrid) {
+        var me = this;
+        // propgrid.getViewModel().bind('{entry}', function() {
+        //     me.table = entry.get('table');
+        // });
+        propgrid.getViewModel().bind('{masterGrid.selection}', this.masterGridSelect, this);
     },
 
-    onBeforeRender: function(){
-        var me = this,
-            propGrid = me.getView();
-
-        /*
-         * Build source list from accompanying grid's column definitions
-         */
-        var masterGrid = propGrid.up().down('grid');
-        if (masterGrid != propGrid){
-            masterGrid.getView().on('select', 'masterGridSelect', me );
-        }
-    },
-
-    /*
-     * When row selected by master grid, have the property grid properly massage
-     * data suitable for property grid.
-     *
-     * So keep in mind that this is all in the contet of the "grid master" we're attached to,
-     * not this property grid.
+    /**
+     * Display record details in the details panel
+     * @param {Ext.data.Model} record
      */
-    masterGridSelect: function (grid, record) {
-        var me = this,
-            vm = me.getViewModel(),
+    masterGridSelect: function (record) {
+        var me = this;
+
+        // empty the details view when no record selected
+        if (!record) {
+            me.getView().getStore().loadData([]);
+            return;
+        }
+
+        var vm = me.getViewModel(),
             propertyRecord = record.getData();
 
         // hide these attributes always
@@ -79,6 +39,8 @@ Ext.define('Ung.cmp.PropertyGridController', {
         delete propertyRecord.tags;
 
         var data = [], category;
+
+        console.log(propertyRecord);
 
         Ext.Object.each( propertyRecord, function(key, value){
             category = ' Event'.t();
@@ -96,7 +58,7 @@ Ext.define('Ung.cmp.PropertyGridController', {
                 if (key.startsWith('ssl_inspector')) { category = 'SSL Inspector'; }
                 if (key.startsWith('virus_blocker')) { category = 'Virus Blocker'; }
                 if (key.startsWith('virus_blocker_lite')) { category = 'Virus Blocker Lite'; }
-                if (key.startsWith('vweb_filter')) { category = 'Web Filter'; }
+                if (key.startsWith('web_filter')) { category = 'Web Filter'; }
                 if (key.startsWith('threat_prevention')) { category = 'Threat Prevention'; }
 
                 data.push({
