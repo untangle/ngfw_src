@@ -17,9 +17,9 @@ services:
         git checkout $${PKGTOOLS_COMMIT}"
 
     build:
-      image: untangleinc/ngfw:${REPOSITORY:-stretch}-build-${ARCHITECTURE:-amd64}
+      image: untangleinc/ngfw:${REPOSITORY:-buster}-build-${ARCHITECTURE:-amd64}
       environment:
-        REPOSITORY: ${REPOSITORY:-stretch}
+        REPOSITORY: ${REPOSITORY:-buster}
         DISTRIBUTION: ${DISTRIBUTION:-current}
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
@@ -32,7 +32,7 @@ services:
         # empty: "do not force the build when that version is already
         # present on the target mirror (default)"
         FORCE: ${FORCE}
-        TRAVIS_BRANCH:
+        TRAVIS_BRANCH: ${TRAVIS_BRANCH:-master}
         TRAVIS_PULL_REQUEST:
       extra_hosts:
         # from the inside, pass package-server's internal IP instead
