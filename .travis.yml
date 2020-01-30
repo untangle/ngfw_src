@@ -32,7 +32,6 @@ before_install:
 
 script:
 - docker-compose -f docker-compose.build.yml run pkgtools
-- if [ "$TRAVIS_BRANCH" != "master" ] || [ "$TRAVIS_PULL_REQUEST" == "true" ] ; then export UPLOAD= ; fi
 - docker-compose -f docker-compose.build.yml run build
 
 notifications:
