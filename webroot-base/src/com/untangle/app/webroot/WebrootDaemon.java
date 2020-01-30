@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -47,6 +48,18 @@ public class WebrootDaemon
     private final String BCTID_CONFIG_UID_KEY = "UID=";
 
     /**
+     * bctid daemon cache conntrol for urls and IP addresses.
+     */
+    private final String BCTID_CONFIG_URLCACHESIZEMBYTES_KEY = "UrlCacheSizeMBytes=";
+    private final Integer BCTID_CONFIG_URLCACHESIZEMBYTES_VALUE = 20;
+    private final String BCTID_CONFIG_URLREPCACHESIZEMBYTES_KEY = "UrlRepCacheSizeMBytes=";
+    private final Integer BCTID_CONFIG_URLREPCACHESIZEMBYTES_VALUE = 20;
+    private final String BCTID_CONFIG_IPGEOCACHESIZE_KEY = "IpGeoCacheSize=";
+    private final Integer BCTID_CONFIG_IPGEOCACHESIZE_VALUE = 2000;
+    private final String BCTID_CONFIG_IPREPCACHESIZE_KEY = "IpRepCacheSize=";
+    private final Integer BCTID_CONFIG_IPREPCACHESIZE_VALUE = 2000;
+
+    /**
      * Pulse thread to read btci daemon statistics.
      */
     private final long DEFAULT_GET_STATISTICS_INTERVAL_MS = (long) 30 * 1000; /* every 30 seconds */
@@ -64,6 +77,17 @@ public class WebrootDaemon
     private List<AppMetric> metricList = new ArrayList<>();
 
     private Pulse pulseGetStatistics = null;
+
+    /**
+     * Map of system memory (in GB) to cache size multipliers.
+     */
+    public static Map<Integer, Integer> MemoryCacheMultipliers;
+    static {
+        MemoryCacheMultipliers = new LinkedHashMap<>();
+        MemoryCacheMultipliers.put(4,2);
+        MemoryCacheMultipliers.put(8,4);
+        MemoryCacheMultipliers.put(16,8);
+    }
 
     /**
      * Constructor
@@ -206,6 +230,14 @@ public class WebrootDaemon
         if( f.exists() == false ){
             logger.info("reconfigure: bctid configuration not found: " + BCTID_CONFIG_FILE);
         }else{
+            Long totalMemory = UvmContextFactory.context().metricManager().getMemTotal() / 1000000000;
+            int cacheMultipler = 1;
+            for(Map.Entry<Integer,Integer> entry : MemoryCacheMultipliers.entrySet()){
+                if(totalMemory >= entry.getKey()){
+                    cacheMultipler = entry.getValue();
+                }
+            }
+
             String[] config = null;
             FileInputStream is = null;
             try{
@@ -222,7 +254,9 @@ public class WebrootDaemon
                     logger.error("reconfigure: failed to close file");
                 }
             }
+
             if(config != null){
+                String stringValue;
                 boolean changed = false;
                 String deviceValue = BCTID_CONFIG_DEVICE_VALUE;
                 if(UvmContextFactory.context().isDevel()){
@@ -238,6 +272,30 @@ public class WebrootDaemon
                         !config[i].equals(BCTID_CONFIG_UID_KEY + uidValue)){
                         config[i] = BCTID_CONFIG_UID_KEY + uidValue;
                         changed = true;
+                    }else if(config[i].startsWith(BCTID_CONFIG_URLCACHESIZEMBYTES_KEY) ){
+                        stringValue = String.valueOf(BCTID_CONFIG_URLCACHESIZEMBYTES_VALUE * cacheMultipler);
+                        if(!config[i].equals(BCTID_CONFIG_URLCACHESIZEMBYTES_KEY + stringValue)){
+                            config[i] = BCTID_CONFIG_URLCACHESIZEMBYTES_KEY + stringValue;
+                            changed = true;
+                        }
+                    }else if(config[i].startsWith(BCTID_CONFIG_URLREPCACHESIZEMBYTES_KEY) ){
+                        stringValue = String.valueOf(BCTID_CONFIG_URLREPCACHESIZEMBYTES_VALUE * cacheMultipler);
+                        if(!config[i].equals(BCTID_CONFIG_URLREPCACHESIZEMBYTES_KEY + stringValue)){
+                            config[i] = BCTID_CONFIG_URLREPCACHESIZEMBYTES_KEY + stringValue;
+                            changed = true;
+                        }
+                    }else if(config[i].startsWith(BCTID_CONFIG_IPGEOCACHESIZE_KEY) ){
+                        stringValue = String.valueOf(BCTID_CONFIG_IPGEOCACHESIZE_VALUE * cacheMultipler);
+                        if(!config[i].equals(BCTID_CONFIG_IPGEOCACHESIZE_KEY + stringValue)){
+                            config[i] = BCTID_CONFIG_IPGEOCACHESIZE_KEY + stringValue;
+                            changed = true;
+                        }
+                    }else if(config[i].startsWith(BCTID_CONFIG_IPREPCACHESIZE_KEY) ){
+                        stringValue = String.valueOf(BCTID_CONFIG_IPREPCACHESIZE_VALUE * cacheMultipler);
+                        if(!config[i].equals(BCTID_CONFIG_IPREPCACHESIZE_KEY + stringValue)){
+                            config[i] = BCTID_CONFIG_IPREPCACHESIZE_KEY + stringValue;
+                            changed = true;
+                        }
                     }
                 }
                 if(changed){

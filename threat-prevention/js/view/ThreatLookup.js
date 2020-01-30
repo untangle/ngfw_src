@@ -21,16 +21,12 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
         title: 'IP Address and URL Threats'.t(),
         width: '100%',
         items: [{
-            xtype: 'displayfield',
-            value: 'Threat Prevention must be enabled to perform lookups'.t(),
-            bind: {
-                hidden: '{state.on == true}'
-            }
-        }, {
             xtype: 'textfield',
-            fieldLabel: 'Lookup Threat'.t(),
+            fieldLabel: 'IP Address or URL'.t(),
+            labelWidth: 150,
             _neverDirty: true,
             fieldIndex: 'threatLookupInput',
+            width: 400,
             vtype: 'ipOrUrl',
             margin: '10 0 0 0',
             bind: {

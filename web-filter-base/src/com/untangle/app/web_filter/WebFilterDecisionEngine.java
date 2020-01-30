@@ -261,7 +261,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
      */
     public void clearCache()
     {
-        // bctidQuery(BCTI_QUERY_URLCLEARCACHE);
+        webrootQuery.clearCache();
     }
 
     /**
