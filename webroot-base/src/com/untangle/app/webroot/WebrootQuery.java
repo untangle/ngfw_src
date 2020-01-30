@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * Queries for webroot
@@ -46,6 +47,8 @@ public class WebrootQuery
     private static final WebrootQuery INSTANCE = new WebrootQuery();
 
     private static WebrootDaemon webrootDaemon = WebrootDaemon.getInstance();
+
+    public static Integer CACHE_SIZE_MULTIPLIER = 1;
 
     public static final char DOMAIN_PORT = ':';
     public static final char DOMAIN_DOT = '.';
@@ -124,8 +127,7 @@ public class WebrootQuery
     private static AtomicInteger BctidRetryCount = new AtomicInteger(0);
     private static AtomicLong BctidRetryIntervalExpire = new AtomicLong(0L);
 
-    // private static Integer BctidMaxSocketPoolSize = 30;
-    private static Integer BctidMaxSocketPoolSize = 2;
+    private static Integer BctidMaxSocketPoolSize = 30;
 
     private static ArrayBlockingQueue<Socket> BctidSocketPool = new ArrayBlockingQueue<>(BctidMaxSocketPoolSize);
     private static AtomicInteger BctidSocketRunnersCount = new AtomicInteger();
@@ -135,6 +137,9 @@ public class WebrootQuery
     private static int BctidClientReadTimeout = 2500;
 
     private int failures = 0;
+
+    private static String CACHE_EXPIRATION_KEY = "_expiration";
+    private static Integer CACHE_EXPIRATION_VALUE_MILLISECONDS = 86400 * 1000;
 
     private static AtomicInteger ipCacheSync = new AtomicInteger(0);
     private static WebrootCache ipCache = null;
@@ -177,6 +182,13 @@ public class WebrootQuery
             .replaceAll("%deviceid%", config.get("Global").get("Device"))
             .replaceAll("%uid%", config.get("Global").get("UID"));
         BctiApiDirectRequestSuffix = BCTI_API_DIRECT_REQUEST_SUFFIX_TEMPLATE;
+
+        Long totalMemory = UvmContextFactory.context().metricManager().getMemTotal() / 1000000000;
+        for(Map.Entry<Integer,Integer> entry : WebrootDaemon.MemoryCacheMultipliers.entrySet()){
+            if(totalMemory >= entry.getKey()){
+                CACHE_SIZE_MULTIPLIER = entry.getValue();
+            }
+        }
     }
 
     /**
@@ -197,11 +209,24 @@ public class WebrootQuery
     }
 
     /**
-     * Clear the host cache
+     * Clear daemon and local caches.
      */
     public void clearCache()
     {
         apiDaemon(BCTI_API_DAEMON_REQUEST_URLCLEARCACHE);
+        synchronized(urlCacheSync){
+            urlCache.clear();
+            urlA1Cache.clear();
+        }
+        synchronized(ipCacheSync){
+            ipCache.clear();
+        }
+        synchronized(ipHistoryCacheSync){
+            ipHistoryCache.clear();
+        }
+        synchronized(urlHistoryCacheSync){
+            urlHistoryCache.clear();
+        }
     }
 
     /**
@@ -461,23 +486,32 @@ public class WebrootQuery
                     queryAnswer = urlA1Cache.get(urls[i]);
                 }
             }
+            if( queryAnswer != null ){
+                try{
+                    if( queryAnswer.getJSONObject(0).getLong(CACHE_EXPIRATION_KEY) < System.currentTimeMillis()){
+                        queryAnswer = null;
+                    }
+                }catch(Exception e){
+                    logger.warn("Unable to determine expiration: "+ e);
+                    queryAnswer = null;
+                }
+            }
             if(queryAnswer == null){
                 queryAnswer = apiDaemon(BCTI_API_DAEMON_REQUEST_URLINFO_PREFIX + urls[i] + BCTI_API_DAEMON_REQUEST_URLINFO_SUFFIX);
                 if(queryAnswer != null){
                     boolean a1 = false;
                     try{
                         a1 = (urls.length == 1) && queryAnswer.getJSONObject(0).getBoolean(BCTI_API_DAEMON_RESPONSE_URLINFO_A1CAT_KEY);
+                        queryAnswer.getJSONObject(0).put(CACHE_EXPIRATION_KEY, System.currentTimeMillis() + CACHE_EXPIRATION_VALUE_MILLISECONDS);
                     }catch(Exception e){
                         logger.warn("Unable to determine a1cat: "+ queryAnswer);
                     }
-                    // logger.warn("a1:"+ urls[0] + " -> " + urls[i].replace("/", "") + ":" + rootUrl + " && " + a1);
                     synchronized(urlCacheSync){
                         if(rootUrl && a1){
                             urlA1Cache.put(urls[i], queryAnswer);
                         }else{
                             urlCache.put(urls[i], queryAnswer);
                         }
-                        // logger.warn("urlA1Cache=" + urlA1Cache.size() + ", urlCache="+urlCache.size() );
                     }
                 }
             }
@@ -515,9 +549,24 @@ public class WebrootQuery
         synchronized(ipCacheSync){
             answer = ipCache.get(key);
         }
+        if( answer != null ){
+            try{
+                if( answer.getJSONObject(0).getLong(CACHE_EXPIRATION_KEY) < System.currentTimeMillis()){
+                    answer = null;
+                }
+            }catch(Exception e){
+                logger.warn("Unable to determine expiration: "+ e);
+                answer = null;
+            }
+        }
         if(answer == null){
             answer = apiDaemon(BCTI_API_DAEMON_REQUEST_IPINFO_PREFIX + key + BCTI_API_DAEMON_REQUEST_IPINFO_SUFFIX);
             if(answer != null){
+                try{
+                    answer.getJSONObject(0).put(CACHE_EXPIRATION_KEY, System.currentTimeMillis() + CACHE_EXPIRATION_VALUE_MILLISECONDS);
+                }catch(Exception e){
+                    logger.warn("Unable to set expiration");
+                }
                 synchronized(ipCacheSync){
                     ipCache.put(key, answer);
                 }
@@ -597,6 +646,16 @@ public class WebrootQuery
         synchronized(ipHistoryCacheSync){
             answer = ipHistoryCache.get(key);
         }
+        if( answer != null ){
+            try{
+                if( answer.getJSONObject(0).getLong(CACHE_EXPIRATION_KEY) < System.currentTimeMillis()){
+                    answer = null;
+                }
+            }catch(Exception e){
+                logger.warn("Unable to determine expiration: "+ e);
+                answer = null;
+            }
+        }
         if(answer == null){
             answer = new JSONArray();
             int index = 0;
@@ -621,6 +680,11 @@ public class WebrootQuery
                         .replaceAll(BCTI_API_DIRECT_REQUEST_STARTDATE_PARAMETER, BCTI_DATE_FORMATTER.format(startDate.getTime()) + BCTI_DATE_TIME)
                         .replaceAll(BCTI_API_DIRECT_REQUEST_ENDDATE_PARAMETER, BCTI_DATE_FORMATTER.format(endDate.getTime()) + BCTI_DATE_TIME)
                 );
+                try{
+                    answer.getJSONObject(0).put(CACHE_EXPIRATION_KEY, System.currentTimeMillis() + CACHE_EXPIRATION_VALUE_MILLISECONDS);
+                }catch(Exception e){
+                    logger.warn("Unable to set expiration");
+                }
                 answer.put(index++, directAnswer.get(0));
             }catch(Exception e){
                 logger.warn("getIpHistory: ", e);
@@ -648,6 +712,16 @@ public class WebrootQuery
         synchronized(urlHistoryCacheSync){
             answer = urlHistoryCache.get(key);
         }
+        if( answer != null ){
+            try{
+                if( answer.getJSONObject(0).getLong(CACHE_EXPIRATION_KEY) < System.currentTimeMillis()){
+                    answer = null;
+                }
+            }catch(Exception e){
+                logger.warn("Unable to determine expiration: "+ e);
+                answer = null;
+            }
+        }
         if(answer == null){
             answer = new JSONArray();
 
@@ -674,6 +748,11 @@ public class WebrootQuery
             }
 
             if(answer != null){
+                try{
+                    answer.getJSONObject(0).put(CACHE_EXPIRATION_KEY, System.currentTimeMillis() + CACHE_EXPIRATION_VALUE_MILLISECONDS);
+                }catch(Exception e){
+                    logger.warn("Unable to set expiration");
+                }
                 synchronized(urlHistoryCacheSync){
                     urlHistoryCache.put(key, answer);
                 }
@@ -691,9 +770,6 @@ public class WebrootQuery
         return apiDaemon(BCTI_API_DAEMON_REQUEST_STATUS);
     }
 
-    // ipGetInfo(ips...)
-    // status()
-
     /**
      *  Generic cache class
      */
@@ -708,7 +784,7 @@ public class WebrootQuery
          * @return        Whether the size of the cache is greater than maximum number of entries.
          */
         protected boolean removeEldestEntry(Map.Entry<String,JSONArray> eldest) {
-            return size() > MAX_ENTRIES;
+            return size() > (MAX_ENTRIES * WebrootQuery.CACHE_SIZE_MULTIPLIER);
         }
     }
 
