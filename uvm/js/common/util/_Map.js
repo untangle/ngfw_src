@@ -1376,6 +1376,11 @@ Ext.define('Ung.util.Map', {
         ]
     },
 
+    listeners: {
+        sessions: {},
+        http_events: {}
+    },
+
 
     webReasons: {
         D: 'in Categories Block list'.t(),

@@ -12,7 +12,7 @@ Ext.define('TableConfig', {
          * attach extra tables configuration
          * e.g. thareat prevention info
          */
-        Ext.Object.each(Ung.common.TableConfig, function(key, value) {
+        Ext.Object.each(Ung.common.TableConfig, function(key) {
             Ung.common.TableConfig[key].initialize(me.tableConfig);
         });
 
@@ -39,6 +39,10 @@ Ext.define('TableConfig', {
                 fields: tFields,
                 columns: tColumns
             };
+        });
+
+        Ext.Object.each(Map.listeners, function (table, listeners) {
+            TableConfig.tableConfig[table].listeners = listeners;
         });
     },
 

@@ -43,7 +43,9 @@ Ext.define('Ung.view.reports.EventReport', {
         region: 'east',
         title: 'Details'.t(),
         collapsible: true,
-        collapsed: true,
+        bind: {
+            collapsed: '{!masterGrid.selection}'
+        },
         animCollapse: false,
         titleCollapse: true,
     }],

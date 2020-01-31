@@ -9,9 +9,10 @@ Ext.define('Ung.cmp.PropertyGridController', {
      */
     init: function (propgrid) {
         var me = this;
-        // propgrid.getViewModel().bind('{entry}', function() {
-        //     me.table = entry.get('table');
-        // });
+        propgrid.getViewModel().bind('{entry}', function(entry) {
+            if (!entry) { return; }
+            me.tableName = entry.get('table');
+        });
         propgrid.getViewModel().bind('{masterGrid.selection}', this.masterGridSelect, this);
     },
 
@@ -20,12 +21,21 @@ Ext.define('Ung.cmp.PropertyGridController', {
      * @param {Ext.data.Model} record
      */
     masterGridSelect: function (record) {
-        var me = this, recordData, data = [], category;
+        var me = this, recordData, data = [], category, listeners;
 
-        // empty the details view when no record selected
         if (!record) {
+            // empty the details view when no record selected
             me.getView().getStore().loadData([]);
             return;
+        }
+
+        // for thread prevention is fetching extra data
+        listeners = TableConfig.tableConfig[me.tableName].listeners;
+        if (listeners) {
+            if (Ext.isFunction(listeners.select));
+            listeners.select(record, function(response) {
+                me.getView().getStore().add(response);
+            });
         }
 
         recordData = record.getData();
@@ -67,38 +77,5 @@ Ext.define('Ung.cmp.PropertyGridController', {
             }
         });
         me.getView().getStore().loadData(data);
-    },
-
-    /**
-     * Used for extra column actions which can be added to the grid but are very specific to that context
-     * The grid requires to have defined a parentView tied to the controller on which action method is implemented
-     * action - is an extra configuration set on actioncolumn and represents the name of the method to be called
-     * see Users/UsersController implementation
-     */
-    externalAction: function (v, rowIndex, colIndex, item, e, record) {
-        var view = this.getView(),
-            parentController = null,
-            action = item && item.action ? item.action : v.action;
-
-        while( view != null){
-            parentController = view.getController();
-
-            if( parentController && parentController[action]){
-                break;
-            }
-            view = view.up();
-        }
-
-        if (!parentController) {
-            console.log('Unable to get the extra controller');
-            return;
-        }
-
-        // call the action from the extra controller in extra controller scope, and pass all the actioncolumn arguments
-        if (action) {
-            parentController[action].apply(parentController, arguments);
-        } else {
-            console.log('External action not defined!');
-        }
     }
 });

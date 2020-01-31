@@ -71,27 +71,28 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         }
     },
 
-    initialize: function(tableConfig) {
+    initialize: function() {
         var me = this, _map = me.map;
+
         /**
          * Set From types
          */
-        // tableConfig.setFromType({
-        //     threat_reputation: {
-        //         type: 'RANGE',
-        //         rangeValues: [
-        //             [1,20],
-        //             [21,40],
-        //             [41,60],
-        //             [61,80],
-        //             [81,100]
-        //         ]
-        //     },
-        //     threat_category: {
-        //         type: 'BITMASK',
-        //         length: 31
-        //     }
-        // });
+        TableConfig.setFromType({
+            threat_reputation: {
+                type: 'RANGE',
+                rangeValues: [
+                    [1,20],
+                    [21,40],
+                    [41,60],
+                    [61,80],
+                    [81,100]
+                ]
+            },
+            threat_category: {
+                type: 'BITMASK',
+                length: 31
+            }
+        });
 
         /**
          * Add threat prevention fields and tables configuration
@@ -101,6 +102,15 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         Ext.Object.each(this.map.tables, function (table, fields) {
             Ext.Array.push(Map.tables[table], fields);
         });
+
+        Map.listeners['sessions'] = {
+            select: Ung.common.TableConfig.threatprevention.getIpDetails
+        };
+        Map.listeners['http_events'] = {
+            select: Ung.common.TableConfig.threatprevention.getUrlDetails
+        };
+
+
     },
 
     /**
@@ -349,27 +359,38 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
      * @param {*} element Currently selected grid row
      * @param {*} record Current grid row record
      */
-    getUrlDetails: function( element, record){
-        var me = this,
-            v = me.getView(),
-            vm = this.getViewModel(),
-            policyId = record.get('policy_id'),
+    getUrlDetails: function(record, cb) {
+        var policyId,
             uriAddress = record.get('host'),
             reputation = record.get('threat_prevention_reputation');
 
-        if(reputation == null || reputation == 0){
-            return;
-        }
+        if (!reputation) { return; }
 
-        if(uriAddress != undefined){
+        if (uriAddress != undefined) {
             uriAddress += record.get('uri');
         }
 
-        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getUrlHistory', [uriAddress])], this)
-        .then(function(results){
-            if(Util.isDestroyed(v)){
-                return;
+        /**
+         * !!!!! Very important, needs to be changed
+         * Because of the converter used on policy ids
+         * the record.get('policy_id') returns the name of the policy, not the ID
+         * because of that the id needs to be identified from the policies map
+         */
+        Ext.Object.each(Map.policies, function(key, val) {
+            if (val === record.get('policy_id')) {
+                policyId = key;
             }
+        });
+
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(
+                'rpc.reportsManager.getReportInfo',
+                'threat-prevention',
+                policyId,
+                'getUrlHistory',
+                [uriAddress])
+        ], this)
+        .then(function(results) {
             var propertyRecord = [];
             var propertyCategory = null;
             results.forEach( function(result){
@@ -388,44 +409,58 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     );
                 });
             });
-            v.up().down('unpropertygrid').getStore().loadData(propertyRecord, true);
+            cb(propertyRecord);
         }, function(ex) {
+            cb();
             console.log(ex);
         });
-
     },
 
     /**
      * Build IP-address based property records for reputation detail apis.
-     *
-     * @param {*} element Currently selected grid row
      * @param {*} record Current grid row record
      */
-    getIpDetails: function( element, record){
-        var me = this,
-            v = me.getView(),
-            vm = this.getViewModel(),
-            clientIpAddress = record.get('c_client_addr'),
+    getIpDetails: function(record, cb) {
+        var clientIpAddress = record.get('c_client_addr'),
             serverIpAddress = record.get('s_server_addr'),
-            policyId = record.get('policy_id'),
+            policyId,
             clientReputation = record.get('threat_prevention_client_reputation'),
             serverReputation = record.get('threat_prevention_server_reputation'),
             ipAddresses = [];
 
-        if( clientReputation != null && clientReputation > 0 ){
+        /**
+         * !!!!! Very important, needs to be changed
+         * Because of the converter used on policy ids
+         * the record.get('policy_id') returns the name of the policy, not the ID
+         * because of that the id needs to be identified from the policies map
+         */
+        Ext.Object.each(Map.policies, function(key, val) {
+            if (val === record.get('policy_id')) {
+                policyId = key;
+            }
+        });
+
+        if (clientReputation != null && clientReputation > 0) {
             ipAddresses.push(clientIpAddress);
         }
-        if( serverReputation != null && serverReputation > 0){
+        if (serverReputation != null && serverReputation > 0) {
             ipAddresses.push(serverIpAddress);
         }
 
-        if(ipAddresses.length == 0){
+        if (ipAddresses.length == 0) {
             return;
         }
 
-        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getIpHistory', ipAddresses)], this)
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(
+                'rpc.reportsManager.getReportInfo',
+                'threat-prevention',
+                policyId,
+                'getIpHistory',
+                ipAddresses)
+        ], this)
          .then(function(results){
-            if(Util.isDestroyed(v)){
+            if (Util.isDestroyed(v)){
                 return;
             }
             var propertyRecord = [];
@@ -447,8 +482,9 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     );
                 });
             });
-            v.up().down('unpropertygrid').getStore().loadData(propertyRecord, true);
+            cb(propertyRecord);
         }, function(ex) {
+            cb();
             console.log(ex);
         });
     },
