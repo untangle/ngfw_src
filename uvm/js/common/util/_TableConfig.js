@@ -153,26 +153,7 @@ Ext.define('TableConfig', {
     },
 
     getColumnHumanReadableName: function(columnName) {
-        if(!this.columnsHumanReadableNames) {
-            this.columnsHumanReadableNames = {};
-            if(!this.tableConfig) {
-                this.buildTableConfig();
-            }
-            var i, table, columns, dataIndex;
-            for (table in this.tableConfig) {
-                columns = this.tableConfig[table].columns;
-                for(i=0; i<columns.length; i++) {
-                    dataIndex = columns[i].dataIndex;
-                    if(dataIndex && !this.columnsHumanReadableNames[dataIndex]) {
-                        this.columnsHumanReadableNames[dataIndex] = columns[i].header;
-                    }
-                }
-            }
-        }
-        if(!columnName) {
-            columnName = '';
-        }
-        var readableName = this.columnsHumanReadableNames[columnName];
+        var readableName = Map.fields[columnName].col.text;
         return readableName !== null ? readableName : columnName.replace(/_/g,' ');
     },
 

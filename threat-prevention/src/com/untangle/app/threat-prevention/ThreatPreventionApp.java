@@ -24,7 +24,6 @@ import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.app.PortRange;
 import com.untangle.uvm.vnet.Subscription;
 
-
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.HookManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -170,19 +169,11 @@ public class ThreatPreventionApp extends AppBase
         this.replacementGenerator = buildReplacementGenerator();
 
         this.otherHandler = new ThreatPreventionEventHandler(this);
-        // Calculate home networks as a uvm network function
-        //  // Just pull context?  Would have to contentw with chnges, right?
-        // this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings());
         
-        // getlocalNetworks
-        // this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
-        //      this should just get local network list for us.
         localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
         localNetworks.add(new IPMaskedAddress("192.168.0.0/16"));
         localNetworks.add(new IPMaskedAddress("172.16.0.0/12"));
         localNetworks.add(new IPMaskedAddress("10.0.0.0/8"));
-
-        // this.handler = new ThreatPreventionEventHandler(this);
 
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
@@ -580,8 +571,6 @@ public class ThreatPreventionApp extends AppBase
      */
     private void reconfigure() 
     {
-        logger.info("Reconfigure()");
-
         /* check for any sessions that should be killed according to new rules */
         this.killMatchingSessions(THREAT_PREVENTION_SESSION_MATCHER);
 

@@ -4,6 +4,7 @@ import copy
 import unittest
 import pytest
 import runtests
+import subprocess
 
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
@@ -20,6 +21,7 @@ orig_network_settings_without_qos = None
 wan_limit_kbit = None
 wan_limit_mbit = None
 pre_down_speed_kbit = None
+target_server = global_functions.ACCOUNT_FILE_SERVER
 
 
 def create_single_condition_rule( conditionType, value, actionType="SET_PRIORITY", priorityValue=3 ):
@@ -205,7 +207,7 @@ class BandwidthControlTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global orig_network_settings, orig_network_settings_with_qos, orig_network_settings_without_qos, pre_down_speed_kbit, wan_limit_kbit, wan_limit_mbit
+        global orig_network_settings, orig_network_settings_with_qos, orig_network_settings_without_qos, pre_down_speed_kbit, wan_limit_kbit, wan_limit_mbit,target_server
 
         settings = cls._app.getSettings()
         settings["configured"] = True
@@ -223,8 +225,12 @@ class BandwidthControlTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
         # measure speed
-        pre_down_speed_kbit = global_functions.get_download_speed(download_server="test.untangle.com")
-
+        localTargetResult = subprocess.call(["ping","-c","1",target_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (localTargetResult != 0):
+            # local bandwidth target server not available so use test.untangle.com
+            target_server = global_functions.TEST_SERVER_HOST
+        pre_down_speed_kbit = global_functions.get_download_speed(download_server=target_server)
+            
         # calculate QoS limits
         wan_limit_kbit = int((pre_down_speed_kbit*8) * .9)
         # set max to 100Mbit, so that other limiting factors dont interfere
@@ -263,7 +269,7 @@ class BandwidthControlTests(NGFWTestCase):
 
         print("\nSetting WAN limit: %i Kbps" % (wan_limit_kbit))
 
-        post_down_speed_kbit = global_functions.get_download_speed()
+        post_down_speed_kbit = global_functions.get_download_speed(download_server=target_server)
 
         # since the limit is 90% of first measure, check that second measure is less than first measure
         assert (pre_down_speed_kbit >  post_down_speed_kbit)
@@ -272,7 +278,7 @@ class BandwidthControlTests(NGFWTestCase):
         nuke_rules(self._app)
         priority_level = 7
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
+        wget_speed_pre = global_functions.get_download_speed(download_server=target_server)
 
         # Create SRC_ADDR based custom Q0S rule to limit bypass QoS
         netsettings = copy.deepcopy( orig_network_settings_with_qos )
@@ -281,7 +287,7 @@ class BandwidthControlTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings( netsettings )
         
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
+        wget_speed_post = global_functions.get_download_speed(download_server=target_server)
 
         # Restore original network settings
         uvmContext.networkManager().setNetworkSettings( orig_network_settings_with_qos )
@@ -335,7 +341,7 @@ class BandwidthControlTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings( netsettings )
         
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
+        wget_speed_post = global_functions.get_download_speed(download_server=target_server)
 
         # Restore original network settings
         uvmContext.networkManager().setNetworkSettings( orig_network_settings_with_qos )
@@ -350,13 +356,13 @@ class BandwidthControlTests(NGFWTestCase):
         nuke_rules(self._app)
         priority_level = 7
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
+        wget_speed_pre = global_functions.get_download_speed(download_server=target_server)
 
         # Create SRC_ADDR based rule to limit bandwidth
         append_rule(self._app, create_single_condition_rule("SRC_ADDR",remote_control.client_ip,"SET_PRIORITY",priority_level))
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
+        wget_speed_post = global_functions.get_download_speed(download_server=target_server)
 
         print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
 
@@ -408,7 +414,7 @@ class BandwidthControlTests(NGFWTestCase):
         priority_level = 7
         # This test might need web filter for http to start
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed(download_server="test.untangle.com")
+        wget_speed_pre = global_functions.get_download_speed(download_server=target_server)
         
         # Create WEB_FILTER_FLAGGED based rule to limit bandwidth
         append_rule(self._app, create_single_condition_rule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
@@ -416,7 +422,10 @@ class BandwidthControlTests(NGFWTestCase):
         # Test.untangle.com is listed as Software, Hardware in web filter. As of 1/2014 its in Technology 
         settingsWF = self._app_web_filter.getSettings()
         i = 0
-        untangleCats = ["Computer,", "Security"]
+        if target_server == global_functions.TEST_SERVER_HOST:
+            untangleCats = ["Computer,", "Security"]
+        else:
+            untangleCats = ["Uncategorized",]
         for webCategories in settingsWF['categories']['list']:
             if any(x in webCategories['name'] for x in untangleCats):
                 settingsWF['categories']['list'][i]['flagged'] = "true"
@@ -424,7 +433,7 @@ class BandwidthControlTests(NGFWTestCase):
         self._app_web_filter.setSettings(settingsWF)
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed(download_server="test.untangle.com")
+        wget_speed_post = global_functions.get_download_speed(download_server=target_server)
         
         print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
 
@@ -454,7 +463,7 @@ class BandwidthControlTests(NGFWTestCase):
         uvmContext.hostTable().removeQuota(remote_control.client_ip)
         
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
+        wget_speed_pre = global_functions.get_download_speed(download_server=target_server)
         
         # Create rule to give quota
         append_rule(self._app, create_quota_rule("HOST_HAS_NO_QUOTA","true","GIVE_HOST_QUOTA",given_quota))
@@ -462,13 +471,13 @@ class BandwidthControlTests(NGFWTestCase):
         append_rule(self._app, create_single_condition_rule("HOST_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.get_download_speed(meg=1)
+        global_functions.get_download_speed(download_server=target_server,meg=1)
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
+        wget_speed_post = global_functions.get_download_speed(download_server=target_server)
         
         print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
 
@@ -515,7 +524,7 @@ class BandwidthControlTests(NGFWTestCase):
         uvmContext.userTable().removeQuota(username)
         
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.get_download_speed()
+        wget_speed_pre = global_functions.get_download_speed(download_server=target_server)
         
         # Create rule to give quota
         append_rule(self._app, create_quota_rule("USER_HAS_NO_QUOTA","true","GIVE_USER_QUOTA",given_quota))
@@ -524,13 +533,13 @@ class BandwidthControlTests(NGFWTestCase):
         append_rule(self._app, create_single_condition_rule("USER_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.get_download_speed(meg=1)
+        global_functions.get_download_speed(download_server=target_server,meg=1)
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.get_download_speed()
+        wget_speed_post = global_functions.get_download_speed(download_server=target_server)
         
         print_results( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limited_acceptance_ratio )
 
