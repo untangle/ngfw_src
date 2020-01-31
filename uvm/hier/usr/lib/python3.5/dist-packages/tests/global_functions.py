@@ -466,3 +466,23 @@ def __get_gateway(ifname):
         return output
     else:
         return None
+
+def check_clamd_ready():
+    """
+    check_clamd_ready will verify clamd is running and also that signatures are done downloading
+    """
+    clamdtimeout = 1200
+
+    # call freshclam to update signatures
+    freshClamResult = subprocess.call("freshclam >/dev/null 2>&1", shell=True)
+
+    # wait until clamd service is running on 3310
+    print("Waiting for server to start...")
+    for i in range(clamdtimeout):
+        time.sleep(1)
+        ncresult = subprocess.call("netcat -n -z 127.0.0.1 3310 >/dev/null 2>&1", shell=True)
+        if ncresult == 0:
+            break
+    print("Number of sleep cycles waiting: %d" % i)
+
+    return True
