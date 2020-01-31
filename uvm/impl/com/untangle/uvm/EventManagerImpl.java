@@ -879,10 +879,11 @@ public class EventManagerImpl implements EventManager
                     }
                     kv = line.trim().split(":", 2);
                     key = kv[0].trim();
-                    if(kv.length > 1 && kv[1].equals("")){
+                    key = key.replaceAll("(.)(\\p{Upper})", "$1 $2").toLowerCase();
+                    if(kv.length > 1 && kv[1].trim().equals("{")){
                         subKey = key;
                     }else if(subKey != null){
-                        key = subKey + "\t" + key;
+                        key = subKey + "\t" + key.trim();
                     }
 
                     key = key.replaceAll("(.)(\\p{Upper})", "$1 $2").toLowerCase();
@@ -898,14 +899,14 @@ public class EventManagerImpl implements EventManager
                 List<String> kvStrings = new LinkedList<>();
                 for(String k : sortedKeys){
                     String kvString;
-                    if(kvPairs.get(k).equals("")){
+                    if(kvPairs.get(k).trim().equals("{")){
                         kvString = String.format("%-" + maxKeyLength+ "s", k);
                     }else{
                         String showKey = k;
                         if(showKey.indexOf('\t') != -1){
-                            showKey = k.substring(showKey.indexOf(' '));
+                            showKey = " " + k.substring(showKey.indexOf('\t')).trim();
                         }
-                        kvString = String.format("%-" + maxKeyLength+ "s %s", showKey + " = ", kvPairs.get(k));
+                        kvString = String.format("%-" + maxKeyLength+ "s = %s", showKey, kvPairs.get(k));
                     }
                     kvStrings.add(kvString);
                 }
@@ -1296,7 +1297,6 @@ public class EventManagerImpl implements EventManager
         alertRecipients.addAll(reportsEmailAddresses);
 
         for( String emailAddress : alertRecipients){
-            logger.warn("emailAddress=" + emailAddress);
             try {
                 String[] recipients = null;
                 recipients = new String[]{ emailAddress };
