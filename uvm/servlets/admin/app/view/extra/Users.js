@@ -194,11 +194,13 @@ Ext.define('Ung.view.extra.Users', {
         }]
     }, {
         region: 'east',
-        xtype: 'unpropertygrid',
-        reference: 'masterGrid',
+        xtype: 'recorddetails',
         title: 'User Details'.t(),
         itemId: 'details',
-        collapsed: true
+        width: 350,
+        bind: {
+            collapsed: '{!usersgrid.selection}'
+        }
     }],
     tbar: [{
         xtype: 'button',

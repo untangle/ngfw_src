@@ -26,7 +26,7 @@ Ext.define('Ung.view.extra.Sessions', {
         region: 'center',
         xtype: 'ungrid',
         itemId: 'sessionsgrid',
-        reference: 'masterGrid',
+        reference: 'sessionsgrid',
         store: 'sessions',
         stateful: true,
         defaultSortable: true,
@@ -743,13 +743,13 @@ Ext.define('Ung.view.extra.Sessions', {
         }]
     }, {
         region: 'east',
-        xtype: 'unpropertygrid',
+        xtype: 'recorddetails',
         title: 'Session Details'.t(),
+        width: 350,
         itemId: 'details',
-
-        // bind: {
-        //     source: '{selectedSession}'
-        // }
+        bind: {
+            collapsed: '{!sessionsgrid.selection}'
+        }
     }],
     tbar: [{
         xtype: 'button',
