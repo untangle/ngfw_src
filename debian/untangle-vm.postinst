@@ -77,11 +77,11 @@ rm -rf /var/lib/postgresql/9.4
 sed -e '/^deb cdrom/d' -i /etc/apt/sources.list
 
 #
-# 14.2 upgrade
+# 15.0 upgrade
 #
 
-# Point to stable-142
-sed -e 's/stable-141\s/stable-142 /g' -i /etc/apt/sources.list.d/untangle.list
+# Point to stable-150
+sed -e 's/stable-142\s/stable-150 /g' -i /etc/apt/sources.list.d/untangle.list
 
 # Remove old tests .pyc files.
 OLD_PYTHON_DIR=/usr/lib/python2.7/dist-packages/tests
