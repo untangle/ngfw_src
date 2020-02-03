@@ -92,17 +92,13 @@ class PhishBlockerTests(NGFWTestCase):
             
     # verify daemon is running
     def test_009_clamdIsRunning(self):
-        # wait for freshclam to finish updating sigs
-        freshClamResult = subprocess.call("freshclam >/dev/null 2>&1", shell=True)
-        # wait for clam to get ready - trying to fix occasional failure of later tests
-        timeout = 180
-        result = 1
-        while (result and timeout > 0):
-            time.sleep(5)
-            timeout -= 5
-            result = subprocess.call("pidof clamd >/dev/null 2>&1", shell=True)
-        assert (result == 0)
-
+        """
+        test_009_clamdIsRunning runs the check_clamd_ready function to 
+        verify clamd is running and also that signatures are done downloading
+        """
+        result = global_functions.check_clamd_ready()
+        assert (result)
+        
     # verify client is online
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
