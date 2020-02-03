@@ -460,9 +460,6 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 ipAddresses)
         ], this)
          .then(function(results){
-            if (Util.isDestroyed(v)){
-                return;
-            }
             var propertyRecord = [];
             var propertyCategory = null;
             results.forEach( function(result){

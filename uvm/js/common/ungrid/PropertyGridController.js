@@ -29,15 +29,6 @@ Ext.define('Ung.cmp.PropertyGridController', {
             return;
         }
 
-        // for thread prevention is fetching extra data
-        listeners = TableConfig.tableConfig[me.tableName].listeners;
-        if (listeners) {
-            if (Ext.isFunction(listeners.select));
-            listeners.select(record, function(response) {
-                me.getView().getStore().add(response);
-            });
-        }
-
         recordData = record.getData();
 
         // delete extra non relevant attributes
@@ -77,5 +68,17 @@ Ext.define('Ung.cmp.PropertyGridController', {
             }
         });
         me.getView().getStore().loadData(data);
+
+        // for thread prevention is fetching extra data
+        listeners = TableConfig.tableConfig[me.tableName].listeners;
+        if (listeners) {
+            if (Ext.isFunction(listeners.select));
+            listeners.select(record, function(response) {
+                if (!Util.isDestroyed(me.getView())) {
+                    me.getView().getStore().add(response);
+                }
+            });
+        }
+
     }
 });
