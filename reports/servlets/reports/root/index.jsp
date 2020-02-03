@@ -31,6 +31,9 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
     <script src="/ext6.2/classic/theme-<%=extjsTheme%>/theme-<%=extjsTheme%>.js"></script>
     <link href="/ext6.2/classic/theme-<%=extjsTheme%>/resources/theme-<%=extjsTheme%>-all.css" rel="stylesheet" />
 
+    <!-- Ext.ux.Exporter resources -->
+    <script src="/script/common/packages/exporter.js"></script>
+
     <!-- FontAwesome -->
     <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
 
