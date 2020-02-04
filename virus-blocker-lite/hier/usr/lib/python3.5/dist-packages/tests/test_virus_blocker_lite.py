@@ -6,6 +6,7 @@ import pytest
 import runtests.test_registry as test_registry
 
 from .test_virus_blocker_base import VirusBlockerBaseTests
+import tests.global_functions as global_functions
 
 #
 # Just extends the virus base tests
@@ -30,18 +31,12 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
 
     # verify daemon is running
     def test_009_clamdIsRunning(self):
-        # wait for freshclam to finish updating sigs
-        subprocess.call("freshclam >/dev/null 2>&1", shell=True)
-        result = subprocess.call("pidof clamd >/dev/null 2>&1", shell=True)
-        assert (result == 0)
+        """
+        test_009_clamdIsRunning runs the check_clamd_ready function to 
+        verify clamd is running and also that signatures are done downloading
+        """
+        result = global_functions.check_clamd_ready()
+        assert (result)
 
-        # give it up to 20 minutes to download signatures for the first time
-        print("Waiting for server to start...")
-        for i in range(1200):
-            time.sleep(1)
-            result = subprocess.call("netcat -n -z 127.0.0.1 3310 >/dev/null 2>&1", shell=True)
-            if result == 0:
-                break
-        print("Number of sleep cycles waiting: %d" % i)
 
 test_registry.register_module("virus-blocker-lite", VirusBlockerLiteTests)
