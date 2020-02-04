@@ -26,9 +26,6 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     /* Name of the DNS test script */
     private static final String DNS_TEST_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-dns-test";
 
-    /* Name of the host to lookup */
-    private static final String TEST_HOSTNAME = "updates.untangle.com";
-
     /* Port the TCP test will try to connect to */
     private static final int TCP_TEST_PORT = 80;
 
@@ -80,12 +77,15 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         boolean isWorking = true;
         String primaryServer = null;
         String secondaryServer = null;
+        String domainName = null;
 
         if (dnsPrimaryServer != null) primaryServer = dnsPrimaryServer.getHostAddress();
         if (dnsSecondaryServer != null) secondaryServer = dnsSecondaryServer.getHostAddress();
 
-        if (primaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + primaryServer) != 0) isWorking = false;
-        if (secondaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + secondaryServer) != 0) isWorking = false;
+        domainName = UvmContextFactory.context().uriManager().getSettings().getDnsTestHost();
+
+        if (primaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + primaryServer + " " + domainName) != 0) isWorking = false;
+        if (secondaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + secondaryServer + " " + domainName) != 0) isWorking = false;
 
         return isWorking;
     }
@@ -99,9 +99,9 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     {
         InetAddress testAddress;
         int testPort = TCP_TEST_PORT;
-        
+
         try {
-            testAddress = InetAddress.getByName(TEST_HOSTNAME);
+            testAddress = InetAddress.getByName(UvmContextFactory.context().uriManager().getSettings().getTcpTestHost());
         } catch (UnknownHostException e) {
             testAddress = null;
         }
