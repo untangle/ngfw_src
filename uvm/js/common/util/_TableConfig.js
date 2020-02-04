@@ -5,8 +5,17 @@ Ext.define('TableConfig', {
 
     tableConfig: {},
 
-    initialized: false,
     initialize: function() {
+        var me = this;
+
+        /**
+         * attach extra tables configuration
+         * e.g. thareat prevention info
+         */
+        Ext.Object.each(Ung.common.TableConfig, function(key) {
+            Ung.common.TableConfig[key].initialize(me.tableConfig);
+        });
+
         /**
          * generate the tables fields, columns configurations used for reports grids
          * this replaces the older TableConfig.tableConfig definitions
@@ -32,15 +41,9 @@ Ext.define('TableConfig', {
             };
         });
 
-        if(this.initialized){
-            return;
-        }
-        var me = this;
-
-        Ext.Object.each(Ung.common.TableConfig, function(key, value){
-            Ung.common.TableConfig[key].initialize(me);
+        Ext.Object.each(Map.listeners, function (table, listeners) {
+            TableConfig.tableConfig[table].listeners = listeners;
         });
-        this.initialized = true;
     },
 
     getConfig: function(tableName) {
@@ -166,9 +169,9 @@ Ext.define('TableConfig', {
 
         // generate checkboxes and menu
         Ext.Array.each(tableConfig.columns, function (column) {
-            checkboxes.push({ boxLabel: column.header, inputValue: column.dataIndex, name: 'cbGroup' });
+            checkboxes.push({ boxLabel: column.text, inputValue: column.dataIndex, name: 'cbGroup' });
             comboItems.push({
-                text: column.header,
+                text: column.text,
                 value: column.dataIndex
             });
         });
@@ -283,18 +286,6 @@ Ext.define('TableConfig', {
             });
         }
         return tableColumn;
-    },
-
-    /**
-     * Add table columns to a table's column list.
-     * @param String identifier of table.
-     * @param Object (or Array of objects) of columns to add.
-     */
-    setTableColumn: function(table, column){
-        Ext.Array.push(
-            TableConfig.tableConfig[table]['columns'],
-            column
-        );
     },
 
     setTableListener: function(table, listener){

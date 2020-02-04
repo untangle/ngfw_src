@@ -773,46 +773,46 @@ Ext.define('Ung.util.Map', {
             col: { text: 'Status'.t() + ' (SSL Inspector)', width: 120 },
             fld: { type: 'string' }
         },
-        threat_prevention_blocked: {
-            col: { text: 'Blocked'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-            fld: { type: 'boolean' }
-        },
-        threat_prevention_categories: {
-            col: { text: 'Categories'.t() + ' (Threat Prevention)', width: 120 },
-            fld: { type: 'integer' }
-        },
-        threat_prevention_client_categories: {
-            col: { text: 'Client Categories'.t() + ' (Threat Prevention)', width: 100 },
-            fld: { type: 'integer' }
-        },
-        threat_prevention_client_reputation: {
-            col: { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 100 },
-            fld: { type: 'integer' }
-        },
-        threat_prevention_flagged: {
-            col: { text: 'Flagged'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
-            fld: { type: 'boolean' }
-        },
-        threat_prevention_reason: {
-            col: { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
-            fld: { type: 'string' }
-        },
-        threat_prevention_reputation: {
-            col: { text: 'Reputation'.t() + ' (Threat Prevention)', width: 120 },
-            fld: { type: 'integer' }
-        },
-        threat_prevention_rule_id: {
-            col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120 },
-            fld: { type: 'integer' }
-        },
-        threat_prevention_server_categories: {
-            col: { text: 'Server Categories'.t() + ' (Threat Prevention)', width: 100 },
-            fld: { type: 'integer' }
-        },
-        threat_prevention_server_reputation: {
-            col: { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 100 },
-            fld: { type: 'integer' }
-        },
+        // threat_prevention_blocked: {
+        //     col: { text: 'Blocked'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+        //     fld: { type: 'boolean' }
+        // },
+        // threat_prevention_categories: {
+        //     col: { text: 'Categories'.t() + ' (Threat Prevention)', width: 120 },
+        //     fld: { type: 'integer' }
+        // },
+        // threat_prevention_client_categories: {
+        //     col: { text: 'Client Categories'.t() + ' (Threat Prevention)', width: 100 },
+        //     fld: { type: 'integer' }
+        // },
+        // threat_prevention_client_reputation: {
+        //     col: { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 100 },
+        //     fld: { type: 'integer' }
+        // },
+        // threat_prevention_flagged: {
+        //     col: { text: 'Flagged'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+        //     fld: { type: 'boolean' }
+        // },
+        // threat_prevention_reason: {
+        //     col: { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
+        //     fld: { type: 'string' }
+        // },
+        // threat_prevention_reputation: {
+        //     col: { text: 'Reputation'.t() + ' (Threat Prevention)', width: 120 },
+        //     fld: { type: 'integer' }
+        // },
+        // threat_prevention_rule_id: {
+        //     col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120 },
+        //     fld: { type: 'integer' }
+        // },
+        // threat_prevention_server_categories: {
+        //     col: { text: 'Server Categories'.t() + ' (Threat Prevention)', width: 100 },
+        //     fld: { type: 'integer' }
+        // },
+        // threat_prevention_server_reputation: {
+        //     col: { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 100 },
+        //     fld: { type: 'integer' }
+        // },
         virus_blocker_clean: {
             col: { text: 'Clean'.t() + ' (Virus Blocker)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
             fld: { type: 'boolean' }
@@ -848,7 +848,18 @@ Ext.define('Ung.util.Map', {
         web_filter_rule_id: {
             col: { text: 'Web Rule'.t() + ' (Web Filter)', width: 120 }, // converter not implemented
             fld: { type: 'integer' }
+        },
+
+
+        /**
+         * merged sessions related fields definition which are not defined above
+         * this are "-" dash separated instead of "_"
+         * this are used in the record detauls view so they do not require but human readable text
+         */
+        'application-control-application': {
+            col: { text: 'Application'.t() }
         }
+
     },
 
     /**
@@ -856,6 +867,9 @@ Ext.define('Ung.util.Map', {
      * the fields are used to determine the store model field and the grid column defined above
      * if there are tables having same field name but with different meaning,
      * than use a different mapping for each and not the exact field name
+     *
+     * !!! Note, all the below columns for table can be fetched using
+     * rpc.reportsManager.getColumnsForTable(<table_name>)
      */
     tables: {
         admin_logins: [
@@ -1124,12 +1138,12 @@ Ext.define('Ung.util.Map', {
             'virus_blocker_lite_clean',
             'virus_blocker_lite_name',
             'virus_blocker_clean',
-            'virus_blocker_name',
-            'threat_prevention_blocked',
-            'threat_prevention_flagged',
-            'threat_prevention_rule_id',
-            'threat_prevention_reputation',
-            'threat_prevention_categories'
+            'virus_blocker_name'
+            // 'threat_prevention_blocked',
+            // 'threat_prevention_flagged',
+            // 'threat_prevention_rule_id',
+            // 'threat_prevention_reputation',
+            // 'threat_prevention_categories'
         ],
         http_query_events: [
             'event_id',
@@ -1268,14 +1282,14 @@ Ext.define('Ung.util.Map', {
             'firewall_blocked',
             'firewall_flagged',
             'firewall_rule_index',
-            'threat_prevention_blocked',
-            'threat_prevention_flagged',
-            'threat_prevention_reason',
-            'threat_prevention_rule_id',
-            'threat_prevention_client_reputation',
-            'threat_prevention_client_categories',
-            'threat_prevention_server_reputation',
-            'threat_prevention_server_categories',
+            // 'threat_prevention_blocked',
+            // 'threat_prevention_flagged',
+            // 'threat_prevention_reason',
+            // 'threat_prevention_rule_id',
+            // 'threat_prevention_client_reputation',
+            // 'threat_prevention_client_categories',
+            // 'threat_prevention_server_reputation',
+            // 'threat_prevention_server_categories',
             'application_control_lite_protocol',
             'application_control_lite_blocked',
             'captive_portal_blocked',
@@ -1307,8 +1321,8 @@ Ext.define('Ung.util.Map', {
             'username',
             'policy_id',
             'policy_rule_id',
-            'local_address',
-            'remote_address',
+            'local_addr',
+            'remote_addr',
             'c_client_addr',
             'c_server_addr',
             'c_client_port',
@@ -1333,14 +1347,14 @@ Ext.define('Ung.util.Map', {
             'firewall_blocked',
             'firewall_flagged',
             'firewall_rule_index',
-            'threat_prevention_blocked',
-            'threat_prevention_flagged',
-            'threat_prevention_reason',
-            'threat_prevention_rule_id',
-            'threat_prevention_client_reputation',
-            'threat_prevention_client_categories',
-            'threat_prevention_server_reputation',
-            'threat_prevention_server_categories',
+            // 'threat_prevention_blocked',
+            // 'threat_prevention_flagged',
+            // 'threat_prevention_reason',
+            // 'threat_prevention_rule_id',
+            // 'threat_prevention_client_reputation',
+            // 'threat_prevention_client_categories',
+            // 'threat_prevention_server_reputation',
+            // 'threat_prevention_server_categories',
             'application_control_lite_protocol',
             'application_control_lite_blocked',
             'captive_portal_blocked',
@@ -1360,6 +1374,11 @@ Ext.define('Ung.util.Map', {
             'ssl_inspector_detail',
             'tags'
         ]
+    },
+
+    listeners: {
+        sessions: {},
+        http_events: {}
     },
 
 

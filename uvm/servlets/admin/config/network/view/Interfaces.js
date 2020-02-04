@@ -180,7 +180,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             title: 'Status'.t(),
             region: 'center',
             itemId: 'interfaceStatus',
-            xtype: 'unpropertygrid',
+            xtype: 'recorddetails',
             collapsible: false,
             emptyText: 'Status not available'.t(),
             bind: {

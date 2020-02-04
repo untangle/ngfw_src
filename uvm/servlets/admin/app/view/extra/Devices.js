@@ -219,14 +219,14 @@ Ext.define('Ung.view.extra.Devices', {
         }],
     }, {
         region: 'east',
-        xtype: 'unpropertygrid',
-        title: 'Device Details'.t(),
+        xtype: 'recorddetails',
+        title: 'Session Details'.t(),
         itemId: 'details',
-        collapsed: true,
-
+        width: 350,
         bind: {
-            source: '{deviceDetails}'
+            collapsed: '{!devicesgrid.selection}'
         }
+
     }],
     tbar: [{
         xtype: 'button',

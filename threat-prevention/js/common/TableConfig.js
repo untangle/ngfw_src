@@ -1,17 +1,83 @@
 Ext.define('Ung.common.TableConfig.threatprevention', {
     singleton: true,
-
     initialized: false,
-    initialize: function(tableConfig){
-        if(this.initialized){
-            return;
+
+    /**
+     * extra map with fields, columns tables
+     * used to inject threat prevention info
+     * into sessions and http_events tables
+     */
+    map: {
+        fields: {
+            threat_prevention_blocked: {
+                col: { text: 'Blocked'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+                fld: { type: 'boolean' }
+            },
+            threat_prevention_categories: {
+                col: { text: 'Categories'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
+            },
+            threat_prevention_client_categories: {
+                col: { text: 'Client Categories'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
+            },
+            threat_prevention_client_reputation: {
+                col: { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
+                fld: { type: 'integer' }
+            },
+            threat_prevention_flagged: {
+                col: { text: 'Flagged'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
+                fld: { type: 'boolean' }
+            },
+            threat_prevention_reason: {
+                col: { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
+                fld: { type: 'string' }
+            },
+            threat_prevention_reputation: {
+                col: { text: 'Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
+                fld: { type: 'integer' }
+            },
+            threat_prevention_rule_id: { // should use converter instead
+                col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120, renderer: Ung.common.Renderer.threatprevention.ruleId },
+                fld: { type: 'integer' }
+            },
+            threat_prevention_server_categories: {
+                col: { text: 'Server Categories'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
+            },
+            threat_prevention_server_reputation: {
+                col: { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
+                fld: { type: 'integer' }
+            }
+        },
+
+        tables: {
+            sessions: [
+                'threat_prevention_blocked',
+                'threat_prevention_flagged',
+                'threat_prevention_rule_id',
+                'threat_prevention_client_reputation',
+                'threat_prevention_client_categories',
+                'threat_prevention_server_reputation',
+                'threat_prevention_server_categories'
+            ],
+            http_events: [
+                'threat_prevention_blocked',
+                'threat_prevention_flagged',
+                'threat_prevention_rule_id',
+                'threat_prevention_reputation',
+                'threat_prevention_categories'
+            ]
         }
-        var me = this;
+    },
+
+    initialize: function() {
+        var me = this, _map = me.map;
 
         /**
          * Set From types
          */
-        tableConfig.setFromType({
+        TableConfig.setFromType({
             threat_reputation: {
                 type: 'RANGE',
                 rangeValues: [
@@ -29,154 +95,22 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
         });
 
         /**
-         * Extended report sessions table fields.
+         * Add threat prevention fields and tables configuration
+         * to the main Map
          */
-        tableConfig.setTableField("sessions", [{
-            name: 'threat_prevention_blocked'
-        }, {
-            name: 'threat_prevention_flagged'
-        }, {
-            name: 'threat_prevention_rule_id'
-        }, {
-            name: 'threat_prevention_client_reputation',
-            fromType: 'threat_reputation'
-        }, {
-            name: 'threat_prevention_client_categories',
-            fromType: 'threat_category'
-        }, {
-            name: 'threat_prevention_server_reputation',
-            fromType: 'threat_reputation'
-        }, {
-            name: 'threat_prevention_server_categories',
-            fromType: 'threat_category'
-        }]);
-        /**
-         * Extended report sessions table columns
-         */
-        tableConfig.setTableColumn("sessions", [{
-            header: 'Blocked'.t() + ' (Threat Prevention)',
-            width: Renderer.booleanWidth,
-            sortable: true,
-            dataIndex: 'threat_prevention_blocked',
-            filter: Renderer.booleanFilter
-        }, {
-            header: 'Flagged'.t() + ' (Threat Prevention)',
-            width: Renderer.booleanWidth,
-            sortable: true,
-            dataIndex: 'threat_prevention_flagged',
-            filter: Renderer.booleanFilter
-        }, {
-            header: 'Rule Id'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_rule_id',
-            filter: Renderer.numericFilter,
-            renderer: Ung.common.Renderer.threatprevention.ruleId
-        }, {
-            header: 'Client Reputation'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_client_reputation',
-            renderer: Ung.common.Renderer.threatprevention.reputation,
-            filter: Renderer.numericFilter
-        }, {
-            header: 'Client Categories'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_client_categories',
-            renderer: Ung.common.Renderer.threatprevention.category,
-            filter: Renderer.numericFilter
-        }, {
-            header: 'Server Reputation'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_server_reputation',
-            renderer: Ung.common.Renderer.threatprevention.reputation,
-            filter: Renderer.numericFilter,
-        }, {
-            header: 'Server Categories'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_server_categories',
-            renderer: Ung.common.Renderer.threatprevention.category,
-            filter: Renderer.numericFilter,
-        }]);
-        /**
-         * Add get detail listener
-         */
-        tableConfig.setTableListener("sessions", {
+        Ext.apply(Map.fields, this.map.fields);
+        Ext.Object.each(this.map.tables, function (table, fields) {
+            Ext.Array.push(Map.tables[table], fields);
+        });
+
+        Map.listeners['sessions'] = {
             select: Ung.common.TableConfig.threatprevention.getIpDetails
-        });
-
-        /**
-        * Extended report http_events table fields.
-        */
-        tableConfig.setTableField("http_events", [{
-            name: 'threat_prevention_blocked'
-        }, {
-            name: 'threat_prevention_flagged'
-        }, {
-            name: 'threat_prevention_rule_id'
-        }, {
-            name: 'threat_prevention_reputation',
-            fromType: 'threat_reputation'
-        }, {
-            name: 'threat_prevention_categories',
-            fromType: 'threat_category'
-        }]);
-        /**
-         * Extended report http_events table columns
-         */
-        tableConfig.setTableColumn("http_events",[{
-            header: 'Blocked'.t() + ' (Threat Prevention)',
-            width: Renderer.booleanWidth,
-            sortable: true,
-            dataIndex: 'threat_prevention_blocked',
-            filter: Renderer.booleanFilter
-        }, {
-            header: 'Flagged'.t() + ' (Threat Prevention)',
-            width: Renderer.booleanWidth,
-            sortable: true,
-            dataIndex: 'threat_prevention_flagged',
-            filter: Renderer.booleanFilter
-        }, {
-            header: 'Rule Id'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_rule_id',
-            filter: Renderer.numericFilter,
-            renderer: Ung.common.Renderer.threatprevention.ruleId
-        }, {
-            header: 'Reputation'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_reputation',
-            renderer: Ung.common.Renderer.threatprevention.reputation,
-            filter: Renderer.numericFilter
-        }, {
-            header: 'Categories'.t() + ' (Threat Prevention)',
-            width: Renderer.idWidth,
-            sortable: true,
-            flex:1,
-            dataIndex: 'threat_prevention_categories',
-            renderer: Ung.common.Renderer.threatprevention.category,
-            filter: Renderer.numericFilter
-        }]);
-        /**
-         * Add get detail listener
-         */
-        tableConfig.setTableListener("http_events", {
+        };
+        Map.listeners['http_events'] = {
             select: Ung.common.TableConfig.threatprevention.getUrlDetails
-        });
+        };
 
-        this.initialized = true;
+
     },
 
     /**
@@ -425,27 +359,38 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
      * @param {*} element Currently selected grid row
      * @param {*} record Current grid row record
      */
-    getUrlDetails: function( element, record){
-        var me = this,
-            v = me.getView(),
-            vm = this.getViewModel(),
-            policyId = record.get('policy_id'),
+    getUrlDetails: function(record, cb) {
+        var policyId,
             uriAddress = record.get('host'),
             reputation = record.get('threat_prevention_reputation');
 
-        if(reputation == null || reputation == 0){
-            return;
-        }
+        if (!reputation) { return; }
 
-        if(uriAddress != undefined){
+        if (uriAddress != undefined) {
             uriAddress += record.get('uri');
         }
 
-        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getUrlHistory', [uriAddress])], this)
-        .then(function(results){
-            if(Util.isDestroyed(v)){
-                return;
+        /**
+         * !!!!! Very important, needs to be changed
+         * Because of the converter used on policy ids
+         * the record.get('policy_id') returns the name of the policy, not the ID
+         * because of that the id needs to be identified from the policies map
+         */
+        Ext.Object.each(Map.policies, function(key, val) {
+            if (val === record.get('policy_id')) {
+                policyId = key;
             }
+        });
+
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(
+                'rpc.reportsManager.getReportInfo',
+                'threat-prevention',
+                policyId,
+                'getUrlHistory',
+                [uriAddress])
+        ], this)
+        .then(function(results) {
             var propertyRecord = [];
             var propertyCategory = null;
             results.forEach( function(result){
@@ -464,46 +409,57 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     );
                 });
             });
-            v.up().down('unpropertygrid').getStore().loadData(propertyRecord, true);
+            cb(propertyRecord);
         }, function(ex) {
+            cb();
             console.log(ex);
         });
-
     },
 
     /**
      * Build IP-address based property records for reputation detail apis.
-     *
-     * @param {*} element Currently selected grid row
      * @param {*} record Current grid row record
      */
-    getIpDetails: function( element, record){
-        var me = this,
-            v = me.getView(),
-            vm = this.getViewModel(),
-            clientIpAddress = record.get('c_client_addr'),
+    getIpDetails: function(record, cb) {
+        var clientIpAddress = record.get('c_client_addr'),
             serverIpAddress = record.get('s_server_addr'),
-            policyId = record.get('policy_id'),
+            policyId,
             clientReputation = record.get('threat_prevention_client_reputation'),
             serverReputation = record.get('threat_prevention_server_reputation'),
             ipAddresses = [];
 
-        if( clientReputation != null && clientReputation > 0 ){
+        /**
+         * !!!!! Very important, needs to be changed
+         * Because of the converter used on policy ids
+         * the record.get('policy_id') returns the name of the policy, not the ID
+         * because of that the id needs to be identified from the policies map
+         */
+        Ext.Object.each(Map.policies, function(key, val) {
+            if (val === record.get('policy_id')) {
+                policyId = key;
+            }
+        });
+
+        if (clientReputation != null && clientReputation > 0) {
             ipAddresses.push(clientIpAddress);
         }
-        if( serverReputation != null && serverReputation > 0){
+        if (serverReputation != null && serverReputation > 0) {
             ipAddresses.push(serverIpAddress);
         }
 
-        if(ipAddresses.length == 0){
+        if (ipAddresses.length == 0) {
             return;
         }
 
-        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", policyId, 'getIpHistory', ipAddresses)], this)
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(
+                'rpc.reportsManager.getReportInfo',
+                'threat-prevention',
+                policyId,
+                'getIpHistory',
+                ipAddresses)
+        ], this)
          .then(function(results){
-            if(Util.isDestroyed(v)){
-                return;
-            }
             var propertyRecord = [];
             var propertyCategory = null;
             results.forEach( function(result){
@@ -523,8 +479,9 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     );
                 });
             });
-            v.up().down('unpropertygrid').getStore().loadData(propertyRecord, true);
+            cb(propertyRecord);
         }, function(ex) {
+            cb();
             console.log(ex);
         });
     },
