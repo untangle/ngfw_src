@@ -19,7 +19,7 @@ Ext.define('Ung.view.reports.EventReport', {
         xtype: 'ungrid',
         stateful: true,
         itemId: 'eventsGrid',
-        reference: 'eventsGrid',
+        reference: 'masterGrid',
         region: 'center',
         store: { data: [] },
         plugins: ['gridfilters'],
@@ -44,6 +44,9 @@ Ext.define('Ung.view.reports.EventReport', {
         title: 'Details'.t(),
         collapsible: true,
         collapsed: true,
+        bind: {
+            hidden: '{isWidget}'
+        },
         animCollapse: false,
         titleCollapse: true,
     }],
@@ -75,13 +78,14 @@ Ext.define('Ung.view.reports.EventReport', {
 
             // hide property grid if rendered inside widget
             if (view.getWidget() || view.up('new-widget')) {
-                view.down('unpropertygrid').hide();
+                vm.set('isWidget', true);
             }
 
             vm.bind('{entry}', function (entry) {
                 if(Util.isDestroyed(me, view)){
                     return;
                 }
+
                 // clear grid data on report change
                 store.setData([]);
                 // clear sorters
@@ -93,7 +97,14 @@ Ext.define('Ung.view.reports.EventReport', {
                     return;
                 }
 
-                me.setupGrid();
+                /**
+                 * store table info, and update the grid settings
+                 * only on table change
+                 */
+                if (!me.table || me.table !== entry.get('table')) {
+                    me.table = entry.get('table');
+                    me.setupGrid();
+                }
 
                 // if rendered in creating new widget dialog, fetch data
                 if (view.up('new-widget')) {
@@ -111,34 +122,28 @@ Ext.define('Ung.view.reports.EventReport', {
                 grid = me.getView().down('grid'),
                 model = grid.getStore().getModel(),
                 entry = vm.get('eEntry') || vm.get('entry'),
-                fields = [],
-                columns = [], // computed grid columns
-                fieldIds = [], // field ids of the entry table
                 defaultColumns; // default columns to show for report
 
             if (!entry) { return; }
 
             defaultColumns = entry.get('defaultColumns');
 
+            // keep this for backward compatibility
             if (me.getView().up('reportwidget')) {
                 me.isWidget = true;
             }
 
-            var table = TableConfig.tableConfig[entry.get('table')];
+            var tableConfig = TableConfig.tableConfig[me.table];
+
             // hide non default columns
-            Ext.Array.each(table.columns, function (column) {
+            Ext.Array.each(tableConfig.columns, function (column) {
                 column.hidden = !Ext.Array.contains(defaultColumns, column.dataIndex);
             });
 
             // see how to update fields, even if it works still as it is
             model.removeFields(Ext.Array.remove(Ext.Object.getKeys(model.getFieldsMap()), '_id'));
-            model.addFields(table.fields);
-            grid.reconfigure(table.columns);
-
-            var propertygrid = me.getView().down('#eventsProperties');
-            vm.set('eventProperty', null);
-            propertygrid.fireEvent('beforerender');
-            propertygrid.fireEvent('beforeexpand');
+            model.addFields(tableConfig.fields);
+            grid.reconfigure(tableConfig.columns);
         },
 
         onDefaultColumn: function (defaultColumn) {

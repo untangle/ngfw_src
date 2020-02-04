@@ -3,135 +3,82 @@ Ext.define('Ung.cmp.PropertyGridController', {
 
     alias: 'controller.unpropertygrid',
 
-    getBindRecordName: function(){
-        var me = this,
-            v = me.getView();
-
-        var bindRecordName = 'propertyRecord';
-        if( v.initialConfig.bind &&
-            ( typeof( v.initialConfig.bind ) == 'object' ) &&
-            v.initialConfig.bind.source ){
-            bindRecordName = v.initialConfig.bind.source.substring( 1, v.initialConfig.bind.source.length - 1);
-        }
-
-        return bindRecordName;
-    },
-
-    /*
-     * If property grid started collapsed it will have no data.
-     * On expansion, force population based on first row in master grid
+    /**
+     * Listen when mastergrid selection change than update the details view
+     * @param {Ext.grid.Panel} propgrid
      */
-    onBeforeExpand: function(){
-        var me = this,
-            v = me.getView(),
-            vm = me.getViewModel();
-
-        if( vm.get(me.getBindRecordName()) == null ){
-            v.up().down('grid').getView().getSelectionModel().select(0);
-        }
-    },
-
-    onBeforeRender: function(){
-        var me = this,
-            v = me.getView();
-
-        var sourceConfig = v.initialConfig.sourceConfig ? v.initialConfig.sourceConfig : {};
-
-        /*
-         * Build source list from accompanying grid's column definitions
-         */
-        var masterGrid = v.up().down('grid');
-        if(masterGrid != v){
-            var columns = masterGrid.getColumns();
-
-            columns.forEach( function(column){
-                var displayName = column.text;
-                if( column.ownerCt.text ){
-                    displayName = column.ownerCt.text + ' ' + displayName;
-                }
-                var config = {
-                    displayName: displayName
-                };
-
-                config.renderer = column.renderer;
-
-                var key = column.dataIndex;
-                sourceConfig[key] = config;
-            });
-            masterGrid.getView().on('select', 'masterGridSelect', me );
-        }
-
-        me.getView().getStore().setFields(['name', 'value', 'category']);
-        me.getView().getStore().setGroupField('category');
-
-        v.sourceConfig = Ext.apply({}, sourceConfig);
-        v.configure(sourceConfig);
-        v.reconfigure();
-    },
-
-    /*
-     * When row selected by master grid, have the property grid properly massage
-     * data suitable for property grid.
-     *
-     * So keep in mind that this is all in the contet of the "grid master" we're attached to,
-     * not this property grid.
-     */
-    masterGridSelect: function (grid, record) {
-        var me = this,
-            vm = me.getViewModel(),
-            propertyRecord = record.getData();
-
-        // hide these attributes always
-        delete propertyRecord._id;
-        delete propertyRecord.javaClass;
-        delete propertyRecord.state;
-        delete propertyRecord.attachments;
-        delete propertyRecord.tags;
-
-        var data = [];
-        Ext.Object.each( propertyRecord, function(key, value){
-            if(value != null){
-                data.push({
-                    name: key,
-                    value: value,
-                    category: 'Event'.t()
-                });
-            }
+    init: function (propgrid) {
+        var me = this;
+        propgrid.getViewModel().bind('{entry}', function(entry) {
+            if (!entry) { return; }
+            me.tableName = entry.get('table');
         });
-
-        me.getView().getStore().loadData(data);
+        propgrid.getViewModel().bind('{masterGrid.selection}', this.masterGridSelect, this);
     },
 
     /**
-     * Used for extra column actions which can be added to the grid but are very specific to that context
-     * The grid requires to have defined a parentView tied to the controller on which action method is implemented
-     * action - is an extra configuration set on actioncolumn and represents the name of the method to be called
-     * see Users/UsersController implementation
+     * Display record details in the details panel
+     * @param {Ext.data.Model} record
      */
-    externalAction: function (v, rowIndex, colIndex, item, e, record) {
-        var view = this.getView(),
-            parentController = null,
-            action = item && item.action ? item.action : v.action;
+    masterGridSelect: function (record) {
+        var me = this, recordData, data = [], category, listeners;
 
-        while( view != null){
-            parentController = view.getController();
-
-            if( parentController && parentController[action]){
-                break;
-            }
-            view = view.up();
-        }
-
-        if (!parentController) {
-            console.log('Unable to get the extra controller');
+        if (!record) {
+            // empty the details view when no record selected
+            me.getView().getStore().loadData([]);
             return;
         }
 
-        // call the action from the extra controller in extra controller scope, and pass all the actioncolumn arguments
-        if (action) {
-            parentController[action].apply(parentController, arguments);
-        } else {
-            console.log('External action not defined!');
+        recordData = record.getData();
+
+        // delete extra non relevant attributes
+        delete recordData._id;
+        delete recordData.javaClass;
+        delete recordData.state;
+        delete recordData.attachments;
+        delete recordData.tags;
+
+        Ext.Object.each(recordData, function(key, value) {
+            category = ' Event'.t();
+            if(value != null) {
+                // set grouping category
+                if (key.startsWith('ad_blocker')) { category = 'Ad Blocker'; }
+                if (key.startsWith('application_control')) { category = 'Application Control'; }
+                if (key.startsWith('application_control_lite')) { category = 'Application Control Lite'; }
+                if (key.startsWith('bandwidth_control')) { category = 'Bandwidth Control'; }
+                if (key.startsWith('captive_portal')) { category = 'Captive Portal'; }
+                if (key.startsWith('firewall')) { category = 'Firewall'; }
+                if (key.startsWith('phish_blocker')) { category = 'Phish Blocker'; }
+                if (key.startsWith('spam_blocker')) { category = 'Spam Blocker'; }
+                if (key.startsWith('spam_blocker_lite')) { category = 'Spam Blocker Lite'; }
+                if (key.startsWith('ssl_inspector')) { category = 'SSL Inspector'; }
+                if (key.startsWith('virus_blocker')) { category = 'Virus Blocker'; }
+                if (key.startsWith('virus_blocker_lite')) { category = 'Virus Blocker Lite'; }
+                if (key.startsWith('web_filter')) { category = 'Web Filter'; }
+                if (key.startsWith('threat_prevention')) { category = 'Threat Prevention'; }
+
+                data.push({
+                    // the human readable field name
+                    name: Map.fields[key] ? Map.fields[key].col.text : key,
+                    // in case the value is rendered use the renderer in details view too
+                    value: (Map.fields[key] && Map.fields[key].col.renderer) ? Map.fields[key].col.renderer(value) : value,
+                    // use categories for grouping purposes
+                    category: category
+                });
+            }
+        });
+        me.getView().getStore().loadData(data);
+
+        // for thread prevention is fetching extra data
+        listeners = TableConfig.tableConfig[me.tableName].listeners;
+        if (listeners) {
+            if (Ext.isFunction(listeners.select));
+            listeners.select(record, function(response) {
+                if (!Util.isDestroyed(me.getView())) {
+                    me.getView().getStore().add(response);
+                }
+            });
         }
+
     }
 });
