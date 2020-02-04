@@ -43,8 +43,9 @@ Ext.define('Ung.view.reports.EventReport', {
         region: 'east',
         title: 'Details'.t(),
         collapsible: true,
+        collapsed: true,
         bind: {
-            collapsed: '{!masterGrid.selection}'
+            hidden: '{isWidget}'
         },
         animCollapse: false,
         titleCollapse: true,
@@ -77,7 +78,7 @@ Ext.define('Ung.view.reports.EventReport', {
 
             // hide property grid if rendered inside widget
             if (view.getWidget() || view.up('new-widget')) {
-                view.down('unpropertygrid').hide();
+                vm.set('isWidget', true);
             }
 
             vm.bind('{entry}', function (entry) {
@@ -121,15 +122,13 @@ Ext.define('Ung.view.reports.EventReport', {
                 grid = me.getView().down('grid'),
                 model = grid.getStore().getModel(),
                 entry = vm.get('eEntry') || vm.get('entry'),
-                fields = [],
-                columns = [], // computed grid columns
-                fieldIds = [], // field ids of the entry table
                 defaultColumns; // default columns to show for report
 
             if (!entry) { return; }
 
             defaultColumns = entry.get('defaultColumns');
 
+            // keep this for backward compatibility
             if (me.getView().up('reportwidget')) {
                 me.isWidget = true;
             }
@@ -145,11 +144,6 @@ Ext.define('Ung.view.reports.EventReport', {
             model.removeFields(Ext.Array.remove(Ext.Object.getKeys(model.getFieldsMap()), '_id'));
             model.addFields(tableConfig.fields);
             grid.reconfigure(tableConfig.columns);
-
-            var propertygrid = me.getView().down('#eventsProperties');
-            vm.set('eventProperty', null);
-            propertygrid.fireEvent('beforerender');
-            propertygrid.fireEvent('beforeexpand');
         },
 
         onDefaultColumn: function (defaultColumn) {
