@@ -1226,6 +1226,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.netcapManager = NetcapManagerImpl.getInstance();
         
+        this.uriManager = new UriManagerImpl();
+
         createUID();
 
         this.hookManager = HookManagerImpl.getInstance();
@@ -1300,8 +1302,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.pluginManager = PluginManagerImpl.getInstance();
 
         this.eventManager = new EventManagerImpl();
-
-        this.uriManager = new UriManagerImpl();
 
         // start vectoring
         NetcapManagerImpl.getInstance().run();
@@ -1506,6 +1506,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             extraOptions += " -d \"nightly\" ";
         } else {
             extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getVersion().replaceAll("\\.","") + "\" ";
+            extraOptions += " -u \"" + uriManager.getUri("https://updates.untangle.com") + "\" ";
         }
 
         extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
