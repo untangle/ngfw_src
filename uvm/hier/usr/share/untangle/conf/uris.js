@@ -1,5 +1,7 @@
 {
     "javaClass": "com.untangle.uvm.UriManagerSettings",
+    "dnsTestHost": "updates.untangle.com",
+    "tcpTestHost": "updates.untangle.com",
     "uriTranslations": {
         "javaClass": "java.util.LinkedList",
         "list": [
