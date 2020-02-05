@@ -22,8 +22,8 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
             },
             threat_prevention_client_reputation: {
-                col: { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
-                fld: { type: 'integer' }
+                col: { text: 'Client Reputation'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.reputation }
             },
             threat_prevention_flagged: {
                 col: { text: 'Flagged'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
@@ -34,8 +34,8 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 fld: { type: 'string' }
             },
             threat_prevention_reputation: {
-                col: { text: 'Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
-                fld: { type: 'integer' }
+                col: { text: 'Reputation'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.reputation }
             },
             threat_prevention_rule_id: { // should use converter instead
                 col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120, renderer: Ung.common.Renderer.threatprevention.ruleId },
@@ -46,8 +46,8 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
             },
             threat_prevention_server_reputation: {
-                col: { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 150, renderer: Ung.common.Renderer.threatprevention.reputation },
-                fld: { type: 'integer' }
+                col: { text: 'Server Reputation'.t() + ' (Threat Prevention)', width: 150 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.reputation }
             }
         },
 
