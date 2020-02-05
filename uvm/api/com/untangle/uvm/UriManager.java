@@ -13,4 +13,6 @@ public interface UriManager
     void setSettings(UriManagerSettings settings);
 
     String getUri(String url);
+
+    UriTranslation getUriTranslationByHost(String url);
 }
