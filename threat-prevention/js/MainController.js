@@ -79,7 +79,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
     /**
      * showSliderInfo will display the Threat Temperature Gauge above the slider, as well as the label below the slider with the current threat description information.
-     * @param {Ung.ThreatSlider} slider - The threat reputation slider object 
+     * @param {Ung.ThreatSlider} slider - The threat reputation slider object
      */
     showSliderInfo: function(slider) {
         var me = this, vm = this.getViewModel(), view = this.getView();
@@ -107,7 +107,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
     /**
      * handleThreatLookup is the click event handler to retrieve threat prevention data on a URL or IP Address from the getUrlHistory API
-     * 
+     *
      */
     handleThreatLookup: function() {
         var v = this.getView(), vm = this.getViewModel();
@@ -116,7 +116,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput])], this)
-        .then(function(result){           
+        .then(function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
@@ -209,9 +209,9 @@ Ext.define('Ung.ThreatSlider', {
         var me = this,
             ariaDom = me.ariaEl.dom,
             k, val;
-        
+
         k = e.getKey();
- 
+
         /*
          * The behaviour for keyboard handling with multiple thumbs is currently undefined.
          * There's no real sane default for it, so leave it like this until we come up
@@ -222,45 +222,45 @@ Ext.define('Ung.ThreatSlider', {
             if (k !== e.TAB) {
                 e.preventDefault();
             }
-            
+
             return;
         }
- 
+
         switch (k) {
             case e.UP:
             case e.RIGHT:
                 val = e.ctrlKey ? me.minValue : me.getValue(0) - me.keyIncrement;
                 break;
-            
+
             case e.DOWN:
             case e.LEFT:
                 val = e.ctrlKey ? me.maxValue : me.getValue(0) + me.keyIncrement;
                 break;
-            
+
             case e.HOME:
                 val = me.minValue;
                 break;
-            
+
             case e.END:
                 val = me.maxValue;
                 break;
-            
+
             case e.PAGE_UP:
                 val = me.getValue(0) + me.pageSize;
                 break;
-            
+
             case e.PAGE_DOWN:
                 val = me.getValue(0) - me.pageSize;
                 break;
         }
-        
+
         if (val !== undefined) {
             e.stopEvent();
-            
+
             val = me.normalizeValue(val);
-            
+
             me.setValue(0, val, undefined, true);
-            
+
             if (ariaDom) {
                 ariaDom.setAttribute('aria-valuenow', val);
             }

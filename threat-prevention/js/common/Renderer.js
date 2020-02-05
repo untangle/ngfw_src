@@ -34,33 +34,24 @@ Ext.define('Ung.common.Renderer.threatprevention', {
 
     /**
      * reputation renderer will display the reputation level of the value
-     * 
      * @param {int} value - the reputation score
      */
-    reputation: function(value, cell, record){
-        if(value == 0 || value == null){
-            return null;
-        }
-        return Ung.common.threatprevention.references.getReputationLevel(value).get('description');
+    reputation: function(value) {
+        return value ? Ung.common.threatprevention.references.getReputationLevel(value).get('description') : '';
     },
 
     /**
      * reputationDetails renderer displays the details of a reputation level
-     * 
-     * @param {int} value - the Reputation score to retrieve the threat level details for 
+     * @param {int} value - the Reputation score to retrieve the threat level details for
      */
     reputationDetails: function(value) {
-        if(value == 0 || value == null){
-            return null;
-        }
-
-        return Ung.common.threatprevention.references.getReputationLevel(value).get('details');
+        return value ? Ung.common.threatprevention.references.getReputationLevel(value).get('details') : '';
     },
 
     /**
      * age renderer displays the age in months
-     * 
-     * @param {int} value - the number of months the renderer should display 
+     *
+     * @param {int} value - the number of months the renderer should display
      */
     age: function(value) {
         return Ext.String.format('{0} months'.t(), value);
@@ -68,8 +59,8 @@ Ext.define('Ung.common.Renderer.threatprevention', {
 
     /**
      * recentOccurrences render displays the number of occurrences the threat has occurred
-     * 
-     * @param {int} value - the number of recent occurrences 
+     *
+     * @param {int} value - the number of recent occurrences
      */
     recentOccurrences: function(value){
         return Ext.String.format('{0} occurrences'.t(), value > Ung.common.TableConfig.threatprevention.maxKeyIndex ? Ung.common.TableConfig.threatprevention.maxKeyIndex : value);
@@ -77,7 +68,7 @@ Ext.define('Ung.common.Renderer.threatprevention', {
 
     /**
      * webCategories renderer displays the category and confidence % associated with that category
-     * 
+     *
      * @param {Array} values - An array of JSON objects with category IDs to display the category and confidence levels
      */
     webCategories: function(values) {
@@ -103,13 +94,13 @@ Ext.define('Ung.common.Renderer.threatprevention', {
 
     /**
      * reputationHistory displays the history of a threat
-     * 
+     *
      * @param {Array} values - An array of reputation history items to display
      */
     reputationHistory: function(values) {
         if(values == 0 || values == null){
             return null;
-        }       
+        }
 
         if(Array.isArray(values)) {
 
@@ -165,10 +156,10 @@ Ext.define('Ung.common.Renderer.threatprevention', {
         4: 'Lower than 10M'.t(),
         5: 'Unranked'.t()
     },
-    
+
     /**
      * ipPopularity will return the IP popularity that should be displayed
-     * 
+     *
      * @param {int} value - The popularity ID to be looked up in the popularity map
      */
     ipPopularity: function(value){

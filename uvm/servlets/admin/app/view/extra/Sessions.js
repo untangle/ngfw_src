@@ -33,6 +33,10 @@ Ext.define('Ung.view.extra.Sessions', {
 
         enableColumnHide: true,
 
+        selModel: {
+            type: 'rowmodel'
+        },
+
         viewConfig: {
             stripeRows: true,
             enableTextSelection: true
@@ -739,12 +743,12 @@ Ext.define('Ung.view.extra.Sessions', {
         }]
     }, {
         region: 'east',
-        xtype: 'unpropertygrid',
+        xtype: 'recorddetails',
         title: 'Session Details'.t(),
+        width: 350,
         itemId: 'details',
-
         bind: {
-            source: '{selectedSession}'
+            collapsed: '{!sessionsgrid.selection}'
         }
     }],
     tbar: [{

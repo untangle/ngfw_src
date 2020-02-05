@@ -401,12 +401,12 @@ Ext.define('Ung.view.extra.Hosts', {
         }]
     }, {
         region: 'east',
-        xtype: 'unpropertygrid',
+        xtype: 'recorddetails',
         title: 'Host Details'.t(),
         itemId: 'details',
-
+        width: 350,
         bind: {
-            source: '{hostDetails}'
+            collapsed: '{!hostsgrid.selection}'
         }
     }],
     tbar: [{
