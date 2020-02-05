@@ -302,11 +302,12 @@ Ext.define('Ung.view.reports.EventReport', {
              csvButton = me.getView().up().up().down('#exportCsv'),
              xlsButton = me.getView().up().up().down('#exportXls'),
              grid = me.getView().down('grid');
+             tc = TableConfig.tableConfig[me.table];
 
-             if (!me.tableConfig || !csvButton || !xlsButton || !grid) { return; }
+             if (!tc || !csvButton || !xlsButton || !grid) { return; }
 
              var gridStore = grid.getStore();
-             var validColumns = me.tableConfig.columns;
+             var validColumns = tc.columns;
              var displayColumns = grid.down('headercontainer').getGridColumns();
 
             // Iterate valid Cols and Display Cols, set valid col visibility to match the displayed columns
