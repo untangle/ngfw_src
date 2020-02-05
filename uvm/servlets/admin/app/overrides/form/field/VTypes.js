@@ -17,7 +17,8 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         positiveInteger: /^[0-9]+$/,
         domainNameRe: /^[a-zA-Z0-9\-_.]+$/,
         urlAddrRe: /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/,
-        cidrBlockRe: /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/
+        cidrBlockRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
+        cidrBlockOnlyRangeRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-1]))$/
     },
 
     isSinglePortValid: function(val) {
@@ -176,6 +177,11 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     openvpnNameText: 'A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed.'.t(),
 
+    cidrBlockOnlyRanges: function(v) {
+        return (this.mask.cidrBlockOnlyRangeRe.test(v));
+    },
+
+    cidrBlockOnlyRangesText: 'Must be a network in CIDR format, excluding /32 addresses.'.t() + ' (192.168.123.0/24)',
 
     domainName: function(value) {
         if (value.charAt(0) === '.') {
