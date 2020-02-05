@@ -18,13 +18,13 @@
                 "uri": "https://telemetry.untangle.com/ngfw/v1/infection",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "https://updates.untangle.com",
+                "uri": "http://updates.untangle.com/",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "https://cmd.untangle.com",
+                "uri": "https://cmd.untangle.com/",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "https://license.untangle.com",
+                "uri": "https://license.untangle.com/",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
                 "uri": "https://classify.untangle.com/v1/md5s",
@@ -33,7 +33,7 @@
                 "uri": "https://bd.untangle.com/",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "https://backup.untangle.com",
+                "uri": "https://backup.untangle.com/",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             }
         ]
