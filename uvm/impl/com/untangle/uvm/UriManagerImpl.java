@@ -23,6 +23,7 @@ public class UriManagerImpl implements UriManager
     UriManagerSettings settings = null;
 
     Map<String,String> UriMap = new HashMap<>();
+    Map<String,UriTranslation> HostUriTranslations = new HashMap<>();
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -116,7 +117,7 @@ public class UriManagerImpl implements UriManager
     }
 
     /**
-     * 
+     * Get built URI string based on key uri.
      * @param uri String of url to lookup.
      * @return String of translated url.
      */
@@ -130,29 +131,53 @@ public class UriManagerImpl implements UriManager
     }
 
     /**
-     * 
+     * Retrieve URI settings by hostname.
+     * @param host of host of uri  to lookup.
+     * @return UriTranslation of matching host or null if no match.
+     */
+    public UriTranslation getUriTranslationByHost(String host)
+    {
+        UriTranslation ut = null;
+        synchronized(this.UriMap){
+            ut = this.HostUriTranslations.get(host);
+        }
+        return ut;
+    }
+
+    /**
+     * Build cache of built URIs.
      */
     private void buildMap()
     {
         synchronized(this.UriMap){
             this.UriMap = new HashMap<>();
+            this.HostUriTranslations = new HashMap<>();
             URIBuilder uriBuilder = null;
+            String keyHost = null; 
+            UriTranslation utExpanded;
             if(settings.getUriTranslations() != null){
                 for(UriTranslation ut : settings.getUriTranslations()){
+                    utExpanded = new UriTranslation();
                     try{
                         uriBuilder = new URIBuilder(ut.getUri());
+                        keyHost = uriBuilder.getHost();
+                        utExpanded.setUri(ut.getUri());
                         if(ut.getScheme() != null){
                             uriBuilder.setScheme(ut.getScheme());
                         }
+                        utExpanded.setScheme(uriBuilder.getScheme());
                         if(ut.getHost() != null){
                             uriBuilder.setHost(ut.getHost());
                         }
+                        utExpanded.setHost(uriBuilder.getHost());
                         if(ut.getPort() != null){
                             uriBuilder.setPort(ut.getPort());
                         }
+                        utExpanded.setPort(uriBuilder.getPort());
                         if(ut.getPath() != null){
                             uriBuilder.setPath(ut.getPath());
                         }
+                        utExpanded.setPath(uriBuilder.getPath());
                         if(ut.getQuery() != null){
                             uriBuilder.setCustomQuery(ut.getQuery());
                         }
@@ -160,6 +185,9 @@ public class UriManagerImpl implements UriManager
                         logger.warn("*** Unable to create URIBuilder", e);
                     }
                     this.UriMap.put(ut.getUri(), uriBuilder.toString());
+                    if(keyHost != null){
+                        this.HostUriTranslations.put(keyHost, utExpanded);
+                    }
                 }
             }
         }
