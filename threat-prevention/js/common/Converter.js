@@ -61,5 +61,13 @@ Ext.define('Ung.common.Converter.threatprevention', {
             }
         }
         return descriptions.join(', ');
-    }
+    },
+
+    /**
+     * converts the reputation value to readable string
+     * @param {int} value - the reputation score
+     */
+    reputation: function(value) {
+        return value ? Ung.common.threatprevention.references.getReputationLevel(value).get('description') : '';
+    },
 });
