@@ -24,7 +24,7 @@
                 "uri": "https://cmd.untangle.com/",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "https://license.untangle.com/",
+                "uri": "https://license.untangle.com/license.php",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
                 "uri": "https://classify.untangle.com/v1/md5s",
