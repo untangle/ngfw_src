@@ -301,7 +301,7 @@ Ext.define('Ung.view.reports.EventReport', {
             var me = this,
              csvButton = me.getView().up().up().down('#exportCsv'),
              xlsButton = me.getView().up().up().down('#exportXls'),
-             grid = me.getView().down('grid');
+             grid = me.getView().down('grid'),
              tc = TableConfig.tableConfig[me.table];
 
              if (!tc || !csvButton || !xlsButton || !grid) { return; }
