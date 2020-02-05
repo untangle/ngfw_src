@@ -245,12 +245,18 @@ public class NotificationManagerImpl implements NotificationManager
     private void testConnectivity(List<String> notificationList)
     {
         Socket socket = null;
+        UriTranslation updatesUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("updates.untangle.com");
+        UriTranslation licenseUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("license.untangle.com");
 
+        String host = null;
+        int port = 0;
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress("updates.untangle.com", 80), 7000);
+            host = updatesUri.getHost() != null ? updatesUri.getHost(): "updates.untangle.com";
+            port = updatesUri.getPort() != -1 ? updatesUri.getPort() : 80;
+            socket.connect(new InetSocketAddress(host, port), 7000);
         } catch (Exception e) {
-            notificationList.add(i18nUtil.tr("Failed to connect to Untangle." + " [updates.untangle.com:80]"));
+            notificationList.add(i18nUtil.tr("Failed to connect to updates:") + ": [" + host + ":" + Integer.toString(port) + "]");
         } finally {
             try {
                 if (socket != null) socket.close();
@@ -260,9 +266,11 @@ public class NotificationManagerImpl implements NotificationManager
 
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress("license.untangle.com", 443), 7000);
+            host = licenseUri.getHost() != null ? licenseUri.getHost(): "license.untangle.com";
+            port = licenseUri.getPort() != -1 ? licenseUri.getPort() : 443;
+            socket.connect(new InetSocketAddress(host, port), 7000);
         } catch (Exception e) {
-            notificationList.add(i18nUtil.tr("Failed to connect to Untangle." + " [license.untangle.com:443]"));
+            notificationList.add(i18nUtil.tr("Failed to connect to license:") + ": [" + host + ":" + Integer.toString(port) + "]");
         } finally {
             try {
                 if (socket != null) socket.close();
