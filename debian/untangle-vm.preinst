@@ -34,7 +34,7 @@ if [ -f /var/run/uvm.pid ] ; then
           disk=`df --output=avail / | awk ' /^[0-9]/ { print $1 }'`
           if grep -q hypervisor /proc/cpuinfo && \
              free -m | egrep -q '^Swap:\s+0\s.*' && \
-             [ $mem -le 2101301248 ] && \
+             [ $mem -le 2106716160 ] && \
              [ $disk -gt 2097152 ] ; then
 
             echo "mem: $mem"
