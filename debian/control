@@ -3,7 +3,26 @@ Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <sdelafond@gmail.com>
 Uploaders: Untangle Buildbot <buildbot@untangle.com>
-Build-Depends: untangle-development-build, debhelper (>= 10)
+Build-Depends: debhelper (>= 10),
+         bzip2,
+         jshint:native | jshint,
+         libc6-dev,
+         ruby-gettext:native | ruby-gettext,
+         libjson-c-dev,
+         libnetfilter-conntrack-dev (>= 1.0.4),
+         libnetfilter-queue-dev (>= 1.0.2),
+         libnfnetlink-dev (>= 1.0.1),
+         libssl-dev,
+         libxml2-dev,
+         lintian,
+	 openjdk-11-jdk-headless | openjdk-8-jdk,
+	 python-javalang:native | python-javalang,
+	 python3-pytest:native | python3-pytest,
+	 python3-setuptools,
+         rake (>= 10),
+	 ruby-sass:native | ruby-sass,
+         rhino:native | rhino,
+         unzip
 Standards-Version: 3.9.8
 
 Package: untangle-libuvmcore

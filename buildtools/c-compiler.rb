@@ -2,21 +2,21 @@
 # $Id$
 
 class CCompilerEnv
-  ARCH = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
+  ARCH = `dpkg-architecture -qDEB_TARGET_ARCH_CPU`.strip()
   Defines = case ARCH
-            when /(armhf|amd64)/
-              "-fPIC -O -D_GNU_SOURCE -D_REENTRANT"
-            else
+            when /i386/
               "-O -D_GNU_SOURCE -D_REENTRANT"
+            else
+              "-fPIC -O -D_GNU_SOURCE -D_REENTRANT"
             end
   ## These are the defaults, this way, overrides can append
   ## parameters to the defaults if they want to.
   Warnings      = "-Wall"
 
-  CC            = "gcc"
-  Ranlib        = "ranlib"
-  Archive       = "ar"
-  Loader        = "ld"
+  CC            = ENV.fetch("CC", "gcc")
+  Ranlib        = ENV.fetch("RANLIB", "ranlib")
+  Archive       = ENV.fetch("AR", "ar")
+  Loader        = ENV.fetch("LD", "ld")
   Link          = "ln"
 
   ## Debugging packages
