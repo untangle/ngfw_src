@@ -33,7 +33,7 @@
                 "uri": "https://bd.untangle.com/",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "https://backup.untangle.com/",
+                "uri": "https://boxbackup.untangle.com/boxbackup/backup.php",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             }
         ]
