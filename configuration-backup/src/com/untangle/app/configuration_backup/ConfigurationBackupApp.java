@@ -16,6 +16,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
@@ -252,16 +253,17 @@ public class ConfigurationBackupApp extends AppBase
      */
     private void uploadBackup( File backupFile )
     {
-            
+        String backupUri = UvmContextFactory.context().uriManager().getUri(BACKUP_URL);
+
         String[] cmd = new String[]{System.getProperty("uvm.bin.dir") + "/configuration-backup-upload-backup.sh",
-                                    "-u",BACKUP_URL,
+                                    "-u",backupUri,
                                     "-v",
                                     "-k",UvmContextFactory.context().getServerUID(),
                                     "-t",TIMEOUT_SEC,
                                     "-f",backupFile.getAbsoluteFile().toString()};
 
-        logger.info("Backing up " + backupFile.getAbsoluteFile() + " to " + BACKUP_URL);
-        logger.info("Backup command: " + cmd);
+        logger.info("Backing up " + backupFile.getAbsoluteFile() + " to " + backupUri);
+        logger.info("Backup command: " + Arrays.toString(cmd));
 
         Integer exitCode = 0;
         try {
@@ -281,19 +283,19 @@ public class ConfigurationBackupApp extends AppBase
                 reason = "Error in arguments";
                 break;
             case 2:
-                reason = "Error from remote server " + BACKUP_URL;
+                reason = "Error from remote server " + backupUri;
                 break;
             case 3:
-                reason = "Permission problem with remote server " + BACKUP_URL;
+                reason = "Permission problem with remote server " + backupUri;
                 break;
             case 4:
-                reason = "Unable to contact " + BACKUP_URL;
+                reason = "Unable to contact " + backupUri;
                 break;
             case 5:
-                reason = "Timeout contacting " + BACKUP_URL;
+                reason = "Timeout contacting " + backupUri;
                 break;
             case 99:
-                reason = "Exception during backup " + BACKUP_URL;
+                reason = "Exception during backup " + backupUri;
                 break;
             default:
                 reason = "Unknown error";
