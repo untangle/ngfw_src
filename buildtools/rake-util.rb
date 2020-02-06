@@ -80,7 +80,7 @@ end
 include Debug
 
 class BuildEnv
-  ARCH = `dpkg-architecture -qDEB_BUILD_ARCH`.strip()
+  ARCH = `dpkg-architecture -qDEB_TARGET_ARCH_CPU`.strip()
   THIRD_PARTY_JAR = 'usr/share/java/uvm'
 
   SERVLET_COMMON = "./servlet/common"
