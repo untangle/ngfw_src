@@ -296,56 +296,92 @@ Ext.define('Ung.view.reports.EventReport', {
          * bindExportButtons handles the binding of the ungrid component and store to the exportCsv and exportXls buttons
          * Within this functionality we create an Ext.js default grid panel and set the current columns and store to the grid.
          * The grid is not rendered, but passed directly into the Exporter tools, which handle proper exporting of the data.
+         *
+         * This binding is quite inefficient because it runs whenever data or columns are changed
+         * todo: trigger binding only when export button is pressed
          */
         bindExportButtons: function() {
             var me = this,
-             csvButton = me.getView().up().up().down('#exportCsv'),
-             xlsButton = me.getView().up().up().down('#exportXls'),
-             grid = me.getView().down('grid');
+            csvButton = me.getView().up().up().down('#exportCsv'),
+            xlsButton = me.getView().up().up().down('#exportXls'),
+            grid = me.getView().down('grid');
 
-             if (!me.tableConfig || !csvButton || !xlsButton || !grid) { return; }
+            if (!csvButton || !xlsButton || !grid) { return; }
 
-             var gridStore = grid.getStore();
-             var validColumns = me.tableConfig.columns;
-             var displayColumns = grid.down('headercontainer').getGridColumns();
+            /**
+             * it is necessary to generate a different grid which is decoupled from original one
+             * because of the formula injections preventions which strips some special characters from values
+             *
+             * record.set(field, value) would trigger the renderer and converter methods
+             * and it will fail with exception as the value has already been converted from id to string
+             */
 
-            // Iterate valid Cols and Display Cols, set valid col visibility to match the displayed columns
-            Ext.Array.each(validColumns, function(validCol) {
-                Ext.Array.each(displayColumns, function(displayCol) {
-                    if (validCol.dataIndex == displayCol.dataIndex) {
-                        if(!displayCol.hidden) {
-                            validCol.hidden = displayCol.hidden;
-                        }
-                    }
+            var originalStore = grid.getStore(),
+                originalVisibleColumns = grid.getVisibleColumns(),
+                originalFields = originalStore.getModel().fields,
+                dataIndexes = Ext.Array.pluck(originalVisibleColumns, 'dataIndex'),
+
+                exportColumns = [],
+                exportFields = [],
+                exportData = [];
+
+            originalVisibleColumns.forEach(function (column) {
+                exportColumns.push({
+                    text: column.text,
+                    dataIndex: column.dataIndex
                 });
+            });
+
+            originalFields.forEach(function (field) {
+                if (!Ext.Array.contains(dataIndexes, field.name)) {
+                    return;
+                }
+                exportFields.push({
+                    type: field.type,
+                    name: field.name
+                });
+            });
+
+            originalStore.each(function(record) {
+                var recordData = {};
+                record.fields.forEach(function (field) {
+                    var fieldName = field.name,
+                        fieldValue = record.get(fieldName);
+
+                    if (!Ext.Array.contains(dataIndexes, fieldName)) {
+                        return;
+                    }
+
+                    /**
+                     * remove any commas in the string, and escape leading -, ", @, +, and =
+                     * with a single quote to prevent formula injections
+                     * This was moved from the ReportsApp toCSV java function
+                     */
+                    if (typeof fieldValue  === 'string') {
+                        fieldValue = fieldValue.replace(new RegExp(",", 'gi'), "").replace(new RegExp("(^|,)([-\"@+=])", 'gi'), "$1'$2");
+                    }
+                    recordData[fieldName] = fieldValue;
+                });
+                exportData.push(recordData);
             });
 
             // Build an exportGrid object to use with the csv/xls export buttons
-            var exportGrid = Ext.create('Ext.grid.Panel', {
-                store: gridStore,
-                columns: validColumns
+            var exportStore = Ext.create('Ext.data.Store', {
+                data: exportData,
+                model: Ext.create('Ext.data.Model', {
+                    fields: exportFields
+                })
             });
-
-            /**
-             * remove any commas in the string, and escape leading -, ", @, +, and =
-             * with a single quote to prevent formula injections
-             * This was moved from the ReportsApp toCSV java function
-             */
-            gridStore.each(function(record, idx) {
-                record.fields.forEach(function(field, fieldIdx) {
-                    var recVal = record.get(field.name);
-                    if(typeof(recVal) === 'string') {
-                        var replaceVal = recVal.replace(new RegExp(",", 'gi'), "").replace(new RegExp("(^|,)([-\"@+=])", 'gi'), "$1'$2");
-                        record.set(field.name, replaceVal);
-                    }
-                });
+            var exportGrid = Ext.create('Ext.grid.Panel', {
+                store: exportStore,
+                columns: exportColumns
             });
 
             csvButton.component = exportGrid;
             xlsButton.component = exportGrid;
 
-            csvButton.store = gridStore;
-            xlsButton.store = gridStore;
+            csvButton.store = exportStore;
+            xlsButton.store = exportStore;
         }
     },
     statics:{
