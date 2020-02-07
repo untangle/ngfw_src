@@ -272,7 +272,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        The password
      * @return Result
      */
-    public boolean unblockSite(String nonce, boolean global, String password)
+    public boolean unblockNonce(String nonce, boolean global, String password)
     {
         if (!this.verifyPassword(password)) {
             if (logger.isInfoEnabled()) {
@@ -283,7 +283,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             if (logger.isInfoEnabled()) {
                 logger.info("Verified the password for nonce: '" + nonce + "'");
             }
-            return unblockSite(nonce, global);
+            return unblockNonce(nonce, global);
         }
     }
 
@@ -383,6 +383,31 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     public WebFilterRedirectDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
+    }
+
+    /**
+     * unblockNonce determines the type of block, and runs the proper unblock logic
+     * 
+     * @param nonce
+     *        The nonce to test
+     * @param global
+     *        Global Flag
+     * @return Result of the operation
+     */
+    public boolean unblockNonce(String nonce, boolean global)
+    {
+        //Load nonce data
+        WebFilterRedirectDetails loadNonce = replacementGenerator.getNonceData(nonce);
+
+        // search term blocks do not currently function
+        if(loadNonce.getBlockType() == Reason.BLOCK_SEARCH_TERM)
+        {
+            return false;
+        }
+        else
+        {
+            return unblockSite(nonce, global);
+        }
     }
 
     /**
