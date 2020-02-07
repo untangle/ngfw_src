@@ -225,7 +225,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle(), Reason.BLOCK_IP_HOST, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             }
@@ -243,7 +243,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle(), Reason.BLOCK_URL, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             } else {
@@ -272,7 +272,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle(), Reason.FILTER_RULE, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             } else if ((filterRule != null) && (filterRule.getFlagged())) {
@@ -314,7 +314,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), blockReason, clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), blockReason, clientIp, app.getAppTitle(), reason, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             } else {
@@ -386,7 +386,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle(), Reason.FILTER_RULE, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             } else if (filterRule.getFlagged()) {

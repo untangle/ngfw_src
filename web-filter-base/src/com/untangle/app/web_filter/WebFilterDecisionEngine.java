@@ -154,7 +154,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                                 return ( new HttpRedirect(
                                     ourApp.generateBlockResponse(
-                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle()), 
+                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle(), Reason.BLOCK_SEARCH_TERM, term), 
                                         sess, uri.toString(), header),
                                     HttpRedirect.RedirectType.BLOCK));
                             } else {
@@ -171,7 +171,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                                 return ( new HttpRedirect(
                                     ourApp.generateRedirectResponse(
-                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle()), 
+                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle(), Reason.REDIRECT_KIDS, term), 
                                             sess, uri.toString(), header, 
                                             SearchEngine.KidFriendlySearchEngineRedirectUri, SearchEngine.getKidFriendlyRedirectParameters(term)),
                                     HttpRedirect.RedirectType.REDIRECT));
