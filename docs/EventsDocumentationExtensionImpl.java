@@ -8,6 +8,9 @@
  */
 package com.untangle.uvm;
 
+import java.io.File;
+import java.io.FileWriter;
+
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -23,6 +26,9 @@ public class ExtensionImpl implements Runnable
 {
     private static final Logger logger = Logger.getLogger( ExtensionImpl.class );
 
+    private static final String CLASS_EVENTS_JSON_FILE_NAME = "/tmp/wiki.txt";
+
+    private FileWriter FileWriter = null;
     private HashMap<String,String> attributeDescriptions = new HashMap<>();
     private HashMap<String,String> classDescriptions = new HashMap<>();
     private HashMap<String,HashMap<String,String>> classSpecificAttributeDescriptions = new HashMap<>();
@@ -80,6 +86,8 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("SmtpMessageAddressEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_addrs|mail_addrs]] table for each address on each email.");
         classDescriptions.put("SmtpMessageEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_msgs|mail_msgs]] table for each email.");
         classDescriptions.put("LoginEvent","These events are created by [[Directory Connector]] and inserted to the [[Database_Schema#directory_connector_login_events|directory_connector_login_events]] table for each login.");
+        classDescriptions.put("ThreatPreventionEvent","These events are created by [[Threat Prevention]] and inserted to the [[Database_Schema#sessions|sessions]] table for each threat lookup.");
+        classDescriptions.put("ThreatPreventionHttpEvent","These events are created by [[Threat Prevention]] and inserted to the [[Database_Schema#http_events|http_events]] table for each threat lookup.");
 
         attributeDescriptions.put("partitionTablePostfix","");
         attributeDescriptions.put("tag","");
@@ -288,6 +296,12 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("loginType","W = Windows login, A=Active Directory, R=RADIUS, T=test");
         attributeDescriptions.put("categoryId","Numeric value of matching category");
         attributeDescriptions.put("tunnelDescription","Description of tunnel");
+        attributeDescriptions.put("clientCategories","Client threat categories");
+        attributeDescriptions.put("clientReputation","Client threat reputation");
+        attributeDescriptions.put("serverCategories","Server threat categories");
+        attributeDescriptions.put("serverReputation","Server threat reputation");
+        attributeDescriptions.put("categories","Server threat categories");
+        attributeDescriptions.put("reputation","Server threat reputation");
 
         HashMap<String,String> specificDescriptions;
 
@@ -339,10 +353,14 @@ public class ExtensionImpl implements Runnable
         String result = UvmContextFactory.context().execManager().execOutput("find " + System.getProperty("uvm.lib.dir") + " -name '*Event.class' | xargs grep -l 'logging.LogEvent' | sed -e 's|.*com/\\(.*\\)|com/\\1|' -e 's|/|.|g' -e 's/.class//'");
 
         try {
+            File file = new File(CLASS_EVENTS_JSON_FILE_NAME);
+            FileWriter = new FileWriter(file);
             String lines[] = result.split("\\n");
             for ( String line : lines ) {
                 printClassDescription( line );
             }
+            FileWriter.write("}\n");
+            FileWriter.close();
         } catch (Exception e) {
             System.out.println(e + " " + e.getMessage());
         }
@@ -364,16 +382,19 @@ public class ExtensionImpl implements Runnable
         }
 
         //System.out.println(fullName);
-        System.out.println("== " + shortName + " ==");
-        System.out.println("<section begin='" + shortName + "' />");
-        System.out.println("");
-        System.out.println(classDescription);
-        System.out.println("");
-        System.out.println("{| border=\"1\" cellpadding=\"2\" width=\"90%\" align=\"center\"");
-        System.out.println("! Attribute Name");
-        System.out.println("! Type");
-        System.out.println("! Description");
-
+        try{
+            FileWriter.write("== " + shortName + " ==\n");
+            FileWriter.write("<section begin='" + shortName + "' />\n");
+            FileWriter.write("\n");
+            FileWriter.write(classDescription + "\n");
+            FileWriter.write("\n");
+            FileWriter.write("{| border=\"1\" cellpadding=\"2\" width=\"90%\" align=\"center\"\n");
+            FileWriter.write("! Attribute Name\n");
+            FileWriter.write("! Type\n");
+            FileWriter.write("! Description\n");
+        }catch(Exception e){
+            System.out.println("Unable to write section:" + e);
+        }
 
         Class clazz;
         try {
@@ -395,7 +416,7 @@ public class ExtensionImpl implements Runnable
                     continue;
                 }
                 String methodName = method.getName();
-                System.out.println(methodName);
+                FileWriter.write(methodName + "\n");
                 methodName = methodName.replaceAll("^get","");
                 if (methodName.length() > 1) {
                     // if second char is upper case, leave first char
@@ -423,17 +444,19 @@ public class ExtensionImpl implements Runnable
                 if ("".equals(description))
                     continue;
 
-                System.out.println("|-");
-                System.out.println("|" + methodName);
-                System.out.println("|" + returnType);
-                System.out.println("|" + description);
+                FileWriter.write("|-\n");
+                FileWriter.write("|" + methodName + "\n");
+                FileWriter.write("|" + returnType + "\n");
+                FileWriter.write("|" + description + "\n");
             }
+            FileWriter.write("|}\n");
+            FileWriter.write("<section end='" + shortName + "' />\n");
+            FileWriter.write("\n");
+            FileWriter.write("\n");
         } catch (java.beans.IntrospectionException e) {
             System.out.println(e);
+        } catch( Exception e){
+            System.out.println("Unable to write" + e);
         }
-        System.out.println("|}");
-        System.out.println("<section end='" + shortName + "' />");
-        System.out.println("");
-        System.out.println("");
     }
 }
