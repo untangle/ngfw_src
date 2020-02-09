@@ -8,6 +8,9 @@
  */
 package com.untangle.uvm;
 
+import java.io.File;
+import java.io.FileWriter;
+
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -25,6 +28,9 @@ public class ExtensionImpl implements Runnable
 {
     private static final Logger logger = Logger.getLogger( ExtensionImpl.class );
 
+    private static final String CLASS_EVENTS_JSON_FILE_NAME = "/tmp/classFields.json";
+
+    private FileWriter FileWriter = null;
     private HashMap<String,String> attributeDescriptions = new HashMap<>();
     private HashMap<String,String> classDescriptions = new HashMap<>();
     private HashMap<String,HashMap<String,String>> classSpecificAttributeDescriptions = new HashMap<>();
@@ -82,6 +88,8 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("SmtpMessageAddressEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_addrs|mail_addrs]] table for each address on each email.");
         classDescriptions.put("SmtpMessageEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_msgs|mail_msgs]] table for each email.");
         classDescriptions.put("LoginEvent","These events are created by [[Directory Connector]] and inserted to the [[Database_Schema#directory_connector_login_events|directory_connector_login_events]] table for each login.");
+        classDescriptions.put("ThreatPreventionEvent","These events are created by [[Threat Prevention]] and inserted to the [[Database_Schema#sessions|sessions]] table for each threat lookup.");
+        classDescriptions.put("ThreatPreventionHttpEvent","These events are created by [[Threat Prevention]] and inserted to the [[Database_Schema#http_events|http_events]] table for each threat lookup.");
 
         attributeDescriptions.put("partitionTablePostfix","");
         attributeDescriptions.put("tag","");
@@ -290,6 +298,12 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("loginType","W = Windows login, A=Active Directory, R=RADIUS, T=test");
         attributeDescriptions.put("categoryId","Numeric value of matching category");
         attributeDescriptions.put("tunnelDescription","Description of tunnel");
+        attributeDescriptions.put("clientCategories","Client threat categories");
+        attributeDescriptions.put("clientReputation","Client threat reputation");
+        attributeDescriptions.put("serverCategories","Server threat categories");
+        attributeDescriptions.put("serverReputation","Server threat reputation");
+        attributeDescriptions.put("categories","Server threat categories");
+        attributeDescriptions.put("reputation","Server threat reputation");
 
         HashMap<String,String> specificDescriptions;
 
@@ -341,12 +355,15 @@ public class ExtensionImpl implements Runnable
         String result = UvmContextFactory.context().execManager().execOutput("find " + System.getProperty("uvm.lib.dir") + " -name '*Event.class' | xargs grep -l 'logging.LogEvent' | sed -e 's|.*com/\\(.*\\)|com/\\1|' -e 's|/|.|g' -e 's/.class//'");
 
         try {
+            File file = new File(CLASS_EVENTS_JSON_FILE_NAME);
+            FileWriter = new FileWriter(file);
             String lines[] = result.split("\\n");
-            System.out.println("{");
+            FileWriter.write("{\n");
             for ( String line : lines ) {
                 printClassDescription( line );
             }
-            System.out.println("}");
+            FileWriter.write("}\n");
+            FileWriter.close();
         } catch (Exception e) {
             System.out.println(e + " " + e.getMessage());
         }
@@ -367,9 +384,12 @@ public class ExtensionImpl implements Runnable
             throw new RuntimeException("Missing class description: " + shortName);
         }
 
-        //System.out.println(fullName);
-        System.out.println("    " + shortName + ": {");
-        System.out.println("    description: \"" + classDescription + "\",");
+        try{
+            FileWriter.write("    " + shortName + ": {\n");
+            FileWriter.write("    description: \"" + classDescription + "\",\n");
+        }catch(Exception e){
+            System.out.println("Unable to write class information to file:" + e);
+        }
 
         Class clazz;
         try {
@@ -383,15 +403,14 @@ public class ExtensionImpl implements Runnable
             throw new RuntimeException("Class not found: " + fullName);
         }
 
-        System.out.println("    fields: [");
-        printFields( clazz, "" );
-        System.out.println("    ]");
-        System.out.println("    },");
-
-        // System.out.println("|}");
-        // System.out.println("<section end='" + shortName + "' />");
-        // System.out.println("");
-        // System.out.println("");
+        try{
+            FileWriter.write("    fields: [\n");
+            printFields( clazz, "" );
+            FileWriter.write("    ]\n");
+            FileWriter.write("    },\n");
+        }catch(Exception e){
+            System.out.println("Unable to write field informaton to file:" + e);
+        }
     }
 
     /**
@@ -453,19 +472,23 @@ public class ExtensionImpl implements Runnable
                 }
                 if ("".equals(description))
                     continue;
-                System.out.println("        {");
-                System.out.println("        name: \"" + prefix + methodName + "\",");
-                System.out.println("        type: \"" + returnType + "\",");
-                System.out.println("        description: \"" + description + "\",");
-                Object[] enums = method.getReturnType().getEnumConstants();
-                if ( enums != null ) {
-                    System.out.print("        values: [");
-                    for ( Object o: enums ) {
-                        System.out.print(" \"" + o.toString() + "\", ");
+                try{
+                    FileWriter.write("        {\n");
+                    FileWriter.write("        name: \"" + prefix + methodName + "\",\n");
+                    FileWriter.write("        type: \"" + returnType + "\",\n");
+                    FileWriter.write("        description: \"" + description + "\",\n");
+                    Object[] enums = method.getReturnType().getEnumConstants();
+                    if ( enums != null ) {
+                        FileWriter.write("        values: [\n");
+                        for ( Object o: enums ) {
+                            FileWriter.write(" \"" + o.toString() + "\", \n");
+                        }
+                        FileWriter.write("],\n");
                     }
-                    System.out.println("],");
+                    FileWriter.write("        },\n");
+                }catch(Exception e){
+                    System.out.println("Unable to write field to file:" + e);
                 }
-                System.out.println("        },");
             }
         } catch (Exception e) {
             System.out.println(e);
