@@ -4,7 +4,7 @@
 package com.untangle.uvm;
 
 /**
- * the System Manager API
+ * The URI Manager API
  */
 public interface UriManager
 {
