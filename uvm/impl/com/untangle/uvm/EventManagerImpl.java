@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.lang.Class;
 import java.lang.reflect.Method;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -1365,7 +1366,20 @@ public class EventManagerImpl implements EventManager
                     try{
                         long value = jsonObject.getLong(key);
                         if(value > 0){
-                            jsonObject.put(key, StringUtil.longToHumanReadable(value));
+                            if(key.indexOf("Time") > -1){
+                                Date date = new Date(value);
+                                jsonObject.put(key, date);
+                            }else if(
+                                (key.indexOf("Id") > -1) ||
+                                (key.indexOf("Latitude") > -1) ||
+                                (key.indexOf("Longitude") > -1) ||
+                                (key.indexOf("Intf") > -1) ||
+                                (key.indexOf("Port") > -1)
+                                ){
+                                // Ignore.  Don't try to convert this value.
+                            }else{
+                                jsonObject.put(key, StringUtil.longToHumanReadable(value));
+                            }
                         }
                     }catch(Exception e){}
                 }
