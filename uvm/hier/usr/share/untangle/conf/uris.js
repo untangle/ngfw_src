@@ -12,7 +12,7 @@
                 "uri": "https://labs.untangle.com/Utility/v1/mac",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
-                "uri": "relay.untangle.com",
+                "uri": "https://auth-relay.untangle.com/callback.php",
                 "javaClass": "com.untangle.uvm.UriTranslation"
             },{
                 "uri": "https://telemetry.untangle.com/ngfw/v1/infection",
