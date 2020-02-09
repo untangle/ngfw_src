@@ -777,7 +777,7 @@ public class OpenVpnAppImpl extends AppBase
             for (OpenVpnConfigItem clientCfgItem : clientSettings) {
                 if (serverCfgItem.getOptionName().equals(clientCfgItem.getOptionName())) {
                     if (!java.util.Objects.equals(serverCfgItem.getOptionValue(), clientCfgItem.getOptionValue())) {
-                        throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + I18nUtil.marktr("OpenVPN Configuration Option: ") + serverCfgItem.getOptionName() + " " + I18nUtil.marktr("does not match between server configuration:") + " " + serverCfgItem.getOptionValue()+ " "  + I18nUtil.marktr("and client configuration:") + " " + clientCfgItem.getOptionValue());
+                        throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + I18nUtil.marktr("OpenVPN Configuration Option:") + " " + serverCfgItem.getOptionName() + " " + I18nUtil.marktr("does not match between server configuration:") + " " + serverCfgItem.getOptionValue()+ " "  + I18nUtil.marktr("and client configuration:") + " " + clientCfgItem.getOptionValue());
                     }
                 }
             }
