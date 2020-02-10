@@ -178,7 +178,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
                     externalAuthenticationParameters = new HashMap<>(MICROSOFT_PARAMETERS);
                     break;
             }
-            externalAuthenticationParameters.put("state", redirectUri.toString());
+            externalAuthenticationParameters.put("redirect_uri", UvmContextFactory.context().uriManager().getUri((String) externalAuthenticationParameters.get("redirect_uri")));
             redirectUri = externalAuthenticationUri;
             redirectParameters = externalAuthenticationParameters;
         }
