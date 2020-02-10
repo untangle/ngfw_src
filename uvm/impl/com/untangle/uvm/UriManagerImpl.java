@@ -123,9 +123,12 @@ public class UriManagerImpl implements UriManager
      */
     public String getUri(String uri)
     {
-        String translatedUri = uri;
+        String translatedUri = null;
         synchronized(this.UriMap){
             translatedUri = UriMap.get(uri);
+        }
+        if(translatedUri == null){
+            translatedUri = uri;
         }
         return translatedUri;
     }
