@@ -232,6 +232,11 @@ public interface UvmContext
     UriManager uriManager();
 
     /**
+     * Get the Authentication manager
+     */
+    AuthenticationManager authenticationManager();
+
+    /**
      * Get the UploadManager
      *
      * @return the UploadManager
