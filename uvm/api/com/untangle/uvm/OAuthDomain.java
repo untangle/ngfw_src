@@ -7,9 +7,9 @@ package com.untangle.uvm;
 /**
   * Holds the details of an OAuth domain
 */
-class OAuthDomain
+public class OAuthDomain
 {
-    String provider;
-    String match;
-    String name;
+    public String provider;
+    public String match;
+    public String name;
 }
