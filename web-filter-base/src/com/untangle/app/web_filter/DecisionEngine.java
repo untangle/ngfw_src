@@ -61,7 +61,7 @@ public abstract class DecisionEngine
      * are temporary and only stored in memory This map stores a list of
      * unblocked sites by IP address
      */
-    private final Map<InetAddress, HashSet<String>> unblockedDomains = new HashMap<InetAddress, HashSet<String>>();
+    private final Map<InetAddress, HashMap<String, Reason>> unblockedDomains = new HashMap<InetAddress, HashMap<String, Reason>>();
 
     /**
      * Constructor
@@ -206,6 +206,15 @@ public abstract class DecisionEngine
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
         if (checkUnblockedSites(host, uri, clientIp)) {
+            // !!!! make -1 be a constant
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, bestCategory.getId(), -1, "", app.getName());
+            logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
+            app.logEvent(hbe);
+            return null;
+        }
+
+        // if a term is unblocked, pass regardless of settings
+        if(checkUnblockedTerms(clientIp, requestLine, header)) {
             // !!!! make -1 be a constant
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, bestCategory.getId(), -1, "", app.getName());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
@@ -368,6 +377,7 @@ public abstract class DecisionEngine
         if (UrlMatchingUtil.checkClientList(clientIp, app.getSettings().getPassedClients()) != null) return null;
         if (UrlMatchingUtil.checkSiteList(host, uri.toString(), app.getSettings().getPassedUrls()) != null) return null;
         if (checkUnblockedSites(host, uri, clientIp)) return null;
+        if (checkUnblockedTerms(clientIp, requestLine, header)) return null;
 
         logger.debug("checkResponse: " + host + uri);
 
@@ -404,22 +414,24 @@ public abstract class DecisionEngine
      * 
      * @param addr
      *        The site address
-     * @param site
+     * @param val
      *        The site name
+     * @param reason
+     *        The reason type
      */
-    public void addUnblockedSite(InetAddress addr, String site)
+    public void addUnblockedSite(InetAddress addr, String val, Reason reason)
     {
-        HashSet<String> wl;
+        HashMap<String, Reason> wl;
         synchronized (unblockedDomains) {
             wl = unblockedDomains.get(addr);
             if (null == wl) {
-                wl = new HashSet<String>();
+                wl = new HashMap<String, Reason>();
                 unblockedDomains.put(addr, wl);
             }
         }
 
         synchronized (wl) {
-            wl.add(site);
+            wl.put(val, reason);
         }
     }
 
@@ -436,7 +448,7 @@ public abstract class DecisionEngine
 
         InetAddress addr;
         List<String> unblockedSites;
-        HashSet<String> hostSites;
+        HashMap<String, Reason> hostSites;
 
         synchronized (unblockedDomains) {
             for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
@@ -446,7 +458,7 @@ public abstract class DecisionEngine
                 hostSites = unblockedDomains.get(addr);
 
                 for (String site : unblockedSites) {
-                    if (hostSites.contains(site)) {
+                    if (hostSites.containsKey(site)) {
                         logger.info("Removing unblocked site " + site + " for " + addr);
                         hostSites.remove(site);
                         if (hostSites.isEmpty()) {
@@ -508,8 +520,33 @@ public abstract class DecisionEngine
      */
     private boolean checkUnblockedSites(String host, URI uri, InetAddress clientIp)
     {
-        if (isDomainUnblocked(host, clientIp)) {
+        host = host.toLowerCase();
+
+        if (isItemUnblocked(host, clientIp)) {
             logger.debug("LOG: " + host + uri + " in unblock list for " + clientIp);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * checkUnblockedTerms checks if a search term was used, and if so queries if it is in the unblocklist
+     * 
+     * @param clientIp
+     *        IP of the host
+     * @param requestLine
+     *        The request line token
+     * @param header
+     *        The Header Token
+     * @return
+     */
+    private boolean checkUnblockedTerms(InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    {
+        String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
+
+        if(isItemUnblocked(term, clientIp)) {
+            logger.debug("LOG: " + term + " in unblock list for " + clientIp);
             return true;
         }
 
@@ -641,27 +678,31 @@ public abstract class DecisionEngine
     /**
      * Checks whether a given domain has been unblocked for the given address
      * 
-     * @param domain
-     *        The domain
+     * @param value
+     *        The value to check in the unblock map
      * @param clientAddr
      *        The client address
      * @return True if unblocked, otherwise false
      */
-    private boolean isDomainUnblocked(String domain, InetAddress clientAddr)
+    private boolean isItemUnblocked(String value, InetAddress clientAddr)
     {
-        if (null == domain) {
+        if (null == value) {
             return false;
         } else {
-            domain = domain.toLowerCase();
-
-            HashSet<String> unblocks = unblockedDomains.get(clientAddr);
+            HashMap<String, Reason> unblocks = unblockedDomains.get(clientAddr);
             if (unblocks == null) {
                 return false;
             } else {
-                for (String d = domain; d != null; d = UrlMatchingUtil.nextHost(d)) {
-                    if (unblocks.contains(d)) {
+                // Check URLs in unblock keys
+                for (String d = value; d != null; d = UrlMatchingUtil.nextHost(d)) {
+                    if (unblocks.containsKey(d)) {
                         return true;
                     }
+                }
+
+                // Check Terms in unblock keys
+                if(unblocks.containsKey(value)) {
+                    return true;
                 }
             }
         }
