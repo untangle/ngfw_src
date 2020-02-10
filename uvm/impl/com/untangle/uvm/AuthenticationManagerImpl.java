@@ -83,6 +83,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager
                 logger.warn("Exception loading OAuth domains:" + OAUTH_DOMAIN_CONFIG, exn);
             }
         }
+        UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.AUTHENTICATION_OAUTHDOMAIN_CHANGE, this.OAuthConfigList);
     }
 
     /**
