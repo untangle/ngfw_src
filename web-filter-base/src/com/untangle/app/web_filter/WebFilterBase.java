@@ -385,33 +385,9 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         return replacementGenerator.getNonceData(nonce);
     }
 
-    /**
-     * unblockNonce determines the type of block, and runs the proper unblock logic
-     * 
-     * @param nonce
-     *        The nonce to test
-     * @param global
-     *        Global Flag
-     * @return Result of the operation
-     */
-    public boolean unblockNonce(String nonce, boolean global)
-    {
-        //Load nonce data
-        WebFilterRedirectDetails loadNonce = replacementGenerator.getNonceData(nonce);
-
-        // search term blocks do not currently function
-        if(loadNonce.getBlockType() == Reason.BLOCK_SEARCH_TERM)
-        {
-            return false;
-        }
-        else
-        {
-            return unblockSite(nonce, global);
-        }
-    }
 
     /**
-     * Unblock a site
+     * Unblock a site or search term based on nonce
      * 
      * @param nonce
      *        The nonce
@@ -419,7 +395,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        Global flag
      * @return Result of the operation
      */
-    public boolean unblockSite(String nonce, boolean global)
+    public boolean unblockNonce(String nonce, boolean global)
     {
         WebFilterRedirectDetails bd = replacementGenerator.removeNonce(nonce);
 
@@ -446,27 +422,38 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                 logger.warn("cannot unblock null host");
                 return false;
             } else {
-                logger.warn("permanently unblocking site: " + site);
-                GenericRule sr = new GenericRule(site, site, "user unblocked", "unblocked by user", true);
-                settings.getPassedUrls().add(sr);
-                _setSettings(settings);
+                if(bd.getBlockType() == Reason.BLOCK_SEARCH_TERM) {
+                    String term = bd.getBlockVal();
+                    logger.info("Permanently unblocking search term: " + term);
 
-                return true;
+                    // TBD ?
+    
+                    return true;
+                } else {
+                    logger.warn("permanently unblocking site: " + site);
+                    GenericRule sr = new GenericRule(site, site, "user unblocked", "unblocked by user", true);
+                    settings.getPassedUrls().add(sr);
+                    _setSettings(settings);
+
+                    return true;
+                }
             }
         } else {
-            String site = bd.getUnblockHost();
-            if (null == site) {
-                logger.warn("cannot unblock null host");
-                return false;
-            } else {
-                logger.info("Temporarily unblocking site: " + site);
-                InetAddress addr = bd.getClientAddress();
+                Reason blockType = bd.getBlockType();
+                String blockVal = bd.getBlockVal();
 
-                unblockedSitesMonitor.addUnblockedSite(addr, site);
-                getDecisionEngine().addUnblockedSite(addr, site);
-
-                return true;
-            }
+                if (null == blockVal) {
+                    logger.warn("cannot unblock null host");
+                    return false;
+                } else {
+                    logger.info("Temporarily unblocking "+ blockType + " : " + blockVal);
+                    InetAddress addr = bd.getClientAddress();
+    
+                    unblockedSitesMonitor.addUnblockedSite(addr, blockVal);
+                    getDecisionEngine().addUnblockedSite(addr, blockVal, blockType);
+    
+                    return true;
+                }
         }
     }
 
