@@ -114,6 +114,8 @@ public class UriManagerImpl implements UriManager
             errorOccurred = true;
             errorStr = "sync-settings failed: returned " + result.getResult();
         }
+        
+        UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.URIS_SETTINGS_CHANGE, this.settings);
     }
 
     /**
