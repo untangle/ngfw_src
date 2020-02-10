@@ -85,6 +85,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private NetcapManagerImpl netcapManager;
     private EventManagerImpl eventManager;
     private UriManagerImpl uriManager;
+    private AuthenticationManagerImpl authenticationManager;
     private DaemonManagerImpl daemonManager;
     private HostsFileManagerImpl hostsFileManager;
     private BrandingManagerImpl brandingManager;
@@ -335,6 +336,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public UriManager uriManager()
     {
         return this.uriManager;
+    }
+
+    /**
+     * Get AuthenticationManager
+     * @return AuthenticationManager
+     */
+    public AuthenticationManager authenticationManager()
+    {
+        return this.authenticationManager;
     }
 
     /**
@@ -1122,6 +1132,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("adminManager", this.adminManager());
             json.put("eventManager", this.eventManager());
             json.put("uriManager", this.uriManager());
+            json.put("authenticationManager", this.authenticationManager());
             json.put("systemManager", this.systemManager());
             json.put("dashboardManager", this.dashboardManager());
             json.put("hostTable", this.hostTable());
@@ -1226,11 +1237,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.netcapManager = NetcapManagerImpl.getInstance();
         
+        this.hookManager = HookManagerImpl.getInstance();
+
         this.uriManager = new UriManagerImpl();
 
         createUID();
 
-        this.hookManager = HookManagerImpl.getInstance();
+        this.authenticationManager = new AuthenticationManagerImpl();
 
         this.certCacheManager = new CertCacheManagerImpl();
 
