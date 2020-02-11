@@ -449,8 +449,8 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                     logger.info("Temporarily unblocking "+ blockType + " : " + blockVal);
                     InetAddress addr = bd.getClientAddress();
     
-                    unblockedSitesMonitor.addUnblockedSite(addr, blockVal);
-                    getDecisionEngine().addUnblockedSite(addr, blockVal, blockType);
+                    unblockedSitesMonitor.addUnblockedItem(addr, blockVal, blockType);
+                    getDecisionEngine().addUnblockedItem(addr, blockVal, blockType);
     
                     return true;
                 }
@@ -460,10 +460,10 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     /**
      * Flush all unblocked sites
      */
-    public void flushAllUnblockedSites()
+    public void flushAllUnblockedItems()
     {
-        logger.warn("Flushing all Unblocked sites...");
-        getDecisionEngine().removeAllUnblockedSites();
+        logger.warn("Flushing all Unblocked items...");
+        getDecisionEngine().removeAllUnblockedItems();
     }
 
     /**
@@ -977,7 +977,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        getDecisionEngine().removeAllUnblockedSites();
+        getDecisionEngine().removeAllUnblockedItems();
         unblockedSitesMonitor.start();
     }
 
@@ -1019,7 +1019,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     protected void postStop(boolean isPermanentTransition)
     {
         unblockedSitesMonitor.stop();
-        getDecisionEngine().removeAllUnblockedSites();
+        getDecisionEngine().removeAllUnblockedItems();
     }
 
     /**

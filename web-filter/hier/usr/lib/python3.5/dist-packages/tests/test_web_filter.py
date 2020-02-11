@@ -228,7 +228,7 @@ class WebFilterTests(WebFilterBaseTests):
         resultUnBlock = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
 
         self.block_url_list_clear()
-        self._app.flushAllUnblockedSites()
+        self._app.flushAllUnblockedItems()
 
         print("block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock))
         assert (resultBlock == 0)
