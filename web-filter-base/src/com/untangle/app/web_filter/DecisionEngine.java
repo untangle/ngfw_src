@@ -61,7 +61,7 @@ public abstract class DecisionEngine
      * are temporary and only stored in memory This map stores a list of
      * unblocked sites by IP address
      */
-    final Map<InetAddress, HashMap<String, Reason>> unblockedDomains = new HashMap<InetAddress, HashMap<String, Reason>>();
+    final Map<InetAddress, HashMap<String, Reason>> unblockedItems = new HashMap<InetAddress, HashMap<String, Reason>>();
 
     /**
      * Constructor
@@ -410,14 +410,14 @@ public abstract class DecisionEngine
      * @param reason
      *        The reason type
      */
-    public void addUnblockedSite(InetAddress addr, String val, Reason reason)
+    public void addUnblockedItem(InetAddress addr, String val, Reason reason)
     {
         HashMap<String, Reason> wl;
-        synchronized (unblockedDomains) {
-            wl = unblockedDomains.get(addr);
+        synchronized (unblockedItems) {
+            wl = unblockedItems.get(addr);
             if (null == wl) {
                 wl = new HashMap<String, Reason>();
-                unblockedDomains.put(addr, wl);
+                unblockedItems.put(addr, wl);
             }
         }
 
@@ -433,27 +433,27 @@ public abstract class DecisionEngine
      * @param map
      *        a Map<InetAddress, List<String>>
      */
-    public void removeUnblockedSites(Map<InetAddress, List<String>> map)
+    public void removeUnblockedItems(Map<InetAddress, List<String>> map)
     {
         logger.info("about to remove host-unblocked sites for " + map.size() + " host(s)");
 
         InetAddress addr;
-        List<String> unblockedSites;
+        List<String> itemsToUnblock;
         HashMap<String, Reason> hostSites;
 
-        synchronized (unblockedDomains) {
+        synchronized (unblockedItems) {
             for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
                 addr = entry.getKey();
-                unblockedSites = entry.getValue();
+                itemsToUnblock = entry.getValue();
 
-                hostSites = unblockedDomains.get(addr);
+                hostSites = unblockedItems.get(addr);
 
-                for (String site : unblockedSites) {
-                    if (hostSites.containsKey(site)) {
-                        logger.info("Removing unblocked site " + site + " for " + addr);
-                        hostSites.remove(site);
+                for (String item : itemsToUnblock) {
+                    if (hostSites.containsKey(item)) {
+                        logger.info("Removing unblocked item " + item + " for " + addr);
+                        hostSites.remove(item);
                         if (hostSites.isEmpty()) {
-                            unblockedDomains.remove(addr);
+                            unblockedItems.remove(addr);
                             break;
                         }
                     }
@@ -463,11 +463,11 @@ public abstract class DecisionEngine
     }
 
     /**
-     * Remove all the unblocked sites for all the clients.
+     * Remove all the unblocked sites and search terms for all the clients.
      */
-    public void removeAllUnblockedSites()
+    public void removeAllUnblockedItems()
     {
-        unblockedDomains.clear();
+        unblockedItems.clear();
     }
 
     /**
@@ -680,20 +680,15 @@ public abstract class DecisionEngine
         if (null == value) {
             return false;
         } else {
-            HashMap<String, Reason> unblocks = unblockedDomains.get(clientAddr);
+            HashMap<String, Reason> unblocks = unblockedItems.get(clientAddr);
             if (unblocks == null) {
                 return false;
             } else {
-                // Check URLs in unblock keys
+                // Check URLs in unblock keys (This will also check for terms)
                 for (String d = value; d != null; d = UrlMatchingUtil.nextHost(d)) {
                     if (unblocks.containsKey(d)) {
                         return true;
                     }
-                }
-
-                // Check Terms in unblock keys
-                if(unblocks.containsKey(value)) {
-                    return true;
                 }
             }
         }
