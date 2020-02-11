@@ -99,6 +99,15 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
 
                 if (term != null) {
+
+                    // if a term is unblocked, pass regardless of settings
+                    if(super.isItemUnblocked(term, clientIp)) {
+                        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, null, -1, "", ourApp.getName());
+                        logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
+                        ourApp.logEvent(hbe);
+                        return null;
+                    }
+
                     GenericRule matchingRule = null;
                     for (GenericRule rule : ourApp.getSettings().getSearchTerms()) {
                         if (rule.getEnabled() != null && !rule.getEnabled()) continue;
