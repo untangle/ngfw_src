@@ -61,7 +61,7 @@ public abstract class DecisionEngine
      * are temporary and only stored in memory This map stores a list of
      * unblocked sites by IP address
      */
-    private final Map<InetAddress, HashMap<String, Reason>> unblockedDomains = new HashMap<InetAddress, HashMap<String, Reason>>();
+    final Map<InetAddress, HashMap<String, Reason>> unblockedDomains = new HashMap<InetAddress, HashMap<String, Reason>>();
 
     /**
      * Constructor
@@ -206,15 +206,6 @@ public abstract class DecisionEngine
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
         if (checkUnblockedSites(host, uri, clientIp)) {
-            // !!!! make -1 be a constant
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, bestCategory.getId(), -1, "", app.getName());
-            logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
-            app.logEvent(hbe);
-            return null;
-        }
-
-        // if a term is unblocked, pass regardless of settings
-        if(checkUnblockedTerms(clientIp, requestLine, header)) {
             // !!!! make -1 be a constant
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, bestCategory.getId(), -1, "", app.getName());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
@@ -541,7 +532,7 @@ public abstract class DecisionEngine
      *        The Header Token
      * @return
      */
-    private boolean checkUnblockedTerms(InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    boolean checkUnblockedTerms(InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
         String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
 
@@ -684,7 +675,7 @@ public abstract class DecisionEngine
      *        The client address
      * @return True if unblocked, otherwise false
      */
-    private boolean isItemUnblocked(String value, InetAddress clientAddr)
+    boolean isItemUnblocked(String value, InetAddress clientAddr)
     {
         if (null == value) {
             return false;
