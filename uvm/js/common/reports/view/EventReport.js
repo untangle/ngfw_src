@@ -302,11 +302,24 @@ Ext.define('Ung.view.reports.EventReport', {
          */
         bindExportButtons: function() {
             var me = this,
+            entry = me.getViewModel().get('entry'),
+            export_title = 'export', // default export title
             csvButton = me.getView().up().up().down('#exportCsv'),
             xlsButton = me.getView().up().up().down('#exportXls'),
             grid = me.getView().down('grid');
 
             if (!csvButton || !xlsButton || !grid) { return; }
+
+            if (entry) {
+                export_title = (entry.get('category') + '-' + entry.get('title')).replace(/ /g, '_');
+            }
+
+            /**
+             * exporterbutton uses the `title` prop to set the filename
+             * given that the title is altered so it contains the report entry category/title
+             */
+            csvButton.title = export_title;
+            xlsButton.title = export_title;
 
             /**
              * it is necessary to generate a different grid which is decoupled from original one
