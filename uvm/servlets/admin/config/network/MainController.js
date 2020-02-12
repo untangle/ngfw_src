@@ -59,7 +59,6 @@ Ext.define('Ung.config.network.MainController', {
             Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
             Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
             Rpc.directPromise('rpc.companyName'),
-            Rpc.directPromise('rpc.uriManager.getSettings'),
         ], this).then(function (result) {
             if(Util.isDestroyed(me, v, vm)){
                 return;
@@ -105,8 +104,6 @@ Ext.define('Ung.config.network.MainController', {
             me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
 
             vm.set('companyName', result[3]);
-            vm.set('dnsTestHost', result[4].dnsTestHost);
-            vm.set('tcpTestHost', result[4].tcpTestHost);
 
             vm.set('panel.saveDisabled', false);
 

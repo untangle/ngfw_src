@@ -2,7 +2,6 @@
 import os
 import getopt
 from multiprocessing import Process
-import re
 import shlex
 import signal
 import subprocess
@@ -62,8 +61,6 @@ class DumpWriter:
 ## Read packet dump and output to stdout
 ##
 class DumpReader:
-    regex_timestamp_header = re.compile(r'^\d{1,2}:\d{1,2}:\d{1,2}\.\d+ ')
-
     def __init__( self, file_name, error_file_name ):
         self.dump_file_name = file_name
         self.error_file_name = error_file_name
@@ -86,7 +83,7 @@ class DumpReader:
             if count > 0:
                 self.printed_header = True
 				
-    def read( self, search_string=None ):
+    def read( self ):
         if self.printed_header == False:
             return
 		
@@ -103,13 +100,8 @@ class DumpReader:
             '-n',
 			'-r', self.dump_file_name
         ]
-        if search_string is not None:
-            args.append('-A')
-
         self.process = subprocess.Popen( args, stdout=subprocess.PIPE, stderr=open(os.devnull, 'wb') )
         line_count = 0
-        current_header = None
-        current_payload = ""
         for line in self.process.stdout:
             line_count = line_count + 1
             if show_lines == 0 and line_count == self.last_line_count:
@@ -118,19 +110,7 @@ class DumpReader:
 			
             if show_lines == 1:
                 with timeout(seconds=5):
-                    if search_string is None:
-                        print(line.strip())
-                    else:
-                        if re.match(DumpReader.regex_timestamp_header, line):
-                            if current_header is not None:
-                                if search_string in current_payload:
-                                    print(current_header)
-                                    print(current_payload)
-                            current_header = line.strip()
-                            current_payload = ""
-                        elif current_payload is not None:
-                            current_payload += line.strip()
-
+                    print(line.strip())
                     sys.stdout.flush()
         self.last_line_count = line_count
 
@@ -155,7 +135,6 @@ def usage():
     print("--help\tShow usage")
     print("--timeout <sec>\tTime to run in seconds")
     print("--filename <filename>\tFile to write")
-    print("--search_string <text>\tOnly show packets containing this string")
     print("--arguments <list>\tcpdump arguments")
 
 ##
@@ -172,10 +151,9 @@ def main(argv):
     timeout = 5
     filename = "/tmp/network-tests"
     arguments = ""
-    search_string = None
 
     try:
-        opts, args = getopt.getopt( argv, "htfas:d", [ "help", "timeout=", "filename=", "arguments=", "search_string=", "debug" ] )
+        opts, args = getopt.getopt( argv, "htfa:d", [ "help", "timeout=", "filename=", "arguments=", "debug" ] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -192,8 +170,6 @@ def main(argv):
             filename = arg
         elif opt in ( "-t", "--arguments" ):
             arguments = arg
-        elif opt in ( "-s", "--search_string" ):
-            search_string = arg
 
     if _debug == True:
         print("timeout=" + str(timeout))
@@ -212,7 +188,7 @@ def main(argv):
 	
     while timeout > 0:
         dump_reader.header()
-        dump_reader.read(search_string)
+        dump_reader.read()
 
         timeout = timeout -1
         time.sleep(1) 

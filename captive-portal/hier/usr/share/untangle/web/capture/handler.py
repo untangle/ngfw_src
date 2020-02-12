@@ -13,16 +13,12 @@ import uvm.i18n_helper
 
 sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
-from urlparse import urlparse
-
 from uvm.settings_reader import get_app_settings_item
 from uvm.settings_reader import get_appid_settings
 from uvm.settings_reader import get_app_settings
 from uvm.settings_reader import get_settings_item
 
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
-
-OAUTH_TYPES = ['GOOGLE', 'FACEBOOK', 'MICROSOFT', 'ANY_OAUTH']
 
 ## PythonOption ApplicationPath /
 #mod_python.session.application_path /
@@ -95,16 +91,10 @@ def index(req):
     authmode = args['AUTHMODE']
 
     if (authcode != "Empty"):
-        authenticationType = captureSettings.get("authenticationType")
-        uri_base = None
-        if authenticationType in OAUTH_TYPES:
-            ut = Uvm().getUvmContext().uriManager().getUriTranslationByHost("auth-relay.untangle.com")
-            uri_base = ut['scheme'] + '://' + ut['host'] + ':' + str(ut['port']) + "/cgi-bin/getAccessToken?authType={authenticationType}&authCode={authcode}"
-
-        if (authenticationType == "GOOGLE") or ((authenticationType == "ANY_OAUTH") and (authmode == "GOOGLE")):
+        if (captureSettings.get("authenticationType") == "GOOGLE") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "GOOGLE")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authenticationType="GOOGLE", authcode=authcode)).geturl()))
+            altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=GOOGLE&authCode=%s" % authcode)
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
@@ -134,10 +124,10 @@ def index(req):
             util.redirect(req, target)
             return
 
-        if (authenticationType == "FACEBOOK") or ((authenticationType == "ANY_OAUTH") and (authmode == "FACEBOOK")):
+        if (captureSettings.get("authenticationType") == "FACEBOOK") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "FACEBOOK")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authenticationType="FACEBOOK", authcode=authcode)).geturl()))
+            altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=FACEBOOK&authCode=%s" % authcode)
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
@@ -167,10 +157,10 @@ def index(req):
             util.redirect(req, target)
             return
 
-        if (authenticationType == "MICROSOFT") or ((authenticationType == "ANY_OAUTH") and (authmode == "MICROSOFT")):
+        if (captureSettings.get("authenticationType") == "MICROSOFT") or ((captureSettings.get("authenticationType") == "ANY_OAUTH") and (authmode == "MICROSOFT")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authenticationType="MICROSOFT", authcode=authcode)).geturl()))
+            altres = urllib.urlopen("https://auth-relay.untangle.com/cgi-bin/getAccessToken?authType=MICROSOFT&authCode=%s" % authcode)
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
@@ -485,8 +475,6 @@ def generate_page(req,captureSettings,args,extra=''):
         page = replace_marker(page,'$.GoogleState.$', urllib.quote(target + "&authmode=GOOGLE").encode('utf8'))
         page = replace_marker(page,'$.FacebookState.$', urllib.quote(target + "&authmode=FACEBOOK").encode('utf8'))
         page = replace_marker(page,'$.MicrosoftState.$', urllib.quote(target + "&authmode=MICROSOFT").encode('utf8'))
-
-        page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.untangle.com/callback.php"))
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags

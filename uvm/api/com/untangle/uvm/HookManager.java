@@ -9,8 +9,6 @@ public interface HookManager
     public static String APPLICATION_DESTROY = "application-destroy";
     public static String SETTINGS_CHANGE = "settings-change";
     public static String NETWORK_SETTINGS_CHANGE = "network-settings-change";
-    public static String URIS_SETTINGS_CHANGE = "uris-settings-change";
-    public static String AUTHENTICATION_OAUTHDOMAIN_CHANGE = "authentication-oauthdomain-change";
     public static String REPORTS_EVENT_LOGGED = "reports-event-logged";
     public static String LICENSE_CHANGE = "license-change";
     public static String UVM_STARTUP_COMPLETE = "uvm-startup-complete";
