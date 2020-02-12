@@ -1171,7 +1171,8 @@ Ext.define('Ung.util.Map', {
             's2c_content_length',
             's2c_content_type',
             'blocked',
-            'flagged'
+            'flagged',
+            'web_filter_reason'
         ],
         mail_addrs: [
             'time_stamp',
