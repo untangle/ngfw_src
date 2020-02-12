@@ -135,7 +135,7 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
          */
         public String getAdditionalFields(Map<String, String> i18n_map)
         {
-            String returnFields = "<p><strong>" + I18nUtil.tr("Additional Details:", i18n_map) + "</strong> \""+this.blockDetails.getBlockVal() + "\" " + I18nUtil.tr(this.blockDetails.getBlockType().getReason(), i18n_map) + "</p><br>";
+            String returnFields = "<p><strong>" + I18nUtil.tr("Details:", i18n_map) + "</strong> \""+this.blockDetails.getBlockVal() + "\" " + I18nUtil.tr(this.blockDetails.getBlockType().getReason(), i18n_map) + "</p><br>";
 
             if ("None".equals(getUnblockMode())) {
                return returnFields;
