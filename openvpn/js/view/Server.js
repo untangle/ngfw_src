@@ -61,7 +61,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         },{
             fieldLabel: 'Address Space'.t(),
             xtype: 'textfield',
-            vtype: 'cidrBlock',
+            vtype: 'cidrBlockOnlyRanges',
             disabled: true,
             bind: {
                 value: '{settings.addressSpace}',
