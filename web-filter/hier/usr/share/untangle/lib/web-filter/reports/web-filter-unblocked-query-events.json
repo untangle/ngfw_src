@@ -1,0 +1,20 @@
+{
+    "category": "Web Filter",
+    "readOnly": true,
+    "type": "EVENT_LIST",
+    "conditions": [
+        {
+            "column": "web_filter_reason",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "operator": "=",
+            "value": "B"
+        }
+    ],
+    "defaultColumns": ["time_stamp","hostname","username","host","web_filter_reason","term","blocked","flagged","c_client_addr","s_server_addr","s_server_port"],
+    "description": "Shows all unblocked search query requests",
+    "displayOrder": 1033,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "table": "http_query_events",
+    "title": "Unblocked Search Events",
+    "uniqueId": "web-filter-I9Y3CG2J45"
+}

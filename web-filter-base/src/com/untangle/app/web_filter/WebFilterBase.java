@@ -386,7 +386,6 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         return replacementGenerator.getNonceData(nonce);
     }
 
-
     /**
      * Unblock a site or search term based on nonce
      * 

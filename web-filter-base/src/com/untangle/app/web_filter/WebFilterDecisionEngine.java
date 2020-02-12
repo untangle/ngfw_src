@@ -92,6 +92,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
         if (!isLicenseValid()) {
             return null;
         } else {
+
+            // The WebFilterDecisionEngine runs the Base class DecisionEngine here, this is important as the Base Decision Engine can return null 
+            // while the WebFilterDecision engine can still return a redirect.
+            
             HttpRedirect redirect = super.checkRequest(sess, clientIp, port, requestLine, header);
             if(redirect != null){
                 return redirect;
@@ -102,9 +106,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                     // if a term is unblocked, pass regardless of settings
                     if(super.isItemUnblocked(term, clientIp)) {
-                        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, null, -1, "", ourApp.getName());
-                        logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
-                        ourApp.logEvent(hbe);
+
+                        WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, getApp().getName());
+                        logger.debug("LOG: term "+ term + " in unblock list: " + requestLine.getRequestLine());
+                        getApp().logEvent(hbqe);
                         return null;
                     }
 
@@ -133,7 +138,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                         }
                     }
 
-                    WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, getApp().getName());
+                    WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, (matchingRule != null && matchingRule.getBlocked()) ? Reason.BLOCK_SEARCH_TERM : Reason.DEFAULT, getApp().getName());
                     getApp().logEvent(hbqe);
 
                     if( matchingRule != null ||

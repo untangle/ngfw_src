@@ -425,6 +425,7 @@ dict['http_query_events'].update({
     'uri' : 'The HTTP URI',
     'term' : 'The search term',
     'host' : 'The HTTP host',
+    'web_filter_reason' : 'This reason Web Filter blocked/flagged this request',
 })
 
 dict['wan_failover_action_events'] = copy.deepcopy(generic)
