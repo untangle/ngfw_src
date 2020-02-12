@@ -26,7 +26,6 @@ import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.CertificateManager;
-import com.untangle.uvm.OAuthDomain;
 import com.untangle.uvm.UvmContextFactory;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -169,7 +168,7 @@ public class CaptivePortalSSLEngine
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
 
             // check the SNI name against each item in the OAuthConfigList
-            for (OAuthDomain item : captureApp.oauthConfigList) {
+            for (CaptivePortalApp.oauthDomain item : captureApp.oauthConfigList) {
                 // check PROVIDER = all
                 if ((item.provider.equals("all")) && ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.FACEBOOK) || (authType == CaptivePortalSettings.AuthenticationType.MICROSOFT) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH))) {
                     if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;

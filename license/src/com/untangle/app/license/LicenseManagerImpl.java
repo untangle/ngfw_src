@@ -994,7 +994,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         String urlStr = System.getProperty(LICENSE_URL_PROPERTY);
         
         if (urlStr == null)
-            urlStr = UvmContextFactory.context().uriManager().getUri(DEFAULT_LICENSE_URL);
+            urlStr = DEFAULT_LICENSE_URL;
 
         return urlStr;
     }

@@ -26,7 +26,6 @@ import intrusion_prevention
 DEBUG = False
 CHUNK_SIZE = 1024 * 1024
 FORCE_SYNC = False
-UVM_CONTEXT = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
 
 class Update:
     """
@@ -74,13 +73,14 @@ class Update:
             })
             return False
 
-        self.app_manager = UVM_CONTEXT.appManager()
+        uvm_context = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
+        self.app_manager = uvm_context.appManager()
 
         ##
         ## Easier to parse the api for instances than reproducing what
         ## it does with object.
         ##
-        for instance in AppManager(UVM_CONTEXT).get_instances():
+        for instance in AppManager(uvm_context).get_instances():
             if instance[1] == "intrusion-prevention" and (instance[3] == "RUNNING" or FORCE_SYNC):
                 self.app_ids.append(instance[0])
 
@@ -284,7 +284,7 @@ def main(argv):
     global DEBUG
     global FORCE_SYNC
     signatures_template_directory = "/usr/share/untangle-suricata-config"
-    url = UVM_CONTEXT.uriManager().getUri("https://ids.untangle.com/suricatasignatures.tar.gz")
+    url = "https://ids.untangle.com/suricatasignatures.tar.gz"
     update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
     force_download = False
 
