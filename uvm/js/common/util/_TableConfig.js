@@ -153,8 +153,12 @@ Ext.define('TableConfig', {
     },
 
     getColumnHumanReadableName: function(columnName) {
-        var readableName = Map.fields[columnName].col.text;
-        return readableName !== null ? readableName : columnName.replace(/_/g,' ');
+        /**
+         * NGFW-12862
+         * if somehow columnName is not found in Map (it should be defined)
+         * than return it as is ('some_column_name' => 'some column name')
+         */
+        return Map.fields[columnName] ? Map.fields[columnName].col.text : columnName.replace(/_/g,' ');
     },
 
     // new methods .........
