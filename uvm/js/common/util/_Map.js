@@ -459,6 +459,10 @@ Ext.define('Ung.util.Map', {
             col: { text: 'Rid'.t(), width: 120 },
             fld: { type: 'string' }
         },
+        rule_id: {
+            col: { text: 'Rule Id'.t(), width: 120 },
+            fld: { type: 'string' }
+        },        
         rx_bytes: {
             col: { text: 'RX Bytes'.t(), filter: Rndr.filters.numeric, width: 120 },
             fld: { type: 'number' }
@@ -992,6 +996,7 @@ Ext.define('Ung.util.Map', {
             'classtype',
             'msg',
             'rid',
+            'rule_id'
         ],
         openvpn_events: [
             'time_stamp',
