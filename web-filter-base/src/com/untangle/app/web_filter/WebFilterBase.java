@@ -434,7 +434,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                         GenericRule rule = termRule.get();
                         rule.setBlocked(false);
                         rule.setDescription(rule.getDescription() + " - Unblocked by user");
-                        rule.setCategory(rule.getCategory() + " - User unblocked");
+                        rule.setCategory("user unblocked");
                     }
 
                     return true;
