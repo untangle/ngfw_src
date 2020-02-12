@@ -850,7 +850,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string', convert: Converter.webReason }
         },
         web_filter_rule_id: {
-            col: { text: 'Web Rule'.t() + ' (Web Filter)', width: 120 }, // converter not implemented
+            col: { text: 'Web Rule'.t() + ' (Web Filter)', width: 120, renderer: Renderer.webRule }, // converter not implemented
             fld: { type: 'integer' }
         },
 
