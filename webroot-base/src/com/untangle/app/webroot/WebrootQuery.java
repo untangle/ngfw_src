@@ -62,6 +62,7 @@ public class WebrootQuery
 
     public static final String BCTI_API_DIRECT_REQUEST_IPS_PARAMETER = "%ips%";
     public static final String BCTI_API_DIRECT_REQUEST_URL_PARAMETER = "%url%";
+    public static final String BCTI_API_DIRECT_REQUEST_CATS_PARAMETER = "%cats%";
     public static final String BCTI_API_DIRECT_REQUEST_URLS_PARAMETER = "%urls%";
     public static final String BCTI_API_DIRECT_REQUEST_STARTDATE_PARAMETER = "%startdate%";
     public static final String BCTI_API_DIRECT_REQUEST_ENDDATE_PARAMETER = "%enddate%";
@@ -76,7 +77,7 @@ public class WebrootQuery
     public static final String BCTI_API_DIRECT_REQUEST_URL = "url";
     public static final String BCTI_API_DIRECT_REQUEST_URL_GETREPINFO = "\"queries\": [\"getrepinfo\",],\"urls\": [\"%urls%\"]";
 
-    public static final String BCTI_API_DIRECT_REQUEST_URL_SUBMITNEWURICATS = "\"queries\": [\"submitnewuricats\",],\"urls\": [{\"url\": \"%url%\"}]";
+    public static final String BCTI_API_DIRECT_REQUEST_URL_SUBMITNEWURICATS = "\"queries\": [\"submitnewuricats\"],\"urls\": [{\"changerequests\": [{ \"url\": \"%url%\", \"cats\": [%cats%] }] }]";
     public static final String BCTI_API_DIRECT_RESPONSE_URL_SUBMITNEWURICATS_KEY = "submitnewuricats";
     public static final String BCTI_API_DIRECT_RESPONSE_URL_SUBMITNEWURICATS_SUCCESS_KEY = "success";
 
