@@ -14,4 +14,5 @@ public interface GoogleManager
     public String getAuthorizationUrl( String windowProtocol, String windowLocation );
     public String provideDriveCode( String code );
     public void disconnectGoogleDrive();
+    public void migrateConfiguration( String refreshToken );
 }
