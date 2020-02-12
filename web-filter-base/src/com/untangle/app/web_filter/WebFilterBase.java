@@ -11,6 +11,7 @@ import java.util.LinkedList;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -426,8 +427,16 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                     String term = bd.getBlockVal();
                     logger.info("Permanently unblocking search term: " + term);
 
-                    // TBD ?
-    
+                    // Find the generic rule that blocked the term and disable
+                    Optional<GenericRule> termRule = settings.getSearchTerms().stream().filter(u -> u.getString().equalsIgnoreCase(term)).findFirst();
+
+                    if(termRule.isPresent()) {
+                        GenericRule rule = termRule.get();
+                        rule.setBlocked(false);
+                        rule.setDescription(rule.getDescription() + " - Unblocked by user");
+                        rule.setCategory(rule.getCategory() + " - User unblocked");
+                    }
+
                     return true;
                 } else {
                     logger.warn("permanently unblocking site: " + site);
