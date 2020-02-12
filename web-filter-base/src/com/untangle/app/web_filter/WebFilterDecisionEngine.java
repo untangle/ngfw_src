@@ -294,6 +294,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 WebrootQuery.BCTI_API_DIRECT_REQUEST_URL,
                 WebrootQuery.BCTI_API_DIRECT_REQUEST_URL_SUBMITNEWURICATS
                         .replaceAll(WebrootQuery.BCTI_API_DIRECT_REQUEST_URL_PARAMETER, url)
+                        .replaceAll(WebrootQuery.BCTI_API_DIRECT_REQUEST_CATS_PARAMETER, Integer.toString(category))
             );
             if(directAnswer != null){
                 if( 1 == directAnswer.getJSONObject(0)
