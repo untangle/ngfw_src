@@ -10,4 +10,3 @@ appdeps = [directory_connector['src']]
 
 ## Servlets
 ServletBuilder.new(directory_connector, "com.untangle.app.directory_connector.jsp", "./directory-connector/servlets/userapi", [uvm_lib['taglib']], appdeps, [], [BuildEnv::SERVLET_COMMON])
-ServletBuilder.new(directory_connector, "com.untangle.app.directory_connector.jsp", "./directory-connector/servlets/oauth",   [uvm_lib['taglib']], appdeps, [], [BuildEnv::SERVLET_COMMON])

@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.GoogleManager;
 import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.DirectoryConnector;
@@ -147,11 +148,10 @@ public class ConfigurationBackupApp extends AppBase
          * If google drive is enabled and licensed and configured
          * upload to google drive
          */
-        DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
+        GoogleManager googleManager = UvmContextFactory.context().googleManager();
         if ( settings.getGoogleDriveEnabled() &&
-             UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR) &&
-             directoryConnector != null &&
-             directoryConnector.isGoogleDriveConnected()) {
+             googleManager != null &&
+             googleManager.isGoogleDriveConnected()) {
             uploadBackupToGoogleDrive( backupFile );
         }
         
