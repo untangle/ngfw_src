@@ -11,10 +11,6 @@ fi
 
 DNS_SERVER=$1
 
-if [ "x$2" != "x" ] ; then
-    TEST_HOST=$2
-fi
-
 if [ -z "${DNS_SERVER}" ]; then
     exit 1
 fi

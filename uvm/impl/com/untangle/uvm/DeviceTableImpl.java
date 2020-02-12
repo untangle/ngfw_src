@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -193,20 +192,14 @@ public class DeviceTableImpl implements DeviceTable
      */
     public String lookupMacVendor(String macAddress)
     {
-        logger.warn("lookupMacVendor:" + macAddress);
         if (macAddress == null) return null;
 
         try {
             String body = "[\n\"" + macAddress + "\"\n]\n";
             logger.info("Cloud MAC lookup = " + macAddress);
 
-            URL myurl = new URL(UvmContextFactory.context().uriManager().getUri(CLOUD_LOOKUP_URL));
-            HttpURLConnection mycon;
-            if(myurl.getProtocol().equals("https")){
-                mycon = (HttpsURLConnection) myurl.openConnection();
-            }else{
-                mycon = (HttpURLConnection) myurl.openConnection();
-            }
+            URL myurl = new URL(CLOUD_LOOKUP_URL);
+            HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
             mycon.setRequestMethod("POST");
 
             mycon.setConnectTimeout(5000); // 5 seconds
