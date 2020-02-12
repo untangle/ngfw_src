@@ -138,7 +138,6 @@ public class GoogleManagerImpl implements GoogleManager
             } catch (Exception ex) {
                 logger.warn("Error deleting credentials.json.", ex);
             }
-            
         }
     }
 
@@ -203,7 +202,6 @@ public class GoogleManagerImpl implements GoogleManager
             logger.error("Failed to parse drive output.",e);
             return null;
         }
-        
     }
 
     /**
@@ -273,7 +271,20 @@ public class GoogleManagerImpl implements GoogleManager
         googleSettings.setDriveRefreshToken( null );
         setSettings( googleSettings );
     }
-    
+
+    /**
+     * Called by Directory Connector to migrate the existing configuration from
+     * there to here now that Google Drive support has moved to the base system.
+     *
+     * @param refreshToken - The refresh token
+     */
+    public void migrateConfiguration(String refreshToken)
+    {
+        GoogleSettings googleSettings = getSettings();
+        googleSettings.setDriveRefreshToken( refreshToken );
+        setSettings( googleSettings );
+    }
+
     /**
      * Start Google authorization process
      * 
@@ -314,5 +325,4 @@ public class GoogleManagerImpl implements GoogleManager
         driveProcOut = null;
         driveProc = null;
     }
-
 }

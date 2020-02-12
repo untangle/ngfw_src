@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.GoogleManager;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.app.GroupMatcher;
 import com.untangle.uvm.app.DomainMatcher;
@@ -127,15 +128,17 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-
             this.initializeSettings();
         } else {
+
             logger.info("Loading Settings...");
+
+            boolean writeFlag = false;
 
             /* 13.1 conversion */
             if ( readSettings.getVersion() < 2 ) {
                 convertV1toV2Settings( readSettings );
-                this.setSettings( readSettings );
+                writeFlag = true;
             }
 
             /* 13.1 - convert ouFilter to array */
@@ -145,15 +148,33 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 ouFilters.add(ouFilter);
                 readSettings.getActiveDirectorySettings().setOUFilters(ouFilters);
                 readSettings.getActiveDirectorySettings().setOUFilter("");
-                setSettings( readSettings );
+                writeFlag = true;
             }
 
             if ( readSettings.getVersion() < 3 ) {
                 convertV2toV3Settings( readSettings );
-                this.setSettings( readSettings );
+                writeFlag = true;
             }
 
-            this.settings = readSettings;
+            /*
+             * 15.1 migrate google drive configuration to uvm and clear our refreshToken so we only do this one time
+             */
+            if (readSettings.getGoogleSettings().getDriveRefreshToken() != null) {
+                logger.info("Migrating Google Drive settings to Uvm GoogleManager");
+                GoogleManager googleManager = UvmContextFactory.context().googleManager();
+                googleManager.migrateConfiguration(readSettings.getGoogleSettings().getDriveRefreshToken());
+                readSettings.getGoogleSettings().setDriveRefreshToken(null);
+                writeFlag = true;
+            }
+
+            if (writeFlag == true) {
+                // if any changes were made we need to write the updated settings
+                this.setSettings( readSettings );
+            } else {
+                // no changes made so use the settings but don't write the file
+                this.settings = readSettings;
+            }
+
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
