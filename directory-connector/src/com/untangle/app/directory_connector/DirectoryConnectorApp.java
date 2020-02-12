@@ -34,7 +34,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     private static final String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Directory Connector\n# service. If you modify this file manually, your changes may be overridden.\n\n";
     private static final String USERAPI_WEBAPP_OLD = "adpb";
     private static final String USERAPI_WEBAPP = "userapi";
-    private static final String OAUTH_WEBAPP = "oauth";
     private static final String TAB = "\t";
     private static final String RET = "\n";
 
@@ -63,11 +62,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     private RadiusManagerImpl radiusManager = null;
 
     /**
-     * The Google Manager
-     */
-    private GoogleManagerImpl googleManager = null;
-
-    /**
      * Directory Connector app constructor
      *
      * @param appSettings
@@ -82,7 +76,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
 
     /**
      * Load servlets for:
-     * * Oauth
      * * API
      * * Old API
      *
@@ -93,14 +86,12 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     protected void postStart( boolean isPermanentTransition )
     {
         /* Start the servlet */
-        UvmContextFactory.context().tomcatManager().loadServlet("/" + OAUTH_WEBAPP, OAUTH_WEBAPP);
         UvmContextFactory.context().tomcatManager().loadServlet("/" + USERAPI_WEBAPP, USERAPI_WEBAPP);
         UvmContextFactory.context().tomcatManager().loadServlet("/" + USERAPI_WEBAPP_OLD, USERAPI_WEBAPP); //load the old URL for backwards compat
     }
 
     /**
      * Shutdown servlets for:
-     * * Oauth
      * * API
      * * Old API
      *
@@ -110,7 +101,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
-        UvmContextFactory.context().tomcatManager().unloadServlet("/" + OAUTH_WEBAPP);
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP);
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP_OLD);
     }
@@ -252,17 +242,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     public RadiusManagerImpl getRadiusManager()
     {
         return this.radiusManager;
-    }
-
-    /**
-     * Get Google manager.
-     *
-     * @return
-     *      Google manager
-     */
-    public GoogleManagerImpl getGoogleManager()
-    {
-        return this.googleManager;
     }
 
     /**
@@ -567,17 +546,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
-     * Determine if Google drive is configured.
-     *
-     * @return
-     *      true if Google Drive is configured, false otherwise.
-     */
-    public boolean isGoogleDriveConnected()
-    {
-        return getGoogleManager().isGoogleDriveConnected();
-    }
-
-    /**
      * Initalize Directory Connector settings.
      */
     @Override
@@ -675,14 +643,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             this.radiusManager = new RadiusManagerImpl(settings.getRadiusSettings(), this);
         else
             this.radiusManager.setSettings(settings.getRadiusSettings());
-
-        /**
-         * Initialize the Google manager (or update settings on current)
-         */
-        if (googleManager == null)
-            this.googleManager = new GoogleManagerImpl(settings.getGoogleSettings(), this);
-        else
-            this.googleManager.setSettings(settings.getGoogleSettings());
 
         /**
          * Initialize the Group manager (if necessary) and Refresh
