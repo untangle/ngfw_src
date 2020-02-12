@@ -16,7 +16,6 @@ CURRENT_STABLE=None
 UID_FILENAME=None
 SOURCES_FILENAME="/etc/apt/sources.list.d/untangle.list"
 UPDATE_SERVER="updates.untangle.com"
-URI_REGEX=re.compile(r'^(https?:\/\/)([^?\/\s]+[?\/])(.*)')
 
 class ArgumentParser(object):
     def __init__(self):
@@ -108,18 +107,11 @@ file.write(uid + "\n")
 file.flush()
 file.close()
 
-update_uri_scheme = "http://"
-update_uri_host = UPDATE_SERVER+"/"
-match = re.search(URI_REGEX, UPDATE_SERVER)
-if match:
-    update_uri_scheme=match.group(1)
-    update_uri_host=match.group(2)
-
 # write sources file
 file = open( SOURCES_FILENAME, "w+" )
 file.write("## Auto Generated on %s\n" % datetime.datetime.now());
 file.write("## DO NOT EDIT. Changes will be overwritten.\n" + "\n");
-file.write("deb %s%s:untangle@%spublic/%s %s main non-free\n" % (update_uri_scheme, uid, update_uri_host, debian_distro, CURRENT_STABLE))
+file.write("deb http://%s:untangle@%s/public/%s %s main non-free" % (uid, UPDATE_SERVER, debian_distro, CURRENT_STABLE)+ "\n")
 file.flush()
 file.close()
 

@@ -5,7 +5,6 @@
 package com.untangle.app.virus_blocker;
 
 import java.io.DataOutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
@@ -99,14 +98,9 @@ public class VirusCloudFeedback extends Thread
         logger.debug("CloudFeedback thread has started for: " + feedback.toString());
 
         try {
-            String target = (UvmContextFactory.context().uriManager().getUri(CLOUD_FEEDBACK_URL) + "?hash=" + virusState.fileHash + "&det=" + threatName + "&type=" + threatType + "&detProvider=" + vendorName + "&metaProvider=NGFW");
+            String target = (CLOUD_FEEDBACK_URL + "?hash=" + virusState.fileHash + "&det=" + threatName + "&type=" + threatType + "&detProvider=" + vendorName + "&metaProvider=NGFW");
             URL myurl = new URL(target);
-            HttpURLConnection mycon;
-            if(myurl.getProtocol().equals("https")){
-                mycon = (HttpsURLConnection) myurl.openConnection();
-            }else{
-                mycon = (HttpURLConnection) myurl.openConnection();
-            }
+            HttpsURLConnection mycon = (HttpsURLConnection) myurl.openConnection();
             mycon.setRequestMethod("POST");
 
             mycon.setRequestProperty("Content-length", String.valueOf(feedback.length()));

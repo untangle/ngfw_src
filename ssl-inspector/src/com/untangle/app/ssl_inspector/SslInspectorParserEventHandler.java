@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.OAuthDomain;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
@@ -598,7 +597,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         if ((captureFlag != null) && (sniHostname != null)) {
 
             // check the SNI name against each item in the OAuthConfigList
-            for (OAuthDomain item : app.oauthConfigList) {
+            for (SslInspectorApp.oauthDomain item : app.oauthConfigList) {
                 // check PROVIDER = all
                 if ((item.provider.equals("all")) && ((captureFlag == "GOOGLE") || (captureFlag == "FACEBOOK") || (captureFlag == "MICROSOFT") || (captureFlag == "ANY_OAUTH"))) {
                     if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
