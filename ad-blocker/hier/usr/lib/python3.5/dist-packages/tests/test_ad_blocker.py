@@ -137,7 +137,7 @@ class AdBlockerTests(NGFWTestCase):
         nukeRules("passedClients")
         assert (result == 0)
         
-    # verify there is a accuweather cookie
+    # verify there is a test.untangle.com cookie
     def test_100_webCookie(self):
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f testcookie.txt")
@@ -145,7 +145,7 @@ class AdBlockerTests(NGFWTestCase):
         result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://test.untangle.com/mycookie.php ; grep -q untangle.com /tmp/testcookie.txt")
         assert (result == 0)
  
-    # verify a accuweather cookie can be blocked
+    # verify a test.untangle.com cookie can be blocked
     def test_101_webCookieEnabled(self):
         addCookieEnabled("untangle.com")
         # remove any previous instance of testcookie.txt
@@ -154,7 +154,7 @@ class AdBlockerTests(NGFWTestCase):
         result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://test.untangle.com/mycookie.php ; grep -q untangle.com /tmp/testcookie.txt")
         assert (result == 1)
          
-    # verify a accuweather cookie can be blocked, but set both "enabled" and "blocked" params
+    # verify a test.untangle.com cookie can be blocked, but set both "enabled" and "blocked" params
     def test_102_webCookieBlockedEnabled(self):
         addCookieBlockedEnabled("untangle.com")
         # remove any previous instance of testcookie.txt

@@ -6,488 +6,19 @@
         name: "action",
         type: "SpamMessageAction",
         description: "The action",
-        values: [ "PASS",  "MARK",  "DROP",  "BLOCK",  "QUARANTINE",  "SAFELIST",  "OVERSIZE",  "OUTBOUND",  "FAILED_BLOCKED",  "FAILED_PASSED",  "GREYLIST", ],
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "clientAddr",
-        type: "InetAddress",
-        description: "The client address",
-        },
-        {
-        name: "clientPort",
-        type: "int",
-        description: "The client port",
-        },
-        {
-        name: "messageId",
-        type: "Long",
-        description: "The message ID",
-        },
-        {
-        name: "receiver",
-        type: "String",
-        description: "The receiver",
-        },
-        {
-        name: "score",
-        type: "float",
-        description: "The score",
-        },
-        {
-        name: "sender",
-        type: "String",
-        description: "The sender",
-        },
-        {
-        name: "serverAddr",
-        type: "InetAddress",
-        description: "The server address",
-        },
-        {
-        name: "serverPort",
-        type: "int",
-        description: "The server port",
-        },
-        {
-        name: "smtpMessageEvent.addresses",
-        type: "Set",
-        description: "The addresses",
-        },
-        {
-        name: "smtpMessageEvent.class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "smtpMessageEvent.envelopeFromAddress",
-        type: "String",
-        description: "The envelop FROM address",
-        },
-        {
-        name: "smtpMessageEvent.envelopeToAddress",
-        type: "String",
-        description: "The envelope TO address",
-        },
-        {
-        name: "smtpMessageEvent.messageId",
-        type: "Long",
-        description: "The message ID",
-        },
-        {
-        name: "smtpMessageEvent.receiver",
-        type: "String",
-        description: "The receiver",
-        },
-        {
-        name: "smtpMessageEvent.sender",
-        type: "String",
-        description: "The sender",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.CClientAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) client address",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.CClientPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) client port",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.CServerAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) server address",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.CServerPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) server port",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.SClientAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) client address",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.SClientPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) client port",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.SServerAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) server address",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.SServerPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) server port",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.bypassed",
-        type: "boolean",
-        description: "True if bypassed, false otherwise",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.clientCountry",
-        type: "String",
-        description: "The client country",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.clientIntf",
-        type: "Integer",
-        description: "The client interface ID",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.clientLatitude",
-        type: "Double",
-        description: "The client latitude",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.clientLongitude",
-        type: "Double",
-        description: "The client longitude",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.entitled",
-        type: "boolean",
-        description: "The entitled status",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.filterPrefix",
-        type: "String",
-        description: "The filter prefix if blocked by the filter rules",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.icmpType",
-        type: "Short",
-        description: "The ICMP type",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.localAddr",
-        type: "InetAddress",
-        description: "The local host address",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.policyId",
-        type: "Integer",
-        description: "The policy ID",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.policyRuleId",
-        type: "Integer",
-        description: "The policy rule ID",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.protocol",
-        type: "Short",
-        description: "The protocol",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.protocolName",
-        type: "String",
-        description: "The protocol name",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.remoteAddr",
-        type: "InetAddress",
-        description: "The remote host address",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.serverCountry",
-        type: "String",
-        description: "The server country",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.serverIntf",
-        type: "Integer",
-        description: "The server interface ID",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.serverLatitude",
-        type: "Double",
-        description: "The server latitude",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.serverLongitude",
-        type: "Double",
-        description: "The server longitude",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "smtpMessageEvent.sessionEvent.username",
-        type: "String",
-        description: "The username",
-        },
-        {
-        name: "smtpMessageEvent.sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "smtpMessageEvent.subject",
-        type: "String",
-        description: "The subject",
-        },
-        {
-        name: "smtpMessageEvent.timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "smtpMessageEvent.tmpFile",
-        type: "File",
-        description: "The /tmp file",
-        },
-        {
-        name: "isSpam",
-        type: "boolean",
-        description: "True if spam, false otherwise",
-        },
-        {
-        name: "subject",
-        type: "String",
-        description: "The subject",
-        },
-        {
-        name: "testsString",
-        type: "String",
-        description: "The tests string from the spam engine",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "vendorName",
-        type: "String",
-        description: "The application name",
-        },
-    ]
-    },
-    SpamSmtpTarpitEvent: {
-    description: "These events are created by [[Spam Blocker]] and inserted to the [[Database_Schema#smtp_tarpit_events|smtp_tarpit_events]] table when a session is tarpitted.",
-    fields: [
-        {
-        name: "IPAddr",
-        type: "InetAddress",
-        description: "The IP address",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "sessionEvent.CClientAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) client address",
-        },
-        {
-        name: "sessionEvent.CClientPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) client port",
-        },
-        {
-        name: "sessionEvent.CServerAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) server address",
-        },
-        {
-        name: "sessionEvent.CServerPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) server port",
-        },
-        {
-        name: "sessionEvent.SClientAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) client address",
-        },
-        {
-        name: "sessionEvent.SClientPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) client port",
-        },
-        {
-        name: "sessionEvent.SServerAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) server address",
-        },
-        {
-        name: "sessionEvent.SServerPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) server port",
-        },
-        {
-        name: "sessionEvent.bypassed",
-        type: "boolean",
-        description: "True if bypassed, false otherwise",
-        },
-        {
-        name: "sessionEvent.class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "sessionEvent.clientCountry",
-        type: "String",
-        description: "The client country",
-        },
-        {
-        name: "sessionEvent.clientIntf",
-        type: "Integer",
-        description: "The client interface ID",
-        },
-        {
-        name: "sessionEvent.clientLatitude",
-        type: "Double",
-        description: "The client latitude",
-        },
-        {
-        name: "sessionEvent.clientLongitude",
-        type: "Double",
-        description: "The client longitude",
-        },
-        {
-        name: "sessionEvent.entitled",
-        type: "boolean",
-        description: "The entitled status",
-        },
-        {
-        name: "sessionEvent.filterPrefix",
-        type: "String",
-        description: "The filter prefix if blocked by the filter rules",
-        },
-        {
-        name: "sessionEvent.hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "sessionEvent.icmpType",
-        type: "Short",
-        description: "The ICMP type",
-        },
-        {
-        name: "sessionEvent.localAddr",
-        type: "InetAddress",
-        description: "The local host address",
-        },
-        {
-        name: "sessionEvent.policyId",
-        type: "Integer",
-        description: "The policy ID",
-        },
-        {
-        name: "sessionEvent.policyRuleId",
-        type: "Integer",
-        description: "The policy rule ID",
-        },
-        {
-        name: "sessionEvent.protocol",
-        type: "Short",
-        description: "The protocol",
-        },
-        {
-        name: "sessionEvent.protocolName",
-        type: "String",
-        description: "The protocol name",
-        },
-        {
-        name: "sessionEvent.remoteAddr",
-        type: "InetAddress",
-        description: "The remote host address",
-        },
-        {
-        name: "sessionEvent.serverCountry",
-        type: "String",
-        description: "The server country",
-        },
-        {
-        name: "sessionEvent.serverIntf",
-        type: "Integer",
-        description: "The server interface ID",
-        },
-        {
-        name: "sessionEvent.serverLatitude",
-        type: "Double",
-        description: "The server latitude",
-        },
-        {
-        name: "sessionEvent.serverLongitude",
-        type: "Double",
-        description: "The server longitude",
-        },
-        {
-        name: "sessionEvent.sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "sessionEvent.timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "sessionEvent.username",
-        type: "String",
-        description: "The username",
-        },
-        {
-        name: "sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "vendorName",
-        type: "String",
-        description: "The application name",
-        },
-    ]
-    },
-    SpamLogEvent: {
-    description: "These events are created by [[Spam Blocker]] and update the [[Database_Schema#mail_msgs|mail_msgs]] table when an email is scanned.",
-    fields: [
-        {
-        name: "action",
-        type: "SpamMessageAction",
-        description: "The action",
-        values: [ "PASS",  "MARK",  "DROP",  "BLOCK",  "QUARANTINE",  "SAFELIST",  "OVERSIZE",  "OUTBOUND",  "FAILED_BLOCKED",  "FAILED_PASSED",  "GREYLIST", ],
+        values: [
+ "PASS", 
+ "MARK", 
+ "DROP", 
+ "BLOCK", 
+ "QUARANTINE", 
+ "SAFELIST", 
+ "OVERSIZE", 
+ "OUTBOUND", 
+ "FAILED_BLOCKED", 
+ "FAILED_PASSED", 
+ "GREYLIST", 
+],
         },
         {
         name: "class",
@@ -971,172 +502,6 @@
         },
     ]
     },
-    OpenVpnStatusEvent: {
-    description: "These events are created by [[OpenVPN]] and update the [[Database_Schema#openvpn_stats|openvpn_stats]] table periodically.",
-    fields: [
-        {
-        name: "address",
-        type: "InetAddress",
-        description: "The address",
-        },
-        {
-        name: "bytesRxDelta",
-        type: "long",
-        description: "The delta number of RX (received) bytes from the previous event",
-        },
-        {
-        name: "bytesRxTotal",
-        type: "long",
-        description: "The total number of RX (received) bytes",
-        },
-        {
-        name: "bytesTxDelta",
-        type: "long",
-        description: "The delta number of TX (transmitted) bytes from the previous event",
-        },
-        {
-        name: "bytesTxTotal",
-        type: "long",
-        description: "The total number of TX (transmitted) bytes",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "clientName",
-        type: "String",
-        description: "The client name",
-        },
-        {
-        name: "end",
-        type: "Timestamp",
-        description: "The end",
-        },
-        {
-        name: "poolAddress",
-        type: "InetAddress",
-        description: "The pool address",
-        },
-        {
-        name: "port",
-        type: "int",
-        description: "The port",
-        },
-        {
-        name: "start",
-        type: "Timestamp",
-        description: "The start",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    OpenVpnEvent: {
-    description: "These events are created by [[OpenVPN]] and update the [[Database_Schema#openvpn_events|openvpn_events]] table when OpenVPN processes a client action.",
-    fields: [
-        {
-        name: "address",
-        type: "InetAddress",
-        description: "The address",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "clientName",
-        type: "String",
-        description: "The client name",
-        },
-        {
-        name: "poolAddress",
-        type: "InetAddress",
-        description: "The pool address",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "type",
-        type: "OpenVpnEvent$EventType",
-        description: "The type",
-        values: [ "CONNECT",  "DISCONNECT", ],
-        },
-    ]
-    },
-    ApplicationControlLiteEvent: {
-    description: "These events are created by [[Application Control Lite]] and update the [[Database_Schema#sessions|sessions]] table when application control lite identifies a session.",
-    fields: [
-        {
-        name: "blocked",
-        type: "boolean",
-        description: "True if blocked, false otherwise",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "protocol",
-        type: "String",
-        description: "The protocol",
-        },
-        {
-        name: "sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    FirewallEvent: {
-    description: "These events are created by [[Firewall]] and update the [[Database_Schema#sessions|sessions]] table when a firewall rule matches a session.",
-    fields: [
-        {
-        name: "blocked",
-        type: "boolean",
-        description: "True if blocked, false otherwise",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "flagged",
-        type: "boolean",
-        description: "True if flagged, false otherwise",
-        },
-        {
-        name: "ruleId",
-        type: "long",
-        description: "The rule ID",
-        },
-        {
-        name: "sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
     PrioritizeEvent: {
     description: "These events are created by the [[Bandwidth Control]] and update the [[Database_Schema#sessions|session]] table when a session is prioritized.",
     fields: [
@@ -1304,217 +669,6 @@
         name: "sessionEvent.tagsString",
         type: "String",
         description: "The string value of all tags",
-        },
-        {
-        name: "sessionEvent.timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "sessionEvent.username",
-        type: "String",
-        description: "The username",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    AdBlockerEvent: {
-    description: "These events are created by [[Ad Blocker]] and update the [[Database_Schema#http_events|http_events]] table when an ad is blocked.",
-    fields: [
-        {
-        name: "action",
-        type: "Action",
-        description: "The action",
-        values: [ "PASS",  "BLOCK", ],
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "reason",
-        type: "String",
-        description: "The reason",
-        },
-        {
-        name: "requestId",
-        type: "Long",
-        description: "The request ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    CookieEvent: {
-    description: "These events are created by [[Ad Blocker]] and update the [[Database_Schema#http_events|http_events]] table when a cookie is blocked.",
-    fields: [
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "identification",
-        type: "String",
-        description: "The identification string",
-        },
-        {
-        name: "requestId",
-        type: "Long",
-        description: "The request ID",
-        },
-        {
-        name: "sessionEvent.CClientAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) client address",
-        },
-        {
-        name: "sessionEvent.CClientPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) client port",
-        },
-        {
-        name: "sessionEvent.CServerAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) server address",
-        },
-        {
-        name: "sessionEvent.CServerPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) server port",
-        },
-        {
-        name: "sessionEvent.SClientAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) client address",
-        },
-        {
-        name: "sessionEvent.SClientPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) client port",
-        },
-        {
-        name: "sessionEvent.SServerAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) server address",
-        },
-        {
-        name: "sessionEvent.SServerPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) server port",
-        },
-        {
-        name: "sessionEvent.bypassed",
-        type: "boolean",
-        description: "True if bypassed, false otherwise",
-        },
-        {
-        name: "sessionEvent.class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "sessionEvent.clientCountry",
-        type: "String",
-        description: "The client country",
-        },
-        {
-        name: "sessionEvent.clientIntf",
-        type: "Integer",
-        description: "The client interface ID",
-        },
-        {
-        name: "sessionEvent.clientLatitude",
-        type: "Double",
-        description: "The client latitude",
-        },
-        {
-        name: "sessionEvent.clientLongitude",
-        type: "Double",
-        description: "The client longitude",
-        },
-        {
-        name: "sessionEvent.entitled",
-        type: "boolean",
-        description: "The entitled status",
-        },
-        {
-        name: "sessionEvent.filterPrefix",
-        type: "String",
-        description: "The filter prefix if blocked by the filter rules",
-        },
-        {
-        name: "sessionEvent.hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "sessionEvent.icmpType",
-        type: "Short",
-        description: "The ICMP type",
-        },
-        {
-        name: "sessionEvent.localAddr",
-        type: "InetAddress",
-        description: "The local host address",
-        },
-        {
-        name: "sessionEvent.policyId",
-        type: "Integer",
-        description: "The policy ID",
-        },
-        {
-        name: "sessionEvent.policyRuleId",
-        type: "Integer",
-        description: "The policy rule ID",
-        },
-        {
-        name: "sessionEvent.protocol",
-        type: "Short",
-        description: "The protocol",
-        },
-        {
-        name: "sessionEvent.protocolName",
-        type: "String",
-        description: "The protocol name",
-        },
-        {
-        name: "sessionEvent.remoteAddr",
-        type: "InetAddress",
-        description: "The remote host address",
-        },
-        {
-        name: "sessionEvent.serverCountry",
-        type: "String",
-        description: "The server country",
-        },
-        {
-        name: "sessionEvent.serverIntf",
-        type: "Integer",
-        description: "The server interface ID",
-        },
-        {
-        name: "sessionEvent.serverLatitude",
-        type: "Double",
-        description: "The server latitude",
-        },
-        {
-        name: "sessionEvent.serverLongitude",
-        type: "Double",
-        description: "The server longitude",
-        },
-        {
-        name: "sessionEvent.sessionId",
-        type: "Long",
-        description: "The session ID",
         },
         {
         name: "sessionEvent.timeStamp",
@@ -2095,7 +1249,10 @@
         name: "type",
         type: "OpenVpnEvent$EventType",
         description: "The type",
-        values: [ "CONNECT",  "DISCONNECT", ],
+        values: [
+ "CONNECT", 
+ "DISCONNECT", 
+],
         },
     ]
     },
@@ -2361,316 +1518,6 @@
         name: "swapUsedPercent",
         type: "float",
         description: "The percentage of total swap that is used",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    SessionMinuteEvent: {
-    description: "These events are created by the base system and update the [[Database_Schema#sessions|session_minutes]] table each minute a session exists.",
-    fields: [
-        {
-        name: "c2sBytes",
-        type: "long",
-        description: "The number of bytes sent from the client to the server",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "s2cBytes",
-        type: "long",
-        description: "The number of bytes sent from the server to the client",
-        },
-        {
-        name: "sessionId",
-        type: "long",
-        description: "The session ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    SessionEvent: {
-    description: "These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table each time a session is created.",
-    fields: [
-        {
-        name: "CClientAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) client address",
-        },
-        {
-        name: "CClientPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) client port",
-        },
-        {
-        name: "CServerAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) server address",
-        },
-        {
-        name: "CServerPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) server port",
-        },
-        {
-        name: "SClientAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) client address",
-        },
-        {
-        name: "SClientPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) client port",
-        },
-        {
-        name: "SServerAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) server address",
-        },
-        {
-        name: "SServerPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) server port",
-        },
-        {
-        name: "bypassed",
-        type: "boolean",
-        description: "True if bypassed, false otherwise",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "clientCountry",
-        type: "String",
-        description: "The client country",
-        },
-        {
-        name: "clientIntf",
-        type: "Integer",
-        description: "The client interface ID",
-        },
-        {
-        name: "clientLatitude",
-        type: "Double",
-        description: "The client latitude",
-        },
-        {
-        name: "clientLongitude",
-        type: "Double",
-        description: "The client longitude",
-        },
-        {
-        name: "entitled",
-        type: "boolean",
-        description: "The entitled status",
-        },
-        {
-        name: "filterPrefix",
-        type: "String",
-        description: "The filter prefix if blocked by the filter rules",
-        },
-        {
-        name: "hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "icmpType",
-        type: "Short",
-        description: "The ICMP type",
-        },
-        {
-        name: "localAddr",
-        type: "InetAddress",
-        description: "The local host address",
-        },
-        {
-        name: "policyId",
-        type: "Integer",
-        description: "The policy ID",
-        },
-        {
-        name: "policyRuleId",
-        type: "Integer",
-        description: "The policy rule ID",
-        },
-        {
-        name: "protocol",
-        type: "Short",
-        description: "The protocol",
-        },
-        {
-        name: "protocolName",
-        type: "String",
-        description: "The protocol name",
-        },
-        {
-        name: "remoteAddr",
-        type: "InetAddress",
-        description: "The remote host address",
-        },
-        {
-        name: "serverCountry",
-        type: "String",
-        description: "The server country",
-        },
-        {
-        name: "serverIntf",
-        type: "Integer",
-        description: "The server interface ID",
-        },
-        {
-        name: "serverLatitude",
-        type: "Double",
-        description: "The server latitude",
-        },
-        {
-        name: "serverLongitude",
-        type: "Double",
-        description: "The server longitude",
-        },
-        {
-        name: "sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "username",
-        type: "String",
-        description: "The username",
-        },
-    ]
-    },
-    SessionStatsEvent: {
-    description: "These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table when a session ends with the updated stats.",
-    fields: [
-        {
-        name: "c2pBytes",
-        type: "long",
-        description: "The number of bytes sent from the client to Untangle",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "endTime",
-        type: "long",
-        description: "The end time/date",
-        },
-        {
-        name: "p2cBytes",
-        type: "long",
-        description: "The number of bytes sent to the client from Untangle",
-        },
-        {
-        name: "p2sBytes",
-        type: "long",
-        description: "The number of bytes sent to the server from Untangle",
-        },
-        {
-        name: "s2pBytes",
-        type: "long",
-        description: "The number of bytes sent from the server to Untangle",
-        },
-        {
-        name: "sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    SessionNatEvent: {
-    description: "These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table each time a session is NATd with the post-NAT information.",
-    fields: [
-        {
-        name: "SClientAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) client address",
-        },
-        {
-        name: "SClientPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) client port",
-        },
-        {
-        name: "SServerAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) server address",
-        },
-        {
-        name: "SServerPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) server port",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "serverIntf",
-        type: "Integer",
-        description: "The server interface ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    QuotaEvent: {
-    description: "These events are created by the [[Bandwidth Control]] and inserted or update the [[Database_Schema#quotas|quotas]] table when quotas are given or exceeded.",
-    fields: [
-        {
-        name: "action",
-        type: "int",
-        description: "The action (1=Quota Given, 2=Quota Exceeded)",
-        },
-        {
-        name: "address",
-        type: "InetAddress",
-        description: "The address",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "quotaSize",
-        type: "long",
-        description: "The quota size",
-        },
-        {
-        name: "reason",
-        type: "String",
-        description: "The reason",
         },
         {
         name: "timeStamp",
@@ -3471,7 +2318,15 @@
         name: "kind",
         type: "AddressKind",
         description: "The type for this address (F=From, T=To, C=CC, G=Envelope From, B=Envelope To, X=Unknown)",
-        values: [ "FROM",  "TO",  "CC",  "ENVELOPE_FROM",  "ENVELOPE_TO",  "USER",  "", ],
+        values: [
+ "FROM", 
+ "TO", 
+ "CC", 
+ "ENVELOPE_FROM", 
+ "ENVELOPE_TO", 
+ "USER", 
+ "", 
+],
         },
         {
         name: "messageId",
@@ -3902,7 +2757,19 @@
         name: "authenticationType",
         type: "CaptivePortalSettings$AuthenticationType",
         description: "The authentication type",
-        values: [ "NONE",  "LOCAL_DIRECTORY",  "RADIUS",  "ACTIVE_DIRECTORY",  "ANY_DIRCON",  "GOOGLE",  "FACEBOOK",  "MICROSOFT",  "ANY_OAUTH",  "CUSTOM",  "ANY", ],
+        values: [
+ "NONE", 
+ "LOCAL_DIRECTORY", 
+ "RADIUS", 
+ "ACTIVE_DIRECTORY", 
+ "ANY_DIRCON", 
+ "GOOGLE", 
+ "FACEBOOK", 
+ "MICROSOFT", 
+ "ANY_OAUTH", 
+ "CUSTOM", 
+ "ANY", 
+],
         },
         {
         name: "authenticationTypeValue",
@@ -3923,7 +2790,15 @@
         name: "event",
         type: "CaptivePortalUserEvent$EventType",
         description: "The event (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT)",
-        values: [ "LOGIN",  "FAILED",  "TIMEOUT",  "INACTIVE",  "USER_LOGOUT",  "ADMIN_LOGOUT",  "HOST_CHANGE", ],
+        values: [
+ "LOGIN", 
+ "FAILED", 
+ "TIMEOUT", 
+ "INACTIVE", 
+ "USER_LOGOUT", 
+ "ADMIN_LOGOUT", 
+ "HOST_CHANGE", 
+],
         },
         {
         name: "eventValue",
@@ -3954,7 +2829,10 @@
         name: "action",
         type: "Action",
         description: "The action",
-        values: [ "PASS",  "BLOCK", ],
+        values: [
+ "PASS", 
+ "BLOCK", 
+],
         },
         {
         name: "class",
@@ -4705,7 +3583,10 @@
         name: "eventType",
         type: "TunnelVpnEvent$EventType",
         description: "The event type",
-        values: [ "CONNECT",  "DISCONNECT", ],
+        values: [
+ "CONNECT", 
+ "DISCONNECT", 
+],
         },
         {
         name: "localAddress",
@@ -4866,292 +3747,6 @@
         name: "vlanId",
         type: "int",
         description: "The VLAN Id",
-        },
-    ]
-    },
-    AlertEvent: {
-    description: "These events are created by [[Reports]] and inserted to the [[Database_Schema#alerts|alerts]] table when an alert fires.",
-    fields: [
-        {
-        name: "cause",
-        type: "LogEvent",
-        description: "The cause",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "description",
-        type: "String",
-        description: "The description",
-        },
-        {
-        name: "json",
-        type: "JSONObject",
-        description: "The JSON string",
-        },
-        {
-        name: "summaryText",
-        type: "String",
-        description: "The summary text",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    SmtpMessageAddressEvent: {
-    description: "These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_addrs|mail_addrs]] table for each address on each email.",
-    fields: [
-        {
-        name: "addr",
-        type: "String",
-        description: "The address",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "kind",
-        type: "AddressKind",
-        description: "The type for this address (F=From, T=To, C=CC, G=Envelope From, B=Envelope To, X=Unknown)",
-        values: [ "FROM",  "TO",  "CC",  "ENVELOPE_FROM",  "ENVELOPE_TO",  "USER",  "", ],
-        },
-        {
-        name: "messageId",
-        type: "Long",
-        description: "The message ID",
-        },
-        {
-        name: "personal",
-        type: "String",
-        description: "personal",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    SmtpMessageEvent: {
-    description: "These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_msgs|mail_msgs]] table for each email.",
-    fields: [
-        {
-        name: "addresses",
-        type: "Set",
-        description: "The addresses",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "envelopeFromAddress",
-        type: "String",
-        description: "The envelop FROM address",
-        },
-        {
-        name: "envelopeToAddress",
-        type: "String",
-        description: "The envelope TO address",
-        },
-        {
-        name: "messageId",
-        type: "Long",
-        description: "The message ID",
-        },
-        {
-        name: "receiver",
-        type: "String",
-        description: "The receiver",
-        },
-        {
-        name: "sender",
-        type: "String",
-        description: "The sender",
-        },
-        {
-        name: "sessionEvent.CClientAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) client address",
-        },
-        {
-        name: "sessionEvent.CClientPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) client port",
-        },
-        {
-        name: "sessionEvent.CServerAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) server address",
-        },
-        {
-        name: "sessionEvent.CServerPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) server port",
-        },
-        {
-        name: "sessionEvent.SClientAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) client address",
-        },
-        {
-        name: "sessionEvent.SClientPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) client port",
-        },
-        {
-        name: "sessionEvent.SServerAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) server address",
-        },
-        {
-        name: "sessionEvent.SServerPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) server port",
-        },
-        {
-        name: "sessionEvent.bypassed",
-        type: "boolean",
-        description: "True if bypassed, false otherwise",
-        },
-        {
-        name: "sessionEvent.class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "sessionEvent.clientCountry",
-        type: "String",
-        description: "The client country",
-        },
-        {
-        name: "sessionEvent.clientIntf",
-        type: "Integer",
-        description: "The client interface ID",
-        },
-        {
-        name: "sessionEvent.clientLatitude",
-        type: "Double",
-        description: "The client latitude",
-        },
-        {
-        name: "sessionEvent.clientLongitude",
-        type: "Double",
-        description: "The client longitude",
-        },
-        {
-        name: "sessionEvent.entitled",
-        type: "boolean",
-        description: "The entitled status",
-        },
-        {
-        name: "sessionEvent.filterPrefix",
-        type: "String",
-        description: "The filter prefix if blocked by the filter rules",
-        },
-        {
-        name: "sessionEvent.hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "sessionEvent.icmpType",
-        type: "Short",
-        description: "The ICMP type",
-        },
-        {
-        name: "sessionEvent.localAddr",
-        type: "InetAddress",
-        description: "The local host address",
-        },
-        {
-        name: "sessionEvent.policyId",
-        type: "Integer",
-        description: "The policy ID",
-        },
-        {
-        name: "sessionEvent.policyRuleId",
-        type: "Integer",
-        description: "The policy rule ID",
-        },
-        {
-        name: "sessionEvent.protocol",
-        type: "Short",
-        description: "The protocol",
-        },
-        {
-        name: "sessionEvent.protocolName",
-        type: "String",
-        description: "The protocol name",
-        },
-        {
-        name: "sessionEvent.remoteAddr",
-        type: "InetAddress",
-        description: "The remote host address",
-        },
-        {
-        name: "sessionEvent.serverCountry",
-        type: "String",
-        description: "The server country",
-        },
-        {
-        name: "sessionEvent.serverIntf",
-        type: "Integer",
-        description: "The server interface ID",
-        },
-        {
-        name: "sessionEvent.serverLatitude",
-        type: "Double",
-        description: "The server latitude",
-        },
-        {
-        name: "sessionEvent.serverLongitude",
-        type: "Double",
-        description: "The server longitude",
-        },
-        {
-        name: "sessionEvent.sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "sessionEvent.timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "sessionEvent.username",
-        type: "String",
-        description: "The username",
-        },
-        {
-        name: "sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "subject",
-        type: "String",
-        description: "The subject",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "tmpFile",
-        type: "File",
-        description: "The /tmp file",
         },
     ]
     },
@@ -5452,7 +4047,19 @@
         name: "reason",
         type: "Reason",
         description: "The reason",
-        values: [ "BLOCK_CATEGORY",  "BLOCK_URL",  "BLOCK_SEARCH_TERM",  "BLOCK_IP_HOST",  "PASS_URL",  "PASS_REFERER_URL",  "PASS_CLIENT",  "PASS_UNBLOCK",  "FILTER_RULE",  "DEFAULT", ],
+        values: [
+ "BLOCK_CATEGORY", 
+ "BLOCK_URL", 
+ "BLOCK_SEARCH_TERM", 
+ "BLOCK_IP_HOST", 
+ "PASS_URL", 
+ "PASS_REFERER_URL", 
+ "PASS_CLIENT", 
+ "PASS_UNBLOCK", 
+ "FILTER_RULE", 
+ "REDIRECT_KIDS", 
+ "DEFAULT", 
+],
         },
         {
         name: "requestLine",
@@ -5898,7 +4505,10 @@
         name: "action",
         type: "WanFailoverEvent$Action",
         description: "The action",
-        values: [ "CONNECTED",  "DISCONNECTED", ],
+        values: [
+ "CONNECTED", 
+ "DISCONNECTED", 
+],
         },
         {
         name: "class",
@@ -5927,18 +4537,93 @@
         },
     ]
     },
-    CaptureRuleEvent: {
-    description: "These events are created by [[Captive Portal]] and update the [[Database_Schema#sessions|sessions]] table when Captive Portal processes a session.",
+    ThreatPreventionEvent: {
+    description: "These events are created by [[Threat Prevention]] and inserted to the [[Database_Schema#sessions|sessions]] table for each threat lookup.",
     fields: [
         {
-        name: "captured",
+        name: "blocked",
         type: "boolean",
-        description: "True if captured, false otherwise",
+        description: "True if blocked, false otherwise",
         },
         {
         name: "class",
         type: "Class",
         description: "The class name",
+        },
+        {
+        name: "clientCategories",
+        type: "int",
+        description: "Client threat categories",
+        },
+        {
+        name: "clientReputation",
+        type: "int",
+        description: "Client threat reputation",
+        },
+        {
+        name: "flagged",
+        type: "boolean",
+        description: "True if flagged, false otherwise",
+        },
+        {
+        name: "ruleId",
+        type: "long",
+        description: "The rule ID",
+        },
+        {
+        name: "serverCategories",
+        type: "int",
+        description: "Server threat categories",
+        },
+        {
+        name: "serverReputation",
+        type: "int",
+        description: "Server threat reputation",
+        },
+        {
+        name: "sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+    ]
+    },
+    ThreatPreventionHttpEvent: {
+    description: "These events are created by [[Threat Prevention]] and inserted to the [[Database_Schema#http_events|http_events]] table for each threat lookup.",
+    fields: [
+        {
+        name: "blocked",
+        type: "Boolean",
+        description: "True if blocked, false otherwise",
+        },
+        {
+        name: "categories",
+        type: "Integer",
+        description: "Server threat categories",
+        },
+        {
+        name: "class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "flagged",
+        type: "Boolean",
+        description: "True if flagged, false otherwise",
+        },
+        {
+        name: "reputation",
+        type: "Integer",
+        description: "Server threat reputation",
+        },
+        {
+        name: "requestLine",
+        type: "RequestLine",
+        description: "The request line",
         },
         {
         name: "ruleId",
@@ -6091,6 +4776,11 @@
         description: "The session ID",
         },
         {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
         name: "sessionEvent.timeStamp",
         type: "Timestamp",
         description: "The timestamp",
@@ -6107,58 +4797,6 @@
         },
     ]
     },
-    CaptivePortalUserEvent: {
-    description: "These events are created by [[Captive Portal]] and inserted to the [[Database_Schema#captive_portal_user_events|captive_portal_user_events]] table when Captive Portal user takes an action.",
-    fields: [
-        {
-        name: "authenticationType",
-        type: "CaptivePortalSettings$AuthenticationType",
-        description: "The authentication type",
-        values: [ "ANY",  "ACTIVE_DIRECTORY",  "RADIUS",  "LOCAL_DIRECTORY",  "GOOGLE",  "FACEBOOK",  "CUSTOM",  "NONE", ],
-        },
-        {
-        name: "authenticationTypeValue",
-        type: "String",
-        description: "The authentication type as a string",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "clientAddr",
-        type: "InetAddress",
-        description: "The client address",
-        },
-        {
-        name: "event",
-        type: "CaptivePortalUserEvent$EventType",
-        description: "The event (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT)",
-        values: [ "LOGIN",  "FAILED",  "TIMEOUT",  "INACTIVE",  "USER_LOGOUT",  "ADMIN_LOGOUT",  "HOST_CHANGE", ],
-        },
-        {
-        name: "eventValue",
-        type: "String",
-        description: "The event value as a string (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT)",
-        },
-        {
-        name: "loginName",
-        type: "String",
-        description: "The login name",
-        },
-        {
-        name: "policyId",
-        type: "Integer",
-        description: "The policy ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
     SpamLogEvent: {
     description: "These events are created by [[Spam Blocker]] and update the [[Database_Schema#mail_msgs|mail_msgs]] table when an email is scanned.",
     fields: [
@@ -6166,7 +4804,19 @@
         name: "action",
         type: "SpamMessageAction",
         description: "The action",
-        values: [ "PASS",  "MARK",  "DROP",  "BLOCK",  "QUARANTINE",  "SAFELIST",  "OVERSIZE",  "OUTBOUND",  "FAILED_BLOCKED",  "FAILED_PASSED",  "GREYLIST", ],
+        values: [
+ "PASS", 
+ "MARK", 
+ "DROP", 
+ "BLOCK", 
+ "QUARANTINE", 
+ "SAFELIST", 
+ "OVERSIZE", 
+ "OUTBOUND", 
+ "FAILED_BLOCKED", 
+ "FAILED_PASSED", 
+ "GREYLIST", 
+],
         },
         {
         name: "class",
@@ -6722,7 +5372,11 @@
         name: "eventType",
         type: "IpsecVpnEvent$EventType",
         description: "The event type",
-        values: [ "CONNECT",  "DISCONNECT",  "UNREACHABLE", ],
+        values: [
+ "CONNECT", 
+ "DISCONNECT", 
+ "UNREACHABLE", 
+],
         },
         {
         name: "localAddress",
@@ -7018,441 +5672,6 @@
         name: "sessionId",
         type: "Long",
         description: "The session ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    HttpRequestEvent: {
-    description: "These events are created by HTTP subsystem and inserted to the [[Database_Schema#http_events|http_events]] table when a web request happens.",
-    fields: [
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "contentLength",
-        type: "long",
-        description: "The content length",
-        },
-        {
-        name: "domain",
-        type: "String",
-        description: "The domain",
-        },
-        {
-        name: "host",
-        type: "String",
-        description: "The host",
-        },
-        {
-        name: "method",
-        type: "HttpMethod",
-        description: "The HTTP method",
-        },
-        {
-        name: "referer",
-        type: "String",
-        description: "The referer",
-        },
-        {
-        name: "requestId",
-        type: "Long",
-        description: "The request ID",
-        },
-        {
-        name: "requestUri",
-        type: "URI",
-        description: "The request URI",
-        },
-        {
-        name: "sessionEvent.CClientAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) client address",
-        },
-        {
-        name: "sessionEvent.CClientPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) client port",
-        },
-        {
-        name: "sessionEvent.CServerAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) server address",
-        },
-        {
-        name: "sessionEvent.CServerPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) server port",
-        },
-        {
-        name: "sessionEvent.SClientAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) client address",
-        },
-        {
-        name: "sessionEvent.SClientPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) client port",
-        },
-        {
-        name: "sessionEvent.SServerAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) server address",
-        },
-        {
-        name: "sessionEvent.SServerPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) server port",
-        },
-        {
-        name: "sessionEvent.bypassed",
-        type: "boolean",
-        description: "True if bypassed, false otherwise",
-        },
-        {
-        name: "sessionEvent.class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "sessionEvent.clientCountry",
-        type: "String",
-        description: "The client country",
-        },
-        {
-        name: "sessionEvent.clientIntf",
-        type: "Integer",
-        description: "The client interface ID",
-        },
-        {
-        name: "sessionEvent.clientLatitude",
-        type: "Double",
-        description: "The client latitude",
-        },
-        {
-        name: "sessionEvent.clientLongitude",
-        type: "Double",
-        description: "The client longitude",
-        },
-        {
-        name: "sessionEvent.entitled",
-        type: "boolean",
-        description: "The entitled status",
-        },
-        {
-        name: "sessionEvent.filterPrefix",
-        type: "String",
-        description: "The filter prefix if blocked by the filter rules",
-        },
-        {
-        name: "sessionEvent.hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "sessionEvent.icmpType",
-        type: "Short",
-        description: "The ICMP type",
-        },
-        {
-        name: "sessionEvent.localAddr",
-        type: "InetAddress",
-        description: "The local host address",
-        },
-        {
-        name: "sessionEvent.policyId",
-        type: "Integer",
-        description: "The policy ID",
-        },
-        {
-        name: "sessionEvent.policyRuleId",
-        type: "Integer",
-        description: "The policy rule ID",
-        },
-        {
-        name: "sessionEvent.protocol",
-        type: "Short",
-        description: "The protocol",
-        },
-        {
-        name: "sessionEvent.protocolName",
-        type: "String",
-        description: "The protocol name",
-        },
-        {
-        name: "sessionEvent.remoteAddr",
-        type: "InetAddress",
-        description: "The remote host address",
-        },
-        {
-        name: "sessionEvent.serverCountry",
-        type: "String",
-        description: "The server country",
-        },
-        {
-        name: "sessionEvent.serverIntf",
-        type: "Integer",
-        description: "The server interface ID",
-        },
-        {
-        name: "sessionEvent.serverLatitude",
-        type: "Double",
-        description: "The server latitude",
-        },
-        {
-        name: "sessionEvent.serverLongitude",
-        type: "Double",
-        description: "The server longitude",
-        },
-        {
-        name: "sessionEvent.sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "sessionEvent.timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "sessionEvent.username",
-        type: "String",
-        description: "The username",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-    ]
-    },
-    HttpResponseEvent: {
-    description: "These events are created by HTTP subsystem and update the [[Database_Schema#http_events|http_events]] table when a web response happens.",
-    fields: [
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "contentLength",
-        type: "long",
-        description: "The content length",
-        },
-        {
-        name: "contentType",
-        type: "String",
-        description: "The content type",
-        },
-        {
-        name: "httpRequestEvent.class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "httpRequestEvent.contentLength",
-        type: "long",
-        description: "The content length",
-        },
-        {
-        name: "httpRequestEvent.domain",
-        type: "String",
-        description: "The domain",
-        },
-        {
-        name: "httpRequestEvent.host",
-        type: "String",
-        description: "The host",
-        },
-        {
-        name: "httpRequestEvent.method",
-        type: "HttpMethod",
-        description: "The HTTP method",
-        },
-        {
-        name: "httpRequestEvent.referer",
-        type: "String",
-        description: "The referer",
-        },
-        {
-        name: "httpRequestEvent.requestId",
-        type: "Long",
-        description: "The request ID",
-        },
-        {
-        name: "httpRequestEvent.requestUri",
-        type: "URI",
-        description: "The request URI",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.CClientAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) client address",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.CClientPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) client port",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.CServerAddr",
-        type: "InetAddress",
-        description: "The client-side (pre-NAT) server address",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.CServerPort",
-        type: "Integer",
-        description: "The client-side (pre-NAT) server port",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.SClientAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) client address",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.SClientPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) client port",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.SServerAddr",
-        type: "InetAddress",
-        description: "The server-side (post-NAT) server address",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.SServerPort",
-        type: "Integer",
-        description: "The server-side (post-NAT) server port",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.bypassed",
-        type: "boolean",
-        description: "True if bypassed, false otherwise",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.clientCountry",
-        type: "String",
-        description: "The client country",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.clientIntf",
-        type: "Integer",
-        description: "The client interface ID",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.clientLatitude",
-        type: "Double",
-        description: "The client latitude",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.clientLongitude",
-        type: "Double",
-        description: "The client longitude",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.entitled",
-        type: "boolean",
-        description: "The entitled status",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.filterPrefix",
-        type: "String",
-        description: "The filter prefix if blocked by the filter rules",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.icmpType",
-        type: "Short",
-        description: "The ICMP type",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.localAddr",
-        type: "InetAddress",
-        description: "The local host address",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.policyId",
-        type: "Integer",
-        description: "The policy ID",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.policyRuleId",
-        type: "Integer",
-        description: "The policy rule ID",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.protocol",
-        type: "Short",
-        description: "The protocol",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.protocolName",
-        type: "String",
-        description: "The protocol name",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.remoteAddr",
-        type: "InetAddress",
-        description: "The remote host address",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.serverCountry",
-        type: "String",
-        description: "The server country",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.serverIntf",
-        type: "Integer",
-        description: "The server interface ID",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.serverLatitude",
-        type: "Double",
-        description: "The server latitude",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.serverLongitude",
-        type: "Double",
-        description: "The server longitude",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "httpRequestEvent.sessionEvent.username",
-        type: "String",
-        description: "The username",
-        },
-        {
-        name: "httpRequestEvent.timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "requestLine",
-        type: "RequestLine",
-        description: "The request line",
         },
         {
         name: "timeStamp",

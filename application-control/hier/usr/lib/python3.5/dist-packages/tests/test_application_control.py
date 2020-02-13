@@ -176,31 +176,31 @@ class ApplicationControlTests(NGFWTestCase):
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
-    def test_031_logicRule_Block_Gmail_by_ProtoChain(self):
+    def test_032_logicRule_Block_Gmail_by_ProtoChain(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PROTOCHAIN", "*/SSL*"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
-    def test_032_logicRule_Block_Gmail_by_Category(self):
+    def test_033_logicRule_Block_Gmail_by_Category(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CATEGORY", "Mail"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
-    def test_033_logicRule_Block_Gmail_by_Productivity(self):
+    def test_034_logicRule_Block_Gmail_by_Productivity(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PRODUCTIVITY", ">2"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
-    def test_034_logicRule_Block_Gmail_by_Risk(self):
+    def test_035_logicRule_Block_Gmail_by_Risk(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_RISK", "<5"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
-    def test_034_logicRule_Block_Gmail_by_Confidence(self):
+    def test_036_logicRule_Block_Gmail_by_Confidence(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CONFIDENCE", ">50"))
         result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")

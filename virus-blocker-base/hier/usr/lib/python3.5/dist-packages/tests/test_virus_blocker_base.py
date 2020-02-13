@@ -146,7 +146,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
 
-    # test that client can block virus http download zip
+    # test that client can block virus http download exe
     def test_016_httpVirusBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
@@ -169,7 +169,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         result = remote_control.run_command("curl -L -r '5-' http://" + testsite + "/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
-    # test that client can block virus http download zip
+    # test that client can download virus http zip from pass site
     def test_019_httpEicarPassSite(self):
         addPassSite(self._app, testsite)
         result = remote_control.run_command("wget -q -O - http://" + testsite + "/virus/eicar.zip 2>&1 | grep -q blocked")
@@ -215,7 +215,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
                                             self.shortName() + '_clean', False )
         assert( found )
 
-    # test that client can block virus ftp download zip
+    # test that client can ftp download zip from pass site
     def test_027_ftpVirusPassSite(self):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
