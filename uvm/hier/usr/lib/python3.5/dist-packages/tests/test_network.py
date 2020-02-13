@@ -1304,7 +1304,7 @@ class NetworkTests(NGFWTestCase):
         assert (result1 == 0)
         assert (result2 != 0)
 
-    # Test that filter rule's SRC_ADDR condition supports commas
+    # Test that filter rule's SRC_MAC condition supports commas
     def test_153_filter_rules_blocked_src_mac_comma(self):
         remote_control.run_command("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
@@ -1339,7 +1339,7 @@ class NetworkTests(NGFWTestCase):
         assert (result1 == 0)
         assert (result2 != 0)
 
-    # Test that filter rule's SRC_ADDR condition supports commas
+    # Test that filter rule's CLIENT_TAGGED condition supports commas
     def test_154_filter_rules_blocked_client_tagged(self):
         # verify port 80 is open
         result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")

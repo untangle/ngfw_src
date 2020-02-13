@@ -23,7 +23,7 @@ defaultRackCaptivePortal = None
 
 def addRack(app, name="New Rack", description="", parentId=None):
     currentSettings = app.getSettings()
-    currentPolicies = currentSettings['policies'];
+    currentPolicies = currentSettings['policies']
     maxIdFound = 0
     for policy in currentPolicies['list']:
         if policy['policyId'] > maxIdFound:
@@ -35,14 +35,14 @@ def addRack(app, name="New Rack", description="", parentId=None):
 
 def removeRack(app, id):
     currentSettings = app.getSettings()
-    currentPolicies = currentSettings['policies'];
+    currentPolicies = currentSettings['policies']
     i = 0
     removed = False
     for policy in currentPolicies['list']:
         if policy['policyId'] == id:
             del currentPolicies['list'][i]
             removed = True
-            break;
+            break
         i = i + 1
     if removed:
         app.setSettings(currentSettings)
@@ -68,17 +68,17 @@ def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked
                     }
                 ]
             }
-        };
+        }
 
 def appendRule(app, newRule):
     settings = app.getSettings()
-    settings['rules']['list'].append(newRule);
-    app.setSettings(settings);
+    settings['rules']['list'].append(newRule)
+    app.setSettings(settings)
 
 def nukeRules(app):
     settings = app.getSettings()
-    settings['rules']['list'] = [];
-    app.setSettings(settings);
+    settings['rules']['list'] = []
+    app.setSettings(settings)
 
 def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
@@ -101,7 +101,7 @@ def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
                     }
                 ]
             }
-        };
+        }
 
 def createLocalDirectoryUser():
     passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
@@ -171,8 +171,8 @@ class PolicyManagerTests(NGFWTestCase):
         assert (secondRackFirewall != None)
         # add a block rule for the client IP
         rules = secondRackFirewall.getRules()
-        rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.client_ip));
-        secondRackFirewall.setRules(rules);
+        rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.client_ip))
+        secondRackFirewall.setRules(rules)
 
     # verify client is online
     def test_023_childShouldNotEffectParent(self):
@@ -182,8 +182,8 @@ class PolicyManagerTests(NGFWTestCase):
         assert (blockRackFirewall != None)
         # add a block rule for the client IP
         rules = blockRackFirewall.getRules()
-        rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.client_ip));
-        blockRackFirewall.setRules(rules);
+        rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.client_ip))
+        blockRackFirewall.setRules(rules)
         # client should still be online
         result = remote_control.is_online()
         assert (result == 0)
@@ -337,7 +337,7 @@ class PolicyManagerTests(NGFWTestCase):
         uvmContext.appManager().destroy( thirdRackFirewall.getAppSettings()["id"] )
 
     # remove third rack
-    def test_982_removeSecondRack(self):
+    def test_982_removeThirdRack(self):
         global thirdRackId
         nukeRules(self._app)
         assert (removeRack(self._app, thirdRackId))

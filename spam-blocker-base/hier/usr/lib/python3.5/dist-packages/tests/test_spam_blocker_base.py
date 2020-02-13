@@ -65,7 +65,7 @@ def createSSLInspectRule(port="25"):
         "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRule",
         "live": True,
         "ruleId": 1
-    };
+    }
 
 class SpamBlockerBaseTests(NGFWTestCase):
 
@@ -197,12 +197,12 @@ class SpamBlockerBaseTests(NGFWTestCase):
 
         curQuarantineList = curQuarantine.getInboxRecords(to_address)
         initialLen = len(curQuarantineList['list'])
-        mailId = curQuarantineList['list'][0]['mailID'];
+        mailId = curQuarantineList['list'][0]['mailID']
         print(mailId)
-        curQuarantine.purge(to_address, [mailId]);
+        curQuarantine.purge(to_address, [mailId])
 
         curQuarantineListAfter = curQuarantine.getInboxRecords(to_address)
-        assert(len(curQuarantineListAfter['list']) == initialLen - 1);
+        assert(len(curQuarantineListAfter['list']) == initialLen - 1)
 
     def test_060_adminQuarantineDeleteAccount(self):
         # Get adminstrative quarantine list of email addresses

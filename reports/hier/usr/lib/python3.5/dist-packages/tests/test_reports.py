@@ -216,8 +216,8 @@ class ReportsTests(NGFWTestCase):
 
         # Install firewall rule to generate syslog events
         rules = firewall_app.getRules()
-        rules["list"].append(create_firewall_rule("SRC_ADDR",remote_control.client_ip));
-        firewall_app.setRules(rules);
+        rules["list"].append(create_firewall_rule("SRC_ADDR",remote_control.client_ip))
+        firewall_app.setRules(rules)
         rules = firewall_app.getRules()
         # Get rule ID
         for rule in rules['list']:
@@ -245,8 +245,8 @@ class ReportsTests(NGFWTestCase):
 
         # remove the firewall rule aet syslog back to original settings
         app.setSettings(orig_settings)
-        rules["list"]=[];
-        firewall_app.setRules(rules);
+        rules["list"]=[]
+        firewall_app.setRules(rules)
 
         # remove firewall
         if firewall_app != None:
@@ -382,7 +382,7 @@ class ReportsTests(NGFWTestCase):
         msg = email.message_from_string(email_string)
 
         mime_content_ids = []
-        parser = ContentIdParser();
+        parser = ContentIdParser()
         for part in msg.walk():
             if part.get_content_maintype() == "image":
                 for index, key in enumerate(part.keys()):
@@ -575,7 +575,7 @@ class ReportsTests(NGFWTestCase):
             assert(result == 0)
 
     def test_110_verify_report_users(self):
-        # Test report only user can login and report serlvet displays 
+        # Test report only user can login and report servlet displays 
         # add report user with test_email_address
         settings = app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]

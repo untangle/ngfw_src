@@ -129,14 +129,14 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify a block port 79,81 rule doesnt match 80
+    # verify a block port 79,81 rule doesn't match 80
     def test_023_portComma2(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","79,81"))
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-    # verify a block port 79,80,81 rule works
+    # verify a block port mixed range rule works
     def test_024_portMixed(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","1- 5,80, 90-100"))
@@ -164,7 +164,7 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify a block port <1 rule doesnt block 80
+    # verify a block port <1 rule doesn't block 80
     def test_028_portLessThan2(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","<1"))
@@ -234,7 +234,7 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify dst addr rule with commas works
+    # verify dst addr rule with range works
     def test_044_addressDstRange(self):
         ipObj = ipaddr.IPAddress(testsiteIP)
         startRangeIP = ipObj - 1
@@ -246,7 +246,7 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify dst addr rule with commas works
+    # verify dst addr rule with a different range works
     def test_045_addressDstRange2(self):
         testsiteIP = socket.gethostbyname("test.untangle.com")
         ipObj = ipaddr.IPAddress(testsiteIP)
@@ -307,7 +307,7 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify dst intf number rule doesnt match everythin
+    # verify dst intf number rule doesn't match everything
     def test_052_intfWrongIntf(self):
         rules_clear()
         rule_append( create_rule_single_condition( "DST_INTF", int(remote_control.interface_external) + 1 ) )
@@ -330,7 +330,7 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify dst intf wan is blockde
+    # verify dst intf wan is blocked
     def test_054_intfWan(self):
         rules_clear()
         rule_append( create_rule_single_condition( "DST_INTF", "wan" ) )
@@ -359,7 +359,7 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify src intf number rule doesnt match everythin
+    # verify src intf number rule doesn't match everything
     def test_062_intfSrcWrongIntf(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_INTF", int(remote_control.interface) + 1 ) )
@@ -415,12 +415,14 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
+    # verify a tagged rule doesn't block a non-tagged host
     def test_080_tagHostCheckMissing(self):
         rules_clear()
         rule_append( create_rule_single_condition( "TAGGED", "NONEXISTANT-TAG" ) )
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
+    # verify a tagged host is blocked with a tagged rule
     def test_081_tagHostBlock(self):
         rules_clear()
         global_functions.host_tags_add("testtag")
@@ -429,6 +431,7 @@ class FirewallTests(NGFWTestCase):
         assert (result != 0)
         global_functions.host_tags_clear()
 
+    # verify a tagged host is blocked with a tagged rule using glob matching
     def test_082_tagHostBlockGlob(self):
         rules_clear()
         global_functions.host_tags_add("testtag")
@@ -437,6 +440,7 @@ class FirewallTests(NGFWTestCase):
         global_functions.host_tags_clear()
         assert (result != 0)
 
+    # verify a tagged rule blocks a tagged host with multiple tags
     def test_082_tagHostBlockMultiple(self):
         rules_clear()
         global_functions.host_tags_add("foobar1")
@@ -448,7 +452,8 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         global_functions.host_tags_clear()
         assert (result != 0)
-        
+    
+    # verify a tagged rule blocks a tagged username
     def test_083_tagUserBlock(self):
         rules_clear()
         username = remote_control.get_hostname()
@@ -467,7 +472,7 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-        # verify client penalty box not blocked
+    # verify client penalty box not blocked
     def test_101_clientPenaltyBox(self):
         rules_clear()
         rule_append( create_rule_single_condition( "CLIENT_IN_PENALTY_BOX", None ) )
@@ -483,14 +488,14 @@ class FirewallTests(NGFWTestCase):
         assert (result != 0)
         global_functions.host_tags_clear()
 
-    # verify client penalty box not blocked
+    # verify host penalty box not blocked
     def test_103_hostPenaltyBox(self):
         rules_clear()
         rule_append( create_rule_single_condition( "HOST_IN_PENALTY_BOX", None ) )
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-    # verify client penalty box is blocked when client in penalty box
+    # verify host penalty box is blocked when host in penalty box
     def test_104_hostPenaltyBox2(self):
         rules_clear()
         global_functions.host_tags_add("penalty-box")
@@ -506,7 +511,7 @@ class FirewallTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-    # verify client quota attainment condition
+    # verify host quota attainment condition
     def test_111_hostQuotaAttainment(self):
         rules_clear()
         rule_append( create_rule_single_condition("HOST_QUOTA_ATTAINMENT", "<1.3", blocked=True) )
@@ -619,7 +624,7 @@ class FirewallTests(NGFWTestCase):
         assert (result1 != 0)
         assert (result2 != 0)
 
-    # verify username matcher works despite rule & username being different case
+    # verify username matcher works despite rule & username being different case (lowercase)
     def test_144_clientUsernameWrongCase1(self):
         username = remote_control.get_hostname()
         global_functions.host_username_set( username )
@@ -631,8 +636,8 @@ class FirewallTests(NGFWTestCase):
 
         global_functions.host_username_clear()
 
-    # verify username matcher works despite rule & username being different case
-    def test_145_clientUsernameWrongCase1(self):
+    # verify username matcher works despite rule & username being different case (uppercase)
+    def test_145_clientUsernameWrongCase2(self):
         username = remote_control.get_hostname()
         global_functions.host_username_set( username )
 
@@ -813,7 +818,7 @@ class FirewallTests(NGFWTestCase):
         post_events_block = global_functions.get_app_metric_value(app,"block")
         assert(pre_events_block < post_events_block)
 
-    # verify a flagged sesion event
+    # verify a flagged session event
     def test_902_flagEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","80",blocked=False,flagged=True))
@@ -851,7 +856,7 @@ class FirewallTests(NGFWTestCase):
         post_events_block = global_functions.get_app_metric_value(app,"block")
         assert(pre_events_block < post_events_block)
 
-    # verify a flagged local sesion event
+    # verify a flagged local session event
     def test_904_flagLocalEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("CLIENT_COUNTRY","XL",blocked=False,flagged=True))
