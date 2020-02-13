@@ -697,7 +697,16 @@ Ext.define('Ung.util.Renderer', {
         var policyIds = [];
         var i;
         if( record && record.get && record.get('policy_id') ){
-            policyIds = [record.get('policy_id')];
+            var policyName = record.get('policy_id');
+            for(var id in Map.policies){
+                if(Map.policies.hasOwnProperty(id)){
+                    if(Map.policies[id] == policyName){
+                        policyIds = [id];
+                    }
+                }
+            }
+        }else{
+            policyIds=[1];
         }
 
         var policies = Rpc.directData('rpc.reportsManager.getPoliciesInfo');
@@ -763,8 +772,33 @@ Ext.define('Ung.util.Renderer', {
      */
     webRuleMap: {},
     webRule: function(value, metaData, record){
+        var id;
         var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
+        if(policyId != 1){
+            for(id in Map.policies){
+                if(Map.policies.hasOwnProperty(id)){
+                    if(Map.policies[id] == policyId){
+                        policyId = id;
+                        break;
+                    }
+                }
+            }
+        }
         var webFilterReason = record && record.get && record.get('web_filter_reason') ? record.get('web_filter_reason') : 'N';
+        if(webFilterReason != 'N'){
+            for(id in Map.webReasons){
+                if(Map.webReasons.hasOwnProperty(id)){
+                    if(Map.webReasons[id] == webFilterReason){
+                        webFilterReason = id;
+                        if(webFilterReason == 'default'){
+                            webFilterReason = 'N';
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
         var reasonSource = "categories";
         switch(webFilterReason){
             case 'D':
