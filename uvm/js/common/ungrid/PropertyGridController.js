@@ -39,7 +39,7 @@ Ext.define('Ung.cmp.PropertyGridController', {
         delete recordData.tags;
 
         Ext.Object.each(recordData, function(key, value) {
-            category = ' Event'.t();
+            category = ' ' + 'Event'.t();
             if(value != null) {
                 // set grouping category
                 if (key.startsWith('ad_blocker')) { category = 'Ad Blocker'; }

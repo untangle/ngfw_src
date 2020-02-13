@@ -242,14 +242,32 @@ Ext.define('Ung.apps.webfilter.cmp.SearchTermsGridController', {
 
                 var blocked = false;
                 var flagged = false;
-                form.getValues().defaultActions.forEach(function(action){
-                    if(action == 'block'){
-                        blocked = true;
+
+                /**
+                 * NGFW-12869
+                 * checkboxgroup has a specific behaviour for form.getValues()
+                 * - if nothing is checked, form.getValues() does not contain anything related to it
+                 * - if a single one is checked, form.getValues() will return the string value of that checked one
+                 * - and only if more than one are checked, form.getValues() will return an array of checked values
+                 */
+                var defaultActions = form.getValues().defaultActions;
+
+                // defaultActions is undefined is nothing is checked
+                if (defaultActions) {
+                    // defaultActions is a string if a single one is checked
+                    if (Ext.isString(defaultActions)) {
+                        defaultActions = [defaultActions];
                     }
-                    if(action == 'flag'){
-                        flagged = true;
-                    }
-                });
+                    // defaultActions is an array only if more than one are checked
+                    defaultActions.forEach(function(action){
+                        if(action == 'block'){
+                            blocked = true;
+                        }
+                        if(action == 'flag'){
+                            flagged = true;
+                        }
+                    });
+                }
 
                 var fileType = form.getValues().fileType;
                 var jsonArray = [];

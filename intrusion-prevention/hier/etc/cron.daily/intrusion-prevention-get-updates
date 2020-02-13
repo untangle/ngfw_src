@@ -265,14 +265,7 @@ class Update:
         """
         for app_id in self.app_ids:
             app = self.app_manager.app(app_id)
-            changed = False
-
-            changed = app.synchronizeSettingsWithDefaults() or changed
-            changed = app.synchronizeSettingsWithClassifications() or changed
-            changed = app.synchronizeSettingsWithVariables() or changed
-
-            if changed:
-                app.setSettings(app.getSettings())
+            app.setSettings(app.getSettings())
 
         return True
 

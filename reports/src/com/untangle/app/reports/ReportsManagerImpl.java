@@ -213,14 +213,15 @@ public class ReportsManagerImpl implements ReportsManager
             if ( app == null ) {
                 continue;
             }
-
+            if ( ! app.isLicenseValid() ) {
+                continue;
+            }
             org.json.JSONObject json = new org.json.JSONObject();
 
             try {
                 json.put("displayName", appProperties.getDisplayName());
                 json.put("name", appProperties.getName());
                 json.put("viewPosition", appProperties.getViewPosition());
-                json.put("licenseValid", app.isLicenseValid());
             } catch (Exception e) {
                 logger.error( "Error generating Current Applications list", e );
             }

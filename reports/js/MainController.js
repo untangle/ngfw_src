@@ -61,10 +61,7 @@ Ext.define('Ung.apps.reports.MainController', {
 
             var appCategories = [];
             result[0].list.forEach( function( app ){
-                // do not show invalid licenses
-                if(app.licenseValid) {
-                    appCategories.push( app.displayName );
-                }
+                appCategories.push( app.displayName );
             });
 
             vm.set({
