@@ -27,10 +27,11 @@ public class WebFilterQueryEvent extends LogEvent
     private long contentLength;
     private Boolean blocked;
     private Boolean flagged;
+    private Reason reason;
 
     public WebFilterQueryEvent() { }
 
-    public WebFilterQueryEvent(RequestLine requestLine, String host, String term, Boolean blocked, Boolean flagged, String appName)
+    public WebFilterQueryEvent(RequestLine requestLine, String host, String term, Boolean blocked, Boolean flagged, Reason reason, String appName)
     {
         this.host = host;
         this.requestId = requestLine.getRequestId();
@@ -41,6 +42,7 @@ public class WebFilterQueryEvent extends LogEvent
         this.appName = appName;
         this.sessionEvent = requestLine.getSessionEvent();
         this.requestUri = requestLine.getRequestUri();
+        this.reason = reason;
     }
 
     public String getHost() { return host; }
@@ -69,6 +71,9 @@ public class WebFilterQueryEvent extends LogEvent
     
     public URI getRequestUri() { return requestUri; }
     public void setRequestUri( URI requestUri ) { this.requestUri = requestUri; }
+
+    public Reason getReason() { return reason; }
+    public void setReason( Reason reason ) { this.reason = reason; }
 
     public long getContentLength() { return contentLength; }
     public void setContentLength( long contentLength ) { this.contentLength = contentLength; }
@@ -101,12 +106,13 @@ public class WebFilterQueryEvent extends LogEvent
             "hostname, " +
             "term," + 
             "blocked," + 
-            "flagged" + 
+            "flagged," + 
+            "web_filter_reason" +
         ") " + 
         "values ( " + 
             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " + 
             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " + 
-            "?, ?, ?" +
+            "?, ?, ?, ?" +
         ")";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -135,6 +141,7 @@ public class WebFilterQueryEvent extends LogEvent
         pstmt.setString(++i, getTerm());
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setBoolean(++i, getFlagged());
+        pstmt.setString(++i, ((getReason() == null) ? "" : Character.toString(getReason().getKey())));
 
         pstmt.addBatch();
         return;

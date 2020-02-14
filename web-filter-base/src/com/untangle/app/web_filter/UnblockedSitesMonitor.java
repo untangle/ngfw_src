@@ -46,12 +46,14 @@ public class UnblockedSitesMonitor
      * 
      * @param addr
      *        The address
-     * @param site
-     *        The site
+     * @param blockVal
+     *        The value that is blocked
+     * @param blockType
+     *        The type of block
      */
-    void addUnblockedSite(InetAddress addr, String site)
+    void addUnblockedItem(InetAddress addr, String blockVal, Reason blockType)
     {
-        monitor.addUnblockedSite(addr, site);
+        monitor.addUnblockedItem(addr, blockVal, blockType);
     }
 
     /**
@@ -94,12 +96,14 @@ public class UnblockedSitesMonitor
          * 
          * @param addr
          *        The address
-         * @param site
-         *        The site
+         * @param blockVal
+         *        The blocked value
+         * @param blockType
+         *        The blocked type
          */
-        public synchronized void addUnblockedSite(InetAddress addr, String site)
+        public synchronized void addUnblockedItem(InetAddress addr, String blockVal, Reason blockType)
         {
-            UnblockedSite bs = new UnblockedSite(addr, site);
+            UnblockedSite bs = new UnblockedSite(addr, blockVal, blockType);
             if (unblockedSites.contains(bs)) unblockedSites.remove(bs); // to make sure creation time is the latest...
             unblockedSites.add(bs);
 
@@ -131,7 +135,7 @@ public class UnblockedSitesMonitor
                 if (unblockedSites.first().creationTimeMillis > expirationTime) continue;
 
                 try {
-                    Map<InetAddress, List<String>> sitesToDelete = new HashMap<InetAddress, List<String>>();
+                    Map<InetAddress, List<String>> itemsToDelete = new HashMap<InetAddress, List<String>>();
                     synchronized (this) {
                         Iterator<UnblockedSite> iter = unblockedSites.iterator();
                         UnblockedSite bs;
@@ -149,16 +153,16 @@ public class UnblockedSitesMonitor
                             logger.info("Evaluating unblock \"" + bs + "\": expired (" + bs.creationTimeMillis + " > " + expirationTime + ")");
                             iter.remove();
 
-                            // add to sitesToDelete
-                            if (sitesToDelete.containsKey(bs.addr)) sitesToDelete.get(bs.addr).add(bs.site);
+                            // add to itemsToDelete
+                            if (itemsToDelete.containsKey(bs.addr)) itemsToDelete.get(bs.addr).add(bs.blockVal);
                             else {
                                 l = new ArrayList<String>();
-                                l.add(bs.site);
-                                sitesToDelete.put(bs.addr, l);
+                                l.add(bs.blockVal);
+                                itemsToDelete.put(bs.addr, l);
                             }
                         }
                     }
-                    wfb.getDecisionEngine().removeUnblockedSites(sitesToDelete);
+                    wfb.getDecisionEngine().removeUnblockedItems(itemsToDelete);
                 } catch (Exception e) {
                     logger.warn("Problem in UnblockedSitesMonitor: '" + e.getMessage() + "'", e);
                 }
@@ -174,7 +178,8 @@ public class UnblockedSitesMonitor
      */
     private final class UnblockedSite implements Comparable<UnblockedSite>
     {
-        private String site;
+        private String blockVal;
+        private Reason blockType;
         private InetAddress addr;
         private long creationTimeMillis;
 
@@ -183,24 +188,27 @@ public class UnblockedSitesMonitor
          * 
          * @param myAddr
          *        The address
-         * @param mySite
-         *        The site
+         * @param blockVal
+         *        The value of the blocked item
+         * @param blockType
+         *        The type of block
          */
-        public UnblockedSite(InetAddress myAddr, String mySite)
+        public UnblockedSite(InetAddress myAddr, String blockVal, Reason blockType)
         {
-            site = mySite;
-            addr = myAddr;
-            creationTimeMillis = System.currentTimeMillis();
+            this.blockVal = blockVal;
+            this.addr = myAddr;
+            this.blockType = blockType;
+            this.creationTimeMillis = System.currentTimeMillis();
         }
 
         /**
-         * Generate a hash code from the site and address
+         * Generate a hash code from the block value, client address, and block type
          * 
          * @return The hashcode
          */
         public int hashCode()
         {
-            return (17 + 37 * (site.hashCode() + addr.hashCode()));
+            return (17 + 37 * (blockVal.hashCode() + addr.hashCode() + blockType.hashCode()));
         }
 
         /**
@@ -222,7 +230,7 @@ public class UnblockedSitesMonitor
          */
         public String toString()
         {
-            return "Unblock {" + addr + ", " + site + "}";
+            return "Unblock {" + addr + ", " + blockVal + ", " + blockType +"}";
         }
     }
 }

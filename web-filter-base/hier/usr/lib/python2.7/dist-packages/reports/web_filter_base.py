@@ -30,6 +30,7 @@ CREATE TABLE reports.http_query_events (
     hostname text,
     request_id bigint, 
     method character(1), 
+    web_filter_reason character(1),
     uri text,
     term text,
     host text, 
@@ -39,3 +40,4 @@ CREATE TABLE reports.http_query_events (
 
     sql_helper.add_column('http_query_events', 'blocked', 'boolean') #rule_14.2
     sql_helper.add_column('http_query_events', 'flagged', 'boolean') #rule_14.2
+    sql_helper.add_column('http_query_events', 'web_filter_reason', 'character(1)') #rule_15.1
