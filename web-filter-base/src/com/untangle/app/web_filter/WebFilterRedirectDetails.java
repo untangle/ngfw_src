@@ -20,6 +20,8 @@ public class WebFilterRedirectDetails extends RedirectDetails
     private final String reason;
     private final InetAddress clientAddr;
     private final String appTitle;
+    private final String blockVal;
+    private final Reason blockType;
 
     /**
      * Constructor for redirects.
@@ -36,14 +38,20 @@ public class WebFilterRedirectDetails extends RedirectDetails
      *        The client address
      * @param appTitle
      *        The application title
+     * @param blockType
+     *        The type of block
+     * @param blockVal
+     *        The blocked value   
      */
-    public WebFilterRedirectDetails(WebFilterSettings settings, String host, String uri, String reason, InetAddress clientAddr, String appTitle)
+    public WebFilterRedirectDetails(WebFilterSettings settings, String host, String uri, String reason, InetAddress clientAddr, String appTitle, Reason blockType, String blockVal)
     {
         super(host, uri);
         this.settings = settings;
         this.reason = reason;
         this.clientAddr = clientAddr;
         this.appTitle = appTitle;
+        this.blockType = blockType;
+        this.blockVal = blockVal;
     }
 
     /**
@@ -94,5 +102,25 @@ public class WebFilterRedirectDetails extends RedirectDetails
     public WebFilterSettings getSettings()
     {
         return settings;
+    }
+
+     /**
+     * Get the Type of block this is
+     * 
+     * @return The Reason type, representing what type of block this is
+     */
+    public Reason getBlockType()
+    {
+        return blockType;
+    }
+
+     /**
+     * Get the Blocked Value
+     * 
+     * @return The value of the block
+     */
+    public String getBlockVal()
+    {
+        return blockVal;
     }
 }

@@ -61,7 +61,7 @@ public abstract class DecisionEngine
      * are temporary and only stored in memory This map stores a list of
      * unblocked sites by IP address
      */
-    private final Map<InetAddress, HashSet<String>> unblockedDomains = new HashMap<InetAddress, HashSet<String>>();
+    final Map<InetAddress, HashMap<String, Reason>> unblockedItems = new HashMap<InetAddress, HashMap<String, Reason>>();
 
     /**
      * Constructor
@@ -225,7 +225,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), I18nUtil.tr("Host name is an IP address ({0})", host, i18nMap), clientIp, app.getAppTitle(), Reason.BLOCK_IP_HOST, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             }
@@ -243,7 +243,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, app.getAppTitle(), Reason.BLOCK_URL, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             } else {
@@ -272,7 +272,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle(), Reason.FILTER_RULE, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             } else if ((filterRule != null) && (filterRule.getFlagged())) {
@@ -314,7 +314,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), blockReason, clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), blockReason, clientIp, app.getAppTitle(), reason, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             } else {
@@ -368,6 +368,7 @@ public abstract class DecisionEngine
         if (UrlMatchingUtil.checkClientList(clientIp, app.getSettings().getPassedClients()) != null) return null;
         if (UrlMatchingUtil.checkSiteList(host, uri.toString(), app.getSettings().getPassedUrls()) != null) return null;
         if (checkUnblockedSites(host, uri, clientIp)) return null;
+        if (checkUnblockedTerms(clientIp, requestLine, header)) return null;
 
         logger.debug("checkResponse: " + host + uri);
 
@@ -386,7 +387,7 @@ public abstract class DecisionEngine
                 return (
                     new HttpRedirect(
                         app.generateBlockResponse(
-                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle()), 
+                            new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle(), Reason.FILTER_RULE, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
             } else if (filterRule.getFlagged()) {
@@ -404,22 +405,24 @@ public abstract class DecisionEngine
      * 
      * @param addr
      *        The site address
-     * @param site
+     * @param val
      *        The site name
+     * @param reason
+     *        The reason type
      */
-    public void addUnblockedSite(InetAddress addr, String site)
+    public void addUnblockedItem(InetAddress addr, String val, Reason reason)
     {
-        HashSet<String> wl;
-        synchronized (unblockedDomains) {
-            wl = unblockedDomains.get(addr);
+        HashMap<String, Reason> wl;
+        synchronized (unblockedItems) {
+            wl = unblockedItems.get(addr);
             if (null == wl) {
-                wl = new HashSet<String>();
-                unblockedDomains.put(addr, wl);
+                wl = new HashMap<String, Reason>();
+                unblockedItems.put(addr, wl);
             }
         }
 
         synchronized (wl) {
-            wl.add(site);
+            wl.put(val, reason);
         }
     }
 
@@ -430,27 +433,27 @@ public abstract class DecisionEngine
      * @param map
      *        a Map<InetAddress, List<String>>
      */
-    public void removeUnblockedSites(Map<InetAddress, List<String>> map)
+    public void removeUnblockedItems(Map<InetAddress, List<String>> map)
     {
         logger.info("about to remove host-unblocked sites for " + map.size() + " host(s)");
 
         InetAddress addr;
-        List<String> unblockedSites;
-        HashSet<String> hostSites;
+        List<String> itemsToUnblock;
+        HashMap<String, Reason> hostSites;
 
-        synchronized (unblockedDomains) {
+        synchronized (unblockedItems) {
             for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
                 addr = entry.getKey();
-                unblockedSites = entry.getValue();
+                itemsToUnblock = entry.getValue();
 
-                hostSites = unblockedDomains.get(addr);
+                hostSites = unblockedItems.get(addr);
 
-                for (String site : unblockedSites) {
-                    if (hostSites.contains(site)) {
-                        logger.info("Removing unblocked site " + site + " for " + addr);
-                        hostSites.remove(site);
+                for (String item : itemsToUnblock) {
+                    if (hostSites.containsKey(item)) {
+                        logger.info("Removing unblocked item " + item + " for " + addr);
+                        hostSites.remove(item);
                         if (hostSites.isEmpty()) {
-                            unblockedDomains.remove(addr);
+                            unblockedItems.remove(addr);
                             break;
                         }
                     }
@@ -460,11 +463,11 @@ public abstract class DecisionEngine
     }
 
     /**
-     * Remove all the unblocked sites for all the clients.
+     * Remove all the unblocked sites and search terms for all the clients.
      */
-    public void removeAllUnblockedSites()
+    public void removeAllUnblockedItems()
     {
-        unblockedDomains.clear();
+        unblockedItems.clear();
     }
 
     /**
@@ -508,8 +511,33 @@ public abstract class DecisionEngine
      */
     private boolean checkUnblockedSites(String host, URI uri, InetAddress clientIp)
     {
-        if (isDomainUnblocked(host, clientIp)) {
+        host = host.toLowerCase();
+
+        if (isItemUnblocked(host, clientIp)) {
             logger.debug("LOG: " + host + uri + " in unblock list for " + clientIp);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * checkUnblockedTerms checks if a search term was used, and if so queries if it is in the unblocklist
+     * 
+     * @param clientIp
+     *        IP of the host
+     * @param requestLine
+     *        The request line token
+     * @param header
+     *        The Header Token
+     * @return
+     */
+    boolean checkUnblockedTerms(InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    {
+        String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
+
+        if(isItemUnblocked(term, clientIp)) {
+            logger.debug("LOG: " + term + " in unblock list for " + clientIp);
             return true;
         }
 
@@ -641,25 +669,24 @@ public abstract class DecisionEngine
     /**
      * Checks whether a given domain has been unblocked for the given address
      * 
-     * @param domain
-     *        The domain
+     * @param value
+     *        The value to check in the unblock map
      * @param clientAddr
      *        The client address
      * @return True if unblocked, otherwise false
      */
-    private boolean isDomainUnblocked(String domain, InetAddress clientAddr)
+    boolean isItemUnblocked(String value, InetAddress clientAddr)
     {
-        if (null == domain) {
+        if (null == value) {
             return false;
         } else {
-            domain = domain.toLowerCase();
-
-            HashSet<String> unblocks = unblockedDomains.get(clientAddr);
+            HashMap<String, Reason> unblocks = unblockedItems.get(clientAddr);
             if (unblocks == null) {
                 return false;
             } else {
-                for (String d = domain; d != null; d = UrlMatchingUtil.nextHost(d)) {
-                    if (unblocks.contains(d)) {
+                // Check URLs in unblock keys (This will also check for terms)
+                for (String d = value; d != null; d = UrlMatchingUtil.nextHost(d)) {
+                    if (unblocks.containsKey(d)) {
                         return true;
                     }
                 }
