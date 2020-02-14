@@ -297,6 +297,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             evt = new HttpRequestEvent(requestLine, domain, null, 0);
             requestLine.setHttpRequestEvent(evt);
             this.app.logEvent(evt);
+            sess.globalAttach(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT, evt);
             logger.info("Creating new HttpRequestEvent: " + evt.toString());
         } else {
             logger.info("Using existing HttpRequestEvent: " + evt.toString());
