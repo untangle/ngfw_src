@@ -275,14 +275,32 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             return;
         }
         requestLine.setRequestUri(fakeUri); // URI is unknown
-        RequestLineToken rlt = new RequestLineToken(requestLine, "HTTP/1.1");
+        RequestLineToken rlt = null;
+
+        rlt = (RequestLineToken) sess.globalAttachment(AppSession.KEY_HTTPS_SNI_REQUEST_TOKEN);
+        if (rlt == null) {
+            rlt = new RequestLineToken(requestLine, "HTTP/1.1");
+            sess.globalAttach(AppSession.KEY_HTTPS_SNI_REQUEST_TOKEN, rlt);
+            logger.info("Creating new requestLineToken: " + rlt.toString());
+        } else {
+            logger.info("Using existing requestLine: " + rlt.toString());
+        }
 
         /**
          * Log this HTTPS hit to the http_events table
          */
-        HttpRequestEvent evt = new HttpRequestEvent(requestLine, domain, null, 0);
-        requestLine.setHttpRequestEvent(evt);
-        this.app.logEvent(evt);
+        HttpRequestEvent evt = null;
+        
+        evt = (HttpRequestEvent) sess.globalAttachment(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT);
+
+        if (evt == null) {
+            evt = new HttpRequestEvent(requestLine, domain, null, 0);
+            requestLine.setHttpRequestEvent(evt);
+            this.app.logEvent(evt);
+            logger.info("Creating new HttpRequestEvent: " + evt.toString());
+        } else {
+            logger.info("Using existing HttpRequestEvent: " + evt.toString());
+        }
 
         // attach the hostname we extracted to the session
         sess.globalAttach(AppSession.KEY_HTTP_HOSTNAME, domain);

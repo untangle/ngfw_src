@@ -62,12 +62,15 @@ public interface SessionAttachments
     public static final String KEY_CAPTIVE_PORTAL_SSL_ENGINE = "captive-portal-ssl-engine"; /* CaptureSSLEngine */
     public static final String KEY_CAPTIVE_PORTAL_SESSION_CAPTURE = "captive-portal-session-capture"; /* String */
 
+    public static final String KEY_THREAT_PREVENTION_SSL_ENGINE = "threat-prevention-ssl-engine"; /* ThreatPreventionSSLEngine */
     public static final String KEY_THREAT_PREVENTION_CLIENT_REPUTATION = "ip-reputation-client-reputation"; /* Integer */
     public static final String KEY_THREAT_PREVENTION_CLIENT_CATEGORIES = "ip-reputation-client-categories"; /* Integer */
     public static final String KEY_THREAT_PREVENTION_SERVER_REPUTATION = "ip-reputation-server-reputation"; /* Integer */
     public static final String KEY_THREAT_PREVENTION_SERVER_CATEGORIES = "ip-reputation-server-categories"; /* Integer */
 
     public static final String KEY_HTTPS_SNI_REQUEST_LINE = "https-sni-request-line"; /* RequestLine */
+    public static final String KEY_HTTPS_SNI_REQUEST_TOKEN = "https-sni-request-line-token"; /* RequestLineToken */
+    public static final String KEY_HTTPS_SNI_HTTP_REQUEST_EVENT = "https-sni-http-request-event"; /* HttpRequestEvent */
 
     /**
      * Attaches the given object to this session.
