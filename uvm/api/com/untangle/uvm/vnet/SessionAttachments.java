@@ -67,6 +67,8 @@ public interface SessionAttachments
     public static final String KEY_THREAT_PREVENTION_SERVER_REPUTATION = "ip-reputation-server-reputation"; /* Integer */
     public static final String KEY_THREAT_PREVENTION_SERVER_CATEGORIES = "ip-reputation-server-categories"; /* Integer */
 
+    public static final String KEY_HTTPS_SNI_REQUEST_LINE = "https-sni-request-line"; /* RequestLine */
+
     /**
      * Attaches the given object to this session.
      *
