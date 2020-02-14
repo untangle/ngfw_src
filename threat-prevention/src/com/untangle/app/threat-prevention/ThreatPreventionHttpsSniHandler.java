@@ -243,9 +243,9 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         if (requestLine == null) {
             requestLine = new RequestLine(sess.sessionEvent(), HttpMethod.GET, new byte[] { '/' });
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_REQUEST_LINE, requestLine);
-            logger.info("Creating new requestLine: " + requestLine.toString());
+            logger.debug("Creating new requestLine: " + requestLine.toString());
         } else {
-            logger.info("Using existing requestLine: " + requestLine.toString());
+            logger.debug("Using existing requestLine: " + requestLine.toString());
         }
 
         URI fakeUri;
@@ -274,19 +274,34 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         }
         requestLine.setRequestUri(fakeUri); // URI is unknown
 
+        /**
+         * Similar to the RequestLine logic above, this session may already have a requestlinetoken associated with it,
+         * we do not want to add multiple requestlinetokens for each individual app.
+         * 
+         * This logic should be consolidated/removed.
+         */
+
         RequestLineToken rlt = null;
 
         rlt = (RequestLineToken) sess.globalAttachment(AppSession.KEY_HTTPS_SNI_REQUEST_TOKEN);
         if (rlt == null) {
             rlt = new RequestLineToken(requestLine, "HTTP/1.1");
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_REQUEST_TOKEN, rlt);
-            logger.info("Creating new requestLineToken: " + rlt.toString());
+            logger.debug("Creating new requestLineToken: " + rlt.toString());
         } else {
-            logger.info("Using existing requestLine: " + rlt.toString());
+            logger.debug("Using existing requestLine: " + rlt.toString());
         }
 
         /**
          * Log this HTTPS hit to the http_events table
+         * 
+         * 
+         * Similar to the RequestLine and RequestLineToken logic above, 
+         * we do not want to create an additional HttpRequestEvent in the http_events
+         * table when a request comes through the SNI logic.
+         * 
+         * This logic should be consolidated/removed.
+         * 
          */
         HttpRequestEvent evt = null;
         
@@ -297,9 +312,9 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             requestLine.setHttpRequestEvent(evt);
             this.app.logEvent(evt);
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT, evt);
-            logger.info("Creating new HttpRequestEvent: " + evt.toString());
+            logger.debug("Creating new HttpRequestEvent: " + evt.toString());
         } else {
-            logger.info("Using existing HttpRequestEvent: " + evt.toString());
+            logger.debug("Using existing HttpRequestEvent: " + evt.toString());
         }
 
         // attach the hostname we extracted to the session
