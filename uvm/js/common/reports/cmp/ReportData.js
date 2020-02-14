@@ -164,7 +164,8 @@ Ext.define('Ung.reports.cmp.ReportData', {
                 dataIndex: entry.get('pieGroupColumn'),
                 header: header,
                 flex: 1,
-                tdCls: 'anchor',
+                // NGFW-12881 - disable clickable anchor style for threat prevention reputation
+                tdCls: entry.get('pieGroupColumn') !== 'threat_prevention_reputation' ? 'anchor' : '',
                 field: entry.get('pieGroupColumn'),
                 table: entry.get('table'),
                 renderer: Renderer[entry.get('pieGroupColumn')] || TableConfig.getDisplayValue
@@ -269,6 +270,15 @@ Ext.define('Ung.reports.cmp.ReportData', {
             }
 
             if (cellIndex === 0) {
+                /**
+                 * for Threat Prevention reputation pie charts disable click
+                 * because the point value cannot represent a range of values
+                 * NGFW-12881
+                 */                
+                if (entry.get('pieGroupColumn') === 'threat_prevention_reputation') {
+                    return;
+                }
+
                 // fire event to add global condition, implemented in GlobalConditions.js controller section
                 Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('pieGroupColumn'), record.get(entry.get('pieGroupColumn')));
             }
