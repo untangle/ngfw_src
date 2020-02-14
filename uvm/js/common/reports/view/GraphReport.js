@@ -600,7 +600,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                     if (seriesRenderer) {
                         seriesName = seriesRenderer(parseInt(colVal, 10));
                     } else {
-                        seriesName = colVal !== undefined ? TableConfig.getDisplayValue(colVal, table, colField, rowRecord) : 'None'.t();
+                        seriesName = !colVal ? 'None'.t() : TableConfig.getDisplayValue(colVal, table, colField, rowRecord);
                     }
 
                     var tableColumn = null;

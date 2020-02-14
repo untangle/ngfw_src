@@ -188,7 +188,10 @@ class IntrusionPreventionTests(NGFWTestCase):
         self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
-        remote_control.run_command("nmap -sP " + wan_ip + " >/dev/null 2>&1",host=global_functions.iperf_server)
+
+        # Ensure the icmp request includes the string ISSPNGRQ in it so we are sure to trigger a detected scan event
+        # see sid: 2100465 "GPL SCAN ISS Pinger"
+        remote_control.run_command("ping -c 1 -p 495353504e475251 " + wan_ip + " >/dev/null 2>&1",host=global_functions.iperf_server)
 
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
