@@ -592,42 +592,103 @@ Ext.define('Ung.view.reports.GraphReport', {
                 var othersValue = 0, colVal, colField; // needed for global conditions from pies which have seriesRendered defined (altered) e.g. protocol
                 seriesData = [];
 
-                Ext.Array.each(me.data, function (row, idx) {
-                    colField = entry.get('pieGroupColumn');
-                    colVal = row[colField];
-                    rowRecord = new Ext.data.Model(row);
-
-                    if (seriesRenderer) {
-                        seriesName = seriesRenderer(parseInt(colVal, 10));
-                    } else {
-                        seriesName = !colVal ? 'None'.t() : TableConfig.getDisplayValue(colVal, table, colField, rowRecord);
-                    }
-
-                    var tableColumn = null;
-                    var expandedInformation = {};
-                    for(var field in row){
-                        if(field == colField){
-                            continue;
+                /** 
+                 * NGFW-12881
+                 * special treatement for threat prevention reputation range values 
+                 * by grouping same reputation hits in a single series (pie slice)
+                */
+                if (entry.get('pieGroupColumn') === 'threat_prevention_reputation') {
+                    var newData = [];
+                    /**
+                     * helper object to cumulate hits of same reputation
+                     * each value key represents the final series options having extra
+                     * - disableClickEvent: to avoid showing Add Condition modal
+                     * - color: for pie slice based on risk (green -> low to red -> high)
+                     * - reputation: unique number set as the highest range, used for data displayed in the Data Table grid
+                     */
+                    var hits = { 
+                        trustworthy: { name: 'Trustworthy', y: 0, color: '#00ac00', disableClickEvent: true, reputation: 100 },
+                        low_risk: { name: 'Low Risk', y: 0, color: '#7fd500', disableClickEvent: true, reputation: 80 },
+                        moderate_risk: { name: 'Moderate Risk', y: 0, color: '#fff001', disableClickEvent: true, reputation: 60 },
+                        suspicious: { name: 'Suspicious', y: 0, color: '#f57e00', disableClickEvent: true, reputation: 40 },
+                        high_risk: { name: 'High Risk', y: 0, color: '#f20000', disableClickEvent: true, reputation: 20 }
+                    };
+                    Ext.Array.each(me.data, function (row, idx) {
+                        var reputation = row['threat_prevention_reputation'];
+                        // see threat-prevention/js/common/References.js
+                        if (reputation >= 81 && reputation <= 100) { hits.trustworthy.y += row.value; }
+                        if (reputation >= 61 && reputation <= 80)  { hits.low_risk.y += row.value; }
+                        if (reputation >= 41 && reputation <= 60)  { hits.moderate_risk.y += row.value; }
+                        if (reputation >= 21 && reputation <= 40)  { hits.suspicious.y += row.value; }
+                        if (reputation >= 0 && reputation <= 20)   { hits.high_risk.value += row.value; }
+                    });
+                    
+                    // set series only for those who have hits
+                    Ext.Object.each(hits, function (key, hit) {
+                        if (hit.y > 0) {
+                            seriesData.push(hit);
                         }
-                        tableColumn =  TableConfig.getTableColumn(table, field);
-                        if(tableColumn && tableColumn.header){
-                            expandedInformation[tableColumn.header] = 
-                                TableConfig.getDisplayValue(row[field], table, field, rowRecord);
-                        }
-                    }
+                    });
 
-                    if (idx < entry.get('pieNumSlices')) {
-                        seriesData.push({
-                            name: seriesName,
-                            value: colVal,
-                            y: row.value,
-                            expandedInformation: expandedInformation,
-                            rowRecord: rowRecord
+                    /**
+                     * debatable
+                     * sort by number of hits or leave them order by risk (low to high)
+                     */
+                    // Ext.Array.sort(seriesData, function (a, b) {
+                    //     if (a.y < b.y) { return 1; }
+                    //     if (a.y > b.y) { return -1; }
+                    //     return 0;
+                    // });
+
+                    // process also data which will be shown in side Data Table View
+                    var tableData = [];
+                    Ext.Array.each(seriesData, function (row) {
+                        tableData.push({
+                            threat_prevention_reputation: row.reputation, // as number
+                            value: row.y
                         });
-                    } else {
-                        othersValue += row.value;
-                    }
-                });
+                    });
+
+                    // apply new data 
+                    me.data = tableData;
+                } else {
+                    Ext.Array.each(me.data, function (row, idx) {
+                        colField = entry.get('pieGroupColumn');
+                        colVal = row[colField];
+                        rowRecord = new Ext.data.Model(row);
+    
+                        if (seriesRenderer) {
+                            seriesName = seriesRenderer(parseInt(colVal, 10));
+                        } else {
+                            seriesName = !colVal ? 'None'.t() : TableConfig.getDisplayValue(colVal, table, colField, rowRecord);
+                        }
+    
+                        var tableColumn = null;
+                        var expandedInformation = {};
+                        for(var field in row){
+                            if(field == colField){
+                                continue;
+                            }
+                            tableColumn =  TableConfig.getTableColumn(table, field);
+                            if(tableColumn && tableColumn.header){
+                                expandedInformation[tableColumn.header] = 
+                                    TableConfig.getDisplayValue(row[field], table, field, rowRecord);
+                            }
+                        }
+    
+                        if (idx < entry.get('pieNumSlices')) {
+                            seriesData.push({
+                                name: seriesName,
+                                value: colVal,
+                                y: row.value,
+                                expandedInformation: expandedInformation,
+                                rowRecord: rowRecord
+                            });
+                        } else {
+                            othersValue += row.value;
+                        }
+                    });                    
+                }
 
                 // add the rest of the values as Others slice
                 if (othersValue > 0) {
@@ -964,6 +1025,15 @@ Ext.define('Ung.view.reports.GraphReport', {
             var me = this, vm = me.getViewModel(),
                 entry = vm.get('entry'),
                 value = event.point.value;
+
+            /**
+             * for Threat Prevention reputation pie charts disable click
+             * because the point value cannot represent a range of values
+             * NGFW-12881
+             */
+            if (event.point.disableClickEvent) {
+                return;
+            }
 
             var rowRecord = null;
             if(event.point.rowRecord){
