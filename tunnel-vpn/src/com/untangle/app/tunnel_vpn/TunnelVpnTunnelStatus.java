@@ -30,6 +30,7 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
     private long recvTotal = 0;
     private long recvLast = 0;
     private int tunnelId = 0;
+    private long lastTrafficCheck = 0;
 
     protected long restartCount = 0;
     protected long restartStamp = 0;
@@ -80,6 +81,9 @@ public class TunnelVpnTunnelStatus implements JSONString, Serializable
 
         public int getTunnelId() { return(tunnelId); }
         public void setTunnelId(int argValue) { this.tunnelId = argValue; }
+
+        public long getLastTrafficCheck() { return(lastTrafficCheck); }
+        public void setLastTrafficCheck(long argValue) { this.lastTrafficCheck = argValue; }
 
         public long getElapsedTime()
         {

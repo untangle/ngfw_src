@@ -118,7 +118,7 @@ public class RequestLine implements Serializable
      * Set the requestId
      * @param newValue
      */
-    public void setRequestId( long newValue ) { this.requestId = requestId; }
+    public void setRequestId( long newValue ) { this.requestId = newValue; }
 
     /**
      * Request method.

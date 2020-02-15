@@ -2,7 +2,6 @@
     "category": "Threat Prevention",
     "readOnly": true,
     "type": "EVENT_LIST",
-    "conditions": [],
     "defaultColumns": ["time_stamp","client_country","server_country","hostname","username","host","uri","c_client_addr","s_server_addr","s_server_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_id","threat_prevention_reputation","threat_prevention_categories"],
     "conditions": [
         {
