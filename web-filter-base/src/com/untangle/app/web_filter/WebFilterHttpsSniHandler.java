@@ -199,7 +199,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
                     logger.warn("Exception extracting host name from server certificate ", exn);
                 }
 
-                if(ldapName != null){
+                if (ldapName != null) {
                     // we only want the CN from the certificate
                     for (Rdn rdn : ldapName.getRdns()) {
                         if (rdn.getType().equals("CN") == false) continue;
@@ -231,7 +231,24 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             return;
         }
 
-        RequestLine requestLine = new RequestLine(sess.sessionEvent(), HttpMethod.GET, new byte[] { '/' });
+        /*
+         * Since we process traffic long before the http-casing gets the
+         * traffic, lots of http related stuff isn't available, so we use a
+         * dummy RequestLine to log our events. We don't want multiple apps
+         * parsing SNI to create duplicate event entries, so we check to see if
+         * there is an existing RequestLine attached. If so we use it otherwise
+         * we create and attach it ourselves.
+         */
+        RequestLine requestLine = null;
+
+        requestLine = (RequestLine) sess.globalAttachment(AppSession.KEY_HTTPS_SNI_REQUEST_LINE);
+        if (requestLine == null) {
+            requestLine = new RequestLine(sess.sessionEvent(), HttpMethod.GET, new byte[] { '/' });
+            sess.globalAttach(AppSession.KEY_HTTPS_SNI_REQUEST_LINE, requestLine);
+            logger.debug("Creating new requestLine: " + requestLine.toString());
+        } else {
+            logger.debug("Using existing requestLine: " + requestLine.toString());
+        }
 
         URI fakeUri;
         try {
@@ -258,14 +275,49 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             return;
         }
         requestLine.setRequestUri(fakeUri); // URI is unknown
-        RequestLineToken rlt = new RequestLineToken(requestLine, "HTTP/1.1");
+
+        /**
+         * Similar to the RequestLine logic above, this session may already have a requestlinetoken associated with it,
+         * we do not want to add multiple requestlinetokens for each individual app.
+         * 
+         * This logic should be consolidated/removed.
+         */
+
+        RequestLineToken rlt = null;
+
+        rlt = (RequestLineToken) sess.globalAttachment(AppSession.KEY_HTTPS_SNI_REQUEST_TOKEN);
+        if (rlt == null) {
+            rlt = new RequestLineToken(requestLine, "HTTP/1.1");
+            sess.globalAttach(AppSession.KEY_HTTPS_SNI_REQUEST_TOKEN, rlt);
+            logger.debug("Creating new requestLineToken: " + rlt.toString());
+        } else {
+            logger.debug("Using existing requestLine: " + rlt.toString());
+        }
 
         /**
          * Log this HTTPS hit to the http_events table
+         * 
+         * 
+         * Similar to the RequestLine and RequestLineToken logic above, 
+         * we do not want to create an additional HttpRequestEvent in the http_events
+         * table when a request comes through the SNI logic.
+         * 
+         * This logic should be consolidated/removed.
+         * 
          */
-        HttpRequestEvent evt = new HttpRequestEvent(requestLine, domain, null, 0);
-        requestLine.setHttpRequestEvent(evt);
-        this.app.logEvent(evt);
+        HttpRequestEvent evt = null;
+        
+        evt = (HttpRequestEvent) sess.globalAttachment(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT);
+
+        if (evt == null) {
+            evt = new HttpRequestEvent(requestLine, domain, null, 0);
+            requestLine.setHttpRequestEvent(evt);
+            this.app.logEvent(evt);
+            sess.globalAttach(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT, evt);
+            logger.debug("Creating new HttpRequestEvent: " + evt.toString());
+        } else {
+            logger.debug("Using existing HttpRequestEvent: " + evt.toString());
+        }
 
         // attach the hostname we extracted to the session
         sess.globalAttach(AppSession.KEY_HTTP_HOSTNAME, domain);
@@ -282,9 +334,9 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
-            if(redirect.getType() == HttpRedirect.RedirectType.BLOCK){
+            if (redirect.getType() == HttpRedirect.RedirectType.BLOCK) {
                 app.incrementBlockCount();
-            }else{
+            } else {
                 app.incrementRedirectCount();
             }
             WebFilterSSLEngine engine = new WebFilterSSLEngine(sess, redirect.getResponse());

@@ -53,7 +53,6 @@ class TunnelVpnMonitor implements Runnable
 
     private Thread thread = null;
     private volatile boolean isAlive = false;
-    private volatile long lastTrafficCheck = 0;
     private volatile long cycleCount = 0;
 
     /**
@@ -404,8 +403,8 @@ class TunnelVpnMonitor implements Runnable
          * If not time to write a traffic stats record just return
          */
         long currentTime = System.currentTimeMillis();
-        if (currentTime < (lastTrafficCheck + TRAFFIC_CHECK_INTERVAL)) return (status);
-        lastTrafficCheck = currentTime;
+        if (currentTime < (status.getLastTrafficCheck() + TRAFFIC_CHECK_INTERVAL)) return (status);
+        status.setLastTrafficCheck(currentTime);
 
         /*
          * The stats for each the tunnel will be cleared if the connection dies
