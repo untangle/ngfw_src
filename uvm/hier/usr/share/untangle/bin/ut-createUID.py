@@ -84,6 +84,8 @@ try:
         debian_distro='jessie'
     elif re.match(r'^9\.*',ver) != None:
         debian_distro='stretch'
+    elif re.match(r'^10\.*',ver) != None:
+        debian_distro='buster'
     else:
         print("Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro))
 except Exception,e:
