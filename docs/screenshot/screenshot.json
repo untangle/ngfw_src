@@ -249,6 +249,9 @@
     },{
         "url": "/admin/index.do#config/events/syslog",
         "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/events/emailtemplate",
+        "type": "remove_nav"
 
     },{
         "url": "/admin/index.do#config/email/outgoing-server",
@@ -411,6 +414,19 @@
         "type": "remove_nav",
         "extra_delay": 5
 
+    },{
+        "url": "/admin/index.do#apps/1/threat-prevention/status",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/threat-prevention/threats",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/threat-prevention/rules",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/threat-prevention/lookup",
+        "type": "remove_nav"
+              
     },{
         "url": "/admin/index.do#apps/1/spam-blocker/status",
         "type": "remove_nav"
@@ -1617,6 +1633,88 @@
         "type": "remove_report_nav"
       },{
         "url": "/admin/index.do#reports?cat=virus-blocker-lite&rep=clean-ftp-events",
+        "type": "remove_report_nav"
+
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=web-traffic-summary",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-traffic-summary",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=web-top-scanned-threats",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=web-top-blocked-threats",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=web-top-scanned-categories",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=web-top-blocked-categories",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=web-top-blocked-countries",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=web-top-scanned-hosts",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=web-top-blocked-hosts",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-scanned-threats-(by-client)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-blocked-threats-(by-client)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-scanned-threats-(by-server)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-blocked-threats-(by-server)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-scanned-categories-(by-client)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-blocked-categories-(by-client)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-scanned-categories-(by-server)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-blocked-categories-(by-server)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-blocked-countries-(by-client)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-blocked-countries-(by-server)",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-scanned-clients",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-blocked-clients",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-scanned-servers",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-top-blocked-server",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=all-web-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=blocked-web-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-all-events",
+        "type": "remove_report_nav"
+      },{
+        "url": "/admin/index.do#reports?cat=threat-prevention&rep=non-web-blocked-events",
         "type": "remove_report_nav"
 
       },{
