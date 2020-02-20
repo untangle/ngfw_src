@@ -287,6 +287,14 @@ public class ThreatPreventionDecisionEngine
             }
         }
 
+        Integer clientReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
+        if(clientReputation == null){
+            clientReputation = 0;
+        }
+        Integer clientThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES);
+        if(clientThreatmask == null){
+            clientThreatmask = 0;
+        }
         Integer serverReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
         if(serverReputation == null){
             serverReputation = 0;
@@ -304,6 +312,8 @@ public class ThreatPreventionDecisionEngine
             match && block, 
             match && flag, 
             ruleIndex != null ? ruleIndex : 0, 
+            clientReputation,
+            clientThreatmask,
             serverReputation,
             serverThreatmask
             );
