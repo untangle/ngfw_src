@@ -93,7 +93,7 @@ except Exception,e:
     print("Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro))
 
 # last two bytes in UID have special meaning 
-platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8', 'wheezy':'9', 'jessie':'3', 'stretch':'4' }
+platforms = { 'sarge':'0', 'etch':'1', 'sid':'2', 'lenny':'7', 'squeeze':'8', 'wheezy':'9', 'jessie':'3', 'stretch':'4', 'buster':'5' }
 versions = { 'hardware':'1', 'iso':'2' }
 
 # generate UID (mostly random bytes)
