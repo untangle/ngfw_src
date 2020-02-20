@@ -67,10 +67,12 @@ human_names = {
 'entity': 'Entity',
 'event_id': 'Event ID',
 'event_info': 'Event Type',
+'event_type': 'Event Type',
 'filter_prefix': 'Filter Block',
 'firewall_blocked': 'Firewall ' + 'Blocked',
 'firewall_flagged': 'Firewall ' + 'Flagged',
 'firewall_rule_index': 'Firewall ' + 'Rule ID',
+'flagged': 'Flagged',
 'gen_id': 'Grouping ID',
 'goodbye_stamp': 'End Time',
 'hit_bytes': 'Hit Bytes',
@@ -88,8 +90,10 @@ human_names = {
 'load_5': 'CPU load (5-min)',
 'local': 'Local',
 'local_addr': 'Local Address',
+'local_address': 'Local Address',
 'login': 'Login',
 'login_name': 'Login Name',
+'login_type': 'Login Type',
 'mac_address': 'MAC Address',
 'mem_buffers': 'Memory Buffers',
 'mem_cache': 'Memory Cache',
@@ -123,6 +127,8 @@ human_names = {
 'remote_address': 'Remote Address',
 'remote_port': 'Remote Port',
 'request_id': 'Request ID',
+'rid': 'Rule ID',
+'rule_id': 'Rule ID',
 'rx_bytes': 'Bytes Received',
 'rx_rate': 'Rx Rate',
 's2c_bytes': 'From-Server Bytes',
@@ -135,6 +141,7 @@ human_names = {
 's_server_addr': 'Server-side Server Address',
 's_server_port': 'Server-side Server Port',
 'sender': 'Sender',
+'server_address': 'Server IP Address',
 'server_country': 'Server Country',
 'server_intf': 'Server Interface',
 'server_latitude': 'Server Latitude',
@@ -167,6 +174,17 @@ human_names = {
 'tags': 'Tags',
 'term': 'Search Term',
 'time_stamp': 'Timestamp',
+'threat_prevention_blocked': 'Threat Prevention ' + 'Blocked',
+'threat_prevention_flagged': 'Threat Prevention ' + 'Flagged',
+'threat_prevention_reason': 'Threat Prevention ' + 'Reason',
+'threat_prevention_rule_id': 'Threat Prevention ' + 'Rule Id',
+'threat_prevention_reputation': 'Threat Prevention ' + 'Reputation',
+'threat_prevention_client_reputation': 'Threat Prevention ' + 'Client Reputation',
+'threat_prevention_server_reputation': 'Threat Prevention ' + 'Server Reputation',
+'threat_prevention_categories': 'Threat Prevention ' + 'Categories',
+'threat_prevention_client_categories': 'Threat Prevention ' + 'Client Categories',
+'threat_prevention_server_categories': 'Threat Prevention ' + 'Server Categories',
+'tunnel_description': 'Tunnel Description',
 'tunnel_name': 'Tunnel Name',
 'tx_bytes': 'Bytes Sent',
 'tx_rate': 'Tx Rate',
@@ -181,6 +199,8 @@ human_names = {
 'virus_blocker_name': 'Virus Blocker ' + 'Name',
 'web_filter_blocked': 'Web Filter ' + 'Blocked',
 'web_filter_category': 'Web Filter ' + 'Category',
+'web_filter_category_id': 'Web Filter ' + 'Category Id',
+'web_filter_rule_id': 'Web Filter ' + 'Rule Id',
 'web_filter_flagged': 'Web Filter ' + 'Flagged',
 'web_filter_reason': 'Web Filter ' + 'Reason',
 }
@@ -272,7 +292,7 @@ dict['ipsec_vpn_events'].update({
     'local_address' : 'The local address of the tunnel',
     'remote_address' : 'The remote address of the tunnel',
     'tunnel_description' : 'The description of the tunnel',
-    'type': 'The type of the event (CONNECT,DISCONNECT)',
+    'event_type': 'The type of the event (CONNECT,DISCONNECT)',
 })
 
 dict['tunnel_vpn_stats'] = copy.deepcopy(generic)
@@ -290,6 +310,7 @@ dict['tunnel_vpn_events'].update({
     'local_address' : 'The local address assigned the client',
     'tunnel_name' : 'The name the tunnel',
     'type': 'The type of the event (CONNECT,DISCONNECT)',
+    'event_type': 'The type of the event (CONNECT,DISCONNECT)',
 })
 
 dict['smtp_tarpit_events'] = copy.deepcopy(generic)
@@ -413,8 +434,15 @@ dict['http_events'].update({
     'ad_blocker_action' : 'This action of Ad Blocker on this request',
     'web_filter_reason' : 'This reason Web Filter blocked/flagged this request',
     'web_filter_category' : 'This category according to Web Filter',
+    'web_filter_category_id' : 'This numeric category according to Web Filter',
+    'web_filter_rule_id' : 'This numeric rule according to Web Filter',
     'web_filter_blocked' : 'If Web Filter blocked this request',
     'web_filter_flagged' : 'If Web Filter flagged this request',
+    'threat_prevention_blocked' : 'If Threat Prevention blocked this request',
+    'threat_prevention_flagged' : 'If Threat Prevention flagged this request',
+    'threat_prevention_rule_id' : 'This numeric rule according to Threat Prevention',
+    'threat_prevention_reputation' : 'This numeric threat reputation',
+    'threat_prevention_categories' : 'This bitmask of threat categories',
 })
 
 dict['http_query_events'] = copy.deepcopy(generic)
@@ -426,6 +454,8 @@ dict['http_query_events'].update({
     'term' : 'The search term',
     'host' : 'The HTTP host',
     'web_filter_reason' : 'This reason Web Filter blocked/flagged this request',
+    'blocked' : 'If Web Filter blocked this search term',
+    'flagged' : 'If Web Filter flagged this search term',
 })
 
 dict['wan_failover_action_events'] = copy.deepcopy(generic)
@@ -450,6 +480,7 @@ dict['directory_connector_login_events'] = copy.deepcopy(generic)
 dict['directory_connector_login_events'].update({
     'table_description' : 'This table stores Directory Connector username events. There is one row for each status update of an IP/username.',
     'login_name' : 'The login name',
+    'login_type' : 'The login type',
     'domain' : 'The AD domain',
     'type' : 'The type of event (I=Login,U=Update,O=Logout)',
     'client_addr' : 'The client IP address',
@@ -467,9 +498,11 @@ dict['intrusion_prevention_events'].update({
     'dest_port' : 'The destination port of the packet (if applicable)',
     'protocol' : 'The protocol of the packet',
     'blocked' : 'If the packet was blocked/dropped',
-    'category' : 'The application specific grouping',
-    'classtype' : 'The generalized threat rule grouping (unrelated to gen_id)',
-    'msg' : 'The "title" or "description" of the rule',
+    'category' : 'The application specific grouping for the signature',
+    'classtype' : 'The generalized threat signature grouping (unrelated to gen_id)',
+    'msg' : 'The "title" or "description" of the signature',
+    'rid' : 'The rule id',
+    'rule_id' : 'The rule id',
 })
 
 dict['alerts'] = copy.deepcopy(generic)
@@ -559,7 +592,15 @@ dict['sessions'].update({
     'ssl_inspector_ruleid' : 'The matching rule in SSL Inspector rule (if any)',
     'ssl_inspector_status' : 'The status/action of the SSL session (INSPECTED,IGNORED,BLOCKED,UNTRUSTED,ABANDONED)',
     'ssl_inspector_detail' : 'Additional text detail about the SSL connection (SNI, IP Address)',
-    'tags' : 'The tags on this session'
+    'tags' : 'The tags on this session',
+    'threat_prevention_blocked' : 'If Threat Prevention blocked',
+    'threat_prevention_flagged' : 'If Threat Prevention flagged',
+    'threat_prevention_reason' : 'Threat Prevention reason',
+    'threat_prevention_rule_id' : 'Numeric rule id of Threat Prevention',
+    'threat_prevention_client_reputation' : 'Numeric client reputation of Threat Prevention',
+    'threat_prevention_client_categories' : 'Bitmask client categories of Threat Prevention',
+    'threat_prevention_server_reputation' : 'Numeric server reputation of Threat Prevention',
+    'threat_prevention_server_categories' : 'Bitmask server categories of Threat Prevention',
 })
 
 dict['session_minutes'] = copy.deepcopy(dict['sessions'])
