@@ -19,20 +19,24 @@ public class ThreatPreventionHttpEvent extends LogEvent
     private Boolean blocked;
     private Boolean flagged;
     private Integer ruleId = 0;
-    private Integer reputation = 0;
-    private Integer categories = 0;
+    private Integer clientReputation = 0;
+    private Integer clientCategories = 0;
+    private Integer serverReputation = 0;
+    private Integer serverCategories = 0;
     
     public ThreatPreventionHttpEvent() { }
 
-    public ThreatPreventionHttpEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Integer ruleId, int reputation, int categories)
+    public ThreatPreventionHttpEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Integer ruleId, int clientReputation, int clientCategories, int serverReputation, int serverCategories)
     {
         this.requestLine = requestLine;
         this.sessionEvent = sessionEvent;
         this.blocked = blocked;
         this.flagged = flagged;
         this.ruleId = ruleId;
-        this.reputation = reputation;
-        this.categories = categories;
+        this.clientReputation = clientReputation;
+        this.clientCategories = clientCategories;
+        this.serverReputation = serverReputation;
+        this.serverCategories = serverCategories;
     }
 
     public Boolean getBlocked() { return blocked; }
@@ -44,11 +48,17 @@ public class ThreatPreventionHttpEvent extends LogEvent
     public Integer getRuleId() { return ruleId; }
     public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
 
-    public Integer getReputation() { return reputation; }
-    public void setReputation( Integer newValue ) { this.reputation = newValue; }
+    public Integer getClientReputation() { return clientReputation; }
+    public void setClientReputation( Integer newValue ) { this.clientReputation = newValue; }
 
-    public Integer getCategories() { return categories; }
-    public void setCategories( Integer newValue ) { this.categories = newValue; }
+    public Integer getClientCategories() { return clientCategories; }
+    public void setClientCategories( Integer newValue ) { this.clientCategories = newValue; }
+
+    public Integer getServerReputation() { return serverReputation; }
+    public void setServerReputation( Integer newValue ) { this.serverReputation = newValue; }
+
+    public Integer getServerCategories() { return serverCategories; }
+    public void setServerCategories( Integer newValue ) { this.serverCategories = newValue; }
 
     public RequestLine getRequestLine() { return requestLine; }
     public void setRequestLine(RequestLine newValue) { this.requestLine = newValue; }
@@ -65,8 +75,10 @@ public class ThreatPreventionHttpEvent extends LogEvent
             "threat_prevention_blocked  = ?, " + 
             "threat_prevention_flagged  = ?, " +
             "threat_prevention_rule_id  = ?, " +
-            "threat_prevention_reputation = ?, " +
-            "threat_prevention_categories = ? " +
+            "threat_prevention_client_reputation = ?, " +
+            "threat_prevention_client_categories = ?, " +
+            "threat_prevention_server_reputation = ?, " +
+            "threat_prevention_server_categories = ? " +
             "WHERE " +
             "request_id = ? ";
 
@@ -76,8 +88,10 @@ public class ThreatPreventionHttpEvent extends LogEvent
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setBoolean(++i, getFlagged());
         pstmt.setInt(++i, getRuleId());
-        pstmt.setInt(++i, getReputation());
-        pstmt.setInt(++i, getCategories());
+        pstmt.setInt(++i, getClientReputation());
+        pstmt.setInt(++i, getClientCategories());
+        pstmt.setInt(++i, getServerReputation());
+        pstmt.setInt(++i, getServerCategories());
         pstmt.setLong(++i, requestLine.getRequestId());
 
         pstmt.addBatch();
@@ -95,7 +109,7 @@ public class ThreatPreventionHttpEvent extends LogEvent
         else
             actionStr = I18nUtil.marktr("logged");
 
-        String summary = "Threat Prevention " + actionStr + " " + requestLine.getUrl() + " (" + getReputation() + "," + getCategories() + ")";
+        String summary = "Threat Prevention " + actionStr + " " + requestLine.getUrl() + " (" + getClientReputation() + "," + getClientCategories() + getServerReputation() + "," + getServerCategories() + "," +")";
         return summary;
     }
 

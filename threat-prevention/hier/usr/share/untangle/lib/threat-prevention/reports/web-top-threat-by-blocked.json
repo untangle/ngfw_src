@@ -8,7 +8,7 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "threat_prevention_reputation",
+    "pieGroupColumn": "threat_prevention_server_reputation",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
@@ -18,7 +18,7 @@
             "value": "true"
         },{
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_reputation",
+            "column": "threat_prevention_server_reputation",
             "operator": ">",
             "value": "0"
         }
