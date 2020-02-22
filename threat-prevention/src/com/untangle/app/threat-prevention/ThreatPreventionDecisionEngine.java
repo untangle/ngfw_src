@@ -239,6 +239,7 @@ public class ThreatPreventionDecisionEngine
          * this stores the corresponding reason for the flag/block
          */
         URI requestUri = null;
+        int pos;
 
         try {
             requestUri = new URI(CONSECUTIVE_SLASHES_URI_PATTERN.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll("/"));
@@ -266,6 +267,17 @@ public class ThreatPreventionDecisionEngine
 
         uri = CONSECUTIVE_SLASHES_PATH_PATTERN.matcher(uri).replaceAll("/");
 
+        /*
+         * We have seen a case where the host in the "Host"
+         * header actually has a port number appended to it
+         * bctid doesn't work with the port appended to the
+         * host, so strip it here if it exists (NGFW-12877)
+         */
+        pos = host.indexOf(':');
+        if (pos > 0) {
+            host = host.substring(0, pos);
+        }
+
         Boolean match = false;
         if(addressQuery(clientIp, sess.getServerAddr(), host + uri, sess)){
             match = isMatch(sess);
@@ -287,6 +299,14 @@ public class ThreatPreventionDecisionEngine
             }
         }
 
+        Integer clientReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
+        if(clientReputation == null){
+            clientReputation = 0;
+        }
+        Integer clientThreatmask = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES);
+        if(clientThreatmask == null){
+            clientThreatmask = 0;
+        }
         Integer serverReputation = (Integer) sess.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
         if(serverReputation == null){
             serverReputation = 0;
@@ -304,6 +324,8 @@ public class ThreatPreventionDecisionEngine
             match && block, 
             match && flag, 
             ruleIndex != null ? ruleIndex : 0, 
+            clientReputation,
+            clientThreatmask,
             serverReputation,
             serverThreatmask
             );

@@ -2,10 +2,10 @@
     "category": "Threat Prevention",
     "readOnly": true,
     "type": "EVENT_LIST",
-    "defaultColumns": ["time_stamp","client_country","server_country","hostname","username","host","uri","c_client_addr","s_server_addr","s_server_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_id","threat_prevention_reputation","threat_prevention_categories"],
+    "defaultColumns": ["time_stamp","client_country","server_country","hostname","username","host","uri","c_client_addr","s_server_addr","s_server_port","threat_prevention_blocked","threat_prevention_flagged","threat_prevention_rule_id","threat_prevention_client_reputation","threat_prevention_client_categories","threat_prevention_server_reputation","threat_prevention_server_categories"],
     "conditions": [
         {
-            "column": "threat_prevention_reputation",
+            "column": "threat_prevention_server_reputation",
             "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "is not",
             "value": "NULL"

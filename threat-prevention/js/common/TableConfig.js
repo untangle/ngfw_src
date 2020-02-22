@@ -13,10 +13,6 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 col: { text: 'Blocked'.t() + ' (Threat Prevention)', filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
                 fld: { type: 'boolean' }
             },
-            threat_prevention_categories: {
-                col: { text: 'Categories'.t() + ' (Threat Prevention)', width: 150 },
-                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
-            },
             threat_prevention_client_categories: {
                 col: { text: 'Client Categories'.t() + ' (Threat Prevention)', width: 150 },
                 fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.category }
@@ -32,10 +28,6 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             threat_prevention_reason: {
                 col: { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
                 fld: { type: 'string' }
-            },
-            threat_prevention_reputation: {
-                col: { text: 'Reputation'.t() + ' (Threat Prevention)', width: 150 },
-                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.reputation }
             },
             threat_prevention_rule_id: { // should use converter instead
                 col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120, renderer: Ung.common.Renderer.threatprevention.ruleId },
@@ -65,8 +57,10 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 'threat_prevention_blocked',
                 'threat_prevention_flagged',
                 'threat_prevention_rule_id',
-                'threat_prevention_reputation',
-                'threat_prevention_categories'
+                'threat_prevention_client_reputation',
+                'threat_prevention_client_categories',
+                'threat_prevention_server_reputation',
+                'threat_prevention_server_categories'
             ]
         }
     },
@@ -107,7 +101,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             select: Ung.common.TableConfig.threatprevention.getIpDetails
         };
         Map.listeners['http_events'] = {
-            select: Ung.common.TableConfig.threatprevention.getUrlDetails
+            select: Ung.common.TableConfig.threatprevention.getHttpDetails
         };
 
 
@@ -359,12 +353,15 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
      * @param {*} element Currently selected grid row
      * @param {*} record Current grid row record
      */
-    getUrlDetails: function(record, cb) {
+    getHttpDetails: function(record, cb) {
         var policyId,
             uriAddress = record.get('host'),
-            reputation = record.get('threat_prevention_reputation');
+            reputation = record.get('threat_prevention_server_reputation'),
+            clientIpAddress = record.get('c_client_addr'),
+            clientReputation = record.get('threat_prevention_client_reputation'),
+            ipAddresses = [];
 
-        if (!reputation) { return; }
+        if (!reputation && !clientReputation) { return; }
 
         if (uriAddress != undefined) {
             uriAddress += record.get('uri');
@@ -382,38 +379,77 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             }
         });
 
-        Ext.Deferred.sequence([
-            Rpc.asyncPromise(
-                'rpc.reportsManager.getReportInfo',
-                'threat-prevention',
-                policyId,
-                'getUrlHistory',
-                [uriAddress])
-        ], this)
-        .then(function(results) {
-            var propertyRecord = [];
-            var propertyCategory = null;
-            results.forEach( function(result){
-                result.forEach( function(answer){
-                    /**
-                     * Walk detail maps for this answer.  Each call can make multiple API queries.
-                     */
-                    Ext.Object.each(
-                        Ung.common.TableConfig.threatprevention.detailMaps,
-                        function(detail, detailMap){
-                            if(detail in answer['queries']){
-                                propertyCategory = Ext.String.format('Threat Prevention: {0}: {1}'.t(), detailMap.name, 'Server'.t());
-                                Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, detailMap['fields'], answer['queries'][detail]);
+        if(reputation){
+            Ext.Deferred.sequence([
+                Rpc.asyncPromise(
+                    'rpc.reportsManager.getReportInfo',
+                    'threat-prevention',
+                    policyId,
+                    'getUrlHistory',
+                    [uriAddress])
+            ], this)
+            .then(function(results) {
+                var propertyRecord = [];
+                var propertyCategory = null;
+                results.forEach( function(result){
+                    result.forEach( function(answer){
+                        /**
+                         * Walk detail maps for this answer.  Each call can make multiple API queries.
+                         */
+                        Ext.Object.each(
+                            Ung.common.TableConfig.threatprevention.detailMaps,
+                            function(detail, detailMap){
+                                if(detail in answer['queries']){
+                                    propertyCategory = Ext.String.format('Threat Prevention: {0}: {1}'.t(), detailMap.name, 'Server'.t());
+                                    Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, detailMap['fields'], answer['queries'][detail]);
+                                }
                             }
-                        }
-                    );
+                    )   ;
+                    });
                 });
+                cb(propertyRecord);
+            }, function(ex) {
+                cb();
+                console.log(ex);
             });
-            cb(propertyRecord);
-        }, function(ex) {
-            cb();
-            console.log(ex);
-        });
+        }
+
+        if(clientReputation){
+            ipAddresses.push(clientIpAddress);
+            Ext.Deferred.sequence([
+                Rpc.asyncPromise(
+                    'rpc.reportsManager.getReportInfo',
+                    'threat-prevention',
+                    policyId,
+                    'getIpHistory',
+                    ipAddresses)
+            ], this)
+             .then(function(results){
+                var propertyRecord = [];
+                var propertyCategory = null;
+                results.forEach( function(result){
+                    result.forEach( function(answer){
+                        /**
+                         * Walk detail maps for this answer.  Each call can make multiple API queries.
+                         */
+                        Ext.Object.each(
+                            Ung.common.TableConfig.threatprevention.detailMaps,
+                            function(detail, detailMap){
+                                if(detail in answer['queries']){
+                                    var ipAddress = "ip" in answer ? answer["ip"] : answer["value"];
+                                    propertyCategory = Ext.String.format('Threat Prevention: {0}: {1}'.t(), detailMap.name, 'Client'.t());
+                                    Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, detailMap['fields'], answer['queries'][detail]);
+                                }
+                            }
+                        );
+                    });
+                });
+                cb(propertyRecord);
+            }, function(ex) {
+                cb();
+                console.log(ex);
+            });
+        }
     },
 
     /**
@@ -489,7 +525,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
     /*
      * Convert multi-level json object into a single-level key-pair flattened json object.
      */
-    maxKeyIndex: 10,
+    maxKeyIndex: 9,
     toPropertyRecord: function(propertyRecord, propertyCategory, fields, obj, fieldPath, namePath, currentIndex) {
         fieldPath = fieldPath || [];
         namePath = namePath || [];
@@ -507,7 +543,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     if(obj.length > 1){
                         newName += ' ' + ( keyIndex + 1 );
                     }
-                    Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, fields, value, fieldPath, namePath.slice(0,namePath.length-2).concat(newName), keyIndex);
+                    Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, fields, value, fieldPath, namePath.slice(0,namePath.length-1).concat(newName), keyIndex);
                 }else{
                     Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, fields[key] && 'fields' in fields[key] ? fields[key]['fields'] : fields, value, fieldPath.concat(key), namePath.concat(fields[key] && 'name' in fields[key] ? fields[key]['name'] : key));
                 }
@@ -519,7 +555,6 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 addProperty = false;
             }
             if(addProperty == true){
-                // append to property record array
                 propertyRecord.push({
                     category: propertyCategory,
                     name: namePath.join(': '),

@@ -99,9 +99,13 @@ Ext.define('Ung.view.reports.EventReport', {
 
                 /**
                  * store table info, and update the grid settings
-                 * only on table change
+                 * only on initialization and when the default columns are different than shown
                  */
-                if (!me.table || me.table !== entry.get('table')) {
+
+                // This component query will find displayed columns on current grid display, and convert them into an array of dataindexes
+                var currentCols = this.getView().down('grid').query('gridcolumn:not([hidden])').map(function(item){return item.dataIndex;});
+
+                if (!me.table || me.table !== entry.get('table') || !Ext.Array.equals(entry.get('defaultColumns'), currentCols)) {
                     me.table = entry.get('table');
                     me.setupGrid();
                 }
