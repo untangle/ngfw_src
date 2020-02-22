@@ -8,12 +8,12 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "threat_prevention_categories",
+    "pieGroupColumn": "threat_prevention_server_categories",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "column": "threat_prevention_categories",
+            "column": "threat_prevention_server_categories",
             "operator": ">",
             "value": "0"
         }
