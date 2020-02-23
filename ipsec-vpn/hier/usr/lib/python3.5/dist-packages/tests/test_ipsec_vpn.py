@@ -187,7 +187,7 @@ class IPsecTests(NGFWTestCase):
         global tunnelUp
         if (ipsecHostResult != 0):
             raise unittest.SkipTest("No paried IPSec server available")
-        pre_events_enabled = global_functions.get_app_metric_value(app,"enabled")
+        pre_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         pairMatchNotFound = True
@@ -215,7 +215,7 @@ class IPsecTests(NGFWTestCase):
         tunnelUp = True
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_enabled = global_functions.get_app_metric_value(app,"enabled")
+        post_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
         assert(pre_events_enabled < post_events_enabled)
                
     def test_030_restartNetworkVerifyIpsecTunnel(self):
@@ -318,7 +318,7 @@ class IPsecTests(NGFWTestCase):
     def test_060_createIpsecTunnelHostname(self):
         if (ipsecHostResult != 0):
             raise unittest.SkipTest("No paried IPSec server available")
-        pre_events_enabled = global_functions.get_app_metric_value(app,"enabled")
+        pre_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         pairMatchNotFound = True
@@ -345,7 +345,7 @@ class IPsecTests(NGFWTestCase):
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
             ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
-        post_events_enabled = global_functions.get_app_metric_value(app,"enabled")
+        post_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
         nukeIPSecTunnels(self._app)
         assert (ipsecHostLANResult == 0)
         # Check to see if the faceplate counters have incremented. 
