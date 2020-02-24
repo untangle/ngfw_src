@@ -26,16 +26,20 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 data: {
                     description: 'The <b>Connectivity Test</b> verifies a working connection to the Internet.'.t(),
                     emptyText: 'Connectivity Test Output'.t(),
-                    command: [
-                        '/bin/bash',
-                        '-c',
-                        ['echo -n "Testing DNS ... " ; success="Successful";',
-                            'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                            'echo -n "Testing TCP Connectivity ... ";',
-                            'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;',
-                            'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                            'echo "Test ${success}!"'].join('')
-                    ]
+                },
+                formulas: {
+                    command: function (get) {
+                        return [
+                            '/bin/bash',
+                            '-c',
+                            ['echo -n "Testing DNS ... " ; success="Successful";',
+                                'dig ' + get('dnsTestHost') + ' > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                                'echo -n "Testing TCP Connectivity ... ";',
+                                'echo "GET /" | netcat -q 0 -w 15 ' + get('tcpTestHost') + ' 80 > /dev/null 2>&1;',
+                                'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                                'echo "Test ${success}!"'].join('')
+                        ];
+                    }
                 }
             }
         }, {

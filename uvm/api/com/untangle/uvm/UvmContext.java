@@ -227,6 +227,16 @@ public interface UvmContext
     EventManager eventManager();
 
     /**
+     * Get the Uri translation manager
+     */
+    UriManager uriManager();
+
+    /**
+     * Get the Authentication manager
+     */
+    AuthenticationManager authenticationManager();
+
+    /**
      * Get the UploadManager
      *
      * @return the UploadManager
