@@ -367,9 +367,9 @@ public class ThreatPreventionApp extends AppBase
                 logger.warn("getReportnfo:", e);
             }
         }else if(key.equals("getUrlHistory")){
-            return webrootQuery.getUrlHistory(arguments);
+            return webrootQuery != null ? webrootQuery.getUrlHistory(arguments) : null;
         }else if(key.equals("getIpHistory")){
-            return webrootQuery.getIpHistory(arguments);
+            return webrootQuery != null ? webrootQuery.getIpHistory(arguments) : null;
         }else if(key.equals("rules")){
             result = new JSONArray();
             try{
