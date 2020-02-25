@@ -438,7 +438,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
             });
 
             Ext.Array.each(TableConfig.tableConfig['sessions'].columns, function (column) {
-                columnsComboStore.push([column.dataIndex, column.header + ' [' + column.dataIndex + ']']);
+                columnsComboStore.push([column.dataIndex, column.text + ' [' + column.dataIndex + ']']);
             });
 
             var dialog = me.getView().add({
@@ -474,7 +474,7 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                 change: function (el, table) {
                                     var columns = TableConfig.tableConfig[table].columns, store = [];
                                     Ext.Array.each(columns, function (column) {
-                                        store.push([column.dataIndex, column.header + ' [' + column.dataIndex + ']']);
+                                        store.push([column.dataIndex, column.text + ' [' + column.dataIndex + ']']);
                                     });
                                     el.nextNode().setStore(store);
                                     el.nextNode().setValue(store[0]);

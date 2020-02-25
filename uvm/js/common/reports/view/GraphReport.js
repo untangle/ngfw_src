@@ -669,9 +669,10 @@ Ext.define('Ung.view.reports.GraphReport', {
                             if(field == colField){
                                 continue;
                             }
+                            // below tableColumn seem to be null all the time
                             tableColumn =  TableConfig.getTableColumn(table, field);
-                            if(tableColumn && tableColumn.header){
-                                expandedInformation[tableColumn.header] = 
+                            if(tableColumn && tableColumn.text){
+                                expandedInformation[tableColumn.text] = 
                                     TableConfig.getDisplayValue(row[field], table, field, rowRecord);
                             }
                         }

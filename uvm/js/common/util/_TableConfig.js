@@ -200,11 +200,11 @@ Ext.define('TableConfig', {
             });
             TableConfig.tableConfig[table].columns.forEach( function( column ){
                 if(column.width === undefined){
-                    console.log(table + ":" + column.header + ", no width");
+                    console.log(table + ":" + column.text + ", no width");
                 }
                 if(!column.filter &&
                     ( !column.xtype || column.xtype != "actioncolumn") ){
-                    console.log(table + ": column=" + column.header + ", no filter");
+                    console.log(table + ": column=" + column.text + ", no filter");
                 }
             });
         }
