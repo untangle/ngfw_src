@@ -354,8 +354,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
      * @param {*} record Current grid row record
      */
     getHttpDetails: function(record, cb) {
-        var policyId,
-            uriAddress = record.get('host'),
+        var uriAddress = record.get('host'),
             reputation = record.get('threat_prevention_server_reputation'),
             clientIpAddress = record.get('c_client_addr'),
             clientReputation = record.get('threat_prevention_client_reputation'),
@@ -367,24 +366,12 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             uriAddress += record.get('uri');
         }
 
-        /**
-         * !!!!! Very important, needs to be changed
-         * Because of the converter used on policy ids
-         * the record.get('policy_id') returns the name of the policy, not the ID
-         * because of that the id needs to be identified from the policies map
-         */
-        Ext.Object.each(Map.policies, function(key, val) {
-            if (val === record.get('policy_id')) {
-                policyId = key;
-            }
-        });
-
         if(reputation){
             Ext.Deferred.sequence([
                 Rpc.asyncPromise(
                     'rpc.reportsManager.getReportInfo',
                     'threat-prevention',
-                    policyId,
+                    -1,
                     'getUrlHistory',
                     [uriAddress])
             ], this)
@@ -420,7 +407,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 Rpc.asyncPromise(
                     'rpc.reportsManager.getReportInfo',
                     'threat-prevention',
-                    policyId,
+                    -1,
                     'getIpHistory',
                     ipAddresses)
             ], this)
@@ -459,22 +446,9 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
     getIpDetails: function(record, cb) {
         var clientIpAddress = record.get('c_client_addr'),
             serverIpAddress = record.get('s_server_addr'),
-            policyId,
             clientReputation = record.get('threat_prevention_client_reputation'),
             serverReputation = record.get('threat_prevention_server_reputation'),
             ipAddresses = [];
-
-        /**
-         * !!!!! Very important, needs to be changed
-         * Because of the converter used on policy ids
-         * the record.get('policy_id') returns the name of the policy, not the ID
-         * because of that the id needs to be identified from the policies map
-         */
-        Ext.Object.each(Map.policies, function(key, val) {
-            if (val === record.get('policy_id')) {
-                policyId = key;
-            }
-        });
 
         if (clientReputation != null && clientReputation > 0) {
             ipAddresses.push(clientIpAddress);
@@ -491,7 +465,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             Rpc.asyncPromise(
                 'rpc.reportsManager.getReportInfo',
                 'threat-prevention',
-                policyId,
+                -1,
                 'getIpHistory',
                 ipAddresses)
         ], this)
