@@ -854,15 +854,163 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'integer' }
         },
 
+        /**
+         * non table specific column
+         * used in Settings Changes Events listing
+         */
+        differences: {
+            col: {
+                text: "Differences".t(),
+                dataIndex: 'settings_file',
+                width: Renderer.actionWidth,
+                xtype: 'actioncolumn',
+                align: 'center',
+                tdCls: 'action-cell',
+                hideable: false,
+                sortable: false,
+                hidden: false,
+                menuDisabled: true,
+                iconCls: 'fa fa-search fa-black',
+                tooltip: "Show difference between previous version".t(),
+                handler: function(view, rowIndex, colIndex, item, e, record) {
+                    if( !this.diffWindow ) {
+                        var columnRenderer = function(value, meta, record) {
+                            var action = record.get("action");
+                            if( action == 3){
+                                meta.style = "background-color:#ffff99";
+                            }else if(action == 2) {
+                                meta.style = "background-color:#ffdfd9";
+                            }else if(action == 1) {
+                                meta.style = "background-color:#d9f5cb";
+                            }
+                            return value;
+                        };
+                        this.diffWindow = Ext.create('Ext.window.Window',{
+                            name: 'diffWindow',
+                            title: 'Settings Difference'.t(),
+                            closeAction: 'hide',
+                            width: Ext.getBody().getViewSize().width - 20,
+                            height:Ext.getBody().getViewSize().height - 20,
+                            layout: 'fit',
+                            items: [{
+                                xtype: 'ungrid',
+                                name: 'gridDiffs',
+                                initialLoad: function() {},
+                                cls: 'diff-grid',
+                                reload: function(handler) {
+                                    this.getStore().getProxy().setData([]);
+                                    this.getStore().load();
+                                    rpc.settingsManager.getDiff(Ext.bind(function(result,exception) {
+                                        var diffWindow = this.up("window[name=diffWindow]");
+                                        if (diffWindow ==null || !diffWindow.isVisible()) {
+                                            return;
+                                        }
+                                        if(exception) {
+                                            this.getView().setLoading(false);
+                                            Util.handleException(exception);
+                                            return;
+                                        }
+                                        var diffData = [];
+                                        var diffLines = result.split("\n");
+                                        var action;
+                                        for( var i = 0; i < diffLines.length; i++) {
+                                            var previousAction = diffLines[i].substr(0,1);
+                                            var previousLine = diffLines[i].substr(1,510);
+                                            var currentAction = diffLines[i].substr(511,1);
+                                            var currentLine = diffLines[i].substr(512);
+        
+                                            if( previousAction != "<" && previousAction != ">") {
+                                                previousLine = previousAction + previousLine;
+                                            }
+                                            if( currentAction != "<" && currentAction != ">" && currentAction != "|"){
+                                                currentLine = currentAction + currentLine;
+                                                currentAction = -1;
+                                            }
+        
+                                            if( currentAction == "|" ) {
+                                                action = 3;
+                                            } else if(currentAction == "<") {
+                                                action = 2;
+                                            } else if(currentAction == ">") {
+                                                action = 1;
+                                            } else {
+                                                action = 0;
+                                            }
+        
+                                            diffData.push({
+                                                line: (i + 1),
+                                                previous: previousLine.replace(/\s+$/,"").replace(/\s/g, "&nbsp;"),
+                                                current: currentLine.replace(/\s+$/,"").replace(/\s/g, "&nbsp;"),
+                                                action: action
+                                            });
+                                        }
+                                        this.getStore().loadRawData(diffData);
+                                    },this), this.fileName);
+                                },
+                                fields: [{
+                                    name: "line"
+                                }, {
+                                    name: "previous"
+                                }, {
+                                    name: "current"
+                                }, {
+                                    name: "action"
+                                }],
+                                columnsDefaultSortable: false,
+                                columns:[{
+                                    text: "Line".t(),
+                                    dataIndex: "line",
+                                    renderer: columnRenderer
+                                },{
+                                    text: "Previous".t(),
+                                    flex: 1,
+                                    dataIndex: "previous",
+                                    renderer: columnRenderer
+                                },{
+                                    text: "Current".t(),
+                                    flex: 1,
+                                    dataIndex: "current",
+                                    renderer: columnRenderer
+                                }]
+                            }],
+                            buttons: [{
+                                text: "Close".t(),
+                                handler: Ext.bind(function() {
+                                    this.diffWindow.hide();
+                                }, this)
+                            }],
+                            update: function(fileName) {
+                                var grid = this.down("grid[name=gridDiffs]");
+                                grid.fileName = fileName;
+                                grid.reload();
+                            },
+                            doSize : function() {
+                                this.maximize();
+                            }
+                        });
+                        this.on("beforedestroy", Ext.bind(function() {
+                            if(this.diffWindow) {
+                                Ext.destroy(this.diffWindow);
+                                this.diffWindow = null;
+                            }
+                        }, this));
+                    }
+                    this.diffWindow.show();
+                    this.diffWindow.update(record.get("settings_file"));
+                }
+            },
+            fld: { type: 'auto' }
+        }
 
         /**
+         * NOT USED, kept just for future references/improvement needs
          * merged sessions related fields definition which are not defined above
          * this are "-" dash separated instead of "_"
          * this are used in the record detauls view so they do not require but human readable text
          */
-        'application-control-application': {
-            col: { text: 'Application'.t() }
-        }
+        // 'application-control-application': {
+        //     col: { text: 'Application'.t() }
+        // }
 
     },
 
@@ -1043,7 +1191,8 @@ Ext.define('Ung.util.Map', {
             'time_stamp',
             'settings_file',
             'username',
-            'hostname'
+            'hostname',
+            'differences' // custom non sql table field
         ],
         smtp_tarpit_events: [
             'time_stamp',
