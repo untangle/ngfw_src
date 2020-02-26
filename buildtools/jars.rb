@@ -90,8 +90,10 @@ class Jars
                            Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-exec-1.3.jar'),
                            Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-logging-1.2.jar')])
     
-    const_set(:Jstl, [ Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/jstl.jar'),
-                       Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/standard.jar') ])
+    const_set(:Jstl, [ Jars.downloadTarget('taglibs-standard-impl-1.2.5.jar'),
+                       Jars.downloadTarget('taglibs-standard-spec-1.2.5.jar'),
+                       Jars.downloadTarget('taglibs-standard-jstlel-1.2.5.jar'),
+                       Jars.downloadTarget('taglibs-standard-compat-1.2.5.jar') ])
 
     const_set(:GeoIP, [ Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-annotations-2.7.0.jar'),
                            Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-databind-2.7.0.jar'),
