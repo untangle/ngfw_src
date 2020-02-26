@@ -129,6 +129,10 @@ public class ThreatPreventionDecisionEngine
             }
         }
 
+        sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION, 0);
+        sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES, 0);
+        sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION, 0);
+        sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES, 0);
         long lookupTimeBegin = System.currentTimeMillis();
         JSONArray answer = null;
         if(!clientLocal && !serverLocal){
