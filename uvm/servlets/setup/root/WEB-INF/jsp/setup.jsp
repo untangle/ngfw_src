@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html; charset=utf-8" %>
-<%@ taglib uri="http://java.untangle.com/jsp/uvm" prefix="uvm" %>
 <html xmlns:uvm="http://java.untangle.com/jsp/uvm">
   <head>
     <meta charset="UTF-8"/>
