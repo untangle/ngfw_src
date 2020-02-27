@@ -33,9 +33,9 @@ Ext.define('Ung.util.Map', {
 
         if (rpc.reportsManager) {
             policies = Rpc.directData('rpc.reportsManager.getPoliciesInfo');
-            if (policies) {
-                Ext.Array.each(policies, function (policy) {
-                    // map[intf.interfaceId] = intf.name;
+            if (policies && policies['list']) {
+                Ext.Array.each(policies['list'], function (policy) {
+                    map[policy.policyId] = policy.name;
                 });
             }
         }
