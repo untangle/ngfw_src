@@ -102,7 +102,7 @@ def index(req):
             port = ""
             if ut['port'] != -1:
                 ut['port'] = ":" + str(ut['port'])
-            uri_base = ut['scheme'] + '://' + ut['host'] + ':' + port + "/cgi-bin/getAccessToken?authType={authenticationType}&authCode={authcode}"
+            uri_base = ut['scheme'] + '://' + ut['host'] + port + "/cgi-bin/getAccessToken?authType={authenticationType}&authCode={authcode}"
 
         if (authenticationType == "GOOGLE") or ((authenticationType == "ANY_OAUTH") and (authmode == "GOOGLE")):
             # Here we call the relay server with the authcode that was returned to the client
