@@ -398,6 +398,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         String licenseUrl = System.getProperty( "uvm.license.url" );
         if ( licenseUrl == null )
             licenseUrl = "https://license.untangle.com/license.php";
+        licenseUrl = UvmContextFactory.context().uriManager().getUri(licenseUrl);
 
 
         /**
@@ -991,7 +992,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private String _getLicenseUrl()
     {
-        String urlStr = System.getProperty(LICENSE_URL_PROPERTY);
+        String urlStr = UvmContextFactory.context().uriManager().getUri(System.getProperty(LICENSE_URL_PROPERTY));
         
         if (urlStr == null)
             urlStr = UvmContextFactory.context().uriManager().getUri(DEFAULT_LICENSE_URL);
