@@ -35,6 +35,9 @@
             },{
                 "uri": "https://boxbackup.untangle.com/boxbackup/backup.php",
                 "javaClass": "com.untangle.uvm.UriTranslation"
+            },{
+                "uri": "https://downloads.untangle.com/download.php",
+                "javaClass": "com.untangle.uvm.UriTranslation"
             }
         ]
     },
