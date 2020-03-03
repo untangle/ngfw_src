@@ -81,6 +81,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private PipelineFoundryImpl pipelineFoundry;
     private AppManagerImpl appManager;
     private CertificateManagerImpl certificateManager;
+    private GoogleManagerImpl googleManager;
     private GeographyManagerImpl geographyManager;
     private NetcapManagerImpl netcapManager;
     private EventManagerImpl eventManager;
@@ -200,6 +201,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public CertificateManager certificateManager()
     {
         return this.certificateManager;
+    }
+
+    /**
+     * Get GoogleManager
+     * @return GoogleManager
+     */
+    public GoogleManager googleManager()
+    {
+        return this.googleManager;
     }
 
     /**
@@ -1303,6 +1313,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.connectivityTester = ConnectivityTesterImpl.getInstance();
 
         this.certificateManager = new CertificateManagerImpl();
+
+        this.googleManager = new GoogleManagerImpl();
 
         this.geographyManager = new GeographyManagerImpl();
 

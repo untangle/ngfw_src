@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.directoryconnector.view.Google', {
+Ext.define('Ung.config.administration.view.Google', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app-directory-connector-google',
+    alias: 'widget.config-administration-google',
     itemId: 'google',
     title: 'Google'.t(),
 

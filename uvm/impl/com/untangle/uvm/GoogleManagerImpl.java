@@ -1,7 +1,7 @@
 /**
  * $Id: GoogleManagerImpl.java 41234 2015-09-12 00:47:13Z dmorris $
  */
-package com.untangle.app.directory_connector;
+package com.untangle.uvm;
 
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -19,7 +19,7 @@ import com.untangle.uvm.UvmContextFactory;
 /**
  * GoogleManagerImpl provides the API implementation of all RADIUS related functionality
  */
-public class GoogleManagerImpl
+public class GoogleManagerImpl implements GoogleManager
 {
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
     private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
@@ -32,11 +32,6 @@ public class GoogleManagerImpl
     private GoogleSettings settings;
 
     /**
-     * The app that owns this manager
-     */
-    private DirectoryConnectorApp directoryConnector;
-
-    /**
      * These hold the proc, reader, and writer for the drive process if it is active
      */
     private Process            driveProc = null;
@@ -45,18 +40,33 @@ public class GoogleManagerImpl
     
     /**
      * Initialize Google authenticator.
-     *
-     * @param settings
-     *  GoogleSettings object.
-     * @param directoryConnector
-     *  Directory Connector application.
-     * @return
-     *  GoogleManagerImpl object.
      */
-    public GoogleManagerImpl( GoogleSettings settings, DirectoryConnectorApp directoryConnector )
+    protected GoogleManagerImpl()
     {
-        this.directoryConnector = directoryConnector;
-        setSettings(settings);
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        GoogleSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "google.js";
+        try {
+            readSettings = settingsManager.load( GoogleSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+            GoogleSettings newSettings = new GoogleSettings();
+            this.setSettings(newSettings);
+        }
+        else {
+            logger.debug("Loading Settings...");
+            this.settings = readSettings;
+            logger.debug("Settings: " + this.settings.toJSONString());
+        }
+
+        logger.info("Initialized GoogleManager");        
     }
 
     /**
@@ -76,6 +86,17 @@ public class GoogleManagerImpl
      */
     public void setSettings( GoogleSettings settings )
     {
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "google.js", settings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
         this.settings = settings;
 
         if ( isGoogleDriveConnected() ) {
@@ -117,7 +138,6 @@ public class GoogleManagerImpl
             } catch (Exception ex) {
                 logger.warn("Error deleting credentials.json.", ex);
             }
-            
         }
     }
 
@@ -142,7 +162,7 @@ public class GoogleManagerImpl
     /**
      * This returns the URL that the user should visit and click allow for the google connector app to be authorized.
      * Once the user clicks the allow button, they will be redirected to Untangle with the redirect_url. The untangle redirect_url
-     * will redirect them to their local server oauth servlet (the IP is passed in the state variable).
+     * will redirect them to their local server gdrive servlet (the IP is passed in the state variable).
      * The servlet will later call provideDriveCode() with the token
      *
      * @param windowProtocol TCP/IP protocol to use.
@@ -169,7 +189,7 @@ public class GoogleManagerImpl
                     continue;
 
                 URIBuilder builder = new URIBuilder(line);
-                String state = windowProtocol + "//" + windowLocation + "/" + "oauth" + "/" + "oauth";
+                String state = windowProtocol + "//" + windowLocation + "/" + "gdrive" + "/" + "gdrive";
                 builder.setParameter("state",state);
                 builder.setParameter("approval_prompt","force");
 
@@ -182,7 +202,6 @@ public class GoogleManagerImpl
             logger.error("Failed to parse drive output.",e);
             return null;
         }
-        
     }
 
     /**
@@ -231,9 +250,9 @@ public class GoogleManagerImpl
             refreshToken = refreshToken.replaceAll("\\s+","");
             logger.info("Refresh Token: " + refreshToken);
         
-            DirectoryConnectorSettings directoryConnectorSettings = directoryConnector.getSettings();
-            directoryConnectorSettings.getGoogleSettings().setDriveRefreshToken( refreshToken );
-            directoryConnector.setSettings( directoryConnectorSettings );
+            GoogleSettings googleSettings = getSettings();
+            googleSettings.setDriveRefreshToken( refreshToken );
+            setSettings( googleSettings );
         } else {
             logger.warn("Unable to parse refreshToken");
             return "Unable to parse refresh_token";
@@ -248,11 +267,24 @@ public class GoogleManagerImpl
      */
     public void disconnectGoogleDrive()
     {
-        DirectoryConnectorSettings directoryConnectorSettings = directoryConnector.getSettings();
-        directoryConnectorSettings.getGoogleSettings().setDriveRefreshToken( null );
-        directoryConnector.setSettings( directoryConnectorSettings );
+        GoogleSettings googleSettings = getSettings();
+        googleSettings.setDriveRefreshToken( null );
+        setSettings( googleSettings );
     }
-    
+
+    /**
+     * Called by Directory Connector to migrate the existing configuration from
+     * there to here now that Google Drive support has moved to the base system.
+     *
+     * @param refreshToken - The refresh token
+     */
+    public void migrateConfiguration(String refreshToken)
+    {
+        GoogleSettings googleSettings = getSettings();
+        googleSettings.setDriveRefreshToken( refreshToken );
+        setSettings( googleSettings );
+    }
+
     /**
      * Start Google authorization process
      * 
@@ -293,5 +325,4 @@ public class GoogleManagerImpl
         driveProcOut = null;
         driveProc = null;
     }
-
 }

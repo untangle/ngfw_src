@@ -5,20 +5,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0" metadata-complete="true">
 
-  <display-name>Oauth</display-name>
+  <display-name>GoogleDrive</display-name>
 
   <description>
-    Oauth Configuration Handler
+    Google Drive Handler
   </description>
   
   <servlet>
-    <servlet-name>OauthHandler</servlet-name>
-    <servlet-class>com.untangle.app.directory_connector.OauthHandler</servlet-class>
+    <servlet-name>GoogleDriveHandler</servlet-name>
+    <servlet-class>com.untangle.uvm.GoogleDriveHandler</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>OauthHandler</servlet-name>
-    <url-pattern>/oauth</url-pattern>
+    <servlet-name>GoogleDriveHandler</servlet-name>
+    <url-pattern>/gdrive</url-pattern>
   </servlet-mapping>
 </web-app>
