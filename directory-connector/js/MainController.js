@@ -8,8 +8,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         }
     },
 
-    refreshGoogleTask: null,
-
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
@@ -31,12 +29,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             }
             Util.handleException(ex);
         });
-
-        var googleDrive = new Ung.cmp.GoogleDrive();
-        vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
-        vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(vm.get('policyId')); });
-
-        me.googleRefreshTaskBuild();
     },
 
     setSettings: function () {
@@ -204,84 +196,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             Util.handleException(ex);
         });
     },
-
-    googleRefreshTaskBuild: function() {
-        var me = this;
-
-        if(me.refreshGoogleTask != null){
-            return;
-        }
-
-        me.refreshGoogleTask = {
-            // update interval in millisecond
-            updateFrequency: 3000,
-            count:0,
-            maxTries: 40,
-            started: false,
-            intervalId: null,
-            app: me,
-            start: function() {
-                this.stop();
-                this.count=0;
-                this.intervalId = window.setInterval(this.run, this.updateFrequency);
-                this.started = true;
-            },
-            stop: function() {
-                if (this.intervalId !== null) {
-                    window.clearInterval(this.intervalId);
-                    this.intervalId = null;
-                }
-                this.started = false;
-            },
-            run: Ext.bind(function () {
-                var me = this, v = this.getView();
-                if(!me || !v.rendered) {
-                    return;
-                }
-                if(Util.isDestroyed(me, v)){
-                    return;
-                }
-                me.refreshGoogleTask.count++;
-
-                if ( me.refreshGoogleTask.count > me.refreshGoogleTask.maxTries ) {
-                    me.refreshGoogleTask.stop();
-                    return;
-                }
-
-                Rpc.asyncData( v.appManager.getGoogleManager(), 'isGoogleDriveConnected')
-                .then(function(result){
-                    if(Util.isDestroyed(me, v)){
-                        return;
-                    }
-                    var isConnected = result;
-
-                    v.down('[name=fieldsetDriveEnabled]').setVisible(isConnected);
-                    v.down('[name=fieldsetDriveDisabled]').setVisible(!isConnected);
-
-                    if ( isConnected ){
-                        me.refreshGoogleTask.stop();
-                        return;
-                    }
-                }, function(ex){
-                    Util.handleException(ex);
-                });
-
-            },this)
-        };
-    },
-
-    googleDriveConfigure: function(){
-        this.refreshGoogleTask.start();
-        window.open(Rpc.directData(this.getView().appManager.getGoogleManager(), 'getAuthorizationUrl', window.location.protocol, window.location.host));
-    },
-
-    googleDriveDisconnect: function(){
-        var me = this, v = this.getView(), vm = this.getViewModel();
-        Rpc.directData(v.appManager.getGoogleManager(), 'disconnectGoogleDrive');
-        me.refreshGoogleTask.run();
-        vm.set('settings.googleSettings.authenticationEnabled', false);
-    }
-
 });
 
 Ext.define('Ung.apps.directory-connector.ActiveDirectoryServerGridController', {

@@ -11,8 +11,7 @@ Ext.define('Ung.apps.directoryconnector.Main', {
         { xtype: 'app-directory-connector-status' },
         { xtype: 'app-directory-connector-usernotificationapi' },
         { xtype: 'app-directory-connector-activedirectory' },
-        { xtype: 'app-directory-connector-radius' },
-        { xtype: 'app-directory-connector-google' }
+        { xtype: 'app-directory-connector-radius' }
     ]
 
 });

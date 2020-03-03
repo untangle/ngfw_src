@@ -12,6 +12,8 @@ Ext.define('Ung.config.administration.MainController', {
         }
     },
 
+    refreshGoogleTask: null,
+
     countries: [
         [ 'US', 'United States'.t() ], [ 'AF', 'Afghanistan'.t() ], [ 'AL', 'Albania'.t() ], [ 'DZ', 'Algeria'.t() ],
         [ 'AS', 'American Samoa'.t() ], [ 'AD', 'Andorra'.t() ], [ 'AO', 'Angola'.t() ], [ 'AI', 'Anguilla'.t() ],
@@ -105,6 +107,12 @@ Ext.define('Ung.config.administration.MainController', {
                 v.setLoading(false);
             }
         });
+
+        var googleDrive = new Ung.cmp.GoogleDrive();
+        vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
+        vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(vm.get('policyId')); });
+
+        me.googleRefreshTaskBuild();
     },
 
     loadCertificates: function () {
@@ -731,8 +739,84 @@ Ext.define('Ung.config.administration.MainController', {
                 Ext.MessageBox.alert('Import Failure'.t(), action.result.msg);
             }, this)
         });
-    }
+    },
 
+    googleRefreshTaskBuild: function() {
+        var me = this;
+
+        if(me.refreshGoogleTask != null){
+            return;
+        }
+
+        me.refreshGoogleTask = {
+            // update interval in millisecond
+            updateFrequency: 3000,
+            count:0,
+            maxTries: 40,
+            started: false,
+            intervalId: null,
+            app: me,
+            start: function() {
+                this.stop();
+                this.count=0;
+                this.intervalId = window.setInterval(this.run, this.updateFrequency);
+                this.started = true;
+            },
+            stop: function() {
+                if (this.intervalId !== null) {
+                    window.clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+                this.started = false;
+            },
+            run: Ext.bind(function () {
+                var me = this, v = this.getView();
+                if(!me || !v.rendered) {
+                    return;
+                }
+                if(Util.isDestroyed(me, v)){
+                    return;
+                }
+                me.refreshGoogleTask.count++;
+
+                if ( me.refreshGoogleTask.count > me.refreshGoogleTask.maxTries ) {
+                    me.refreshGoogleTask.stop();
+                    return;
+                }
+
+                Rpc.asyncData('rpc.UvmContext.googleManager.isGoogleDriveConnected')
+                .then(function(result){
+                    if(Util.isDestroyed(me, v)){
+                        return;
+                    }
+                    var isConnected = result;
+
+                    v.down('[name=fieldsetDriveEnabled]').setVisible(isConnected);
+                    v.down('[name=fieldsetDriveDisabled]').setVisible(!isConnected);
+
+                    if ( isConnected ){
+                        me.refreshGoogleTask.stop();
+                        return;
+                    }
+                }, function(ex){
+                    Util.handleException(ex);
+                });
+
+            },this)
+        };
+    },
+
+    googleDriveConfigure: function(){
+        this.refreshGoogleTask.start();
+        window.open(Rpc.directData('rpc.UvmContext.googleManager.getAuthorizationUrl', window.location.protocol, window.location.host));
+    },
+
+    googleDriveDisconnect: function(){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        Rpc.directData('rpc.UvmContext.googleManager.disconnectGoogleDrive');
+        me.refreshGoogleTask.run();
+        vm.set('settings.googleSettings.authenticationEnabled', false);
+    }
 });
 
 Ext.define('Ung.cmp.AdminGridController', {

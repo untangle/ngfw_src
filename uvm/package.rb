@@ -49,6 +49,8 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", ["uvm/servlets
 
 deps=[]
 
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.gdrive.servlet", ["./uvm/servlets/gdrive"], deps)
+
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.admin.servlet", ["./uvm/servlets/admin"], deps)
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", ["./uvm/servlets/setup"], deps)
