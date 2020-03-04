@@ -6,6 +6,8 @@ import filecmp
 import glob
 import pytest
 import requests
+import re
+import datetime
 
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
@@ -53,6 +55,13 @@ class ConfigurationBackupTests(NGFWTestCase):
 
     def test_140_compare_cloud_backup(self):
         """Compare a cloud backup with a local backup"""
+        timeformat = "%d-%m-%Y_%H-%M-%S" # this is timestamp of backups
+        regex = re.compile("^(\d{2}\-\d{2}\-\d{4}_\d{2}\-\d{2}\-\d{2})")  # extract date and time string from cloud filename
+        
+        def gettimestamp(backup_filename):
+            m = regex.search(backup_filename)
+            return datetime.datetime.strptime(m.groups()[0], timeformat)
+        
         boxUID = uvmContext.getServerUID()
         #get authentication url and api key
         authUrl,authKey = global_functions.get_live_account_info("UntangleAuth")
@@ -88,9 +97,10 @@ class ConfigurationBackupTests(NGFWTestCase):
 
         #convert response text to literal list
         backupList = ast.literal_eval(bbResponse.text)
-        #grab the latest cloud backup from the list
+        # grab the latest cloud backup from the list
+        backupList = sorted(backupList, key=lambda x: gettimestamp(x))
         latestBackup = backupList[-1]
-        #print("latest backup from cloud: %s" % latestBackup)
+        # print("latest backup from cloud: %s" % latestBackup)
 
         #download the latest backup and save it to /tmp
         dlUrl = boxBackupUrl
