@@ -19,6 +19,7 @@ RUN apt install --yes openssh-client
 RUN apt install --yes dput
 RUN apt install --yes curl
 RUN apt install --yes procps
+RUN apt install --yes gawk
 
 # cleanup
 RUN apt clean
