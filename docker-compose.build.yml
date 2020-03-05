@@ -24,7 +24,8 @@ services:
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
         PACKAGE: ${PACKAGE} # defaults to empty: "all packages"
-        DEBUG: ${DEBUG} # defaults to empty: "no debugging
+        DEBUG: ${DEBUG} # defaults to empty: "no debugging"
+        SSH_KEY: ${SSH_KEY} # defaults to empty: "no key"
         # empty: "no upload" (default)
         # scp: use scp method for dput
         # ftp: use ftp method for dput
