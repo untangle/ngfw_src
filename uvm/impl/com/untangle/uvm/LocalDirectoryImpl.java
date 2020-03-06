@@ -268,9 +268,10 @@ public class LocalDirectoryImpl implements LocalDirectory
             return;
         }
 
-        // update xauth.secrets and chap-secrets for IPsec
+        // update xauth.secrets and chap-secrets for IPsec and untangle.local for RADIUS
         updateXauthSecrets(list);
         updateChapSecrets(list);
+        updateRadiusSecrets(list);
         this.currentList = list;
     }
 
@@ -296,10 +297,11 @@ public class LocalDirectoryImpl implements LocalDirectory
             this.saveUsersList(new LinkedList<LocalDirectoryUser>());
         }
 
-        // settings loaded so assign to currentList and write IPsec secrets
+        // settings loaded so assign to currentList and write IPsec and RADIUS secrets
         else {
             updateXauthSecrets(users);
             updateChapSecrets(users);
+            updateRadiusSecrets(users);
             this.currentList = users;
         }
     }
@@ -415,11 +417,51 @@ public class LocalDirectoryImpl implements LocalDirectory
         } catch (Exception exn) {
             logger.error("Exception creating IPsec xauth.secrets file", exn);
         } finally {
-            if(auth != null){
+            if (auth != null) {
                 try {
                     auth.close();
                 } catch (IOException ex) {
                     logger.error("Exception closing IPsec xauth.secrets file", ex);
+                }
+            }
+        }
+    }
+
+    /**
+     * We now support WPA Enterprise which allows connecting to a WiFi network
+     * using a username and password which is authenticated via RADIUS. To make
+     * this work we put all of our credentials in the freeradius authorize file.
+     *
+     * @param list
+     *        The list of LocalDirectoryUsers
+     */
+    private void updateRadiusSecrets(LinkedList<LocalDirectoryUser> list)
+    {
+        String authFile = "/etc/freeradius/3.0/mods-config/files/untangle.local";
+
+        FileWriter auth = null;
+        try {
+            // put all the username/password pairs into a file for the RADIUS server
+            auth = new FileWriter(authFile, false);
+
+            auth.write(FILE_DISCLAIMER);
+
+            for (LocalDirectoryUser user : list) {
+                byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
+                String userPassword = new String(rawPassword);
+                auth.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\"\n");
+            }
+
+            auth.flush();
+            auth.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating RADIUS untangle.local file", exn);
+        } finally {
+            if (auth != null) {
+                try {
+                    auth.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing RADIUS untangle.local file", ex);
                 }
             }
         }
@@ -533,7 +575,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         } catch (Exception e) {
             logger.warn("Unable to access formatter", e);
         } finally {
-            if(secform != null){
+            if (secform != null) {
                 try {
                     secform.close();
                 } catch (FormatterClosedException ex) {
