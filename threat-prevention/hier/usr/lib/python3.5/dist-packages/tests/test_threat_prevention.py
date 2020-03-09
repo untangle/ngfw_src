@@ -26,11 +26,11 @@ class ThreatpreventionTests(NGFWTestCase):
 
     @staticmethod
     def eventAppName():
-        return "web_filter"
+        return "threat_prevention"
 
     @staticmethod
     def displayName():
-        return "Web Filter"
+        return "Threat Prevention"
 
     @classmethod
     def initial_extra_setup(cls):
@@ -81,6 +81,7 @@ class ThreatpreventionTests(NGFWTestCase):
                                             "host","account.paypal-inc.tribesiren.com",
                                             self.eventAppName() + '_blocked', True,
                                             self.eventAppName() + '_flagged', True )
+        assert( found )
         
     def test_030_test_untangle_com_reachable(self):
         result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
@@ -91,7 +92,8 @@ class ThreatpreventionTests(NGFWTestCase):
                                             "host","test.untangle.com",
                                             self.eventAppName() + '_blocked', False,
                                             self.eventAppName() + '_flagged', False )
-
+        assert( found )
+        
     def test_031_block_by_IP(self):
         self.rules_clear()
         self.rule_add("DST_ADDR",global_functions.test_server_ip)
@@ -104,7 +106,8 @@ class ThreatpreventionTests(NGFWTestCase):
                                             "host","test.untangle.com",
                                             self.eventAppName() + '_blocked', True,
                                             self.eventAppName() + '_flagged', True )
-
+        assert( found )
+        
     def test_032_block_by_Port(self):
         self.rules_clear()
         self.rule_add("DST_PORT","80")
@@ -117,7 +120,8 @@ class ThreatpreventionTests(NGFWTestCase):
                                             "host","test.untangle.com",
                                             self.eventAppName() + '_blocked', True,
                                             self.eventAppName() + '_flagged', True )
-
+        assert( found )
+        
     def test_033_block_by_Hostname(self):
         self.rules_clear()
         self.rule_add("HOST_HOSTNAME",remote_control.client_ip)
@@ -127,10 +131,11 @@ class ThreatpreventionTests(NGFWTestCase):
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "host","test.untangle.com",
+                                            "hostname",remote_control.client_ip,
                                             self.eventAppName() + '_blocked', True,
                                             self.eventAppName() + '_flagged', True )
-
+        assert( found )
+        
     @classmethod
     def final_extra_tear_down(cls):
         pass
