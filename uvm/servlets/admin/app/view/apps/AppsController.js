@@ -459,6 +459,7 @@ Ext.define('Ung.view.apps.AppsController', {
                         { displayName: 'Policy Manager', name: 'policy-manager'},
                         { displayName: 'Directory Connector', name: 'directory-connector'},
                         { displayName: 'IPsec VPN', name: 'ipsec-vpn'},
+                        { displayName: 'Wireguard VPN', name: 'wireguard-vpn'},
                         { displayName: 'OpenVPN', name: 'openvpn'},
                         { displayName: 'Tunnel VPN', name: 'tunnel-vpn'},
                         { displayName: 'Configuration Backup', name: 'configuration-backup'},
