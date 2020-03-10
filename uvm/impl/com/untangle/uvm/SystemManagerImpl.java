@@ -145,9 +145,10 @@ public class SystemManagerImpl implements SystemManager
         if (settings.getSnmpSettings().isEnabled()) restartSnmpDaemon();
 
         /**
-         * If pyconnector state does not match the settings, re-sync them
+         * If pyconnector or freeradius state does not match the settings, re-sync them
          */
         pyconnectorSync();
+        freeradiusSync();
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new SystemSupportLogDownloadHandler() );
 
@@ -215,6 +216,7 @@ public class SystemManagerImpl implements SystemManager
         }
 
         pyconnectorSync();
+        freeradiusSync();
     }
 
     /**
@@ -614,6 +616,25 @@ public class SystemManagerImpl implements SystemManager
         if ((0 != exitValue) && settings.getCloudEnabled()) {
             UvmContextFactory.context().execManager().exec( "systemctl enable untangle-pyconnector" );
             UvmContextFactory.context().execManager().exec( "systemctl restart untangle-pyconnector" );
+        }
+    }
+
+    /**
+     * If radius server in enabled, start freeradius.service and enable on startup. If
+     * not, stop it and disable on startup
+     */
+    protected void freeradiusSync()
+    {
+        Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled freeradius.service");
+        // if running and should not be, stop it
+        if ((0 == exitValue) && !settings.getRadiusServerEnabled()) {
+            UvmContextFactory.context().execManager().exec( "systemctl disable freeradius.service" );
+            UvmContextFactory.context().execManager().exec( "systemctl stop freeradius.service" );
+        }
+        // if not running and should be, start it
+        if ((0 != exitValue) && settings.getRadiusServerEnabled()) {
+            UvmContextFactory.context().execManager().exec( "systemctl enable freeradius.service" );
+            UvmContextFactory.context().execManager().exec( "systemctl restart freeradius.service" );
         }
     }
 
