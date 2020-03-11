@@ -49,7 +49,7 @@
                     Ext.application({
                         name: 'Ung',
                         extend: 'Ung.Lang',
-                        languageList: "${languageList}",
+                        languageList: ${languageList},
                         language: "${language}",
                         languageSource: "${languageSource}"
                     });
