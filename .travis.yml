@@ -9,6 +9,7 @@ services:
 env:
   global:
     - SSH_KEY: /tmp/travis-buildbot.rsa
+      PACKAGE_SERVER_IP: 173.14.28.193
   jobs:
     - REPOSITORY: stretch
       DISTRIBUTION: current
