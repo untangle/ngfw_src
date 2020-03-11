@@ -7,6 +7,17 @@ if [ "$1" = "upgrade" ] ; then
   oldVersion="$2"
 fi
 
+if dpkg --compare-versions "$oldVersion" le 15.1~ ; then
+  # if we are upgrading to 15.1, we need to mask some services so they
+  # are not forcibly restarted by their respective postinsts (thus
+  # failing the entire dist-upgrade). They will be unmask'ed in
+  # untangle-vm's postinst (we could instead use untangle-foo-config
+  # to do that, but for the sake of centralizing those fixes in a
+  # single repository we choose not to)
+  systemctl mask freeradius-dhcp # NGFW-12934
+  systemctl mask suricata # NGFW-12939
+fi
+
 # If untangle-vm PID file exist and the process exists
 # stop the untangle-vm, launch the splash screen, and
 # launch uvm-restart to restart it after apt-get is done

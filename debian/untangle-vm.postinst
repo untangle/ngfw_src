@@ -95,4 +95,11 @@ if dpkg --compare-versions "$oldVersion" le 15.0~ ; then
   nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &  
 fi
 
+if dpkg --compare-versions "$oldVersion" le 15.1~ ; then
+  # see corresponding comment in preinst: we need to unmask those
+  # services that were masked just so the dist-upgrade could succeed
+  systemctl unmask freeradius-dhcp # NGFW-12934
+  systemctl unmask suricata # NGFW-12939
+fi
+
 exit 0
