@@ -34,39 +34,10 @@ if [ -f /var/run/uvm.pid ] ; then
         killall -9 java
         echo "Stopped  untangle-vm  $?"
 
-	if dpkg --compare-versions "$oldVersion" le 15.0~ ; then
-
-          # if we are upgrading a vm install to 15.0 and it doesn't
-          # have swap, has 2GB or less of memory, and 2GB or more
-          # of free disk space, add a 2GB swap file.  Depending on
-          # what apps a user has installed we may be tight on memory
-          # with only 2GB and adding a swap file can help
-          mem=`free -b | awk '/Mem:/ { print $2 }'`
-          disk=`df --output=avail / | awk ' /^[0-9]/ { print $1 }'`
-          if grep -q hypervisor /proc/cpuinfo && \
-             free -m | egrep -q '^Swap:\s+0\s.*' && \
-             [ $mem -le 2106716160 ] && \
-             [ $disk -gt 2097152 ] ; then
-
-            echo "mem: $mem"
-            echo "disk: $disk"
-            echo "Creating swap..."
-
-            fallocate -l 2G /swapfile
-            mkswap /swapfile
-            chmod 600 /swapfile
-            swapon /swapfile
-
-            /bin/sed -e '/^\/swapfile/d' -i /etc/fstab
-            /bin/echo -e '/swapfile\tnone\tswap\tsw\t0\t0' >> /etc/fstab
-          fi
-
-	  # reboot to new 4.9.0-11 kernel (NGFW-12661)
-	  #
-          # we defer this to the postinst, because during preinst
-          # /usr/bin/uvm is still the 14.2 version... which doesn't
-          # have the reboot functionality
-	  echo "Deferring reboot to postinst"
+	if dpkg --compare-versions "$oldVersion" le 15.1~ ; then
+	  # reboot to new 4.19.0 kernel (NGFW-12623)
+	  echo "Rebooting after apt-get completes..."
+	  nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &  
 	else
           echo "Restarting untangle-vm after apt-get completes..."
 	  nohup /usr/bin/uvm-restart >> /var/log/uvm/restart.log 2>&1 &
