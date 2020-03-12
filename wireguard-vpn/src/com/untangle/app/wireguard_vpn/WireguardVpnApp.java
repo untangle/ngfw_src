@@ -22,6 +22,8 @@ import com.untangle.uvm.network.NetworkSettings;
  */
 public class WireguardVpnApp extends AppBase
 {
+    private final static String WIREGUARD_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/wireguard-status";
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
@@ -171,4 +173,14 @@ public class WireguardVpnApp extends AppBase
         return settings;
     }
 
+    /**
+     * Returns a list with the status of all wireguard tunnels
+     *
+     * @return A JSON string returned by the wireguard-status script
+     */
+    public String getTunnelStatus()
+    {
+        String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT);
+        return (result);
+    }
 }
