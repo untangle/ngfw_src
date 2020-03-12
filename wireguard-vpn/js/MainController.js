@@ -27,6 +27,17 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             }
             Util.handleException(ex);
         });
+
+        // trigger active clients/servers fetching when instance run state changes
+        vm.bind('{state.on}', function (stateon) {
+            if (stateon) {
+                me.getTunnelStatus();
+            } else {
+                vm.set({
+                    tunnelStatusData: []
+                });
+            }
+        });
     },
 
     setSettings: function () {
@@ -77,5 +88,26 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
 
     validateSettings: function() {
         return(true);
-    }
+    },
+
+    getTunnelStatus: function () {
+        var grid = this.getView().down('#tunnelStatus'),
+            vm = this.getViewModel();
+
+        grid.setLoading(true);
+        Rpc.asyncData(this.getView().appManager, 'getTunnelStatus')
+        .then( function(result){
+            if(Util.isDestroyed(grid, vm)){
+                return;
+            }
+            var status = Ext.JSON.decode(result);
+            vm.set('tunnelStatusData', status.wireguard);
+            grid.setLoading(false);
+        },function(ex){
+            if(!Util.isDestroyed(grid)){
+                grid.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
+    },
 });

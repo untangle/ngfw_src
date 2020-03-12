@@ -5,9 +5,24 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
 
     viewModel: {
         stores: {
+            tunnelStatusList: {
+                data: '{tunnelStatusData}',
+                fields: [{
+                    name: 'interface',
+                },{
+                    name :'public-key',
+                },{
+                    name: 'private-key',
+                },{
+                    name: 'listen-port',
+                },{
+                    name: 'fwmark'
+                }]
+            }
         },
 
         data: {
+            tunnelStatusData: []
         },
 
         formulas: {

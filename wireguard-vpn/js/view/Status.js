@@ -51,55 +51,53 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
             },
             items: [{
                 xtype: 'ungrid',
-                itemId: 'activeClients',
+                itemId: 'tunnelStatus',
                 enableColumnHide: true,
                 stateful: true,
                 trackMouseOver: false,
                 resizable: true,
                 defaultSortable: true,
 
-                emptyText: 'No Active Clients'.t(),
+                emptyText: 'No Active Wireguard Tunnels'.t(),
 
                 bind: {
-                    store: '{clientStatusList}'
+                    store: '{tunnelStatusList}'
                 },
 
                 plugins: ['gridfilters'],
 
                 columns: [{
-                    header: 'Address'.t(),
-                    dataIndex: 'address',
-                    width: Renderer.ipWidth,
+                    header: 'Interface'.t(),
+                    dataIndex: 'interface',
+                    width: Renderer.messageWidth,
+                    filter: Renderer.stringFilter
+                }, {
+                    header: 'Public Key'.t(),
+                    dataIndex: 'public-key',
+                    width: Renderer.messageWidth,
                     filter: Renderer.stringFilter,
-                    flex: 1
+                    flex:1
                 }, {
-                    header: 'Client'.t(),
-                    dataIndex: 'clientName',
-                    width: Renderer.usernameWidth,
+                    header: 'Private Key'.t(),
+                    dataIndex: 'private-key',
+                    width: Renderer.messageWidth,
+                    filter: Renderer.stringFilter,
+                    flex:1
+                }, {
+                    header: 'Listen Port'.t(),
+                    dataIndex: 'listen-port',
+                    width: Renderer.portWidth,
+                    filter: Renderer.portFilter
+                }, {
+                    header: 'Firewall Mark'.t(),
+                    dataIndex: 'fwmark',
+                    width: Renderer.messageWidth,
                     filter: Renderer.stringFilter
                 }, {
-                    header: 'Pool Address'.t(),
-                    dataIndex: 'poolAddress',
-                    width: Renderer.networkWidth,
-                    filter: Renderer.stringFilter
-                }, {
-                    header: 'Start Time'.t(),
-                    dataIndex: 'start',
-                    renderer: Renderer.timestamp,
-                    width: Renderer.timestampWidth,
-                    filter: Renderer.timestampFilter
-                }, {
-                    header: 'Rx Data'.t(),
-                    dataIndex: 'bytesRxTotal',
-                    width: Renderer.sizeWidth,
-                    renderer: Renderer.datasize,
-                    filter: Renderer.numericFilter
-                }, {
-                    header: 'Tx Data'.t(),
-                    dataIndex: 'bytesTxTotal',
-                    width: Renderer.sizeWidth,
-                    renderer: Renderer.datasize,
-                    filter: Renderer.numericFilter
+                    header: 'Peers'.t(),
+                    dataIndex: 'peers',
+                    width: Renderer.messageWidth,
+                    flex:1
                 }],
                 bbar: ['@refresh', '@reset']
             }]

@@ -23,61 +23,73 @@ import json
 
 # -----------------------------------------------------------------------------
 
-def parse_output(parse_data, parse_array):
+def parse_output(parse_data):
     parse_lines = parse_data.split('\n')
-    parse_words = None
-    parse_info = {}
-    peer_count = 0
-    face_index = None
+    tunnel_info = []
+    first_time = True
+    face_index = 0
+    peer_index = 0
+    token = None
 
     # look at every line
     for line in parse_lines:
 
-        # strip the line and parse the words
+        # strip the line and parse the tokens
         line = line.strip()
-        parse_words = line.split()
+        token = line.split()
 
-        # ignore lines that do not have enough words
-        if (len(parse_words) < 5):
+        # ignore lines that do not have enough tokens
+        if (len(token) < 5):
             continue
 
-        # lines with 5 words indicate the start of an interface
-        if (len(parse_words) == 5):
-            face_index = parse_words[0]
-            parse_info[face_index] = {}
-            parse_info[face_index]["private-key"] = parse_words[1]
-            parse_info[face_index]["public-key"] = parse_words[2]
-            parse_info[face_index]["listen-port"] = parse_words[3]
-            parse_info[face_index]["fwmark"] = parse_words[4]
-            peer_count = 0
+        # lines with 5 tokens indicate the start of an interface
+        # peer lines will have 9 tokens
+        if (len(token) == 5):
+
+            # we only start incrementing face_index after the first time
+            # through since we use the value when parsing peers
+            if first_time == True:
+                first_time = False
+            else:
+                face_index += 1
+
+            tunnel_info.append({})
+            tunnel_info[face_index]["interface"] = token[0]
+            tunnel_info[face_index]["private-key"] = token[1]
+            tunnel_info[face_index]["public-key"] = token[2]
+            tunnel_info[face_index]["listen-port"] = token[3]
+            tunnel_info[face_index]["fwmark"] = token[4]
+            tunnel_info[face_index]["peers"] = []
+            peer_index = 0
             continue
 
-        parse_info[face_index]["peerlist"] = []
-        parse_info[face_index]["peerlist"].append({})
-        parse_info[face_index]["peerlist"][peer_count]["public-key"] = parse_words[1]
-        parse_info[face_index]["peerlist"][peer_count]["preshared-key"] = parse_words[2]
-        parse_info[face_index]["peerlist"][peer_count]["endpoint"] = parse_words[3]
-        parse_info[face_index]["peerlist"][peer_count]["allowed-ips"] = parse_words[4]
-        parse_info[face_index]["peerlist"][peer_count]["latest-handshake"] = parse_words[5]
-        parse_info[face_index]["peerlist"][peer_count]["transfer-rx"] = parse_words[6]
-        parse_info[face_index]["peerlist"][peer_count]["transfer-tx"] = parse_words[7]
-        parse_info[face_index]["peerlist"][peer_count]["persistent-keepalive"] = parse_words[8]
+        peer_info = {}
+        peer_info["public-key"] = token[1]
+        peer_info["preshared-key"] = token[2]
+        peer_info["endpoint"] = token[3]
+        peer_info["allowed-ips"] = token[4]
+        peer_info["latest-handshake"] = token[5]
+        peer_info["transfer-rx"] = token[6]
+        peer_info["transfer-tx"] = token[7]
+        peer_info["persistent-keepalive"] = token[8]
 
-    # append the record we created
-    parse_array.append(parse_info)
+        tunnel_info[face_index]["peers"].append([])
+        tunnel_info[face_index]["peers"][peer_index] = peer_info
+        peer_index += 1
 
-    return(parse_array)
+    # return the tunnel_info array we created
+    return tunnel_info
 
 # -----------------------------------------------------------------------------
 
-tunnel_object = {}
-tunnel_array = []
+tunnel_status = {}
 
 tunnel_proc = subprocess.Popen("/usr/bin/wg show all dump", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 (tunnel_out,tunnel_err) = tunnel_proc.communicate()
-tunnel_array = parse_output(tunnel_out,tunnel_array)
-tunnel_object["wireguard"] = tunnel_array
+tunnel_raw = parse_output(tunnel_out)
 
-tunnel_json = json.dumps(tunnel_object)
+tunnel_status["wireguard"] = tunnel_raw
+
+tunnel_json = json.dumps(tunnel_status)
 print tunnel_json
 
