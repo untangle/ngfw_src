@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+#
+# Script to get the status of all wireguard interfaces and return to
+# the caller as json object. We call 'wg show all dump' which gives us
+# multiple lines per interface in the following format:
+#
+# The first line contains in order separated by tab:
+# interface, private-key, public-key, listen-port, fwmark
+#
+# Subsequent lines for each peer contain in order separated by tab:
+# interface, public-key, preshared-key, endpoint, allowed-ips,
+# latest-handshake, transfer-rx, transfer-tx, persistent-keepalive
+#
+# Since there can be multiple peers per interface we use the field count
+# per line to know when we're parsing data for an interface or a peer for
+# the last interface we found. Lines with 5 fields have the interface details
+# and lines with 9 fields have the details for one peer of that interface.
+# Note that using the dump argument with wg causes each line to start with the
+# interface name to help with exactly the kind of parsing we're doing here.
+
+import subprocess
+import json
+
+# -----------------------------------------------------------------------------
+
+def parse_output(parse_data, parse_array):
+    parse_lines = parse_data.split('\n')
+    parse_words = None
+    parse_info = {}
+    peer_count = 0
+    face_index = None
+
+    # look at every line
+    for line in parse_lines:
+
+        # strip the line and parse the words
+        line = line.strip()
+        parse_words = line.split()
+
+        # ignore lines that do not have enough words
+        if (len(parse_words) < 5):
+            continue
+
+        # lines with 5 words indicate the start of an interface
+        if (len(parse_words) == 5):
+            face_index = parse_words[0]
+            parse_info[face_index] = {}
+            parse_info[face_index]["private-key"] = parse_words[1]
+            parse_info[face_index]["public-key"] = parse_words[2]
+            parse_info[face_index]["listen-port"] = parse_words[3]
+            parse_info[face_index]["fwmark"] = parse_words[4]
+            peer_count = 0
+            continue
+
+        parse_info[face_index]["peerlist"] = []
+        parse_info[face_index]["peerlist"].append({})
+        parse_info[face_index]["peerlist"][peer_count]["public-key"] = parse_words[1]
+        parse_info[face_index]["peerlist"][peer_count]["preshared-key"] = parse_words[2]
+        parse_info[face_index]["peerlist"][peer_count]["endpoint"] = parse_words[3]
+        parse_info[face_index]["peerlist"][peer_count]["allowed-ips"] = parse_words[4]
+        parse_info[face_index]["peerlist"][peer_count]["latest-handshake"] = parse_words[5]
+        parse_info[face_index]["peerlist"][peer_count]["transfer-rx"] = parse_words[6]
+        parse_info[face_index]["peerlist"][peer_count]["transfer-tx"] = parse_words[7]
+        parse_info[face_index]["peerlist"][peer_count]["persistent-keepalive"] = parse_words[8]
+
+    # append the record we created
+    parse_array.append(parse_info)
+
+    return(parse_array)
+
+# -----------------------------------------------------------------------------
+
+tunnel_object = {}
+tunnel_array = []
+
+tunnel_proc = subprocess.Popen("/usr/bin/wg show all dump", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+(tunnel_out,tunnel_err) = tunnel_proc.communicate()
+tunnel_array = parse_output(tunnel_out,tunnel_array)
+tunnel_object["wireguard"] = tunnel_array
+
+tunnel_json = json.dumps(tunnel_object)
+print tunnel_json
+
