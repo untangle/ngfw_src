@@ -14,7 +14,7 @@ if dpkg --compare-versions "$oldVersion" le 15.1~ ; then
   # untangle-vm's postinst (we could instead use untangle-foo-config
   # to do that, but for the sake of centralizing those fixes in a
   # single repository we choose not to)
-  systemctl mask freeradius-dhcp # NGFW-12934
+  systemctl mask freeradius # NGFW-12934
   systemctl mask suricata # NGFW-12939
 fi
 
