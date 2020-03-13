@@ -18,6 +18,9 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                 },{
                     name: 'fwmark'
                 }]
+            },
+            tunnels: {
+                data:'{settings.tunnels.list}'
             }
         },
 
@@ -26,12 +29,19 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
         },
 
         formulas: {
+            getSiteUrl: {
+                get: function(get) {
+                    var publicUrl = Rpc.directData('rpc.networkManager.getPublicUrl');
+                    return(publicUrl.split(":")[0] + ":" + get('settings.listenPort'));
+                }
+            }
         }
     },
 
     items: [
         { xtype: 'app-wireguard-vpn-status' },
-        { xtype: 'app-wireguard-vpn-server' }
+        { xtype: 'app-wireguard-vpn-settings' },
+        { xtype: 'app-wireguard-vpn-tunnels' }
     ]
 
 });

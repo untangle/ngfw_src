@@ -17,7 +17,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             if(Util.isDestroyed(v, vm)){
                 return;
             }
-
+            vm.set('settings', result);
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
         },function(ex){
@@ -43,11 +43,11 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        if (!Util.validateForms(v)) {
-            return;
-        }
+        // if (!Util.validateForms(v)) {
+        //     return;
+        // }
 
-        if (me.validateSettings() != true) return;
+        // if (me.validateSettings() != true) return;
 
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
