@@ -26,6 +26,7 @@ services:
         PACKAGE: ${PACKAGE} # defaults to empty: "all packages"
         DEBUG: ${DEBUG} # defaults to empty: "no debugging"
         SSH_KEY: ${SSH_KEY} # defaults to empty: "no key"
+        NO_CLEAN: ${NO_CLEAN} # defaults to empty: "do clean"
         # empty: "no upload" (default)
         # scp: use scp method for dput
         # ftp: use ftp method for dput
@@ -35,6 +36,7 @@ services:
         FORCE: ${FORCE}
         TRAVIS_BRANCH: ${TRAVIS_BRANCH:-master}
         TRAVIS_PULL_REQUEST:
+      privileged: ${PRIVILEGED:-false}
       extra_hosts:
         # from the outside, pass package-server's outside IP instead
         - "package-server:${PACKAGE_SERVER_IP:-10.112.11.105}"
