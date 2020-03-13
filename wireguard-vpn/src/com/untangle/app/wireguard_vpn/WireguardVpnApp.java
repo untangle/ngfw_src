@@ -4,6 +4,7 @@
 
 package com.untangle.app.wireguard_vpn;
 
+import java.util.List;
 import java.util.LinkedList;
 import java.io.File;
 
@@ -16,6 +17,7 @@ import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
  * The Wireguard VPN application connects to 3rd party VPN tunnel providers.
@@ -26,10 +28,13 @@ public class WireguardVpnApp extends AppBase
 
     private final Logger logger = Logger.getLogger(getClass());
 
+    private final String SettingsDirectory = "wireguard-vpn/";
+
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
     private WireguardVpnSettings settings = null;
     private WireguardVpnMonitor WireguardVpnMonitor;
+    private final WireguardVpnManager wireguardVpnManager;
 
     /**
      * Constructor
@@ -42,6 +47,7 @@ public class WireguardVpnApp extends AppBase
     public WireguardVpnApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
+        this.wireguardVpnManager = new WireguardVpnManager(this);
     }
 
     /**
@@ -51,7 +57,20 @@ public class WireguardVpnApp extends AppBase
      */
     public WireguardVpnSettings getSettings()
     {
+        String privateKey = this.getWireguardVpnManager().createPrivateKey().trim();
+        String publicKey = this.getWireguardVpnManager().getPublicKey(privateKey).trim();
+        logger.warn(privateKey + " ?? " + publicKey);
         return settings;
+    }
+
+    /**
+     * Get the wireguard Vpn manager
+     * 
+     * @return wireguard manager
+     */
+    public WireguardVpnManager getWireguardVpnManager(){
+        logger.warn(this.wireguardVpnManager);
+        return this.wireguardVpnManager;
     }
 
     /**
@@ -67,7 +86,7 @@ public class WireguardVpnApp extends AppBase
          */
         String appID = this.getAppSettings().getId().toString();
         try {
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/" + "settings_"  + appID + ".js", newSettings );
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + "/" + SettingsDirectory + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -124,7 +143,7 @@ public class WireguardVpnApp extends AppBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         WireguardVpnSettings readSettings = null;
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/tunnel-vpn/" + "settings_" + appID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + SettingsDirectory + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load(WireguardVpnSettings.class, settingsFilename);
@@ -169,6 +188,15 @@ public class WireguardVpnApp extends AppBase
         logger.info("Creating the default settings...");
 
         WireguardVpnSettings settings = new WireguardVpnSettings();
+
+        String privateKey = this.getWireguardVpnManager().createPrivateKey().trim();
+        String publicKey = this.getWireguardVpnManager().getPublicKey(privateKey).trim();
+        settings.setPrivateKey(privateKey);
+        settings.setPublicKey(publicKey);
+
+        settings.setAddressPool(new IPMaskedAddress("172.16.0.0/16"));
+
+        settings.setTunnels(new LinkedList<WireguardVpnTunnel>());
 
         return settings;
     }
