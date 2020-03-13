@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# 15.0 upgrade
+# 15.1 upgrade
 oldVersion=""
 if [ "$1" = "upgrade" ] ; then
   # oldVersion will be non-empty if untangle-vm is being upgraded
