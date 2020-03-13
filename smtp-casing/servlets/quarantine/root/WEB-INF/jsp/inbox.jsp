@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ taglib uri="http://java.untangle.com/jsp/uvm" prefix="uvm" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html xmlns:uvm="http://java.untangle.com/jsp/uvm">
@@ -98,11 +97,11 @@
                             token: "${currentAuthToken}",
                             address: "${currentAddress}",
                             forwardAddress: "${forwardAddress}",
-                            companyName: "${fn:replace(companyName,'\"','')}",
-                            currentAddress: "${fn:replace(currentAddress,'\"','')}",
-                            quarantineDays: "${quarantineDays}",
-                            safelistData: "${safelistData}",
-                            remapsData: "${remapsData}"
+                            companyName: "${fn:replace(companyName,'"','')}",
+                            currentAddress: "${fn:replace(currentAddress,'"','')}",
+                            quarantineDays: ${quarantineDays},
+                            safelistData: ${safelistData},
+                            remapsData: ${remapsData}
                         }
                     });
                 });
