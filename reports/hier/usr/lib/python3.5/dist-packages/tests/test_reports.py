@@ -241,10 +241,10 @@ class ReportsTests(NGFWTestCase):
         timestamp_now_plus1 = exactly_now_plus1.strftime('%Y-%m-%d %H:%M')
         result = remote_control.is_online(tries=1)
         # flush out events
-        app.flushEvents()
+        self._app.flushEvents()
 
         # remove the firewall rule aet syslog back to original settings
-        app.setSettings(orig_settings)
+        self._app.setSettings(orig_settings)
         rules["list"]=[];
         firewall_app.setRules(rules);
 
@@ -307,7 +307,7 @@ class ReportsTests(NGFWTestCase):
         remote_control.run_command("wget -q -O /dev/null http://news.google.com")
         remote_control.run_command("wget -q -O /dev/null http://www.yahoo.com")
         remote_control.run_command("wget -q -O /dev/null http://www.reddit.com")
-        app.flushEvents()
+        self._app.flushEvents()
         time.sleep(5)
         
         # Get CSV export of events
@@ -528,9 +528,9 @@ class ReportsTests(NGFWTestCase):
         uvmContext.adminManager().setSettings(adminsettings)
 
         # clear all report users
-        settings = app.getSettings()
+        settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
-        app.setSettings(settings)
+        self._app.setSettings(settings)
         
         # install all the apps that aren't already installed
         system_stats = uvmContext.metricManager().getStats()
@@ -550,7 +550,7 @@ class ReportsTests(NGFWTestCase):
         result = remote_control.is_online(tries=1)
 
         # flush out events
-        app.flushEvents()
+        self._app.flushEvents()
 
         # send emails
         subprocess.call([global_functions.get_prefix()+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -577,10 +577,10 @@ class ReportsTests(NGFWTestCase):
     def test_110_verify_report_users(self):
         # Test report only user can login and report serlvet displays 
         # add report user with test_email_address
-        settings = app.getSettings()
+        settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         settings["reportsUsers"]["list"].append(create_reports_user(profile_email='test', access=True))  # password = passwd
-        app.setSettings(settings)
+        self._app.setSettings(settings)
         adminURL = global_functions.get_http_url()
         print("URL %s" % adminURL)
         resultLoginPage = subprocess.call("wget -q -O - " + adminURL + "reports 2>&1 | grep -q Login", shell=True)
