@@ -2,10 +2,14 @@
 
 # Stop the xlt2pd and ipsec daemons
 systemctl stop xl2tpd 2>&1 1>> /dev/null
-systemctl stop ipsec 2>&1 1>> /dev/null
+# systemctl stop ipsec 2>&1 1>> /dev/null
+
+/usr/sbin/ipsec update
+/usr/sbin/ipsec rereadall
+/usr/sbin/ipsec reload
 
 # Start the xl2tpd and ipsec daemons
-systemctl start ipsec 2>&1 1>> /dev/null
+# systemctl start ipsec 2>&1 1>> /dev/null
 systemctl start xl2tpd 2>&1 1>> /dev/null
 
 # Call the script to create the L2TP interface status file
