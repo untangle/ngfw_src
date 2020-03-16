@@ -112,16 +112,6 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                     value: '{threatLookupInfo.age}',
                     hidden: '{threatLookupInfo.age.length === 0}'
                 }
-            }, {
-                xtype: 'displayfield',
-                labelWidth: 160,
-                fieldLabel: 'Reputation Score'.t(),
-                hidden: true,
-                fieldIndex: 'threatLookupReputationScore',
-                bind: {
-                    value: '{threatLookupInfo.score}',
-                    hidden: '{threatLookupInfo.score.length === 0}'
-                }
             },{
                 xtype: 'displayfield',
                 labelWidth: 160,
