@@ -17,6 +17,22 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                     name: 'listen-port',
                 },{
                     name: 'fwmark'
+                },{
+                    name: 'peer-key'
+                },{
+                    name: 'preshared-key'
+                },{
+                    name: 'endpoint'
+                },{
+                    name: 'allowed-ips'
+                },{
+                    name: 'latest-handshake'
+                },{
+                    name: 'transfer-rx'
+                },{
+                    name: 'transfer-txt'
+                },{
+                    name: 'persistent-keepalive'
                 }]
             },
             tunnels: {
