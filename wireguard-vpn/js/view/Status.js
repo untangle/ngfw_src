@@ -93,7 +93,9 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                 }, {
                     header: 'Last Handshake'.t(),
                     dataIndex: 'latest-handshake',
-                    width: Renderer.timestampWidth
+                    width: Renderer.timestampWidth,
+                    renderer: Renderer.timestamp,
+                    filter: Renderer.timestampFilter
                 }, {
                     header: 'Keepalive'.t(),
                     dataIndex: 'persistent-keepalive',
