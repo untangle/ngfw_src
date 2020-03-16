@@ -76,28 +76,36 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                     dataIndex: 'public-key',
                     width: Renderer.messageWidth,
                     filter: Renderer.stringFilter,
-                    flex:1
+                    flex: 1
                 }, {
-                    header: 'Private Key'.t(),
-                    dataIndex: 'private-key',
-                    width: Renderer.messageWidth,
-                    filter: Renderer.stringFilter,
-                    flex:1
+                    header: 'Allowed IPs'.t(),
+                    dataIndex: 'allowed-ips',
+                    width: Renderer.networkWidth,
                 }, {
                     header: 'Listen Port'.t(),
                     dataIndex: 'listen-port',
                     width: Renderer.portWidth,
                     filter: Renderer.portFilter
                 }, {
-                    header: 'Firewall Mark'.t(),
-                    dataIndex: 'fwmark',
-                    width: Renderer.messageWidth,
-                    filter: Renderer.stringFilter
+                    header: 'Endpoint'.t(),
+                    dataIndex: 'endpoint',
+                    width: Renderer.ipWidth + Renderer.portWidth
                 }, {
-                    header: 'Peers'.t(),
-                    dataIndex: 'peers',
-                    width: Renderer.messageWidth,
-                    flex:1
+                    header: 'Last Handshake'.t(),
+                    dataIndex: 'latest-handshake',
+                    width: Renderer.timestampWidth
+                }, {
+                    header: 'Keepalive'.t(),
+                    dataIndex: 'persistent-keepalive',
+                    width: Renderer.messageWidth
+                }, {
+                    header: 'Bytes In'.t(),
+                    dataIndex: 'transfer-rx',
+                    width: Renderer.sizeWidth
+                }, {
+                    header: 'Bytes Out'.t(),
+                    dataIndex: 'transfer-tx',
+                    width: Renderer.sizeWidth
                 }],
                 bbar: ['@refresh', '@reset']
             }]

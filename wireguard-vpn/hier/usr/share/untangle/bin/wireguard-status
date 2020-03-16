@@ -26,9 +26,8 @@ import json
 def parse_output(parse_data):
     parse_lines = parse_data.split('\n')
     tunnel_info = []
-    first_time = True
     face_index = 0
-    peer_index = 0
+    face_info = {}
     token = None
 
     # look at every line
@@ -45,37 +44,32 @@ def parse_output(parse_data):
         # lines with 5 tokens indicate the start of an interface
         # peer lines will have 9 tokens
         if (len(token) == 5):
-
-            # we only start incrementing face_index after the first time
-            # through since we use the value when parsing peers
-            if first_time == True:
-                first_time = False
-            else:
-                face_index += 1
-
-            tunnel_info.append({})
-            tunnel_info[face_index]["interface"] = token[0]
-            tunnel_info[face_index]["private-key"] = token[1]
-            tunnel_info[face_index]["public-key"] = token[2]
-            tunnel_info[face_index]["listen-port"] = token[3]
-            tunnel_info[face_index]["fwmark"] = token[4]
-            tunnel_info[face_index]["peers"] = []
-            peer_index = 0
+            face_info["interface"] = token[0]
+            face_info["private-key"] = token[1]
+            face_info["public-key"] = token[2]
+            face_info["listen-port"] = token[3]
+            face_info["fwmark"] = token[4]
             continue
 
-        peer_info = {}
-        peer_info["public-key"] = token[1]
-        peer_info["preshared-key"] = token[2]
-        peer_info["endpoint"] = token[3]
-        peer_info["allowed-ips"] = token[4]
-        peer_info["latest-handshake"] = token[5]
-        peer_info["transfer-rx"] = token[6]
-        peer_info["transfer-tx"] = token[7]
-        peer_info["persistent-keepalive"] = token[8]
+        # append an object for each peer with the common interface details
+        tunnel_info.append({})
+        tunnel_info[face_index]["interface"] = face_info["interface"]
+        tunnel_info[face_index]["private-key"] = face_info["private-key"]
+        tunnel_info[face_index]["public-key"] = face_info["public-key"]
+        tunnel_info[face_index]["listen-port"] = face_info["listen-port"]
+        tunnel_info[face_index]["fwmark"] = face_info["fwmark"]
 
-        tunnel_info[face_index]["peers"].append([])
-        tunnel_info[face_index]["peers"][peer_index] = peer_info
-        peer_index += 1
+        # now add the details for the peer we just parsed
+        tunnel_info[face_index]["peer-key"] = token[1]
+        tunnel_info[face_index]["preshared-key"] = token[2]
+        tunnel_info[face_index]["endpoint"] = token[3]
+        tunnel_info[face_index]["allowed-ips"] = token[4]
+        tunnel_info[face_index]["latest-handshake"] = token[5]
+        tunnel_info[face_index]["transfer-rx"] = token[6]
+        tunnel_info[face_index]["transfer-tx"] = token[7]
+        tunnel_info[face_index]["persistent-keepalive"] = token[8]
+
+        face_index += 1
 
     # return the tunnel_info array we created
     return tunnel_info
@@ -92,4 +86,3 @@ tunnel_status["wireguard"] = tunnel_raw
 
 tunnel_json = json.dumps(tunnel_status)
 print tunnel_json
-
