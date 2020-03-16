@@ -133,18 +133,26 @@ public class ThreatPreventionDecisionEngine
         sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES, 0);
         sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION, 0);
         sessionAttachments.globalAttach(AppSession.KEY_THREAT_PREVENTION_SERVER_CATEGORIES, 0);
+
         long lookupTimeBegin = System.currentTimeMillis();
         JSONArray answer = null;
-        if(!clientLocal && !serverLocal){
-            // Also need to handle serverAddress = null
-            answer = app.webrootQuery.ipGetInfo(clientAddress.getHostAddress(), serverAddress != null ? serverAddress.getHostAddress() : null);
-        }else if(!clientLocal){
-            answer = app.webrootQuery.ipGetInfo(clientAddress.getHostAddress());
-        }else if(!serverLocal){
+        if(!serverLocal){
             if(serverUrl != null){
                 answer = app.webrootQuery.urlGetInfo(serverUrl);
             }else{
                 answer = app.webrootQuery.urlGetInfo(serverAddress != null ? serverAddress.getHostAddress() : null);
+            }
+        }
+        if(!clientLocal){
+            JSONArray clientAnswer = app.webrootQuery.ipGetInfo(clientAddress.getHostAddress(), serverAddress != null ? serverAddress.getHostAddress() : null);
+            if(clientAnswer != null){
+                if(answer == null){
+                    answer = clientAnswer;
+                }else{
+                    try{
+                        answer.put(clientAnswer.getJSONObject(0));
+                    }catch(Exception e){}
+                }
             }
         }
         app.adjustLookupAverage(System.currentTimeMillis() - lookupTimeBegin);
