@@ -113,7 +113,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
      */
     detailMaps: {
         getrepinfo: {
-            name: 'Reputation History'.t(),
+            name: 'Domain Reputation History'.t(),
             fields: {
                 age: {
                     name: 'Age'.t(),
@@ -131,7 +131,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                     renderer: Ung.common.Renderer.threatprevention.recentOccurrences
                 },
                 reputation: {
-                    name: 'Reputation'.t(),
+                    name: 'Reputation (Parent Domain)'.t(),
                     renderer: Ung.common.Renderer.threatprevention.reputation
                 }
             }
@@ -455,51 +455,78 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             ipAddresses = [];
 
         if (clientReputation != null && clientReputation > 0) {
-            ipAddresses.push(clientIpAddress);
+            Ext.Deferred.sequence([
+                Rpc.asyncPromise(
+                    'rpc.reportsManager.getReportInfo',
+                    'threat-prevention',
+                    -1,
+                    'getIpHistory',
+                    [clientIpAddress])
+            ], this)
+            .then(function(results){
+                var propertyRecord = [];
+                var propertyCategory = null;
+                results.forEach( function(result){
+                    if(result != null){
+                        result.forEach( function(answer){
+                            /**
+                             * Walk detail maps for this answer.  Each call can make multiple API queries.
+                             */
+                            Ext.Object.each(
+                                Ung.common.TableConfig.threatprevention.detailMaps,
+                                function(detail, detailMap){
+                                    if(detail in answer['queries']){
+                                        var ipAddress = "ip" in answer ? answer["ip"] : answer["value"];
+                                        propertyCategory = Ext.String.format('Threat Prevention: {0}: {1}'.t(), detailMap.name, ipAddress == serverIpAddress ? 'Server'.t() : 'Client'.t());
+                                        Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, detailMap['fields'], answer['queries'][detail]);
+                                    }
+                                }
+                            );
+                        });
+                    }
+                });
+                cb(propertyRecord);
+            }, function(ex) {
+                cb();
+                console.log(ex);
+            });
         }
         if (serverReputation != null && serverReputation > 0) {
-            ipAddresses.push(serverIpAddress);
-        }
-
-        if (ipAddresses.length == 0) {
-            return;
-        }
-
-        Ext.Deferred.sequence([
-            Rpc.asyncPromise(
-                'rpc.reportsManager.getReportInfo',
-                'threat-prevention',
-                -1,
-                'getIpHistory',
-                ipAddresses)
-        ], this)
-         .then(function(results){
-            var propertyRecord = [];
-            var propertyCategory = null;
-            results.forEach( function(result){
-                if(result != null){
-                    result.forEach( function(answer){
-                        /**
-                         * Walk detail maps for this answer.  Each call can make multiple API queries.
-                         */
-                        Ext.Object.each(
-                            Ung.common.TableConfig.threatprevention.detailMaps,
-                            function(detail, detailMap){
-                                if(detail in answer['queries']){
-                                    var ipAddress = "ip" in answer ? answer["ip"] : answer["value"];
-                                    propertyCategory = Ext.String.format('Threat Prevention: {0}: {1}'.t(), detailMap.name, ipAddress == serverIpAddress ? 'Server'.t() : 'Client'.t());
-                                    Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, detailMap['fields'], answer['queries'][detail]);
+            Ext.Deferred.sequence([
+                Rpc.asyncPromise(
+                    'rpc.reportsManager.getReportInfo',
+                    'threat-prevention',
+                    -1,
+                    'getUrlHistory',
+                    [serverIpAddress])
+            ], this)
+            .then(function(results) {
+                var propertyRecord = [];
+                var propertyCategory = null;
+                results.forEach( function(result){
+                    if(result != null){
+                        result.forEach( function(answer){
+                            /**
+                             * Walk detail maps for this answer.  Each call can make multiple API queries.
+                             */
+                            Ext.Object.each(
+                                Ung.common.TableConfig.threatprevention.detailMaps,
+                                function(detail, detailMap){
+                                    if(detail in answer['queries']){
+                                        propertyCategory = Ext.String.format('Threat Prevention: {0}: {1}'.t(), detailMap.name, 'Server'.t());
+                                        Ung.common.TableConfig.threatprevention.toPropertyRecord(propertyRecord, propertyCategory, detailMap['fields'], answer['queries'][detail]);
+                                    }
                                 }
-                            }
-                        );
-                    });
-                }
+                            );
+                        });
+                    }
+                });
+                cb(propertyRecord);
+            }, function(ex) {
+                cb();
+                console.log(ex);
             });
-            cb(propertyRecord);
-        }, function(ex) {
-            cb();
-            console.log(ex);
-        });
+        }
     },
 
     /*
