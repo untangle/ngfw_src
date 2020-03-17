@@ -301,14 +301,14 @@ public class OpenVpnAppImpl extends AppBase
 
         /**
          * Restart the daemon
-         */
+         * 
         try {
             if (getRunState() == AppSettings.AppState.RUNNING) {
                 this.openVpnManager.restart();
             }
         } catch (Exception exn) {
             logger.error("Could not save VPN settings", exn);
-        }
+        } */
 
         /**
          * Clean up stuff from clients and servers that have been removed
