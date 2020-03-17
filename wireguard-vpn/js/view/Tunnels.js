@@ -42,14 +42,17 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     recordActions: ['edit', 'delete'],
     listProperty: 'settings.tunnels.list',
     emptyRow: {
-        javaClass: 'com.untangle.app.wireguard_vpn.WireguardVpnTunnel',
+        'javaClass': 'com.untangle.app.wireguard_vpn.WireguardVpnTunnel',
         'enabled': true,
         'description': '',
         'publicKey': '',
         'peerAddress': '',
         'endpointAddress' : '',
         'endpointPort': '',
-        'networks': ''
+        'networks': {
+            'javaClass': 'java.util.LinkedList',
+            'list': []
+        }
     },
 
     bind: '{tunnels}',
@@ -115,31 +118,31 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Endpoint Address'.t(),
-        allowBlank: false,
+        // allowBlank: false,
         bind: {
             value: '{record.endpointAddress}'
         }
     }, {
         xtype: 'textfield',
         fieldLabel: 'Endpoint Port'.t(),
-        allowBlank: false,
+        // allowBlank: false,
         bind: {
             value: '{record.endpointPort}'
         }
     }, {
         xtype: 'textfield',
         fieldLabel: 'Peer Address'.t(),
-        allowBlank: false,
+        // allowBlank: false,
         bind: {
             value: '{record.peerAddress}'
         }
-    }, {
-        xtype: 'textfield',
-        fieldLabel: 'Networks'.t(),
-        // allowBlank: false,
-        bind: {
-            value: '{record.networks}'
-        }
+    // }, {
+    //     xtype: 'textfield',
+    //     fieldLabel: 'Networks'.t(),
+    //     // allowBlank: false,
+    //     bind: {
+    //         value: '{record.networks}'
+    //     }
     }]
 
 });
