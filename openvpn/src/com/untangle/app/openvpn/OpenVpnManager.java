@@ -159,7 +159,7 @@ public class OpenVpnManager
         writeIptablesFiles(settings);
         writeServerSettings(settings);
         writeRemoteClientFiles(settings.getRemoteClients(), settings.getGroups(), settings.getAddressSpace().getFirstMaskedAddress().getHostAddress());
-        writeRemoteServerFiles(settings);
+        writeRemoteServerFiles(settings.getRemoteServers());
     }
 
     /**
@@ -613,10 +613,10 @@ public class OpenVpnManager
     /**
      * Write config files for remote servers
      * 
-     * @param settings
-     *        The application settings
+     * @param remoteServers
+     *        List of remote servers within settings config
      */
-    private void writeRemoteServerFiles(OpenVpnSettings settings)
+    private void writeRemoteServerFiles(List<OpenVpnRemoteServer> remoteServers)
     {
         int count = 1;
 
@@ -626,7 +626,7 @@ public class OpenVpnManager
         BufferedReader cfgReader;
         BufferedWriter cfgWriter;
         BufferedWriter authWriter;
-        for (OpenVpnRemoteServer server : settings.getRemoteServers()) {
+        for (OpenVpnRemoteServer server : remoteServers) {
             if (!server.getEnabled()) continue;
 
             String name = server.getName();
