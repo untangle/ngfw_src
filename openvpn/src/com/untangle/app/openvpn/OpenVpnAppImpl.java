@@ -285,6 +285,8 @@ public class OpenVpnAppImpl extends AppBase
             return;
         }
 
+        boolean restartRequired = isRestartRequired(this.settings, newSettings);
+
         /**
          * Change current settings
          */
@@ -300,16 +302,19 @@ public class OpenVpnAppImpl extends AppBase
         this.openVpnManager.configure(this.settings);
 
         /**
-         * Restart the daemon
+         * Restart the daemon if we changed a setting that requires OpenVPN service restart
          * 
-        try {
-            if (getRunState() == AppSettings.AppState.RUNNING) {
-                this.openVpnManager.restart();
+         * */
+        if(restartRequired) {
+            try {
+                if (getRunState() == AppSettings.AppState.RUNNING) {
+                    this.openVpnManager.restart();
+                }
+            } catch (Exception exn) {
+                logger.error("Could not save VPN settings", exn);
             }
-        } catch (Exception exn) {
-            logger.error("Could not save VPN settings", exn);
-        } */
-
+        }
+        
         /**
          * Clean up stuff from clients and servers that have been removed
          */
@@ -320,6 +325,29 @@ public class OpenVpnAppImpl extends AppBase
         } catch (Exception exn) {
             logger.warn("Exception during client/server cleanup", exn);
         }
+    }
+
+    /**
+     * isRestartRequired checks for field changes that would require a service restart
+     * 
+     * @param oldSettings - The previous settings before the save
+     * @param newSettings - The new settings to be saved
+     * @return boolean - True if a restart of the OpenVpn service is required, False if not
+     * 
+     */
+    private boolean isRestartRequired(OpenVpnSettings oldSettings, OpenVpnSettings newSettings) {
+
+        if (
+            Boolean.compare(oldSettings.getServerEnabled(), newSettings.getServerEnabled()) != 0 || 
+            !oldSettings.getAddressSpace().equals(newSettings.getAddressSpace()) ||
+            Boolean.compare(oldSettings.getNatOpenVpnTraffic(), newSettings.getNatOpenVpnTraffic()) != 0 ||
+            oldSettings.getAuthenticationType() != newSettings.getAuthenticationType() ||
+            Boolean.compare(oldSettings.getAuthUserPass(), newSettings.getAuthUserPass()) != 0) {
+
+            return true;
+        }
+
+        return false;
     }
 
     
