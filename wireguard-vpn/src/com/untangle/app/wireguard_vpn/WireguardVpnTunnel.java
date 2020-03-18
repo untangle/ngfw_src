@@ -23,9 +23,10 @@ public class WireguardVpnTunnel implements Serializable, JSONString
     private Boolean enabled = true;
     private String description = "";
     private String publicKey = "";
-    private InetAddress peerAddress;
+    private Boolean endpointDynamic = true;
     private InetAddress endpointAddress; 
     private Integer endpointPort = 51820;
+    private InetAddress peerAddress;
     private List<IPMaskedAddress> networks = null;
 
     public Boolean getEnabled() { return enabled; }
@@ -37,14 +38,17 @@ public class WireguardVpnTunnel implements Serializable, JSONString
     public String getPublicKey() { return publicKey; }
     public void setPublicKey( String newValue ) { this.publicKey = newValue; }
 
-    public InetAddress getPeerAddress() { return peerAddress; }
-    public void setPeerAddress( InetAddress newValue ) { this.peerAddress = newValue; }
+    public Boolean getEndpointDynamic() { return endpointDynamic; }
+    public void setEndpointDynamic( Boolean newValue ) { this.endpointDynamic = newValue; }
 
     public InetAddress getEndpointAddress() { return endpointAddress; }
     public void setEndpointAddress( InetAddress newValue ) { this.endpointAddress = newValue; }
 
     public Integer getEndpointPort() { return endpointPort; }
     public void setEndpointPort( Integer newValue ) { this.endpointPort = newValue; }
+
+    public InetAddress getPeerAddress() { return peerAddress; }
+    public void setPeerAddress( InetAddress newValue ) { this.peerAddress = newValue; }
 
     public List<IPMaskedAddress> getNetworks() { return networks; }
     public void setNetworks( List<IPMaskedAddress> newValue ) { this.networks = newValue; }
