@@ -28,7 +28,7 @@ public class WireguardVpnApp extends AppBase
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final String SettingsDirectory = "wireguard-vpn/";
+    private final String SettingsDirectory = "/wireguard-vpn/";
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
@@ -47,6 +47,7 @@ public class WireguardVpnApp extends AppBase
     public WireguardVpnApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
+        WireguardVpnMonitor = new WireguardVpnMonitor(this);
         this.wireguardVpnManager = new WireguardVpnManager(this);
     }
 
@@ -57,9 +58,6 @@ public class WireguardVpnApp extends AppBase
      */
     public WireguardVpnSettings getSettings()
     {
-        String privateKey = this.getWireguardVpnManager().createPrivateKey().trim();
-        String publicKey = this.getWireguardVpnManager().getPublicKey(privateKey).trim();
-        logger.warn(privateKey + " ?? " + publicKey);
         return settings;
     }
 
@@ -86,7 +84,7 @@ public class WireguardVpnApp extends AppBase
          */
         String appID = this.getAppSettings().getId().toString();
         try {
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + "/" + SettingsDirectory + "settings_"  + appID + ".js", newSettings );
+            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + SettingsDirectory + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -156,7 +154,6 @@ public class WireguardVpnApp extends AppBase
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-
             this.initializeSettings();
         } else {
             logger.info("Loading Settings...");
