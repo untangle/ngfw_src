@@ -776,24 +776,24 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             type: 'countryfield'
         },{
             name:'THREAT_PREVENTION_SRC_REPUTATION',
-            displayName: 'Threat Prevention: Source address reputation threshold'.t(),
+            displayName: 'Threat Prevention: Client address reputation'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
             name:'THREAT_PREVENTION_DST_REPUTATION',
-            displayName: 'Threat Prevention: Destination address reputation threshold'.t(),
+            displayName: 'Threat Prevention: Server address reputation'.t(),
             type: 'checkboxgroup',
             values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
             name:'THREAT_PREVENTION_SRC_CATEGORIES',
-            displayName: 'Threat Prevention: Source address category'.t(),
+            displayName: 'Threat Prevention: Client address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.threatprevention.references.threatsConditionValues()
         },{
             name:'THREAT_PREVENTION_DST_CATEGORIES',
-            displayName: 'Threat Prevention: Destination address category'.t(),
+            displayName: 'Threat Prevention: Server address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.threatprevention.references.threatsConditionValues()
