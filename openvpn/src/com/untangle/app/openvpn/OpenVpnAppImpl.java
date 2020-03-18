@@ -7,6 +7,7 @@ package com.untangle.app.openvpn;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -306,6 +307,7 @@ public class OpenVpnAppImpl extends AppBase
          * 
          * */
         if(restartRequired) {
+            logger.debug("Restarting openvpn service...");
             try {
                 if (getRunState() == AppSettings.AppState.RUNNING) {
                     this.openVpnManager.restart();
@@ -337,20 +339,57 @@ public class OpenVpnAppImpl extends AppBase
      */
     private boolean isRestartRequired(OpenVpnSettings oldSettings, OpenVpnSettings newSettings) {
 
-        if (
-            Boolean.compare(oldSettings.getServerEnabled(), newSettings.getServerEnabled()) != 0 || 
-            !oldSettings.getAddressSpace().equals(newSettings.getAddressSpace()) ||
-            Boolean.compare(oldSettings.getNatOpenVpnTraffic(), newSettings.getNatOpenVpnTraffic()) != 0 ||
-            oldSettings.getAuthenticationType() != newSettings.getAuthenticationType() ||
-            Boolean.compare(oldSettings.getAuthUserPass(), newSettings.getAuthUserPass()) != 0) {
+        // Server enabled/disabled
+        if (oldSettings.getServerEnabled() != newSettings.getServerEnabled()) { logger.debug("Server is Enabled has changed."); return true;}
 
+        // Address space changes
+        if (!oldSettings.getAddressSpace().equals(newSettings.getAddressSpace())) { logger.debug("Server Address space has changed."); return true;}
+
+        // Authentication type changes
+        if (oldSettings.getAuthenticationType() != newSettings.getAuthenticationType()) { logger.debug("Server Authentication Type has changed."); return true;}
+
+        // AuthUserPass changes
+        if (oldSettings.getAuthUserPass() != newSettings.getAuthUserPass()) { logger.debug("Server Authentication User Password Data has changed."); return true;}
+
+        // Protocol changes
+        if (!oldSettings.getProtocol().equals(newSettings.getProtocol())) { logger.debug("Server Protocol has changed."); return true;}
+
+        // Listening Port changes
+        if (oldSettings.getPort() != newSettings.getPort()) { logger.debug("Server Port has changed."); return true;}
+
+        // Cipher changes
+        if (!oldSettings.getCipher().equals(newSettings.getCipher())) { logger.debug("Server Cipher has changed."); return true;}
+
+        // Client to client enabled/disabled
+        if (oldSettings.getClientToClient() != newSettings.getClientToClient()) { logger.debug("Server Client to Client has changed."); return true;}
+
+        // Server config settings
+        if(customConfigHasDifferences(oldSettings.getServerConfiguration(), newSettings.getServerConfiguration())) { logger.debug("Custom Server Configuration Items have changed."); return true; }
+
+        return false;
+    }
+
+
+    /**
+     * customConfigHasDifferences validates OpenVpnConfigItem lists to see if the data has changed
+     * 
+     * this function takes the LinkedList and will cast items to JSON Strings, and then join the JSON Strings for comparison.
+     * 
+     * @param configA - A list of configuration items
+     * @param configB - A list of configuration items
+     * @return - a boolean indicating if the two configuration lists are different
+     */
+    private boolean customConfigHasDifferences(LinkedList<OpenVpnConfigItem> configA, LinkedList<OpenVpnConfigItem> configB) {
+        String configAsString1 = configA.stream().map(u -> u.toJSONString()).collect(Collectors.joining(""));
+        String configAsString2 = configB.stream().map(u -> u.toJSONString()).collect(Collectors.joining(""));
+
+        if(configAsString1.compareTo(configAsString2) != 0) {
             return true;
         }
 
         return false;
     }
-
-    
+   
     /**
      * Verifies current OpenVpnSettings version, and updates to latest verson.
      *
