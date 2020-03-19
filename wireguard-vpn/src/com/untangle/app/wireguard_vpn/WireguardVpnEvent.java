@@ -18,11 +18,9 @@ public class WireguardVpnEvent extends LogEvent implements Serializable, org.jso
 {
     public enum EventType
     {
-        CONNECT, DISCONNECT
+        CONNECT, DISCONNECT, UNREACHABLE
     };
 
-    private InetAddress serverAddress;
-    private InetAddress localAddress;
     private String tunnelName;
     private EventType type;
 
@@ -30,19 +28,11 @@ public class WireguardVpnEvent extends LogEvent implements Serializable, org.jso
 
     public WireguardVpnEvent() {}
 
-    public WireguardVpnEvent( InetAddress serverAddress, InetAddress localAddress, String tunnelName, EventType type )
+    public WireguardVpnEvent( String tunnelName, EventType type )
     {
-        this.serverAddress = serverAddress;
-        this.localAddress  = localAddress;
         this.tunnelName    = tunnelName;
         this.type          = type;
     }
-    
-    public InetAddress getServerAddress() { return this.serverAddress; }
-    public void setServerAddress( InetAddress newValue ) { this.serverAddress = newValue; }
-
-    public InetAddress getLocalAddress() { return this.localAddress; }
-    public void setLocallAddress( InetAddress newValue ) { this.localAddress = newValue; }
     
     public String getTunnelName() { return this.tunnelName; }
     public void setTunnelName( String newValue ) { this.tunnelName = newValue; }
@@ -54,19 +44,14 @@ public class WireguardVpnEvent extends LogEvent implements Serializable, org.jso
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO " + schemaPrefix() + "wireguard_vpn_events" + getPartitionTablePostfix() + " " +
-        "(time_stamp, server_address, local_address, tunnel_name, event_type) " +
+        "(time_stamp, tunnel_name, event_type) " +
         "values " +
         "( ?, ?, ?, ?, ? ) ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );
 
-        String serverAddress = (getServerAddress() == null ? "unknown" : getServerAddress().getHostAddress().toString());
-        String localAddress = (getLocalAddress() == null ? "unknown" : getLocalAddress().getHostAddress().toString());
-
         int i=0;
         pstmt.setTimestamp(++i,getTimeStamp());
-        pstmt.setObject(++i, serverAddress, java.sql.Types.OTHER);
-        pstmt.setObject(++i, localAddress, java.sql.Types.OTHER);
         pstmt.setString(++i, getTunnelName());
         pstmt.setString(++i, getEventType().toString());
 

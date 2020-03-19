@@ -6,11 +6,11 @@
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
-        "round(coalesce(sum(rx_bytes + tx_bytes), 0) / (1024*1024),1) as total"
+        "round(coalesce(sum(in_bytes + out_bytes), 0) / (1024*1024),1) as total"
     ],
     "textString": "Wireguard VPN processed {0} megabytes over Wireguard VPN tunnels.", 
     "readOnly": true,
-    "table": "wireguardvpn_stats",
+    "table": "wireguard_tunnel_stats",
     "title": "Wireguard VPN Summary",
     "type": "TEXT"
 }
