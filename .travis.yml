@@ -11,10 +11,6 @@ env:
     - SSH_KEY: /tmp/travis-buildbot.rsa
       PACKAGE_SERVER_IP: 173.14.28.193
   jobs:
-    - REPOSITORY: stretch
-      DISTRIBUTION: current
-      PKGTOOLS_COMMIT: origin/master
-      ARCHITECTURE: amd64
     - REPOSITORY: buster
       DISTRIBUTION: current
       ARCHITECTURE: amd64
