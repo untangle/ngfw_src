@@ -10,17 +10,13 @@ env:
   global:
     - SSH_KEY: /tmp/travis-buildbot.rsa
       PACKAGE_SERVER_IP: 173.14.28.193
+      REPOSITORY: buster
+      DISTRIBUTION: current
+      PKGTOOLS_COMMIT: origin/master
+      UPLOAD: scp
   jobs:
-    - REPOSITORY: buster
-      DISTRIBUTION: current
-      ARCHITECTURE: amd64
-      PKGTOOLS_COMMIT: origin/master
-      UPLOAD: scp
-    - REPOSITORY: buster
-      DISTRIBUTION: current
-      ARCHITECTURE: i386
-      PKGTOOLS_COMMIT: origin/master
-      UPLOAD: scp
+    - ARCHITECTURE: amd64
+    - ARCHITECTURE: i386
 
 before_install:
 - docker pull untangleinc/ngfw:${REPOSITORY}-build-${ARCHITECTURE}
