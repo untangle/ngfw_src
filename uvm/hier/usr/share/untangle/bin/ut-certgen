@@ -54,7 +54,7 @@ fi
 if [ ! -z "$3" -a "$3" != "" ]; then
     UT_EXT_MODE="req_ext_san"
     UT_SAN_LIST="$3"
-elif grep -qE '^9\.' /etc/debian_version ; then
+elif grep -qE '(^9\.)|(^10\.)' /etc/debian_version ; then
     # NGFW-11179: on Stretch, openssl errors out when reading the
     # empty [req_ext_nil] section of ut-openssl.cnf. Trying to
     # populate that section with some unimportant variable fixes the
