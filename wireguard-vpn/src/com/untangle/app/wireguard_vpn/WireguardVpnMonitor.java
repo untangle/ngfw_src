@@ -4,17 +4,16 @@
 
 package com.untangle.app.wireguard_vpn;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.File;
-import java.io.FileReader;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
+import java.time.Instant;
 import java.net.InetAddress;
-import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+
+import org.json.JSONTokener;
+import org.json.JSONObject;
+import org.json.JSONString;
+import org.json.JSONArray;
 
 import org.apache.log4j.Logger;
 
@@ -22,41 +21,52 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
 /**
- * Monitors the Wireguard VPN daemon for active tunnels, capturing statistics and
- * automatically restarting any that terminate unexpectedly.
- * 
- * @author mahotz
- * 
+ * Class to monitor Wireguard tunnels. Tasks include collecting traffic
+ * statistics, generating tunnel state transition events, and handling the ping
+ * test when configured for a tunnel.
  */
 class WireguardVpnMonitor implements Runnable
 {
-    private static final long TRAFFIC_CHECK_INTERVAL = (60 * 1000);
-    private static final long PROCESS_RESTART_DELAY = (30 * 1000);
+    /**
+     * Define an object we can use to keep track of each Wireguard tunnel.
+     */
+    class TunnelWatcher
+    {
+        String publicKey;
+        long rxLast;
+        long txLast;
+        long lastPing;
+        long lastUpdate;
+
+        /**
+         * Constructor
+         *
+         * @param publicKey
+         *        The public key of the tunnel
+         */
+        public TunnelWatcher(String publicKey)
+        {
+            this.publicKey = publicKey;
+            rxLast = 0;
+            txLast = 0;
+            lastPing = 0;
+            lastUpdate = 0;
+        }
+    }
 
     /* Delay a second while the thread is joining */
     private static final long THREAD_JOIN_TIME_MSEC = 1000;
 
-    /* Interrupt if there is no traffic for 2 seconds */
-    private static final int READ_TIMEOUT = 2000;
-
-    private static final String STATE_CMD = "state";
-    private static final String STATUS_CMD = "status";
-    private static final String XMIT_MARKER = "TCP/UDP write bytes";
-    private static final String RECV_MARKER = "TCP/UDP read bytes";
-    private static final String END_MARKER = "end";
-
     protected final Logger logger = Logger.getLogger(getClass());
-
-    private final ConcurrentHashMap<Integer, WireguardVpnTunnelStatus> tunnelStatusList = new ConcurrentHashMap<>();
     private final WireguardVpnApp app;
 
+    private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<>();
     private Thread thread = null;
     private volatile boolean isAlive = false;
-    private volatile long cycleCount = 0;
 
     /**
      * Constructor
-     * 
+     *
      * @param app
      *        The Tunnel VPN application
      */
@@ -79,18 +89,15 @@ class WireguardVpnMonitor implements Runnable
 
         while (isAlive) {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 logger.info("WireguardVpn monitor was interrupted");
             }
 
             if (!isAlive) break;
 
-            /* check that all the enabled tunnels are running and active */
-            checkTunnelProcesses();
-
-            /* generate the status and traffic statistics for each tunnel */
-            generateTunnelStatistics();
+            /* call the main monitor worker function */
+            monitorWorker();
         }
 
         logger.debug("Finished");
@@ -140,63 +147,212 @@ class WireguardVpnMonitor implements Runnable
     }
 
     /**
-     * Checks that all enabled tunnels have a running Wireguard VPN process. If any
-     * are missing the process is restarted.
+     * Main worker function
+     *
      */
-    private void checkTunnelProcesses()
+    private void monitorWorker()
     {
-        cycleCount += 1;
+        JSONTokener jsonTokener;
+        JSONObject jsonObject;
+        JSONArray statusList;
 
-        // BufferedReader bufferedReader = null;
-        // FileReader fileReader = null;
-        // /*
-        //  * Tunnel status objects that didn't get updated are left over from a
-        //  * tunnel that was deleted so we clean them up here.
-        //  */
-        // for (Map.Entry<Integer, WireguardVpnTunnelStatus> entry : tunnelStatusList.entrySet()) {
-        //     Integer key = entry.getKey();
-        //     WireguardVpnTunnelStatus value = entry.getValue();
-        //     if (value.getCycleCount() != cycleCount) tunnelStatusList.remove(value.getTunnelId());
-        // }
+        // get the status of all tunnels
+        String tunnelStatus = app.getTunnelStatus();
 
+        // create a tokener from the tunnel status string
+        try {
+            jsonTokener = new JSONTokener(tunnelStatus);
+        } catch (Exception exn) {
+            logger.warn("Exception creating JSONTokener:", exn);
+            return;
+        }
+
+        // create an object from the tokener
+        try {
+            jsonObject = new JSONObject(jsonTokener);
+        } catch (Exception exn) {
+            logger.warn("Exception creating JSONObject:", exn);
+            return;
+        }
+
+        // create an array from the wireguard info in the object
+        try {
+            statusList = jsonObject.getJSONArray("wireguard");
+        } catch (Exception exn) {
+            logger.warn("Exception creating JSONArray:", exn);
+            return;
+        }
+
+        // walk through the list of tunnel status records
+        for (int x = 0; x < statusList.length(); x++) {
+            JSONObject status;
+            String peerkey;
+
+            try {
+                // get the tunnel status object at the current index
+                status = statusList.getJSONObject(x);
+            } catch (Exception exn) {
+                logger.warn("Error creating status array:", exn);
+                continue;
+            }
+            try {
+                // get the peer key from the status record
+                peerkey = status.getString("peer-key");
+            } catch (Exception exn) {
+                logger.warn("Error getting peer-key:", exn);
+                continue;
+            }
+
+            // get the WireguardVpnTunnel tunnel for the peer key
+            WireguardVpnTunnel tunnel = findTunnelByPublicKey(peerkey);
+            if (tunnel == null) {
+                logger.warn("Missing tunnel for " + peerkey);
+                continue;
+            }
+
+            // get the TunnelWatcher entry for the peer key
+            TunnelWatcher watcher = watchTable.get(peerkey);
+
+            if (watcher == null) {
+                logger.debug("Creating new watch table entry for " + peerkey);
+                watcher = new TunnelWatcher(peerkey);
+                watchTable.put(peerkey, watcher);
+            } else {
+                logger.debug("Found existing watch table entry for " + peerkey);
+            }
+
+            generateTunnelStatistics(tunnel, watcher, status);
+            handleTunnelPingCheck(tunnel, watcher);
+        }
+
+        Set<String> keylist = watchTable.keySet();
+        long nowtime = Instant.now().getEpochSecond();
+
+        // look for stale entries in the watch table
+        for (String key : keylist) {
+            TunnelWatcher watcher = watchTable.get(key);
+
+            // continue if the entry has been updated in the last hour
+            if (nowtime < watcher.lastUpdate + 3600) continue;
+
+            // entry has not been touched in a while so remove from the table
+            logger.debug("Removing stale watchTable entry for " + watcher.publicKey);
+            watchTable.remove(key);
+        }
     }
 
     /**
-     * Connects to the wireguard vpn management port for every active tunnel to get
-     * the connection and traffic stats. We also watch for transitions between
-     * CONNECTED and DISCONNECTED and generate log events as required.
+     * Function to generate traffic statistics for a wireguard vpn tunnel
+     *
+     * @param tunnel
+     *        - The tunnel object
+     * @param watcher
+     *        - The watcher object
+     * @param status
+     *        - The status object
      */
-    protected void generateTunnelStatistics()
+    private void generateTunnelStatistics(WireguardVpnTunnel tunnel, TunnelWatcher watcher, JSONObject status)
     {
-        WireguardVpnTunnelStatus status = null;
-        WireguardVpnEvent event = null;
+        long inValue = 0;
+        long outValue = 0;
+        long inBytes = 0;
+        long outBytes = 0;
 
+        try {
+            inValue = status.getLong("transfer-rx");
+        } catch (Exception exn) {
+            logger.warn("Error getting transfer-rx", exn);
+            return;
+        }
+
+        try {
+            outValue = status.getLong("transfer-tx");
+        } catch (Exception exn) {
+            logger.warn("Error getting transfer-tx");
+            return;
+        }
+
+        // set the lastUpdate which is used by the table cleanup logic
+        watcher.lastUpdate = Instant.now().getEpochSecond();
+
+        // if neither value changed there is nothing to log so just return
+        if ((inValue == watcher.rxLast) && (outValue == watcher.txLast)) return;
+
+        /*
+         * We calculate the rx and tx bytes since the last time we checked. If
+         * the current values are less than we saw during the previous check we
+         * assume the tunnel or counters were somehow reset and just use the new
+         * the values as the raw byte counts for this iteration.
+         */
+
+        if (inValue < watcher.rxLast) inBytes = inValue;
+        else inBytes = (inValue - watcher.rxLast);
+
+        if (outValue < watcher.txLast) outBytes = outValue;
+        else outBytes = (outValue - watcher.txLast);
+
+        watcher.rxLast = inValue;
+        watcher.txLast = outValue;
+
+        WireguardVpnStatusEvent event = new WireguardVpnStatusEvent(tunnel.getDescription(), inBytes, outBytes);
+        app.logEvent(event);
+        logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
     }
 
     /**
-     * Gets a list of the status for each active tunnel
-     * 
-     * @return The tunnel status list
+     * Function to perform ping test for a wireguard vpn tunnel
+     *
+     * @param tunnel
+     *        - The tunnel object
+     * @param watcher
+     *        - The watcher object
      */
-    public LinkedList<WireguardVpnTunnelStatus> getTunnelStatusList()
+    private void handleTunnelPingCheck(WireguardVpnTunnel tunnel, TunnelWatcher watcher)
     {
-        LinkedList<WireguardVpnTunnelStatus> statusList = new LinkedList<>();
+        // nothing to do if tunnel has no ping interval or address
+        if (tunnel.getPingInterval() == 0) return;
+        if (tunnel.getPingAddress() == null) return;
+        if (tunnel.getPingAddress().length() == 0) return;
 
-        // if the app is not running just return an empty list
-        if (app.getRunState() != AppSettings.AppState.RUNNING) {
-            return (statusList);
+        // check the tunnel ping interval and return if below 
+        long nowtime = Instant.now().getEpochSecond();
+        if (nowtime < watcher.lastPing + tunnel.getPingInterval()) return;
+
+        // update the last ping time
+        watcher.lastPing = nowtime;
+
+        try {
+            InetAddress target = InetAddress.getByName(tunnel.getPingAddress());
+            if (target.isReachable(2000)) {
+                logger.debug("PING SUCCESS: " + tunnel.getPingAddress());
+                return;
+            }
+        } catch (Exception exn) {
+            logger.debug("PING EXCEPTION: " + tunnel.getPingAddress(), exn);
         }
-
-        checkTunnelProcesses();
-        generateTunnelStatistics();
-
-        for (Map.Entry<Integer, WireguardVpnTunnelStatus> entry : tunnelStatusList.entrySet()) {
-            Integer key = entry.getKey();
-            WireguardVpnTunnelStatus value = entry.getValue();
-            statusList.add(value);
-        }
-
-        return (statusList);
+        WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.UNREACHABLE);
+        app.logEvent(event);
+        logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
     }
 
+    /**
+     * Function to find the WireguardVpnTunnel in the application settings that
+     * matches a given public key.
+     *
+     * @param finder
+     *        The public key of the tunnel to find
+     *
+     * @return The WireguardVpnTunnel if found, otherwise null
+     */
+    private WireguardVpnTunnel findTunnelByPublicKey(String finder)
+    {
+        List<WireguardVpnTunnel> configList = app.getSettings().getTunnels();
+
+        for (int x = 0; x < configList.size(); x++) {
+            WireguardVpnTunnel tunnel = configList.get(x);
+            if (tunnel.getPublicKey().equals(finder)) return (tunnel);
+        }
+
+        return (null);
+    }
 }

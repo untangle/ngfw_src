@@ -49,7 +49,7 @@ public class WireguardVpnStatusEvent extends LogEvent implements Serializable
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO " + schemaPrefix() + "wireguard_vpn_stats" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "wireguard_tunnel_stats" + getPartitionTablePostfix() + " " +
             "(time_stamp, tunnel_name, in_bytes, out_bytes) " +
             "values " +
             "( ?, ?, ?, ? )";
@@ -82,7 +82,7 @@ public class WireguardVpnStatusEvent extends LogEvent implements Serializable
     @Override
     public String toSummaryString()
     {
-        String summary = "Tunnel VPN Tunnel " + getTunnelName() + " " + I18nUtil.marktr("sent") + " " + getOutBytes() + " " + I18nUtil.marktr("bytes and received") + " " + getInBytes() + " " + I18nUtil.marktr("bytes");
+        String summary = "Wireguard Tunnel " + getTunnelName() + " " + I18nUtil.marktr("sent") + " " + getOutBytes() + " " + I18nUtil.marktr("bytes and received") + " " + getInBytes() + " " + I18nUtil.marktr("bytes");
         return summary;
     }
 }

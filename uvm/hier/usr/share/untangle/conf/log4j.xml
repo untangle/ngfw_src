@@ -230,6 +230,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.app.wireguard_vpn">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.app.license">
     <priority value="WARN"/>
   </category>
