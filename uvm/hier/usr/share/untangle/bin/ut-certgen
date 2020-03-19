@@ -63,6 +63,7 @@ elif grep -qE '(^9\.)|(^10\.)' /etc/debian_version ; then
     # DNS:$(hostname) subjectAlternativeName.
     # To make sure this doesn't have an impact on 13.2 itself, we
     # isolate this fix to Stretch-based installs only.
+    # NGFW-12963: this fix applied to Buster as well
     UT_EXT_MODE="req_ext_san"
     UT_SAN_LIST="DNS:$(hostname)"
 else
