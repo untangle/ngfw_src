@@ -7,6 +7,37 @@ if [ "$1" = "upgrade" ] ; then
   oldVersion="$2"
 fi
 
+get_cpuinfo_field () {
+  line=$(grep -m1 ^"$1" /proc/cpuinfo)
+  echo "${line##*: }"
+}
+
+bay_trail () {
+  family=$(get_cpuinfo_field "cpu family")
+  model=$(get_cpuinfo_field "model")
+  stepping=$(get_cpuinfo_field "stepping")
+
+  if [ $family -eq 6 ] && \
+     [ $model -eq 55 ] && \
+     [ $stepping -eq 9 ] ; then
+
+    return 0
+  else
+    return 1
+  fi
+}
+
+# if this is a bay trail cpu like in the lanner u25
+if bay_trail ; then
+
+  # schedule a reboot if we aren't running with intel_idle.max_cstate=1
+  # which should have been set up by untangle-linux-config
+  if ! grep -q intel_idle.max_cstate=1 /proc/cmdline ; then
+    echo "Rebooting after apt-get completes for intel_idle.max_cstate=1..."
+    nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &
+  fi
+fi
+
 # If untangle-vm PID file exist and the process exists
 # stop the untangle-vm, launch the splash screen, and
 # launch uvm-restart to restart it after apt-get is done
