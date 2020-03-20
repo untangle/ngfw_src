@@ -19,11 +19,6 @@
 
   <servlet-mapping>
     <servlet-name>Downloader</servlet-name>
-    <url-pattern>/setup.exe</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>Downloader</servlet-name>
     <url-pattern>/config.zip</url-pattern>
   </servlet-mapping>
 
