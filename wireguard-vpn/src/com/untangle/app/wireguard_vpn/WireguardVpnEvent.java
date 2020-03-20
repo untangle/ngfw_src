@@ -46,7 +46,7 @@ public class WireguardVpnEvent extends LogEvent implements Serializable, org.jso
         String sql = "INSERT INTO " + schemaPrefix() + "wireguard_vpn_events" + getPartitionTablePostfix() + " " +
         "(time_stamp, tunnel_name, event_type) " +
         "values " +
-        "( ?, ?, ?, ?, ? ) ";
+        "( ?, ?, ? ) ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );
 
