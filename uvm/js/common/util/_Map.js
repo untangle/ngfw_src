@@ -1137,6 +1137,12 @@ Ext.define('Ung.util.Map', {
             'out_bytes',
             'event_id'
         ],
+        wireguard_vpn_events: [
+            'event_id',
+            'time_stamp',
+            'tunnel_name',
+            'event_type'
+        ],
         intrusion_prevention_events: [
             'time_stamp',
             'sig_id',

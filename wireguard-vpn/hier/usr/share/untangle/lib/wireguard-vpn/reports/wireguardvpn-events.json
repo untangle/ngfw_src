@@ -10,9 +10,9 @@
     "readOnly": true,
     "table": "wireguard_vpn_events",
     "timeDataColumns": [
-        "sum(case when type='CONNECT' then 1 else 0 end) as connect",
-        "sum(case when type='DISCONNECT' then 1 else 0 end) as disconnect",
-        "sum(case when type='UNREACHABLE' then 1 else 0 end) as unreachable"
+        "sum(case when event_type='CONNECT' then 1 else 0 end) as connect",
+        "sum(case when event_type='DISCONNECT' then 1 else 0 end) as disconnect",
+        "sum(case when event_type='UNREACHABLE' then 1 else 0 end) as unreachable"
     ],
     "colors": [
         "#396c2b",

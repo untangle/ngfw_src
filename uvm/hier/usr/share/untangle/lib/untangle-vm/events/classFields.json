@@ -5494,6 +5494,36 @@
         description: "The IP address of the tunnel peer",
     ]
     },
+    WireguardVpnEvent: {
+    description: "These events are created by [[Wireguard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_events|wireguard_vpn_events]] table when a Wireguard connec tion event occurs.",
+    fields: [
+        {
+        name: "class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "eventType",
+        type: "WireguardVpnEvent$EventType",
+        description: "The event type",
+        values: [
+ "CONNECT",
+ "DISCONNECT",
+ "UNREACHABLE",
+],
+        },
+        {
+        name: "timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "tunnelName",
+        type: "String",
+        description: "The name of the tunnel",
+        },
+    ]
+    },
     SslInspectorLogEvent: {
     description: "These events are created by [[SSL Inspector]] and update the [[Database_Schema#sessions|sessions]] table when a session is processed by SSL Inspector.",
     fields: [

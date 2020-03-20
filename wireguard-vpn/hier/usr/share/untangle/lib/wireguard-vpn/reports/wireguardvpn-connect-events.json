@@ -3,7 +3,7 @@
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
-    "defaultColumns": ["time_stamp","type","client_name","remote_address","pool_address"],
+    "defaultColumns": ["time_stamp","tunnel_name","event_type"],
     "description": "Wireguard VPN client connection events.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
