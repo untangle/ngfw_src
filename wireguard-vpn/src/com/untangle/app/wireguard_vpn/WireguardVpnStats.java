@@ -1,10 +1,11 @@
 /**
- * $Id: WireguardVpnStatusEvent.java 39740 2015-02-26 20:46:19Z dmorris $
+ * $Id: WireguardVpnStats.java 39740 2015-02-26 20:46:19Z dmorris $
  */
 
 package com.untangle.app.wireguard_vpn;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
@@ -16,26 +17,31 @@ import com.untangle.uvm.util.I18nUtil;
  * 
  */
 @SuppressWarnings("serial")
-public class WireguardVpnStatusEvent extends LogEvent implements Serializable
+public class WireguardVpnStats extends LogEvent implements Serializable
 {
+    private InetAddress peerAddress;
     private String tunnelName;
     private long inBytes;
     private long outBytes;
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
-    public WireguardVpnStatusEvent()
+    public WireguardVpnStats()
     {
         tunnelName = "unknown";
         inBytes = outBytes = 0;
     }
 
-    public WireguardVpnStatusEvent(String tunnelName,long inBytes,long outBytes)
+    public WireguardVpnStats(String tunnelName,InetAddress peerAddress,long inBytes,long outBytes)
     {
+        this.peerAddress = peerAddress;
         this.tunnelName = tunnelName;
         this.inBytes = inBytes;
         this.outBytes = outBytes;
     }
+
+    public InetAddress getPeerAddress() { return(peerAddress); }
+    public void setPeerAddress(InetAddress peerAddress) { this.peerAddress = peerAddress; }
 
     public String getTunnelName() { return(tunnelName); }
     public void setTunnelName( String tunnelName ) { this.tunnelName = tunnelName; }
@@ -49,16 +55,17 @@ public class WireguardVpnStatusEvent extends LogEvent implements Serializable
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO " + schemaPrefix() + "wireguard_tunnel_stats" + getPartitionTablePostfix() + " " +
-            "(time_stamp, tunnel_name, in_bytes, out_bytes) " +
+        String sql = "INSERT INTO " + schemaPrefix() + "wireguard_vpn_stats" + getPartitionTablePostfix() + " " +
+            "(time_stamp, tunnel_name, peer_address, in_bytes, out_bytes) " +
             "values " +
-            "( ?, ?, ?, ? )";
+            "( ?, ?, ?, ?, ? )";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
         pstmt.setString(++i, getTunnelName());
+        pstmt.setObject(++i, getPeerAddress().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setLong(++i, getInBytes());
         pstmt.setLong(++i, getOutBytes());
 
@@ -71,7 +78,7 @@ public class WireguardVpnStatusEvent extends LogEvent implements Serializable
     public String toString()
     {
         String detail = new String();
-        detail += ("WireguardVpnStatusEvent(");
+        detail += ("WireguardVpnStats(");
         detail += (" tunnelName:" + tunnelName);
         detail += (" inBytes:" + inBytes);
         detail += (" outBytes:" + outBytes);

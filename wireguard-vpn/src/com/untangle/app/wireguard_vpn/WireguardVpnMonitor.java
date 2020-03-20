@@ -294,7 +294,7 @@ class WireguardVpnMonitor implements Runnable
         watcher.rxLast = inValue;
         watcher.txLast = outValue;
 
-        WireguardVpnStatusEvent event = new WireguardVpnStatusEvent(tunnel.getDescription(), inBytes, outBytes);
+        WireguardVpnStats event = new WireguardVpnStats(tunnel.getDescription(), tunnel.getPeerAddress(), inBytes, outBytes);
         app.logEvent(event);
         logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
     }

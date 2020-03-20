@@ -5460,6 +5460,40 @@
         },
     ]
     },
+    WireguardVpnStats: {
+    description: "These events are created by [[Wireguard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_stats|wireguard_vpn_stats]] table periodically.",
+    fields: [
+        {
+        name: "class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "inBytes",
+        type: "long",
+        description: "The number of bytes received from this tunnel",
+        },
+        {
+        name: "outBytes",
+        type: "long",
+        description: "The number of bytes sent in this tunnel",
+        },
+        {
+        name: "timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "tunnelName",
+        type: "String",
+        description: "The name of this tunnel",
+        },
+        {
+        name: "peerAddress",
+        type: "String",
+        description: "The IP address of the tunnel peer",
+    ]
+    },
     SslInspectorLogEvent: {
     description: "These events are created by [[SSL Inspector]] and update the [[Database_Schema#sessions|sessions]] table when a session is processed by SSL Inspector.",
     fields: [

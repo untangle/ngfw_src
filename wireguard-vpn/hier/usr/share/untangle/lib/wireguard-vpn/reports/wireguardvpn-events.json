@@ -1,17 +1,18 @@
 {
     "uniqueId": "wireguardvpn-wgBp3UkhVS1x",
     "category": "Wireguard VPN",
-    "description": "The amount of login and logout events over time.",
+    "description": "The amount of connect, disconnect, and unreachable events over time.",
     "displayOrder": 101,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "events",
     "readOnly": true,
-    "table": "wireguardvpn_events",
+    "table": "wireguard_vpn_events",
     "timeDataColumns": [
-        "sum(case when type='CONNECT' then 1 else 0 end) as logins",
-        "sum(case when type='DISCONNECT' then 1 else 0 end) as logouts"
+        "sum(case when type='CONNECT' then 1 else 0 end) as connect",
+        "sum(case when type='DISCONNECT' then 1 else 0 end) as disconnect",
+        "sum(case when type='UNREACHABLE' then 1 else 0 end) as unreachable"
     ],
     "colors": [
         "#396c2b",
