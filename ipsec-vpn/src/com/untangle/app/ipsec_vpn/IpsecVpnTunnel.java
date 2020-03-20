@@ -152,6 +152,16 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     public int getPingInterval() { return(pingInterval); }
     public void setPingInterval(int pingInterval) { this.pingInterval = pingInterval; }
 
+    /*
+    * Use the id and description to create a unique connection name that
+    * won't cause problems in the ipsec.conf file by replacing non-word
+    * characters with a hyphen. We also prefix this name with UT123_ to
+    * ensure no dupes in the config file.
+    *
+    * Moved this into the IpsecVpnTunnel class as a public getter to be consistent
+    */
+    public String getWorkName() { return "UT" + this.id + "_" + this.description.replaceAll("\\W", "-"); }
+
     // THIS IS FOR ECLIPSE - @formatter:on
 
     public String toJSONString()
