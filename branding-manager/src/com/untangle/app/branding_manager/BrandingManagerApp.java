@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.apache.commons.fileupload.FileItem;
 
-import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -36,29 +35,8 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     private static final String DEFAULT_UNTANGLE_COMPANY_NAME = "Untangle";
     private static final String DEFAULT_UNTANGLE_URL = "http://untangle.com/";
 
-    public enum FILE_PARSE_TYPE {
-        QUOTED,
-        NON_QUOTED
-    }
-
-    private static final String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/branding-manager/root_certificate_installer";
-    private static final HashMap<FILE_PARSE_TYPE, String> ROOT_CA_INSTALLER_PARSE_FILE_NAMES;
-
-    public enum REGEX_TYPE {
-        COMPANY_NAME,
-        COMPANY_URL
-    }
-
-    static {
-        ROOT_CA_INSTALLER_PARSE_FILE_NAMES = new HashMap<>();
-        ROOT_CA_INSTALLER_PARSE_FILE_NAMES.put(FILE_PARSE_TYPE.QUOTED, ROOT_CA_INSTALLER_DIRECTORY_NAME + "/installer.nsi");
-        ROOT_CA_INSTALLER_PARSE_FILE_NAMES.put(FILE_PARSE_TYPE.NON_QUOTED, ROOT_CA_INSTALLER_DIRECTORY_NAME + "/SoftwareLicense.txt");
-    }
-
     private final Logger logger = Logger.getLogger(getClass());
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
-
-    private static final String EOL = "\n";
 
     private BrandingManagerSettings settings = null;
 
@@ -196,7 +174,6 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         this.settings = newSettings;
 
         setFileLogo(settings.binary_getLogo());
-        createRootCaInstaller();
     }
 
     /**
@@ -353,119 +330,6 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
                 }
             }
         }
-    }
-
-    /**
-     * Using the non-branded version from uvm as a template base, modify
-     * images and text to reflect branding.
-     */
-    private void createRootCaInstaller()
-    {
-        /*
-         * Use the non-branded version as a template base.  Copy over.
-         */
-        UvmContextFactory.context().execManager().exec("rm -rf " + ROOT_CA_INSTALLER_DIRECTORY_NAME + "; cp -fa " + CertificateManager.ROOT_CA_INSTALLER_DIRECTORY_NAME + " " + ROOT_CA_INSTALLER_DIRECTORY_NAME);
-
-        /*
-         * Convert images to .bmp format
-         */
-        UvmContextFactory.context().execManager().exec("anytopnm " + BRANDING_LOGO + " | ppmtobmp > "+ROOT_CA_INSTALLER_DIRECTORY_NAME+"/images/modern-header.bmp");
-        UvmContextFactory.context().execManager().exec("anytopnm " + BRANDING_LOGO + " | pnmrotate 90 | ppmtobmp > "+ROOT_CA_INSTALLER_DIRECTORY_NAME+"/images/modern-wizard.bmp");
-
-        /*
-         * Parse files replacing Untangle defaults
-         */
-        String companyName = settings.getCompanyName();
-        String companyUrl = settings.getCompanyUrl();
-        for(Map.Entry<FILE_PARSE_TYPE, String> filenameSet : ROOT_CA_INSTALLER_PARSE_FILE_NAMES.entrySet()) {
-            String filename = filenameSet.getValue();
-            File file = new File(filename);
-            String name = file.getName();
-            HashMap<REGEX_TYPE, Pattern> regexes = new HashMap<>();
-            String quotedString = "";
-            int flags = 0;
-            if(filenameSet.getKey() == FILE_PARSE_TYPE.QUOTED){
-                quotedString = "\"";
-            }else{
-                flags = Pattern.CASE_INSENSITIVE;                
-            }
-
-            /*
-             * Build up regexes to find the first occurance of our current name.
-             */
-            regexes.put(REGEX_TYPE.COMPANY_NAME, Pattern.compile("(" + quotedString + ".*?)" + DEFAULT_UNTANGLE_COMPANY_NAME + "(.*" + quotedString + ")", flags));
-            regexes.put(REGEX_TYPE.COMPANY_URL, Pattern.compile("(" + quotedString + ".*?)" + "http://.*.untangle.com(.*" + quotedString + ")", flags));
-
-            StringBuilder parsed = new StringBuilder();
-            Matcher match = null;
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new FileReader(filename));
-                for (String line = reader.readLine(); null != line; line = reader.readLine()) {
-                    /*
-                     * When parsing the nsi file we only want to replace strings within quotes and
-                     * for other files, everything.
-                     */
-                    for(Map.Entry<REGEX_TYPE, Pattern> regex : regexes.entrySet()) {
-                        match = regex.getValue().matcher(line);
-                        int startPos = 0;
-                        while(match.find(startPos)){
-                            switch(regex.getKey()){
-                                case COMPANY_NAME:
-                                    startPos = match.start() + match.group(1).length() + companyName.length();
-                                    line = match.replaceAll("$1" + companyName + "$2");
-                                    break;
-                                case COMPANY_URL:
-                                    startPos = match.start() + match.group(1).length() + companyUrl.length();
-                                    line = match.replaceAll("$1" + companyUrl + "$2");
-                                    break;
-
-                                default:
-                                    /* Shouldn'e be here...but if we are, make sure we exit the loop. */
-                                    startPos = line.length();
-                            }
-                            if(startPos >= line.length()){
-                                break;
-                            }
-                           match = regex.getValue().matcher(line);
-                        }
-                    }
-                    parsed.append(line).append(EOL);
-                }
-            } catch (Exception x) {
-                logger.warn("Unable to open installer configuration file: " + filename );
-                return;
-            } finally {
-                if (reader != null){
-                    try {
-                        reader.close();
-                    } catch (Exception x) {
-                        logger.warn("Unable to close installer configuration file: " + filename );
-                    }
-                }
-            }
-
-            File tmp = null;
-            try(
-                FileOutputStream fos = new FileOutputStream(tmp);
-            ){
-                tmp = File.createTempFile( file.getName(), ".tmp");
-                fos.write(parsed.toString().getBytes());
-                fos.flush();
-                IOUtil.copyFile(tmp, new File(filename));
-            }catch(Exception ex) {
-                logger.error("Unable to create installer file:" + filename + ":", ex);
-            }finally{
-                if(tmp != null){
-                    tmp.delete();
-                }
-            }
-        }
-
-        /*
-         * Regenerate
-         */
-        UvmContextFactory.context().execManager().exec(CertificateManager.ROOT_CA_INSTALLER_SCRIPT);
     }
 
     /**
