@@ -325,10 +325,6 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                         html: 'These files can be used to configure your Remote Clients.'.t(),
                     }, {
                         xtype: 'component',
-                        name: 'downloadWindowsInstaller',
-                        html:  " "
-                    }, {
-                        xtype: 'component',
                         name: 'downloadGenericConfigurationFile',
                         html: " "
                     }, {
@@ -366,10 +362,6 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                 this.setTitle('Download OpenVPN Client'.t() + ' | ' + record.data.name);
 
                 var clients = [{
-                  name: 'downloadWindowsInstaller',
-                  type: 'exe',
-                  message: 'Click here to download this client\'s Windows setup.exe file.'.t()
-                },{
                   name: 'downloadUntangleConfigurationFile',
                   type: 'zip',
                   message: 'Click here to download this client\'s configuration zip file for remote Untangle OpenVPN clients or other OS\'s (apple/linux/etc).'.t()
