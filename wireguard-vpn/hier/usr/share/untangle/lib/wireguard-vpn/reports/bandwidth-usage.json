@@ -8,7 +8,7 @@
     "orderDesc": false,
     "units": "KB/s",
     "readOnly": true,
-    "table": "wireguard_tunnel_stats",
+    "table": "wireguard_vpn_stats",
     "timeDataColumns": [
         "round(coalesce(sum(in_bytes + out_bytes), 0) / (1024*60),1) as total",
         "round(coalesce(sum(out_bytes), 0) / (1024*60),1) as sent",

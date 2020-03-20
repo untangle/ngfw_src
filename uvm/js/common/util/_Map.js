@@ -462,7 +462,7 @@ Ext.define('Ung.util.Map', {
         rule_id: {
             col: { text: 'Rule Id'.t(), width: 120 },
             fld: { type: 'string' }
-        },        
+        },
         rx_bytes: {
             col: { text: 'RX Bytes'.t(), filter: Rndr.filters.numeric, width: 120 },
             fld: { type: 'number' }
@@ -918,7 +918,7 @@ Ext.define('Ung.util.Map', {
                                             var previousLine = diffLines[i].substr(1,510);
                                             var currentAction = diffLines[i].substr(511,1);
                                             var currentLine = diffLines[i].substr(512);
-        
+
                                             if( previousAction != "<" && previousAction != ">") {
                                                 previousLine = previousAction + previousLine;
                                             }
@@ -926,7 +926,7 @@ Ext.define('Ung.util.Map', {
                                                 currentLine = currentAction + currentLine;
                                                 currentAction = -1;
                                             }
-        
+
                                             if( currentAction == "|" ) {
                                                 action = 3;
                                             } else if(currentAction == "<") {
@@ -936,7 +936,7 @@ Ext.define('Ung.util.Map', {
                                             } else {
                                                 action = 0;
                                             }
-        
+
                                             diffData.push({
                                                 line: (i + 1),
                                                 previous: previousLine.replace(/\s+$/,"").replace(/\s/g, "&nbsp;"),
@@ -1125,6 +1125,14 @@ Ext.define('Ung.util.Map', {
         ipsec_tunnel_stats: [
             'time_stamp',
             'tunnel_name',
+            'in_bytes',
+            'out_bytes',
+            'event_id'
+        ],
+        wireguard_vpn_stats: [
+            'time_stamp',
+            'tunnel_name',
+            'peer_address',
             'in_bytes',
             'out_bytes',
             'event_id'
