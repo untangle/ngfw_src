@@ -286,7 +286,11 @@ public class OpenVpnAppImpl extends AppBase
             return;
         }
 
-        boolean restartRequired = isRestartRequired(this.settings, newSettings);
+        boolean restartRequired = true;
+        
+        if(this.settings != null) {
+            restartRequired = isRestartRequired(this.settings, newSettings);
+        }
 
         /**
          * Change current settings
