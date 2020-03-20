@@ -607,6 +607,10 @@ Ext.define('Ung.util.Map', {
             col: { text: 'Tunnel Name'.t(), width: 160 },
             fld: { type: 'string' }
         },
+        peer_address: {
+            col: { text: 'Source Address'.t(), width: 120 },
+            fld: { type: 'string', sortType: 'asIp' }
+        },
         tx_bytes: {
             col: { text: 'TX Bytes'.t(), filter: Rndr.filters.numeric, width: 80 },
             fld: { type: 'number' }
