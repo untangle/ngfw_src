@@ -448,7 +448,6 @@ class WireguardVpnMonitor implements Runnable
         // nothing to do if tunnel has no ping interval or address
         if (tunnel.getPingInterval() == 0) return;
         if (tunnel.getPingAddress() == null) return;
-        if (tunnel.getPingAddress().length() == 0) return;
 
         // check the tunnel ping interval and return if below
         long nowtime = Instant.now().getEpochSecond();
@@ -458,13 +457,13 @@ class WireguardVpnMonitor implements Runnable
         watcher.lastPing = nowtime;
 
         try {
-            InetAddress target = InetAddress.getByName(tunnel.getPingAddress());
+            InetAddress target = InetAddress.getByName(tunnel.getPingAddress().getHostAddress());
             if (target.isReachable(2000)) {
-                logger.debug("PING SUCCESS: " + tunnel.getPingAddress());
+                logger.debug("PING SUCCESS: " + tunnel.getPingAddress().getHostAddress());
                 return;
             }
         } catch (Exception exn) {
-            logger.debug("PING EXCEPTION: " + tunnel.getPingAddress(), exn);
+            logger.debug("PING EXCEPTION: " + tunnel.getPingAddress().getHostAddress(), exn);
         }
         WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.UNREACHABLE);
         app.logEvent(event);
