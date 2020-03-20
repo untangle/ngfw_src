@@ -374,11 +374,6 @@ Ext.define('Ung.config.administration.MainController', {
         downloadForm.type.value = 'root_certificate_download';
         downloadForm.submit();
     },
-    downloadRootCertificateInstaller: function () {
-        var downloadForm = document.getElementById('downloadForm');
-        downloadForm.type.value = 'root_certificate_installer_download';
-        downloadForm.submit();
-    },
     certGenerator: function () {
         var me = this,
             form = this.certDialog.down('form'),
