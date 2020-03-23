@@ -132,6 +132,10 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = readSettings;
             configureInterfaceSettingsArray();
 
+            /* 15.2 conversion */
+            if ( this.networkSettings.getVersion() < 8 ) {
+                convertSettingsV8();
+            }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -871,7 +875,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 7 ); // Currently on v7 (as of v13.2.1)
+            newSettings.setVersion( 8 ); // Currently on v8 (as of v15.2)
 
             String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
             try {
@@ -2208,7 +2212,7 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleWireguard.setReadOnly( true );
         filterRuleWireguard.setEnabled( true );
         filterRuleWireguard.setIpv6Enabled( true );
-        filterRuleWireguard.setDescription( "Allow wireguard" );
+        filterRuleWireguard.setDescription( "Allow Wireguard" );
         filterRuleWireguard.setBlocked( false );
         List<FilterRuleCondition> ruleWireguardConditions = new LinkedList<>();
         FilterRuleCondition ruleWireguardMatcher1 = new FilterRuleCondition();
@@ -2664,6 +2668,52 @@ public class NetworkManagerImpl implements NetworkManager
         }
         logger.warn("Failed to find a free interface Id (min:" + minimum + " max:"  + freeId + ")");
         return -1;
+    }
+
+    /**
+     * convertSettingsV8
+     * Add default access rule for wireguard tunnels
+     */
+    private void convertSettingsV8()
+    {
+        try {
+            List<FilterRule> accessRules = this.networkSettings.getAccessRules();
+            for( FilterRule rule : accessRules ) {
+                int pos = 1;
+                if ("Allow OpenVPN".equals(rule.getDescription())) {
+                    FilterRule filterRuleWireguard = new FilterRule();
+                    filterRuleWireguard.setReadOnly( true );
+                    filterRuleWireguard.setEnabled( true );
+                    filterRuleWireguard.setIpv6Enabled( true );
+                    filterRuleWireguard.setDescription( "Allow Wireguard" );
+                    filterRuleWireguard.setBlocked( false );
+                    List<FilterRuleCondition> ruleWireguardConditions = new LinkedList<>();
+                    FilterRuleCondition ruleWireguardMatcher1 = new FilterRuleCondition();
+                    ruleWireguardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+                    ruleWireguardMatcher1.setValue("UDP");
+                    FilterRuleCondition ruleWireguardMatcher2 = new FilterRuleCondition();
+                    ruleWireguardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+                    ruleWireguardMatcher2.setValue("51820");
+                    FilterRuleCondition ruleWireguardMatcher3 = new FilterRuleCondition();
+                    ruleWireguardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+                    ruleWireguardMatcher3.setValue("wan");
+                    ruleWireguardConditions.add(ruleWireguardMatcher1);
+                    ruleWireguardConditions.add(ruleWireguardMatcher2);
+                    ruleWireguardConditions.add(ruleWireguardMatcher3);
+                    filterRuleWireguard.setConditions( ruleWireguardConditions );
+
+                    accessRules.add( pos, filterRuleWireguard );
+
+                    break;
+                }
+                pos++;
+            }
+        } catch (Exception e) {
+            logger.warn("Exception converting Networking Settings",e);
+        }
+
+        this.networkSettings.setVersion( 8 );
+        this.setNetworkSettings( this.networkSettings, false );
     }
 
     /**
