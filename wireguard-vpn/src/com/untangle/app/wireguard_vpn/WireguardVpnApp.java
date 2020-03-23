@@ -33,8 +33,8 @@ public class WireguardVpnApp extends AppBase
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
     private WireguardVpnSettings settings = null;
-    private WireguardVpnMonitor WireguardVpnMonitor;
-    private final WireguardVpnManager wireguardVpnManager;
+    private WireguardVpnMonitor WireguardVpnMonitor = null;
+    private WireguardVpnManager WireguardVpnManager = null;
 
     /**
      * Constructor
@@ -48,7 +48,7 @@ public class WireguardVpnApp extends AppBase
     {
         super(appSettings, appProperties);
         WireguardVpnMonitor = new WireguardVpnMonitor(this);
-        this.wireguardVpnManager = new WireguardVpnManager(this);
+        this.WireguardVpnManager = new WireguardVpnManager(this);
     }
 
     /**
@@ -67,8 +67,17 @@ public class WireguardVpnApp extends AppBase
      * @return wireguard manager
      */
     public WireguardVpnManager getWireguardVpnManager(){
-        logger.warn(this.wireguardVpnManager);
-        return this.wireguardVpnManager;
+        logger.warn(this.WireguardVpnManager);
+        return this.WireguardVpnManager;
+    }
+
+    /**
+     * Return the settings filename
+     * @return String of filename
+     */
+    public String getSettingsFilename()
+    {
+        return System.getProperty("uvm.settings.dir") + SettingsDirectory + "settings_"  + this.getAppSettings().getId().toString() + ".js";
     }
 
     /**
@@ -82,9 +91,8 @@ public class WireguardVpnApp extends AppBase
         /**
          * Save the settings
          */
-        String appID = this.getAppSettings().getId().toString();
         try {
-            UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + SettingsDirectory + "settings_"  + appID + ".js", newSettings );
+            UvmContextFactory.context().settingsManager().save( this.getSettingsFilename(), newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -117,6 +125,19 @@ public class WireguardVpnApp extends AppBase
     @Override
     protected void postStart(boolean isPermanentTransition)
     {
+        try {
+            this.WireguardVpnManager.configure();
+            this.WireguardVpnManager.start();
+        } catch (Exception e) {
+            logger.error("Error during startup", e);
+            try {
+                this.WireguardVpnManager.stop();
+            } catch (Exception stopException) {
+                logger.error("Unable to stop the wireguard process", stopException);
+            }
+            throw new RuntimeException(e);
+        }
+
         this.WireguardVpnMonitor.start();
     }
 
@@ -130,6 +151,8 @@ public class WireguardVpnApp extends AppBase
     protected void preStop(boolean isPermanentTransition)
     {
         this.WireguardVpnMonitor.stop();
+
+        this.WireguardVpnManager.stop();
     }
 
     /**
@@ -139,12 +162,10 @@ public class WireguardVpnApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = this.getAppSettings().getId().toString();
         WireguardVpnSettings readSettings = null;
-        String settingsFilename = System.getProperty("uvm.settings.dir") + SettingsDirectory + "settings_" + appID + ".js";
 
         try {
-            readSettings = settingsManager.load(WireguardVpnSettings.class, settingsFilename);
+            readSettings = settingsManager.load(WireguardVpnSettings.class, this.getSettingsFilename());
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
         }
