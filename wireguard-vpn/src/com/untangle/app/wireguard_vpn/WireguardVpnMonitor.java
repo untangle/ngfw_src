@@ -36,49 +36,35 @@ class WireguardVpnMonitor implements Runnable
      */
     class TunnelWatcher
     {
-        String faceName;
+        String deviceName;
         String publicKey;
-
-        long faceTraffic;
-        boolean faceAlive;
-
-        long lastFaceRx;
-        long lastFaceTx;
-        long currFaceRx;
-        long currFaceTx;
-
-        long lastWgRx;
-        long lastWgTx;
-
-        long lastPing;
-        long lastUpdate;
+        long lastUpdateTime;
+        long lastRxBytes;
+        long lastTxBytes;
+        long devRxBytes;
+        long devTxBytes;
+        long lastPingTime;
+        boolean virtualStateFlag;
 
         /**
          * Constructor
          * 
-         * @param faceName
+         * @param deviceName
          *        The network interface of the tunnel
          * @param publicKey
          *        The public key of the tunnel
          */
-        public TunnelWatcher(String faceName, String publicKey)
+        public TunnelWatcher(String deviceName, String publicKey)
         {
-            this.faceName = faceName;
+            this.deviceName = deviceName;
             this.publicKey = publicKey;
-
-            faceTraffic = 0;
-            faceAlive = false;
-
-            lastFaceRx = 0;
-            lastFaceTx = 0;
-            currFaceRx = 0;
-            currFaceTx = 0;
-
-            lastWgRx = 0;
-            lastWgTx = 0;
-
-            lastPing = 0;
-            lastUpdate = 0;
+            lastUpdateTime = 0;
+            lastRxBytes = 0;
+            lastTxBytes = 0;
+            devRxBytes = 0;
+            devTxBytes = 0;
+            lastPingTime = 0;
+            virtualStateFlag = false;
         }
     }
 
@@ -178,7 +164,8 @@ class WireguardVpnMonitor implements Runnable
     }
 
     /**
-     * Main worker function
+     * Main worker function gets wireguard and raw interface stats for all
+     * devices and then calls worker functions for all configured tunnels.
      *
      */
     private void monitorWorker()
@@ -189,7 +176,12 @@ class WireguardVpnMonitor implements Runnable
         JSONArray statusList;
 
         /*
-         * Start by getting the raw statistics for all interfaces
+         * Start by getting the raw device stats for all wireguard interfaces.
+         * 
+         * NOTE: These values aren't currently used. The logic to retrieve them
+         * was added while looking at ways to trigger connection UP and DOWN
+         * alerts, but was ultimately not used. I'm leaving this in place since
+         * it is very low impact and may prove useful later.
          */
         try {
             reader = new BufferedReader(new FileReader("/proc/net/dev"));
@@ -201,8 +193,8 @@ class WireguardVpnMonitor implements Runnable
                 // find the watcher for the device and update the current interface byte counts
                 TunnelWatcher watcher = watchTable.get(matcher.group(1));
                 if (watcher == null) continue;
-                watcher.currFaceRx = Long.parseLong(matcher.group(2));
-                watcher.currFaceTx = Long.parseLong(matcher.group(3));
+                watcher.devRxBytes = Long.parseLong(matcher.group(2));
+                watcher.devTxBytes = Long.parseLong(matcher.group(3));
             }
 
         } catch (Exception exn) {
@@ -248,7 +240,7 @@ class WireguardVpnMonitor implements Runnable
         // walk through the list of tunnel status records
         for (int x = 0; x < statusList.length(); x++) {
             JSONObject status;
-            String facename;
+            String deviceName;
             String peerkey;
 
             try {
@@ -261,7 +253,7 @@ class WireguardVpnMonitor implements Runnable
 
             try {
                 // get the interface from the status record
-                facename = status.getString("interface");
+                deviceName = status.getString("interface");
             } catch (Exception exn) {
                 logger.warn("Error getting interface:", exn);
                 continue;
@@ -283,18 +275,17 @@ class WireguardVpnMonitor implements Runnable
             }
 
             // get the TunnelWatcher entry for the peer key
-            TunnelWatcher watcher = watchTable.get(facename);
+            TunnelWatcher watcher = watchTable.get(deviceName);
 
             if (watcher == null) {
-                logger.debug("Creating new watch table entry for " + facename);
-                watcher = new TunnelWatcher(facename, peerkey);
-                watchTable.put(facename, watcher);
+                logger.debug("Creating new watch table entry for " + deviceName);
+                watcher = new TunnelWatcher(deviceName, peerkey);
+                watchTable.put(deviceName, watcher);
             } else {
-                logger.debug("Found existing watch table entry for " + facename);
+                logger.debug("Found existing watch table entry for " + deviceName);
             }
 
             generateTunnelStatistics(tunnel, watcher, status);
-            checkTunnelConnection(tunnel, watcher);
             handleTunnelPingCheck(tunnel, watcher);
         }
 
@@ -306,7 +297,7 @@ class WireguardVpnMonitor implements Runnable
             TunnelWatcher watcher = watchTable.get(key);
 
             // continue if the entry has been updated in the last hour
-            if (nowtime < (watcher.lastUpdate + 3600)) continue;
+            if (nowtime < (watcher.lastUpdateTime + 3600)) continue;
 
             // entry has not been touched in a while so remove from the table
             logger.debug("Removing stale watchTable entry for " + watcher.publicKey);
@@ -349,18 +340,18 @@ class WireguardVpnMonitor implements Runnable
          * If this is the first time checking this tunnel we need to use the
          * current RX and TX values as the starting point for delta caculations.
          */
-        if (watcher.lastUpdate == 0) {
-            watcher.lastUpdate = Instant.now().getEpochSecond();
-            watcher.lastWgRx = inValue;
-            watcher.lastWgTx = outValue;
+        if (watcher.lastUpdateTime == 0) {
+            watcher.lastUpdateTime = Instant.now().getEpochSecond();
+            watcher.lastRxBytes = inValue;
+            watcher.lastTxBytes = outValue;
             return;
         }
 
-        // set the lastUpdate which is used by the table cleanup logic
-        watcher.lastUpdate = Instant.now().getEpochSecond();
+        // set the lastUpdateTime which is used by the table cleanup logic
+        watcher.lastUpdateTime = Instant.now().getEpochSecond();
 
         // if neither value changed there is nothing to log so just return
-        if ((inValue == watcher.lastWgRx) && (outValue == watcher.lastWgTx)) return;
+        if ((inValue == watcher.lastRxBytes) && (outValue == watcher.lastTxBytes)) return;
 
         /*
          * We calculate the rx and tx bytes since the last time we checked. If
@@ -369,70 +360,18 @@ class WireguardVpnMonitor implements Runnable
          * the values as the raw byte counts for this iteration.
          */
 
-        if (inValue < watcher.lastWgRx) inBytes = inValue;
-        else inBytes = (inValue - watcher.lastWgRx);
+        if (inValue < watcher.lastRxBytes) inBytes = inValue;
+        else inBytes = (inValue - watcher.lastRxBytes);
 
-        if (outValue < watcher.lastWgTx) outBytes = outValue;
-        else outBytes = (outValue - watcher.lastWgTx);
+        if (outValue < watcher.lastTxBytes) outBytes = outValue;
+        else outBytes = (outValue - watcher.lastTxBytes);
 
-        watcher.lastWgRx = inValue;
-        watcher.lastWgTx = outValue;
+        watcher.lastRxBytes = inValue;
+        watcher.lastTxBytes = outValue;
 
         WireguardVpnStats event = new WireguardVpnStats(tunnel.getDescription(), tunnel.getPeerAddress(), inBytes, outBytes);
         app.logEvent(event);
         logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
-    }
-
-    /**
-     * Function to determine if a tunnel is actually connected
-     *
-     * @param tunnel
-     *        - The tunnel object
-     * @param watcher
-     *        - The watcher object
-     */
-    private void checkTunnelConnection(WireguardVpnTunnel tunnel, TunnelWatcher watcher)
-    {
-        long nowtime = Instant.now().getEpochSecond();
-
-        // if current interface counts are less than previous they overflowed or were reset 
-        if (watcher.currFaceRx < watcher.lastFaceRx) watcher.lastFaceRx = 0;
-        if (watcher.currFaceTx < watcher.lastFaceTx) watcher.lastFaceTx = 0;
-
-        // if the counters have not changed we may need to handle state transition  
-        if ((watcher.currFaceRx == watcher.lastFaceRx) && (watcher.currFaceTx == watcher.lastFaceTx)) {
-            // if we have not reached the timeout just return
-            if (nowtime < (watcher.faceTraffic + TUNNEL_ACTIVITY_TIMEOUT)) return;
-
-            // if the alive flag is clear there is nothing to do
-            if (watcher.faceAlive == false) return;
-
-            // clear the alive flag
-            watcher.faceAlive = false;
-
-            // log the DISCONNECT event
-            WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.DISCONNECT);
-            app.logEvent(event);
-            logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
-
-            return;
-        }
-
-        // the couters have changed so update them and the last traffic time
-        watcher.faceTraffic = nowtime;
-        watcher.lastFaceRx = watcher.currFaceRx;
-        watcher.lastFaceTx = watcher.currFaceTx;
-
-        // if the alive flag is set there is nothing to do
-        if (watcher.faceAlive == true) return;
-
-        // clear the alive flag
-        watcher.faceAlive = true;
-
-        // log the CONNECT event
-        WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.CONNECT);
-        app.logEvent(event);
-        logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
     }
 
     /**
@@ -445,27 +384,56 @@ class WireguardVpnMonitor implements Runnable
      */
     private void handleTunnelPingCheck(WireguardVpnTunnel tunnel, TunnelWatcher watcher)
     {
+        boolean pingSuccess = false;
+
         // nothing to do if tunnel has no ping interval or address
         if (tunnel.getPingInterval() == 0) return;
         if (tunnel.getPingAddress() == null) return;
 
         // check the tunnel ping interval and return if below
         long nowtime = Instant.now().getEpochSecond();
-        if (nowtime < (watcher.lastPing + tunnel.getPingInterval())) return;
+        if (nowtime < (watcher.lastPingTime + tunnel.getPingInterval())) return;
 
         // update the last ping time
-        watcher.lastPing = nowtime;
+        watcher.lastPingTime = nowtime;
 
         try {
             InetAddress target = InetAddress.getByName(tunnel.getPingAddress().getHostAddress());
             if (target.isReachable(2000)) {
-                logger.debug("PING SUCCESS: " + tunnel.getPingAddress().getHostAddress());
-                return;
+                pingSuccess = true;
             }
         } catch (Exception exn) {
             logger.debug("PING EXCEPTION: " + tunnel.getPingAddress().getHostAddress(), exn);
         }
-        WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.UNREACHABLE);
+
+        if (pingSuccess == false) {
+            // if ping unreachable events are enabled log an unreachable event
+            if (tunnel.getPingUnreachableEvents()) {
+                WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.UNREACHABLE);
+                app.logEvent(event);
+                logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
+            }
+
+            // if connection events are not enabled just return
+            if (tunnel.getPingConnectionEvents() == false) return;
+
+            // if the virtual state flag is already clear just return
+            if (watcher.virtualStateFlag == false) return;
+
+            // clear the virtual state flag, log a disconnect event, and return
+            watcher.virtualStateFlag = false;
+            WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.DISCONNECT);
+            app.logEvent(event);
+            logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
+            return;
+        }
+
+        // if the virtual state flag is already set just return
+        if (watcher.virtualStateFlag == true) return;
+
+        // set the virtual state flag and log a connect event
+        watcher.virtualStateFlag = true;
+        WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.CONNECT);
         app.logEvent(event);
         logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
     }
