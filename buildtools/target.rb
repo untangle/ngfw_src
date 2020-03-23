@@ -615,7 +615,7 @@ class JavaCompilerTarget < Target
       if status != 0
         puts "missing documentation"
         missing_javadoc = 1
-        puts stdout
+        puts stdout, stderr
       end
     end
 
