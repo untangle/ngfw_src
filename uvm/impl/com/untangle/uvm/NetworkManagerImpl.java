@@ -753,6 +753,15 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Return the current network settings file for use in sync-settings calls.
+     * @return String of network settings filename. 
+     */
+    public String getNetworkSettingsFilename()
+    {
+        return settingsFilename;
+    }
+
+    /**
      * sets values in the interafceSettingsById map for quick lookups
      */
     private void configureInterfaceSettingsArray()

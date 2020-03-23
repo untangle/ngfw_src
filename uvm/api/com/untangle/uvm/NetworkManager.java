@@ -61,4 +61,7 @@ public interface NetworkManager
     int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum);
 
     List<IPMaskedAddress> getLocalNetworks();
+
+    String getNetworkSettingsFilename();
+
 }
