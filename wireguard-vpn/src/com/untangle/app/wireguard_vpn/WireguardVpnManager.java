@@ -32,7 +32,10 @@ import com.untangle.uvm.ExecManagerResult;
  */
 public class WireguardVpnManager
 {
-    private static final String WireguardApp = "/usr/bin/wg";
+    private static final String IPTABLES_SCRIPT = "/etc/untangle/iptables-rules.d/720-wireguard-vpn";
+    private static final String WIREGUARD_APP = "/usr/bin/wg";
+    private static final String WIREGUARD_QUICK_APP = "/usr/bin/wg-quick";
+    private static final String WIREGUARD_QUICK_CONFIG = "/etc/wireguard/wg0.conf";
 
     private final Logger logger = Logger.getLogger(this.getClass());
     private final WireguardVpnApp app;
@@ -49,13 +52,105 @@ public class WireguardVpnManager
     }
 
     /**
+     * Start all Wireguard VPN instances
+     */
+    protected void start()
+    {
+        logger.info("Starting Wireguard interface and tunnels");
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_QUICK_APP + " up " + WIREGUARD_QUICK_CONFIG);
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info(WIREGUARD_QUICK_APP + ": ");
+            for (String line : lines)
+                logger.info(WIREGUARD_QUICK_APP + ": " + line);
+        } catch (Exception e) {
+        }
+        if (result.getResult() != 0) logger.error("Failed calling Wireguard start script (return code: " + result.getResult() + ")");
+
+        configureIptables();
+    }
+
+    /**
+     * Stop all Wireguard VPN instances
+     */
+    protected void stop()
+    {
+        logger.info("Stopping Wireguard interface and tunnels");
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_QUICK_APP + " down " + WIREGUARD_QUICK_CONFIG);
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info(WIREGUARD_QUICK_APP + ": ");
+            for (String line : lines)
+                logger.info(WIREGUARD_QUICK_APP + ": " + line);
+        } catch (Exception e) {
+        }
+        if (result.getResult() != 0) logger.error("Failed calling Wireguard start script (return code: " + result.getResult() + ")");
+
+        configureIptables();
+    }
+
+    /**
+     * Restart all Wireguard VPN instances
+     */
+    protected void restart()
+    {
+        stop();
+        start();
+    }
+
+    /**
+     * Create the Wireguard VPN file from the application settings
+     */
+    protected void configure()
+    {
+        /**
+         * Update Wireguard quick config and iptables script.
+         */
+        String result = UvmContextFactory.context().execManager().execOutput(
+            "/usr/bin/sync-settings" +
+            " -f " + app.getSettingsFilename() + 
+            " -f " + UvmContextFactory.context().networkManager().getNetworkSettingsFilename());
+        try {
+            String lines[] = result.split("\\r?\\n");
+            for ( String line : lines ){
+                if( line.trim().length() > 1 ){
+                    logger.warn("reconfigure: sync-settings: " + line);
+                }
+            }
+        } catch (Exception e) {
+            logger.warn( "Unable to generate iptables configuration:", e );
+        }
+    }
+
+    /**
+     * Configure appropriate iptables rules.
+     */
+    private synchronized void configureIptables()
+    {
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(IPTABLES_SCRIPT);
+        try {
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info(IPTABLES_SCRIPT + ": ");
+            for (String line : lines)
+                logger.info(IPTABLES_SCRIPT + ": " + line);
+        } catch (Exception e) {
+        }
+
+        if (result.getResult() != 0) {
+            logger.error("Failed to configure Wireguard VPN iptables rules (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to configure Wireguard VPN iptables rules");
+        }
+    }
+
+
+    /**
      * Generate private key from wireguard app.
      * 
      * @return String of generated private key.
      */
     public String createPrivateKey()
     {
-        return wireguardCommand(WireguardApp + " genkey");
+        return wireguardCommand(WIREGUARD_APP + " genkey");
     }
 
     /**
@@ -66,7 +161,7 @@ public class WireguardVpnManager
      */
     public String getPublicKey(String privateKey)
     {
-        return wireguardCommand("echo " + privateKey + " | " + WireguardApp + " pubkey");
+        return wireguardCommand("echo " + privateKey + " | " + WIREGUARD_APP + " pubkey");
     }
 
     /**
