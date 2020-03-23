@@ -2203,7 +2203,28 @@ public class NetworkManagerImpl implements NetworkManager
         ruleOpenVpnConditions.add(ruleOpenVpnMatcher2);
         ruleOpenVpnConditions.add(ruleOpenVpnMatcher3);
         filterRuleOpenVpn.setConditions( ruleOpenVpnConditions );
-        
+
+        FilterRule filterRuleWireguard = new FilterRule();
+        filterRuleWireguard.setReadOnly( true );
+        filterRuleWireguard.setEnabled( true );
+        filterRuleWireguard.setIpv6Enabled( true );
+        filterRuleWireguard.setDescription( "Allow wireguard" );
+        filterRuleWireguard.setBlocked( false );
+        List<FilterRuleCondition> ruleWireguardConditions = new LinkedList<>();
+        FilterRuleCondition ruleWireguardMatcher1 = new FilterRuleCondition();
+        ruleWireguardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+        ruleWireguardMatcher1.setValue("UDP");
+        FilterRuleCondition ruleWireguardMatcher2 = new FilterRuleCondition();
+        ruleWireguardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+        ruleWireguardMatcher2.setValue("51820");
+        FilterRuleCondition ruleWireguardMatcher3 = new FilterRuleCondition();
+        ruleWireguardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+        ruleWireguardMatcher3.setValue("wan");
+        ruleWireguardConditions.add(ruleWireguardMatcher1);
+        ruleWireguardConditions.add(ruleWireguardMatcher2);
+        ruleWireguardConditions.add(ruleWireguardMatcher3);
+        filterRuleWireguard.setConditions( ruleWireguardConditions );
+
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setReadOnly( true );
         filterRuleBlock.setEnabled( true );
@@ -2231,6 +2252,7 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleNatT );
         rules.add( filterRuleL2tp );
         rules.add( filterRuleOpenVpn );
+        rules.add( filterRuleWireguard );
         rules.add( filterRuleBlock );
 
         return rules;
