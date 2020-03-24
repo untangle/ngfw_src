@@ -18,6 +18,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     },{
         fieldLabel: 'Listen port'.t(),
         xtype: 'textfield',
+        vtype: 'isSinglePortValid',
         bind: {
             value: '{settings.listenPort}'
         },
@@ -25,6 +26,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     },{
         fieldLabel: 'MTU'.t(),
         xtype: 'textfield',
+        vtype: 'mtu',
         bind: {
             value: '{settings.mtu}'
         },
