@@ -49,6 +49,9 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
 
         // if (me.validateSettings() != true) return;
 
+        var tunnelsAdded = [],
+            tunnelsDeleted = [];
+
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             if (store.getModifiedRecords().length > 0 ||
@@ -62,6 +65,32 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 });
                 store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                if(grid.listProperty == 'settings.tunnels.list'){
+                    store.getModifiedRecords().forEach(function(record){
+                        var previousPublicKey = record.getPrevious('publicKey');
+                        if(previousPublicKey == undefined ){
+                            previousPublicKey = record.get('publicKey');
+                        }
+                        if(previousPublicKey != ""){
+                            if(tunnelsDeleted.indexOf(previousPublicKey) == -1){
+                                tunnelsDeleted.push(previousPublicKey);
+                            }
+                        }
+                        if(tunnelsAdded.indexOf(record.get('publicKey')) == -1){
+                            tunnelsAdded.push(record.get('publicKey'));
+                        }
+                    });
+                    store.getNewRecords().forEach(function(record){
+                        if(tunnelsAdded.indexOf(record.get('publicKey')) == -1){
+                            tunnelsAdded.push(record.get('publicKey'));
+                        }
+                    });
+                    store.getRemovedRecords().forEach(function(record){
+                        if(tunnelsDeleted.indexOf(record.get('publicKey')) == -1){
+                            tunnelsDeleted.push(record.get('publicKey'));
+                        }
+                    });
+                }
             }
         });
 
@@ -72,6 +101,9 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 return;
             }
             Util.successToast('Settings saved');
+
+            me.updateTunnels(tunnelsDeleted, tunnelsAdded);
+
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
 
@@ -83,6 +115,29 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 v.setLoading(false);
             }
             Util.handleException(ex);
+        });
+    },
+
+    updateTunnels: function( deleted, added ){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        var rpcSequence = [];
+
+        deleted.forEach(function(publicKey){
+            rpcSequence.push(Rpc.asyncPromise(v.appManager, 'deleteTunnel', publicKey));
+        });
+        added.forEach(function(publicKey){
+            rpcSequence.push(Rpc.asyncPromise(v.appManager, 'addTunnel', publicKey));
+        });
+        Ext.Deferred.sequence(rpcSequence, this)
+        .then(function(result){
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
         });
     },
 
