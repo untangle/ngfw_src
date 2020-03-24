@@ -26,7 +26,7 @@ before_install:
 
 script:
 - docker-compose -f docker-compose.build.yml run pkgtools
-- docker-compose -f docker-compose.build.yml run build
+- travis_wait 30 docker-compose -f docker-compose.build.yml run build
 
 notifications:
   email: false
