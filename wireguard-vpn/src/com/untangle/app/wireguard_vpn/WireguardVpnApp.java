@@ -106,6 +106,24 @@ public class WireguardVpnApp extends AppBase
     }
 
     /**
+     * Add a tunnel by publicKey
+     * @param publicKey String of public key to add.
+     */
+    public void addTunnel(String publicKey)
+    {
+        this.WireguardVpnManager.addTunnel(publicKey);
+    }
+
+    /**
+     * Delete a tunnel by publicKey
+     * @param publicKey String of public key to delete.
+     */
+    public void deleteTunnel(String publicKey)
+    {
+        this.WireguardVpnManager.deleteTunnel(publicKey);
+    }
+
+    /**
      * Get the list of pipeline connectors
      * 
      * @return List of pipeline connectors
