@@ -50,6 +50,14 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                 disabled: '{!state.on}'
             },
             items: [{
+                xtype: 'component',
+                margin: '0 0 10 0',
+                hidden: true,
+                bind: {
+                    html: '{warning}',
+                    hidden: '{!warning}'
+                }
+            }, {
                 xtype: 'ungrid',
                 itemId: 'tunnelStatus',
                 enableColumnHide: true,
