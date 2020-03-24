@@ -66,32 +66,28 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         resizable: false
     }, {
         header: 'Description'.t(),
-        width: Renderer.usernameWidth,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'description',
     }, {
         header: 'Public Key'.t(),
-        width: Renderer.usernameWidth,
-        flex: 1,
+        width: 290,
         dataIndex: 'publicKey',
     }, {
         header: 'Endpoint Address'.t(),
-        width: Renderer.usernameWidth,
-        flex: 1,
+        width: Renderer.ipWidth,
         dataIndex: 'endpointAddress',
     }, {
         header: 'Endpoint Port'.t(),
-        width: Renderer.usernameWidth,
-        flex: 1,
+        width: Renderer.portWidth,
         dataIndex: 'endpointPort',
     }, {
         header: 'Peer Address'.t(),
-        width: Renderer.usernameWidth,
-        flex: 1,
+        width: Renderer.ipWidth,
         dataIndex: 'peerAddress',
     }, {
         header: 'Networks'.t(),
-        width: Renderer.usernameWidth,
+        width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'networks',
     }],
