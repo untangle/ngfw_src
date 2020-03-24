@@ -122,6 +122,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         hidden: true,
         disabled: true,
         allowBlank: false,
+        vtype: 'isSingleIpValid',
         bind: {
             value: '{record.endpointAddress}',
             hidden: '{record.endpointDynamic}',
@@ -130,6 +131,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Endpoint Port'.t(),
+        vtype: 'isSinglePortValid',
         hidden: true,
         disabled: true,
         allowBlank: false,
@@ -141,7 +143,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Peer Address'.t(),
-        // allowBlank: false,
+        vtype: 'isSingleIpValidOrEmpty',
+        allowBlank: true,
         bind: {
             value: '{record.peerAddress}'
         }
