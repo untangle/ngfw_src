@@ -4,23 +4,14 @@
 
 package com.untangle.app.wireguard_vpn;
 
-// import java.io.BufferedReader;
-// import java.io.BufferedWriter;
-// import java.io.FileReader;
-// import java.io.FileWriter;
-// import java.io.File;
-// import java.net.InetAddress;
-// import java.net.UnknownHostException;
-// import java.util.Date;
-// import java.util.LinkedList;
+import java.util.List;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
-// import com.untangle.uvm.app.IPMaskedAddress;
-// import com.untangle.uvm.network.NetworkSettings;
-// import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
  * This class has all the logic for "managing" the WireguardVpn daemon. This includes
@@ -120,6 +111,54 @@ public class WireguardVpnManager
         } catch (Exception e) {
             logger.warn( "Unable to generate iptables configuration:", e );
         }
+    }
+
+    /**
+     * Add a tunnel
+     * @param publicKey String of key to lookup in tunnel settings.
+     */
+    public void addTunnel(String publicKey)
+    {
+        WireguardVpnTunnel addTunnel = null;
+        for(WireguardVpnTunnel tunnel : app.getSettings().getTunnels()){
+            if(tunnel.getPublicKey().equals(publicKey)){
+                addTunnel = tunnel;
+            }
+        }
+        if(addTunnel == null){
+            logger.warn("addTunnel: publicKey=" + publicKey+ " not found");
+            return;
+        }
+        if(addTunnel.getEnabled() == false){
+            logger.warn("addTunnel: publicKey=" + publicKey+ " not enabled");
+            return;
+        }
+        List<IPMaskedAddress> networks = addTunnel.getNetworks();
+        String[] allowedIps = new String[networks.size() + 1];
+        int index = 0;
+        allowedIps[index++] = addTunnel.getPeerAddress().getHostAddress() + "/32";
+        // for(IPMaskedAddress network : networks){
+        //     allowedIps[index++] = network.toString();
+        // }
+        String command = WIREGUARD_APP +
+            " set wg0 peer " + publicKey +
+            ( addTunnel.getEndpointDynamic() != true
+                ? " endpoint " + addTunnel.getEndpointAddress().getHostAddress() + ":" + addTunnel.getEndpointPort()
+                : ""
+            ) +
+            " persistent-keepalive " + app.getSettings().getKeepaliveInterval() +
+            " allowed-ips " + String.join(",", allowedIps);
+        this.wireguardCommand(command);
+    }
+
+    /**
+     * Remove a tunnel
+     * @param publicKey String of key to lookup in tunnel settings.
+     */
+    public void deleteTunnel(String publicKey)
+    {
+        String command = WIREGUARD_APP + " set wg0 peer " + publicKey + " remove";
+        this.wireguardCommand(command);
     }
 
     /**
