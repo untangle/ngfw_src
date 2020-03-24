@@ -13,6 +13,8 @@ env:
       REPOSITORY: buster
       PKGTOOLS_COMMIT: origin/${TRAVIS_BRANCH}
       UPLOAD: scp
+      VERBOSE: 1
+      DEBUG: 1
   jobs:
     - ARCHITECTURE: amd64
     - ARCHITECTURE: i386
