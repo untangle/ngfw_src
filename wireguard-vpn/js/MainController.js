@@ -21,14 +21,24 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         v.setLoading(true);
-        Rpc.asyncData(v.appManager, 'getSettings')
-        .then( function(result){
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings')
+        ], this).then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
             vm.set('originalSettings', JSON.parse(JSON.stringify(result)));
-            vm.set('settings', result);
+            vm.set('settings', result[0]);
             vm.set('panel.saveDisabled', false);
+
+            var warning = '';
+            var listenPort = vm.get('settings.listenPort');
+            if(me.isUDPAccessAllowedForPort(result[1], listenPort) == false) {
+                warning = '<i class="fa fa-exclamation-triangle fa-red fa-lg"></i> <strong>' + 'There are no enabled access rules to allow traffic on UDP port '.t() + listenPort + '</strong>';
+            }
+            vm.set('warning', warning);
+
             v.setLoading(false);
         },function(ex){
             if(!Util.isDestroyed(v, vm)){
@@ -196,5 +206,35 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             }
             Util.handleException(ex);
         });
+    },
+
+    isUDPAccessAllowedForPort: function(networkSettings, listenPort) {
+        if(networkSettings.accessRules && networkSettings.accessRules.list) {
+            for(var i=0; i<networkSettings.accessRules.list.length ; i++) {
+                var rule = networkSettings.accessRules.list[i];
+                if(rule.enabled == true && rule.blocked == false) {
+                    if(rule.conditions && rule.conditions.list) {
+                        var isUDP = false;
+                        var isPort = false;
+                        for(var j=0; j<rule.conditions.list.length ; j++) {
+                            var condition = rule.conditions.list[j];
+                            if(condition.invert == false) {
+                                if(condition.conditionType == 'PROTOCOL' && condition.value == 'UDP') {
+                                    isUDP = true;
+                                }
+                                if(condition.conditionType == 'DST_PORT' && parseInt(condition.value, 10) == listenPort) {
+                                    isPort = true;
+                                }
+                            }
+                        }
+
+                        if(isUDP == true && isPort == true) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     },
 });
