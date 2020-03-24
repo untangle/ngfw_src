@@ -27,7 +27,7 @@ public class WireguardVpnTunnel implements Serializable, JSONString
     private InetAddress endpointAddress; 
     private Integer endpointPort = 51820;
     private InetAddress peerAddress;
-    private List<IPMaskedAddress> networks = null;
+    private List<IPMaskedAddress> networks = new LinkedList<>();
     private InetAddress pingAddress = null;
     private Integer pingInterval = 60;
     private Boolean pingConnectionEvents = true;
