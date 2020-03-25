@@ -17,9 +17,6 @@ public interface CertificateManager
     static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
     static final String CERT_FILE_PASSWORD = "password";
 
-    static final String ROOT_CA_INSTALLER_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen-installer";
-    static final String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/untangle-vm/root_certificate_installer";;
-
     CertificateInformation getRootCertificateInformation();
 
     LinkedList<CertificateInformation> getServerCertificateList();
