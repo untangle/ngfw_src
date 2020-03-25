@@ -20,7 +20,7 @@ services:
       image: untangleinc/ngfw:${REPOSITORY:-buster}-build-${ARCHITECTURE:-amd64}
       environment:
         REPOSITORY: ${REPOSITORY:-buster}
-        DISTRIBUTION: ${DISTRIBUTION:-current}
+        DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
         PACKAGE: ${PACKAGE} # defaults to empty: "all packages"

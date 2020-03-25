@@ -11,6 +11,8 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import org.json.JSONObject;
+
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
@@ -54,15 +56,17 @@ public class SyslogManagerImpl
      * 
      * @param e
      *        The event
+     * @param jsonEvent
+     *        The event in JSON format.
      */
-    public static void sendSyslog(LogEvent e)
+    public static void sendSyslog(LogEvent e, JSONObject jsonEvent)
     {
         if (!enabled) {
             return;
         }
 
         try {
-            logger.log(org.apache.log4j.Level.INFO, e.getTag() + " " + e.toJSONString());
+            logger.log(org.apache.log4j.Level.INFO, e.getTag() + " " + jsonEvent);
         } catch (Exception exn) {
             logger.warn("Failed to syslog Event: " + e, exn);
         }
