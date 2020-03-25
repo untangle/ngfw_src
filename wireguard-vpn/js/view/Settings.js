@@ -9,18 +9,19 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     padding: '8 5',
 
     items: [{
-        fieldLabel: 'Keepalive interval'.t(),
-        xtype: 'textfield',
-        bind: {
-            value: '{settings.keepaliveInterval}'
-        },
-        allowBlank: false
-    },{
         fieldLabel: 'Listen port'.t(),
         xtype: 'textfield',
         vtype: 'isSinglePortValid',
         bind: {
             value: '{settings.listenPort}'
+        },
+        allowBlank: false
+    },{
+        fieldLabel: 'Keepalive interval'.t(),
+        xtype: 'textfield',
+        vtype: 'keepalive',
+        bind: {
+            value: '{settings.keepaliveInterval}'
         },
         allowBlank: false
     },{
