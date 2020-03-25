@@ -10,6 +10,8 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                 fields: [{
                     name: 'interface',
                 },{
+                    name :'tunnel-description',
+                },{
                     name :'public-key',
                 },{
                     name: 'private-key',

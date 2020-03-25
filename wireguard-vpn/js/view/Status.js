@@ -69,8 +69,14 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                 columns: [{
                     header: 'Interface'.t(),
                     dataIndex: 'interface',
-                    width: Renderer.messageWidth,
+                    width: Renderer.idWidth,
                     filter: Renderer.stringFilter
+                }, {
+                    header: 'Description'.t(),
+                    dataIndex: 'tunnel-description',
+                    width: Renderer.messageWidth,
+                    filter: Renderer.stringFilter,
+                    flex: 1
                 }, {
                     header: 'Public Key'.t(),
                     dataIndex: 'public-key',
