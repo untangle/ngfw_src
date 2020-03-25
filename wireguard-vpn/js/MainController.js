@@ -8,6 +8,15 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         }
     },
 
+    // General settings that are checked and if different, force
+    // a full restart of wireguard.
+    fullRestartSettingsKeys: [
+        'keepaliveInterval',
+        'listenPort',
+        'mtu',
+        'addressPool'
+    ],
+
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
@@ -17,6 +26,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             if(Util.isDestroyed(v, vm)){
                 return;
             }
+            vm.set('originalSettings', JSON.parse(JSON.stringify(result)));
             vm.set('settings', result);
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -43,14 +53,22 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        // if (!Util.validateForms(v)) {
-        //     return;
-        // }
+        if (!Util.validateForms(v)) {
+            return;
+        }
 
-        // if (me.validateSettings() != true) return;
+        if (me.validateSettings() != true) return;
 
         var tunnelsAdded = [],
-            tunnelsDeleted = [];
+            tunnelsDeleted = [],
+            settingsChanged = false;
+
+        // Determine if settings changed, requiring a full restart.
+        me.fullRestartSettingsKeys.forEach( function(key){
+            if(vm.get('originalSettings')[key] != vm.get('settings')[key]){
+                settingsChanged = true;
+            }
+        });
 
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -95,14 +113,16 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         });
 
         v.setLoading(true);
-        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'), settingsChanged)
         .then(function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
             Util.successToast('Settings saved');
 
-            me.updateTunnels(tunnelsDeleted, tunnelsAdded);
+            if(settingsChanged == false){
+                me.updateTunnels(tunnelsDeleted, tunnelsAdded);
+            }
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
