@@ -18,6 +18,7 @@ class SmtpTests(NGFWTestCase):
 
     do_not_install_app = True
     do_not_remove_app = True
+    not_an_app = True
 
     @staticmethod
     def module_name():
