@@ -979,6 +979,16 @@ public class NetworkManagerImpl implements NetworkManager
             InterfaceSettings virtualIntf;
             LinkedList<InterfaceSettings> virtualInterfaces = new LinkedList<InterfaceSettings>();
 
+            virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"Wireguard VPN");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
+
             virtualIntf = new InterfaceSettings(InterfaceSettings.OPENVPN_INTERFACE_ID,"OpenVPN");
             virtualIntf.setIsVirtualInterface(true);
             virtualIntf.setConfigType(null);
@@ -2708,6 +2718,18 @@ public class NetworkManagerImpl implements NetworkManager
                 }
                 pos++;
             }
+            List<InterfaceSettings> virtualInterfaces = this.networkSettings.getVirtualInterfaces();
+
+            InterfaceSettings virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"Wireguard VPN");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(0, virtualIntf);
+
         } catch (Exception e) {
             logger.warn("Exception converting Networking Settings",e);
         }
