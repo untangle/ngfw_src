@@ -28,7 +28,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             if(Util.isDestroyed(v, vm)){
                 return;
             }
-            vm.set('originalSettings', JSON.parse(JSON.stringify(result)));
+            vm.set('originalSettings', JSON.parse(JSON.stringify(result[0])));
             vm.set('settings', result[0]);
             vm.set('panel.saveDisabled', false);
 
