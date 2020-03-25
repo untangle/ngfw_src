@@ -176,6 +176,16 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 return;
             }
             var status = Ext.JSON.decode(result);
+
+            // Match tunnel public key with configuration tunnel descriptions.
+            vm.get('tunnels').each(function(tunnel){
+                status.wireguard.forEach(function(status){
+                    if(tunnel.get('publicKey') == status['public-key']){
+                        status['tunnel-description'] = tunnel.get('description');
+                    }
+                });
+            });
+
             vm.set('tunnelStatusData', status.wireguard);
             grid.setLoading(false);
         },function(ex){
