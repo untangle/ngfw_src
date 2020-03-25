@@ -70,7 +70,8 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                     header: 'Interface'.t(),
                     dataIndex: 'interface',
                     width: Renderer.idWidth,
-                    filter: Renderer.stringFilter
+                    filter: Renderer.stringFilter,
+                    hidden: true
                 }, {
                     header: 'Description'.t(),
                     dataIndex: 'tunnel-description',
@@ -78,20 +79,16 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                     filter: Renderer.stringFilter,
                     flex: 1
                 }, {
-                    header: 'Public Key'.t(),
-                    dataIndex: 'public-key',
+                    header: 'Peer Public Key'.t(),
+                    dataIndex: 'peer-key',
                     width: Renderer.messageWidth,
                     filter: Renderer.stringFilter,
-                    flex: 1
+                    flex: 1,
+                    hidden: true
                 }, {
                     header: 'Allowed IPs'.t(),
                     dataIndex: 'allowed-ips',
                     width: Renderer.networkWidth,
-                }, {
-                    header: 'Listen Port'.t(),
-                    dataIndex: 'listen-port',
-                    width: Renderer.portWidth,
-                    filter: Renderer.portFilter
                 }, {
                     header: 'Endpoint'.t(),
                     dataIndex: 'endpoint',
