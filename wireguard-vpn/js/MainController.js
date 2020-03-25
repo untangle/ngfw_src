@@ -178,7 +178,8 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
     },
 
     getTunnelStatus: function () {
-        var grid = this.getView().down('#tunnelStatus'),
+        var me = this,
+            grid = this.getView().down('#tunnelStatus'),
             vm = this.getViewModel();
 
         grid.setLoading(true);
@@ -189,16 +190,27 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             }
             var status = Ext.JSON.decode(result);
 
-            // Match tunnel public key with configuration tunnel descriptions.
-            vm.get('tunnels').each(function(tunnel){
-                status.wireguard.forEach(function(status){
-                    if(tunnel.get('publicKey') == status['peer-key']){
-                        status['tunnel-description'] = tunnel.get('description');
-                    }
+            var delay = 100;
+            var updateStatusTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                if(Util.isDestroyed(vm, status)){
+                    return;
+                }
+                var tunnels = vm.get('tunnels');
+                if(!tunnels){
+                    updateStatusTask.delay(delay);
+                    return;
+                }
+                tunnels.each(function(tunnel){
+                    status.wireguard.forEach(function(status){
+                        if(tunnel.get('publicKey') == status['peer-key']){
+                            status['tunnel-description'] = tunnel.get('description');
+                        }
+                    });
                 });
-            });
+                vm.set('tunnelStatusData', status.wireguard);
+            }, me) );
+            updateStatusTask.delay( delay );
 
-            vm.set('tunnelStatusData', status.wireguard);
             grid.setLoading(false);
         },function(ex){
             if(!Util.isDestroyed(grid)){
