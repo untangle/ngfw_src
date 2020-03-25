@@ -94,12 +94,14 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                                 tunnelsDeleted.push(previousPublicKey);
                             }
                         }
-                        if(tunnelsAdded.indexOf(record.get('publicKey')) == -1){
+                        if( record.get("enabled") &&
+                            tunnelsAdded.indexOf(record.get('publicKey')) == -1){
                             tunnelsAdded.push(record.get('publicKey'));
                         }
                     });
                     store.getNewRecords().forEach(function(record){
-                        if(tunnelsAdded.indexOf(record.get('publicKey')) == -1){
+                        if( record.get("enabled") &&
+                            tunnelsAdded.indexOf(record.get('publicKey')) == -1){
                             tunnelsAdded.push(record.get('publicKey'));
                         }
                     });
