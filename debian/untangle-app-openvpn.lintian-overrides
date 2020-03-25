@@ -1,2 +1,0 @@
-# this is a license for the windows installer itself, and needs to be presented to users
-untangle-node-openvpn binary: extra-license-file /usr/share/untangle/openvpn/installer/openvpn/install-win32/license.txt
