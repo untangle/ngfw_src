@@ -82,11 +82,13 @@ public class WireguardVpnApp extends AppBase
 
     /**
      * Set the application settings
-     * 
+     *
      * @param newSettings
-     *        The new settings
+     *      The new settings
+     * @param restart
+     *      If true, restart
      */
-    public void setSettings(final WireguardVpnSettings newSettings)
+    public void setSettings(final WireguardVpnSettings newSettings, boolean restart)
     {
         /**
          * Save the settings
@@ -103,6 +105,22 @@ public class WireguardVpnApp extends AppBase
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.WireguardVpnManager.configure();
+        if(restart == true){
+            this.WireguardVpnManager.restart();
+        }
+    }
+
+    /**
+     * Set the application settings and restart.
+     *
+     * @param newSettings
+     *        The new settings
+     */
+    public void setSettings(final WireguardVpnSettings newSettings)
+    {
+        setSettings(newSettings, true);
     }
 
     /**
