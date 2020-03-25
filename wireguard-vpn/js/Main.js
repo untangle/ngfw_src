@@ -16,6 +16,8 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                 },{
                     name: 'private-key',
                 },{
+                    name :'peer-key',
+                },{
                     name: 'listen-port',
                 },{
                     name: 'fwmark'

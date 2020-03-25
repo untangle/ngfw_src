@@ -180,7 +180,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             // Match tunnel public key with configuration tunnel descriptions.
             vm.get('tunnels').each(function(tunnel){
                 status.wireguard.forEach(function(status){
-                    if(tunnel.get('publicKey') == status['public-key']){
+                    if(tunnel.get('publicKey') == status['peer-key']){
                         status['tunnel-description'] = tunnel.get('description');
                     }
                 });
