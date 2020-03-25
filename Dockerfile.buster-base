@@ -2,7 +2,7 @@ FROM debian:buster
 LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
 
 ENV REPOSITORY=buster
-ENV STABLE_VERSION=15.0.0
+ENV STABLE_VERSION=15.1.0
 
 USER root
 ENV DEBIAN_FRONTEND=noninteractive
