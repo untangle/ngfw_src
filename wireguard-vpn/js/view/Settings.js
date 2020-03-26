@@ -33,9 +33,9 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         },
         allowBlank: false
     },{
-        fieldLabel: 'Address Space'.t(),
+        fieldLabel: 'IP Address Space'.t(),
         xtype: 'textfield',
-        vtype: 'cidrBlockOnlyRanges',
+        vtype: 'cidrAddr',
         bind: {
             value: '{settings.addressPool}'
         }
