@@ -33,11 +33,6 @@ public class Downloader extends HttpServlet
     private static final String CONFIG_NAME_SUFFIX = ".zip";
     private static final String CONFIG_TYPE = "application/zip";
 
-    private static final String SETUP_PAGE = "/setup.exe";
-    private static final String SETUP_NAME_PREFIX = "setup-";
-    private static final String SETUP_NAME_SUFFIX = ".exe";
-    private static final String SETUP_TYPE = "application/download";
-
     private static final String CHROME_PAGE = "/chrome.onc";
     private static final String CHROME_NAME_PREFIX = "chrome-";
     private static final String CHROME_NAME_SUFFIX = ".onc";
@@ -72,10 +67,6 @@ public class Downloader extends HttpServlet
             fileName = "/tmp/openvpn/client-packages/" + "config-" + commonName + ".zip";
             downloadFilename = "openvpn-" + commonName + "-config.zip";
             type = CONFIG_TYPE;
-        } else if (pageName.equalsIgnoreCase(SETUP_PAGE)) {
-            fileName = "/tmp/openvpn/client-packages/" + "setup-" + commonName + ".exe";
-            downloadFilename = "openvpn-" + commonName + "-setup.exe";
-            type = SETUP_TYPE;
         } else if (pageName.equalsIgnoreCase(CHROME_PAGE)) {
             fileName = "/tmp/openvpn/client-packages/" + "chrome-" + commonName + ".onc";
             downloadFilename = "openvpn-" + commonName + "-chrome.onc";
