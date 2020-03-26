@@ -5,6 +5,7 @@
 package com.untangle.app.wireguard_vpn;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
@@ -133,13 +134,13 @@ public class WireguardVpnManager
             logger.warn("addTunnel: publicKey=" + publicKey+ " not enabled");
             return;
         }
-        List<IPMaskedAddress> networks = addTunnel.getNetworks();
-        String[] allowedIps = new String[networks.size() + 1];
-        int index = 0;
-        allowedIps[index++] = addTunnel.getPeerAddress().getHostAddress() + "/32";
-        // for(IPMaskedAddress network : networks){
-        //     allowedIps[index++] = network.toString();
-        // }
+        ArrayList<String> allowedIps = new ArrayList<String>();
+        allowedIps.add(addTunnel.getPeerAddress().getHostAddress() + "/32");
+        String[] networks = addTunnel.getNetworks().split("\\n");
+        for (int x = 0;x < networks.length;x++) {
+            if (networks[x].trim().length() == 0) continue;
+            allowedIps.add(networks[x].trim());
+        }
         String command = WIREGUARD_APP +
             " set wg0 peer " + publicKey +
             ( addTunnel.getEndpointDynamic() != true
