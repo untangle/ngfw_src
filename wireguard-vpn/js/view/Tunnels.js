@@ -148,14 +148,41 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: {
             value: '{record.peerAddress}'
         }
-    // }, {
-    //     xtype: 'textfield',
-    //     fieldLabel: 'Networks'.t(),
-    //     // allowBlank: false,
-    //     bind: {
-    //         value: '{record.networks}'
-    //     }
+    }, {
+        xtype: 'textarea',
+        fieldLabel: 'Networks'.t(),
+        vtype: 'cidrBlockArea',
+        allowBlank: true,
+        width: 250,
+        height: 100,
+        bind: {
+            value: '{record.networks}'
+        }
+    }, {
+        xtype: 'textfield',
+        fieldLabel: 'Ping Address'.t(),
+        allowBlank: true,
+        vtype: 'isSingleIpValid',
+        bind: {
+            value: '{record.endpointAddress}',
+        }
+    }, {
+        xtype: 'numberfield',
+        fieldLabel: 'Ping Interval'.t(),
+        allowBlank: false,
+        allowDecimals: false,
+        minValue: 0,
+        maxValue: 300,
+        bind: {
+            value: '{record.pingInterval}'
+        }
+    },{
+        xtype: 'checkbox',
+        fieldLabel: 'Tunnel Up/Down Alerts'.t(),
+        bind: '{record.pingConnectionEvents}'
+    },{
+        xtype: 'checkbox',
+        fieldLabel: 'Ping Unreachable Alerts'.t(),
+        bind: '{record.pingUnreachableEvents}'
     }]
-
 });
-
