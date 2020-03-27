@@ -83,6 +83,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private CertificateManagerImpl certificateManager;
     private GoogleManagerImpl googleManager;
     private GeographyManagerImpl geographyManager;
+    private NetspaceManagerImpl netspaceManager;
     private NetcapManagerImpl netcapManager;
     private EventManagerImpl eventManager;
     private UriManagerImpl uriManager;
@@ -219,6 +220,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public GeographyManager geographyManager()
     {
         return this.geographyManager;
+    }
+
+    /**
+     * Get NetspaceManager
+     * @return NetspaceManager
+     */
+    public NetspaceManager netspaceManager()
+    {
+        return this.netspaceManager;
     }
 
     /**
@@ -1317,6 +1327,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.googleManager = new GoogleManagerImpl();
 
         this.geographyManager = new GeographyManagerImpl();
+
+        this.netspaceManager = new NetspaceManagerImpl();
 
         this.daemonManager = new DaemonManagerImpl();
 
