@@ -234,6 +234,7 @@ class SslInspectorTests(NGFWTestCase):
 
     def test_700_youtube_safe_search(self):
         """Verify activation of YouTube Safe Search"""
+        unittest.SkipTest('Youtube Safe Search requires JS rendering web engine')
         fname = sys._getframe().f_code.co_name
         settings = appWeb.getSettings()
         settings["enableHttpsSni"] = False

@@ -1132,7 +1132,8 @@ public class EventManagerImpl implements EventManager
             return;
 
         JSONObject jsonObject = event.toJSONObject();
-        cleanupJsonObject( jsonObject, true );
+        JSONObject jsonSendObject = event.toJSONObject();
+        cleanupJsonObject( jsonSendObject );
 
         for ( SyslogRule rule : rules ) {
             if ( ! rule.getEnabled() )
@@ -1145,7 +1146,7 @@ public class EventManagerImpl implements EventManager
             event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
             if ( rule.getSyslog() ) {
                 try {
-                    SyslogManagerImpl.sendSyslog( event );
+                    SyslogManagerImpl.sendSyslog( event, jsonSendObject );
                 } catch (Exception exn) {
                     logger.warn("failed to send syslog", exn);
                 }

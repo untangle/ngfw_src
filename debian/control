@@ -310,7 +310,7 @@ Architecture: all
 Conflicts: untangle-node-openvpn
 Replaces: untangle-node-openvpn
 Provides: untangle-node-openvpn
-Depends: ${misc:Depends}, untangle-vm, untangle-nsis-addons, openssl, openvpn, python
+Depends: ${misc:Depends}, untangle-vm, openssl, openvpn, python
 Description: OpenVPN application
  The OpenVPN application.
 

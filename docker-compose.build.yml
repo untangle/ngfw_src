@@ -14,7 +14,7 @@ services:
         git fetch -a &&
         git clean -f -d &&
         git reset --hard &&
-        git checkout $${PKGTOOLS_COMMIT}"
+        git checkout $${PKGTOOLS_COMMIT} || true"
 
     build:
       image: untangleinc/ngfw:${REPOSITORY:-buster}-build-${ARCHITECTURE:-amd64}
