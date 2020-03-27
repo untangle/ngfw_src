@@ -132,6 +132,10 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = readSettings;
             configureInterfaceSettingsArray();
 
+            /* 15.2 conversion */
+            if ( this.networkSettings.getVersion() < 8 ) {
+                convertSettingsV8();
+            }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -871,7 +875,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 7 ); // Currently on v7 (as of v13.2.1)
+            newSettings.setVersion( 8 ); // Currently on v8 (as of v15.2)
 
             String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
             try {
@@ -974,6 +978,16 @@ public class NetworkManagerImpl implements NetworkManager
 
             InterfaceSettings virtualIntf;
             LinkedList<InterfaceSettings> virtualInterfaces = new LinkedList<InterfaceSettings>();
+
+            virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"Wireguard VPN");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(virtualIntf);
 
             virtualIntf = new InterfaceSettings(InterfaceSettings.OPENVPN_INTERFACE_ID,"OpenVPN");
             virtualIntf.setIsVirtualInterface(true);
@@ -1911,7 +1925,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSsh.setIpv6Enabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot() );
         filterRuleSsh.setDescription( "Allow SSH" );
         filterRuleSsh.setBlocked( false );
-        filterRuleSsh.setReadOnly( true );
         List<FilterRuleCondition> ruleSshConditions = new LinkedList<>();
         FilterRuleCondition ruleSshMatcher1 = new FilterRuleCondition();
         ruleSshMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
@@ -1929,7 +1942,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsWan.setIpv6Enabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
         filterRuleHttpsWan.setDescription( "Allow HTTPS on WANs" );
         filterRuleHttpsWan.setBlocked( false );
-        filterRuleHttpsWan.setReadOnly( true );
         List<FilterRuleCondition> ruleHttpsWanConditions = new LinkedList<>();
         FilterRuleCondition ruleHttpsWanMatcher1 = new FilterRuleCondition();
         ruleHttpsWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
@@ -1951,7 +1963,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttpsNonWan.setIpv6Enabled( true );
         filterRuleHttpsNonWan.setDescription( "Allow HTTPS on non-WANs" );
         filterRuleHttpsNonWan.setBlocked( false );
-        filterRuleHttpsNonWan.setReadOnly( true );
         List<FilterRuleCondition> ruleHttpsNonWanConditions = new LinkedList<>();
         FilterRuleCondition ruleHttpsNonWanMatcher1 = new FilterRuleCondition();
         ruleHttpsNonWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
@@ -1973,7 +1984,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRulePing.setIpv6Enabled( true );
         filterRulePing.setDescription( "Allow PING" );
         filterRulePing.setBlocked( false );
-        filterRulePing.setReadOnly( true );
         List<FilterRuleCondition> rulePingConditions = new LinkedList<>();
         FilterRuleCondition rulePingMatcher1 = new FilterRuleCondition();
         rulePingMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
@@ -2008,7 +2018,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleDhcp.setIpv6Enabled( true );
         filterRuleDhcp.setDescription( "Allow DHCP on non-WANs" );
         filterRuleDhcp.setBlocked( false );
-        filterRuleDhcp.setReadOnly( true );
         List<FilterRuleCondition> ruleDhcpConditions = new LinkedList<>();
         FilterRuleCondition ruleDhcpMatcher1 = new FilterRuleCondition();
         ruleDhcpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
@@ -2030,7 +2039,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleHttp.setIpv6Enabled( true );
         filterRuleHttp.setDescription( "Allow HTTP on non-WANs" );
         filterRuleHttp.setBlocked( false );
-        filterRuleHttp.setReadOnly( true );
         List<FilterRuleCondition> ruleHttpConditions = new LinkedList<>();
         FilterRuleCondition ruleHttpMatcher1 = new FilterRuleCondition();
         ruleHttpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
@@ -2052,7 +2060,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleSnmp.setIpv6Enabled( true );
         filterRuleSnmp.setDescription( "Allow SNMP on non-WANs" );
         filterRuleSnmp.setBlocked( false );
-        filterRuleSnmp.setReadOnly( true );
         List<FilterRuleCondition> ruleSnmpConditions = new LinkedList<>();
         FilterRuleCondition ruleSnmpMatcher1 = new FilterRuleCondition();
         ruleSnmpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
@@ -2074,7 +2081,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleUpnp.setIpv6Enabled( true );
         filterRuleUpnp.setDescription( "Allow UPnP (UDP/1900) on non-WANs" );
         filterRuleUpnp.setBlocked( false );
-        filterRuleUpnp.setReadOnly( true );
         conditions = new LinkedList<>();
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "1900" ));
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "UDP" ));
@@ -2087,7 +2093,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleUpnpB.setIpv6Enabled( true );
         filterRuleUpnpB.setDescription( "Allow UPnP (TCP/5000) on non-WANs" );
         filterRuleUpnpB.setBlocked( false );
-        filterRuleUpnpB.setReadOnly( true );
         conditions = new LinkedList<>();
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "5000" ));
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "TCP" ));
@@ -2100,7 +2105,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleUpnpC.setIpv6Enabled( true );
         filterRuleUpnpC.setDescription( "Allow UPnP (UDP/5351) on non-WANs" );
         filterRuleUpnpC.setBlocked( false );
-        filterRuleUpnpC.setReadOnly( true );
         conditions = new LinkedList<>();
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "5351" ));
         conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "UDP" ));
@@ -2135,7 +2139,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleAhEsp.setIpv6Enabled( true );
         filterRuleAhEsp.setDescription( "Allow AH/ESP for IPsec" );
         filterRuleAhEsp.setBlocked( false );
-        filterRuleAhEsp.setReadOnly( true );
         List<FilterRuleCondition> ruleAhEspConditions = new LinkedList<>();
         FilterRuleCondition ruleAhEspMatcher1 = new FilterRuleCondition();
         ruleAhEspMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
@@ -2149,7 +2152,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleIke.setIpv6Enabled( true );
         filterRuleIke.setDescription( "Allow IKE for IPsec" );
         filterRuleIke.setBlocked( false );
-        filterRuleIke.setReadOnly( true );
         List<FilterRuleCondition> ruleIkeConditions = new LinkedList<>();
         FilterRuleCondition ruleIkeMatcher1 = new FilterRuleCondition();
         ruleIkeMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
@@ -2167,7 +2169,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleNatT.setIpv6Enabled( true );
         filterRuleNatT.setDescription( "Allow NAT-T for IPsec" );
         filterRuleNatT.setBlocked( false );
-        filterRuleNatT.setReadOnly( true );
         List<FilterRuleCondition> ruleNatTConditions = new LinkedList<>();
         FilterRuleCondition ruleNatTMatcher1 = new FilterRuleCondition();
         ruleNatTMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
@@ -2185,7 +2186,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleL2tp.setIpv6Enabled( true );
         filterRuleL2tp.setDescription( "Allow L2TP" );
         filterRuleL2tp.setBlocked( false );
-        filterRuleL2tp.setReadOnly( true );
         List<FilterRuleCondition> ruleL2tpConditions = new LinkedList<>();
         FilterRuleCondition ruleL2tpMatcher1 = new FilterRuleCondition();
         ruleL2tpMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
@@ -2203,7 +2203,6 @@ public class NetworkManagerImpl implements NetworkManager
         filterRuleOpenVpn.setIpv6Enabled( true );
         filterRuleOpenVpn.setDescription( "Allow OpenVPN" );
         filterRuleOpenVpn.setBlocked( false );
-        filterRuleOpenVpn.setReadOnly( true );
         List<FilterRuleCondition> ruleOpenVpnConditions = new LinkedList<>();
         FilterRuleCondition ruleOpenVpnMatcher1 = new FilterRuleCondition();
         ruleOpenVpnMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
@@ -2218,14 +2217,34 @@ public class NetworkManagerImpl implements NetworkManager
         ruleOpenVpnConditions.add(ruleOpenVpnMatcher2);
         ruleOpenVpnConditions.add(ruleOpenVpnMatcher3);
         filterRuleOpenVpn.setConditions( ruleOpenVpnConditions );
-        
+
+        FilterRule filterRuleWireguard = new FilterRule();
+        filterRuleWireguard.setReadOnly( true );
+        filterRuleWireguard.setEnabled( true );
+        filterRuleWireguard.setIpv6Enabled( true );
+        filterRuleWireguard.setDescription( "Allow Wireguard" );
+        filterRuleWireguard.setBlocked( false );
+        List<FilterRuleCondition> ruleWireguardConditions = new LinkedList<>();
+        FilterRuleCondition ruleWireguardMatcher1 = new FilterRuleCondition();
+        ruleWireguardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+        ruleWireguardMatcher1.setValue("UDP");
+        FilterRuleCondition ruleWireguardMatcher2 = new FilterRuleCondition();
+        ruleWireguardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+        ruleWireguardMatcher2.setValue("51820");
+        FilterRuleCondition ruleWireguardMatcher3 = new FilterRuleCondition();
+        ruleWireguardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+        ruleWireguardMatcher3.setValue("wan");
+        ruleWireguardConditions.add(ruleWireguardMatcher1);
+        ruleWireguardConditions.add(ruleWireguardMatcher2);
+        ruleWireguardConditions.add(ruleWireguardMatcher3);
+        filterRuleWireguard.setConditions( ruleWireguardConditions );
+
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setReadOnly( true );
         filterRuleBlock.setEnabled( true );
         filterRuleBlock.setIpv6Enabled( true );
         filterRuleBlock.setDescription( "Block All" );
         filterRuleBlock.setBlocked( true );
-        filterRuleBlock.setReadOnly( true );
         List<FilterRuleCondition> rule4Conditions = new LinkedList<>();
         filterRuleBlock.setConditions( rule4Conditions );
 
@@ -2247,6 +2266,7 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleNatT );
         rules.add( filterRuleL2tp );
         rules.add( filterRuleOpenVpn );
+        rules.add( filterRuleWireguard );
         rules.add( filterRuleBlock );
 
         return rules;
@@ -2658,6 +2678,64 @@ public class NetworkManagerImpl implements NetworkManager
         }
         logger.warn("Failed to find a free interface Id (min:" + minimum + " max:"  + freeId + ")");
         return -1;
+    }
+
+    /**
+     * convertSettingsV8
+     * Add default access rule for wireguard tunnels
+     */
+    private void convertSettingsV8()
+    {
+        try {
+            List<FilterRule> accessRules = this.networkSettings.getAccessRules();
+            for( FilterRule rule : accessRules ) {
+                int pos = 1;
+                if ("Allow OpenVPN".equals(rule.getDescription())) {
+                    FilterRule filterRuleWireguard = new FilterRule();
+                    filterRuleWireguard.setReadOnly( true );
+                    filterRuleWireguard.setEnabled( true );
+                    filterRuleWireguard.setIpv6Enabled( true );
+                    filterRuleWireguard.setDescription( "Allow Wireguard" );
+                    filterRuleWireguard.setBlocked( false );
+                    List<FilterRuleCondition> ruleWireguardConditions = new LinkedList<>();
+                    FilterRuleCondition ruleWireguardMatcher1 = new FilterRuleCondition();
+                    ruleWireguardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+                    ruleWireguardMatcher1.setValue("UDP");
+                    FilterRuleCondition ruleWireguardMatcher2 = new FilterRuleCondition();
+                    ruleWireguardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+                    ruleWireguardMatcher2.setValue("51820");
+                    FilterRuleCondition ruleWireguardMatcher3 = new FilterRuleCondition();
+                    ruleWireguardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+                    ruleWireguardMatcher3.setValue("wan");
+                    ruleWireguardConditions.add(ruleWireguardMatcher1);
+                    ruleWireguardConditions.add(ruleWireguardMatcher2);
+                    ruleWireguardConditions.add(ruleWireguardMatcher3);
+                    filterRuleWireguard.setConditions( ruleWireguardConditions );
+
+                    accessRules.add( pos, filterRuleWireguard );
+
+                    break;
+                }
+                pos++;
+            }
+            List<InterfaceSettings> virtualInterfaces = this.networkSettings.getVirtualInterfaces();
+
+            InterfaceSettings virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"Wireguard VPN");
+            virtualIntf.setIsVirtualInterface(true);
+            virtualIntf.setConfigType(null);
+            virtualIntf.setV4ConfigType(null);
+            virtualIntf.setV4Aliases(null);
+            virtualIntf.setV6ConfigType(null);
+            virtualIntf.setV6Aliases(null);
+            virtualIntf.setVrrpAliases(null);
+            virtualInterfaces.add(0, virtualIntf);
+
+        } catch (Exception e) {
+            logger.warn("Exception converting Networking Settings",e);
+        }
+
+        this.networkSettings.setVersion( 8 );
+        this.setNetworkSettings( this.networkSettings, false );
     }
 
     /**
