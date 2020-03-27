@@ -4,9 +4,10 @@
 
 package com.untangle.app.wireguard_vpn;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.io.File;
+import java.util.List;
+import java.util.Random;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
@@ -272,7 +273,7 @@ public class WireguardVpnApp extends AppBase
 
         // TODO: Retrieve Default from "IP Registry Manager"
         settings.setAutoAddressAssignment(true);
-        settings.setAddressPools(List.of(new IPMaskedAddress("172.16.0.0/16")));
+        settings.setAddressPool(getAvailableAddressSpace());
 
         settings.setTunnels(new LinkedList<WireguardVpnTunnel>());
 
@@ -289,4 +290,28 @@ public class WireguardVpnApp extends AppBase
         String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT);
         return (result);
     }
+
+    /**
+     * getAvailableAddressSpace should be used to get the next available address space available on the appliance.
+     * 
+     * 
+     * @return IPMaskedAddress - A CIDR address that is not conflicting with other address spaces on the appliance
+     */
+
+    public IPMaskedAddress getAvailableAddressSpace() {
+
+        // Load addresses used across the network manager
+        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks(true, true, true);
+
+        // Gen a random address
+        Random rand = new Random();
+        IPMaskedAddress randAddress = null;
+
+        // If the address is contained in the above list, gen another one until we have one that is not matching
+        while (randAddress == null || currentlyUsed.contains(randAddress)) {
+            randAddress = new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24");
+        }
+
+        return randAddress;
+        }
 }

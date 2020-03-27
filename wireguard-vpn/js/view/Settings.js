@@ -52,10 +52,11 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         xtype: 'textfield',
         vtype: 'cidrBlockOnlyRanges',
         bind: {
-            value: '{settings.addressPools}',
+            value: '{settings.addressPool}',
             disabled: '{settings.autoAddressAssignment}',
             editable: '{!settings.autoAddressAssignment}'
         }
     }
+    ]
 });
 

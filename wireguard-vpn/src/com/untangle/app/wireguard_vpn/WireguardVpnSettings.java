@@ -23,7 +23,7 @@ public class WireguardVpnSettings implements Serializable, JSONString
     private Integer keepaliveInterval = 25;
     private Integer listenPort = 51820;
     private Integer mtu = 1500;
-    private List<IPMaskedAddress> addressPools;
+    private IPMaskedAddress addressPool;
     private String privateKey = "";
     private String publicKey = "";
     private boolean autoAddressAssignment = true;
@@ -42,8 +42,8 @@ public class WireguardVpnSettings implements Serializable, JSONString
     public Integer getMtu() { return mtu; }
     public void setMtu( Integer newValue ) { this.mtu = newValue; }
 
-    public List<IPMaskedAddress> getAddressPools() { return addressPools; }
-    public void setAddressPools( List<IPMaskedAddress> newValue ) { this.addressPools = newValue; }
+    public IPMaskedAddress getAddressPool() { return addressPool; }
+    public void setAddressPool( IPMaskedAddress newValue ) { this.addressPool = newValue; }
 
     public String getPrivateKey() { return privateKey; }
     public void setPrivateKey( String newValue ) { this.privateKey = newValue; }
