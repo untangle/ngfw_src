@@ -54,7 +54,7 @@ fi
 if [ ! -z "$3" -a "$3" != "" ]; then
     UT_EXT_MODE="req_ext_san"
     UT_SAN_LIST="$3"
-elif grep -qE '^9\.' /etc/debian_version ; then
+else
     # NGFW-11179: on Stretch, openssl errors out when reading the
     # empty [req_ext_nil] section of ut-openssl.cnf. Trying to
     # populate that section with some unimportant variable fixes the
@@ -63,11 +63,10 @@ elif grep -qE '^9\.' /etc/debian_version ; then
     # DNS:$(hostname) subjectAlternativeName.
     # To make sure this doesn't have an impact on 13.2 itself, we
     # isolate this fix to Stretch-based installs only.
+    # NGFW-12963: this fix applied to any version now
+    # Moving forward we are no longer concerned with compiling on deb <9 versions
     UT_EXT_MODE="req_ext_san"
     UT_SAN_LIST="DNS:$(hostname)"
-else
-    UT_EXT_MODE="req_ext_nil"
-    UT_SAN_LIST="empty"
 fi
 
 # export all environment variables referenced in our openssl config file

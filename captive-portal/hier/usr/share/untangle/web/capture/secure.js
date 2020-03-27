@@ -49,13 +49,6 @@ function imgLoadFailure(isRequired) {
     newParagraph.appendChild(text);
     newParagraph.appendChild(document.createElement('br'));
     newParagraph.appendChild(document.createElement('br'));
-    var newLink = document.createElement('a');
-    var linkText = document.createTextNode("Click this link to download the root certificate Windows installer.");
-    newLink.appendChild(linkText);
-    newLink.href = '/RootCAInstaller.exe';
-    newLink.title ="Download server root CA certificate installer";
-    newParagraph.appendChild(newLink);
-    form.parentElement.appendChild(newParagraph);
 
     newParagraph.appendChild(document.createElement('br'));
 
