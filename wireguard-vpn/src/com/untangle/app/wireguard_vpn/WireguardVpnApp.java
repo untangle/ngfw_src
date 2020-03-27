@@ -105,6 +105,12 @@ public class WireguardVpnApp extends AppBase
      */
     public void setSettings(final WireguardVpnSettings newSettings, boolean restart)
     {
+
+        if(!validateManualAddress(newSettings.getAddressPool())) {
+            logger.warn("Invalid address pool");
+            return;
+        }
+
         /**
          * Save the settings
          */
@@ -306,12 +312,37 @@ public class WireguardVpnApp extends AppBase
         // Gen a random address
         Random rand = new Random();
         IPMaskedAddress randAddress = null;
+        boolean uniqueAddress = false;
 
-        // If the address is contained in the above list, gen another one until we have one that is not matching
-        while (randAddress == null || currentlyUsed.contains(randAddress)) {
+        // If the address intersects another address, gen another one until we have one that is not matching
+        do {
             randAddress = new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24");
+
+            for (IPMaskedAddress takenAddr : currentlyUsed) {
+                if(!takenAddr.isIntersecting(randAddress)) {
+                    uniqueAddress = true;
+                }
+            }
+        } while (!uniqueAddress);
+        
+        return randAddress;
+    }
+
+    /**
+     * validateManualAddress will validate an address in the ip address scope field and return false/true on if it is valid and not intersection other addresses
+     *
+     * @param addr - The address to validate
+     * @return boolean - indicates whether the address is unique or not
+     */
+    public boolean validateManualAddress(IPMaskedAddress addr) {
+        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks(true, true, true);
+
+        for (IPMaskedAddress used : currentlyUsed) {
+            if (addr.isIntersecting(used)) {
+                return false;
+            }
         }
 
-        return randAddress;
-        }
+        return true;
+    }
 }
