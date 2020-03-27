@@ -50,6 +50,14 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                 disabled: '{!state.on}'
             },
             items: [{
+                xtype: 'component',
+                margin: '0 0 10 0',
+                hidden: true,
+                bind: {
+                    html: '{warning}',
+                    hidden: '{!warning}'
+                }
+            }, {
                 xtype: 'ungrid',
                 itemId: 'tunnelStatus',
                 enableColumnHide: true,
@@ -69,23 +77,26 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                 columns: [{
                     header: 'Interface'.t(),
                     dataIndex: 'interface',
-                    width: Renderer.messageWidth,
-                    filter: Renderer.stringFilter
+                    width: Renderer.idWidth,
+                    filter: Renderer.stringFilter,
+                    hidden: true
                 }, {
-                    header: 'Public Key'.t(),
-                    dataIndex: 'public-key',
+                    header: 'Description'.t(),
+                    dataIndex: 'tunnel-description',
                     width: Renderer.messageWidth,
                     filter: Renderer.stringFilter,
                     flex: 1
                 }, {
+                    header: 'Peer Public Key'.t(),
+                    dataIndex: 'peer-key',
+                    width: Renderer.messageWidth,
+                    filter: Renderer.stringFilter,
+                    flex: 1,
+                    hidden: true
+                }, {
                     header: 'Allowed IPs'.t(),
                     dataIndex: 'allowed-ips',
                     width: Renderer.networkWidth,
-                }, {
-                    header: 'Listen Port'.t(),
-                    dataIndex: 'listen-port',
-                    width: Renderer.portWidth,
-                    filter: Renderer.portFilter
                 }, {
                     header: 'Endpoint'.t(),
                     dataIndex: 'endpoint',

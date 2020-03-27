@@ -15,9 +15,13 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
+import com.untangle.uvm.app.AppMetric;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
  * The Wireguard VPN application connects to 3rd party VPN tunnel providers.
@@ -30,11 +34,15 @@ public class WireguardVpnApp extends AppBase
 
     private final String SettingsDirectory = "/wireguard-vpn/";
 
-    private final PipelineConnector[] connectors = new PipelineConnector[] {};
+    private static final String STAT_PASS = "pass";
+
+    private final PipelineConnector connector;
+    private final PipelineConnector[] connectors;
 
     private WireguardVpnSettings settings = null;
     private WireguardVpnMonitor WireguardVpnMonitor = null;
     private WireguardVpnManager WireguardVpnManager = null;
+    private final WireguardVpnEventHandler handler;
 
     /**
      * Constructor
@@ -49,6 +57,12 @@ public class WireguardVpnApp extends AppBase
         super(appSettings, appProperties);
         WireguardVpnMonitor = new WireguardVpnMonitor(this);
         this.WireguardVpnManager = new WireguardVpnManager(this);
+
+        this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+
+        this.handler = new WireguardVpnEventHandler(this);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create("wireguard-vpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 10, false);
+        this.connectors = new PipelineConnector[] { connector };
     }
 
     /**
@@ -82,11 +96,13 @@ public class WireguardVpnApp extends AppBase
 
     /**
      * Set the application settings
-     * 
+     *
      * @param newSettings
-     *        The new settings
+     *      The new settings
+     * @param restart
+     *      If true, restart
      */
-    public void setSettings(final WireguardVpnSettings newSettings)
+    public void setSettings(final WireguardVpnSettings newSettings, boolean restart)
     {
         /**
          * Save the settings
@@ -103,6 +119,48 @@ public class WireguardVpnApp extends AppBase
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.WireguardVpnManager.configure();
+        if(restart == true){
+            this.WireguardVpnManager.restart();
+        }
+    }
+
+    /**
+     * Set the application settings and restart.
+     *
+     * @param newSettings
+     *        The new settings
+     */
+    public void setSettings(final WireguardVpnSettings newSettings)
+    {
+        setSettings(newSettings, true);
+    }
+
+    /**
+     * Add a tunnel by publicKey
+     * @param publicKey String of public key to add.
+     */
+    public void addTunnel(String publicKey)
+    {
+        this.WireguardVpnManager.addTunnel(publicKey);
+    }
+
+    /**
+     * Delete a tunnel by publicKey
+     * @param publicKey String of public key to delete.
+     */
+    public void deleteTunnel(String publicKey)
+    {
+        this.WireguardVpnManager.deleteTunnel(publicKey);
+    }
+
+    /**
+     * Called to increment the pass count metric
+     */
+    public void incrementPassCount()
+    {
+        this.incrementMetric(STAT_PASS);
     }
 
     /**

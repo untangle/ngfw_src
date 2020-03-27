@@ -28,6 +28,8 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         if (!/^\d{1,5}$/.test(val)) { return false; }
         return true;
     },
+    isSinglePortValidText: 'Invalid port (number between 0 and 65536)'.t(),
+
     isPortRangeValid: function(val) {
         var portRange = val.split('-');
         if (portRange.length !== 2) { return false; }
@@ -51,6 +53,16 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     isSingleIpValid: function(val) {
         return this.mask.ip4AddrMaskRe.test(val);
     },
+    isSingleIpValidText: 'Invalid IP address.'.t(),
+
+    isSingleIpValidOrEmpty: function(val){
+        if(val == ''){
+            return true;
+        }
+        return this.mask.ip4AddrMaskRe.test(val);
+    },
+    isSingleIpValidOrEmptyText: 'Valut must either empty or IP address'.t(),
+
     isIpRangeValid: function(val) {
         return this.mask.ipAddrRange.test(val);
     },
@@ -138,12 +150,10 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     ipMatcherText: 'Invalid IP Address.'.t(),
 
-
     ip4Address: function (val) {
         return this.mask.ip4AddrMaskRe.test(val);
     },
     ip4AddressText: 'Invalid IPv4 Address.'.t(),
-
 
     ip4AddressList:  function (v) {
         var addr = v.split(','), i;
@@ -217,7 +227,6 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         return true;
     },
     cidrBlockAreaText: 'Must be a one-per-line list of networks in CIDR format.'.t() + ' ' + '(192.168.123.0/24)',
-
 
     portMatcher: function (val) {
         switch (val) {
@@ -323,5 +332,22 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         var number = parseInt(value, 10);
         return (number >= 0) && (number <= 4294967);
     },
-    routerAutoCostText: 'Invalid auto cost reference bandwidth'.t()
+    routerAutoCostText: 'Invalid auto cost reference bandwidth'.t(),
+
+    mtu: function(value){
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
+        var number = parseInt(value, 10);
+        return (number == 0 || number >= 68);
+    },
+    mtuText: 'Invalid value (integer above 68, 0 for default)'.t(),
+
+    keepalive: function(value) {
+        if(isNaN(value) || ( this.mask.positiveInteger.test(value) == false ) ){
+            return false;
+        }
+        return true;
+    },
+    keepaliveText: 'Keepalive must be a number or 0 to disable.'.t(),
 });

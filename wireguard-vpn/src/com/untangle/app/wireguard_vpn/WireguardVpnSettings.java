@@ -22,7 +22,7 @@ public class WireguardVpnSettings implements Serializable, JSONString
 
     private Integer keepaliveInterval = 25;
     private Integer listenPort = 51820;
-    private Integer mtu = 1420;
+    private Integer mtu = 1500;
     private IPMaskedAddress addressPool;
     private String privateKey = "";
     private String publicKey = "";
