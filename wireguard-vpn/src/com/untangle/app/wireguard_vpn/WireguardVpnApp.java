@@ -270,7 +270,9 @@ public class WireguardVpnApp extends AppBase
         settings.setPrivateKey(privateKey);
         settings.setPublicKey(publicKey);
 
-        settings.setAddressPool(new IPMaskedAddress("172.16.0.0/16"));
+        // TODO: Retrieve Default from "IP Registry Manager"
+        settings.setAutoAddressAssignment(true);
+        settings.setAddressPools(List.of(new IPMaskedAddress("172.16.0.0/16")));
 
         settings.setTunnels(new LinkedList<WireguardVpnTunnel>());
 
