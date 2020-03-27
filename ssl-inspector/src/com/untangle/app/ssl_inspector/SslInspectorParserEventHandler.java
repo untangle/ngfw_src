@@ -667,10 +667,11 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         if (sniHostname != null) {
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
             logger.debug("SSL_INSPECTOR_SNI_HOSTNAME = " + sniHostname);
+            serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(sniHostname);
         }
 
         // grab the cached certificate for the server but only for non-SMTP traffic 
-        if (session.getServerPort() != 25) {
+        if (session.getServerPort() != 25 && sniHostname == null) {
             serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(session.getServerAddr().getHostAddress().toString());
         }
 
