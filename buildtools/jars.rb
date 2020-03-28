@@ -48,17 +48,17 @@ class Jars
                                'tomcat-embed-core.jar',
                                'tomcat-embed-el.jar',
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
               end)
 
-    const_set(:TomcatServer, ['ecj-4.4.2.jar',
+    const_set(:TomcatServer, ['ecj-4.6.3.jar',
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
               end)
 
     const_set(:TomcatLogging, ['tomcat-embed-logging-log4j.jar',
                          ].map do |n|
-                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
              end)
 
     const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-logging-1.2.jar')] +  TomcatLogging)
