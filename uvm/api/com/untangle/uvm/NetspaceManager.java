@@ -23,6 +23,8 @@ public interface NetspaceManager
 
     boolean isNetworkAvailable(IPMaskedAddress tester);
 
+    IPMaskedAddress getAvailableAddressSpace();
+
     /**
      * Stores details about a network address block
      *
