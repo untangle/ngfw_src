@@ -134,8 +134,10 @@ public class NetspaceManagerImpl implements NetspaceManager
 
     /**
      * Called to determine if the passed network conflicts with any existing
-     * network registrations
+     * network registrations.
      * 
+     * @param ownerName
+     *        The name of the calling application
      * @param networkAddress
      *        The network address
      * @param networkSize
@@ -143,47 +145,59 @@ public class NetspaceManagerImpl implements NetspaceManager
      * @return true if the network block is available for use or false if it
      *         conflicts with an existing registration
      */
-    public boolean isNetworkAvailable(InetAddress networkAddress, Integer networkSize)
+    public NetworkSpace isNetworkAvailable(String ownerName, InetAddress networkAddress, Integer networkSize)
     {
         IPMaskedAddress tester = new IPMaskedAddress(networkAddress, networkSize);
-        return isNetworkAvailable(tester);
+        return isNetworkAvailable(ownerName, tester);
     }
 
     /**
      * Called to determine if the passed network conflicts with any existing
      * network registrations
      * 
+     * @param ownerName
+     *        The name of the calling application
      * @param networkText
      *        The network address
      * @return true if the network block is available for use or false if it
      *         conflicts with an existing registration
      */
-    public boolean isNetworkAvailable(String networkText)
+    public NetworkSpace isNetworkAvailable(String ownerName, String networkText)
     {
         IPMaskedAddress tester = new IPMaskedAddress(networkText);
-        return isNetworkAvailable(tester);
+        return isNetworkAvailable(ownerName, tester);
     }
 
     /**
      * Called to determine if the passed network conflicts with any existing
      * network registrations
      * 
+     * @param ownerName
+     *        The name of the calling application
      * @param tester
      *        The network to test
      * @return true if the network block is available for use or false if it
      *         conflicts with an existing registration
      */
 
-    public boolean isNetworkAvailable(IPMaskedAddress tester)
+    public NetworkSpace isNetworkAvailable(String ownerName, IPMaskedAddress tester)
     {
         Iterator<NetworkSpace> nsi = networkRegistry.iterator();
         NetworkSpace space;
 
         while (nsi.hasNext()) {
             space = nsi.next();
-            if (tester.isIntersecting(space.maskedAddress)) return true;
+            /*
+             * Ignore reservations for the calling owner since we expect they
+             * will be removed and replaced with new reservations on save
+             */
+            if ((ownerName != null) && (ownerName.equals(space.ownerName))) continue;
+
+            // if the test address intersects a reservation return the conflicting space
+            if (tester.isIntersecting(space.maskedAddress)) return space;
         }
 
-        return (true);
+        // no conflicts found so return null
+        return null;
     }
 }
