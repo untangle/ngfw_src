@@ -128,6 +128,7 @@ public class WireguardVpnApp extends AppBase
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.WireguardVpnManager.configure();
+        this.WireguardVpnManager.registerNetSpaces();
         if(restart == true){
             this.WireguardVpnManager.restart();
         }
@@ -280,7 +281,6 @@ public class WireguardVpnApp extends AppBase
         IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace();
 
         settings.setAutoAddressAssignment(true);
-        UvmContextFactory.context().netspaceManager().registerNetworkBlock("Wireguard", "WG-Interface", newSpace.getAddress(), newSpace.getPrefixLength());
         settings.setAddressPool(newSpace);
 
         settings.setTunnels(new LinkedList<WireguardVpnTunnel>());

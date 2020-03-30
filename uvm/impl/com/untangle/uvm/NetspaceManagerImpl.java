@@ -178,15 +178,17 @@ public class NetspaceManagerImpl implements NetspaceManager
         // Gen a random address
         Random rand = new Random();
         IPMaskedAddress randAddress = null;
-        boolean uniqueAddress = false;
+        boolean uniqueAddress = true;
 
         // If the address intersects another address, gen another one until we have one that is not matching
         do {
             randAddress = new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24");
 
+            // Verify any intersections in the registry
             for (NetworkSpace netSpace : networkRegistry) {
-                if(!netSpace.maskedAddress.isIntersecting(randAddress)) {
-                    uniqueAddress = true;
+                if(netSpace.maskedAddress.isIntersecting(randAddress)) {
+                    uniqueAddress = false;
+                    break;
                 }
             }
         } while (!uniqueAddress);
