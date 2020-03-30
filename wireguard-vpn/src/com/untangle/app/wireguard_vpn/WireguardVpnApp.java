@@ -303,16 +303,19 @@ public class WireguardVpnApp extends AppBase
     {
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
 
+        // start by clearing all existing registrations
         nsmgr.clearOwnerRegistrationAll("wireguard-vpn");
 
+        // add registration for the configured address pool
         nsmgr.registerNetworkBlock("wireguard-vpn", "server-network", settings.getAddressPool());
 
+        // add reservation for all networks of all configured tunnels 
         for (WireguardVpnTunnel tunnel : settings.getTunnels()) {
             String[] networks = tunnel.getNetworks().split("\\n");
             for (int x = 0;x < networks.length;x++) {
                 String item = networks[x].trim();
                 if (item.length() == 0) continue;
-                nsmgr.registerNetworkBlock("wireguard-vpn", "peer-network", networks[x].trim());
+                nsmgr.registerNetworkBlock("wireguard-vpn", "tunnel-network", networks[x].trim());
             }
         }
     }
