@@ -6,7 +6,6 @@ package com.untangle.app.wireguard_vpn;
 
 import java.io.File;
 import java.util.List;
-import java.util.Random;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;

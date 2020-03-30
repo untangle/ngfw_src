@@ -7,6 +7,7 @@ package com.untangle.uvm;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Random;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.NetspaceManager;
@@ -183,8 +184,8 @@ public class NetspaceManagerImpl implements NetspaceManager
         do {
             randAddress = new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24");
 
-            for (IPMaskedAddress takenAddr : networkRegistry) {
-                if(!takenAddr.isIntersecting(randAddress)) {
+            for (NetworkSpace netSpace : networkRegistry) {
+                if(!netSpace.maskedAddress.isIntersecting(randAddress)) {
                     uniqueAddress = true;
                 }
             }
