@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.NetspaceManager;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
@@ -115,9 +116,12 @@ public class WireguardVpnApp extends AppBase
         }
 
         /**
-         * Change current settings
+         * Change current settings and update network reservations
+         * any time settings are saved.
          */
         this.settings = newSettings;
+        updateNetworkReservations(newSettings);
+
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.WireguardVpnManager.configure();
@@ -229,15 +233,17 @@ public class WireguardVpnApp extends AppBase
         }
 
         /**
-         * If there are still no settings, just initialize
+         * If there are still no settings, just initialize. We only need to
+         * register network reservations on successful load since it will
+         * be handled in saveSettings during initialize. 
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
             this.initializeSettings();
         } else {
             logger.info("Loading Settings...");
-
             this.settings = readSettings;
+            updateNetworkReservations(readSettings);
             logger.debug("Settings: " + this.settings.toJSONString());
         }
     }
@@ -286,5 +292,28 @@ public class WireguardVpnApp extends AppBase
     {
         String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT);
         return (result);
+    }
+
+    /**
+     * Function to register all network address blocks configured in this application
+     *
+     * @param settings
+     */
+    private void updateNetworkReservations(WireguardVpnSettings settings)
+    {
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+
+        nsmgr.clearOwnerRegistrationAll("wireguard-vpn");
+
+        nsmgr.registerNetworkBlock("wireguard-vpn", "server-network", settings.getAddressPool());
+
+        for (WireguardVpnTunnel tunnel : settings.getTunnels()) {
+            String[] networks = tunnel.getNetworks().split("\\n");
+            for (int x = 0;x < networks.length;x++) {
+                String item = networks[x].trim();
+                if (item.length() == 0) continue;
+                nsmgr.registerNetworkBlock("wireguard-vpn", "peer-network", networks[x].trim());
+            }
+        }
     }
 }
