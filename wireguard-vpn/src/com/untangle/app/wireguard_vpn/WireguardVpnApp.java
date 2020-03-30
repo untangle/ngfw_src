@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
@@ -106,7 +107,7 @@ public class WireguardVpnApp extends AppBase
     public void setSettings(final WireguardVpnSettings newSettings, boolean restart)
     {
 
-        if(!validateManualAddress(newSettings.getAddressPool())) {
+        if(!UvmContextFactory.context().netspaceManager().isNetworkAvailable(newSettings.getAddressPool())) {
             logger.warn("Invalid address pool");
             return;
         }
@@ -277,9 +278,11 @@ public class WireguardVpnApp extends AppBase
         settings.setPrivateKey(privateKey);
         settings.setPublicKey(publicKey);
 
-        // TODO: Retrieve Default from "IP Registry Manager"
+        IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace();
+
         settings.setAutoAddressAssignment(true);
-        settings.setAddressPool(getAvailableAddressSpace());
+        UvmContextFactory.context().netspaceManager().registerNetworkBlock("Wireguard", "WG-Interface", newSpace.getAddress(), newSpace.getPrefixLength());
+        settings.setAddressPool(newSpace);
 
         settings.setTunnels(new LinkedList<WireguardVpnTunnel>());
 
@@ -295,54 +298,5 @@ public class WireguardVpnApp extends AppBase
     {
         String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT);
         return (result);
-    }
-
-    /**
-     * getAvailableAddressSpace should be used to get the next available address space available on the appliance.
-     * 
-     * 
-     * @return IPMaskedAddress - A CIDR address that is not conflicting with other address spaces on the appliance
-     */
-
-    public IPMaskedAddress getAvailableAddressSpace() {
-
-        // Load addresses used across the network manager
-        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks(true, true, true);
-
-        // Gen a random address
-        Random rand = new Random();
-        IPMaskedAddress randAddress = null;
-        boolean uniqueAddress = false;
-
-        // If the address intersects another address, gen another one until we have one that is not matching
-        do {
-            randAddress = new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24");
-
-            for (IPMaskedAddress takenAddr : currentlyUsed) {
-                if(!takenAddr.isIntersecting(randAddress)) {
-                    uniqueAddress = true;
-                }
-            }
-        } while (!uniqueAddress);
-        
-        return randAddress;
-    }
-
-    /**
-     * validateManualAddress will validate an address in the ip address scope field and return false/true on if it is valid and not intersection other addresses
-     *
-     * @param addr - The address to validate
-     * @return boolean - indicates whether the address is unique or not
-     */
-    public boolean validateManualAddress(IPMaskedAddress addr) {
-        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks(true, true, true);
-
-        for (IPMaskedAddress used : currentlyUsed) {
-            if (addr.isIntersecting(used)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

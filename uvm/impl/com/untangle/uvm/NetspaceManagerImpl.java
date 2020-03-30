@@ -166,4 +166,30 @@ public class NetspaceManagerImpl implements NetspaceManager
 
         return (true);
     }
+
+    /**
+     * getAvailableAddressSpace should be used to get an unregistered address space based on a random subnet
+     * 
+     * @return IPMaskedAddress - An IPv4 CIDR address that is not conflicting with other address spaces on the appliance
+     */
+    public IPMaskedAddress getAvailableAddressSpace() {
+
+        // Gen a random address
+        Random rand = new Random();
+        IPMaskedAddress randAddress = null;
+        boolean uniqueAddress = false;
+
+        // If the address intersects another address, gen another one until we have one that is not matching
+        do {
+            randAddress = new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24");
+
+            for (IPMaskedAddress takenAddr : networkRegistry) {
+                if(!takenAddr.isIntersecting(randAddress)) {
+                    uniqueAddress = true;
+                }
+            }
+        } while (!uniqueAddress);
+        
+        return randAddress;
+    }
 }
