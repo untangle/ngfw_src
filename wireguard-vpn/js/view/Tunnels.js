@@ -164,7 +164,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         allowBlank: true,
         vtype: 'isSingleIpValid',
         bind: {
-            value: '{record.endpointAddress}',
+            value: '{record.pingAddress}',
         }
     }, {
         xtype: 'numberfield',
