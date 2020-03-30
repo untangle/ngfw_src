@@ -123,19 +123,49 @@ class ThreatpreventionTests(NGFWTestCase):
         assert( found )
         
     def test_033_block_by_Hostname(self):
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         self.rules_clear()
-        self.rule_add("HOST_HOSTNAME",remote_control.client_ip)
+        self.rule_add("HOST_HOSTNAME",entry['hostname'])
 
         result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blocked")
         assert (result == 0)
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "hostname",remote_control.client_ip,
+                                            "hostname",entry['hostname'],
                                             self.eventAppName() + '_blocked', True,
                                             self.eventAppName() + '_flagged', True )
         assert( found )
         
+    def test_034_check_rule_precedence(self):
+        self.rules_clear()
+        self.rule_add("SRC_ADDR",remote_control.client_ip,action="pass",flagged=False) # 1st rule
+        self.rule_add("DST_PORT","80",action="block")  # 2nd rule
+
+        result = remote_control.run_command("wget -q -4 -t 2 http://test.untangle.com/")
+        assert (result == 0)
+        events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "c_client_addr",remote_control.client_ip,
+                                            self.eventAppName() + '_blocked', False,
+                                            self.eventAppName() + '_flagged', False )
+        assert( found )
+
+    def test_035_check_rule_over_category(self):
+        self.rules_clear()
+        self.rule_add("SRC_ADDR",remote_control.client_ip,action="pass",flagged=False)
+
+        result = remote_control.run_command("wget -q -4 -t 2 -O - http://account.paypal-inc.tribesiren.com 2>&1 | grep -q blocked")
+        assert (result != 0)
+        events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "c_client_addr",remote_control.client_ip,
+                                            self.eventAppName() + '_blocked', False,
+                                            self.eventAppName() + '_flagged', False )
+        assert( found )
+
     @classmethod
     def final_extra_tear_down(cls):
         pass
