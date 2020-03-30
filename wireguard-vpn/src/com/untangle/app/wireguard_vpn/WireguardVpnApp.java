@@ -351,7 +351,13 @@ public class WireguardVpnApp extends AppBase
             for (int x = 0;x < networks.length;x++) {
                 String item = networks[x].trim();
                 if (item.length() == 0) continue;
-                space = nsmgr.isNetworkAvailable("wireguard-vpn", item);
+                IPMaskedAddress maskaddr = new IPMaskedAddress(item);
+                // see if the tunnel network conflicts with our configured address space
+                if (maskaddr.isIntersecting(settings.getAddressPool())) {
+                    return new String("Tunnel:" + tunnel.getDescription() + " Network:" + item + " conflicts with configured Address Space");
+                }
+                // see if the tunnel network conflicts with any registered networks
+                space = nsmgr.isNetworkAvailable("wireguard-vpn", maskaddr);
                 if (space != null) {
                     return new String("Tunnel:" + tunnel.getDescription() + " Network:" + item + " conflicts with " + space.ownerName + ":" + space.ownerPurpose);
                 }
