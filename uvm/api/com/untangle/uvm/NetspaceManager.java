@@ -19,11 +19,11 @@ public interface NetspaceManager
 
     void clearOwnerRegistrationPurpose(String ownerName, String ownerPurpose);
 
-    boolean isNetworkAvailable(InetAddress networkAddress, Integer networkSize);
+    NetworkSpace isNetworkAvailable(String ownerName, InetAddress networkAddress, Integer networkSize);
 
-    boolean isNetworkAvailable(String networkText);
+    NetworkSpace isNetworkAvailable(String ownerName, String networkText);
 
-    boolean isNetworkAvailable(IPMaskedAddress tester);
+    NetworkSpace isNetworkAvailable(String ownerName, IPMaskedAddress tester);
 
     /**
      * Stores details about a network address block
@@ -43,7 +43,7 @@ public interface NetspaceManager
         public String toString()
         {
             String string = new String();
-            string = "OWNER:" + ownerName + " PURPOSE" + ownerPurpose + " NETWORK:" + maskedAddress.toString();
+            string = "OWNER:" + ownerName + " PURPOSE:" + ownerPurpose + " NETWORK:" + maskedAddress.toString();
             return string;
         }
     }
