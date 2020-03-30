@@ -72,8 +72,28 @@ public class NetspaceManagerImpl implements NetspaceManager
     }
 
     /**
-     * Called to remove all registrations for an owner
+     * Called to register a network address block in use by an application
      * 
+     * @param ownerName
+     *        The name of the owner
+     * @param ownerPurpose
+     *        What the network block is being used for
+     * @param networkInfo
+     *        The network
+     */
+    public void registerNetworkBlock(String ownerName, String ownerPurpose, IPMaskedAddress networkInfo)
+    {
+        NetworkSpace space = new NetworkSpace();
+        space.ownerName = ownerName;
+        space.ownerPurpose = ownerPurpose;
+        space.maskedAddress = networkInfo;
+        networkRegistry.add(space);
+        logger.debug("Added Netspace " + space.toString());
+    }
+
+    /**
+     * Called to remove all registrations for an owner
+     *
      * @param ownerName
      *        The owner
      */

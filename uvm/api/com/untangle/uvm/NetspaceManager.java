@@ -13,6 +13,8 @@ public interface NetspaceManager
 
     void registerNetworkBlock(String ownerName, String ownerPurpose, String networkText);
 
+    void registerNetworkBlock(String ownerName, String ownerPurpose, IPMaskedAddress networkInfo);
+
     void clearOwnerRegistrationAll(String ownerName);
 
     void clearOwnerRegistrationPurpose(String ownerName, String ownerPurpose);
