@@ -29,8 +29,6 @@ public class WireguardVpnManager
     private static final String WIREGUARD_APP = "/usr/bin/wg";
     private static final String WIREGUARD_QUICK_APP = "/usr/bin/wg-quick";
     private static final String WIREGUARD_QUICK_CONFIG = "/etc/wireguard/wg0.conf";
-    private static final String NETSPACE_OWNER_NAME = "Wireguard";
-    private static final String NETSPACE_PURPOSE_INTERFACE = "WGInternal";
 
     private final Logger logger = Logger.getLogger(this.getClass());
     private final WireguardVpnApp app;
@@ -115,20 +113,6 @@ public class WireguardVpnManager
         } catch (Exception e) {
             logger.warn( "Unable to generate iptables configuration:", e );
         }
-    }
-
-    /**
-     * registerNetSpaces is used to unregister/register all netspaces in use by the app with the Netspace Manager.
-     * 
-     */
-    public void registerNetSpaces()
-    {
-        // Unregister any existing spaces
-        UvmContextFactory.context().netspaceManager().clearOwnerRegistrationAll(NETSPACE_OWNER_NAME);
-
-        // Register new settings
-        IPMaskedAddress interfaceAddress = app.getSettings().getAddressPool();
-        UvmContextFactory.context().netspaceManager().registerNetworkBlock(NETSPACE_OWNER_NAME, NETSPACE_PURPOSE_INTERFACE, interfaceAddress.getAddress(), interfaceAddress.getPrefixLength());
     }
 
     /**
