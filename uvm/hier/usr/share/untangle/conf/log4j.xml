@@ -110,6 +110,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.NetspaceManagerImpl">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.uvm.HostsFileManagerImpl">
     <priority value="INFO"/>
   </category>
@@ -231,7 +235,7 @@
   </category>
 
   <category name="com.untangle.app.wireguard_vpn">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.app.license">
