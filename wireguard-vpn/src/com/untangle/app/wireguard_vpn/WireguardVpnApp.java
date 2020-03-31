@@ -12,7 +12,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.NetspaceManager;
+import com.untangle.uvm.NetspaceManager.NetworkSpace;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
@@ -112,6 +113,14 @@ public class WireguardVpnApp extends AppBase
         }
 
         /**
+         * First we check for network address space conflicts
+         */
+        String conflict = checkNetworkReservations(newSettings);
+        if (conflict != null) {
+            throw new RuntimeException(conflict);
+        }
+
+        /**
          * Save the settings
          */
         try {
@@ -122,9 +131,12 @@ public class WireguardVpnApp extends AppBase
         }
 
         /**
-         * Change current settings
+         * Change current settings and update network reservations
+         * any time settings are saved.
          */
         this.settings = newSettings;
+        updateNetworkReservations(newSettings);
+
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.WireguardVpnManager.configure();
@@ -237,15 +249,17 @@ public class WireguardVpnApp extends AppBase
         }
 
         /**
-         * If there are still no settings, just initialize
+         * If there are still no settings, just initialize. We only need to
+         * register network reservations on successful load since it will
+         * be handled in saveSettings during initialize. 
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
             this.initializeSettings();
         } else {
             logger.info("Loading Settings...");
-
             this.settings = readSettings;
+            updateNetworkReservations(readSettings);
             logger.debug("Settings: " + this.settings.toJSONString());
         }
     }
@@ -297,5 +311,69 @@ public class WireguardVpnApp extends AppBase
     {
         String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT);
         return (result);
+    }
+
+    /**
+     * Function to register all network address blocks configured in this application
+     *
+     * @param settings - The application settings
+     */
+    private void updateNetworkReservations(WireguardVpnSettings settings)
+    {
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+
+        // start by clearing all existing registrations
+        nsmgr.clearOwnerRegistrationAll("wireguard-vpn");
+
+        // add registration for the configured address pool
+        nsmgr.registerNetworkBlock("wireguard-vpn", "server-network", settings.getAddressPool());
+
+        // add reservation for all networks of all configured tunnels 
+        for (WireguardVpnTunnel tunnel : settings.getTunnels()) {
+            String[] networks = tunnel.getNetworks().split("\\n");
+            for (int x = 0;x < networks.length;x++) {
+                String item = networks[x].trim();
+                if (item.length() == 0) continue;
+                nsmgr.registerNetworkBlock("wireguard-vpn", "tunnel-network", networks[x].trim());
+            }
+        }
+    }
+
+    /**
+     * Function to check all configured network address blocks for conflicts
+     * @param settings - The new application settings
+     * @return A string describing the conflict or null if no conflicts are detected
+     */
+    private String checkNetworkReservations(WireguardVpnSettings settings)
+    {
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+        NetworkSpace space = null;
+
+        // check the address pool for conflicts
+        space = nsmgr.isNetworkAvailable("wireguard-vpn", settings.getAddressPool());
+        if (space != null) {
+            return new String("Address Pool conflicts with " + space.ownerName + ":" + space.ownerPurpose);
+        }
+
+        // check all tunnel networks for conflicts
+        for (WireguardVpnTunnel tunnel : settings.getTunnels()) {
+            String[] networks = tunnel.getNetworks().split("\\n");
+            for (int x = 0;x < networks.length;x++) {
+                String item = networks[x].trim();
+                if (item.length() == 0) continue;
+                IPMaskedAddress maskaddr = new IPMaskedAddress(item);
+                // see if the tunnel network conflicts with our configured address space
+                if (maskaddr.isIntersecting(settings.getAddressPool())) {
+                    return new String("Tunnel:" + tunnel.getDescription() + " Network:" + item + " conflicts with configured Address Space");
+                }
+                // see if the tunnel network conflicts with any registered networks
+                space = nsmgr.isNetworkAvailable("wireguard-vpn", maskaddr);
+                if (space != null) {
+                    return new String("Tunnel:" + tunnel.getDescription() + " Network:" + item + " conflicts with " + space.ownerName + ":" + space.ownerPurpose);
+                }
+            }
+        }
+
+        return null;
     }
 }
