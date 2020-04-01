@@ -7,7 +7,9 @@
 # This script should be called after changing the settings file to "sync" the settings to the OS.
 
 import sys
-sys.path.insert(0, sys.path[0] + "/" + "../" + "../" + "../" + "lib/" + "python%s.%s/" % sys.version_info[:2])
+
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
 import getopt
 import signal
