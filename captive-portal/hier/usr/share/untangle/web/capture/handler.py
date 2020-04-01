@@ -1,17 +1,19 @@
 from mod_python import apache
 from mod_python import util
 from mod_python import Cookie
+import sys
+
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+
 from uvm import Uvm
 import zipfile
 import urllib
 import pprint
 import imp
-import sys
 import time
 import os
 import uvm.i18n_helper
-
-sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 from urlparse import urlparse
 
