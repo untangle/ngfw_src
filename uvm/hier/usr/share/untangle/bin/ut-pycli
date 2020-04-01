@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 import sys
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ("@PREFIX@", sys.version_info[0], sys.version_info[1])
 if "@PREFIX@" != '':
-    sys.path.insert(0, UNTANGLE_DIR)
-    sys.path.insert(0, UNTANGLE_DIR + "/dist-packages")
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
 
 import urllib
 import getopt
