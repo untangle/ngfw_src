@@ -1080,7 +1080,7 @@ public class OpenVpnAppImpl extends AppBase
                 String networks = client.getExportNetwork();
                 for (String network : networks.split(",")) {
                     if (network.length() == 0) continue;
-                    nsmgr.registerNetworkBlock("wireguard-vpn", "remote-network", networks);
+                    nsmgr.registerNetworkBlock("openvpn", "remote-network", networks);
                 }
             }
         }
