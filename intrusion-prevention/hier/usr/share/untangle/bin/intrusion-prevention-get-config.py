@@ -1,14 +1,12 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3
 """
 Retreive configuration variables from IPS.
 """
 import getopt
 import sys
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ("@PREFIX@", sys.version_info[0], sys.version_info[1])
 if "@PREFIX@" != '':
-    sys.path.insert(0, UNTANGLE_DIR)
-    sys.path.insert(0, UNTANGLE_DIR + "/dist-packages")
+    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 #pylint: disable=wrong-import-position
 import intrusion_prevention
 #pylint: disable=wrong-import-position

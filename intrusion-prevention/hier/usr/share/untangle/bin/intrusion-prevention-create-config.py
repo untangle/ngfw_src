@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3
 """
 Create IPS configuration filesfrom settings
 """
@@ -7,10 +7,8 @@ import sys
 import re
 from subprocess import call
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ("@PREFIX@", sys.version_info[0], sys.version_info[1])
 if "@PREFIX@" != '':
-    sys.path.insert(0, UNTANGLE_DIR)
-    sys.path.insert(0, UNTANGLE_DIR + "/dist-packages")
+    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 #pylint: disable=wrong-import-position
 from uvm.settings_reader import get_app_settings
 import intrusion_prevention
