@@ -20,6 +20,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.NetspaceManager;
+import com.untangle.uvm.NetspaceManager.NetworkSpace;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.network.NetworkSettings;
@@ -126,12 +128,12 @@ public class OpenVpnAppImpl extends AppBase
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-
             this.initializeSettings();
         } else {
             updateSettings(readSettings);
             logger.info("Loading Settings...");
             this.settings = readSettings;
+            updateNetworkReservations(readSettings);
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
@@ -286,9 +288,11 @@ public class OpenVpnAppImpl extends AppBase
         }
 
         /**
-         * Change current settings
+         * Change current settings and update network reservations
+         * any time settings are saved
          */
         this.settings = newSettings;
+        updateNetworkReservations(newSettings);
         try {
             logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
         } catch (Exception e) {
@@ -665,19 +669,14 @@ public class OpenVpnAppImpl extends AppBase
         possibleAddressPools.add(new IPMaskedAddress("172.16.16.0/24"));
         possibleAddressPools.add(new IPMaskedAddress("192.168.168.0/24"));
         possibleAddressPools.add(new IPMaskedAddress("1.2.3.0/24"));
+
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+
+        // use the first possible pool that doesn't conflict with any existing registered networks
         for (IPMaskedAddress possibleAddressPool : possibleAddressPools) {
-
-            boolean foundConflict = false;
-            for (InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus()) {
-                if (intfStatus.getV4Address() == null || intfStatus.getV4Netmask() == null) continue;
-                IPMaskedAddress intfMaskedAddress = new IPMaskedAddress(intfStatus.getV4Address(), intfStatus.getV4PrefixLength());
-                if (intfMaskedAddress.isIntersecting(possibleAddressPool)) foundConflict = true;
-            }
-
-            if (!foundConflict) {
-                newSettings.setAddressSpace(possibleAddressPool);
-                break;
-            }
+            if (nsmgr.isNetworkAvailable(null, possibleAddressPool) != null) continue;
+            newSettings.setAddressSpace(possibleAddressPool);
+            break;
         }
 
         return newSettings;
@@ -744,16 +743,18 @@ public class OpenVpnAppImpl extends AppBase
         }
 
         /**
-         * Check that exported remote network do not conflict with Untangle
-         * addresses and other exports
+         * Check that exported remote networks do not conflict with any other
+         * registered addresses or other exports
          */
-        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks(true, true, false);
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+        NetworkSpace space = null;
+
         for (IPMaskedAddress export : exportedNetworks) {
-            for (IPMaskedAddress used : currentlyUsed) {
-                if (export.isIntersecting(used)) {
-                    throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + export + " " + I18nUtil.marktr("conflicts with address") + " " + used);
-                }
+            space = nsmgr.isNetworkAvailable("openvpn", export);
+            if (space != null) {
+                throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + export + " " + I18nUtil.marktr("conflicts with") + " " + space.ownerName + ":" + space.ownerPurpose);
             }
+
             for (IPMaskedAddress export2 : exportedNetworks) {
                 if (export == export2) continue;
                 if (export.isIntersecting(export2)) {
@@ -1053,6 +1054,33 @@ public class OpenVpnAppImpl extends AppBase
         }
 
         return results;
+    }
+
+    /**
+     * Function to register all network address blocks configured in this application
+     *
+     * @param argSettings - The application settings
+     */
+    private void updateNetworkReservations(OpenVpnSettings argSettings)
+    {
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+
+        // start by clearing all existing registrations
+        nsmgr.clearOwnerRegistrationAll("openvpn");
+
+        // add registration for the configured address pool
+        nsmgr.registerNetworkBlock("openvpn", "server-network", settings.getAddressSpace());
+
+        // add reservation for all exported networks in configured remote clients        
+        for (OpenVpnRemoteClient client : argSettings.getRemoteClients()) {
+            if (client.getExport()) {
+                String networks = client.getExportNetwork();
+                for (String network : networks.split(",")) {
+                    if (network.length() == 0) continue;
+                    nsmgr.registerNetworkBlock("openvpn", "remote-network", networks);
+                }
+            }
+        }
     }
 
     /**
