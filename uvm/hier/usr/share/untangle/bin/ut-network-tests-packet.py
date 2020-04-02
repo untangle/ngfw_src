@@ -9,9 +9,8 @@ import subprocess
 import sys
 import time
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
-if ( "@PREFIX@" != ''):
-    sys.path.insert(0, UNTANGLE_DIR)
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
 
 Max_file_time = 4 * 60 * 60 
 

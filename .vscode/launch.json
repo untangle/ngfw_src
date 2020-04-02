@@ -9,7 +9,7 @@
             "name": "UVM Remote Debugger",
             "projectName": "ngfw_src",
             "request": "attach",
-            "hostName": "192.168.73.35",
+            "hostName": "localhost",
             "port": 1337
         }
     ]
