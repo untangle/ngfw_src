@@ -49,7 +49,6 @@ public class CertificateManagerImpl implements CertificateManager
 
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
-    private static final String ROOT_CERT_INSTALLER_FILE = CERT_STORE_PATH + "RootCAInstaller.exe";
 
     private static final String CERTIFICATE_UPLOAD_FILE = CERT_STORE_PATH + "upload.crt";
     private static final String KEY_UPLOAD_FILE = CERT_STORE_PATH + "upload.key";
@@ -97,7 +96,6 @@ public class CertificateManagerImpl implements CertificateManager
 
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new ServerCertificateUploadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateDownloadHandler());
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateInstallerDownloadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateRequestDownloadHandler());
 
         // in the development environment if the root CA files are missing copy
@@ -120,7 +118,6 @@ public class CertificateManagerImpl implements CertificateManager
         if ((rootCertFile.exists() == false) || (rootKeyFile.exists() == false)) {
             logger.info("Creating default root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
-            UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT);
 
             // in the development enviroment save these to a global location
             // so they will survive a rake clean
@@ -129,9 +126,6 @@ public class CertificateManagerImpl implements CertificateManager
                 UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
             }
         }
-
-        // always perform a check for the root installer.  It will determine if it needs to be rebuilt.
-        UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT + " check");
 
         // we should have a root CA at this point so we check the local apache
         // cert files and create them now if either is missing
@@ -253,61 +247,6 @@ public class CertificateManagerImpl implements CertificateManager
                 try {
                     if (certStream != null) {
                         certStream.close();
-                    }
-                } catch (IOException ex) {
-                    logger.error("Unable to close file", ex);
-                }
-            }
-        }
-    }
-
-    /**
-     * Called by request to download the root CA installer package
-     */
-    private class RootCertificateInstallerDownloadHandler implements DownloadHandler
-    {
-        /**
-         * Get the name of our download handler
-         * 
-         * @return The name of our download handler
-         */
-        @Override
-        public String getName()
-        {
-            return "root_certificate_installer_download";
-        }
-
-        /**
-         * Called to handle download requests
-         * 
-         * @param req
-         *        The web request
-         * @param resp
-         *        The web response
-         */
-        @Override
-        public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
-        {
-            File rootCertInstallerFile = new File(ROOT_CERT_INSTALLER_FILE);
-
-            FileInputStream certInstallerStream = null;
-            try {
-                certInstallerStream = new FileInputStream(rootCertInstallerFile);
-                byte[] certInstallerData = new byte[(int) rootCertInstallerFile.length()];
-                certInstallerStream.read(certInstallerData);
-
-                // set the headers.
-                resp.setContentType("application/x-download");
-                resp.setHeader("Content-Disposition", "attachment; filename=RootCAInstaller.exe");
-
-                OutputStream webStream = resp.getOutputStream();
-                webStream.write(certInstallerData);
-            } catch (Exception exn) {
-                logger.warn("Exception during certificate download", exn);
-            } finally {
-                try {
-                    if (certInstallerStream != null) {
-                        certInstallerStream.close();
                     }
                 } catch (IOException ex) {
                     logger.error("Unable to close file", ex);
@@ -601,7 +540,6 @@ public class CertificateManagerImpl implements CertificateManager
         argList[0] = certSubject;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
         UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + argString);
-        UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT + argString);
 
         // in the development enviroment save these to a global location
         // so they will survive a rake clean

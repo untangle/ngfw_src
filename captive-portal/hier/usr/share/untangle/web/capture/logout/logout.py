@@ -1,10 +1,13 @@
 from mod_python import apache
+
+import sys
+
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+
 from uvm import Uvm
 from mod_python import Cookie
-import sys
 import uvm.i18n_helper
-
-sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 
 from uvm.settings_reader import get_app_settings_item
 from uvm.settings_reader import get_appid_settings

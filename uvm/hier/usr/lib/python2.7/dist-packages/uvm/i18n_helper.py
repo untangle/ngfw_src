@@ -18,7 +18,9 @@ import gettext
 import sys
 import os
 
-sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+
 
 def get_uvm_settings_item(a,b):
     return None
