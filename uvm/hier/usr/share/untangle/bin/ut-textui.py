@@ -14,7 +14,8 @@ import sys
 import subprocess
 import traceback
 
-sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
 
 import curses
 import curses.textpad

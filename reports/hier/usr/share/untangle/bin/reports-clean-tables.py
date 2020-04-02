@@ -36,11 +36,10 @@ class ArgumentParser(object):
              exit(1)
 
 DRIVER = 'postgresql'
-PREFIX = '@PREFIX@'
-PYTHON_DIR = '%s/usr/lib/python%d.%d/dist-packages' % (PREFIX, sys.version_info[0], sys.version_info[1])
+PYTHON_DIR = '@PREFIX@/usr/lib/python2.7/dist-packages'
 REPORTS_PYTHON_DIR = '%s/reports' % (PYTHON_DIR)
 
-if (PREFIX != ''):
+if '@PREFIX@' != '':
      sys.path.insert(0, PYTHON_DIR)
 
 import reports.sql_helper as sql_helper
