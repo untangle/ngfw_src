@@ -239,8 +239,6 @@ public class WebrootQuery
      */
     public List<Integer> lookupSite(String url)
     {
-        // String[] urlSplit = splitUrl(url);
-        // return categorizeSite(urlSplit[0], urlSplit[2]);
         return null;
     }
 
@@ -255,21 +253,6 @@ public class WebrootQuery
      */
     public int recategorizeSite(String url, int category)
     {
-        // String[] urlSplit = splitUrl(url);
-        // String question = encodeDnsQuery(urlSplit[0], urlSplit[2], Integer.toString(category) + "_a");
-        // String[] answers = lookupDns(question);
-        // int answerCategory = -1;
-        // if (answers.length > 0) {
-        //     /**
-        //      * The only way this can fail is if zvelo removes the submit
-        //      * functionality.
-        //      */
-        //     String[] split = answers[0].split("\\s+");
-        //     if (-1 != url.indexOf(split[1])) {
-        //         answerCategory = category;
-        //     }
-        // }
-        // return (category == answerCategory ? category : -1);
         return -1;
     }
 
@@ -602,8 +585,6 @@ public class WebrootQuery
             connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
             connection.setDoOutput(true);
             DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
-            // encode query?
-            logger.warn("apiDirect: query=" + BctiApiDirectRequestPrefix.replaceAll("%requestid%", Integer.toString(requestId)) + query + BctiApiDirectRequestSuffix);
             dos.writeBytes(BctiApiDirectRequestPrefix.replaceAll("%requestid%", Integer.toString(requestId)) + query + BctiApiDirectRequestSuffix);
             requestId++;
             dos.flush();
@@ -620,9 +601,7 @@ public class WebrootQuery
                 response.append(inputLine);
             }
             in.close();
-            logger.warn(response.toString());
             JSONObject jsonObject = new JSONObject(response.toString());
-            logger.warn(jsonObject);
             answer = jsonObject.getJSONArray("results");
             // close buffered reader?
             // close connection
@@ -732,6 +711,10 @@ public class WebrootQuery
             Calendar endDate = Calendar.getInstance();
             JSONArray directAnswer = null;
             try{
+                answer.put(
+                    index++,
+                    new JSONObject().put("queries", new JSONObject().put("getinfo", urlGetInfo(key)))
+                );
                 directAnswer = apiDirect(BCTI_API_DIRECT_REQUEST_URL,
                     BCTI_API_DIRECT_REQUEST_URL_GETREPINFO
                         .replaceAll(BCTI_API_DIRECT_REQUEST_URLS_PARAMETER, key)

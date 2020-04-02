@@ -525,10 +525,7 @@ public class OpenVpnAppImpl extends AppBase
          * and exec files
          */
         String fileName = null;
-        if ("exe".equals(format)) {
-            this.openVpnManager.createClientDistributionExe(settings, client);
-            fileName = "setup.exe";
-        } else if ("zip".equals(format)) {
+        if ("zip".equals(format)) {
             this.openVpnManager.createClientDistributionZip(settings, client);
             fileName = "config.zip";
         } else if ("ovpn".equals(format)) {
