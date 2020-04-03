@@ -30,8 +30,8 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 fld: { type: 'string' }
             },
             threat_prevention_rule_id: { // should use converter instead
-                col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120, renderer: Ung.common.Renderer.threatprevention.ruleId },
-                fld: { type: 'integer' }
+                col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120 },
+                fld: { type: 'integer', convert: Ung.common.Converter.threatprevention.ruleId }
             },
             threat_prevention_server_categories: {
                 col: { text: 'Server Categories'.t() + ' (Threat Prevention)', width: 150 },

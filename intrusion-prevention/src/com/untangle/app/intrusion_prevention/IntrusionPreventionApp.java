@@ -488,11 +488,17 @@ public class IntrusionPreventionApp extends AppBase
      */
     public boolean synchronizeSettingsWithVariables(){
         boolean changed = false;
-        String result = UvmContextFactory.context().execManager().execOutput(GET_CONFIG + " --variables");
-        String variablesMd5sum = md5sum(result);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(GET_CONFIG + " --variables");
+
+        if(result.getResult() != 0) {
+            logger.error("synchronizeSettingsWithVariables: intrusion-prevention-get-config failed to execute: \n" + result.getOutput());
+            return false;
+        }
+
+        String variablesMd5sum = md5sum(result.getOutput());
         if(!variablesMd5sum.equals(this.settings.getVariablesMd5sum())){
             List<IntrusionPreventionVariable> variables = this.settings.getVariables();
-            for ( String line : result.split("\\r?\\n") ){
+            for ( String line : result.getOutput().split("\\r?\\n") ){
                 String variableLine[] = line.split("=");
 
                 Boolean found = false;
