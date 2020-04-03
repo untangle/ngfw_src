@@ -13,7 +13,7 @@ import org.json.JSONObject;
 @SuppressWarnings("serial")
 public class BandwidthControlSettings implements java.io.Serializable, JSONString
 {
-    private Integer settingsVersion = new Integer(5); /* current version is 5 */
+    private Integer settingsVersion = 5; /* current version is 5 */
 
     private Boolean configured = Boolean.FALSE;
     

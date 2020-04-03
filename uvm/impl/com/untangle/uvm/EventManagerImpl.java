@@ -631,7 +631,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "cClientAddr" );
         eventRule.setTagName( "suspicious" );
-        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
+        eventRule.setTagLifetimeSec( (long) (60*30) ); // 30 minutes
         rules.add( eventRule );
         
         conditions = new LinkedList<>();
@@ -643,7 +643,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "proxy-use" );
-        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
+        eventRule.setTagLifetimeSec( (long) (60*30) ); // 30 minutes
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
@@ -655,7 +655,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.CClientAddr" );
         eventRule.setTagName( "bittorrent-usage" );
-        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+        eventRule.setTagLifetimeSec( (long) (60*5) ); // 5 minutes
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
@@ -667,7 +667,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "bittorrent-usage" );
-        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+        eventRule.setTagLifetimeSec( (long) (60*5) ); // 5 minutes
         rules.add( eventRule );
         
         return rules;

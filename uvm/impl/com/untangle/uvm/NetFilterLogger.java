@@ -236,7 +236,7 @@ public class NetFilterLogger
                 // create a new session event and fill it with our data
                 SessionEvent event = new SessionEvent();
                 event.setSessionId(com.untangle.jnetcap.Netcap.nextSessionId());
-                event.setProtocol(new Short((short) netProto));
+                event.setProtocol((short) netProto);
 
                 HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(srcAddress);
                 String username = null;
@@ -254,7 +254,7 @@ public class NetFilterLogger
                 // as this code use the value 999 to indicate empty or unknown.  If icmpType
                 // is any other value, we set it in the event, otherwise we leave it null.
                 if (icmpType != 999) {
-                    event.setIcmpType(new Short((short) icmpType));
+                    event.setIcmpType((short) icmpType);
                 }
 
                 event.setUsername(username);
@@ -266,14 +266,14 @@ public class NetFilterLogger
                 event.setCServerAddr(dstAddress);
                 event.setSServerAddr(dstAddress);
 
-                event.setSClientPort(new Integer(srcPort));
-                event.setCClientPort(new Integer(srcPort));
+                event.setSClientPort(srcPort);
+                event.setCClientPort(srcPort);
 
-                event.setSServerPort(new Integer(dstPort));
-                event.setCServerPort(new Integer(dstPort));
+                event.setSServerPort(dstPort);
+                event.setCServerPort(dstPort);
 
-                event.setClientIntf(new Integer(srcIntf));
-                event.setServerIntf(new Integer(dstIntf));
+                event.setClientIntf(srcIntf);
+                event.setServerIntf(dstIntf);
 
                 if (srcIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface(srcIntf)) {
                     event.setLocalAddr(dstAddress);

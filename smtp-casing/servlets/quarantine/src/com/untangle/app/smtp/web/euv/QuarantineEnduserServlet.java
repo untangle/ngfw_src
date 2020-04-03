@@ -146,7 +146,7 @@ public class QuarantineEnduserServlet extends HttpServlet
             initRemoteRefs();
         }
         QuarantineSettings qSettings = m_mailApp.getSmtpSettings().getQuarantineSettings();
-        String maxDaysToIntern = new Long(qSettings.getMaxMailIntern() / QuarantineSettings.DAY).toString();
+        String maxDaysToIntern = Long.valueOf(qSettings.getMaxMailIntern() / QuarantineSettings.DAY).toString();
         //m_logger.info("maxDaysToIntern: " + maxDaysToIntern);
         return maxDaysToIntern;
     }
@@ -162,7 +162,7 @@ public class QuarantineEnduserServlet extends HttpServlet
             initRemoteRefs();
         }
         QuarantineSettings qSettings = m_mailApp.getSmtpSettings().getQuarantineSettings();
-        String maxDaysIdleInbox = new Long(qSettings.getMaxIdleInbox() / QuarantineSettings.DAY).toString();
+        String maxDaysIdleInbox = Long.valueOf(qSettings.getMaxIdleInbox() / QuarantineSettings.DAY).toString();
         //m_logger.info("maxDaysIdleInbox: " + maxDaysIdleInbox);
         return maxDaysIdleInbox;
     }

@@ -128,7 +128,7 @@ public class QuarantineStore
                 unitDivisor = (1024.0 * 1024.0); // in megabytes
             }
 
-            return String.format("%01.3f", new Float(getTotalSize() / unitDivisor));
+            return String.format("%01.3f", (getTotalSize() / unitDivisor));
         } catch (Exception ex) {
             return "<unknown>";
         }

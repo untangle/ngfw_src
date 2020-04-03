@@ -20,7 +20,7 @@ public class WebCacheSettings implements java.io.Serializable, JSONString
 {
     private LinkedList<WebCacheRule> ruleList = null;
     private HashSet<String> ruleHash = null;
-    private Float loadLimit = new Float(3.5);
+    private Float loadLimit = (float) 3.5;
 
     public LinkedList<WebCacheRule> getRules()
     {

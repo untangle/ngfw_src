@@ -338,9 +338,9 @@ public class WebrootDaemon
                 if(statusResult != null){
                     JSONObject status = statusResult.getJSONObject(0);
                     // !!! KEYS FROM QUERY
-                    metrics.get(STAT_CACHE_COUNT).setValue(new Long(status.getJSONObject("url_db").getInt("url_cache_current_size")));
-                    metrics.get(STAT_NETWORK_ERROR_COUNT).setValue(new Long(status.getJSONObject("counters").getJSONObject("errors").getInt("network")));
-                    metrics.get(STAT_IP_ERROR_COUNT).setValue(new Long(status.getJSONObject("counters").getJSONObject("errors").getInt("ip")));
+                    metrics.get(STAT_CACHE_COUNT).setValue(Long.valueOf(status.getJSONObject("url_db").getInt("url_cache_current_size")));
+                    metrics.get(STAT_NETWORK_ERROR_COUNT).setValue(Long.valueOf(status.getJSONObject("counters").getJSONObject("errors").getInt("network")));
+                    metrics.get(STAT_IP_ERROR_COUNT).setValue(Long.valueOf(status.getJSONObject("counters").getJSONObject("errors").getInt("ip")));
                 }
             }catch(Exception e){
                 logger.warn("Unable to query status",e);

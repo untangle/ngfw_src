@@ -135,7 +135,7 @@ public class HostTableEntry implements Serializable, JSONString
     {
         if ( newValue == this.interfaceId )
             return;
-        updateEvent( "interfaceId", (new Integer(this.interfaceId)).toString(), new Integer(newValue).toString() );
+        updateEvent( "interfaceId", Integer.valueOf(this.interfaceId).toString(), Integer.valueOf(newValue).toString() );
         this.interfaceId = newValue;
         updateAccessTime();
     }
