@@ -2,34 +2,33 @@ Ext.define('Ung.common.Converter.threatprevention', {
     singleton: true,
 
     ruleIdMap: {},
-    ruleId: function(value) {
-        console.log(this);
-        if(value == 0){
-            return;
+    ruleId: function (value, record) {
+        if (value == 0) {
+            return '';
         }
         var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
-        if(!Ung.common.Renderer.threatprevention.ruleIdMap[policyId] ||
+        if (!Ung.common.Renderer.threatprevention.ruleIdMap[policyId] ||
             !Ung.common.Renderer.threatprevention.ruleIdMap[policyId] ||
-            (value != Ung.common.Renderer.threatprevention.listKey && !(value in Ung.common.Renderer.threatprevention.ruleIdMap[policyId]))){
-            if(!Ung.common.Renderer.threatprevention.ruleIdMap[policyId]){
+            (value != Ung.common.Renderer.threatprevention.listKey && !(value in Ung.common.Renderer.threatprevention.ruleIdMap[policyId]))) {
+            if (!Ung.common.Renderer.threatprevention.ruleIdMap[policyId]) {
                 Ung.common.Renderer.threatprevention.ruleIdMap[policyId] = {};
             }
             var ruleInfo = Renderer.getReportInfo(record, ["threat-prevention"], "rules");
 
-            if(ruleInfo){
-                ruleInfo.forEach( function(rule){
+            if (ruleInfo) {
+                ruleInfo.forEach(function (rule) {
                     Ung.common.Renderer.threatprevention.ruleIdMap[policyId][rule["ruleId"]] = rule["description"];
                 });
             }
-            if(!(value in Ung.common.Renderer.threatprevention.ruleIdMap[policyId]) && (value != Ung.common.Renderer.threatprevention.listKey)){
+            if (!(value in Ung.common.Renderer.threatprevention.ruleIdMap[policyId]) && (value != Ung.common.Renderer.threatprevention.listKey)) {
                 // If category cannot be found, don't just keep coming back for more.
                 Ung.common.Renderer.threatprevention.ruleIdMap[policyId][value] = 'Unknown'.t();
             }
         }
-        if(value == Renderer.listKey){
-            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId];
-        }else{
-            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId][value];
+        if (value == Renderer.listKey) {
+            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId] + ' [' + value + ']';
+        } else {
+            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId][value] + ' [' + value + ']';
         }
     },
 
