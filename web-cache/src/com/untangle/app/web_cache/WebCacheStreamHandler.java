@@ -407,12 +407,14 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             // wait for squid response or a wakeup from the cache parent thread
             retval = sessInfo.squidSelector.select(app.SELECT_TIMEOUT);
 
-            // cleanup the socket selector but stay in non-blocking mode to make sure
-            // we don't ever hang reading the client side data back from squid
+            // cleanup the socket selector
             sessInfo.squidKey.cancel();
             sessInfo.squidKey = null;
             sessInfo.squidSelector.close();
             sessInfo.squidSelector = null;
+
+            // switch back to blocking mode
+            sessInfo.squidChannel.configureBlocking(true);
 
             // remove our session object from the app hashtable
             WebCacheParent.INSTANCE.RemoveSockObject(sessInfo);
@@ -438,9 +440,6 @@ public class WebCacheStreamHandler extends AbstractEventHandler
 
             // clear the client buffer for the next request
             sessInfo.clientBuffer.clear();
-
-            // switch back to blocking mode
-            sessInfo.squidChannel.configureBlocking(true);
 
             // stream the cached squid content back to the client
             sess.sendStreamerToClient(new WebCacheStreamer(app, sessInfo));
