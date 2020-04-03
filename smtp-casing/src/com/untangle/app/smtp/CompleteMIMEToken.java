@@ -129,7 +129,7 @@ public class CompleteMIMEToken extends MetadataToken
         @Override
         protected ByteBuffer createReadBuf()
         {
-            return (ByteBuffer) m_readBuf.clear();
+            return m_readBuf.clear();
         }
 
         /**

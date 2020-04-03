@@ -130,7 +130,7 @@ public class GridSettingsServlet extends HttpServlet
         PrintWriter out = resp.getWriter();
         try {
             JSONObject obj = new JSONObject();
-            obj.put("success", new Boolean(success));
+            obj.put("success", success);
             if (msg != null) {
                 obj.put("msg", msg);
             }

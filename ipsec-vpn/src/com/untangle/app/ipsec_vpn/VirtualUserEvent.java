@@ -44,7 +44,7 @@ public class VirtualUserEvent extends LogEvent
         setClientUsername(clientUsername);
         setNetInterface(netInterface);
         setNetProcess(netProcess);
-        setEventId(new Long(generateEventId()));
+        setEventId(Long.valueOf(generateEventId()));
     }
 
     public void updateEvent(String elapsedTime, Long netRXbytes, Long netTXbytes)

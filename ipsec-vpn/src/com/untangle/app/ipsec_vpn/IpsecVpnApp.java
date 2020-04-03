@@ -602,7 +602,7 @@ public class IpsecVpnApp extends AppBase
         if (ss < 10) elapsed += "0";
         elapsed += String.valueOf(ss);
 
-        event.updateEvent(elapsed, new Long(netRXcount), new Long(netTXcount));
+        event.updateEvent(elapsed, Long.valueOf(netRXcount), Long.valueOf(netTXcount));
         logEvent(event);
         logger.debug("virtualUserGoodbye(logEvent) " + event.toString());
 

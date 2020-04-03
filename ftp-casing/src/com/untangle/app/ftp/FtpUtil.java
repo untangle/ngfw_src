@@ -33,7 +33,7 @@ class FtpUtil
 
         byte[] bAddr = new byte[4];
         for (int j = 0; j < 4; j++) {
-            bAddr[j] = new Integer(toks[j]).byteValue();
+            bAddr[j] = Integer.valueOf(toks[j]).byteValue();
         }
 
         InetAddress addr = null;

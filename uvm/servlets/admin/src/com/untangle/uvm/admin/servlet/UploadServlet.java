@@ -126,11 +126,12 @@ public class UploadServlet extends HttpServlet
             JSONObject obj=new JSONObject();
 
             if ( result != null && result instanceof ExecManagerResult ) {
-                obj.put("success",new Boolean(((ExecManagerResult)result).getResult() == 0));
+                // obj.put("success",new Boolean(((ExecManagerResult)result).getResult() == 0));
+                obj.put("success",((ExecManagerResult)result).getResult() == 0);
                 obj.put("msg",((ExecManagerResult)result).getOutput());
             }
             else {
-                obj.put("success",new Boolean(success));
+                obj.put("success",success);
                 if (result != null){
                     obj.put("msg",result);
                 }

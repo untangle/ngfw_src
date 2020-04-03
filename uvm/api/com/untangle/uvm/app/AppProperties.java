@@ -152,7 +152,7 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
 
     public int compareTo( AppProperties a )
     {
-        return new Integer(getViewPosition()).compareTo(a.getViewPosition());
+        return Integer.valueOf(getViewPosition()).compareTo(a.getViewPosition());
     }
 
     public int hashCode( )

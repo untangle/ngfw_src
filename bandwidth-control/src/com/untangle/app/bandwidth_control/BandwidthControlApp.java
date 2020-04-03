@@ -255,7 +255,7 @@ public class BandwidthControlApp extends AppBase
         BandwidthControlRule newRule1 = new BandwidthControlRule();
         BandwidthControlRuleAction newRule1Action = new BandwidthControlRuleAction();
         newRule1Action.setActionType(BandwidthControlRuleAction.ActionType.SET_PRIORITY);
-        newRule1Action.setPriority(new Integer(overQuotaPriority));
+        newRule1Action.setPriority(overQuotaPriority);
         BandwidthControlRuleCondition newRule1Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.HOST_QUOTA_EXCEEDED, "true");
         List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<>();
         newRule1matchers.add(newRule1Matcher);
@@ -305,7 +305,7 @@ public class BandwidthControlApp extends AppBase
         BandwidthControlRule newRule1 = new BandwidthControlRule();
         BandwidthControlRuleAction newRule1Action = new BandwidthControlRuleAction();
         newRule1Action.setActionType(BandwidthControlRuleAction.ActionType.SET_PRIORITY);
-        newRule1Action.setPriority(new Integer(overQuotaPriority));
+        newRule1Action.setPriority(overQuotaPriority);
         BandwidthControlRuleCondition newRule1Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.USER_QUOTA_EXCEEDED, "true");
         List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<>();
         newRule1matchers.add(newRule1Matcher);
