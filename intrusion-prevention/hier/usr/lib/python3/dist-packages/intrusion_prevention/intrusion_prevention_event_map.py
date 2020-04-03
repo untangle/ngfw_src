@@ -58,5 +58,5 @@ class IntrusionPreventionEventMap:
         Save event map
         """
         settings_file = open(self.file_name, "w")
-        json.dump(self.settings, settings_file, False, True, True, True, None, 0)
+        json.dump(self.settings, settings_file)
         settings_file.close()
