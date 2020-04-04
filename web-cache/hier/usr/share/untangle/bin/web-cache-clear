@@ -12,11 +12,14 @@ fi
 # Stop the Squid process
 systemctl stop squid
 
+# We set shutdown_lifetime 2 so sleep one second longer
+sleep 3
+
 # Wipe everything in the cache directory
 /bin/rm -r -f "$CACHE_DIR"/*
 
 # Regenerate the swap files
-/usr/sbin/squid -z
+/usr/sbin/squid -N -z
 
 # Start the Squid process
 systemctl start squid
