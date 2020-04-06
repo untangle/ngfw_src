@@ -1134,6 +1134,9 @@ public class EventManagerImpl implements EventManager
         JSONObject jsonObject = event.toJSONObject();
         JSONObject jsonSendObject = event.toJSONObject();
         cleanupJsonObject( jsonSendObject );
+        try{
+            jsonSendObject.put("class", event.getClass());
+        }catch(Exception e){}
 
         for ( SyslogRule rule : rules ) {
             if ( ! rule.getEnabled() )
