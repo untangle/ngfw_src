@@ -826,5 +826,22 @@ Ext.define('Ung.util.Util', {
         dots = ip.split('.');
         var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
+    },
+
+    /**
+     * Increment the passed IP
+     * @param  string ip      IP address to increment.
+     * @param  int inc        Number to increment by.
+     * @return string         Incremented IP address.
+     */
+    incrementIpAddr: function(ip, inc){
+        var dots = ip.split('.');
+        var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3])+inc;
+        dots = [];
+        dots.push(ipInteger >>> 24);
+        dots.push((ipInteger >>> 16) % 256);
+        dots.push((ipInteger >> 8) % 256);
+        dots.push(ipInteger % 256);
+        return dots.join('.');
     }
   });

@@ -92,6 +92,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         dataIndex: 'networks',
     }],
 
+    editorXtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
     editorFields: [{
         xtype: 'checkbox',
         fieldLabel: 'Enabled'.t(),

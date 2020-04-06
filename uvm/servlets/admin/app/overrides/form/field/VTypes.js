@@ -17,6 +17,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         positiveInteger: /^[0-9]+$/,
         domainNameRe: /^[a-zA-Z0-9\-_.]+$/,
         urlAddrRe: /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,63}(:[0-9]{1,5})?(\/.*)?$/,
+        cidrAddrRe: /^([0-9]{1,3}\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
         cidrBlockRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
         cidrBlockOnlyRangeRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-1]))$/
     },
@@ -227,6 +228,11 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         return true;
     },
     cidrBlockAreaText: 'Must be a one-per-line list of networks in CIDR format.'.t() + ' ' + '(192.168.123.0/24)',
+
+    cidrAddr:  function (v) {
+        return (this.mask.cidrAddrRe.test(v));
+    },
+    cidrAddrText: 'Must be an address in CIDR format where the last octet is not zero.'.t() + ' ' + '(192.168.123.1/24)',
 
     portMatcher: function (val) {
         switch (val) {
