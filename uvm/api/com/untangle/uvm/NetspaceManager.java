@@ -25,6 +25,10 @@ public interface NetspaceManager
 
     NetworkSpace isNetworkAvailable(String ownerName, IPMaskedAddress tester);
 
+    InetAddress getFirstUsableAddress(InetAddress networkAddress, Integer networkSize);
+
+    InetAddress getFirstUsableAddress(String networkText);
+
     /**
      * Stores details about a network address block
      *
