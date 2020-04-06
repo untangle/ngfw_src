@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.NetspaceManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.HookManager;
 import com.untangle.uvm.ExecManagerResult;
@@ -130,6 +131,7 @@ public class NetworkManagerImpl implements NetworkManager
             checkForNewDevices( readSettings );
             
             this.networkSettings = readSettings;
+            updateNetworkReservations(readSettings);
             configureInterfaceSettingsArray();
 
             /* 15.2 conversion */
@@ -224,6 +226,7 @@ public class NetworkManagerImpl implements NetworkManager
          * Change current settings
          */
         this.networkSettings = newSettings;
+        updateNetworkReservations(newSettings);
         configureInterfaceSettingsArray();
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
 
@@ -428,82 +431,6 @@ public class NetworkManagerImpl implements NetworkManager
         return intfSettings.getIsWan();
     }
 
-    /**
-     * returns a list of networks already used locally
-     * This can be used for verification of settings in app settings
-     * @param includeDynamic
-     * @param includeL2tp
-     * @param includeOpenvpn
-     * @return list
-     */
-    public List<IPMaskedAddress> getCurrentlyUsedNetworks( boolean includeDynamic, boolean includeL2tp, boolean includeOpenvpn )
-    {
-        List<IPMaskedAddress> addresses = new LinkedList<IPMaskedAddress>();
-        try {
-        
-            /**
-             * Add static v4 addresses
-             */
-            for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-                if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
-                    continue;
-                if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
-                    continue;
-                if ( intf.getV4StaticAddress() == null || intf.getV4StaticPrefix() == null )
-                    continue;
-
-                IPMaskedAddress intfma = new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() );
-                addresses.add( intfma );
-
-                for ( InterfaceSettings.InterfaceAlias alias : intf.getV4Aliases() ) {
-                    IPMaskedAddress aliasma = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
-                    addresses.add( aliasma );
-                }
-
-            }
-
-            /**
-             * Add dynamic v4 addresses
-             */
-            if ( includeDynamic ) {
-                for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-                    if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
-                        continue;
-                    if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.AUTO )
-                        continue;
-
-                    InetAddress address = getInterfaceStatus( intf.getInterfaceId() ).getV4Address();
-                    InetAddress netmask = getInterfaceStatus( intf.getInterfaceId() ).getV4Netmask();
-
-                    if ( address == null || netmask == null )
-                        continue;
-
-                    IPMaskedAddress intfma = new IPMaskedAddress( address, netmask );
-                    addresses.add( intfma );
-                }
-            }
-
-            if ( includeL2tp ) {
-                InetAddress l2tpAddress = getInterfaceStatus( 251 ).getV4Address();
-                InetAddress l2tpNetmask = getInterfaceStatus( 251 ).getV4Netmask();
-                if ( l2tpAddress != null && l2tpNetmask != null )
-                    addresses.add( new IPMaskedAddress ( l2tpAddress, l2tpNetmask ) );
-            }
-
-            if ( includeOpenvpn ) {
-                InetAddress openvpnAddress = getInterfaceStatus( 250 ).getV4Address();
-                InetAddress openvpnNetmask = getInterfaceStatus( 250 ).getV4Netmask();
-                if ( openvpnAddress != null && openvpnNetmask != null )
-                    addresses.add( new IPMaskedAddress ( openvpnAddress, openvpnNetmask ) );
-            }
-
-        } catch ( Exception e ) {
-            logger.warn( "Exception when computing local networks", e );
-        }
-        
-        return addresses;
-    }
-    
     /**
      * This method returns an address where the host should be able to access HTTP.
      * If HTTP is not reachable on this interface (like all WANs), it returns null.
@@ -2803,6 +2730,60 @@ public class NetworkManagerImpl implements NetworkManager
                 }
 
             }
+        }
+    }
+
+    /**
+     * Function to register all network address blocks configured in this
+     * application
+     *
+     * @param argSettings
+     *        - The application settings
+     */
+    private void updateNetworkReservations(NetworkSettings argSettings)
+    {
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+
+        // start by clearing all existing registrations
+        nsmgr.clearOwnerRegistrationAll("networking");
+
+        /**
+         * Add static v4 addresses
+         */
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
+                continue;
+            if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
+                continue;
+            if ( intf.getV4StaticAddress() == null || intf.getV4StaticPrefix() == null )
+                continue;
+
+            IPMaskedAddress intfma = new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() );
+            nsmgr.registerNetworkBlock("networking", "static-address", intfma);
+
+            for ( InterfaceSettings.InterfaceAlias alias : intf.getV4Aliases() ) {
+                IPMaskedAddress aliasma = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
+                nsmgr.registerNetworkBlock("networking", "static-alias", intfma);
+            }
+        }
+
+        /**
+         * Add dynamic v4 addresses
+         */
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            if ( intf.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
+                continue;
+            if ( intf.getV4ConfigType() != InterfaceSettings.V4ConfigType.AUTO )
+                continue;
+
+            InetAddress address = getInterfaceStatus( intf.getInterfaceId() ).getV4Address();
+            InetAddress netmask = getInterfaceStatus( intf.getInterfaceId() ).getV4Netmask();
+
+            if ( address == null || netmask == null )
+                continue;
+
+            IPMaskedAddress intfma = new IPMaskedAddress( address, netmask );
+            nsmgr.registerNetworkBlock("networking", "dynamic-address", intfma);
         }
     }
 }

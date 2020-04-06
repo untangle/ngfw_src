@@ -50,7 +50,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     },{
         fieldLabel: 'Address Space'.t(),
         xtype: 'textfield',
-        vtype: 'cidrBlockOnlyRanges',
+        vtype: 'cidrAddr',
         bind: {
             value: '{settings.addressPool}',
             disabled: '{settings.autoAddressAssignment}',

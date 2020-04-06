@@ -250,3 +250,52 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         return false;
     },
 });
+
+Ext.define('Ung.apps.wireguard-vpn.cmp.WireguardVpnTunnelRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
+
+    controller: 'unwireguardvpntunnelrecordeditorcontroller'
+});
+
+Ext.define('Ung.apps.wireguard-vpn.cmp.WireguardVpnTunnelRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unwireguardvpntunnelrecordeditorcontroller',
+
+    // Loop through the stored records to see if the passed ip
+    // address is already used
+    isAddrUsed: function(ip, store) {
+        var ret = false;
+        store.each(function(record,idx) {
+            if( record.get('peerAddress') == ip ){
+                ret = true;
+            }
+        });
+        return ret;
+    },
+
+    // Override onAfterRender so we can prepopulate the peerAddress field with the next
+    // available address from the wireguard tunnel address pool.  We loop through the
+    // existing tunnels to make sure we select an address that isn't already used.  After
+    // setting the peerAddress, we then call the default onAfterRender.
+    onAfterRender: function (view) {
+        var grid = this.mainGrid, vm = this.getViewModel();
+        var addressPool = grid.up('panel').up('apppanel').getViewModel().get('settings.addressPool');
+        var pool = addressPool.split("/")[0];
+
+        // Assume the first pool address is used by the wg interface
+        var nextPoolAddr = Util.incrementIpAddr(pool, 2);
+
+        var store = grid.getStore();
+        while (this.isAddrUsed(nextPoolAddr, store)) {
+            nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
+        }
+
+        var record = vm.get('record');
+        if(record.get('markedForNew')) {
+            record.set('peerAddress', nextPoolAddr);
+        }
+
+        this.callParent([view]);
+    }
+});

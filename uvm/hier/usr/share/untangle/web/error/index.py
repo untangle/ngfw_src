@@ -7,7 +7,9 @@ import sys
 
 from mod_python import apache
 
-sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+
 import uvm_login
 
 gettext.bindtextdomain('untangle-apache2-config')

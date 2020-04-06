@@ -1295,6 +1295,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.systemManager = new SystemManagerImpl();
 
+        this.netspaceManager = new NetspaceManagerImpl();
+
         this.networkManager = new NetworkManagerImpl();
 
         this.conntrackMonitor = ConntrackMonitorImpl.getInstance();
@@ -1327,8 +1329,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.googleManager = new GoogleManagerImpl();
 
         this.geographyManager = new GeographyManagerImpl();
-
-        this.netspaceManager = new NetspaceManagerImpl();
 
         this.daemonManager = new DaemonManagerImpl();
 
