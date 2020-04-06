@@ -200,4 +200,32 @@ public class NetspaceManagerImpl implements NetspaceManager
         // no conflicts found so return null
         return null;
     }
+
+    /**
+     * Called to get the first usable address in an address space
+     *
+     * @param networkAddress
+     *        The network address
+     * @param networkSize
+     *        The network size
+     * @return The first usable IP address
+     */
+    public InetAddress getFirstUsableAddress(InetAddress networkAddress, Integer networkSize)
+    {
+        IPMaskedAddress tester = new IPMaskedAddress(networkAddress, networkSize);
+        return tester.getFirstMaskedAddress();
+    }
+
+    /**
+     * Called to get the first usable address in an address space
+     *
+     * @param networkText
+     *        The network in CIDR format
+     * @return The first usable IP address
+     */
+    public InetAddress getFirstUsableAddress(String networkText)
+    {
+        IPMaskedAddress tester = new IPMaskedAddress(networkText);
+        return tester.getFirstMaskedAddress();
+    }
 }
