@@ -136,8 +136,7 @@ public class SyslogManagerImpl
         }
 
         // restart syslog
-        File pidFile = new File("/var/run/rsyslogd.pid");
-        if (pidFile.exists()) UvmContextFactory.context().execManager().exec("systemctl restart rsyslog");
+        UvmContextFactory.context().execManager().exec("systemctl restart rsyslog");
     }
 
     /**
