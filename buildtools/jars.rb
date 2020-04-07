@@ -84,11 +84,12 @@ class Jars
                              Jars.downloadTarget('commons-io-1.1/commons-io-1.1.jar'),
                              Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
 
-    const_set(:Selenium, [ Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/selenium-java-2.53.0.jar'),
-                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/gson-2.3.1.jar'),
-                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/guava-19.0.jar'),
-                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-exec-1.3.jar'),
-                           Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-logging-1.2.jar')])
+    const_set(:Selenium, [ Jars.downloadTarget('selenium-java-3.141.59/client-combined-3.141.59.jar'),
+                           Jars.downloadTarget('selenium-java-3.141.59/libs/byte-buddy-1.8.15.jar'),
+                           Jars.downloadTarget('selenium-java-3.141.59/libs/guava-25.0-jre.jar'),
+                           Jars.downloadTarget('selenium-java-3.141.59/libs/commons-exec-1.3.jar'),
+                           Jars.downloadTarget('selenium-java-3.141.59/libs/okhttp-3.11.0.jar'),
+                           Jars.downloadTarget('selenium-java-3.141.59/libs/okio-1.14.0.jar')])
     
     const_set(:Jstl, [ Jars.downloadTarget('apache-taglibs-standard-1.2.5/taglibs-standard-impl-1.2.5.jar'),
                        Jars.downloadTarget('apache-taglibs-standard-1.2.5/taglibs-standard-spec-1.2.5.jar'),
