@@ -4,9 +4,8 @@ import json
 import sys
 import os
 
-UNTANGLE_DIR = '%s/usr/lib/python%d.%d/dist-packages' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
-if ( "@PREFIX@" != ''):
-    sys.path.insert(0, UNTANGLE_DIR)
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
 
 import pem
 

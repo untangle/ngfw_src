@@ -484,7 +484,7 @@ while True:
         pid_file.write(str(uvm_pid)+"\n");
 
     # adjust oom value to that the kernel will kill java when out of memory
-    procset('/proc/%i/oom_adj'%uvm_pid,'15',True);
+    procset('/proc/%i/oom_score_adj'%uvm_pid,'15',True);
 
     # start the monitoring thread
     monitor_thread = threading.Thread(target=monitor_uvm, args=(uvm_pid,))

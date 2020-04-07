@@ -10,7 +10,9 @@ from StringIO import StringIO
 
 from mod_python import apache, Session, util
 
-sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
+if "@PREFIX@" != '':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+
 import uvm_login
 
 def get_app_settings_item(a,b):

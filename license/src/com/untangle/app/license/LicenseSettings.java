@@ -18,7 +18,7 @@ import com.untangle.uvm.app.License;
 @SuppressWarnings("serial")
 public class LicenseSettings implements Serializable, JSONString
 {
-    private Integer settingsVersion = new Integer(1);
+    private Integer settingsVersion = 1;
 
     private List<License> licenses;
     

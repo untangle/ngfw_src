@@ -65,7 +65,7 @@ public class WebFilterUnblockerServlet extends HttpServlet
                 return;
             }
 
-            if (app.unblockSite(nonce, global, password)) {
+            if (app.unblockNonce(nonce, global, password)) {
                 response.getOutputStream().println("<success/>");
             } else {
                 response.getOutputStream().println("<failure/>");

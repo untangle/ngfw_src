@@ -92,6 +92,10 @@ public class WebFilterDecisionEngine extends DecisionEngine
         if (!isLicenseValid()) {
             return null;
         } else {
+
+            // The WebFilterDecisionEngine runs the Base class DecisionEngine here, this is important as the Base Decision Engine can return null 
+            // while the WebFilterDecision engine can still return a redirect.
+            
             HttpRedirect redirect = super.checkRequest(sess, clientIp, port, requestLine, header);
             if(redirect != null){
                 return redirect;
@@ -99,6 +103,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
 
                 if (term != null) {
+
+                    // if a term is unblocked, pass regardless of settings
+                    if(super.isItemUnblocked(term, clientIp)) {
+
+                        WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, getApp().getName());
+                        logger.debug("LOG: term "+ term + " in unblock list: " + requestLine.getRequestLine());
+                        getApp().logEvent(hbqe);
+                        return null;
+                    }
+
                     GenericRule matchingRule = null;
                     for (GenericRule rule : ourApp.getSettings().getSearchTerms()) {
                         if (rule.getEnabled() != null && !rule.getEnabled()) continue;
@@ -129,7 +143,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                         }
                     }
 
-                    WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, getApp().getName());
+                    WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, (matchingRule != null && matchingRule.getBlocked()) ? Reason.BLOCK_SEARCH_TERM : Reason.DEFAULT, getApp().getName());
                     getApp().logEvent(hbqe);
 
                     if( matchingRule != null ||
@@ -159,7 +173,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                                 return ( new HttpRedirect(
                                     ourApp.generateBlockResponse(
-                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle()), 
+                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle(), Reason.BLOCK_SEARCH_TERM, term), 
                                         sess, uri.toString(), header),
                                     HttpRedirect.RedirectType.BLOCK));
                             } else {
@@ -176,7 +190,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
                                 return ( new HttpRedirect(
                                     ourApp.generateRedirectResponse(
-                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle()), 
+                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle(), Reason.REDIRECT_KIDS, term), 
                                             sess, uri.toString(), header, 
                                             SearchEngine.KidFriendlySearchEngineRedirectUri, SearchEngine.getKidFriendlyRedirectParameters(term)),
                                     HttpRedirect.RedirectType.REDIRECT));

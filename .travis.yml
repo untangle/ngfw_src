@@ -9,17 +9,18 @@ services:
 env:
   global:
     - SSH_KEY: /tmp/travis-buildbot.rsa
-  jobs:
-    - REPOSITORY: stretch
-      DISTRIBUTION: current
-      PKGTOOLS_COMMIT: origin/master
-    - REPOSITORY: buster
-      DISTRIBUTION: current
-      PKGTOOLS_COMMIT: origin/master
+      PACKAGE_SERVER_IP: 173.14.28.193
+      REPOSITORY: buster
+      PKGTOOLS_COMMIT: origin/${TRAVIS_BRANCH}
       UPLOAD: scp
+      VERBOSE: 1
+      DEBUG: 1
+  jobs:
+    - ARCHITECTURE: amd64
+    - ARCHITECTURE: i386
 
 before_install:
-- docker pull untangleinc/ngfw:${REPOSITORY}-build
+- docker pull untangleinc/ngfw:${REPOSITORY}-build-${ARCHITECTURE}
 - openssl aes-256-cbc -K $encrypted_760a309a5163_key -iv $encrypted_760a309a5163_iv -in .travis/buildbot.rsa.enc -out ${SSH_KEY} -d
 - chmod 600 ${SSH_KEY}
 
@@ -31,6 +32,6 @@ notifications:
   email: false
   slack:
     rooms:
-      secure: "Gtt3QGEGRFjVGc5/U60CRQy0ayHClOxNHQIpn2fc2bh4rWdplWQTtMg1KV62/bhX9wZ4//jfjAvtxKSUPa4oAnxOyatdQOLir5+1NFY/2pGgB6ZJDm8duJ2/o4oZCrwxS547jVkBpHz+AMjD9qESeS0NGEC1aM1Hp7xztkHK8/0KAVXgT9xreD41pwXiFU4GoCGCVN8F4ycAXL68Bt2dhsbSmbzRs5NHBg1EUvTUIqJtslKqqTrGB9iK6MdROoianZRcsrXB4KRSXwYFE2bZu7zrilZQQ1HCYGNfN2mNA8C3eVb+3t2ggz1tGoZ8IkfZSy+V8XhAafMtkaB1DJx2N3KufK0Tw7Uv28FwCiHnBN6YRRqKgw1c1wso6IdqIdhXJYV48mxYSFEuhZM+u4f5xUsOtEuE/BnxT9WE7aAf0BrKTXjsjRhlYQrvYo6gyp7WuFQZ7232REgiV3VWTRyaZWKhIc6IJY0UBS20CW6w+S0wq2bAnFIm+Lfidi3NX6Bf+o1AUpTL9qlqOHQHPZc1Q1uLRybxhkyVI7mk1U7AyGjTsABKteelKDIy47vvjb3I8ZxRAU+KutXT/07LTE4ORy7tqxbKpsnATBO0BgNynCezyOWL9i9g1DiQLTpnhxB2AIB/PCcJ3YQzJNbl9fB41GJPJy1kdtHo9O/rRR9vf8c="
+      secure: r9fH3mBG95DE3kiaKs+O/1HzCt7bn0FgWrkzmS2jlsszSsp3E49KTfH/3O/BEXVqxY+JN6C+6YfJyH5OcdGu7dks+/AxRVCj6sK6vT5XgTZIBr1HXSkgmoqiZKk93pLKYZCJJ7vcslUXIlVPWmJc1lef+Ou4lR5Tx7p160YBm9I9NO+AuSZQByVGCU27+Vioac2AWytZPmP19TAGx1ymP/RnOSppfpon3bEvx1KiJXsftTrgR6B89PKygd04BLrWlqEDUwt/D+jxraXKhOtI9I7CNp8OIicAgvJMsIk31NsIhTRJgBH/+DAnCIUdo1v4x7uAvngisJJGuqMNP6L3IyOJTmZDh05bM6EhL02e7lND7RVYOedfN7Ru8mZs7TpoLePjeDCN/2zgyEIwRvDlMeDFwufm+q2xxa/uHUCUw/oSxTPlycvUGoL+kk8m1lCUW+Gltwux01nuP+MeUSOTPBNBMCay3qVFHQhgSEoo0tE2m7jBcbtFP6qskyXShsww0v9XGqtGp04ENS1GIpajEQqdo9HcJUQqw3bKwfIuWUlVoaCYXREEPB5cS7B1RlYhpqbNle7MZC9vBywXzZM4q7CrolhZ46MKiXmpAmnYRsgAlG+OUDv2bDCMumHlsYTqio87M6s1XMITHStRZWBhMFvk6TL9yuLDrGXgbDTFtUs=
     on_success: change
     on_failure: always

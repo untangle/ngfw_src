@@ -15,7 +15,7 @@ UNZIP=unzip
 #* EDIT HERE WHEN ADDING, UPGRADING, OR REMOVING.
 ###############################################################################
 tarballs_gz=apache-ant-1.6.5.tar.gz \
-	apache-tomcat-8.0.32-embed.tar.gz \
+	apache-tomcat-8.5.53-embed.tar.gz \
 	logging-log4j-1.2.16.tar.gz \
 	velocity-1.4.tar.gz \
 	commons-fileupload-1.1.tar.gz \
@@ -30,7 +30,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 tarballs_bz2=
 
 zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip \
-	jradius-client-1.1.4-release.zip jakarta-taglibs-standard-1.1.2.zip \
+	jradius-client-1.1.4-release.zip apache-taglibs-standard-1.2.5.zip \
 	selenium-java-2.53.0.zip geoip2-2.6.0-with-dependencies.zip
 
 jars=gettext-commons-0.9.1.jar postgresql-9.4-1201.jdbc4.jar \

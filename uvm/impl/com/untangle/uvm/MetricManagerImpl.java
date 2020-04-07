@@ -438,7 +438,7 @@ public class MetricManagerImpl implements MetricManager
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader("/proc/net/dev"));
-            Integer i = new Integer(0);
+            Integer i = 0;
 
             for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
                 Matcher matcher = NET_DEV_PATTERN.matcher(l);
@@ -540,7 +540,7 @@ public class MetricManagerImpl implements MetricManager
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader("/proc/diskstats"));
-            Integer i = new Integer(0);
+            Integer i = 0;
             for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
                 Matcher matcher = DISK_STATS_PATTERN.matcher(l);
                 if (matcher.find()) {

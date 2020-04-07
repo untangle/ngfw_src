@@ -117,6 +117,8 @@ public class TomcatManagerImpl implements TomcatManager
         ctx.setAttribute("threadRequest", threadRequest);
 
         ctx = loadServlet("/blockpage", "blockpage");
+
+        ctx = loadServlet("/gdrive", "gdrive");
     }
 
     /**

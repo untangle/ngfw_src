@@ -11,6 +11,8 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import org.json.JSONObject;
+
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
@@ -28,7 +30,7 @@ public class SyslogManagerImpl
     public static final String LOG_TAG_PREFIX = LOG_TAG + "[0]: ";
 
     private static final File CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
-    private static final String CONF_LINE = ":msg, startswith, \" " + LOG_TAG + "\\[\" @";
+    private static final String CONF_LINE = "if $msg startswith ' " + LOG_TAG + "[' then @";
 
     private static boolean enabled;
 
@@ -54,15 +56,17 @@ public class SyslogManagerImpl
      * 
      * @param e
      *        The event
+     * @param jsonEvent
+     *        The event in JSON format.
      */
-    public static void sendSyslog(LogEvent e)
+    public static void sendSyslog(LogEvent e, JSONObject jsonEvent)
     {
         if (!enabled) {
             return;
         }
 
         try {
-            logger.log(org.apache.log4j.Level.INFO, e.getTag() + " " + e.toJSONString());
+            logger.log(org.apache.log4j.Level.INFO, e.getTag() + " " + jsonEvent);
         } catch (Exception exn) {
             logger.warn("Failed to syslog Event: " + e, exn);
         }
@@ -132,8 +136,7 @@ public class SyslogManagerImpl
         }
 
         // restart syslog
-        File pidFile = new File("/var/run/rsyslogd.pid");
-        if (pidFile.exists()) UvmContextFactory.context().execManager().exec("systemctl restart rsyslog");
+        UvmContextFactory.context().execManager().exec("systemctl restart rsyslog");
     }
 
     /**

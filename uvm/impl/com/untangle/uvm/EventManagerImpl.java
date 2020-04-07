@@ -194,20 +194,21 @@ public class EventManagerImpl implements EventManager
      *
      * @param rule    EventRule to process.
      * @param classes List of classes to add to and check.
+     * @return boolean if true, this rule wants to match on all classes, otherwise false.
      */
-    private void buildClassesToProcessRules(EventRule rule, List<String> classes){
-        if(!rule.getEnabled()){
-            return;
-        }
+    private boolean buildClassesToProcessRules(EventRule rule, List<String> classes){
+        Boolean classFound = false;
         String fieldValue = null;
         for(EventRuleCondition condition: rule.getConditions()){
             if(condition.getField().equals("class") || condition.getField().equals("javaClass")){
                 fieldValue = condition.getFieldValue();
+                classFound = true;
                 if(!classes.contains(fieldValue)){
                     classes.add(fieldValue);
                 }
             }
         }
+        return classFound == false;
     }
 
     /**
@@ -216,14 +217,35 @@ public class EventManagerImpl implements EventManager
     private void buildClassesToProcess(){
         LinkedList<String> classes = new LinkedList<>();
 
-        for(EventRule rule : Stream.of(settings.getAlertRules(), settings.getSyslogRules(), settings.getTriggerRules())
+        Boolean allClasses = false;
+        for(EventRule rule : Stream.of(settings.getAlertRules(), settings.getTriggerRules())
                             .flatMap(Collection::stream)
                             .collect(Collectors.toList()) ){
-            buildClassesToProcessRules(rule, classes);
+            if(rule.getEnabled()){
+                allClasses = buildClassesToProcessRules(rule, classes);
+            }
+            if(allClasses == true){
+                break;
+            }
+        }
+
+        // NOTE: Make sure syslog processing comes last.
+        if(settings.getSyslogEnabled() && allClasses == false){
+            for(EventRule rule : settings.getSyslogRules()){
+                if(rule.getEnabled()){
+                    allClasses = buildClassesToProcessRules(rule, classes);
+                }
+                if(allClasses == true){
+                    break;
+                }
+            }
+        }
+        if(allClasses == true){
+            classes.clear();
         }
 
         synchronized (classesToProcess) {
-            classesToProcess = Pattern.compile(GlobUtil.globToRegex(String.join("|", classes) ));
+            classesToProcess = Pattern.compile(GlobUtil.globToRegex(classes.size() == 0 ? "*" : String.join("|", classes) ));
         }
     }
 
@@ -631,7 +653,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "cClientAddr" );
         eventRule.setTagName( "suspicious" );
-        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
+        eventRule.setTagLifetimeSec( (long) (60*30) ); // 30 minutes
         rules.add( eventRule );
         
         conditions = new LinkedList<>();
@@ -643,7 +665,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "proxy-use" );
-        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
+        eventRule.setTagLifetimeSec( (long) (60*30) ); // 30 minutes
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
@@ -655,7 +677,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.CClientAddr" );
         eventRule.setTagName( "bittorrent-usage" );
-        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+        eventRule.setTagLifetimeSec( (long) (60*5) ); // 5 minutes
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
@@ -667,7 +689,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "bittorrent-usage" );
-        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+        eventRule.setTagLifetimeSec( (long) (60*5) ); // 5 minutes
         rules.add( eventRule );
         
         return rules;
@@ -1132,20 +1154,26 @@ public class EventManagerImpl implements EventManager
             return;
 
         JSONObject jsonObject = event.toJSONObject();
-        cleanupJsonObject( jsonObject, true );
+        JSONObject jsonSendObject = event.toJSONObject();
+        cleanupJsonObject( jsonSendObject );
+        try{
+            jsonSendObject.put("class", event.getClass());
+        }catch(Exception e){}
 
         for ( SyslogRule rule : rules ) {
-            if ( ! rule.getEnabled() )
+            if ( ! rule.getEnabled() ){
                 continue;
-            if ( ! rule.isMatch( jsonObject ) ) 
+            }
+            if ( ! rule.isMatch( jsonObject ) ){
                 continue;
+            }
 
             logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
             event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
             if ( rule.getSyslog() ) {
                 try {
-                    SyslogManagerImpl.sendSyslog( event );
+                    SyslogManagerImpl.sendSyslog( event, jsonSendObject );
                 } catch (Exception exn) {
                     logger.warn("failed to send syslog", exn);
                 }

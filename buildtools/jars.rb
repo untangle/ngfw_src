@@ -48,17 +48,17 @@ class Jars
                                'tomcat-embed-core.jar',
                                'tomcat-embed-el.jar',
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
               end)
 
-    const_set(:TomcatServer, ['ecj-4.4.2.jar',
+    const_set(:TomcatServer, ['ecj-4.6.3.jar',
                             ].map do |n|
-                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
               end)
 
     const_set(:TomcatLogging, ['tomcat-embed-logging-log4j.jar',
                          ].map do |n|
-                Jars.downloadTarget("apache-tomcat-8.0.32-embed/#{n}")
+                Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
              end)
 
     const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-logging-1.2.jar')] +  TomcatLogging)
@@ -90,8 +90,10 @@ class Jars
                            Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-exec-1.3.jar'),
                            Jars.downloadTarget('selenium-java-2.53.0/selenium-2.53.0/libs/commons-logging-1.2.jar')])
     
-    const_set(:Jstl, [ Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/jstl.jar'),
-                       Jars.downloadTarget('jakarta-taglibs-standard-1.1.2/jakarta-taglibs-standard-1.1.2/lib/standard.jar') ])
+    const_set(:Jstl, [ Jars.downloadTarget('apache-taglibs-standard-1.2.5/taglibs-standard-impl-1.2.5.jar'),
+                       Jars.downloadTarget('apache-taglibs-standard-1.2.5/taglibs-standard-spec-1.2.5.jar'),
+                       Jars.downloadTarget('apache-taglibs-standard-1.2.5/taglibs-standard-jstlel-1.2.5.jar'),
+                       Jars.downloadTarget('apache-taglibs-standard-1.2.5/taglibs-standard-compat-1.2.5.jar') ])
 
     const_set(:GeoIP, [ Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-annotations-2.7.0.jar'),
                            Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-databind-2.7.0.jar'),

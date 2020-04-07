@@ -56,9 +56,4 @@ public interface DirectoryConnector
      * Authenticate a user using any authentication method
      */
     public boolean anyAuthenticate( String username, String group );
-
-    /**
-     * Return true if Google Drive is configured, false otherwise
-     */
-    public boolean isGoogleDriveConnected();
 }
