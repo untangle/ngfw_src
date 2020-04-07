@@ -47,6 +47,8 @@ class Jars
     const_set(:TomcatCommon, [ 'tomcat-embed-jasper.jar',
                                'tomcat-embed-core.jar',
                                'tomcat-embed-el.jar',
+                               'tomcat-embed-websocket.jar',
+                               'annotations-api.jar',
                             ].map do |n|
                 Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
               end)
@@ -56,12 +58,8 @@ class Jars
                 Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
               end)
 
-    const_set(:TomcatLogging, ['tomcat-embed-logging-log4j.jar',
-                         ].map do |n|
-                Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
-             end)
 
-    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-logging-1.2.jar')] +  TomcatLogging)
+    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-logging-1.2.jar')])
 
     ## Miscellaneous Jars
     const_set(:JavaMail, [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ])
