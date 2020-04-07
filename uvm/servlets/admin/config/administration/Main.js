@@ -22,6 +22,7 @@ Ext.define('Ung.config.administration.Main', {
         { xtype: 'config-administration-admin' },
         { xtype: 'config-administration-certificates' },
         { xtype: 'config-administration-snmp' },
-        { xtype: 'config-administration-skins' }
+        { xtype: 'config-administration-skins' },
+        { xtype: 'config-administration-google' },
     ]
 });

@@ -569,7 +569,7 @@ public class License implements Serializable
     {
         long now = (System.currentTimeMillis() / 1000);
         int days = ((int) (getEnd() - now)) / (60 * 60 * 24);
-        return new Integer(days);
+        return days;
     }
 
     /**

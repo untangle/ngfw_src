@@ -41,7 +41,7 @@ public class AddressCalculator
 
         String symbolicIP = st[0];
         String symbolicCIDR = st[1];
-        Integer numericCIDR = new Integer(symbolicCIDR);
+        Integer numericCIDR = Integer.valueOf(symbolicCIDR);
         if (numericCIDR > 32) {
             throw new NumberFormatException("CIDR can not be greater than 32");
         }

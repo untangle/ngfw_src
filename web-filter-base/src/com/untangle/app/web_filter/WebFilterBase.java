@@ -11,6 +11,7 @@ import java.util.LinkedList;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -272,7 +273,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        The password
      * @return Result
      */
-    public boolean unblockSite(String nonce, boolean global, String password)
+    public boolean unblockNonce(String nonce, boolean global, String password)
     {
         if (!this.verifyPassword(password)) {
             if (logger.isInfoEnabled()) {
@@ -283,7 +284,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             if (logger.isInfoEnabled()) {
                 logger.info("Verified the password for nonce: '" + nonce + "'");
             }
-            return unblockSite(nonce, global);
+            return unblockNonce(nonce, global);
         }
     }
 
@@ -386,7 +387,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     }
 
     /**
-     * Unblock a site
+     * Unblock a site or search term based on nonce
      * 
      * @param nonce
      *        The nonce
@@ -394,7 +395,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        Global flag
      * @return Result of the operation
      */
-    public boolean unblockSite(String nonce, boolean global)
+    public boolean unblockNonce(String nonce, boolean global)
     {
         WebFilterRedirectDetails bd = replacementGenerator.removeNonce(nonce);
 
@@ -421,37 +422,56 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                 logger.warn("cannot unblock null host");
                 return false;
             } else {
-                logger.warn("permanently unblocking site: " + site);
-                GenericRule sr = new GenericRule(site, site, "user unblocked", "unblocked by user", true);
-                settings.getPassedUrls().add(sr);
-                _setSettings(settings);
+                if(bd.getBlockType() == Reason.BLOCK_SEARCH_TERM) {
+                    String term = bd.getBlockVal();
+                    logger.info("Permanently unblocking search term: " + term);
 
-                return true;
+                    // Find the generic rule that blocked the term and disable
+                    Optional<GenericRule> termRule = settings.getSearchTerms().stream().filter(u -> u.getString().equalsIgnoreCase(term)).findFirst();
+
+                    if(termRule.isPresent()) {
+                        GenericRule rule = termRule.get();
+                        rule.setBlocked(false);
+                        rule.setDescription(rule.getDescription() + " - Unblocked by user");
+                        rule.setCategory("user unblocked");
+                    }
+
+                    return true;
+                } else {
+                    logger.warn("permanently unblocking site: " + site);
+                    GenericRule sr = new GenericRule(site, site, "user unblocked", "unblocked by user", true);
+                    settings.getPassedUrls().add(sr);
+                    _setSettings(settings);
+
+                    return true;
+                }
             }
         } else {
-            String site = bd.getUnblockHost();
-            if (null == site) {
-                logger.warn("cannot unblock null host");
-                return false;
-            } else {
-                logger.info("Temporarily unblocking site: " + site);
-                InetAddress addr = bd.getClientAddress();
+                Reason blockType = bd.getBlockType();
+                String blockVal = bd.getBlockVal();
 
-                unblockedSitesMonitor.addUnblockedSite(addr, site);
-                getDecisionEngine().addUnblockedSite(addr, site);
-
-                return true;
-            }
+                if (null == blockVal) {
+                    logger.warn("cannot unblock null host");
+                    return false;
+                } else {
+                    logger.info("Temporarily unblocking "+ blockType + " : " + blockVal);
+                    InetAddress addr = bd.getClientAddress();
+    
+                    unblockedSitesMonitor.addUnblockedItem(addr, blockVal, blockType);
+                    getDecisionEngine().addUnblockedItem(addr, blockVal, blockType);
+    
+                    return true;
+                }
         }
     }
 
     /**
      * Flush all unblocked sites
      */
-    public void flushAllUnblockedSites()
+    public void flushAllUnblockedItems()
     {
-        logger.warn("Flushing all Unblocked sites...");
-        getDecisionEngine().removeAllUnblockedSites();
+        logger.warn("Flushing all Unblocked items...");
+        getDecisionEngine().removeAllUnblockedItems();
     }
 
     /**
@@ -965,7 +985,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        getDecisionEngine().removeAllUnblockedSites();
+        getDecisionEngine().removeAllUnblockedItems();
         unblockedSitesMonitor.start();
     }
 
@@ -1007,7 +1027,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     protected void postStop(boolean isPermanentTransition)
     {
         unblockedSitesMonitor.stop();
-        getDecisionEngine().removeAllUnblockedSites();
+        getDecisionEngine().removeAllUnblockedItems();
     }
 
     /**

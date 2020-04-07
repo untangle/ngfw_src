@@ -4,6 +4,9 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/default.mk
 
+DPKG_EXPORT_BUILDTOOLS = 1
+-include /usr/share/dpkg/buildtools.mk
+
 %:
 	dh $@ 
 
@@ -13,7 +16,7 @@ override_dh_gencontrol:
 override_dh_clean:
 	rm -f *-stamp
 	dh_clean
-	rake clean
+	rake clean || true
 
 override_dh_build-arch:
 	rake builduvmcore

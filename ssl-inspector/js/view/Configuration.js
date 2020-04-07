@@ -39,26 +39,6 @@ Ext.define('Ung.apps.sslinspector.view.Configuration', {
             columnWidth: 1,
             value: "Click here to download the root certificate.".t(),
         }]
-    },{
-        xtype: 'fieldset',
-        layout: 'column',
-        items: [{
-            xtype: 'button',
-            margin: '0 5 0 5',
-            width: 250,
-            text: "Download Root Certificate Installer".t(),
-            iconCls: 'fa fa-download',
-            handler: Ext.bind(function() {
-                var downloadForm = document.getElementById('downloadForm');
-                downloadForm["type"].value = "root_certificate_installer_download";
-                downloadForm.submit();
-            }, this)
-        },{
-            xtype: 'component',
-            margin: '0 5 0 5',
-            columnWidth: 1,
-            html: "Click here to download the root certificate installer.  It installs the root certificate appropriately on a Windows device.".t()
-        }]
     }, {
         title: "Options".t(),
         xtype: 'fieldset',

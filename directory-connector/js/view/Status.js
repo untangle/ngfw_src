@@ -16,7 +16,7 @@ Ext.define('Ung.apps.directoryconnector.view.Status', {
             cls: 'app-desc',
             html: '<img src="/icons/apps/directory-connector.svg" width="80" height="80"/>' +
                 '<h3>Directory Connector</h3>' +
-                '<p>' + 'Directory Connector allows integration with external directories and services, such as Active Directory, RADIUS, or Google.'.t() + '</p>'
+                '<p>' + 'Directory Connector allows integration with external directories and services, such as Active Directory and RADIUS.'.t() + '</p>'
         }, {
             xtype: 'applicense',
             hidden: true,

@@ -1,10 +1,11 @@
 version: '3'
+
 services:
     pkgtools:
       image: untangleinc/pkgtools
       environment:
-        - PKGTOOLS_URL=${PKGTOOLS_URL:-https://github.com/untangle/ngfw_pkgtools}
-        - PKGTOOLS_COMMIT=${PKGTOOLS_COMMIT:-origin/master}
+        PKGTOOLS_URL: ${PKGTOOLS_URL:-https://github.com/untangle/ngfw_pkgtools}
+        PKGTOOLS_COMMIT: ${PKGTOOLS_COMMIT:-origin/master}
       volumes:
         - pkgtools:/opt/untangle/ngfw_pkgtools
       entrypoint: >
@@ -13,26 +14,37 @@ services:
         git fetch -a &&
         git clean -f -d &&
         git reset --hard &&
-        git checkout $${PKGTOOLS_COMMIT}"
+        git checkout $${PKGTOOLS_COMMIT} || true"
 
     build:
-      image: untangleinc/ngfw:${REPOSITORY:-stretch}-build
+      image: untangleinc/ngfw:${REPOSITORY:-buster}-build-${ARCHITECTURE:-amd64}
       environment:
-        - REPOSITORY=${REPOSITORY:-stretch}
-        - DISTRIBUTION=${DISTRIBUTION:-current}
-        - VERBOSE=${VERBOSE} # defaults to empty: "not verbose"
-        - PACKAGE=${PACKAGE} # defaults to empty: "all packages"
+        REPOSITORY: ${REPOSITORY:-buster}
+        DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
+        ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
+        VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
+        PACKAGE: ${PACKAGE} # defaults to empty: "all packages"
+        DEBUG: ${DEBUG} # defaults to empty: "no debugging"
+        SSH_KEY: ${SSH_KEY} # defaults to empty: "no key"
+        NO_CLEAN: ${NO_CLEAN} # defaults to empty: "do clean"
         # empty: "no upload" (default)
         # scp: use scp method for dput
         # ftp: use ftp method for dput
-        - UPLOAD=${UPLOAD}
+        UPLOAD: ${UPLOAD}
+        # empty: "do not force the build when that version is already
+        # present on the target mirror (default)"
+        FORCE: ${FORCE}
+        TRAVIS_BRANCH: ${TRAVIS_BRANCH:-master}
+        TRAVIS_PULL_REQUEST:
+      privileged: ${PRIVILEGED:-false}
       extra_hosts:
-        # from the inside, pass package-server's internal IP instead
-        - "package-server:${PACKAGE_SERVER_IP:-173.14.28.193}"
+        # from the outside, pass package-server's outside IP instead
+        - "package-server:${PACKAGE_SERVER_IP:-10.112.11.105}"
       volumes:
         - .:/opt/untangle/build
         - pkgtools:/opt/untangle/ngfw_pkgtools:ro
         - /tmp/travis-buildbot.rsa:/tmp/travis-buildbot.rsa
+        - /etc/apt/apt.conf.d/01proxy:/etc/apt/apt.conf.d/01proxy
 
 volumes:
   pkgtools:

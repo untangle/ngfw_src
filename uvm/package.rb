@@ -21,7 +21,7 @@ uvm.registerTarget('hier2', cf)
 ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/share/untangle/pycli/") ]
 cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
 uvm.registerTarget('python-jsonrpc', cf)
-ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/lib/python2.7/") ]
+ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/lib/python2.7/dist-packages/") ]
 cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
 uvm.registerTarget('python-jsonrpc2', cf)
 
@@ -49,11 +49,13 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", ["uvm/servlets
 
 deps=[]
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.admin.servlet", ["./uvm/servlets/admin"], deps)
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.gdrive.servlet", ["./uvm/servlets/gdrive"], deps)
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", ["./uvm/servlets/setup"], deps)
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.admin.servlet", ["./uvm/servlets/admin"], deps + Jars::Jstl)
 
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', ["./uvm/servlets/blockpage"], deps, [], [])
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", ["./uvm/servlets/setup"], deps + Jars::Jstl)
+
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', ["./uvm/servlets/blockpage"], deps + Jars::Jstl, [], [])
 
 BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib", nil, true)
 

@@ -135,16 +135,20 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
          */
         public String getAdditionalFields(Map<String, String> i18n_map)
         {
+            String returnFields = "<p><strong>" + I18nUtil.tr("Details:", i18n_map) + "</strong> \""+this.blockDetails.getBlockVal() + "\" " + I18nUtil.tr(this.blockDetails.getBlockType().getReason(), i18n_map) + "</p><br>";
+
             if ("None".equals(getUnblockMode())) {
-                return null;
+               return returnFields;
             }
 
             if (this.getBlockDetails().getSettings().getUnblockPasswordEnabled() == false) {
-                return null;
+                return returnFields;
             }
 
             String errorText = I18nUtil.tr("The password you entered is incorrect.", i18n_map);
-            return "<div class=\"u-form-item\"><label class=\"u-form-item-label\">Password:</label><input class=\"u-form-text u-form-field\" type=\"password\" id=\"unblockPassword\"/></div><div id=\"invalid-password\" style=\"display: none\">" + errorText + "</div>";
+            returnFields += "<div class=\"u-form-item\"><label class=\"u-form-item-label\">Password:</label><input class=\"u-form-text u-form-field\" type=\"password\" id=\"unblockPassword\"/></div><div id=\"invalid-password\" style=\"display: none\">" + errorText + "</div>";
+
+            return returnFields;
         }
 
         /**

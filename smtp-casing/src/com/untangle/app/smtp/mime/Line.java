@@ -32,7 +32,7 @@ public class Line
      */
     public Line(ByteBuffer buf, int termLen) {
 
-        m_buf = (ByteBuffer) buf.rewind();
+        m_buf = buf.rewind();
         m_termLen = termLen;
     }
 

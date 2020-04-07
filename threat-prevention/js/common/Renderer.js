@@ -26,9 +26,9 @@ Ext.define('Ung.common.Renderer.threatprevention', {
             }
         }
         if(value == Renderer.listKey){
-            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId];
+            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId] + ' [' + value + ']';
         }else{
-            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId][value];
+            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId][value] + ' [' + value + ']';
         }
     },
 

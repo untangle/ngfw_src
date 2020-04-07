@@ -77,22 +77,18 @@ rm -rf /var/lib/postgresql/9.4
 sed -e '/^deb cdrom/d' -i /etc/apt/sources.list
 
 #
-# 15.0 upgrade
+# 15.1 upgrade
 #
 
-# Point to stable-150
-sed -e 's/stable-142\s/stable-150 /g' -i /etc/apt/sources.list.d/untangle.list
+# Point to buster/stable-151
+sed -e 's/stretch/buster/g' -i /etc/apt/sources.list.d/untangle.list
+sed -e 's/stable-150\s/stable-151 /g' -i /etc/apt/sources.list.d/untangle.list
 
-# Remove old tests .pyc files.
-OLD_PYTHON_DIR=/usr/lib/python2.7/dist-packages/tests
-if [ -d $OLD_PYTHON_DIR ] ; then
-    rm -rf $OLD_PYTHON_DIR
-fi
-
-if dpkg --compare-versions "$oldVersion" le 15.0~ ; then
-  # reboot to new 4.9.0-11 kernel (NGFW-12661)
-  echo "Rebooting after apt-get completes..."
-  nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &  
+if dpkg --compare-versions "$oldVersion" le 15.1~ ; then
+  # see corresponding comment in preinst: we need to unmask those
+  # services that were masked just so the dist-upgrade could succeed
+  systemctl unmask freeradius-dhcp # NGFW-12934
+  systemctl unmask suricata # NGFW-12939
 fi
 
 exit 0

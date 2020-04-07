@@ -114,7 +114,7 @@ public interface WebFilter extends App
     WebFilterRedirectDetails getDetails(String nonce);
 
     /**
-     * Unblock a site
+     * Unblock a record determined by the nonce
      * 
      * @param nonce
      *        The nonce
@@ -122,7 +122,7 @@ public interface WebFilter extends App
      *        Global flag
      * @return Result
      */
-    boolean unblockSite(String nonce, boolean global);
+    boolean unblockNonce(String nonce, boolean global);
 
     /**
      * Get the unblock mode

@@ -16,7 +16,9 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         openvpnName: /^[A-Za-z0-9]([-.0-9A-Za-z]*[0-9A-Za-z])?$/,
         positiveInteger: /^[0-9]+$/,
         domainNameRe: /^[a-zA-Z0-9\-_.]+$/,
-        urlAddrRe: /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,63}(:[0-9]{1,5})?(\/.*)?$/
+        urlAddrRe: /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,63}(:[0-9]{1,5})?(\/.*)?$/,
+        cidrBlockRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
+        cidrBlockOnlyRangeRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-1]))$/
     },
 
     isSinglePortValid: function(val) {
@@ -175,6 +177,11 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     openvpnNameText: 'A name should only contains numbers, letters, dashes and periods.  Spaces are not allowed.'.t(),
 
+    cidrBlockOnlyRanges: function(v) {
+        return (this.mask.cidrBlockOnlyRangeRe.test(v));
+    },
+
+    cidrBlockOnlyRangesText: 'Must be a network in CIDR format, excluding /32 addresses.'.t() + ' (192.168.123.0/24)',
 
     domainName: function(value) {
         if (value.charAt(0) === '.') {
@@ -185,14 +192,14 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     domainNameText: 'A domain can only contain numbers, letters, dashes and periods, and must not start with a period.'.t(),
 
     cidrBlock:  function (v) {
-        return (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(v));
+        return (this.mask.cidrBlockRe.test(v));
     },
     cidrBlockText: 'Must be a network in CIDR format.'.t() + ' ' + '(192.168.123.0/24)',
 
     cidrBlockList: function (v) {
         var blocks = v.split(','), i;
         for (i = 0 ; i < blocks.length; i += 1) {
-            if (!(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(blocks[i]))) {
+            if (!(this.mask.cidrBlockRe.test(blocks[i]))) {
                 return false;
             }
         }
@@ -203,7 +210,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     cidrBlockArea:  function (v) {
         var blocks = v.split('\n'), i;
         for (i = 0 ; i < blocks.length; i += 1) {
-            if (!(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/.test(blocks[i]))) {
+            if (!(this.mask.cidrBlockRe.test(blocks[i]))) {
                 return false;
             }
         }

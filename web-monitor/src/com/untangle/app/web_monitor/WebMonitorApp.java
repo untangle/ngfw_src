@@ -79,7 +79,7 @@ public class WebMonitorApp extends WebFilterBase
      *        The unblock password
      * @return True if unblocked, otherwise false
      */
-    public boolean unblockSite(String nonce, boolean global, String password)
+    public boolean unblockNonce(String nonce, boolean global, String password)
     {
         if (!this.verifyPassword(password)) {
             if (this.logger.isInfoEnabled()) {
@@ -90,7 +90,7 @@ public class WebMonitorApp extends WebFilterBase
             if (this.logger.isInfoEnabled()) {
                 logger.info("Verified the password for nonce: '" + nonce + "'");
             }
-            return super.unblockSite(nonce, global);
+            return super.unblockNonce(nonce, global);
         }
     }
 
