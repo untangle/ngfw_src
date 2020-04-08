@@ -710,14 +710,6 @@ public class IpsecVpnApp extends AppBase
         record.setInBytes("0");
         record.setOutBytes("0");
 
-        /*
-         * Use the id and description to create a unique connection name that
-         * won't cause problems in the ipsec.conf file by replacing non-word
-         * characters with a hyphen. We also prefix this name with UT123_ to
-         * ensure no dupes in the config file.
-         */
-        String workname = ("UT" + tunnel.getId() + "_" + tunnel.getDescription().replaceAll("\\W", "-"));
-
 // THIS IS FOR ECLIPSE - @formatter:off
 
         /*
@@ -727,7 +719,7 @@ public class IpsecVpnApp extends AppBase
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-        String result = IpsecVpnApp.execManager().execOutput(GRAB_TUNNEL_STATUS_SCRIPT + " " + workname);
+        String result = IpsecVpnApp.execManager().execOutput(GRAB_TUNNEL_STATUS_SCRIPT + " " + tunnel.getWorkName());
 
         /*
          * If the tunnel is active, update the mode and continue parsing.
