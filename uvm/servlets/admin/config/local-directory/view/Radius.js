@@ -4,6 +4,7 @@ Ext.define('Ung.config.local-directory.view.Radius', {
     itemId: 'radius',
     title: 'RADIUS',
     scrollable: true,
+    viewModel: true,
 
     bodyPadding: 10,
 
@@ -40,15 +41,17 @@ Ext.define('Ung.config.local-directory.view.Radius', {
             reference: 'externalAccess',
             padding: '5 0',
             boxLabel: 'Enable external access point authentication'.t(),
-            value: true
+            bind: {
+                value: '{systemSettings.radiusServerEnabled}'
+            }
         }, {
             xtype: 'textfield',
             fieldLabel: 'RADIUS password'.t(),
             labelWidth: 120,
             width: '100%',
-            inputType: 'password',
             allowBlank: false,
             bind: {
+                value: '{systemSettings.radiusServerSecret}',
                 disabled: '{!externalAccess.checked}'
             }
         }]
