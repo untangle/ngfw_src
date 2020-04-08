@@ -110,7 +110,6 @@ public class IpsecVpnTimer extends TimerTask
         IpsecVpnTunnel tunnel;
         TunnelWatcher watcher;
         cycleCounter += 1;
-        String workname;
         String key;
         int x;
 
@@ -118,22 +117,17 @@ public class IpsecVpnTimer extends TimerTask
         for (x = 0; x < statusList.size(); x++) {
             ConnectionStatusRecord status = statusList.get(x);
 
-            // Use the id and description to create a unique connection name that won't cause
-            // problems in the ipsec.conf file by replacing non-word characters with a hyphen.
-            // We also prefix this name with UT123_ to ensure no dupes in the config file.
-            workname = ("UT" + status.getId() + "_" + status.getDescription().replaceAll("\\W", "-"));
-
             // see if there is an existing entry in the watch table
-            watcher = watchTable.get(workname);
+            watcher = watchTable.get(status.getWorkName());
 
             if (watcher == null) {
-                logger.debug("Creating new watch table entry for " + workname);
-                watcher = new TunnelWatcher(workname, Integer.parseInt(status.getId()));
-                watchTable.put(workname, watcher);
+                logger.debug("Creating new watch table entry for " + status.getWorkName());
+                watcher = new TunnelWatcher(status.getWorkName(), Integer.parseInt(status.getId()));
+                watchTable.put(status.getWorkName(), watcher);
             }
 
             else {
-                logger.debug("Found existing watch table entry for " + workname);
+                logger.debug("Found existing watch table entry for " + status.getWorkName());
             }
 
             tunnel = findTunnelById(watcher.tunnelId);
