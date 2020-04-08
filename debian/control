@@ -314,6 +314,15 @@ Depends: ${misc:Depends}, untangle-vm, openssl, openvpn, python
 Description: OpenVPN application
  The OpenVPN application.
 
+Package: untangle-app-wireguard-vpn
+Architecture: all
+Conflicts: untangle-node-wireguard-vpn
+Replaces: untangle-node-wireguard-vpn
+Provides: untangle-node-wireguard-vpn
+Depends: ${misc:Depends}, untangle-vm, wireguard-vpn, wireguard-tools
+Description: Wireguard VPN application
+ The Wireguard VPN application.
+
 Package: untangle-app-tunnel-vpn
 Architecture: all
 Depends: ${misc:Depends}, untangle-vm, openvpn, python3

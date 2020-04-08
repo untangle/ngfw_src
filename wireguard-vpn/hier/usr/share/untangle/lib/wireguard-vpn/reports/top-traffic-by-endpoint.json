@@ -1,0 +1,18 @@
+{
+    "uniqueId": "wireguardvpn-wgJbrLJTbLUY",
+    "category": "Wireguard VPN",
+    "description": "The number of bytes transferred grouped by remote client.",
+    "displayOrder": 200,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "bytes",
+    "pieGroupColumn": "peer_address",
+    "pieSumColumn": "coalesce(sum(in_bytes + out_bytes),0)",
+    "readOnly": true,
+    "table": "wireguard_vpn_stats",
+    "title": "Top Remote Clients (by usage)",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}

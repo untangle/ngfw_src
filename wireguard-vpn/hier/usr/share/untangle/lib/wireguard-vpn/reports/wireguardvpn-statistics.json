@@ -1,0 +1,13 @@
+{
+    "category": "Wireguard VPN",
+    "readOnly": true,
+    "type": "EVENT_LIST",
+    "conditions": [],
+    "defaultColumns": ["time_stamp","tunnel_name","peer_address","in_bytes","out_bytes"],
+    "description": "Shows all Wireguard VPN connection traffic statistics events.",
+    "displayOrder": 1020,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "table": "wireguard_vpn_stats",
+    "title": "Tunnel Traffic Events",
+    "uniqueId": "wireguardvpn-eYMzB3I4Wure"
+}

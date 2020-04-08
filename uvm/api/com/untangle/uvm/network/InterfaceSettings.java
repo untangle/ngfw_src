@@ -21,6 +21,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private static final Logger logger = Logger.getLogger( InterfaceSettings.class );
 
     public static final int   MIN_INTERFACE_ID      = 0x01;
+    public static final int   WIREGUARD_INTERFACE_ID= 0xf9;
     public static final int   OPENVPN_INTERFACE_ID  = 0xfa;
     public static final int   L2TP_INTERFACE_ID     = 0xfb;
     public static final int   XAUTH_INTERFACE_ID    = 0xfc;

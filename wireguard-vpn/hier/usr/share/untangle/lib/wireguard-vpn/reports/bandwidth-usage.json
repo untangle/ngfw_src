@@ -1,0 +1,26 @@
+{
+    "uniqueId": "wireguardvpn-wgStzlzfZAp8",
+    "category": "Wireguard VPN",
+    "description": "The approximate amount of data transfered over Wireguard VPN connections.",
+    "displayOrder": 100,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "KB/s",
+    "readOnly": true,
+    "table": "wireguard_vpn_stats",
+    "timeDataColumns": [
+        "round(coalesce(sum(in_bytes + out_bytes), 0) / (1024*60),1) as total",
+        "round(coalesce(sum(out_bytes), 0) / (1024*60),1) as sent",
+        "round(coalesce(sum(in_bytes), 0) / (1024*60),1) as received"
+    ],
+    "colors": [
+        "#396c2b",
+        "#0099ff",
+        "#6600ff"
+    ],
+    "timeDataInterval": "MINUTE",
+    "timeStyle": "LINE",
+    "title": "Wireguard VPN Bandwidth Usage",
+    "type": "TIME_GRAPH"
+}
