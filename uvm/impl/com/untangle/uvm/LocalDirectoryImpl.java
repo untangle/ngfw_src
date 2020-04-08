@@ -32,7 +32,13 @@ import java.nio.file.Paths;
 public class LocalDirectoryImpl implements LocalDirectory
 {
     private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/local_directory.js";
+    private final static String XAUTH_SECRETS_FILE = "/etc/xauth.secrets";
     private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
+
+    private final static String FREERADIUS_LOCAL_SECRETS = "/etc/freeradius/3.0/mods-config/files/untangle.local";
+    private final static String FREERADIUS_AUTHORIZE = "/etc/freeradius/3.0/mods-config/files/authorize";
+    private final static String FREERADIUS_CLIENTS = "/etc/freeradius/3.0/clients.conf";
+
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
 
@@ -391,12 +397,10 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     private void updateXauthSecrets(LinkedList<LocalDirectoryUser> list)
     {
-        String authFile = "/etc/xauth.secrets";
-
         FileWriter auth = null;
         try {
             // put all the username/password pairs into a file for IPsec Xauth and IKEv2
-            auth = new FileWriter(authFile, false);
+            auth = new FileWriter(XAUTH_SECRETS_FILE, false);
 
             auth.write(FILE_DISCLAIMER);
 
@@ -430,40 +434,108 @@ public class LocalDirectoryImpl implements LocalDirectory
     /**
      * We now support WPA Enterprise which allows connecting to a WiFi network
      * using a username and password which is authenticated via RADIUS. To make
-     * this work we put all of our credentials in the freeradius authorize file.
+     * this work we put all of our credentials in file that will work with
+     * freeradius and update the other configuration files required to make this
+     * work.
      *
      * @param list
      *        The list of LocalDirectoryUsers
      */
     private void updateRadiusSecrets(LinkedList<LocalDirectoryUser> list)
     {
-        String authFile = "/etc/freeradius/3.0/mods-config/files/untangle.local";
+        SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
+        FileWriter fw = null;
 
-        FileWriter auth = null;
+        /*
+         * Put all of the username/password pairs into a file for the RADIUS
+         * server. Unfortunately these have to be in plaintext as it is the only
+         * format that will work with all of the radius authentication
+         * mechanisms.
+         */
         try {
-            // put all the username/password pairs into a file for the RADIUS server
-            auth = new FileWriter(authFile, false);
+            fw = new FileWriter(FREERADIUS_LOCAL_SECRETS, false);
+            fw.write(FILE_DISCLAIMER);
 
-            auth.write(FILE_DISCLAIMER);
-
-            for (LocalDirectoryUser user : list) {
-                byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
-                String userPassword = new String(rawPassword);
-                auth.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\"\n");
-            }
-
-            auth.flush();
-            auth.close();
-        } catch (Exception exn) {
-            logger.error("Exception creating RADIUS untangle.local file", exn);
-        } finally {
-            if (auth != null) {
-                try {
-                    auth.close();
-                } catch (IOException ex) {
-                    logger.error("Exception closing RADIUS untangle.local file", ex);
+            if (systemSettings.getRadiusServerEnabled()) {
+                for (LocalDirectoryUser user : list) {
+                    byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
+                    String userPassword = new String(rawPassword);
+                    fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\"\n");
                 }
             }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating RADIUS secrets file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing RADIUS secrets file", ex);
+                }
+            }
+        }
+
+        /*
+         * Create the authorize file with the package defaults and a line to
+         * include our local credentials.
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_AUTHORIZE, false);
+            fw.write(FILE_DISCLAIMER);
+            if (systemSettings.getRadiusServerEnabled()) {
+                fw.write("DEFAULT Framed-Protocol == PPP\n\tFramed-Protocol = PPP,\n\tFramed-Compression = Van-Jacobson-TCP-IP\n\n");
+                fw.write("DEFAULT Hint == \"CSLIP\"\n\tFramed-Protocol = SLIP,\n\tFramed-Compression = Van-Jacobson-TCP-IP\n\n");
+                fw.write("DEFAULT Hint == \"SLIP\"\n\tFramed-Protocol = SLIP\n\n");
+                fw.write("$INCLUDE untangle.local\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating RADIUS authorize file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing RADIUS authorize file", ex);
+                }
+            }
+        }
+
+        /*
+         * Create the clients.conf
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_CLIENTS, false);
+            fw.write(FILE_DISCLAIMER);
+            if (systemSettings.getRadiusServerEnabled()) {
+                fw.write("client untangle {\n");
+                fw.write("\tipaddr = 0.0.0.0/0\n");
+                fw.write("\tproto = *\n");
+                fw.write("\tsecret = " + systemSettings.getRadiusServerSecret() + "\n");
+                fw.write("}\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating RADIUS clients file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing RADIUS clients file", ex);
+                }
+            }
+        }
+
+        /*
+         * If server is enabled restart the freeradius service
+         */
+        if (systemSettings.getRadiusServerEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
         }
     }
 
