@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Scanner;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -145,12 +146,13 @@ public class SystemManagerImpl implements SystemManager
         if (settings.getSnmpSettings().isEnabled()) restartSnmpDaemon();
 
         /**
-         * If pyconnector or freeradius state does not match the settings, re-sync them
+         * If pyconnector or freeradius state does not match the settings,
+         * re-sync them
          */
         pyconnectorSync();
         freeradiusSync();
-        
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new SystemSupportLogDownloadHandler() );
+
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new SystemSupportLogDownloadHandler());
 
         logger.info("Initialized SystemManager");
     }
@@ -204,6 +206,9 @@ public class SystemManagerImpl implements SystemManager
         if ((oldApacheCert == null) || (newApacheCert.equals(oldApacheCert) == false)) {
             activateApacheCertificate();
         }
+
+        /* update the radius server with the configured certificate */
+        activateRadiusCertificate();
 
         /**
          * If auto-upgrade is enabled and file doesn't exist or is out of date,
@@ -608,33 +613,33 @@ public class SystemManagerImpl implements SystemManager
         Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled untangle-pyconnector");
         // if running and should not be, stop it
         if ((0 == exitValue) && !settings.getCloudEnabled()) {
-            UvmContextFactory.context().execManager().exec( "systemctl disable untangle-pyconnector" );
-            UvmContextFactory.context().execManager().exec( "systemctl stop untangle-pyconnector" );
+            UvmContextFactory.context().execManager().exec("systemctl disable untangle-pyconnector");
+            UvmContextFactory.context().execManager().exec("systemctl stop untangle-pyconnector");
         }
         // if not running and should be, start it
         //(UvmContextImpl.context().isWizardComplete()) || UvmContextImpl.context().isAppliance())
         if ((0 != exitValue) && settings.getCloudEnabled()) {
-            UvmContextFactory.context().execManager().exec( "systemctl enable untangle-pyconnector" );
-            UvmContextFactory.context().execManager().exec( "systemctl restart untangle-pyconnector" );
+            UvmContextFactory.context().execManager().exec("systemctl enable untangle-pyconnector");
+            UvmContextFactory.context().execManager().exec("systemctl restart untangle-pyconnector");
         }
     }
 
     /**
-     * If radius server in enabled, start freeradius.service and enable on startup. If
-     * not, stop it and disable on startup
+     * If radius server in enabled, start freeradius.service and enable on
+     * startup. If not, stop it and disable on startup
      */
     protected void freeradiusSync()
     {
         Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled freeradius.service");
         // if running and should not be, stop it
         if ((0 == exitValue) && !settings.getRadiusServerEnabled()) {
-            UvmContextFactory.context().execManager().exec( "systemctl disable freeradius.service" );
-            UvmContextFactory.context().execManager().exec( "systemctl stop freeradius.service" );
+            UvmContextFactory.context().execManager().exec("systemctl disable freeradius.service");
+            UvmContextFactory.context().execManager().exec("systemctl stop freeradius.service");
         }
         // if not running and should be, start it
         if ((0 != exitValue) && settings.getRadiusServerEnabled()) {
-            UvmContextFactory.context().execManager().exec( "systemctl enable freeradius.service" );
-            UvmContextFactory.context().execManager().exec( "systemctl restart freeradius.service" );
+            UvmContextFactory.context().execManager().exec("systemctl enable freeradius.service");
+            UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
         }
     }
 
@@ -1173,8 +1178,97 @@ public class SystemManagerImpl implements SystemManager
      */
     public void activateApacheCertificate()
     {
+        // if the server is not enabled just return
+        if (!settings.getRadiusServerEnabled()) return;
+
         // copy the configured pem file to the apache directory and restart
         UvmContextFactory.context().execManager().exec("cp " + CertificateManager.CERT_STORE_PATH + getSettings().getWebCertificate() + " " + CertificateManager.APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+    }
+
+    /**
+     * Update the certificate in all of the freeradius configuration files.
+     */
+    public void activateRadiusCertificate()
+    {
+        String certFull = CertificateManager.CERT_STORE_PATH + getSettings().getRadiusCertificate();
+        int dotLocation = certFull.indexOf('.');
+        if (dotLocation < 0) {
+            logger.warn("Invalid filename for RADIUS certificate: + certFull");
+            return;
+        }
+
+        String certBase = certFull.substring(0, dotLocation);
+
+        try {
+            updateRadiusConfigurationFile("/etc/freeradius/3.0/mods-available/eap", certBase);
+            updateRadiusConfigurationFile("/etc/freeradius/3.0/mods-available/inner-eap", certBase);
+            updateRadiusConfigurationFile("/etc/freeradius/3.0/sites-available/abfab-tls", certBase);
+            updateRadiusConfigurationFile("/etc/freeradius/3.0/sites-available/tls", certBase);
+        } catch (Exception exn) {
+            logger.warn("Exception activating RADIUS certificate", exn);
+        }
+    }
+
+    /**
+     * Modify a RADIUS configuration file in place
+     *
+     * This is absolutely awful. The configuration files for freeradius have a
+     * massive amount of comments with dozens of actual configuration lines
+     * scattered all over. Since there are numerous files, I didn't want to
+     * extract the active lines from each of the distribution configs we need to
+     * manage and create a bunch of static config templates. So instead I came
+     * up with this solution that looks for non-comment lines with the
+     * certificate_file and private_key_file options we need to manage, and
+     * adjust them while leaving everything else unchanged.
+     *
+     * @param fileName
+     *        The file to modify
+     * @param certBase
+     *        The base filename of the certificate
+     * @throws Exception
+     */
+    public void updateRadiusConfigurationFile(String fileName, String certBase) throws Exception
+    {
+        java.util.Scanner scanner = new Scanner(new File(fileName));
+        List<String> config = new ArrayList<String>();
+        while (scanner.hasNextLine()) {
+            config.add(scanner.nextLine());
+        }
+        scanner.close();
+
+        FileWriter fw = new FileWriter(fileName, false);
+
+        for (String line : config) {
+            // lines with comments are written without modification
+            if (line.contains("#")) {
+                fw.write(line + "\n");
+                continue;
+            }
+
+            int crtloc = line.indexOf("certificate_file");
+            int keyloc = line.indexOf("private_key_file");
+
+            // lines without cert entries are written without modification
+            if ((crtloc < 0) && (keyloc < 0)) {
+                fw.write(line + "\n");
+                continue;
+            }
+
+            // write certificate_file entries using our configured crt file
+            if (crtloc >= 0) {
+                fw.write(line.substring(0, crtloc));
+                fw.write("certificate_file = " + certBase + ".crt\n");
+            }
+
+            // write private_key_file entries using our configured key file
+            if (keyloc >= 0) {
+                fw.write(line.substring(0, keyloc));
+                fw.write("private_key_file = " + certBase + ".key\n");
+            }
+        }
+
+        fw.flush();
+        fw.close();
     }
 }

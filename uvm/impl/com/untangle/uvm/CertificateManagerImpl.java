@@ -156,6 +156,9 @@ public class CertificateManagerImpl implements CertificateManager
                 UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PFX_FILE + " /etc/untangle/apache.pfx");
             }
         }
+
+        // activate the RADIUS server certificate
+        UvmContextFactory.context().systemManager().activateRadiusCertificate();
     }
 
     /**
@@ -363,6 +366,9 @@ public class CertificateManagerImpl implements CertificateManager
                 }
                 if (UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().equals(file.getName())) {
                     certInfo.setIpsecServer(true);
+                }
+                if (UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate().equals(file.getName())) {
+                    certInfo.setRadiusServer(true);
                 }
 
                 certList.add(certInfo);
@@ -829,6 +835,7 @@ public class CertificateManagerImpl implements CertificateManager
         if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getWebCertificate())) return;
         if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getMailCertificate())) return;
         if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate())) return;
+        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate())) return;
 
         // extract the file name without the extension
         dotLocation = fileName.indexOf('.');
@@ -866,6 +873,7 @@ public class CertificateManagerImpl implements CertificateManager
         String httpsInfo = null;
         String smtpsInfo = null;
         String ipsecInfo = null;
+        String radiusInfo = null;
         String certFile = null;
 
         String missMessage = i18nUtil.tr("Certificate not found");
@@ -939,6 +947,22 @@ public class CertificateManagerImpl implements CertificateManager
             if (ipsecInfo == null) ipsecInfo = goodMessage;
         }
 
+        // check the RADIUS certificate
+        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate().replaceAll("\\.pem", "\\.crt");
+        certInfo = getServerCertificateInformation(certFile);
+        if (certInfo == null) {
+            radiusInfo = missMessage;
+        } else {
+            for (String item : machineList) {
+                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
+                if (radiusInfo == null) radiusInfo = (new String(failMessage) + " ");
+                else radiusInfo += ", ";
+                radiusInfo += item;
+            }
+            if (radiusInfo == null) radiusInfo = goodMessage;
+        }
+
 // THIS IS FOR ECLIPSE - @formatter:off
 
         String statusInfo = "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 STYLE=border-collapse:collapse;>"
@@ -946,6 +970,7 @@ public class CertificateManagerImpl implements CertificateManager
                 + "<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>"
                 + "<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>"
                 + "<TR><TD WIDTH=120>IPSEC Certificate</TD><TD>" + ipsecInfo + "</TD></TR>"
+                + "<TR><TD WIDTH=120>RADIUS Certificate</TD><TD>" + radiusInfo + "</TD></TR>"
                 + "</TABLE>";
 
 // THIS IS FOR ECLIPSE - @formatter:on
