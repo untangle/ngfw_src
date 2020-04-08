@@ -263,7 +263,7 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://translations.untangle.com/");
+        uriTranslation.setUri("http://translations.untangle.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
@@ -295,7 +295,7 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://translations.untangle.com/");
+        uriTranslation.setUri("http://translations.untangle.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
