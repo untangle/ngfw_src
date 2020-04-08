@@ -40,23 +40,34 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         },
         queryMode: 'local',
         store: [
-            [true, 'Automatic'],
-            [false, 'Self assigned']
-
+            [true, 'Automatic'.t()],
+            [false, 'Self assigned'.t()]
         ],
         allowOnlyWhitespace: false,
         forceSelection: true,
         typeAhead: true
     },{
-        fieldLabel: 'Address Space'.t(),
-        xtype: 'textfield',
-        vtype: 'cidrAddr',
-        bind: {
-            value: '{settings.addressPool}',
-            disabled: '{settings.autoAddressAssignment}',
-            editable: '{!settings.autoAddressAssignment}'
-        }
-    }
-    ]
+        xtype: 'fieldcontainer',
+        layout: 'hbox',
+        items: [
+            {
+                fieldLabel: 'Address Space'.t(),
+                xtype: 'textfield',
+                vtype: 'cidrAddr',
+                bind: {
+                    value: '{settings.addressPool}',
+                    disabled: '{settings.autoAddressAssignment}',
+                    editable: '{!settings.autoAddressAssignment}'
+                }
+            },
+            {
+                xtype:'button',
+                text: 'Get New Address Space'.t(),
+                listeners: {
+                    click: 'getNewAddressSpace'
+                }
+            }
+        ]
+    }]
 });
 

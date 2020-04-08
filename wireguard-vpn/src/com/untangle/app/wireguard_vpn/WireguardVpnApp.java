@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetspaceManager;
+import com.untangle.uvm.NetspaceManager.IPVersion;
 import com.untangle.uvm.NetspaceManager.NetworkSpace;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
@@ -290,7 +291,7 @@ public class WireguardVpnApp extends AppBase
         settings.setPrivateKey(privateKey);
         settings.setPublicKey(publicKey);
 
-        IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace();
+        IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4);
 
         settings.setAutoAddressAssignment(true);
         settings.setAddressPool(newSpace);
@@ -310,6 +311,19 @@ public class WireguardVpnApp extends AppBase
         String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT);
         return (result);
     }
+
+ /**
+     * Returns an address pool that is validated against the netspace manager to not be conflicting
+     * 
+     *
+     * @return An unclaimed address space
+     */
+    public String getNewAddressPool()
+    {
+        IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4);
+        return newSpace.toString();
+    }
+
 
     /**
      * Function to register all network address blocks configured in this application

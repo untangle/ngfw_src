@@ -249,6 +249,21 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         }
         return false;
     },
+
+    getNewAddressSpace: function() {
+        var me = this,
+        vm = this.getViewModel();
+        Rpc.asyncData(this.getView().appManager, 'getNewAddressPool')
+        .then( function(result){
+            if(Util.isDestroyed(me, vm)){
+                return;
+            }
+
+            vm.set('settings.addressPool', result);
+        },function(ex){
+            Util.handleException(ex);
+        });
+    },
 });
 
 Ext.define('Ung.apps.wireguard-vpn.cmp.WireguardVpnTunnelRecordEditor', {

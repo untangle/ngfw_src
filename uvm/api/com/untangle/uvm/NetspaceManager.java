@@ -25,11 +25,13 @@ public interface NetspaceManager
 
     NetworkSpace isNetworkAvailable(String ownerName, IPMaskedAddress tester);
 
-    IPMaskedAddress getAvailableAddressSpace();
+    IPMaskedAddress getAvailableAddressSpace(IPVersion version);
     
     InetAddress getFirstUsableAddress(InetAddress networkAddress, Integer networkSize);
 
     InetAddress getFirstUsableAddress(String networkText);
+
+    public static enum IPVersion { IPv4, IPv6 };
 
     /**
      * Stores details about a network address block
