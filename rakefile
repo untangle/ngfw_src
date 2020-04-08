@@ -96,6 +96,7 @@ task :targets => :download do
   require "#{SRC_HOME}/configuration-backup/package.rb"
   require "#{SRC_HOME}/directory-connector/package.rb"
   require "#{SRC_HOME}/openvpn/package.rb"
+  require "#{SRC_HOME}/wireguard-vpn/package.rb"
   require "#{SRC_HOME}/tunnel-vpn/package.rb"
   require "#{SRC_HOME}/ipsec-vpn/package.rb"
   require "#{SRC_HOME}/live-support/package.rb"
