@@ -15,6 +15,7 @@ Ext.define('Ung.config.local-directory.Main', {
     },
 
     items: [
-        { xtype: 'config-local-directory-users' }
+        { xtype: 'config-local-directory-users' },
+        { xtype: 'config-local-directory-radius' }
     ]
 });
