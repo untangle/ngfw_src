@@ -33,12 +33,41 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         },
         allowBlank: false
     },{
-        fieldLabel: 'IP Address Space'.t(),
-        xtype: 'textfield',
-        vtype: 'cidrAddr',
+        fieldLabel: 'IP Address Assignment'.t(),
+        xtype: 'combobox',
         bind: {
-            value: '{settings.addressPool}'
-        }
+            value: '{settings.autoAddressAssignment}'
+        },
+        queryMode: 'local',
+        store: [
+            [true, 'Automatic'.t()],
+            [false, 'Self assigned'.t()]
+        ],
+        allowOnlyWhitespace: false,
+        forceSelection: true,
+        typeAhead: true
+    },{
+        xtype: 'fieldcontainer',
+        layout: 'hbox',
+        items: [
+            {
+                fieldLabel: 'Address Space'.t(),
+                xtype: 'textfield',
+                vtype: 'cidrAddr',
+                bind: {
+                    value: '{settings.addressPool}',
+                    disabled: '{settings.autoAddressAssignment}',
+                    editable: '{!settings.autoAddressAssignment}'
+                }
+            },
+            {
+                xtype:'button',
+                text: 'Get New Address Space'.t(),
+                listeners: {
+                    click: 'getNewAddressSpace'
+                }
+            }
+        ]
     }]
 });
 
