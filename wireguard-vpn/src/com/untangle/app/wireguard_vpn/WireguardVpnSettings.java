@@ -26,6 +26,7 @@ public class WireguardVpnSettings implements Serializable, JSONString
     private IPMaskedAddress addressPool;
     private String privateKey = "";
     private String publicKey = "";
+    private boolean autoAddressAssignment = true;
 
     private List<WireguardVpnTunnel> tunnels;
 
@@ -49,6 +50,9 @@ public class WireguardVpnSettings implements Serializable, JSONString
 
     public String getPublicKey() { return publicKey; }
     public void setPublicKey( String newValue ) { this.publicKey = newValue; }
+
+    public boolean getAutoAddressAssignment() { return autoAddressAssignment; }
+    public void setAutoAddressAssignment( boolean newValue ) { this.autoAddressAssignment = newValue; }
 
     public List<WireguardVpnTunnel> getTunnels() { return tunnels; }
     public void setTunnels( List<WireguardVpnTunnel> newValue ) { this.tunnels = newValue; }
