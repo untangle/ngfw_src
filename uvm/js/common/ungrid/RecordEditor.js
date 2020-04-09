@@ -67,25 +67,12 @@ Ext.define('Ung.cmp.RecordEditor', {
         buttons: ['@cancel', '@apply']
     }],
 
-    // initComponent: function () {
-    //     var items = this.items;
-    //     var form = items[0];
+    /**
+     * to avoid showing invalid fields upon initial form rendering
+     */
+    // onShowComplete: function () {
+    //     var form = this.down('form');
+    //     console.log(form);
+    //     form.reset();
 
-    //     for (var i = 0; i < this.fields.length; i++) {
-    //         console.log();
-    //         if (this.fields[i].editor) {
-    //             if (this.fields[i].getItemId() !== 'conditions') {
-    //                 form.items.push(this.fields[i].editor);
-    //             } else {
-    //                 this.items.push({
-    //                     xtype: 'component',
-    //                     html: 'some panel'
-    //                 });
-    //             }
-    //         }
-    //     }
-
-    //     this.callParent(arguments);
-
-    // }
 });

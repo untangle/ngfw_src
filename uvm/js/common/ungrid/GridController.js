@@ -16,6 +16,12 @@ Ext.define('Ung.cmp.GridController', {
     },
 
     addRecord: function () {
+        /**
+         * Fire a global event before opening the generic editor
+         * so the record data can pe prefilled with specific values when needed
+         */
+        Ext.fireEvent('ungridaddrecord');
+        // open record editor
         this.editorWin(null, null, arguments.length > 2 ? arguments[2] : null);
     },
 

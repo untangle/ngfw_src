@@ -6,7 +6,11 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     scrollable: true,
 
     withValidation: true,
-    padding: '8 5',
+    padding: 10,
+
+    defaults: {
+        labelWidth: 200
+    },
 
     items: [{
         fieldLabel: 'Listen port'.t(),
@@ -17,7 +21,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         },
         allowBlank: false
     },{
-        fieldLabel: 'Keepalive interval'.t(),
+        fieldLabel: 'Keepalive interval (seconds)'.t(),
         xtype: 'textfield',
         vtype: 'keepalive',
         bind: {
@@ -25,7 +29,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         },
         allowBlank: false
     },{
-        fieldLabel: 'MTU'.t(),
+        fieldLabel: 'MTU (bytes)'.t(),
         xtype: 'textfield',
         vtype: 'mtu',
         bind: {
@@ -35,6 +39,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     },{
         fieldLabel: 'IP Address Assignment'.t(),
         xtype: 'combobox',
+        editable: false,
         bind: {
             value: '{settings.autoAddressAssignment}'
         },
@@ -42,29 +47,28 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         store: [
             [true, 'Automatic'.t()],
             [false, 'Self assigned'.t()]
-        ],
-        allowOnlyWhitespace: false,
-        forceSelection: true,
-        typeAhead: true
+        ]
     },{
         xtype: 'fieldcontainer',
         layout: 'hbox',
         items: [
             {
-                fieldLabel: 'Address Space'.t(),
                 xtype: 'textfield',
+                fieldLabel: 'Address Space'.t(),
+                labelWidth: 200,
                 vtype: 'cidrAddr',
                 bind: {
                     value: '{settings.addressPool}',
-                    disabled: '{settings.autoAddressAssignment}',
-                    editable: '{!settings.autoAddressAssignment}'
+                    disabled: '{settings.autoAddressAssignment}'
                 }
             },
             {
                 xtype:'button',
                 text: 'Get New Address Space'.t(),
-                listeners: {
-                    click: 'getNewAddressSpace'
+                handler: 'getNewAddressSpace',
+                margin: '0 0 0 10',
+                bind: {
+                    disabled: '{settings.autoAddressAssignment}'
                 }
             }
         ]
