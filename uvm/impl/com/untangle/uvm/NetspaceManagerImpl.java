@@ -308,12 +308,12 @@ public class NetspaceManagerImpl implements NetspaceManager
                 break;
             case 10:
                 // Everything in 10.X is valid
-                nextNet = rand.nextInt(255);
+                nextNet = rand.nextInt(256);
                 break;
         }
 
         //Combine the above and form IP with random subnet, host address, and CIDR from params
-        return new IPMaskedAddress( leadingNet + "." + nextNet + "." + rand.nextInt(255) + "." + hostIdentifier, CIDRSpace);
+        return new IPMaskedAddress( leadingNet + "." + nextNet + "." + rand.nextInt(256) + "." + hostIdentifier, CIDRSpace);
     }
 
     /**
