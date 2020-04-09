@@ -47,7 +47,6 @@ class Jars
     const_set(:TomcatCommon, [ 'tomcat-embed-jasper.jar',
                                'tomcat-embed-core.jar',
                                'tomcat-embed-el.jar',
-                               'tomcat-embed-websocket.jar',
                                'annotations-api.jar',
                             ].map do |n|
                 Jars.downloadTarget("apache-tomcat-8.5.53-embed/#{n}")
