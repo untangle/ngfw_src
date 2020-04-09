@@ -1178,9 +1178,6 @@ public class SystemManagerImpl implements SystemManager
      */
     public void activateApacheCertificate()
     {
-        // if the server is not enabled just return
-        if (!settings.getRadiusServerEnabled()) return;
-
         // copy the configured pem file to the apache directory and restart
         UvmContextFactory.context().execManager().exec("cp " + CertificateManager.CERT_STORE_PATH + getSettings().getWebCertificate() + " " + CertificateManager.APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
@@ -1191,6 +1188,8 @@ public class SystemManagerImpl implements SystemManager
      */
     public void activateRadiusCertificate()
     {
+        if (!settings.getRadiusServerEnabled()) return;
+
         String certFull = CertificateManager.CERT_STORE_PATH + getSettings().getRadiusCertificate();
         int dotLocation = certFull.indexOf('.');
         if (dotLocation < 0) {
@@ -1207,7 +1206,10 @@ public class SystemManagerImpl implements SystemManager
             updateRadiusConfigurationFile("/etc/freeradius/3.0/sites-available/tls", certBase);
         } catch (Exception exn) {
             logger.warn("Exception activating RADIUS certificate", exn);
+            return;
         }
+
+        UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
     }
 
     /**
