@@ -31,7 +31,7 @@ tarballs_bz2=
 
 zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip \
 	jradius-client-1.1.4-release.zip apache-taglibs-standard-1.2.5.zip \
-	selenium-java-2.53.0.zip geoip2-2.6.0-with-dependencies.zip
+	selenium-java-3.141.59.zip geoip2-2.6.0-with-dependencies.zip
 
 jars=gettext-commons-0.9.1.jar postgresql-9.4-1201.jdbc4.jar \
 	dnsjava-2.1.6.jar sqlite-jdbc-3.15.1.jar \
