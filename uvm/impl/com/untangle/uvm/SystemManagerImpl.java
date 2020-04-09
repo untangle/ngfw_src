@@ -1209,6 +1209,9 @@ public class SystemManagerImpl implements SystemManager
             return;
         }
 
+        // make sure the freeradius daemon can read the crt and key files
+        UvmContextFactory.context().execManager().exec("chmod a+r " + certBase + ".crt");
+        UvmContextFactory.context().execManager().exec("chmod a+r " + certBase + ".key");
         UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
     }
 
