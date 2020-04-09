@@ -840,7 +840,7 @@ Ext.define('Ung.util.Util', {
         dots = [];
         dots.push(ipInteger >>> 24);
         dots.push((ipInteger >>> 16) % 256);
-        dots.push((ipInteger >> 8) % 256);
+        dots.push((ipInteger >>> 8) % 256);
         dots.push(ipInteger % 256);
         return dots.join('.');
     }
