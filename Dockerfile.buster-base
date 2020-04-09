@@ -12,6 +12,8 @@ RUN echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-recommends 
 
 RUN apt update -q
 
+RUN apt dist-upgrade -y
+
 RUN apt install -y gnupg dirmngr
 # we do not need iproute2, and having libxtables12:amd64 in the image
 # prevents us from installing libxtables12:<other> when
