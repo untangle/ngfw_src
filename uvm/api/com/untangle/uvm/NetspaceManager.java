@@ -25,7 +25,7 @@ public interface NetspaceManager
 
     NetworkSpace isNetworkAvailable(String ownerName, IPMaskedAddress tester);
 
-    IPMaskedAddress getAvailableAddressSpace(IPVersion version);
+    IPMaskedAddress getAvailableAddressSpace(IPVersion version, int hostId, int networkSize);
     
     InetAddress getFirstUsableAddress(InetAddress networkAddress, Integer networkSize);
 

@@ -291,7 +291,7 @@ public class WireguardVpnApp extends AppBase
         settings.setPrivateKey(privateKey);
         settings.setPublicKey(publicKey);
 
-        IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4);
+        IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4, 1, 24);
 
         settings.setAutoAddressAssignment(true);
         settings.setAddressPool(newSpace);
@@ -320,7 +320,7 @@ public class WireguardVpnApp extends AppBase
      */
     public String getNewAddressPool()
     {
-        IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4);
+        IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4, 1, 24);
         return newSpace.toString();
     }
 
