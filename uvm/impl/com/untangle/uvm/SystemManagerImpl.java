@@ -1200,10 +1200,10 @@ public class SystemManagerImpl implements SystemManager
         String certBase = certFull.substring(0, dotLocation);
 
         try {
-            updateRadiusConfigurationFile("/etc/freeradius/3.0/mods-available/eap", certBase);
-            updateRadiusConfigurationFile("/etc/freeradius/3.0/mods-available/inner-eap", certBase);
-            updateRadiusConfigurationFile("/etc/freeradius/3.0/sites-available/abfab-tls", certBase);
-            updateRadiusConfigurationFile("/etc/freeradius/3.0/sites-available/tls", certBase);
+            updateRadiusCertificateConfig("/etc/freeradius/3.0/mods-available/eap", certBase);
+            updateRadiusCertificateConfig("/etc/freeradius/3.0/mods-available/inner-eap", certBase);
+            updateRadiusCertificateConfig("/etc/freeradius/3.0/sites-available/abfab-tls", certBase);
+            updateRadiusCertificateConfig("/etc/freeradius/3.0/sites-available/tls", certBase);
         } catch (Exception exn) {
             logger.warn("Exception activating RADIUS certificate", exn);
             return;
@@ -1216,16 +1216,20 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
-     * Modify a RADIUS configuration file in place
+     * Modify a freeradius configuration file in place
      *
-     * This is absolutely awful. The configuration files for freeradius have a
-     * massive amount of comments with dozens of actual configuration lines
-     * scattered all over. Since there are numerous files, I didn't want to
-     * extract the active lines from each of the distribution configs we need to
-     * manage and create a bunch of static config templates. So instead I came
-     * up with this solution that looks for non-comment lines with the
+     * The configuration files for freeradius have a massive amount of comments
+     * with dozens of actual configuration lines scattered all over. Since there
+     * are numerous files, I didn't want to extract the active lines from each
+     * of the distribution configs we need to manage here and create a bunch of
+     * static config templates like I did for the radiusd.conf file. So instead
+     * I came up with this solution that looks for non-comment lines with the
      * certificate_file and private_key_file options we need to manage, and
-     * adjust them while leaving everything else unchanged.
+     * adjust them while leaving everything else unchanged. This simple approach
+     * only works here because the lines we need to modify are not commented. A
+     * whole lot of extra parsing and whitespace detection would be needed to
+     * use this approach to enable or set commented items in one of the config
+     * files. Search tokens that are long and unique is also helpful here.
      *
      * @param fileName
      *        The file to modify
@@ -1233,7 +1237,7 @@ public class SystemManagerImpl implements SystemManager
      *        The base filename of the certificate
      * @throws Exception
      */
-    public void updateRadiusConfigurationFile(String fileName, String certBase) throws Exception
+    public void updateRadiusCertificateConfig(String fileName, String certBase) throws Exception
     {
         java.util.Scanner scanner = new Scanner(new File(fileName));
         List<String> config = new ArrayList<String>();
