@@ -65,10 +65,8 @@ Ext.define('Ung.apps.wireguard-vpn.view.Tunnels', {
             'endpointAddress': '',
             'endpointPort': '',
             'peerAddress': '',
-            'networks': {
-                'javaClass': 'java.util.LinkedList',
-                'list': []
-            }
+            // networks is defined as String
+            'networks': ''
         },
 
         bind: '{tunnels}',
@@ -104,7 +102,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Tunnels', {
             header: 'Networks'.t(),
             width: Renderer.messageWidth,
             flex: 1,
-            dataIndex: 'networks',
+            dataIndex: 'networks'
         }],
 
         editorFields: [{
@@ -116,17 +114,13 @@ Ext.define('Ung.apps.wireguard-vpn.view.Tunnels', {
             // vtype: 'wireguard-vpnName',
             fieldLabel: 'Description'.t(),
             allowBlank: false,
-            bind: {
-                value: '{record.description}'
-            }
+            bind: '{record.description}'
         }, {
             xtype: 'textfield',
             // vtype: 'wireguard-vpnName',
             fieldLabel: 'Public Key'.t(),
             allowBlank: false,
-            bind: {
-                value: '{record.publicKey}'
-            }
+            bind: '{record.publicKey}'
         }, {
             xtype: 'fieldcontainer',
             layout: 'hbox',
@@ -166,18 +160,14 @@ Ext.define('Ung.apps.wireguard-vpn.view.Tunnels', {
             fieldLabel: 'Peer Address'.t(),
             vtype: 'isSingleIpValidOrEmpty',
             allowBlank: true,
-            bind: {
-                value: '{record.peerAddress}'
-            }
+            bind: '{record.peerAddress}'
         }, {
-            xtype: 'textarea',
+            xtype: 'textfield',
             fieldLabel: 'Networks'.t(),
-            vtype: 'cidrBlockArea',
+            emptyText: 'Comma separated list of networks'.t(),
+            vtype: 'cidrBlockList',
             allowBlank: true,
-            height: 60,
-            bind: {
-                value: '{record.networks}'
-            }
+            bind: '{record.networks}'
         }, {
             xtype: 'fieldcontainer',
             layout: 'hbox',
@@ -189,9 +179,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Tunnels', {
                 flex: 1,
                 allowBlank: true,
                 vtype: 'isSingleIpValid',
-                bind: {
-                    value: '{record.pingAddress}',
-                }
+                bind: '{record.pingAddress}'
             }, {
                 xtype: 'numberfield',
                 fieldLabel: 'Ping Interval'.t(),
@@ -203,9 +191,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Tunnels', {
                 emptyText: '0s to 300s ...',
                 minValue: 0,
                 maxValue: 300,
-                bind: {
-                    value: '{record.pingInterval}'
-                }
+                bind: '{record.pingInterval}'
             }]
         }, {
             xtype: 'checkbox',
