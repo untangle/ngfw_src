@@ -205,18 +205,6 @@ public class NetspaceManagerImpl implements NetspaceManager
     }
 
     /**
-     * An overload method for getAvailableAddressSpace that will use the default CIDR of 24 and a start host of 0
-     * 
-     * @param version - An Enum representing the IP version the address space should be
-     * @return IPMaskedAddress - A CIDR address that is not conflicting with other address spaces on the appliance
-     * 
-     */
-    public IPMaskedAddress getAvailableAddressSpace(IPVersion version) {
-        return getAvailableAddressSpace(version, 0, 24);
-    }
-
-
-    /**
      * getAvailableAddressSpace should be used to get an unregistered address space based on a random subnet, IP6 generation will use the Unique Unicast range
      * 
      * @param version
@@ -320,12 +308,12 @@ public class NetspaceManagerImpl implements NetspaceManager
                 break;
             case 10:
                 // Everything in 10.X is valid
-                nextNet = rand.nextInt(255);
+                nextNet = rand.nextInt(256);
                 break;
         }
 
         //Combine the above and form IP with random subnet, host address, and CIDR from params
-        return new IPMaskedAddress( leadingNet + "." + nextNet + "." + rand.nextInt(255) + "." + hostIdentifier, CIDRSpace);
+        return new IPMaskedAddress( leadingNet + "." + nextNet + "." + rand.nextInt(256) + "." + hostIdentifier, CIDRSpace);
     }
 
     /**
