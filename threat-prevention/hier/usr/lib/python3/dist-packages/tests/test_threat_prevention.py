@@ -125,6 +125,7 @@ class ThreatpreventionTests(NGFWTestCase):
     def test_033_block_by_Hostname(self):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         self.rules_clear()
+        self.rule_add("DST_PORT","53",action="pass")  # allow DNS otherwise bridged configs fail
         self.rule_add("HOST_HOSTNAME",entry['hostname'])
 
         result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blocked")
