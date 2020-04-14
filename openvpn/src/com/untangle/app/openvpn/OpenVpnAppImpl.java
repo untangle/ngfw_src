@@ -371,29 +371,11 @@ public class OpenVpnAppImpl extends AppBase
         // Client to client enabled/disabled
         if (oldSettings.getClientToClient() != newSettings.getClientToClient()) { logger.debug("Server Client to Client has changed."); return true;}
 
-        // Server config settings
-        if(customConfigHasDifferences(oldSettings.getServerConfiguration(), newSettings.getServerConfiguration())) { logger.debug("Custom Server Configuration Items have changed."); return true; }
+        // Server config settings (Use data stream to compare a json string of the entire list)
+        if(oldSettings.getServerConfiguration().stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(newSettings.getServerConfiguration().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""))) != 0) { logger.debug("Custom Server Configuration Items have changed."); return true; }
 
-        return false;
-    }
-
-
-    /**
-     * customConfigHasDifferences validates OpenVpnConfigItem lists to see if the data has changed
-     * 
-     * this function takes the LinkedList and will cast items to JSON Strings, and then join the JSON Strings for comparison.
-     * 
-     * @param configA - A list of configuration items
-     * @param configB - A list of configuration items
-     * @return - a boolean indicating if the two configuration lists are different
-     */
-    private boolean customConfigHasDifferences(LinkedList<OpenVpnConfigItem> configA, LinkedList<OpenVpnConfigItem> configB) {
-        String configAsString1 = configA.stream().map(u -> u.toJSONString()).collect(Collectors.joining(""));
-        String configAsString2 = configB.stream().map(u -> u.toJSONString()).collect(Collectors.joining(""));
-
-        if(configAsString1.compareTo(configAsString2) != 0) {
-            return true;
-        }
+        // Exported networks (Use data stream to compare a json string of the entire list)
+        if(oldSettings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(newSettings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""))) != 0) {logger.debug("Exported network items have changed."); return true;}
 
         return false;
     }
