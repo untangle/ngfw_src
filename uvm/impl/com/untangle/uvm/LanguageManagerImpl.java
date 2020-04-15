@@ -786,10 +786,8 @@ public class LanguageManagerImpl implements LanguageManager
         CloseableHttpResponse response = null;
 
         JSONObject remoteObject = null;
-        // JSONObject remoteTable = null;
-        // JSONObject remoteStats = null;
 
-        String urlString = REMOTE_LANGUAGES_URL + "json/" + REMOTE_LANGUAGES_PROJECT + '/' + source.getComponent();
+        String urlString = UvmContextFactory.context().uriManager().getUri(REMOTE_LANGUAGES_URL) + "json/" + REMOTE_LANGUAGES_PROJECT + '/' + source.getComponent();
         try {
             URL url = new URL(urlString);
 
@@ -894,7 +892,7 @@ public class LanguageManagerImpl implements LanguageManager
             return;
         }
 
-        String urlString = REMOTE_LANGUAGES_URL + "export/" + REMOTE_LANGUAGES_PROJECT + "/" + source.getComponent() + "/" + language + "?format=zip";
+        String urlString = UvmContextFactory.context().uriManager().getUri(REMOTE_LANGUAGES_URL) + "export/" + REMOTE_LANGUAGES_PROJECT + "/" + source.getComponent() + "/" + language + "?format=zip";
         try {
             URL url = new URL(urlString);
 

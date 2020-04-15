@@ -16,7 +16,7 @@ import org.json.JSONObject;
 @SuppressWarnings("serial")
 public class UriManagerSettings implements Serializable, JSONString
 {
-    private Integer version = 1;
+    private Integer version = 2;
     private List<UriTranslation> uriTranslations = new LinkedList<>();
 
     private String dnsTestHost = "updates.untangle.com";
