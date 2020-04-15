@@ -5,6 +5,8 @@
 package com.untangle.uvm;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -19,11 +21,13 @@ import com.untangle.uvm.SettingsManager;
  */
 public class UriManagerImpl implements UriManager
 {
-    String SettingsFileName = "";
-    UriManagerSettings settings = null;
+    private static final Integer SettingsCurrentVersion = 2;
 
-    Map<String,String> UriMap = new HashMap<>();
-    Map<String,UriTranslation> HostUriTranslations = new HashMap<>();
+    private String SettingsFileName = "";
+    private UriManagerSettings settings = null;
+
+    private Map<String,String> UriMap = new HashMap<>();
+    private Map<String,UriTranslation> HostUriTranslations = new HashMap<>();
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -47,8 +51,9 @@ public class UriManagerImpl implements UriManager
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-            // this.setSettings(defaultSettings());
+            this.setSettings(defaultSettings());
         } else {
+            updateSettings(readSettings);
             this.settings = readSettings;
 
             logger.debug("Loading Settings: " + this.settings.toJSONString());
@@ -198,4 +203,112 @@ public class UriManagerImpl implements UriManager
         }
     }
 
+    /**
+     * Initialize URI manager settings
+     *
+     * @return UriManagerSettings with default values.
+     */
+    private UriManagerSettings defaultSettings()
+    {
+        UriManagerSettings settings = new UriManagerSettings();
+
+        LinkedList<UriTranslation> uriTranslations = new LinkedList<>();
+
+        UriTranslation uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://ids.untangle.com/suricatasignatures.tar.gz");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://labs.untangle.com/Utility/v1/mac");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://auth-relay.untangle.com/callback.php");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://telemetry.untangle.com/ngfw/v1/infection");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("http://updates.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://cmd.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://license.untangle.com/license.php");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://classify.untangle.com/v1/md5s");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://bd.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://boxbackup.untangle.com/boxbackup/backup.php");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://boxbackup.untangle.com/api/index.php");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://downloads.untangle.com/download.php");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("http://translations.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://queue.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
+        uriTranslations.add(uriTranslation);
+
+        settings.setUriTranslations(uriTranslations);
+
+        return settings;
+    }
+
+    /**
+     * Update settings.
+     * @param settings UriManagerSettings to update.
+     */
+    private void updateSettings(UriManagerSettings settings)
+    {
+        if(settings.getVersion() >= SettingsCurrentVersion){
+            return;
+        }
+        List<UriTranslation> uriTranslations = settings.getUriTranslations();
+
+        UriTranslation uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://boxbackup.untangle.com/api/index.php");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("http://translations.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://queue.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
+        uriTranslations.add(uriTranslation);
+
+        settings.setUriTranslations(uriTranslations);
+
+        settings.setVersion(SettingsCurrentVersion);
+        this.setSettings( settings );
+    }
 }
