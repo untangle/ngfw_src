@@ -95,7 +95,9 @@ public class NetcapConntrackHook implements NetcapCallback
                                                            ct.getPreNatClient(),
                                                            ct.getPreNatServer(),
                                                            ct.getPreNatClientPort(),
-                                                           ct.getPreNatServerPort() );
+                                                           ct.getPreNatServerPort(),
+                                                           clientIntf,
+                                                           serverIntf );
 
             boolean logEvent = UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions();
             
