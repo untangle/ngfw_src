@@ -601,7 +601,7 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                       -1, -1,
                                       cli_intf, srv_intf );
 
-    // NGFW-12726 For Citrix we need to preserve the source and destination
+    // NGFW-12726 For Vendors we need to preserve the source and destination
     // interface id values in the packet mark. Previously we used 0x0000ff00
     // which preserved only the source interface. A Jan 16 2014 commit
     // indicates the mask was added because using the entire mark caused
