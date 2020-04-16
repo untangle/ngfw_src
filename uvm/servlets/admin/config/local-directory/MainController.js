@@ -12,6 +12,9 @@ Ext.define('Ung.config.local-directory.MainController', {
     loadSettings: function () {
         var me = this, v = me.getView(), vm = me.getViewModel();
 
+        // set expert mode used to show/hide RADIUS section
+        vm.set('expertMode', Rpc.directData('rpc.isExpertMode'));
+
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.UvmContext.localDirectory.getUsers'),
