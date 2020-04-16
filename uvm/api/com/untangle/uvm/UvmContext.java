@@ -92,6 +92,13 @@ public interface UvmContext
     GeographyManager geographyManager();
 
     /**
+     * Get the NetspaceManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    NetspaceManager netspaceManager();
+
+    /**
      * Get the DaemonManager singleton for this instance
      *
      * @return the singleton

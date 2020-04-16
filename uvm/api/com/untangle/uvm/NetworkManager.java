@@ -44,8 +44,6 @@ public interface NetworkManager
     
     List<DeviceStatus> getDeviceStatus( );
 
-    List<IPMaskedAddress> getCurrentlyUsedNetworks( boolean includeDynamic, boolean includeL2tp, boolean includeOpenvpn );
-
     boolean isVrrpMaster( int interfaceId );
 
     boolean isWanInterface( int interfaceId );
@@ -61,4 +59,7 @@ public interface NetworkManager
     int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum);
 
     List<IPMaskedAddress> getLocalNetworks();
+
+    String getNetworkSettingsFilename();
+
 }

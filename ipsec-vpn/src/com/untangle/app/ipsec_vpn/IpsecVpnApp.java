@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.NetspaceManager;
+import com.untangle.uvm.NetspaceManager.NetworkSpace;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManager;
@@ -179,20 +181,12 @@ public class IpsecVpnApp extends AppBase
 
         logger.debug("setSettings()");
 
-        IPMaskedAddress lNet = new IPMaskedAddress(newSettings.getVirtualAddressPool());
-        IPMaskedAddress xNet = new IPMaskedAddress(newSettings.getVirtualXauthPool());
-        IPMaskedAddress gNet = new IPMaskedAddress(newSettings.getVirtualNetworkPool());
-
-        if (lNet.isIntersecting(xNet)) {
-            throw new RuntimeException("Detected conflict between L2TP (" + lNet + ") and Xauth (" + xNet + ") address pools.");
-        }
-
-        if (lNet.isIntersecting(gNet)) {
-            throw new RuntimeException("Detected conflict between L2TP (" + lNet + ") and GRE (" + gNet + ") address pools.");
-        }
-
-        if (xNet.isIntersecting(gNet)) {
-            throw new RuntimeException("Detected conflict between Xauth (" + xNet + ") and GRE (" + gNet + ") address pools.");
+        /**
+         * First we check for network address space conflicts
+         */
+        String conflict = checkNetworkReservations(newSettings);
+        if (conflict != null) {
+            throw new RuntimeException(conflict);
         }
 
         idx = 0;
@@ -217,7 +211,12 @@ public class IpsecVpnApp extends AppBase
             return;
         }
 
+        /**
+         * Change current settings and update network reservations any time
+         * settings are saved.
+         */
         this.settings = newSettings;
+        updateNetworkReservations(newSettings);
         reconfigure();
     }
 
@@ -311,12 +310,18 @@ public class IpsecVpnApp extends AppBase
             logger.error("Failed to load settings: ", exn);
         }
 
+        /**
+         * If we couldn't load settings, just initialize. We only need to
+         * register network reservations on successful load since it will be
+         * handled in saveSettings during initialize.
+         */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings");
             this.initializeSettings();
         } else {
             logger.info("Loaded settings from: " + settingsFilename);
             this.settings = readSettings;
+            updateNetworkReservations(readSettings);
             reconfigure();
         }
     }
@@ -424,7 +429,7 @@ public class IpsecVpnApp extends AppBase
     private synchronized void reconfigure()
     {
         logger.debug("reconfigure()");
-        manager.generateConfig(this.settings,activeCertificate);
+        manager.generateConfig(this.settings, activeCertificate);
         updateBlingers();
 
         ExecManagerResult result;
@@ -710,14 +715,6 @@ public class IpsecVpnApp extends AppBase
         record.setInBytes("0");
         record.setOutBytes("0");
 
-        /*
-         * Use the id and description to create a unique connection name that
-         * won't cause problems in the ipsec.conf file by replacing non-word
-         * characters with a hyphen. We also prefix this name with UT123_ to
-         * ensure no dupes in the config file.
-         */
-        String workname = ("UT" + tunnel.getId() + "_" + tunnel.getDescription().replaceAll("\\W", "-"));
-
 // THIS IS FOR ECLIPSE - @formatter:off
 
         /*
@@ -727,7 +724,7 @@ public class IpsecVpnApp extends AppBase
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-        String result = IpsecVpnApp.execManager().execOutput(GRAB_TUNNEL_STATUS_SCRIPT + " " + workname);
+        String result = IpsecVpnApp.execManager().execOutput(GRAB_TUNNEL_STATUS_SCRIPT + " " + tunnel.getWorkName());
 
         /*
          * If the tunnel is active, update the mode and continue parsing.
@@ -820,7 +817,7 @@ public class IpsecVpnApp extends AppBase
 
         FileReader fileReader = new FileReader(cfgfile);
         BufferedReader bufferedReader = null;
-        try{
+        try {
             bufferedReader = new BufferedReader(fileReader);
 
             while ((line = bufferedReader.readLine()) != null) {
@@ -831,13 +828,13 @@ public class IpsecVpnApp extends AppBase
                 buffer.append("\n");
             }
             fileReader.close();
-        } catch( Exception ex){
+        } catch (Exception ex) {
             logger.error("Unable to write to file", ex);
         } finally {
-            if( bufferedReader != null){
-                try{
+            if (bufferedReader != null) {
+                try {
                     bufferedReader.close();
-                } catch( Exception ex){
+                } catch (Exception ex) {
                     logger.error("Unable to close file", ex);
                 }
             }
@@ -847,10 +844,10 @@ public class IpsecVpnApp extends AppBase
         try {
             fileWriter = new FileWriter(STRONGSWAN_STROKE_CONFIG);
             fileWriter.write(buffer.toString());
-        } catch ( Exception ex ){
+        } catch (Exception ex) {
             logger.error("Unable to write file", ex);
-        } finally{
-            if ( fileWriter != null ){
+        } finally {
+            if (fileWriter != null) {
                 try {
                     fileWriter.close();
                 } catch (Exception ex) {
@@ -861,8 +858,8 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
-     * Callback hook for changes to UVM settings so we know when the
-     * certificate assigned to IPsec has been changed.
+     * Callback hook for changes to UVM settings so we know when the certificate
+     * assigned to IPsec has been changed.
      *
      * @author mahotz
      *
@@ -927,5 +924,82 @@ public class IpsecVpnApp extends AppBase
             activeCertificate = adminCertificate;
             reconfigure();
         }
+    }
+
+    /**
+     * Function to register all network address blocks configured in this
+     * application
+     *
+     * @param argSettings
+     *        - The application settings
+     */
+    private void updateNetworkReservations(IpsecVpnSettings argSettings)
+    {
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+
+        // start by clearing all existing registrations
+        nsmgr.clearOwnerRegistrationAll("ipsec-vpn");
+
+        // add registration for L2TP and Xauth address pools if VPN is enabled
+        if (argSettings.getVpnflag()) {
+            nsmgr.registerNetworkBlock("ipsec-vpn", "L2TP", argSettings.getVirtualAddressPool());
+            nsmgr.registerNetworkBlock("ipsec-vpn", "Xauth", argSettings.getVirtualXauthPool());
+        }
+
+        // add registration for the GRE address pool
+        nsmgr.registerNetworkBlock("ipsec-vpn", "GRE", argSettings.getVirtualNetworkPool());
+    }
+
+    /**
+     * Function to check all configured network address blocks for conflicts
+     *
+     * @param argSettings
+     *        - The new application settings
+     * @return A string describing the conflict or null if no conflicts are
+     *         detected
+     */
+    private String checkNetworkReservations(IpsecVpnSettings argSettings)
+    {
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+        NetworkSpace space = null;
+
+        IPMaskedAddress lNet = new IPMaskedAddress(argSettings.getVirtualAddressPool());
+        IPMaskedAddress xNet = new IPMaskedAddress(argSettings.getVirtualXauthPool());
+        IPMaskedAddress gNet = new IPMaskedAddress(argSettings.getVirtualNetworkPool());
+
+        // only need to check for L2TP and Xauth conflits if the VPN flag is enabled 
+        if (argSettings.getVpnflag()) {
+            if (lNet.isIntersecting(xNet)) {
+                return new String("Detected conflict between L2TP (" + lNet + ") and Xauth (" + xNet + ") address pools.");
+            }
+
+            if (lNet.isIntersecting(gNet)) {
+                return new String("Detected conflict between L2TP (" + lNet + ") and GRE (" + gNet + ") address pools.");
+            }
+
+            if (xNet.isIntersecting(gNet)) {
+                return new String("Detected conflict between Xauth (" + xNet + ") and GRE (" + gNet + ") address pools.");
+            }
+
+            // check the L2TP address pool in the registry
+            space = nsmgr.isNetworkAvailable("ipsec-vpn", lNet);
+            if (space != null) {
+                return new String("L2TP Address Pool conflicts with " + space.ownerName + ":" + space.ownerPurpose);
+            }
+
+            // check the Xauth address pool in the registry
+            space = nsmgr.isNetworkAvailable("ipsec-vpn", xNet);
+            if (space != null) {
+                return new String("Xauth Address Pool conflicts with " + space.ownerName + ":" + space.ownerPurpose);
+            }
+        }
+
+        // check the GRE address pool in the registry
+        space = nsmgr.isNetworkAvailable("ipsec-vpn", gNet);
+        if (space != null) {
+            return new String("GRE Address Pool conflicts with " + space.ownerName + ":" + space.ownerPurpose);
+        }
+
+        return null;
     }
 }

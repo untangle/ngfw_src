@@ -99,15 +99,40 @@ public class IpsecVpnManager
          * detected and the tunnel is down for some reason.
          */
         LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
+
+        // call disconnectDSisabledTunnels to verify any disabled tunnels are now off
+        disconnectDisabledTunnels(tunnelList);
+
         IpsecVpnTunnel tunnel;
 
         for (int x = 0; x < tunnelList.size(); x++) {
             tunnel = tunnelList.get(x);
             if (tunnel.getActive() != true) continue;
             if (tunnel.getRunmode().equals("start")) {
-                String workname = ("UT" + tunnel.getId() + "_" + tunnel.getDescription().replaceAll("\\W", "-"));
-                UvmContextFactory.context().execManager().exec("ipsec route " + workname);
+                UvmContextFactory.context().execManager().exec("ipsec route " + tunnel.getWorkName());
             }
+        }
+    }
+
+
+    /**
+     * disconnectDisabledTunnels will check inactive tunnels and bring them down if they are up
+     * 
+     * @param tunnelConfigs - LinkedList of IpsecVpnTunnel configurations 
+     */
+    public void disconnectDisabledTunnels(LinkedList<IpsecVpnTunnel> tunnelConfigs) {
+
+        if(tunnelConfigs == null) return;
+
+        try {
+            for(IpsecVpnTunnel tun : tunnelConfigs) {
+                if(!tun.getActive()) {
+                    logger.info("disconnecting tunnel: " + tun.getWorkName());
+                    UvmContextFactory.context().execManager().exec("ipsec down " + tun.getWorkName());
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to disconnect tunnel: ", e);
         }
     }
 

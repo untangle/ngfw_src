@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -157,8 +158,8 @@ public class OpenVpnManager
         deleteFiles();
         writeIptablesFiles(settings);
         writeServerSettings(settings);
-        writeRemoteClientFiles(settings);
-        writeRemoteServerFiles(settings);
+        writeRemoteClientFiles(settings.getRemoteClients(), settings.getGroups(), settings.getAddressSpace().getFirstMaskedAddress().getHostAddress());
+        writeRemoteServerFiles(settings.getRemoteServers());
     }
 
     /**
@@ -498,13 +499,20 @@ public class OpenVpnManager
     /**
      * Write remote client files
      * 
-     * @param settings
-     *        The application settings
+     * @param clients
+     *        The remote clients to write
+     * 
+     * @param groups
+     *        The groups to write
+     * 
+     * @param dnsAddress
+     *        The dns address to write
+     * 
      */
-    private void writeRemoteClientFiles(OpenVpnSettings settings)
+    private void writeRemoteClientFiles(List<OpenVpnRemoteClient> clients, List<OpenVpnGroup> groups, String dnsAddress)
     {
-        for (OpenVpnRemoteClient client : settings.getRemoteClients()) {
-            OpenVpnGroup group = getGroup(settings, client.getGroupId());
+        for (OpenVpnRemoteClient client : clients) {
+            OpenVpnGroup group = getGroup(groups, client.getGroupId());
 
             if (!client.getEnabled() || (group == null)) continue;
 
@@ -527,7 +535,7 @@ public class OpenVpnManager
                  * custom
                  */
                 if (group.getPushDnsSelf()) {
-                    sb.append("push" + " " + "\"dhcp-option DNS " + settings.getAddressSpace().getFirstMaskedAddress().getHostAddress() + "\"" + "\n");
+                    sb.append("push" + " " + "\"dhcp-option DNS " + dnsAddress + "\"" + "\n");
                 } else {
                     InetAddress dns1 = group.getPushDns1();
                     if (dns1 != null) sb.append("push" + " " + "\"dhcp-option DNS " + dns1.getHostAddress() + "\"" + "\n");
@@ -605,10 +613,10 @@ public class OpenVpnManager
     /**
      * Write config files for remote servers
      * 
-     * @param settings
-     *        The application settings
+     * @param remoteServers
+     *        List of remote servers within settings config
      */
-    private void writeRemoteServerFiles(OpenVpnSettings settings)
+    private void writeRemoteServerFiles(List<OpenVpnRemoteServer> remoteServers)
     {
         int count = 1;
 
@@ -618,7 +626,7 @@ public class OpenVpnManager
         BufferedReader cfgReader;
         BufferedWriter cfgWriter;
         BufferedWriter authWriter;
-        for (OpenVpnRemoteServer server : settings.getRemoteServers()) {
+        for (OpenVpnRemoteServer server : remoteServers) {
             if (!server.getEnabled()) continue;
 
             String name = server.getName();
@@ -886,6 +894,26 @@ public class OpenVpnManager
         if (settings.getGroups() == null) return null;
 
         for (OpenVpnGroup group : settings.getGroups()) {
+            if (group.getGroupId() == groupId) return group;
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets a group corresponding to an argumented group id from an array of groups
+     * 
+     * @param groups
+     *        A list of groups to search
+     * @param groupId
+     *        The group id
+     * @return The group object
+     */
+    private OpenVpnGroup getGroup(List<OpenVpnGroup> groups, int groupId)
+    {
+        if (groups == null) return null;
+
+        for (OpenVpnGroup group : groups) {
             if (group.getGroupId() == groupId) return group;
         }
 

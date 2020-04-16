@@ -42,6 +42,7 @@ Ext.define('Ung.util.Util', {
         'wan-failover': 'WAN Failover detects WAN outages and re-routes traffic to any other available WANs to maximize network uptime.'.t(),
         'wan-balancer': 'WAN Balancer spreads network traffic across multiple internet connections for better performance.'.t(),
         'ipsec-vpn': 'IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, GRE, L2TP, Xauth, and IKEv2 protocols.'.t(),
+        'wireguard-vpn': 'Wireguard VPN provides secure network access and tunneling to remote users and sites using the Wireguard VPN protocol.'.t(),
         'openvpn': 'OpenVPN provides secure network access and tunneling to remote users and sites using the OpenVPN protocol.'.t(),
         'tunnel-vpn': 'Tunnel VPN provides connectivity through encrypted tunnels to remote VPN servers and services.'.t(),
         'intrusion-prevention': 'Intrusion Prevention blocks scans, detects, and blocks attacks and suspicious traffic using signatures.'.t(),
@@ -825,5 +826,22 @@ Ext.define('Ung.util.Util', {
         dots = ip.split('.');
         var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
+    },
+
+    /**
+     * Increment the passed IP
+     * @param  string ip      IP address to increment.
+     * @param  int inc        Number to increment by.
+     * @return string         Incremented IP address.
+     */
+    incrementIpAddr: function(ip, inc){
+        var dots = ip.split('.');
+        var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3])+inc;
+        dots = [];
+        dots.push(ipInteger >>> 24);
+        dots.push((ipInteger >>> 16) % 256);
+        dots.push((ipInteger >>> 8) % 256);
+        dots.push(ipInteger % 256);
+        return dots.join('.');
     }
   });
