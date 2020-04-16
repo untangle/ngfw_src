@@ -7,6 +7,7 @@ package com.untangle.app.openvpn;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.NetspaceManager;
+import com.untangle.uvm.NetspaceManager.NetworkSpace;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.network.NetworkSettings;
@@ -126,12 +129,12 @@ public class OpenVpnAppImpl extends AppBase
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-
             this.initializeSettings();
         } else {
             updateSettings(readSettings);
             logger.info("Loading Settings...");
             this.settings = readSettings;
+            updateNetworkReservations(readSettings);
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
@@ -285,10 +288,18 @@ public class OpenVpnAppImpl extends AppBase
             return;
         }
 
+        boolean restartRequired = true;
+        
+        if(this.settings != null) {
+            restartRequired = isRestartRequired(this.settings, newSettings);
+        }
+
         /**
-         * Change current settings
+         * Change current settings and update network reservations
+         * any time settings are saved
          */
         this.settings = newSettings;
+        updateNetworkReservations(newSettings);
         try {
             logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
         } catch (Exception e) {
@@ -300,16 +311,20 @@ public class OpenVpnAppImpl extends AppBase
         this.openVpnManager.configure(this.settings);
 
         /**
-         * Restart the daemon
-         */
-        try {
-            if (getRunState() == AppSettings.AppState.RUNNING) {
-                this.openVpnManager.restart();
+         * Restart the daemon if we changed a setting that requires OpenVPN service restart
+         * 
+         * */
+        if(restartRequired) {
+            logger.debug("Restarting openvpn service...");
+            try {
+                if (getRunState() == AppSettings.AppState.RUNNING) {
+                    this.openVpnManager.restart();
+                }
+            } catch (Exception exn) {
+                logger.error("Could not save VPN settings", exn);
             }
-        } catch (Exception exn) {
-            logger.error("Could not save VPN settings", exn);
         }
-
+        
         /**
          * Clean up stuff from clients and servers that have been removed
          */
@@ -322,7 +337,49 @@ public class OpenVpnAppImpl extends AppBase
         }
     }
 
-    
+    /**
+     * isRestartRequired checks for field changes that would require a service restart
+     * 
+     * @param oldSettings - The previous settings before the save
+     * @param newSettings - The new settings to be saved
+     * @return boolean - True if a restart of the OpenVpn service is required, False if not
+     * 
+     */
+    private boolean isRestartRequired(OpenVpnSettings oldSettings, OpenVpnSettings newSettings) {
+
+        // Server enabled/disabled
+        if (oldSettings.getServerEnabled() != newSettings.getServerEnabled()) { logger.debug("Server is Enabled has changed."); return true;}
+
+        // Address space changes
+        if (!oldSettings.getAddressSpace().equals(newSettings.getAddressSpace())) { logger.debug("Server Address space has changed."); return true;}
+
+        // Authentication type changes
+        if (oldSettings.getAuthenticationType() != newSettings.getAuthenticationType()) { logger.debug("Server Authentication Type has changed."); return true;}
+
+        // AuthUserPass changes
+        if (oldSettings.getAuthUserPass() != newSettings.getAuthUserPass()) { logger.debug("Server Authentication User Password Data has changed."); return true;}
+
+        // Protocol changes
+        if (!oldSettings.getProtocol().equals(newSettings.getProtocol())) { logger.debug("Server Protocol has changed."); return true;}
+
+        // Listening Port changes
+        if (oldSettings.getPort() != newSettings.getPort()) { logger.debug("Server Port has changed."); return true;}
+
+        // Cipher changes
+        if (!oldSettings.getCipher().equals(newSettings.getCipher())) { logger.debug("Server Cipher has changed."); return true;}
+
+        // Client to client enabled/disabled
+        if (oldSettings.getClientToClient() != newSettings.getClientToClient()) { logger.debug("Server Client to Client has changed."); return true;}
+
+        // Server config settings (Use data stream to compare a json string of the entire list)
+        if(oldSettings.getServerConfiguration().stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(newSettings.getServerConfiguration().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""))) != 0) { logger.debug("Custom Server Configuration Items have changed."); return true; }
+
+        // Exported networks (Use data stream to compare a json string of the entire list)
+        if(oldSettings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(newSettings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""))) != 0) {logger.debug("Exported network items have changed."); return true;}
+
+        return false;
+    }
+   
     /**
      * Verifies current OpenVpnSettings version, and updates to latest verson.
      *
@@ -665,19 +722,14 @@ public class OpenVpnAppImpl extends AppBase
         possibleAddressPools.add(new IPMaskedAddress("172.16.16.0/24"));
         possibleAddressPools.add(new IPMaskedAddress("192.168.168.0/24"));
         possibleAddressPools.add(new IPMaskedAddress("1.2.3.0/24"));
+
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+
+        // use the first possible pool that doesn't conflict with any existing registered networks
         for (IPMaskedAddress possibleAddressPool : possibleAddressPools) {
-
-            boolean foundConflict = false;
-            for (InterfaceStatus intfStatus : UvmContextFactory.context().networkManager().getInterfaceStatus()) {
-                if (intfStatus.getV4Address() == null || intfStatus.getV4Netmask() == null) continue;
-                IPMaskedAddress intfMaskedAddress = new IPMaskedAddress(intfStatus.getV4Address(), intfStatus.getV4PrefixLength());
-                if (intfMaskedAddress.isIntersecting(possibleAddressPool)) foundConflict = true;
-            }
-
-            if (!foundConflict) {
-                newSettings.setAddressSpace(possibleAddressPool);
-                break;
-            }
+            if (nsmgr.isNetworkAvailable(null, possibleAddressPool) != null) continue;
+            newSettings.setAddressSpace(possibleAddressPool);
+            break;
         }
 
         return newSettings;
@@ -744,16 +796,18 @@ public class OpenVpnAppImpl extends AppBase
         }
 
         /**
-         * Check that exported remote network do not conflict with Untangle
-         * addresses and other exports
+         * Check that exported remote networks do not conflict with any other
+         * registered addresses or other exports
          */
-        List<IPMaskedAddress> currentlyUsed = UvmContextFactory.context().networkManager().getCurrentlyUsedNetworks(true, true, false);
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+        NetworkSpace space = null;
+
         for (IPMaskedAddress export : exportedNetworks) {
-            for (IPMaskedAddress used : currentlyUsed) {
-                if (export.isIntersecting(used)) {
-                    throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + export + " " + I18nUtil.marktr("conflicts with address") + " " + used);
-                }
+            space = nsmgr.isNetworkAvailable("openvpn", export);
+            if (space != null) {
+                throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + export + " " + I18nUtil.marktr("conflicts with") + " " + space.ownerName + ":" + space.ownerPurpose);
             }
+
             for (IPMaskedAddress export2 : exportedNetworks) {
                 if (export == export2) continue;
                 if (export.isIntersecting(export2)) {
@@ -1053,6 +1107,33 @@ public class OpenVpnAppImpl extends AppBase
         }
 
         return results;
+    }
+
+    /**
+     * Function to register all network address blocks configured in this application
+     *
+     * @param argSettings - The application settings
+     */
+    private void updateNetworkReservations(OpenVpnSettings argSettings)
+    {
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
+
+        // start by clearing all existing registrations
+        nsmgr.clearOwnerRegistrationAll("openvpn");
+
+        // add registration for the configured address pool
+        nsmgr.registerNetworkBlock("openvpn", "server-network", settings.getAddressSpace());
+
+        // add reservation for all exported networks in configured remote clients        
+        for (OpenVpnRemoteClient client : argSettings.getRemoteClients()) {
+            if (client.getExport()) {
+                String networks = client.getExportNetwork();
+                for (String network : networks.split(",")) {
+                    if (network.length() == 0) continue;
+                    nsmgr.registerNetworkBlock("openvpn", "remote-network", networks);
+                }
+            }
+        }
     }
 
     /**

@@ -114,6 +114,7 @@ public class WebBrowser
                 .withEnvironment(ImmutableMap.of("DISPLAY",":" + this.displaySequence.toString() + "." + displayScreen.toString()))
                 .build();
             ChromeOptions options = new ChromeOptions();
+            options.setHeadless(true);
             options.addArguments("--no-sandbox");
             options.addArguments("--user-data-dir=" + tempDirectory);
             options.addArguments("--disable-default-apps");
@@ -121,6 +122,8 @@ public class WebBrowser
             driver = new ChromeDriver(service, options);
         }catch(UnreachableBrowserException e){
             logger.warn("Unable to open driver, ", e);
+        } catch(Exception ex) {
+            logger.warn("Driver failure:", ex);
         }
 
 	}
