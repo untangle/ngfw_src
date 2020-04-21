@@ -145,8 +145,6 @@ public class IpsecVpnApp extends AppBase
         tmp.setRunmode("start");
         tmp.setLeft("198.51.100.1");
         tmp.setRight("203.0.113.1");
-        //tmp.setLeftSubnet("192.168.101.0/24");
-        //tmp.setRightSubnet("192.168.102.0/24");
 
         tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
         tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
@@ -163,8 +161,6 @@ public class IpsecVpnApp extends AppBase
         tmp.setLeft("198.51.100.1");
         tmp.setRight("203.0.113.1");
 
-        //tmp.setLeftSubnet("10.10.0.0/16");
-        //tmp.setRightSubnet("10.20.0.0/16");
         tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 16).toString());
         tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 16).toString());
 
