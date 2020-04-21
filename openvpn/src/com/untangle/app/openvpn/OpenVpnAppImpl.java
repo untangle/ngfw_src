@@ -1116,9 +1116,6 @@ public class OpenVpnAppImpl extends AppBase
         // add reservation for all exported networks in configured remote clients        
         for (OpenVpnRemoteClient client : remoteClients) {
             if (client.getExport()) {
-                client.
-
-
                 String networks = client.getExportNetwork();
                 for (String network : networks.split(",")) {
                     if (network.length() == 0) continue;
