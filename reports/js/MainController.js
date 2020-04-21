@@ -126,23 +126,12 @@ Ext.define('Ung.apps.reports.MainController', {
         var vm = this.getViewModel();
 
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.UvmContext.licenseManager.isLicenseValid', 'directory-connector'),
-            Rpc.asyncPromise('rpc.appManager.app', 'directory-connector'),
+            Rpc.asyncPromise('rpc.UvmContext.googleManager.isGoogleDriveConnected')
         ]).then(function(result){
             if(Util.isDestroyed(vm)){
                 return;
             }
-            var googleDriveConfigured = false;
-            if(result[0]){
-                var directoryConnector = result[1];
-                if(directoryConnector){
-                    var googleManager = directoryConnector.getGoogleManager();
-                    if(googleManager && googleManager.isGoogleDriveConnected()){
-                        googleDriveConfigured = true;
-                    }
-                }
-            }
-            vm.set('googleDriveConfigured', googleDriveConfigured);
+            vm.set('googleDriveConfigured', result[0]);
         }, function(ex) {
             Util.handleException(ex);
         });
