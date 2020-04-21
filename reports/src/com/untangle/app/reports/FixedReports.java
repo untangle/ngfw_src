@@ -259,6 +259,12 @@ public class FixedReports
         ReservedReports.add("system-N63OfrLqbS");
         // Highest Active Hosts
         ReservedReports.add("system-lL959lz7qu");
+        // Web Traffic Summary
+        ReservedReports.add("threat-prevention-tpupl31dqKb1h");
+        // Web Top Scanned Threats
+        ReservedReports.add("threat-prevention-tpsAsiftrbsss");
+        // Non-Web Top Scanned Threats (by client)
+        ReservedReports.add("threat-prevention-tpAsifWhYotrbsc");
         // Virus Blocker FTP Summary
         ReservedReports.add("virus-blocker-ugosjuGk");
         // Virus Blocker Email Summary
