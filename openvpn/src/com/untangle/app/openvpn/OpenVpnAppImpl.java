@@ -23,6 +23,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetspaceManager;
 import com.untangle.uvm.NetspaceManager.NetworkSpace;
+import com.untangle.uvm.NetspaceManager.IPVersion;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.network.NetworkSettings;
@@ -708,29 +709,12 @@ public class OpenVpnAppImpl extends AppBase
         groups.add(group);
         newSettings.setGroups(groups);
 
-        /**
-         * Find an address pool that doesn't intersect anything
-         */
-        List<IPMaskedAddress> possibleAddressPools = new LinkedList<>();
-        Random rand = new Random();
-        possibleAddressPools.add(new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24"));
-        possibleAddressPools.add(new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24"));
-        possibleAddressPools.add(new IPMaskedAddress("172.16." + rand.nextInt(250) + ".0/24"));
-        possibleAddressPools.add(new IPMaskedAddress("172.16.0.0/16"));
-        possibleAddressPools.add(new IPMaskedAddress("10.10.0.0/16"));
-        possibleAddressPools.add(new IPMaskedAddress("192.168.0.0/16"));
-        possibleAddressPools.add(new IPMaskedAddress("172.16.16.0/24"));
-        possibleAddressPools.add(new IPMaskedAddress("192.168.168.0/24"));
-        possibleAddressPools.add(new IPMaskedAddress("1.2.3.0/24"));
-
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
 
-        // use the first possible pool that doesn't conflict with any existing registered networks
-        for (IPMaskedAddress possibleAddressPool : possibleAddressPools) {
-            if (nsmgr.isNetworkAvailable(null, possibleAddressPool) != null) continue;
-            newSettings.setAddressSpace(possibleAddressPool);
-            break;
-        }
+        IPMaskedAddress newAddrPool = nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24);
+
+        newSettings.setAddressSpace(newAddrPool);
+
 
         return newSettings;
     }
