@@ -117,7 +117,6 @@ public class IpsecVpnApp extends AppBase
     public void initializeSettings()
     {
         logger.debug("initializeSettings()");
-        logger.info("Generating ipsec settings. ");
 
         settings = new IpsecVpnSettings();
         LinkedList<VirtualListen> listenList = new LinkedList<>();
@@ -161,8 +160,8 @@ public class IpsecVpnApp extends AppBase
         tmp.setLeft("198.51.100.1");
         tmp.setRight("203.0.113.1");
 
-        tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 16).toString());
-        tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 16).toString());
+        tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+        tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
 
         tunnelList.add(tmp);
 
@@ -173,8 +172,6 @@ public class IpsecVpnApp extends AppBase
 
         settings.setTunnels(tunnelList);
         setSettings(settings);
-        logger.info("IPsec settings finished setting");
-
     }
 
     /**
