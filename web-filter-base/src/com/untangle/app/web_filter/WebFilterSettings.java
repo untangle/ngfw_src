@@ -46,6 +46,7 @@ public class WebFilterSettings implements Serializable, JSONString
 
     private Boolean customBlockPageEnabled = false;
     private String customBlockPageUrl = "";
+    private Boolean closeHttpsBlockEnabled = false;
 
     private List<WebFilterRule> filterRules = new LinkedList<WebFilterRule>();
     private List<GenericRule> passedClients = new LinkedList<GenericRule>();
@@ -148,7 +149,9 @@ public class WebFilterSettings implements Serializable, JSONString
     public String getCustomBlockPageUrl() { return this.customBlockPageUrl; }
     public void setCustomBlockPageUrl( String customBlockPageUrl ) { this.customBlockPageUrl = customBlockPageUrl; }
 
-    
+    public Boolean getCloseHttpsBlockEnabled() { return closeHttpsBlockEnabled; }
+    public void setCloseHttpsBlockEnabled( Boolean closeHttpsBlockEnabled ) { this.closeHttpsBlockEnabled = closeHttpsBlockEnabled; }
+
     public GenericRule getCategory(Integer id)
     {
         for (GenericRule cat : getCategories()) {
