@@ -47,6 +47,7 @@ import com.untangle.uvm.util.IOUtil;
  */
 public class SystemManagerImpl implements SystemManager
 {
+    private static final int SETTINGS_VERSION = 4;
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
     private static final String TWO_LINES = BLANK_LINE + EOL;
@@ -103,6 +104,12 @@ public class SystemManagerImpl implements SystemManager
             this.setSettings(defaultSettings());
         } else {
             this.settings = readSettings;
+
+            if(this.settings.getVersion() < SETTINGS_VERSION){
+                this.settings.setVersion(SETTINGS_VERSION);
+                this.settings.setLogRetention(7);
+                this.setSettings(this.settings);
+            }
 
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
@@ -618,6 +625,16 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
+     * Get the size of /var/log for display in the UI.
+     *
+     * @return Size of all files recursively.
+     */
+    public Integer getLogDirectorySize()
+    {
+        return Integer.parseInt(UvmContextFactory.context().execManager().execOutput("/bin/du -sb /var/log").split("\\t")[0]);
+    }
+
+    /**
      * Create the default system settings
      * 
      * @return The default system settings
@@ -625,7 +642,7 @@ public class SystemManagerImpl implements SystemManager
     private SystemSettings defaultSettings()
     {
         SystemSettings newSettings = new SystemSettings();
-        newSettings.setVersion(3);
+        newSettings.setVersion(SETTINGS_VERSION);
 
         SnmpSettings snmpSettings = new SnmpSettings();
         snmpSettings.setEnabled(false);
