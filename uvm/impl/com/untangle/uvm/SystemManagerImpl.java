@@ -81,17 +81,20 @@ public class SystemManagerImpl implements SystemManager
 
     private Calendar currentCalendar = Calendar.getInstance();
 
+    private String SettingsFileName = "";
+
     /**
      * Constructor
      */
     protected SystemManagerImpl()
     {
+        this.SettingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "system.js";
+
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         SystemSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "system.js";
 
         try {
-            readSettings = settingsManager.load(SystemSettings.class, settingsFileName);
+            readSettings = settingsManager.load(SystemSettings.class, SettingsFileName);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
         }
@@ -118,7 +121,7 @@ public class SystemManagerImpl implements SystemManager
          * If the settings file date is newer than the system files, re-sync
          * them
          */
-        File settingsFile = new File(settingsFileName);
+        File settingsFile = new File(SettingsFileName);
         File snmpConfFile = new File(SNMP_CONF_FILE_NAME);
         File snmpDefaultFile = new File(SNMP_DEFAULT_FILE_NAME);
         if (settingsFile.lastModified() > snmpConfFile.lastModified() || settingsFile.lastModified() > snmpDefaultFile.lastModified()) syncSnmpSettings(this.settings.getSnmpSettings());
@@ -188,7 +191,7 @@ public class SystemManagerImpl implements SystemManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "system.js", newSettings);
+            settingsManager.save(this.SettingsFileName, newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;
@@ -220,6 +223,8 @@ public class SystemManagerImpl implements SystemManager
         } else {
             if (CRON_FILE.exists()) UvmContextFactory.context().execManager().exec("/bin/rm -f " + CRON_FILE);
         }
+
+        UvmContextImpl.context().syncSettings().run(this.SettingsFileName);
 
         pyconnectorSync();
     }
