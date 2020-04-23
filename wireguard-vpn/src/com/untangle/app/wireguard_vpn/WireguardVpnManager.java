@@ -98,20 +98,7 @@ public class WireguardVpnManager
         /**
          * Update Wireguard quick config and iptables script.
          */
-        String result = UvmContextFactory.context().execManager().execOutput(
-            "/usr/bin/sync-settings" +
-            " -f " + app.getSettingsFilename() + 
-            " -f " + UvmContextFactory.context().networkManager().getNetworkSettingsFilename());
-        try {
-            String lines[] = result.split("\\r?\\n");
-            for ( String line : lines ){
-                if( line.trim().length() > 1 ){
-                    logger.warn("reconfigure: sync-settings: " + line);
-                }
-            }
-        } catch (Exception e) {
-            logger.warn( "Unable to generate iptables configuration:", e );
-        }
+        UvmContextFactory.context().syncSettings().run(app.getSettingsFilename(), UvmContextFactory.context().networkManager().getNetworkSettingsFilename());
     }
 
     /**

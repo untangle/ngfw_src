@@ -61,5 +61,7 @@ public interface SystemManager
 
     void upgrade();
 
-    void activateApacheCertificate();    
+    void activateApacheCertificate();
+
+    Integer getLogDirectorySize();
 }
