@@ -385,7 +385,7 @@ public class SessionMonitorImpl implements SessionMonitor
             logger.warn("Unknown protocol: " + protocolStr);
             protocol = 0;
         }
-        return new SessionTuple( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort, clientIntf, serverIntf );
+        return new SessionTuple( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort, clientIntf );
     }
 
     /**
@@ -409,8 +409,7 @@ public class SessionMonitorImpl implements SessionMonitor
                                      session.getPreNatServer(),
                                      session.getPreNatClientPort(),
                                      session.getPreNatServerPort(),
-                                     session.getClientIntf(),
-                                     session.getServerIntf() );
+                                     session.getClientIntf() );
     }
 
     /**

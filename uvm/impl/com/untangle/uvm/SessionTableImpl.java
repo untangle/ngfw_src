@@ -116,8 +116,7 @@ public class SessionTableImpl
                                                               session.netcapSession().clientSide().server().host(),
                                                               session.netcapSession().clientSide().client().port(),
                                                               session.netcapSession().clientSide().server().port(),
-                                                              session.netcapSession().clientSide().interfaceId(),
-                                                              session.netcapSession().serverSide().interfaceId()
+                                                              session.netcapSession().clientSide().interfaceId()
                                                               );
 // THIS IS FOR ECLIPSE - @formatter:on
 
@@ -151,8 +150,7 @@ public class SessionTableImpl
                                                       session.netcapSession().clientSide().server().host(),
                                                       session.netcapSession().clientSide().client().port(),
                                                       session.netcapSession().clientSide().server().port(),
-                                                      session.netcapSession().clientSide().interfaceId(),
-                                                      session.netcapSession().serverSide().interfaceId()
+                                                      session.netcapSession().clientSide().interfaceId()
                                                       );
 // THIS IS FOR ECLIPSE - @formatter:on
 
@@ -194,7 +192,7 @@ public class SessionTableImpl
      */
     protected synchronized SessionGlobalState remove(short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort)
     {
-        SessionTuple tupleKey = new SessionTuple(protocol, clientAddr, serverAddr, clientPort, serverPort, clientIntf, serverIntf);
+        SessionTuple tupleKey = new SessionTuple(protocol, clientAddr, serverAddr, clientPort, serverPort, clientIntf);
         SessionGlobalState session = sessionTableByTuple.get(tupleKey);
         if (session == null) {
             return null;
