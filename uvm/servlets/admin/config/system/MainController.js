@@ -15,6 +15,7 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.asyncPromise('rpc.systemManager.getDate'),
             Rpc.asyncPromise('rpc.systemManager.getTimeZone'),
             Rpc.asyncPromise('rpc.systemManager.getTimeZones'),
+            Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode')
         ];
 
@@ -24,6 +25,7 @@ Ext.define('Ung.config.system.MainController', {
             'time',
             'timeZone',
             'timeZonesList',
+            'logDirectorySize',
             'isExpertMode'
         ];
         if(Rpc.directData('rpc.appManager.app', 'http')){

@@ -47,6 +47,7 @@ import com.untangle.uvm.util.IOUtil;
  */
 public class SystemManagerImpl implements SystemManager
 {
+    private static final int SETTINGS_VERSION = 4;
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
     private static final String TWO_LINES = BLANK_LINE + EOL;
@@ -80,17 +81,20 @@ public class SystemManagerImpl implements SystemManager
 
     private Calendar currentCalendar = Calendar.getInstance();
 
+    private String SettingsFileName = "";
+
     /**
      * Constructor
      */
     protected SystemManagerImpl()
     {
+        this.SettingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "system.js";
+
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         SystemSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "system.js";
 
         try {
-            readSettings = settingsManager.load(SystemSettings.class, settingsFileName);
+            readSettings = settingsManager.load(SystemSettings.class, SettingsFileName);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
         }
@@ -104,6 +108,12 @@ public class SystemManagerImpl implements SystemManager
         } else {
             this.settings = readSettings;
 
+            if(this.settings.getVersion() < SETTINGS_VERSION){
+                this.settings.setVersion(SETTINGS_VERSION);
+                this.settings.setLogRetention(7);
+                this.setSettings(this.settings);
+            }
+
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
@@ -111,7 +121,7 @@ public class SystemManagerImpl implements SystemManager
          * If the settings file date is newer than the system files, re-sync
          * them
          */
-        File settingsFile = new File(settingsFileName);
+        File settingsFile = new File(SettingsFileName);
         File snmpConfFile = new File(SNMP_CONF_FILE_NAME);
         File snmpDefaultFile = new File(SNMP_DEFAULT_FILE_NAME);
         if (settingsFile.lastModified() > snmpConfFile.lastModified() || settingsFile.lastModified() > snmpDefaultFile.lastModified()) syncSnmpSettings(this.settings.getSnmpSettings());
@@ -181,7 +191,7 @@ public class SystemManagerImpl implements SystemManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "system.js", newSettings);
+            settingsManager.save(this.SettingsFileName, newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;
@@ -213,6 +223,8 @@ public class SystemManagerImpl implements SystemManager
         } else {
             if (CRON_FILE.exists()) UvmContextFactory.context().execManager().exec("/bin/rm -f " + CRON_FILE);
         }
+
+        UvmContextFactory.context().syncSettings().run(this.SettingsFileName);
 
         pyconnectorSync();
     }
@@ -618,6 +630,16 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
+     * Get the size of /var/log for display in the UI.
+     *
+     * @return Size of all files recursively.
+     */
+    public Integer getLogDirectorySize()
+    {
+        return Integer.parseInt(UvmContextFactory.context().execManager().execOutput("/bin/du -sb /var/log").split("\\t")[0]);
+    }
+
+    /**
      * Create the default system settings
      * 
      * @return The default system settings
@@ -625,7 +647,7 @@ public class SystemManagerImpl implements SystemManager
     private SystemSettings defaultSettings()
     {
         SystemSettings newSettings = new SystemSettings();
-        newSettings.setVersion(3);
+        newSettings.setVersion(SETTINGS_VERSION);
 
         SnmpSettings snmpSettings = new SnmpSettings();
         snmpSettings.setEnabled(false);
