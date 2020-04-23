@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetspaceManager;
+import com.untangle.uvm.NetspaceManager.IPVersion;
 import com.untangle.uvm.NetspaceManager.NetworkSpace;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.HookCallback;
@@ -53,6 +54,11 @@ public class IpsecVpnApp extends AppBase
     private static final String STAT_ENABLED = "enabled";
     private static final String STAT_DISABLED = "disabled";
     private static final String STAT_VIRTUAL = "virtual";
+
+    private static final String NETSPACE_OWNER = "ipsec-vpn";
+    private static final String NETSPACE_L2TP = "L2TP";
+    private static final String NETSPACE_GRE = "GRE";
+    private static final String NETSPACE_XAUTH = "Xauth";
 
     private static final Logger logger = Logger.getLogger(IpsecVpnApp.class);
     private final VirtualUserTable virtualUserTable = new VirtualUserTable();
@@ -125,6 +131,7 @@ public class IpsecVpnApp extends AppBase
 
         settings.setVirtualListenList(listenList);
 
+        NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
         LinkedList<IpsecVpnTunnel> tunnelList = new LinkedList<>();
         IpsecVpnTunnel tmp;
 
@@ -136,9 +143,11 @@ public class IpsecVpnApp extends AppBase
         tmp.setSecret("NOTICEhowWEuseAniceLONGstringINthisEXAMPLEwhichWILLbeMUCHmoreSECUREthanAsingleWORD");
         tmp.setRunmode("start");
         tmp.setLeft("198.51.100.1");
-        tmp.setLeftSubnet("192.168.101.0/24");
         tmp.setRight("203.0.113.1");
-        tmp.setRightSubnet("192.168.102.0/24");
+
+        tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+        tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+
         tunnelList.add(tmp);
 
         tmp = new IpsecVpnTunnel();
@@ -149,10 +158,17 @@ public class IpsecVpnApp extends AppBase
         tmp.setSecret("thisISanotherGREATexampleOFaPREsharedSECRETthatISveryLONGandTHUSreasonablySECURE");
         tmp.setRunmode("start");
         tmp.setLeft("198.51.100.1");
-        tmp.setLeftSubnet("10.10.0.0/16");
         tmp.setRight("203.0.113.1");
-        tmp.setRightSubnet("10.20.0.0/16");
+
+        tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+        tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+
         tunnelList.add(tmp);
+
+        //Setup default GRE/Xauth/L2TP addresses:
+        settings.setVirtualNetworkPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+        settings.setVirtualAddressPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+        settings.setVirtualXauthPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
 
         settings.setTunnels(tunnelList);
         setSettings(settings);
@@ -938,16 +954,16 @@ public class IpsecVpnApp extends AppBase
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
 
         // start by clearing all existing registrations
-        nsmgr.clearOwnerRegistrationAll("ipsec-vpn");
+        nsmgr.clearOwnerRegistrationAll(NETSPACE_OWNER);
 
         // add registration for L2TP and Xauth address pools if VPN is enabled
         if (argSettings.getVpnflag()) {
-            nsmgr.registerNetworkBlock("ipsec-vpn", "L2TP", argSettings.getVirtualAddressPool());
-            nsmgr.registerNetworkBlock("ipsec-vpn", "Xauth", argSettings.getVirtualXauthPool());
+            nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_L2TP, argSettings.getVirtualAddressPool());
+            nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_XAUTH, argSettings.getVirtualXauthPool());
         }
 
         // add registration for the GRE address pool
-        nsmgr.registerNetworkBlock("ipsec-vpn", "GRE", argSettings.getVirtualNetworkPool());
+        nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_GRE, argSettings.getVirtualNetworkPool());
     }
 
     /**
@@ -982,20 +998,20 @@ public class IpsecVpnApp extends AppBase
             }
 
             // check the L2TP address pool in the registry
-            space = nsmgr.isNetworkAvailable("ipsec-vpn", lNet);
+            space = nsmgr.isNetworkAvailable(NETSPACE_OWNER, lNet);
             if (space != null) {
                 return new String("L2TP Address Pool conflicts with " + space.ownerName + ":" + space.ownerPurpose);
             }
 
             // check the Xauth address pool in the registry
-            space = nsmgr.isNetworkAvailable("ipsec-vpn", xNet);
+            space = nsmgr.isNetworkAvailable(NETSPACE_OWNER, xNet);
             if (space != null) {
                 return new String("Xauth Address Pool conflicts with " + space.ownerName + ":" + space.ownerPurpose);
             }
         }
 
         // check the GRE address pool in the registry
-        space = nsmgr.isNetworkAvailable("ipsec-vpn", gNet);
+        space = nsmgr.isNetworkAvailable(NETSPACE_OWNER, gNet);
         if (space != null) {
             return new String("GRE Address Pool conflicts with " + space.ownerName + ":" + space.ownerPurpose);
         }
