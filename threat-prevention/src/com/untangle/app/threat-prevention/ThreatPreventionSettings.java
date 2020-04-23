@@ -27,8 +27,11 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     private String action = ThreatPreventionApp.ACTION_BLOCK;
     private Boolean flag = true;
 
+    private Boolean customBlockPageEnabled = false;
+    private String customBlockPageUrl = "";
+
     private List<ThreatPreventionRule> rules = null;
-    
+
     public ThreatPreventionSettings()
     {
         this.rules = new LinkedList<>();
@@ -38,7 +41,7 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     {
         this.rules = rules;
     }
-    
+
     public Integer getVersion() { return this.version; }
     public void setVersion(Integer newValue) { this.version = newValue; }
 
@@ -53,6 +56,12 @@ public class ThreatPreventionSettings implements Serializable, JSONString
 
     public List<ThreatPreventionRule> getRules() { return rules; }
     public void setRules( List<ThreatPreventionRule> newValue ) { this.rules = newValue; }
+
+    public Boolean getCustomBlockPageEnabled() { return customBlockPageEnabled; }
+    public void setCustomBlockPageEnabled(Boolean customBlockPageEnabled) { this.customBlockPageEnabled = customBlockPageEnabled; }
+
+    public String getCustomBlockPageUrl() { return this.customBlockPageUrl; }
+    public void setCustomBlockPageUrl(String customBlockPageUrl) { this.customBlockPageUrl = customBlockPageUrl; }
 
     public String toJSONString()
     {

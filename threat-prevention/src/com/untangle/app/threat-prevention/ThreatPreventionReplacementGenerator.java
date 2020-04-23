@@ -7,22 +7,16 @@ package com.untangle.app.threat_prevention;
 import com.untangle.app.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
 
-import com.untangle.app.web_filter.WebFilterBase;
-
-import java.util.List;
 import org.apache.http.client.utils.URIBuilder;
-import java.util.HashMap;
 
 /**
- * ReplacementGenerator for Threat Prevention.
+ * ReplacementGenerator for ThreatPrevention.
  */
 public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<ThreatPreventionBlockDetails>
 {
+    private ThreatPreventionApp threatpreventionApp = null;
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
@@ -38,13 +32,14 @@ public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<T
     /**
      * Constructor
      *
-     * @param appId
-     *      The application ID
+     * @param appId The application ID
+     * @param app   The application instance that created us
      */
-    public ThreatPreventionReplacementGenerator(AppSettings appId)
+    public ThreatPreventionReplacementGenerator(AppSettings appId, ThreatPreventionApp app)
     {
         super(appId);
         this.redirectUri.setPath("/threat-prevention/blockpage");
+        this.threatpreventionApp = app;
     }
 
     /**
@@ -66,27 +61,17 @@ public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<T
     }
 
     /**
-     * If using a custom block page in WebFilter, use that uri instead of default.
+     * If using a custom block page, use that uri instead of default.
      *
      * @return URIBuilder of uri to redirect client toward.
      */
-    protected URIBuilder getRedirectUri()
-    {
-        UvmContext uvm = UvmContextFactory.context();
-        AppManager nm = uvm.appManager();
-        List<App> wfInstances = nm.appInstances("web-filter");
-
-        if (wfInstances.size() == 0) {
-            return super.getRedirectUri();
-        }
-
-        App app = wfInstances.get(0);
-        WebFilterBase wfApp = (WebFilterBase) nm.app(app.getAppSettings().getId());
-        if (wfApp.getSettings().getCustomBlockPageEnabled()) {
+    protected URIBuilder getRedirectUri() {
+        if (threatpreventionApp.getSettings().getCustomBlockPageEnabled()) {
             URIBuilder redirectUri = null;
             try {
-                redirectUri = new URIBuilder(wfApp.getSettings().getCustomBlockPageUrl());
-            } catch(Exception e) {}
+                redirectUri = new URIBuilder(threatpreventionApp.getSettings().getCustomBlockPageUrl());
+            } catch (Exception e) {
+            }
             return redirectUri;
         } else {
             return super.getRedirectUri();

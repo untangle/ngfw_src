@@ -283,7 +283,7 @@ Architecture: all
 Conflicts: untangle-node-threat-prevention
 Replaces: untangle-node-threat-prevention
 Provides: untangle-node-threat-prevention
-Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-app-license, untangle-bctid, untangle-app-webroot
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-app-license, untangle-bctid, untangle-app-webroot
 Description: Threat Prevention application
  The Threat Prevention application.
 
