@@ -7,7 +7,8 @@
         {
             "type": "java",
             "name": "UVM Remote Debugger",
-            "projectName": "ngfw_src",
+            "sourcePaths":["**/*.jar"],
+            "projectName": "com.untangle",
             "request": "attach",
             "hostName": "localhost",
             "port": 1337
