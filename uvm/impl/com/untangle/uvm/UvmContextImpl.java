@@ -117,6 +117,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private HostTableImpl hostTableImpl = null;
     private DeviceTableImpl deviceTableImpl = null;
     private UserTableImpl userTableImpl = null;
+    private SyncSettingsImpl syncSettingsImpl = null;
     private NetFilterLogger netFilterLogger = null;
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
 
@@ -520,6 +521,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.userTableImpl;
     }
     
+    /**
+     * Get SyncSettings
+     * @return SyncSettings
+     */
+    public SyncSettings syncSettings()
+    {
+        return this.syncSettingsImpl;
+    }
+
     /**
      * Get LicenseManager 
      * @return LicenseManager 
@@ -1275,6 +1285,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.userTableImpl = new UserTableImpl();
         
+        this.syncSettingsImpl = new SyncSettingsImpl();
+
         this.cloudManager = CloudManagerImpl.getInstance();
 
         this.servletFileManager = new ServletFileManagerImpl();

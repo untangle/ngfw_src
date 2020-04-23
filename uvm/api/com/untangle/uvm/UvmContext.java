@@ -303,6 +303,13 @@ public interface UvmContext
     UserTable userTable();
     
     /**
+     * Sync settings
+     *
+     * @return sync settings manager.
+     */
+    SyncSettings syncSettings();
+
+    /**
      * Shut down the untangle-vm
      *
      */
