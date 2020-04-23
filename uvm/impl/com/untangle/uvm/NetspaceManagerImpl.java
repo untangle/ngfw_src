@@ -6,6 +6,8 @@ package com.untangle.uvm;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Random;
@@ -213,11 +215,29 @@ public class NetspaceManagerImpl implements NetspaceManager
      *        The host ID
      * @param CIDRSpace
      *        The CIDRSpace
-     * @return IPMaskedAddress - A CIDR address that is not conflicting with other address spaces on the appliance
+     * @return
      */
     public IPMaskedAddress getAvailableAddressSpace(IPVersion version, int hostIdentifier, int CIDRSpace) {
+        return getAvailableAddressSpace(version, hostIdentifier, CIDRSpace, 15);
+    }
+
+    /**
+     * getAvailableAddressSpace should be used to get an unregistered address space based on a random subnet, IP6 generation will use the Unique Unicast range
+     * 
+     * @param version
+     *        The IP Version to generate a space for (IP4 or IP6)
+     * @param hostIdentifier
+     *        The host ID
+     * @param CIDRSpace
+     *        The CIDRSpace
+     * @param generationAttempts
+     *        The number of generations we should test before giving up with a warning
+     * @return IPMaskedAddress - A CIDR address that is not conflicting with other address spaces on the appliance
+     */
+    public IPMaskedAddress getAvailableAddressSpace(IPVersion version, int hostIdentifier, int CIDRSpace, int generationAttempts) {
         IPMaskedAddress randAddress = null;
         boolean uniqueAddress = true;
+        List<IPMaskedAddress> attemptedAddresses = new ArrayList<>();
 
         // Gen a random address
         Random rand = new Random();
@@ -237,21 +257,38 @@ public class NetspaceManagerImpl implements NetspaceManager
         // If the address intersects another address, gen another one until we have one that is not matching
         do {
 
+            //If we are exceeding the generationAttempts, then return with a warning.
+            if(attemptedAddresses.size() > generationAttempts) {
+                logger.warn("getAvailableAddressSpace has failed after "+ generationAttempts + " and is giving up now.");
+                return new IPMaskedAddress("0.0.0." + hostIdentifier + "/" + CIDRSpace);
+            }
+
             if(version == IPVersion.IPv6) {
                 randAddress = getRandomLocalIp6Address(rand, CIDRSpace);
             } else {
                 randAddress = getRandomLocalIp4Address(rand, hostIdentifier, CIDRSpace);
             }
 
+            // If we've already tested this address then don't even try it against the registry
+            if(attemptedAddresses.contains(randAddress)) {
+                uniqueAddress = false;
+                break;
+            }
+
             // Verify any intersections in the registry
             for (NetworkSpace netSpace : networkRegistry) {
+                logger.debug("Comparing " + randAddress + " against: " + netSpace.maskedAddress);
                 if(netSpace.maskedAddress.isIntersecting(randAddress)) {
+                    logger.debug(randAddress + " is not unique, generating another.");
                     uniqueAddress = false;
+                    attemptedAddresses.add(randAddress);
                     break;
                 }
             }
         } while (!uniqueAddress);
         
+        logger.debug("Unique address found: " + randAddress);
+
         return randAddress;
     }
 
