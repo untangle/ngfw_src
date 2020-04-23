@@ -224,7 +224,7 @@ public class SystemManagerImpl implements SystemManager
             if (CRON_FILE.exists()) UvmContextFactory.context().execManager().exec("/bin/rm -f " + CRON_FILE);
         }
 
-        UvmContextImpl.context().syncSettings().run(this.SettingsFileName);
+        UvmContextFactory.context().syncSettings().run(this.SettingsFileName);
 
         pyconnectorSync();
     }
