@@ -14,29 +14,6 @@ Ext.define('Ung.config.local-directory.view.Radius', {
         width: 500,
         title: 'Wi-Fi Authentication (RADIUS server)'.t(),
         items: [{
-            xtype: 'fieldcontainer',
-            labelWidth: 120,
-            anchor: '100%',
-            padding: '5 0 10 0',
-            fieldLabel: 'Server Certificate'.t(),
-            layout: { type: 'hbox', align: 'middle' },
-            items: [{
-                xtype: 'combo',
-                displayField: 'value',
-                flex: 1,
-                editable: false,
-                queryMode: 'local',
-                allowBlank: false,
-                value: 'default',
-                store: [
-                    ['default', 'Default'.t()]
-                ]
-            }, {
-                xtype: 'button',
-                margin: '0 0 0 10',
-                text: 'Edit ...'
-            }]
-        }, {
             xtype: 'checkbox',
             reference: 'externalAccess',
             padding: '5 0',
@@ -54,6 +31,15 @@ Ext.define('Ung.config.local-directory.view.Radius', {
                 value: '{systemSettings.radiusServerSecret}',
                 disabled: '{!externalAccess.checked}'
             }
+        }, {
+            xtype: 'button',
+            iconCls: 'fa fa-cog',
+            text: 'Configure Server Certificate'.t(),
+            margin: '10, 0',
+            bind: {
+                disabled: '{!systemSettings.radiusServerEnabled}',
+            },
+            handler: 'configureCertificate'
         }]
     }]
 

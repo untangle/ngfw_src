@@ -963,18 +963,16 @@ public class CertificateManagerImpl implements CertificateManager
             if (radiusInfo == null) radiusInfo = goodMessage;
         }
 
-// THIS IS FOR ECLIPSE - @formatter:off
-
-        String statusInfo = "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 STYLE=border-collapse:collapse;>"
-                + "<TR><TD COLSPAN=2><CENTER><STRONG>Server Certificate Verification</STRONG></CENTER></TD></TR>"
-                + "<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>"
-                + "<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>"
-                + "<TR><TD WIDTH=120>IPSEC Certificate</TD><TD>" + ipsecInfo + "</TD></TR>"
-                + "<TR><TD WIDTH=120>RADIUS Certificate</TD><TD>" + radiusInfo + "</TD></TR>"
-                + "</TABLE>";
-
-// THIS IS FOR ECLIPSE - @formatter:on
-
-        return (statusInfo);
+        StringBuilder statusInfo = new StringBuilder(1024);
+        statusInfo.append("<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 STYLE=border-collapse:collapse;>");
+        statusInfo.append("<TR><TD COLSPAN=2><CENTER><STRONG>Server Certificate Verification</STRONG></CENTER></TD></TR>");
+        statusInfo.append("<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>");
+        statusInfo.append("<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>");
+        statusInfo.append("<TR><TD WIDTH=120>IPSEC Certificate</TD><TD>" + ipsecInfo + "</TD></TR>");
+        if (UvmContextFactory.context().isExpertMode()) {
+            statusInfo.append("<TR><TD WIDTH=120>RADIUS Certificate</TD><TD>" + radiusInfo + "</TD></TR>");
+        }
+        statusInfo.append("</TABLE>");
+        return (statusInfo.toString());
     }
 }

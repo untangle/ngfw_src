@@ -119,6 +119,10 @@ Ext.define('Ung.config.local-directory.MainController', {
         });
     },
 
+    configureCertificate: function (btn) {
+        Ung.app.redirectTo("#config/administration/certificates");
+    },
+
     statics:{
         expirationRenderer: function( value ){
             var date;
