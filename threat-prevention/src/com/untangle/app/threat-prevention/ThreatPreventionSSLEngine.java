@@ -329,13 +329,6 @@ public class ThreatPreventionSSLEngine
         // when unwrap finally returns some data it will be the client request
         logger.debug("CLIENT REQUEST = " + new String(target.array(), 0, target.position()));
 
-        InetAddress host = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
-        String hostStr = host.getHostAddress().toString();
-        int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-        if ( httpPort != 80 ) {
-            hostStr = hostStr + ":" + httpPort;
-        }
-
         for(Token token : this.response){
             if( token instanceof StatusLine ){
                 vector += ((StatusLine) token).getString();
