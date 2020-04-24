@@ -131,8 +131,8 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setCreationTime(sessionState.getCreationTime());
                     session.setPipeline(sessionState.getPipelineDescription());
                     session.setBypassed(Boolean.FALSE);
-                    session.setClientIntf(new Integer(sessionState.getClientIntf()));
-                    session.setServerIntf(new Integer(sessionState.getServerIntf()));
+                    session.setClientIntf(sessionState.getClientIntf());
+                    session.setServerIntf(sessionState.getServerIntf());
                     session.setHostname(sessionState.getSessionEvent().getHostname());
                     session.setUsername(sessionState.getSessionEvent().getUsername());
 
@@ -385,7 +385,7 @@ public class SessionMonitorImpl implements SessionMonitor
             logger.warn("Unknown protocol: " + protocolStr);
             protocol = 0;
         }
-        return new SessionTuple( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort );
+        return new SessionTuple( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort, clientIntf );
     }
 
     /**
@@ -408,7 +408,8 @@ public class SessionMonitorImpl implements SessionMonitor
                                      session.getPreNatClient(),
                                      session.getPreNatServer(),
                                      session.getPreNatClientPort(),
-                                     session.getPreNatServerPort() );
+                                     session.getPreNatServerPort(),
+                                     session.getClientIntf() );
     }
 
     /**
