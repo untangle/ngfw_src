@@ -4,6 +4,7 @@
 
 package com.untangle.uvm;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,6 +43,9 @@ public class ExecManagerImpl implements ExecManager
 
     private Level level;
 
+    private boolean showAllStatistics = false;
+    private ConcurrentHashMap<String, ExecManagerStatus> execStatistics = new ConcurrentHashMap<>();
+
     /**
      * Constructor
      */
@@ -49,6 +53,15 @@ public class ExecManagerImpl implements ExecManager
     {
         initDaemon();
         level = Level.INFO;
+    }
+
+    /**
+     * Override default statistics display control.
+     * @param showAllStatistics If true, show all exec stats, otherwise use time limiting.
+     */
+    public void showAllStatistics(boolean showAllStatistics)
+    {
+        this.showAllStatistics = showAllStatistics;
     }
 
     /**
@@ -118,8 +131,21 @@ public class ExecManagerImpl implements ExecManager
         cmd = cmd.replace("\n", "");
         cmd = cmd.replace("\r", "");
 
+        // !!! also global flag to show all
+
         try {
-            logger.log(this.level, "ExecManager.exec(" + cmd + ")");
+            ExecManagerStatus status = execStatistics.get(cmd);
+            if(status == null){
+                status = new ExecManagerStatus();
+                execStatistics.put(cmd, status);
+            }
+            boolean showStatus = status.showStatus();
+            if(this.showAllStatistics){
+                showStatus = true;
+            }
+            if(showStatus){
+                logger.log(this.level, "ExecManager.exec(" + cmd + ")");
+            }
             // write the command to the launcher daemon
             out.write(cmd + "\n", 0, cmd.length() + 1);
             out.flush();
@@ -134,7 +160,16 @@ public class ExecManagerImpl implements ExecManager
                 logger.warn("Failed to serialize ExecManagerResult");
                 return new ExecManagerResult(-1, "");
             }
-            logger.log(this.level, "ExecManager.exec(" + cmd + ") = " + result.getResult() + " took " + (t1 - t0) + " ms.");
+
+            status.update(t0, t1);
+            if(showStatus){
+                if(status.calls == 1){
+                    logger.log(this.level, "ExecManager.exec(" + cmd + ") = " + result.getResult() + " took " + (t1 - t0) + " ms.");
+                }else{
+                    logger.log(this.level, "ExecManager.exec(" + cmd + ") = " + result.getResult() + " (most recent) avg " + (status.interval/status.calls) + " ms in " + status.calls + " calls.");
+                }
+                status.clear();
+            }
 
             return result;
         } catch (IOException exn) {
@@ -301,5 +336,51 @@ public class ExecManagerImpl implements ExecManager
 
         out = new OutputStreamWriter(proc.getOutputStream());
         in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+    }
+
+    /**
+     * Hold information about exec timing and calls.
+     */
+    private class ExecManagerStatus {
+        static final private int MINIUM_LAST_RUN_INTERVAL = 60 * 1000;
+        public long firstRun = 0;
+        public long lastRun = 0;
+        public long interval = 0;
+        public int calls = 0;
+
+        /**
+         * Update with new statistics
+         * @param start Start time in ms.
+         * @param stop Stop time in ms.
+         */
+        public void update(long start, long stop)
+        {
+            this.calls++;
+            this.lastRun = stop;
+            this.interval += (stop - start);
+            if( (this.firstRun + MINIUM_LAST_RUN_INTERVAL ) < stop){
+                this.firstRun = stop;
+            }
+        }
+
+        /**
+         * Clear all values.
+         */
+        public void clear(){
+            this.calls = 0;
+            this.interval = 0;
+        }
+
+        /**
+         * Determine if should show status
+         * @return true if lastRun is greater than minimum display interval.
+         */
+        public boolean showStatus()
+        {
+            if (this.firstRun == 0){
+                return true;
+            }
+            return ( firstRun + MINIUM_LAST_RUN_INTERVAL) < System.currentTimeMillis();
+        }
     }
 }
