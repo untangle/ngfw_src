@@ -416,7 +416,7 @@ public abstract class AppBase implements App
         List<SessionTuple> sessions = new LinkedList<>();
 
         for (AppSession sess : liveAppSessions()) {
-            SessionTuple tuple = new SessionTuple(sess.getProtocol(), sess.getClientAddr(), sess.getServerAddr(), sess.getClientPort(), sess.getServerPort());
+            SessionTuple tuple = new SessionTuple(sess.getProtocol(), sess.getClientAddr(), sess.getServerAddr(), sess.getClientPort(), sess.getServerPort(), sess.getClientIntf());
             sessions.add(tuple);
         }
 

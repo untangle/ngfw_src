@@ -285,7 +285,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         int index = 0;
         List<PipelineConnectorImpl> pipelineConnectors = null;
         try{
-            SessionTuple sessionTuple = new SessionTuple(protocol, InetAddress.getByName(clientIp), InetAddress.getByName(serverIp), clientPort, serverPort);
+            // TODO - For now we just use zero for src and dst interfaces since they
+            // don't currently factor into any traffic processing decisions.
+            SessionTuple sessionTuple = new SessionTuple(protocol, InetAddress.getByName(clientIp), InetAddress.getByName(serverIp), clientPort, serverPort, 0);
             pipelineConnectors = weld( 0L, sessionTuple, policyId, true );
             result = new JSONArray();
             for(PipelineConnectorImpl pci : pipelineConnectors){
