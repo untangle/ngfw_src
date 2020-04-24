@@ -24,7 +24,7 @@ public class WebFilterSettings implements Serializable, JSONString
     public static final String UNBLOCK_MODE_HOST   = "Host";
     public static final String UNBLOCK_MODE_GLOBAL = "Global";
 
-    private Integer version = new Integer(3);
+    private Integer version = 4;
 
     private Boolean enableHttpsSni = true;
     private Boolean enableHttpsSniCertFallback = true;
