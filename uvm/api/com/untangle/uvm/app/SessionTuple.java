@@ -20,6 +20,7 @@ public class SessionTuple
     private int clientPort = 0;
     private InetAddress serverAddr;
     private int serverPort = 0;
+    private int srcInterface = 0;
 
     /**
      * Constructor
@@ -28,14 +29,16 @@ public class SessionTuple
      * @param serverAddr The server address
      * @param clientPort The client port
      * @param serverPort The server port
+     * @param srcInterface The source interface
      */
-    public SessionTuple( short protocol, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
+    public SessionTuple( short protocol, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, int srcInterface )
     {
         this.protocol = protocol;
         this.clientAddr = clientAddr;
         this.clientPort = clientPort;
         this.serverAddr = serverAddr;
         this.serverPort = serverPort;
+        this.srcInterface = srcInterface;
     }
 
     /**
@@ -49,6 +52,7 @@ public class SessionTuple
         this.clientPort = tuple.getClientPort();
         this.serverAddr = tuple.getServerAddr();
         this.serverPort = tuple.getServerPort();
+        this.srcInterface = tuple.getSrcInterface();
     }
 
     /**
@@ -106,12 +110,24 @@ public class SessionTuple
      * @return the server port.
      */
     public int getServerPort() { return this.serverPort; }
-    
+
     /**
      * Set the server port
      * @param serverPort The server port
      */
     public void setServerPort( int serverPort ) { this.serverPort = serverPort; }
+
+    /**
+     * Get the source interface
+     * @return the source interface
+     */
+    public int getSrcInterface() { return this.srcInterface; }
+
+    /**
+     * Set the source interface
+     * @param srcInterface The source interface
+     */
+    public void setSrcInterface(int srcInterface) { this.srcInterface = srcInterface; }
 
     /**
      * Get the hash code
@@ -121,9 +137,9 @@ public class SessionTuple
     public int hashCode()
     {
         if ( clientAddr == null || serverAddr == null )
-            return protocol + clientPort + serverPort;
+            return protocol + clientPort + serverPort + srcInterface;
         else
-            return protocol + clientAddr.hashCode() + clientPort + serverAddr.hashCode() + serverPort;
+            return protocol + clientAddr.hashCode() + clientPort + serverAddr.hashCode() + serverPort + srcInterface;
     }
 
     /**
@@ -145,6 +161,8 @@ public class SessionTuple
             return false;
         if ( ! ( t.serverAddr == null ? this.serverAddr == null : t.serverAddr.equals(this.serverAddr) ) )
             return false;
+        if ( t.srcInterface != this.srcInterface )
+            return false;
         return true;
     }
 
@@ -156,6 +174,8 @@ public class SessionTuple
     public String toString()
     {
         String str = "[Tuple ";
+        str += "{" + Integer.toString(srcInterface) + "} ";
+
         switch ( protocol ) {
         case PROTO_UDP:
             str += "UDP ";
