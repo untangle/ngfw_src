@@ -91,8 +91,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         }
 
         // see if there is an SSL engine attached to the session
-        ThreatPreventionSSLEngine engine = (ThreatPreventionSSLEngine) session.globalAttachment(AppSession.KEY_WEB_FILTER_SSL_ENGINE);
-        // ThreatPreventionSSLEngine engine = null;
+        ThreatPreventionSSLEngine engine = (ThreatPreventionSSLEngine) session.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SSL_ENGINE);
 
         if (engine != null) {
             // found an engine which means we've decided to block so we pass
@@ -332,7 +331,12 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
-            ThreatPreventionSSLEngine engine = new ThreatPreventionSSLEngine(sess, redirect.getResponse());
+            ThreatPreventionSSLEngine engine;
+            if(app.getSettings().getCloseHttpsBlockEnabled()){
+                engine = new ThreatPreventionSSLEngine(sess, app.generateSimpleResponse(null, sess));
+            }else{
+                engine = new ThreatPreventionSSLEngine(sess, redirect.getResponse());
+            }
             sess.globalAttach(AppSession.KEY_THREAT_PREVENTION_SSL_ENGINE, engine);
             engine.handleClientData(buff);
             return;
