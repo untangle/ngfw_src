@@ -69,6 +69,9 @@ public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebF
     @Override
     protected String getReplacement(WebFilterRedirectDetails details)
     {
+        if(details == null){
+            return "";
+        }
         UvmContext uvm = UvmContextFactory.context();
 
         return String.format(BLOCK_TEMPLATE, details.getHeader(),
