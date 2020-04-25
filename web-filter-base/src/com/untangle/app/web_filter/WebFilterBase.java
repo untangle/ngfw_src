@@ -714,6 +714,20 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     }
 
     /**
+     * Generate a "simple" block response that does not redirect.
+     *
+     * @param details
+     *        WebFilter Redirect details. Can be null.
+     * @param session
+     *        The session
+     * @return The response token
+     */
+    public Token[] generateSimpleResponse(WebFilterRedirectDetails details, AppTCPSession session)
+    {
+        return replacementGenerator.generateSimpleResponse(details, session);
+    }
+
+    /**
      * Initialize application settings
      * 
      * @param settings

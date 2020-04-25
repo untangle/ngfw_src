@@ -96,6 +96,10 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             xtype: 'checkbox',
             boxLabel: 'Pass if referrer matches any Pass Sites'.t(),
             bind: '{settings.passReferers}'
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Close connection for blocked HTTPS sessions without redirecting to block page'.t(),
+            bind: '{settings.closeHttpsBlockEnabled}'
         }]
     }, {
         xtype: 'fieldset',

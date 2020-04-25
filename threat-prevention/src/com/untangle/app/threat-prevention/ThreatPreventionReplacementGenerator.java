@@ -50,6 +50,9 @@ public class ThreatPreventionReplacementGenerator extends ReplacementGenerator<T
     @Override
     protected String getReplacement(ThreatPreventionBlockDetails details)
     {
+        if(details == null){
+            return "";
+        }
         UvmContext uvm = UvmContextFactory.context();
 
         return String.format(BLOCK_TEMPLATE, details.getHeader(),

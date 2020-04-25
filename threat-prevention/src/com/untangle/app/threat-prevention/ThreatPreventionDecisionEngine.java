@@ -138,6 +138,7 @@ public class ThreatPreventionDecisionEngine
         JSONArray answer = null;
         if(!serverLocal){
             if(serverUrl != null){
+                serverUrl = app.webrootQuery.normalizeUrl(serverUrl);
                 answer = app.webrootQuery.urlGetInfo(serverUrl);
             }else{
                 answer = app.webrootQuery.urlGetInfo(serverAddress != null ? serverAddress.getHostAddress() : null);
@@ -182,7 +183,6 @@ public class ThreatPreventionDecisionEngine
                             if(ThreatPreventionApp.UrlCatThreatMap.get(cat) != null){
                                 threatmask += ThreatPreventionApp.UrlCatThreatMap.get(cat);
                             }
-                            // !! Maybe also put into new web-filter/monitor categorized attachment to save lookup.
                         }
 
                         if(!clientLocal && clientAddress != null && ip.equals(clientAddress.getHostAddress())){
@@ -278,17 +278,6 @@ public class ThreatPreventionDecisionEngine
         }
 
         uri = CONSECUTIVE_SLASHES_PATH_PATTERN.matcher(uri).replaceAll("/");
-
-        /*
-         * We have seen a case where the host in the "Host"
-         * header actually has a port number appended to it
-         * bctid doesn't work with the port appended to the
-         * host, so strip it here if it exists (NGFW-12877)
-         */
-        pos = host.indexOf(':');
-        if (pos > 0) {
-            host = host.substring(0, pos);
-        }
 
         Boolean match = false;
         if(addressQuery(clientIp, sess.getServerAddr(), host + uri, sess)){
