@@ -405,6 +405,20 @@ public class ThreatPreventionApp extends AppBase
     }
 
     /**
+     * Generate a "simple" block response that does not redirect.
+     *
+     * @param details
+     *        WebFilter Redirect details. Can be null.
+     * @param session
+     *        The session
+     * @return The response token
+     */
+    public Token[] generateSimpleResponse(ThreatPreventionBlockDetails details, AppTCPSession session)
+    {
+        return replacementGenerator.generateSimpleResponse(details, session);
+    }
+
+    /**
      * Get the upper bound of numeric threat from specified threat.
      * @param  reputation Integer of threat.
      * @return            The highest band of reputation that this threat belongs to.
