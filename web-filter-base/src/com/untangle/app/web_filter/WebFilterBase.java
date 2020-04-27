@@ -714,6 +714,20 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     }
 
     /**
+     * Generate a "simple" block response that does not redirect.
+     *
+     * @param details
+     *        WebFilter Redirect details. Can be null.
+     * @param session
+     *        The session
+     * @return The response token
+     */
+    public Token[] generateSimpleResponse(WebFilterRedirectDetails details, AppTCPSession session)
+    {
+        return replacementGenerator.generateSimpleResponse(details, session);
+    }
+
+    /**
      * Initialize application settings
      * 
      * @param settings
@@ -943,32 +957,6 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             _setSettings(settings);
             logger.debug("Default Settings: " + this.settings.toJSONString());
             return;
-        }
-
-        /**
-         * If we found older settings do conversion, save, and return
-         */
-        if (readSettings.getVersion() < SETTINGS_CURRENT_VERSION) {
-            // Convert categories
-            List<GenericRule> oldCategories = readSettings.getCategories();
-            initializeSettings(readSettings);
-            GenericRule newCat = null;
-            for (GenericRule oldCat : oldCategories){
-                try {
-                    newCat = readSettings.getCategory(categoryConversionMap.get(Integer.parseInt(oldCat.getString())));
-                    if(newCat != null){
-                        newCat.setEnabled(oldCat.getEnabled());
-                        newCat.setBlocked(oldCat.getBlocked());
-                        newCat.setFlagged(oldCat.getFlagged());
-                    }
-                } catch (Exception e){
-                    logger.warn("Unable to convert", e);
-                }
-            }
-
-            readSettings.setVersion(SETTINGS_CURRENT_VERSION);
-            _setSettings(readSettings);
-            logger.debug("Converted settings: " + this.settings.toJSONString());
         }
 
         // existing settings loaded and no conversion was needed

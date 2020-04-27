@@ -64,4 +64,6 @@ public interface SystemManager
     void activateApacheCertificate();
 
     void activateRadiusCertificate();
+
+    Integer getLogDirectorySize();
 }
