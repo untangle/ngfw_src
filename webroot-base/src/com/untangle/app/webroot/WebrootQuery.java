@@ -50,6 +50,7 @@ public class WebrootQuery
 
     public static Integer CACHE_SIZE_MULTIPLIER = 1;
 
+    public static final char URI_SLASH = '/';
     public static final char DOMAIN_PORT = ':';
     public static final char DOMAIN_DOT = '.';
     public static final String DOMAIN_WILDCARD = "*.";
@@ -417,17 +418,24 @@ public class WebrootQuery
     }
 
     /**
-     * Perform url getinfo query for single url.
-     *
-     * NOTE: This is optimized for webfilter/webmonitor queries which arrive with the
-     *       domain and uri already split.
-     *
-     * @param  domain domain of url
-     * @param  uri url path of url
-     * @return     JSONArray of webroot response.
+     * Brightcloud expects urls to not have wildcards or ports.
+     * While we could do this only on queries, since callers are expected to look at
+     * the url field in answers, they'll have a mismatch.  This allows callers to have
+     * a properly normalized key for their lookups.
+     * @param url String of url.
+     * @return String of Brightcloud normalized url.
      */
-    public JSONArray urlGetInfo(String domain, String uri)
+    public String normalizeUrl(String url)
     {
+        String domain, path;
+        int pos = url.indexOf(URI_SLASH);
+        if( pos == -1){
+            domain = url;
+            path = "";
+        }else{
+            domain = url.substring(0, pos);
+            path = url.substring(pos);
+        }
         /**
          * While Brightcloud can handle domains with ports its very expensive, around 100 times slower.
          */
@@ -442,8 +450,23 @@ public class WebrootQuery
         if (i > -1) {
             domain = domain.substring(i + 2);
         }
+        return domain + path;
+    }
+
+    /**
+     * Perform url getinfo query for single url.
+     *
+     * NOTE: This is optimized for webfilter/webmonitor queries which arrive with the
+     *       domain and uri already split.
+     *
+     * @param  domain domain of url
+     * @param  uri url path of url
+     * @return     JSONArray of webroot response.
+     */
+    public JSONArray urlGetInfo(String domain, String uri)
+    {
         if(domain.indexOf(DOMAIN_DOT) > -1){
-            return urlGetInfo(domain + uri);
+            return urlGetInfo(normalizeUrl(domain + uri));
         }
         return null;
     }
