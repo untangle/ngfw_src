@@ -125,6 +125,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         });
 
         v.setLoading(true);
+        vm.set('panel.saveDisabled', true);
         Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'), settingsChanged)
         .then(function(result){
             if(Util.isDestroyed(v, vm)){
@@ -143,7 +144,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             Ext.fireEvent('resetfields', v);
         }, function(ex) {
             if(!Util.isDestroyed(v, vm)){
-                vm.set('panel.saveDisabled', true);
+                vm.set('panel.saveDisabled', false);
                 v.setLoading(false);
             }
             Util.handleException(ex);

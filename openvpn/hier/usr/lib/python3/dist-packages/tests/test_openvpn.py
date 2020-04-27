@@ -331,7 +331,8 @@ class OpenVpnTests(NGFWTestCase):
             running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if loopLimit == 0:
             # try killing the openvpn session as it is probably stuck
-            remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
+            openvpn_pid = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,stdout=True)
+            remote_control.run_command("sudo kill -9 " + openvpn_pid, host=global_functions.VPN_CLIENT_IP)
             time.sleep(2)
             running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
         if running == 0:

@@ -72,6 +72,11 @@ public class NetworkManagerImpl implements NetworkManager
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
     private final String settingsFilenameBackup = "/etc/untangle/network.js";
+
+    private static String NETSPACE_OWNER = "networking";
+    private static String NETSPACE_STATIC_ADDRESS = "static-address";
+    private static String NETSPACE_STATIC_ALIAS = "static-alias";
+    private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
     
     /**
      * The current network settings
@@ -2745,7 +2750,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
 
         // start by clearing all existing registrations
-        nsmgr.clearOwnerRegistrationAll("networking");
+        nsmgr.clearOwnerRegistrationAll(NETSPACE_OWNER);
 
         /**
          * Add static v4 addresses
@@ -2759,11 +2764,11 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
 
             IPMaskedAddress intfma = new IPMaskedAddress( intf.getV4StaticAddress(), intf.getV4StaticPrefix() );
-            nsmgr.registerNetworkBlock("networking", "static-address", intfma);
+            nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_STATIC_ADDRESS, intfma);
 
             for ( InterfaceSettings.InterfaceAlias alias : intf.getV4Aliases() ) {
                 IPMaskedAddress aliasma = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
-                nsmgr.registerNetworkBlock("networking", "static-alias", intfma);
+                nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_STATIC_ALIAS, intfma);
             }
         }
 
@@ -2783,7 +2788,7 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
 
             IPMaskedAddress intfma = new IPMaskedAddress( address, netmask );
-            nsmgr.registerNetworkBlock("networking", "dynamic-address", intfma);
+            nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_DYNAMIC_ADDRESS, intfma);
         }
     }
 }
