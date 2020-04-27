@@ -231,7 +231,7 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://bd.untangle.com/");
+        uriTranslation.setUri("http://bd.untangle.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
