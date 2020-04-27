@@ -16,7 +16,7 @@ import com.untangle.uvm.app.DayOfWeekMatcher;
 @SuppressWarnings("serial")
 public class SystemSettings implements Serializable, JSONString
 {
-    private int version = 3;
+    private int version = 4;
     private int httpsPort;
 
     private boolean supportEnabled = false;
@@ -32,6 +32,8 @@ public class SystemSettings implements Serializable, JSONString
     private SnmpSettings snmpSettings;
 
     private String timeSource = "ntp";
+
+    private int logRetention = 7;
     
     /**
      * These are used to indicate which certificate is assigned to each of
@@ -123,6 +125,12 @@ public class SystemSettings implements Serializable, JSONString
     */
     public String getTimeSource(){ return timeSource; }
     public void setTimeSource( String newValue) { this.timeSource = newValue; }
+
+    /**
+    * Get log retention
+    */
+    public Integer getLogRetention(){ return logRetention; }
+    public void setLogRetention( Integer newValue) { this.logRetention = newValue; }
 
     /**
      * Install Type
