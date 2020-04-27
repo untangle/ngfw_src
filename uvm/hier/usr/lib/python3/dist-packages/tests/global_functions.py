@@ -482,7 +482,7 @@ def check_clamd_ready():
         time.sleep(1)
         ncresult = subprocess.call("netcat -n -z 127.0.0.1 3310 >/dev/null 2>&1", shell=True)
         if ncresult == 0:
-            break
+            return True
     print("Number of sleep cycles waiting: %d" % i)
 
-    return True
+    return False
