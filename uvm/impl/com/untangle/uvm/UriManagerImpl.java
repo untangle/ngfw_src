@@ -274,6 +274,17 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
         uriTranslations.add(uriTranslation);
 
+        // On one hand, this is probably better handled as a host, but since this is being released
+        // as a date-release for 15.0 and the update is not going to everyone, adding
+        // multiple getXHots() will fail for those non-updated units.
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://supssh.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://sshrelay.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
         settings.setUriTranslations(uriTranslations);
 
         return settings;
@@ -304,6 +315,14 @@ public class UriManagerImpl implements UriManager
 
         uriTranslation = new UriTranslation();
         uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://supssh.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://sshrelay.untangle.com/");
         uriTranslations.add(uriTranslation);
 
         settings.setUriTranslations(uriTranslations);
