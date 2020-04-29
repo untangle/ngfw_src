@@ -32,7 +32,13 @@ import java.nio.file.Paths;
 public class LocalDirectoryImpl implements LocalDirectory
 {
     private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/local_directory.js";
+    private final static String XAUTH_SECRETS_FILE = "/etc/xauth.secrets";
     private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
+
+    private final static String FREERADIUS_LOCAL_SECRETS = "/etc/freeradius/3.0/mods-config/files/untangle.local";
+    private final static String FREERADIUS_AUTHORIZE = "/etc/freeradius/3.0/mods-config/files/authorize";
+    private final static String FREERADIUS_RADIUSD = "/etc/freeradius/3.0/radiusd.conf";
+
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
 
@@ -268,9 +274,10 @@ public class LocalDirectoryImpl implements LocalDirectory
             return;
         }
 
-        // update xauth.secrets and chap-secrets for IPsec
+        // update xauth.secrets and chap-secrets for IPsec and untangle.local for RADIUS
         updateXauthSecrets(list);
         updateChapSecrets(list);
+        updateRadiusSecrets(list);
         this.currentList = list;
     }
 
@@ -296,10 +303,11 @@ public class LocalDirectoryImpl implements LocalDirectory
             this.saveUsersList(new LinkedList<LocalDirectoryUser>());
         }
 
-        // settings loaded so assign to currentList and write IPsec secrets
+        // settings loaded so assign to currentList and write IPsec and RADIUS secrets
         else {
             updateXauthSecrets(users);
             updateChapSecrets(users);
+            updateRadiusSecrets(users);
             this.currentList = users;
         }
     }
@@ -389,12 +397,10 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     private void updateXauthSecrets(LinkedList<LocalDirectoryUser> list)
     {
-        String authFile = "/etc/xauth.secrets";
-
         FileWriter auth = null;
         try {
             // put all the username/password pairs into a file for IPsec Xauth and IKEv2
-            auth = new FileWriter(authFile, false);
+            auth = new FileWriter(XAUTH_SECRETS_FILE, false);
 
             auth.write(FILE_DISCLAIMER);
 
@@ -415,13 +421,188 @@ public class LocalDirectoryImpl implements LocalDirectory
         } catch (Exception exn) {
             logger.error("Exception creating IPsec xauth.secrets file", exn);
         } finally {
-            if(auth != null){
+            if (auth != null) {
                 try {
                     auth.close();
                 } catch (IOException ex) {
                     logger.error("Exception closing IPsec xauth.secrets file", ex);
                 }
             }
+        }
+    }
+
+    /**
+     * We now support WPA Enterprise which allows connecting to a WiFi network
+     * using a username and password which is authenticated via RADIUS. To make
+     * this work we put all of our credentials in file that will work with
+     * freeradius and update the other configuration files required to make this
+     * work.
+     *
+     * @param list
+     *        The list of LocalDirectoryUsers
+     */
+    private void updateRadiusSecrets(LinkedList<LocalDirectoryUser> list)
+    {
+        SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
+        FileWriter fw = null;
+
+        /*
+         * Put all of the username/password pairs into a file for the RADIUS
+         * server. Unfortunately these have to be in plaintext as it is the only
+         * format that will work with all of the radius authentication
+         * mechanisms.
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_LOCAL_SECRETS, false);
+            fw.write(FILE_DISCLAIMER);
+
+            if (systemSettings.getRadiusServerEnabled()) {
+                for (LocalDirectoryUser user : list) {
+                    byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
+                    String userPassword = new String(rawPassword);
+                    fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\"\n");
+                }
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating RADIUS secrets file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing RADIUS secrets file", ex);
+                }
+            }
+        }
+
+        /*
+         * Create the authorize file with the freeradius package defaults and a
+         * line to include our local credentials.
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_AUTHORIZE, false);
+            fw.write(FILE_DISCLAIMER);
+            if (systemSettings.getRadiusServerEnabled()) {
+                fw.write("DEFAULT Framed-Protocol == PPP\n\tFramed-Protocol = PPP,\n\tFramed-Compression = Van-Jacobson-TCP-IP\n\n");
+                fw.write("DEFAULT Hint == \"CSLIP\"\n\tFramed-Protocol = SLIP,\n\tFramed-Compression = Van-Jacobson-TCP-IP\n\n");
+                fw.write("DEFAULT Hint == \"SLIP\"\n\tFramed-Protocol = SLIP\n\n");
+                fw.write("$INCLUDE untangle.local\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating RADIUS authorize file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing RADIUS authorize file", ex);
+                }
+            }
+        }
+
+        /*
+         * Create the radiusd.conf file with most of the freeradius package
+         * defaults. The main change here is we create our client definition
+         * inline here rather than including and maintaining a separate
+         * clients.conf as would be the case with the default configuration. We
+         * also enable the logging stuff for reporting purposes.
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_RADIUSD, false);
+            fw.write(FILE_DISCLAIMER);
+            if (systemSettings.getRadiusServerEnabled()) {
+                fw.write("prefix = /usr\n");
+                fw.write("exec_prefix = /usr\n");
+                fw.write("sysconfdir = /etc\n");
+                fw.write("localstatedir = /var\n");
+                fw.write("sbindir = ${exec_prefix}/sbin\n");
+                fw.write("logdir = /var/log/freeradius\n");
+                fw.write("raddbdir = /etc/freeradius/3.0\n");
+                fw.write("radacctdir = ${logdir}/radacct\n");
+                fw.write("name = freeradius\n");
+                fw.write("confdir = ${raddbdir}\n");
+                fw.write("modconfdir = ${confdir}/mods-config\n");
+                fw.write("certdir = ${confdir}/certs\n");
+                fw.write("cadir = ${confdir}/certs\n");
+                fw.write("run_dir = ${localstatedir}/run/${name}\n");
+                fw.write("db_dir = ${raddbdir}\n");
+                fw.write("libdir = /usr/lib/freeradius\n");
+                fw.write("pidfile = ${run_dir}/${name}.pid\n");
+                fw.write("correct_escapes = true\n");
+                fw.write("max_request_time = 30\n");
+                fw.write("cleanup_delay = 5\n");
+                fw.write("max_requests = 16384\n");
+                fw.write("hostname_lookups = no\n");
+                fw.write("log {\n");
+                fw.write("\tdestination = files\n");
+                fw.write("\tcolourise = yes\n");
+                fw.write("\tfile = ${logdir}/radius.log\n");
+                fw.write("\tsyslog_facility = daemon\n");
+                fw.write("\tstripped_names = no\n");
+                fw.write("\tauth = yes\n");
+                fw.write("\tauth_badpass = yes\n");
+                fw.write("\tauth_goodpass = yes\n");
+                fw.write("\tmsg_goodpass = \"UT_RADIUS_GOOD\"\n");
+                fw.write("\tmsg_badpass = \"UT_RADIUS_FAIL\"\n");
+                fw.write("\tmsg_denied = \"Access Denied\"\n");
+                fw.write("}\n");
+                fw.write("checkrad = ${sbindir}/checkrad\n");
+                fw.write("security {\n");
+                fw.write("\tuser = freerad\n");
+                fw.write("\tgroup = freerad\n");
+                fw.write("\tallow_core_dumps = no\n");
+                fw.write("\tmax_attributes = 200\n");
+                fw.write("\treject_delay = 1\n");
+                fw.write("\tstatus_server = yes\n");
+                fw.write("}\n");
+                fw.write("proxy_requests = yes\n");
+                fw.write("$INCLUDE proxy.conf\n");
+                fw.write("client untangle {\n");
+                fw.write("\tipaddr = 0.0.0.0/0\n");
+                fw.write("\tproto = *\n");
+                fw.write("\tsecret = " + systemSettings.getRadiusServerSecret() + "\n");
+                fw.write("}\n");
+                fw.write("thread pool {\n");
+                fw.write("\tstart_servers = 5\n");
+                fw.write("\tmax_servers = 32\n");
+                fw.write("\tmin_spare_servers = 3\n");
+                fw.write("\tmax_spare_servers = 10\n");
+                fw.write("\tmax_requests_per_server = 0\n");
+                fw.write("\tauto_limit_acct = no\n");
+                fw.write("}\n");
+                fw.write("modules {\n");
+                fw.write("$INCLUDE mods-enabled/\n");
+                fw.write("}\n");
+                fw.write("instantiate {\n");
+                fw.write("}\n");
+                fw.write("policy {\n");
+                fw.write("$INCLUDE policy.d/\n");
+                fw.write("}\n");
+                fw.write("$INCLUDE sites-enabled/\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating RADIUS radiusd file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing RADIUS radiusd file", ex);
+                }
+            }
+        }
+
+        /*
+         * If server is enabled restart the freeradius service
+         */
+        if (systemSettings.getRadiusServerEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
         }
     }
 
@@ -533,7 +714,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         } catch (Exception e) {
             logger.warn("Unable to access formatter", e);
         } finally {
-            if(secform != null){
+            if (secform != null) {
                 try {
                     secform.close();
                 } catch (FormatterClosedException ex) {

@@ -12,30 +12,35 @@ Ext.define('Ung.config.local-directory.MainController', {
     loadSettings: function () {
         var me = this, v = me.getView(), vm = me.getViewModel();
 
+        // set expert mode used to show/hide RADIUS section
+        vm.set('expertMode', Rpc.directData('rpc.isExpertMode'));
+
         v.setLoading(true);
-        Rpc.asyncData('rpc.UvmContext.localDirectory.getUsers')
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.UvmContext.localDirectory.getUsers'),
+            Rpc.asyncPromise('rpc.systemManager.getSettings')
+        ], this)
         .then(function (result) {
-                if(Util.isDestroyed(v, vm)){
-                    return;
-                }
-                // set the local record fields we use to deal with the expiration time and add vs edit logic
-                var users = result;
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+            // set the local record fields we use to deal with the expiration time and add vs edit logic
+            var users = result[0];
                 for(var i = 0 ; i < users.list.length ; i++) {
                     users.list[i].localEmpty = false;
-
-                    if (users.list[i].expirationTime == 0) {
-                        users.list[i].localExpires = new Date();
-                        users.list[i].localForever = true;
-                    }else {
-                        users.list[i].localExpires = new Date(users.list[i].expirationTime);
-                        users.list[i].localForever = false;
-                    }
+                        if (users.list[i].expirationTime == 0) {
+                            users.list[i].localExpires = new Date();
+                            users.list[i].localForever = true;
+                        } else {
+                            users.list[i].localExpires = new Date(users.list[i].expirationTime);
+                            users.list[i].localForever = false;
+                        }
                 }
 
-                vm.set('usersData', users);
-
-                v.setLoading(false);
-                vm.set('panel.saveDisabled', false);
+            vm.set('usersData', users);
+            vm.set('systemSettings', result[1]);
+            v.setLoading(false);
+            vm.set('panel.saveDisabled', false);
         }, function(ex) {
             if(!Util.isDestroyed(v, vm)){
                 vm.set('panel.saveDisabled', true);
@@ -92,7 +97,12 @@ Ext.define('Ung.config.local-directory.MainController', {
             }
         }
 
-        Rpc.asyncData('rpc.UvmContext.localDirectory.setUsers', userlist)
+        // Make sure we set the userlist last because that function will generate
+        // the user credentials and shared secret configs for the freeradius server
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
+            Rpc.asyncPromise('rpc.UvmContext.localDirectory.setUsers', userlist)
+        ], this)
         .then(function (result) {
             if(Util.isDestroyed(v, me)){
                 return;
@@ -107,6 +117,10 @@ Ext.define('Ung.config.local-directory.MainController', {
                 v.setLoading(false);
             }
         });
+    },
+
+    configureCertificate: function (btn) {
+        Ung.app.redirectTo("#config/administration/certificates");
     },
 
     statics:{

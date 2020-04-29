@@ -44,6 +44,10 @@ public class SystemSettings implements Serializable, JSONString
     private String webCertificate = "apache.pem";
     private String mailCertificate = "apache.pem";
     private String ipsecCertificate = "apache.pem";
+    private String radiusCertificate = "apache.pem";
+
+    private boolean radiusServerEnabled = false;
+    private String radiusServerSecret = "SharedSecret";
 
     private String installType = "";
 
@@ -141,9 +145,19 @@ public class SystemSettings implements Serializable, JSONString
     public String getWebCertificate() { return webCertificate; }
     public String getMailCertificate() { return mailCertificate; }
     public String getIpsecCertificate() { return ipsecCertificate; }
+    public String getRadiusCertificate() { return radiusCertificate; }
     public void setWebCertificate(String newValue) { this.webCertificate = newValue; }
     public void setMailCertificate(String newValue) { this.mailCertificate = newValue; }
     public void setIpsecCertificate(String newValue) { this.ipsecCertificate = newValue; }
+    public void setRadiusCertificate(String newValue) { this.radiusCertificate = newValue; }
+
+    /**
+     * These are used to get and set the radius server flag and secret
+     */
+    public boolean getRadiusServerEnabled() { return radiusServerEnabled; }
+    public void setRadiusServerEnabled(boolean newValue) { this.radiusServerEnabled = newValue; }
+    public String getRadiusServerSecret() { return radiusServerSecret; }
+    public void setRadiusServerSecret(String newValue) { this.radiusServerSecret = newValue; }
 
     /* DEPRECATED in 12.2 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
