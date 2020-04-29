@@ -342,13 +342,12 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
             WebFilterSSLEngine engine = null;
             if(app.getSettings().getCloseHttpsBlockEnabled()){
-                engine = new WebFilterSSLEngine(sess, app.generateSimpleResponse(null, sess));
+                sess.killSession();
             }else{
                 engine = new WebFilterSSLEngine(sess, redirect.getResponse());
+                sess.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
+                engine.handleClientData(buff);
             }
-
-            sess.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
-            engine.handleClientData(buff);
             return;
         }
 
