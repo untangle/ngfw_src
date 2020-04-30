@@ -224,6 +224,7 @@ Ext.define('Ung.config.administration.MainController', {
             if (cert.get('httpsServer')) { vm.set('systemSettings.webCertificate', cert.get('fileName')); }
             if (cert.get('smtpsServer')) { vm.set('systemSettings.mailCertificate', cert.get('fileName')); }
             if (cert.get('ipsecServer')) { vm.set('systemSettings.ipsecCertificate', cert.get('fileName')); }
+            if (cert.get('radiusServer')) { vm.set('systemSettings.radiusCertificate', cert.get('fileName')); }
         });
 
         Ext.Deferred.sequence([
@@ -652,7 +653,7 @@ Ext.define('Ung.config.administration.MainController', {
             Ext.MessageBox.alert('System Certificate'.t(), 'This is the default system certificate and cannot be removed.'.t());
             return;
         }
-        if (record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer')) {
+        if (record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer') || record.get('radiusServer')) {
             Ext.MessageBox.alert('Certificate In Use'.t(), 'You can not delete a certificate that is assigned to one or more services.'.t());
             return;
         }

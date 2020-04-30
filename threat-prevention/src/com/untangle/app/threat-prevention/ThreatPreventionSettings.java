@@ -28,6 +28,8 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     private Boolean flag = true;
 
     private List<ThreatPreventionRule> rules = null;
+
+    private Boolean closeHttpsBlockEnabled = false;
     
     public ThreatPreventionSettings()
     {
@@ -53,6 +55,9 @@ public class ThreatPreventionSettings implements Serializable, JSONString
 
     public List<ThreatPreventionRule> getRules() { return rules; }
     public void setRules( List<ThreatPreventionRule> newValue ) { this.rules = newValue; }
+
+    public Boolean getCloseHttpsBlockEnabled() { return closeHttpsBlockEnabled; }
+    public void setCloseHttpsBlockEnabled( Boolean closeHttpsBlockEnabled ) { this.closeHttpsBlockEnabled = closeHttpsBlockEnabled; }
 
     public String toJSONString()
     {

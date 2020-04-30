@@ -85,7 +85,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
         items: [{
             xtype: 'component',
             padding: 10,
-            html: 'The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.  The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.'.t()
+            html: 'The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.  The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.  The <B>RADIUS</B> column selects the certificate to use for the RADIUS server.'.t()
         }, {
             xtype: 'grid',
             itemId: 'serverCertificateView',
@@ -176,6 +176,25 @@ Ext.define('Ung.config.administration.view.Certificates', {
                     }
                 }
             }, {
+                header: 'RADIUS'.t(),
+                xtype: 'checkcolumn',
+                width: 80,
+                dataIndex: 'radiusServer',
+                listeners: {
+                    // don't allow uncheck - they must pick a different cert
+                    beforecheckchange: function (el, rowIndex, checked) {
+                        return checked ? true : false;
+                    },
+                    // when a new cert is selected uncheck all others
+                    checkchange: function (el, rowIndex, checked, record) {
+                        el.up('grid').getStore().each(function (rec) {
+                            if (rec !== record) {
+                                rec.set('radiusServer', false);
+                            }
+                        });
+                    }
+                }
+            }, {
                 xtype: 'actioncolumn',
                 header: 'View'.t(),
                 width: 60,
@@ -203,7 +222,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
                 tdCls: 'action-cell',
                 handler: 'deleteServerCert',
                 isDisabled: function (view, rowIndex, colIndex, item, record) {
-                    return record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer');
+                    return record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer') || record.get('radiusServer');
                 }
             }]
         }],

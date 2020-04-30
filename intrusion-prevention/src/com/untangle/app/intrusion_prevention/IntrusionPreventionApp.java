@@ -666,17 +666,8 @@ public class IntrusionPreventionApp extends AppBase
          * Update iptables config
          * Callyng sync-settings will restart the iptables script.
          */
+        UvmContextFactory.context().syncSettings().run(SettingsFileName);
         result = UvmContextFactory.context().execManager().execOutput("/usr/bin/sync-settings -f " + SettingsFileName);
-        try {
-            String lines[] = result.split("\\r?\\n");
-            for ( String line : lines ){
-                if( line.trim().length() > 1 ){
-                    logger.warn("reconfigure: sync-settings: " + line);
-                }
-            }
-        } catch (Exception e) {
-            logger.warn( "Unable to generate iptables configuration:", e );
-        }
 
         try {
             if (getRunState() == AppSettings.AppState.RUNNING) {

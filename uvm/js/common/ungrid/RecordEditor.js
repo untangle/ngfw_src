@@ -33,22 +33,8 @@ Ext.define('Ung.cmp.RecordEditor', {
         }
     },
 
-    bodyStyle: {
-        // background: '#FFF'
-    },
-
     autoShow: true,
-    // shadow: false,
-
-    // layout: 'border',
-
     modal: true,
-    // layout: {
-    //     type: 'vbox',
-    //     align: 'stretch'
-    // },
-    // scrollable: true,
-
     layout: 'fit',
 
     items: [{
@@ -65,14 +51,5 @@ Ext.define('Ung.cmp.RecordEditor', {
         },
         items: [],
         buttons: ['@cancel', '@apply']
-    }],
-
-    /**
-     * to avoid showing invalid fields upon initial form rendering
-     */
-    // onShowComplete: function () {
-    //     var form = this.down('form');
-    //     console.log(form);
-    //     form.reset();
-
+    }]
 });
