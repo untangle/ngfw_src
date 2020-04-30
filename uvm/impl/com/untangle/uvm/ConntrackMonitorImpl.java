@@ -250,7 +250,7 @@ public class ConntrackMonitorImpl
                 for (Conntrack conntrack : dumpEntries) {
                     try {
                         long sessionId = 0;
-                        SessionTuple tuple = new SessionTuple(conntrack.getProtocol(), conntrack.getPreNatClient(), conntrack.getPreNatServer(), conntrack.getPreNatClientPort(), conntrack.getPreNatServerPort());
+                        SessionTuple tuple = new SessionTuple(conntrack.getProtocol(), conntrack.getPreNatClient(), conntrack.getPreNatServer(), conntrack.getPreNatClientPort(), conntrack.getPreNatServerPort(), conntrack.getClientIntf());
                         /**
                          * Lookup the session from the previous conntrack
                          * entries

@@ -8,8 +8,23 @@ Ext.define('Ung.apps.threatprevention.view.Advanced', {
 
     items: [{
         xtype: 'fieldset',
+        title: 'Block options'.t(),
+        padding: '10 15',
+        cls: 'app-section',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+        items: [{
+            xtype: 'checkbox',
+            boxLabel: 'Close connection for blocked HTTPS sessions without redirecting to block page'.t(),
+            bind: '{settings.closeHttpsBlockEnabled}'
+        }]
+    }, {
+        xtype: 'fieldset',
         title: 'Custom block page'.t(),
-        padding: 10,
+        padding: '10 15',
+        cls: 'app-section',
         layout: {
             type: 'vbox',
             align: 'stretch'

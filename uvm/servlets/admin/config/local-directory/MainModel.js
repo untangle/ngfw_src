@@ -7,7 +7,8 @@ Ext.define('Ung.config.local-directory.MainModel', {
         title: 'Local Directory'.t(),
         iconName: 'local-directory',
 
-        usersData: null
+        usersData: null,
+        systemSettings: null
     },
 
     stores: {

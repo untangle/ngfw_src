@@ -25,6 +25,7 @@ public class CertificateInformation implements JSONString, Serializable
     private boolean httpsServer;
     private boolean smtpsServer;
     private boolean ipsecServer;
+    private boolean radiusServer;
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -57,6 +58,9 @@ public class CertificateInformation implements JSONString, Serializable
 
     public void setIpsecServer(boolean argValue) { ipsecServer = argValue; }
     public boolean getIpsecServer() { return ipsecServer; }
+
+    public void setRadiusServer(boolean argValue) { radiusServer = argValue; }
+    public boolean getRadiusServer() { return radiusServer; }
 
     public String toJSONString()
     {

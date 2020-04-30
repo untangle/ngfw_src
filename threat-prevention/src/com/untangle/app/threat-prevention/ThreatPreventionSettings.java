@@ -27,10 +27,12 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     private String action = ThreatPreventionApp.ACTION_BLOCK;
     private Boolean flag = true;
 
+    private List<ThreatPreventionRule> rules = null;
+
+    private Boolean closeHttpsBlockEnabled = false;
+
     private Boolean customBlockPageEnabled = false;
     private String customBlockPageUrl = "";
-
-    private List<ThreatPreventionRule> rules = null;
 
     public ThreatPreventionSettings()
     {
@@ -56,6 +58,9 @@ public class ThreatPreventionSettings implements Serializable, JSONString
 
     public List<ThreatPreventionRule> getRules() { return rules; }
     public void setRules( List<ThreatPreventionRule> newValue ) { this.rules = newValue; }
+
+    public Boolean getCloseHttpsBlockEnabled() { return closeHttpsBlockEnabled; }
+    public void setCloseHttpsBlockEnabled( Boolean closeHttpsBlockEnabled ) { this.closeHttpsBlockEnabled = closeHttpsBlockEnabled; }
 
     public Boolean getCustomBlockPageEnabled() { return customBlockPageEnabled; }
     public void setCustomBlockPageEnabled(Boolean customBlockPageEnabled) { this.customBlockPageEnabled = customBlockPageEnabled; }

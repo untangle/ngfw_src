@@ -103,23 +103,7 @@ public class UriManagerImpl implements UriManager
         /**
          * Now actually sync the settings to the system
          */
-        ExecManagerResult result;
-        boolean errorOccurred = false;
-        String errorStr = null;
-        String cmd = "/usr/bin/sync-settings -f " + SettingsFileName;
-        result = UvmContextFactory.context().execManager().exec( cmd );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("Syncing settings to O/S: ");
-            for ( String line : lines )
-                logger.info("sync-settings: " + line);
-        } catch (Exception e) {}
-
-        if ( result.getResult() != 0 ) {
-            errorOccurred = true;
-            errorStr = "sync-settings failed: returned " + result.getResult();
-        }
-        
+        UvmContextFactory.context().syncSettings().run(SettingsFileName);
         UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.URIS_SETTINGS_CHANGE, this.settings);
     }
 
@@ -247,7 +231,7 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://bd.untangle.com/");
+        uriTranslation.setUri("http://bd.untangle.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
@@ -272,6 +256,17 @@ public class UriManagerImpl implements UriManager
 
         uriTranslation = new UriTranslation();
         uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
+        uriTranslations.add(uriTranslation);
+
+        // On one hand, this is probably better handled as a host, but since this is being released
+        // as a date-release for 15.0 and the update is not going to everyone, adding
+        // multiple getXHots() will fail for those non-updated units.
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://supssh.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://sshrelay.untangle.com/");
         uriTranslations.add(uriTranslation);
 
         settings.setUriTranslations(uriTranslations);
@@ -304,6 +299,14 @@ public class UriManagerImpl implements UriManager
 
         uriTranslation = new UriTranslation();
         uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://supssh.untangle.com/");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://sshrelay.untangle.com/");
         uriTranslations.add(uriTranslation);
 
         settings.setUriTranslations(uriTranslations);

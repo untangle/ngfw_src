@@ -144,13 +144,15 @@ public abstract class NetcapHook implements Runnable
                                            netcapSession.clientSide().client().host(),
                                            netcapSession.clientSide().server().host(),
                                            netcapSession.clientSide().client().port(),
-                                           netcapSession.clientSide().server().port());
+                                           netcapSession.clientSide().server().port(),
+                                           netcapSession.clientSide().interfaceId());
             sessionGlobalState.setClientSideTuple( clientSide );
             serverSide = new SessionTuple( sessionGlobalState.getProtocol(),
                                            netcapSession.serverSide().client().host(),
                                            netcapSession.serverSide().server().host(),
                                            netcapSession.serverSide().client().port(),
-                                           netcapSession.serverSide().server().port());
+                                           netcapSession.serverSide().server().port(),
+                                           netcapSession.clientSide().interfaceId());
             sessionGlobalState.setServerSideTuple( clientSide );
 
             
@@ -367,7 +369,8 @@ public abstract class NetcapHook implements Runnable
                                                sessionEvent.getSClientAddr(),
                                                sessionEvent.getSServerAddr(),
                                                sessionEvent.getSClientPort(),
-                                               sessionEvent.getSServerPort());
+                                               sessionEvent.getSServerPort(),
+                                               sessionEvent.getClientIntf());
 
             /* Connect to the client */
             clientActionCompleted = connectClientIfNecessary();

@@ -235,33 +235,10 @@ public class NetworkManagerImpl implements NetworkManager
         configureInterfaceSettingsArray();
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
 
-
-        /**
-         * Now actually sync the settings to the system
-         */
-        ExecManagerResult result;
-        boolean errorOccurred = false;
-        String errorStr = null;
-        String cmd = "/usr/bin/sync-settings -f " + settingsFilename;
-        result = UvmContextFactory.context().execManager().exec( cmd );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("Syncing settings to O/S: ");
-            for ( String line : lines )
-                logger.info("sync-settings: " + line);
-        } catch (Exception e) {}
-
-        if ( result.getResult() != 0 ) {
-            errorOccurred = true;
-            errorStr = "sync-settings failed: returned " + result.getResult();
-        }
+        UvmContextFactory.context().syncSettings().run(this.settingsFilename);
         
         // notify interested parties that the settings have changed
         UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettings );
-
-        if ( errorOccurred ) {
-            throw new RuntimeException(errorStr);
-        }
     }
 
     /**

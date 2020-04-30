@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Scanner;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,6 +48,7 @@ import com.untangle.uvm.util.IOUtil;
  */
 public class SystemManagerImpl implements SystemManager
 {
+    private static final int SETTINGS_VERSION = 4;
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
     private static final String TWO_LINES = BLANK_LINE + EOL;
@@ -80,17 +82,20 @@ public class SystemManagerImpl implements SystemManager
 
     private Calendar currentCalendar = Calendar.getInstance();
 
+    private String SettingsFileName = "";
+
     /**
      * Constructor
      */
     protected SystemManagerImpl()
     {
+        this.SettingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "system.js";
+
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         SystemSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "system.js";
 
         try {
-            readSettings = settingsManager.load(SystemSettings.class, settingsFileName);
+            readSettings = settingsManager.load(SystemSettings.class, SettingsFileName);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
         }
@@ -104,6 +109,12 @@ public class SystemManagerImpl implements SystemManager
         } else {
             this.settings = readSettings;
 
+            if(this.settings.getVersion() < SETTINGS_VERSION){
+                this.settings.setVersion(SETTINGS_VERSION);
+                this.settings.setLogRetention(7);
+                this.setSettings(this.settings);
+            }
+
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
@@ -111,7 +122,7 @@ public class SystemManagerImpl implements SystemManager
          * If the settings file date is newer than the system files, re-sync
          * them
          */
-        File settingsFile = new File(settingsFileName);
+        File settingsFile = new File(SettingsFileName);
         File snmpConfFile = new File(SNMP_CONF_FILE_NAME);
         File snmpDefaultFile = new File(SNMP_DEFAULT_FILE_NAME);
         if (settingsFile.lastModified() > snmpConfFile.lastModified() || settingsFile.lastModified() > snmpDefaultFile.lastModified()) syncSnmpSettings(this.settings.getSnmpSettings());
@@ -145,11 +156,13 @@ public class SystemManagerImpl implements SystemManager
         if (settings.getSnmpSettings().isEnabled()) restartSnmpDaemon();
 
         /**
-         * If pyconnector state does not match the settings, re-sync them
+         * If pyconnector or freeradius state does not match the settings,
+         * re-sync them
          */
         pyconnectorSync();
-        
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler( new SystemSupportLogDownloadHandler() );
+        freeradiusSync();
+
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new SystemSupportLogDownloadHandler());
 
         logger.info("Initialized SystemManager");
     }
@@ -181,7 +194,7 @@ public class SystemManagerImpl implements SystemManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "system.js", newSettings);
+            settingsManager.save(this.SettingsFileName, newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;
@@ -204,6 +217,9 @@ public class SystemManagerImpl implements SystemManager
             activateApacheCertificate();
         }
 
+        /* update the radius server with the configured certificate */
+        activateRadiusCertificate();
+
         /**
          * If auto-upgrade is enabled and file doesn't exist or is out of date,
          * write it
@@ -214,7 +230,10 @@ public class SystemManagerImpl implements SystemManager
             if (CRON_FILE.exists()) UvmContextFactory.context().execManager().exec("/bin/rm -f " + CRON_FILE);
         }
 
+        UvmContextFactory.context().syncSettings().run(this.SettingsFileName);
+
         pyconnectorSync();
+        freeradiusSync();
     }
 
     /**
@@ -606,15 +625,44 @@ public class SystemManagerImpl implements SystemManager
         Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled untangle-pyconnector");
         // if running and should not be, stop it
         if ((0 == exitValue) && !settings.getCloudEnabled()) {
-            UvmContextFactory.context().execManager().exec( "systemctl disable untangle-pyconnector" );
-            UvmContextFactory.context().execManager().exec( "systemctl stop untangle-pyconnector" );
+            UvmContextFactory.context().execManager().exec("systemctl disable untangle-pyconnector");
+            UvmContextFactory.context().execManager().exec("systemctl stop untangle-pyconnector");
         }
         // if not running and should be, start it
         //(UvmContextImpl.context().isWizardComplete()) || UvmContextImpl.context().isAppliance())
         if ((0 != exitValue) && settings.getCloudEnabled()) {
-            UvmContextFactory.context().execManager().exec( "systemctl enable untangle-pyconnector" );
-            UvmContextFactory.context().execManager().exec( "systemctl restart untangle-pyconnector" );
+            UvmContextFactory.context().execManager().exec("systemctl enable untangle-pyconnector");
+            UvmContextFactory.context().execManager().exec("systemctl restart untangle-pyconnector");
         }
+    }
+
+    /**
+     * If radius server in enabled, start freeradius.service and enable on
+     * startup. If not, stop it and disable on startup
+     */
+    protected void freeradiusSync()
+    {
+        Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled freeradius.service");
+        // if running and should not be, stop it
+        if ((0 == exitValue) && !settings.getRadiusServerEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl disable freeradius.service");
+            UvmContextFactory.context().execManager().exec("systemctl stop freeradius.service");
+        }
+        // if not running and should be, start it
+        if ((0 != exitValue) && settings.getRadiusServerEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl enable freeradius.service");
+            UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
+        }
+    }
+
+    /**
+     * Get the size of /var/log for display in the UI.
+     *
+     * @return Size of all files recursively.
+     */
+    public Integer getLogDirectorySize()
+    {
+        return Integer.parseInt(UvmContextFactory.context().execManager().execOutput("/bin/du -sb /var/log").split("\\t")[0]);
     }
 
     /**
@@ -625,7 +673,7 @@ public class SystemManagerImpl implements SystemManager
     private SystemSettings defaultSettings()
     {
         SystemSettings newSettings = new SystemSettings();
-        newSettings.setVersion(3);
+        newSettings.setVersion(SETTINGS_VERSION);
 
         SnmpSettings snmpSettings = new SnmpSettings();
         snmpSettings.setEnabled(false);
@@ -1155,5 +1203,103 @@ public class SystemManagerImpl implements SystemManager
         // copy the configured pem file to the apache directory and restart
         UvmContextFactory.context().execManager().exec("cp " + CertificateManager.CERT_STORE_PATH + getSettings().getWebCertificate() + " " + CertificateManager.APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+    }
+
+    /**
+     * Update the certificate in all of the freeradius configuration files.
+     */
+    public void activateRadiusCertificate()
+    {
+        if (!settings.getRadiusServerEnabled()) return;
+
+        String certFull = CertificateManager.CERT_STORE_PATH + getSettings().getRadiusCertificate();
+        int dotLocation = certFull.indexOf('.');
+        if (dotLocation < 0) {
+            logger.warn("Invalid filename for RADIUS certificate: + certFull");
+            return;
+        }
+
+        String certBase = certFull.substring(0, dotLocation);
+
+        try {
+            updateRadiusCertificateConfig("/etc/freeradius/3.0/mods-available/eap", certBase);
+            updateRadiusCertificateConfig("/etc/freeradius/3.0/mods-available/inner-eap", certBase);
+            updateRadiusCertificateConfig("/etc/freeradius/3.0/sites-available/abfab-tls", certBase);
+            updateRadiusCertificateConfig("/etc/freeradius/3.0/sites-available/tls", certBase);
+        } catch (Exception exn) {
+            logger.warn("Exception activating RADIUS certificate", exn);
+            return;
+        }
+
+        // make sure the freeradius daemon can read the crt and key files
+        UvmContextFactory.context().execManager().exec("chmod a+r " + certBase + ".crt");
+        UvmContextFactory.context().execManager().exec("chmod a+r " + certBase + ".key");
+        UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
+    }
+
+    /**
+     * Modify a freeradius configuration file in place
+     *
+     * The configuration files for freeradius have a massive amount of comments
+     * with dozens of actual configuration lines scattered all over. Since there
+     * are numerous files, I didn't want to extract the active lines from each
+     * of the distribution configs we need to manage here and create a bunch of
+     * static config templates like I did for the radiusd.conf file. So instead
+     * I came up with this solution that looks for non-comment lines with the
+     * certificate_file and private_key_file options we need to manage, and
+     * adjust them while leaving everything else unchanged. This simple approach
+     * only works here because the lines we need to modify are not commented. A
+     * whole lot of extra parsing and whitespace detection would be needed to
+     * use this approach to enable or set commented items in one of the config
+     * files. Search tokens that are long and unique is also helpful here.
+     *
+     * @param fileName
+     *        The file to modify
+     * @param certBase
+     *        The base filename of the certificate
+     * @throws Exception
+     */
+    public void updateRadiusCertificateConfig(String fileName, String certBase) throws Exception
+    {
+        java.util.Scanner scanner = new Scanner(new File(fileName));
+        List<String> config = new ArrayList<String>();
+        while (scanner.hasNextLine()) {
+            config.add(scanner.nextLine());
+        }
+        scanner.close();
+
+        FileWriter fw = new FileWriter(fileName, false);
+
+        for (String line : config) {
+            // lines with comments are written without modification
+            if (line.contains("#")) {
+                fw.write(line + "\n");
+                continue;
+            }
+
+            int crtloc = line.indexOf("certificate_file");
+            int keyloc = line.indexOf("private_key_file");
+
+            // lines without cert entries are written without modification
+            if ((crtloc < 0) && (keyloc < 0)) {
+                fw.write(line + "\n");
+                continue;
+            }
+
+            // write certificate_file entries using our configured crt file
+            if (crtloc >= 0) {
+                fw.write(line.substring(0, crtloc));
+                fw.write("certificate_file = " + certBase + ".crt\n");
+            }
+
+            // write private_key_file entries using our configured key file
+            if (keyloc >= 0) {
+                fw.write(line.substring(0, keyloc));
+                fw.write("private_key_file = " + certBase + ".key\n");
+            }
+        }
+
+        fw.flush();
+        fw.close();
     }
 }
