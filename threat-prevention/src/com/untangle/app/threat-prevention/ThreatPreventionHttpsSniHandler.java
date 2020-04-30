@@ -333,12 +333,12 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 
             ThreatPreventionSSLEngine engine;
             if(app.getSettings().getCloseHttpsBlockEnabled()){
-                engine = new ThreatPreventionSSLEngine(sess, app.generateSimpleResponse(null, sess));
+                sess.killSession();
             }else{
                 engine = new ThreatPreventionSSLEngine(sess, redirect.getResponse());
+                sess.globalAttach(AppSession.KEY_THREAT_PREVENTION_SSL_ENGINE, engine);
+                engine.handleClientData(buff);
             }
-            sess.globalAttach(AppSession.KEY_THREAT_PREVENTION_SSL_ENGINE, engine);
-            engine.handleClientData(buff);
             return;
         }
 
