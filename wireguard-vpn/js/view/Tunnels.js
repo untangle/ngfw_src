@@ -15,7 +15,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Tunnels', {
             value: '{getSiteUrl}',
         },
     },{
-        fieldLabel: 'Public Key'.t(),
+        fieldLabel: 'Server public key'.t(),
         xtype: 'displayfield',
         bind: {
             value: '{settings.publicKey}',
@@ -50,6 +50,9 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'endpointAddress' : '',
         'endpointPort': '',
         'peerAddress': '',
+        'pingInterval': 60,
+        'pingConnectionEvents': true,
+        'pingUnreachableEvents': false
     },
 
     bind: '{tunnels}',
@@ -70,9 +73,19 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         width: 290,
         dataIndex: 'publicKey',
     }, {
-        header: 'Dynamic Endpoint?'.t(),
+        header: 'Peer IP Address'.t(),
+        width: Renderer.ipWidth,
+        dataIndex: 'peerAddress',
+    }, {
+        header: 'Remote Networks'.t(),
+        width: Renderer.messageWidth,
+        flex: 1,
+        dataIndex: 'networks'
+    }, {
+        header: 'Endpoint'.t(),
         width: Renderer.messageWidth,
         dataIndex: 'endpointDynamic',
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
     }, {
         header: 'IP Address'.t(),
         width: Renderer.ipWidth,
@@ -83,15 +96,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         width: Renderer.portWidth,
         dataIndex: 'endpointPort',
         renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
-    }, {
-        header: 'Peer IP Address'.t(),
-        width: Renderer.ipWidth,
-        dataIndex: 'peerAddress',
-    }, {
-        header: 'Remote Networks'.t(),
-        width: Renderer.messageWidth,
-        flex: 1,
-        dataIndex: 'networks'
     }],
 
     editorXtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
@@ -101,7 +105,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: '{record.enabled}'
     }, {
         xtype: 'textfield',
-        // vtype: 'wireguard-vpnName',
         fieldLabel: 'Description'.t(),
         allowBlank: false,
         bind: {
@@ -115,37 +118,9 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: {
             value: '{record.publicKey}'
         }
-    },{
-        xtype: 'checkbox',
-        fieldLabel: 'Dynamic endpoint'.t(),
-        bind: '{record.endpointDynamic}'
     }, {
         xtype: 'textfield',
-        fieldLabel: 'Endpoint Address'.t(),
-        hidden: true,
-        disabled: true,
-        allowBlank: false,
-        vtype: 'isSingleIpValid',
-        bind: {
-            value: '{record.endpointAddress}',
-            hidden: '{record.endpointDynamic}',
-            disabled: '{record.endpointDynamic}'
-        }
-    }, {
-        xtype: 'textfield',
-        fieldLabel: 'Endpoint Port'.t(),
-        vtype: 'isSinglePortValid',
-        hidden: true,
-        disabled: true,
-        allowBlank: false,
-        bind: {
-            value: '{record.endpointPort}',
-            hidden: '{record.endpointDynamic}',
-            disabled: '{record.endpointDynamic}'
-        }
-    }, {
-        xtype: 'textfield',
-        fieldLabel: 'Peer Address'.t(),
+        fieldLabel: 'Peer IP Address'.t(),
         vtype: 'isSingleIpValidOrEmpty',
         allowBlank: true,
         bind: {
@@ -162,30 +137,100 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             value: '{record.networks}'
         }
     }, {
-        xtype: 'textfield',
-        fieldLabel: 'Ping Address'.t(),
-        allowBlank: true,
-        vtype: 'isSingleIpValid',
-        bind: {
-            value: '{record.pingAddress}',
-        }
+        xtype: 'fieldset',
+        title: 'Endpoint'.t(),
+        layout: {
+            type: 'vbox'
+        },
+        defaults: {
+            labelWidth: 170,
+            labelAlign: 'right'
+        },
+        items:[{
+            // xtype: 'checkbox',
+            // fieldLabel: 'Dynamic'.t(),
+            // bind: '{record.endpointDynamic}'
+            fieldLabel: 'Type'.t(),
+            xtype: 'combobox',
+            editable: false,
+            bind: {
+                value: '{record.endpointDynamic}'
+            },
+            queryMode: 'local',
+            store: [
+                [true, 'Dynamic'.t()],
+                [false, 'Static'.t()]
+            ],
+            forceSelection: true
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'IP Address'.t(),
+            hidden: true,
+            disabled: true,
+            allowBlank: false,
+            vtype: 'isSingleIpValid',
+            bind: {
+                value: '{record.endpointAddress}',
+                hidden: '{record.endpointDynamic}',
+                disabled: '{record.endpointDynamic}'
+            }
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Port'.t(),
+            vtype: 'isSinglePortValid',
+            hidden: true,
+            disabled: true,
+            allowBlank: false,
+            bind: {
+                value: '{record.endpointPort}',
+                hidden: '{record.endpointDynamic}',
+                disabled: '{record.endpointDynamic}'
+            }
+        }]
     }, {
-        xtype: 'numberfield',
-        fieldLabel: 'Ping Interval'.t(),
-        allowBlank: false,
-        allowDecimals: false,
-        minValue: 0,
-        maxValue: 300,
-        bind: {
-            value: '{record.pingInterval}'
-        }
-    },{
-        xtype: 'checkbox',
-        fieldLabel: 'Tunnel Up/Down Alerts'.t(),
-        bind: '{record.pingConnectionEvents}'
-    },{
-        xtype: 'checkbox',
-        fieldLabel: 'Ping Unreachable Alerts'.t(),
-        bind: '{record.pingUnreachableEvents}'
+        xtype: 'fieldset',
+        title: 'Monitor'.t(),
+        padding: 10,
+        layout: {
+            type: 'vbox'
+        },
+        defaults: {
+            labelWidth: 170,
+            labelAlign: 'right'
+        },
+        items:[{
+            xtype: 'textfield',
+            fieldLabel: 'Ping IP Address'.t(),
+            allowBlank: true,
+            vtype: 'isSingleIpValid',
+            bind: {
+                value: '{record.pingAddress}',
+            }
+        }, {
+            xtype: 'numberfield',
+            fieldLabel: 'Ping Interval'.t(),
+            allowBlank: false,
+            allowDecimals: false,
+            minValue: 0,
+            maxValue: 300,
+            bind: {
+                value: '{record.pingInterval}',
+                disabled: '{!record.pingAddress}'
+            }
+        },{
+            xtype: 'checkbox',
+            fieldLabel: 'Alert on Tunnel Up/Down'.t(),
+            bind: {
+                value: '{record.pingConnectionEvents}',
+                disabled: '{!record.pingAddress}'
+            }
+        },{
+            xtype: 'checkbox',
+            fieldLabel: 'Alert on Ping Unreachable'.t(),
+            bind: {
+                value: '{record.pingUnreachableEvents}',
+                disabled: '{!record.pingAddress}'
+            }
+        }]
     }]
 });
