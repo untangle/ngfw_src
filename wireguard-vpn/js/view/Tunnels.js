@@ -74,22 +74,28 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         width: 290,
         dataIndex: 'publicKey',
     }, {
-        header: 'Endpoint Address'.t(),
+        header: 'Dynamic Endpoint?'.t(),
+        width: Renderer.messageWidth,
+        dataIndex: 'endpointDynamic',
+    }, {
+        header: 'IP Address'.t(),
         width: Renderer.ipWidth,
         dataIndex: 'endpointAddress',
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
     }, {
-        header: 'Endpoint Port'.t(),
+        header: 'Port'.t(),
         width: Renderer.portWidth,
         dataIndex: 'endpointPort',
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
     }, {
-        header: 'Peer Address'.t(),
+        header: 'Peer IP Address'.t(),
         width: Renderer.ipWidth,
         dataIndex: 'peerAddress',
     }, {
-        header: 'Networks'.t(),
+        header: 'Remote Networks'.t(),
         width: Renderer.messageWidth,
         flex: 1,
-        dataIndex: 'networks',
+        dataIndex: 'networks'
     }],
 
     editorXtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
@@ -107,7 +113,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         }
     }, {
         xtype: 'textfield',
-        // vtype: 'wireguard-vpnName',
+        vtype: 'wireguardPublicKey',
         fieldLabel: 'Public Key'.t(),
         allowBlank: false,
         bind: {
@@ -151,7 +157,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         }
     }, {
         xtype: 'textarea',
-        fieldLabel: 'Networks'.t(),
+        fieldLabel: 'Remote Networks'.t(),
         vtype: 'cidrBlockArea',
         allowBlank: true,
         width: 250,
