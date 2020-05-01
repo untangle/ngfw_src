@@ -62,6 +62,14 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
         { xtype: 'app-wireguard-vpn-status' },
         { xtype: 'app-wireguard-vpn-settings' },
         { xtype: 'app-wireguard-vpn-tunnels' }
-    ]
+    ],
+    statics: {
+        dynamicEndpointRenderer: function(value, cell, record){
+            if(record.get('endpointDynamic')){
+                return '&mdash;';
+            }
+            return value;
+        }
+    }
 
 });
