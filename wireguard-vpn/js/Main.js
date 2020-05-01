@@ -64,8 +64,11 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
         { xtype: 'app-wireguard-vpn-tunnels' }
     ],
     statics: {
-        dynamicEndpointRenderer: function(value, cell, record){
-            if(record.get('endpointDynamic')){
+        dynamicEndpointRenderer: function(value, cell, record, rowIndex, columnIndex, store, table){
+            var dataIndex = table.getColumnManager().columns[columnIndex].dataIndex;
+            if(dataIndex == 'endpointDynamic'){
+                return value ? 'Dynamic'.t() : 'Static'.t();
+            }else if(record.get('endpointDynamic')){
                 return '&mdash;';
             }
             return value;
