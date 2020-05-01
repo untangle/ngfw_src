@@ -73,13 +73,6 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             tunnelsDeleted = [],
             settingsChanged = false;
 
-        // Determine if settings changed, requiring a full restart.
-        me.fullRestartSettingsKeys.forEach( function(key){
-            if(vm.get('originalSettings')[key] != vm.get('settings')[key]){
-                settingsChanged = true;
-            }
-        });
-
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             if (store.getModifiedRecords().length > 0 ||
@@ -123,6 +116,16 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 }
             }
         });
+
+        // Determine if settings changed, requiring a full restart.
+        me.fullRestartSettingsKeys.forEach( function(key){
+            if(vm.get('originalSettings')[key] != vm.get('settings')[key]){
+                settingsChanged = true;
+            }
+        });
+        if(tunnelsDeleted.length == 0 && tunnelsAdded == 0){
+            settingsChanged = true;
+        }
 
         v.setLoading(true);
         vm.set('panel.saveDisabled', true);
