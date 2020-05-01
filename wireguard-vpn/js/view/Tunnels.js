@@ -50,10 +50,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'endpointAddress' : '',
         'endpointPort': '',
         'peerAddress': '',
-        'networks': {
-            'javaClass': 'java.util.LinkedList',
-            'list': []
-        }
     },
 
     bind: '{tunnels}',
@@ -161,7 +157,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         vtype: 'cidrBlockArea',
         allowBlank: true,
         width: 250,
-        height: 100,
+        height: 50,
         bind: {
             value: '{record.networks}'
         }
