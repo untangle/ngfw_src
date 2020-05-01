@@ -111,6 +111,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             value: '{record.description}'
         }
     }, {
+        xtype: 'displayfield',
+        fieldLabel: 'Server Public Key'.t(),
+        bind: {
+            value: '{settings.publicKey}',
+        }
+    }, {
         xtype: 'textfield',
         vtype: 'wireguardPublicKey',
         fieldLabel: 'Public Key'.t(),
