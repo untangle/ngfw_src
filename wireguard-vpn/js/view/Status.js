@@ -115,11 +115,13 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                 }, {
                     header: 'Bytes In'.t(),
                     dataIndex: 'transfer-rx',
-                    width: Renderer.sizeWidth
+                    width: Renderer.sizeWidth,
+                    renderer: Renderer.datasize
                 }, {
                     header: 'Bytes Out'.t(),
                     dataIndex: 'transfer-tx',
-                    width: Renderer.sizeWidth
+                    width: Renderer.sizeWidth,
+                    renderer: Renderer.datasize
                 }],
                 bbar: ['@refresh', '@reset']
             }]
