@@ -358,7 +358,6 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     keepaliveText: 'Keepalive must be a number or 0 to disable.'.t(),
 
     wireguardPublicKey: function(value){
-        console.log(value.length);
         return (value.length == 44) ? true : false;
     },
     wireguardPublicKeyText: 'Public key must be 44 characters long.'.t(),
