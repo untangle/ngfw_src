@@ -48,7 +48,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'publicKey': '',
         'endpointDynamic': true,
         'endpointAddress' : '',
-        'endpointPort': '',
+        'endpointPort': 51820,
         'peerAddress': '',
         'pingInterval': 60,
         'pingConnectionEvents': true,
@@ -154,9 +154,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             labelAlign: 'right'
         },
         items:[{
-            // xtype: 'checkbox',
-            // fieldLabel: 'Dynamic'.t(),
-            // bind: '{record.endpointDynamic}'
             fieldLabel: 'Type'.t(),
             xtype: 'combobox',
             editable: false,
@@ -169,6 +166,15 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 [false, 'Static'.t()]
             ],
             forceSelection: true
+        },{
+            fieldLabel: 'Site URL'.t(),
+            xtype: 'displayfield',
+            cls: 'x-selectable',
+            bind: {
+                value: '{getSiteUrl}',
+                hidden: '{record.endpointDynamic}',
+                disabled: '{record.endpointDynamic}'
+            }
         }, {
             xtype: 'textfield',
             fieldLabel: 'IP Address'.t(),
