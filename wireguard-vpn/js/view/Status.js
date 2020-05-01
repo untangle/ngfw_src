@@ -105,12 +105,13 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                     header: 'Last Handshake'.t(),
                     dataIndex: 'latest-handshake',
                     width: Renderer.timestampWidth,
-                    renderer: Renderer.timestamp,
+                    renderer: Ung.apps['wireguard-vpn'].Main.statusHandshakeRenderer,
                     filter: Renderer.timestampFilter
                 }, {
                     header: 'Keepalive'.t(),
                     dataIndex: 'persistent-keepalive',
-                    width: Renderer.messageWidth
+                    width: Renderer.messageWidth,
+                    hidden: true
                 }, {
                     header: 'Bytes In'.t(),
                     dataIndex: 'transfer-rx',
