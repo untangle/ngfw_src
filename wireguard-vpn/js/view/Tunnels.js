@@ -113,6 +113,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     }, {
         xtype: 'displayfield',
         fieldLabel: 'Server Public Key'.t(),
+        cls: 'x-selectable',
         bind: {
             value: '{settings.publicKey}',
         }
