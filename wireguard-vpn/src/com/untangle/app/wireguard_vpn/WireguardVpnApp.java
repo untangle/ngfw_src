@@ -140,6 +140,8 @@ public class WireguardVpnApp extends AppBase
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.WireguardVpnManager.configure();
+
+        // !!! only do this if we're running
         if(restart == true){
             this.WireguardVpnManager.restart();
         }

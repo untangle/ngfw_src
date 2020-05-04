@@ -1,5 +1,5 @@
 {
-    "category": "Wireguard VPN",
+    "category": "WireGuard VPN",
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],

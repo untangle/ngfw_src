@@ -1,5 +1,5 @@
 {
-    "category": "Wireguard VPN",
+    "category": "WireGuard VPN",
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
@@ -7,7 +7,7 @@
     "description": "Wireguard VPN client connection events.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
-    "table": "wireguard_vpn_events",
+    "table": "wireuard_vpn_events",
     "title": "Connection Events",
     "uniqueId": "wireguardvpn-wg0328AZC5E3"
 }

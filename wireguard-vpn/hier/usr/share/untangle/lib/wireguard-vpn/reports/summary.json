@@ -1,6 +1,6 @@
 {
     "uniqueId": "wireguardvpn-wgupl31dqKb1",
-    "category": "Wireguard VPN",
+    "category": "WireGuard VPN",
     "description": "A summary of Wireguard VPN actions.",
     "displayOrder": 18,
     "enabled": true,
@@ -8,9 +8,9 @@
     "textColumns": [
         "round(coalesce(sum(in_bytes + out_bytes), 0) / (1024*1024),1) as total"
     ],
-    "textString": "Wireguard VPN processed {0} megabytes over Wireguard VPN tunnels.",
+    "textString": "Wireguard VPN processed {0} megabytes over WireGuard VPN tunnels.",
     "readOnly": true,
     "table": "wireguard_vpn_stats",
-    "title": "Wireguard VPN Summary",
+    "title": "WireGuard VPN Summary",
     "type": "TEXT"
 }
