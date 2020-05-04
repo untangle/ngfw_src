@@ -9,18 +9,6 @@ Ext.define('Ung.apps.wireguard-vpn.view.Tunnels', {
     padding: '8 5',
 
     items: [{
-        fieldLabel: 'Site URL'.t(),
-        xtype: 'displayfield',
-        bind: {
-            value: '{getSiteUrl}',
-        },
-    },{
-        fieldLabel: 'Server public key'.t(),
-        xtype: 'displayfield',
-        bind: {
-            value: '{settings.publicKey}',
-        },
-    },{
         xtype: 'app-wireguard-vpn-server-tunnels-grid',
     }]
 });
@@ -111,37 +99,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             value: '{record.description}'
         }
     }, {
-        xtype: 'displayfield',
-        fieldLabel: 'Server Public Key'.t(),
-        cls: 'x-selectable',
-        bind: {
-            value: '{settings.publicKey}',
-        }
-    }, {
         xtype: 'textfield',
         vtype: 'wireguardPublicKey',
         fieldLabel: 'Public Key'.t(),
         allowBlank: false,
         bind: {
             value: '{record.publicKey}'
-        }
-    }, {
-        xtype: 'textfield',
-        fieldLabel: 'Peer IP Address'.t(),
-        vtype: 'isSingleIpValidOrEmpty',
-        allowBlank: true,
-        bind: {
-            value: '{record.peerAddress}'
-        }
-    }, {
-        xtype: 'textarea',
-        fieldLabel: 'Remote Networks'.t(),
-        vtype: 'cidrBlockArea',
-        allowBlank: true,
-        width: 250,
-        height: 50,
-        bind: {
-            value: '{record.networks}'
         }
     }, {
         xtype: 'fieldset',
@@ -165,15 +128,9 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 [true, 'Dynamic'.t()],
                 [false, 'Static'.t()]
             ],
-            forceSelection: true
-        },{
-            fieldLabel: 'Site URL'.t(),
-            xtype: 'displayfield',
-            cls: 'x-selectable',
-            bind: {
-                value: '{getSiteUrl}',
-                hidden: '{record.endpointDynamic}',
-                disabled: '{record.endpointDynamic}'
+            forceSelection: true,
+            listeners: {
+                change: 'endpointTypeComboChange'
             }
         }, {
             xtype: 'textfield',
@@ -200,6 +157,24 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 disabled: '{record.endpointDynamic}'
             }
         }]
+    }, {
+        xtype: 'textfield',
+        fieldLabel: 'Peer IP Address'.t(),
+        vtype: 'isSingleIpValidOrEmpty',
+        allowBlank: true,
+        bind: {
+            value: '{record.peerAddress}'
+        }
+    }, {
+        xtype: 'textarea',
+        fieldLabel: 'Remote Networks'.t(),
+        vtype: 'cidrBlockArea',
+        allowBlank: true,
+        width: 250,
+        height: 50,
+        bind: {
+            value: '{record.networks}'
+        }
     }, {
         xtype: 'fieldset',
         title: 'Monitor'.t(),
