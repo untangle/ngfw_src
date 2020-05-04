@@ -8,6 +8,10 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     withValidation: true,
     padding: '8 5',
 
+    defaults: {
+        labelWidth: 175
+    },
+
     items: [{
         fieldLabel: 'Listen port'.t(),
         xtype: 'textfield',
@@ -32,42 +36,56 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             value: '{settings.mtu}'
         },
         allowBlank: false
-    },{
-        fieldLabel: 'IP Address Assignment'.t(),
-        xtype: 'combobox',
-        bind: {
-            value: '{settings.autoAddressAssignment}'
+    }, {
+        xtype: 'fieldset',
+        title: 'Peer IP Address Pool'.t(),
+        layout: {
+            type: 'vbox'
         },
-        queryMode: 'local',
-        store: [
-            [true, 'Automatic'.t()],
-            [false, 'Self assigned'.t()]
-        ],
-        allowOnlyWhitespace: false,
-        forceSelection: true,
-        typeAhead: true
-    },{
-        xtype: 'fieldcontainer',
-        layout: 'hbox',
-        items: [
-            {
-                fieldLabel: 'Address Space'.t(),
-                xtype: 'textfield',
-                vtype: 'cidrAddr',
-                bind: {
-                    value: '{settings.addressPool}',
-                    disabled: '{settings.autoAddressAssignment}',
-                    editable: '{!settings.autoAddressAssignment}'
-                }
+        defaults: {
+            labelWidth: 165
+        },
+        items:[{
+            fieldLabel: 'Assignment'.t(),
+            xtype: 'combobox',
+            bind: {
+                value: '{settings.autoAddressAssignment}'
             },
-            {
-                xtype:'button',
-                text: 'Get New Address Space'.t(),
-                listeners: {
-                    click: 'getNewAddressSpace'
+            editable: false,
+            queryMode: 'local',
+            store: [
+                [true, 'Automatic'.t()],
+                [false, 'Self-assigned'.t()]
+            ],
+            forceSelection: true
+        },{
+            xtype: 'fieldcontainer',
+            layout: 'hbox',
+            defaults: {
+                labelWidth: 165
+            },
+            items: [{
+                    fieldLabel: 'Network Space'.t(),
+                    xtype: 'textfield',
+                    vtype: 'cidrAddr',
+                    bind: {
+                        value: '{settings.addressPool}',
+                        disabled: '{settings.autoAddressAssignment}',
+                        editable: '{!settings.autoAddressAssignment}'
+                    }
+                },
+                {
+                    xtype:'button',
+                    text: 'New Network Space'.t(),
+                    bind:{
+                        disabled: '{!settings.autoAddressAssignment}'
+                    },
+                    listeners: {
+                        click: 'getNewAddressSpace'
+                    }
                 }
-            }
-        ]
+            ]
+        }]
     }]
 });
 

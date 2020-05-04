@@ -70,7 +70,6 @@ class WireguardVpnEventHandler extends AbstractEventHandler
     {
         if (logger.isDebugEnabled()) logger.debug("New session: [" + request.id() + "]");
 
-        logger.warn(request.getClientIntf() + " server=" + request.getServerIntf());
         if (request.getClientIntf() != InterfaceSettings.WIREGUARD_INTERFACE_ID && request.getServerIntf() != InterfaceSettings.WIREGUARD_INTERFACE_ID) {
             /* Nothing to do - not VPN traffic */
             request.release();
