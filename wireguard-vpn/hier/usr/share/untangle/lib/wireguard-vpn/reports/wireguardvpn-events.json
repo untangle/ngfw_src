@@ -1,6 +1,6 @@
 {
     "uniqueId": "wireguardvpn-wgBp3UkhVS1x",
-    "category": "Wireguard VPN",
+    "category": "WireGuard VPN",
     "description": "The amount of connect, disconnect, and unreachable events over time.",
     "displayOrder": 101,
     "enabled": true,
@@ -20,6 +20,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "Wireguard VPN Events",
+    "title": "WireGuard VPN Events",
     "type": "TIME_GRAPH"
 }
