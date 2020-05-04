@@ -922,6 +922,9 @@ public class OpenVpnAppImpl extends AppBase
 
             if (found == true) continue;
 
+            logger.info("Stopping client OpenVPN proecess for openvpn@" + serverName + ".service");
+            UvmContextFactory.context().execManager().exec("systemctl stop openvpn@" + serverName + ".service");
+
             // no matching server so get rid of the config file and keys
             logger.info("Cleanup removing: " + target);
 
