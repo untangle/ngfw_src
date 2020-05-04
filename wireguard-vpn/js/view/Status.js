@@ -22,7 +22,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
             cls: 'app-desc',
             html: '<img src="/icons/apps/wireguard-vpn.svg" width="80" height="80"/>' +
                 '<h3>WireGuard VPN</h3>' +
-                '<p>' + 'WireGuard VPN provides secure network access and tunneling to remote users and sites using the Wireguard VPN protocol.'.t() + '</p>'
+                '<p>' + 'WireGuard VPN provides secure network access and tunneling to remote users and sites using the WireGuard VPN protocol.'.t() + '</p>'
         }, {
             xtype: 'applicense',
             hidden: true,
