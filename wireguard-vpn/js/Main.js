@@ -54,6 +54,15 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                     var publicUrl = Rpc.directData('rpc.networkManager.getPublicUrl');
                     return(publicUrl.split(":")[0] + ":" + get('settings.listenPort'));
                 }
+            },
+            peerAddress: {
+                get: function(get){
+                    var address = get('settings.addressPool');
+                    if(!address){
+                        return address;
+                    }
+                    return address.split('/')[0];
+                }
             }
         }
     },
@@ -73,11 +82,57 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
             }
             return value;
         },
+
         statusHandshakeRenderer: function(value){
             if(value == 0){
                 return 'Never'.t();
             }
             return Renderer.timestamp(value);
+        },
+
+        hostDisplayFields: function(collapsible, collapsed, recordEditor){
+            return {
+                xtype: 'fieldset',
+                title: 'Service Information'.t(),
+                collapsible: collapsible ? true : false,
+                collapsed: collapsible && collapsed ? true : false,
+                layout: {
+                    type: 'vbox'
+                },
+                defaults: {
+                    labelWidth: 170,
+                    labelAlign: recordEditor ? 'right' : 'left'
+                },
+                items:[{
+                    xtype: 'displayfield',
+                    fieldLabel: 'Public Key'.t(),
+                    cls: 'x-selectable',
+                    bind: {
+                        value: '{settings.publicKey}',
+                    }
+                }, {
+                    fieldLabel: 'Endpoint IP Address'.t(),
+                    xtype: 'displayfield',
+                    cls: 'x-selectable',
+                    bind: {
+                        value: Rpc.directData('rpc.networkManager.getPublicUrl').split(":")[0],
+                    }
+                },{
+                    fieldLabel: 'Endpoint Port'.t(),
+                    xtype: 'displayfield',
+                    cls: 'x-selectable',
+                    bind: {
+                        value: '{settings.listenPort}',
+                    }
+                }, {
+                    xtype: 'displayfield',
+                    fieldLabel: 'Peer IP Address'.t(),
+                    cls: 'x-selectable',
+                    bind: {
+                        value: '{peerAddress}',
+                    }
+                }]
+            };
         }
     }
 

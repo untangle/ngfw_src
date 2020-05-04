@@ -267,12 +267,13 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         },function(ex){
             Util.handleException(ex);
         });
-    },
+    }
 });
 
 Ext.define('Ung.apps.wireguard-vpn.cmp.WireguardVpnTunnelRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
     xtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
+    alias: 'widget.unwireguardvpntunnelrecordeditor',
 
     controller: 'unwireguardvpntunnelrecordeditorcontroller'
 });
@@ -293,28 +294,54 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireguardVpnTunnelRecordEditorController'
         return ret;
     },
 
+    // get next pool address
+    getNextUnusedPoolAddr: function(){
+        var me = this,
+            grid = this.mainGrid,
+            store = grid.getStore(),
+            addressPool = grid.up('panel').up('apppanel').getViewModel().get('settings.addressPool'),
+            pool = addressPool.split("/")[0];
+
+        // Assume the first pool address is used by the wg interface
+        var nextPoolAddr = Util.incrementIpAddr(pool, 2);
+        while (me.isAddrUsed(nextPoolAddr, store)) {
+            nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
+        }
+
+        return nextPoolAddr;
+    },
+
     // Override onAfterRender so we can prepopulate the peerAddress field with the next
     // available address from the wireguard tunnel address pool.  We loop through the
     // existing tunnels to make sure we select an address that isn't already used.  After
     // setting the peerAddress, we then call the default onAfterRender.
     onAfterRender: function (view) {
         var grid = this.mainGrid, vm = this.getViewModel();
-        var addressPool = grid.up('panel').up('apppanel').getViewModel().get('settings.addressPool');
-        var pool = addressPool.split("/")[0];
-
-        // Assume the first pool address is used by the wg interface
-        var nextPoolAddr = Util.incrementIpAddr(pool, 2);
-
-        var store = grid.getStore();
-        while (this.isAddrUsed(nextPoolAddr, store)) {
-            nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
-        }
 
         var record = vm.get('record');
-        if(record.get('markedForNew')) {
-            record.set('peerAddress', nextPoolAddr);
-        }
 
         this.callParent([view]);
+
+        view.down('form').add(
+            Ung.apps['wireguard-vpn'].Main.hostDisplayFields(true, !record.get('markedForNew'), true)
+        );
+    },
+
+    endpointTypeComboChange: function(combo, newValue, oldValue){
+        var me = this,
+            record = me.getViewModel().get('record');
+
+        var peerAddress = record.get('peerAddress');
+        if(newValue && !peerAddress){
+            // Dynamic
+            record.set('peerAddress', me.getNextUnusedPoolAddr());
+        } else if(!newValue && peerAddress){
+            // Static
+            if(record.get('markedForNew')){
+                if(peerAddress == me.getNextUnusedPoolAddr()){
+                    record.set('peerAddress', '');
+                }
+            }
+        }
     }
 });
