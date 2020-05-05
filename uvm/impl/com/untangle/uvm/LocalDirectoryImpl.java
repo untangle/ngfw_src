@@ -544,8 +544,8 @@ public class LocalDirectoryImpl implements LocalDirectory
                 fw.write("\tsyslog_facility = daemon\n");
                 fw.write("\tstripped_names = no\n");
                 fw.write("\tauth = yes\n");
-                fw.write("\tauth_badpass = yes\n");
-                fw.write("\tauth_goodpass = yes\n");
+                fw.write("\tauth_badpass = no\n");
+                fw.write("\tauth_goodpass = no\n");
                 fw.write("\tmsg_goodpass = \"UT_RADIUS_GOOD\"\n");
                 fw.write("\tmsg_badpass = \"UT_RADIUS_FAIL\"\n");
                 fw.write("\tmsg_denied = \"Access Denied\"\n");
