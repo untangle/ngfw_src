@@ -1,0 +1,6 @@
+#!/bin/dash
+
+# Grab most recent output from the Freeradius log file
+tail -n 1024 /var/log/freeradius/radius.log | /usr/bin/tac
+
+exit 0
