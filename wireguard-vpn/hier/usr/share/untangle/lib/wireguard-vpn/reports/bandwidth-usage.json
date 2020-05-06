@@ -1,7 +1,7 @@
 {
     "uniqueId": "wireguardvpn-wgStzlzfZAp8",
-    "category": "Wireguard VPN",
-    "description": "The approximate amount of data transfered over Wireguard VPN connections.",
+    "category": "WireGuard VPN",
+    "description": "The approximate amount of data transfered over WireGuard VPN connections.",
     "displayOrder": 100,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -21,6 +21,6 @@
     ],
     "timeDataInterval": "MINUTE",
     "timeStyle": "LINE",
-    "title": "Wireguard VPN Bandwidth Usage",
+    "title": "WireGuard VPN Bandwidth Usage",
     "type": "TIME_GRAPH"
 }

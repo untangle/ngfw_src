@@ -1,6 +1,6 @@
 {
     "uniqueId": "wireguardvpn-wgJbrLJTbLUY",
-    "category": "Wireguard VPN",
+    "category": "WireGuard VPN",
     "description": "The number of bytes transferred grouped by remote client.",
     "displayOrder": 200,
     "enabled": true,
