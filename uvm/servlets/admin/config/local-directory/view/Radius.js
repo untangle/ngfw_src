@@ -41,6 +41,31 @@ Ext.define('Ung.config.local-directory.view.Radius', {
             },
             handler: 'configureCertificate'
         }]
+    }, {
+        xtype: 'fieldset',
+        padding: '10 20',
+        itemId: 'radius-log',
+        width: '80%',
+        title: 'RADIUS Server Log'.t(),
+        items: [{
+            xtype: 'button',
+            iconCls: 'fa fa-refresh',
+            text: 'Refresh',
+            target: 'radiusLogFile',
+            handler: 'refreshRadiusLogFile'
+        }, {
+            xtype: 'textarea',
+            itemId: 'radiusLogFile',
+            spellcheck: false,
+            padding: '5 0',
+            border: true,
+            width: '100%',
+            height: 500,
+            bind: '{radiusLogFile}',
+            fieldStyle: {
+                'fontFamily'   : 'courier new',
+                'fontSize'     : '12px'
+            }
+        }]
     }]
-
 });
