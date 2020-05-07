@@ -896,6 +896,7 @@ public class OpenVpnAppImpl extends AppBase
         File file = new File(directory);
         String list[] = file.list();
         boolean found;
+        boolean enabled = false;
 
         if (list == null) return;
         if (list.length == 0) return;
@@ -917,12 +918,19 @@ public class OpenVpnAppImpl extends AppBase
             for (OpenVpnRemoteServer server : getSettings().getRemoteServers()) {
                 if (!serverName.equals(server.getName())) continue;
                 found = true;
+                enabled = server.getEnabled();
                 break;
             }
 
-            if (found == true) continue;
+            if (found == true) {
+                if (enabled == false) {
+                    logger.info("Stopping client OpenVPN process for disabled openvpn@" + serverName + ".service");
+                    UvmContextFactory.context().execManager().exec("systemctl stop openvpn@" + serverName + ".service");
+                }
+                continue;
+            }
 
-            logger.info("Stopping client OpenVPN proecess for openvpn@" + serverName + ".service");
+            logger.info("Stopping client OpenVPN process for removed openvpn@" + serverName + ".service");
             UvmContextFactory.context().execManager().exec("systemctl stop openvpn@" + serverName + ".service");
 
             // no matching server so get rid of the config file and keys
