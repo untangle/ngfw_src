@@ -1,5 +1,5 @@
 /**
- * $Id: IpsecVpnTimer.java 37267 2014-02-26 23:42:19Z dmorris $
+ * $Id: IpsecVpnPingTimer.java 37267 2014-02-26 23:42:19Z dmorris $
  */
 
 package com.untangle.app.ipsec_vpn;
@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * 
  */
 
-public class IpsecVpnTimer extends TimerTask
+public class IpsecVpnPingTimer extends TimerTask
 {
 
     /**
@@ -87,7 +87,7 @@ public class IpsecVpnTimer extends TimerTask
      * @param app
      *        The application instance that created us
      */
-    public IpsecVpnTimer(IpsecVpnApp app)
+    public IpsecVpnPingTimer(IpsecVpnApp app)
     {
         this.app = app;
     }
