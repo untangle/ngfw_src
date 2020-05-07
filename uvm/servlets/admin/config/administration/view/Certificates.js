@@ -180,6 +180,9 @@ Ext.define('Ung.config.administration.view.Certificates', {
                 xtype: 'checkcolumn',
                 width: 80,
                 dataIndex: 'radiusServer',
+                bind: {
+                    hidden: '{!expertMode}'
+                },
                 listeners: {
                     // don't allow uncheck - they must pick a different cert
                     beforecheckchange: function (el, rowIndex, checked) {
