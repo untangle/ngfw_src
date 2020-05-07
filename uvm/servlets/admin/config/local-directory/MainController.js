@@ -6,7 +6,8 @@ Ext.define('Ung.config.local-directory.MainController', {
     control: {
         '#': {
             beforerender: 'loadSettings'
-        }
+        },
+        '#radius-log': { afterrender: 'refreshRadiusLogFile' }
     },
 
     loadSettings: function () {
@@ -121,6 +122,23 @@ Ext.define('Ung.config.local-directory.MainController', {
 
     configureCertificate: function (btn) {
         Ung.app.redirectTo("#config/administration/certificates");
+    },
+
+    refreshRadiusLogFile: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var target = v.down('textarea');
+
+        target.setValue('');
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.UvmContext.localDirectory.getRadiusLogFile')
+        .then(function(result){
+            if(Util.isDestroyed(v, target)){
+                return;
+            }
+            target.setValue(result);
+            v.setLoading(false);
+        });
     },
 
     statics:{

@@ -35,6 +35,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String XAUTH_SECRETS_FILE = "/etc/xauth.secrets";
     private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
 
+    private final static String FREERADIUS_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-logfile";
     private final static String FREERADIUS_LOCAL_SECRETS = "/etc/freeradius/3.0/mods-config/files/untangle.local";
     private final static String FREERADIUS_AUTHORIZE = "/etc/freeradius/3.0/mods-config/files/authorize";
     private final static String FREERADIUS_RADIUSD = "/etc/freeradius/3.0/radiusd.conf";
@@ -56,6 +57,17 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         // install a callback for network settings changes
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, networkSaveHookCallback);
+    }
+
+    /**
+     * Gets the contents of the radius server log file
+     *
+     * @return The contents of the radius server log file
+     */
+    public String getRadiusLogFile()
+    {
+        logger.debug("getRadiusLogFile()");
+        return UvmContextFactory.context().execManager().execOutput(FREERADIUS_LOGFILE_SCRIPT);
     }
 
     /**
@@ -544,10 +556,10 @@ public class LocalDirectoryImpl implements LocalDirectory
                 fw.write("\tsyslog_facility = daemon\n");
                 fw.write("\tstripped_names = no\n");
                 fw.write("\tauth = yes\n");
-                fw.write("\tauth_badpass = yes\n");
-                fw.write("\tauth_goodpass = yes\n");
-                fw.write("\tmsg_goodpass = \"UT_RADIUS_GOOD\"\n");
-                fw.write("\tmsg_badpass = \"UT_RADIUS_FAIL\"\n");
+                fw.write("\tauth_badpass = no\n");
+                fw.write("\tauth_goodpass = no\n");
+                fw.write("\tmsg_goodpass = \"RADIUS_ACCEPT\"\n");
+                fw.write("\tmsg_badpass = \"RADIUS_REJECT\"\n");
                 fw.write("\tmsg_denied = \"Access Denied\"\n");
                 fw.write("}\n");
                 fw.write("checkrad = ${sbindir}/checkrad\n");
