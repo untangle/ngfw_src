@@ -75,7 +75,8 @@ public class IpsecVpnApp extends AppBase
     }
 
     protected IpsecVpnSettings settings;
-    protected Timer timer;
+    protected Timer dataTimer;
+    protected Timer pingTimer;
 
     private String activeCertificate = UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate();
 
@@ -370,7 +371,7 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
-     * After the app is started, we create our monitoring timer task.
+     * After the app is started, we create our timer tasks
      * 
      * @param isPermanentTransition
      */
@@ -379,9 +380,12 @@ public class IpsecVpnApp extends AppBase
     {
         logger.debug("postStart()");
 
-        // our timer class expects to be called once every minute
-        timer = new Timer();
-        timer.schedule(new IpsecVpnTimer(this), 60000, 60000);
+        // our DataTimer class expects to be called once every minute
+        dataTimer = new Timer();
+        dataTimer.schedule(new IpsecVpnDataTimer(this), 60000, 60000);
+
+        pingTimer = new Timer();
+        pingTimer.schedule(new IpsecVpnPingTimer(this), 5000, 5000);
     }
 
     /**
@@ -399,7 +403,8 @@ public class IpsecVpnApp extends AppBase
 
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
 
-        timer.cancel();
+        dataTimer.cancel();
+        pingTimer.cancel();
 
         int counter = 0;
 
