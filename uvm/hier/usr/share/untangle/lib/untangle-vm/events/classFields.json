@@ -5492,6 +5492,7 @@
         name: "peerAddress",
         type: "String",
         description: "The IP address of the tunnel peer",
+        },
     ]
     },
     WireguardVpnEvent: {
