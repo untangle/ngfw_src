@@ -49,7 +49,6 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String rightProtoPort;
     private String rightNextHop;
     private String pingAddress;
-    private int pingInterval;
 
     public IpsecVpnTunnel()
     {
@@ -148,9 +147,6 @@ public class IpsecVpnTunnel implements JSONString, Serializable
 
     public String getPingAddress() { return(pingAddress); }
     public void setPingAddress(String pingAddress) { this.pingAddress = pingAddress; }
-
-    public int getPingInterval() { return(pingInterval); }
-    public void setPingInterval(int pingInterval) { this.pingInterval = pingInterval; }
 
     /*
     * Use the id and description to create a unique connection name that

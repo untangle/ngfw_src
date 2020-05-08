@@ -13,7 +13,7 @@ import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 /**
- * This is our DataTimer class that is called periodically to capture and record
+ * This is our DataTimer class that runs periodically to capture and record
  * tunnel traffic statistics for reporting purposes.
  * 
  * @author mahotz
@@ -32,7 +32,6 @@ public class IpsecVpnDataTimer extends TimerTask
     class TunnelWatcher
     {
         String tunnelName;
-        int tunnelId;
         long cycleMark;
         long outLast;
         long inLast;
@@ -42,13 +41,10 @@ public class IpsecVpnDataTimer extends TimerTask
          * 
          * @param tunnelName
          *        The name of the tunnel
-         * @param tunnelId
-         *        The ID of the tunnel
          */
-        public TunnelWatcher(String tunnelName, int tunnelId)
+        public TunnelWatcher(String tunnelName)
         {
             this.tunnelName = tunnelName;
-            this.tunnelId = tunnelId;
             cycleMark = 0;
             outLast = 0;
             inLast = 0;
@@ -100,13 +96,13 @@ public class IpsecVpnDataTimer extends TimerTask
             watcher = watchTable.get(status.getWorkName());
 
             if (watcher == null) {
-                logger.debug("Creating new watch table entry for " + status.getWorkName());
-                watcher = new TunnelWatcher(status.getWorkName(), Integer.parseInt(status.getId()));
+                logger.debug("Creating new data table entry for " + status.getWorkName());
+                watcher = new TunnelWatcher(status.getWorkName());
                 watchTable.put(status.getWorkName(), watcher);
             }
 
             else {
-                logger.debug("Found existing watch table entry for " + status.getWorkName());
+                logger.debug("Found existing data table entry for " + status.getWorkName());
             }
 
             // update the cycle mark for all watcher objects that match an enabled IPsec
@@ -129,7 +125,7 @@ public class IpsecVpnDataTimer extends TimerTask
             // means we didn't find an enabled IPsec tunnel so we remove the entry
             // using the iterator remove function since the Java docs say it's safe
             if (watcher.cycleMark != cycleCounter) {
-                logger.debug("Removing stale watchTable entry for " + watcher.tunnelName);
+                logger.debug("Removing stale data table entry for " + watcher.tunnelName);
                 ksi.remove();
             }
         }
