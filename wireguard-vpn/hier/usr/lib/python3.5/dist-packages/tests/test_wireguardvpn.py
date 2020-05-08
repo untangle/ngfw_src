@@ -15,7 +15,7 @@ import tests.global_functions as global_functions
 
 
 @pytest.mark.wireguard-vpn
-class WireguardVpnTests(NGFWTestCase):
+class WireGuardVpnTests(NGFWTestCase):
 
     force_start = True
 
@@ -44,4 +44,4 @@ class WireguardVpnTests(NGFWTestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
 
-test_registry.register_module("wireguard-vpn", WireguardVpnTests)
+test_registry.register_module("wireguard-vpn", WireGuardVpnTests)

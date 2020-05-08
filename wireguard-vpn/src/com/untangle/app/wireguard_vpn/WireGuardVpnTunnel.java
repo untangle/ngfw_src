@@ -15,10 +15,10 @@ import java.net.InetAddress;
 import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
- * Settings for the WireguardVpn app.
+ * Settings for the WireGuardVpn app.
  */
 @SuppressWarnings("serial")
-public class WireguardVpnTunnel implements Serializable, JSONString
+public class WireGuardVpnTunnel implements Serializable, JSONString
 {
     private Boolean enabled = true;
     private String description = "";

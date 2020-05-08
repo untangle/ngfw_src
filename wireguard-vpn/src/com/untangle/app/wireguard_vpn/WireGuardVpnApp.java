@@ -27,9 +27,9 @@ import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- * The Wireguard VPN application connects to 3rd party VPN tunnel providers.
+ * The WireGuard VPN application connects to 3rd party VPN tunnel providers.
  */
-public class WireguardVpnApp extends AppBase
+public class WireGuardVpnApp extends AppBase
 {
     private final static String WIREGUARD_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/wireguard-status";
 
@@ -42,10 +42,10 @@ public class WireguardVpnApp extends AppBase
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
 
-    private WireguardVpnSettings settings = null;
-    private WireguardVpnMonitor WireguardVpnMonitor = null;
-    private WireguardVpnManager WireguardVpnManager = null;
-    private final WireguardVpnEventHandler handler;
+    private WireGuardVpnSettings settings = null;
+    private WireGuardVpnMonitor WireGuardVpnMonitor = null;
+    private WireGuardVpnManager WireGuardVpnManager = null;
+    private final WireGuardVpnEventHandler handler;
 
     private static final String NETSPACE_OWNER = "wireguard-vpn";
     private static final String NETSPACE_SERVER = "server-network";
@@ -60,15 +60,15 @@ public class WireguardVpnApp extends AppBase
      * @param appProperties
      *        The application properties
      */
-    public WireguardVpnApp(AppSettings appSettings, AppProperties appProperties)
+    public WireGuardVpnApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
-        WireguardVpnMonitor = new WireguardVpnMonitor(this);
-        this.WireguardVpnManager = new WireguardVpnManager(this);
+        WireGuardVpnMonitor = new WireGuardVpnMonitor(this);
+        this.WireGuardVpnManager = new WireGuardVpnManager(this);
 
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
 
-        this.handler = new WireguardVpnEventHandler(this);
+        this.handler = new WireGuardVpnEventHandler(this);
         this.connector = UvmContextFactory.context().pipelineFoundry().create("wireguard-vpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 10, false);
         this.connectors = new PipelineConnector[] { connector };
     }
@@ -78,7 +78,7 @@ public class WireguardVpnApp extends AppBase
      * 
      * @return The application settings
      */
-    public WireguardVpnSettings getSettings()
+    public WireGuardVpnSettings getSettings()
     {
         return settings;
     }
@@ -88,9 +88,9 @@ public class WireguardVpnApp extends AppBase
      * 
      * @return wireguard manager
      */
-    public WireguardVpnManager getWireguardVpnManager(){
-        logger.warn(this.WireguardVpnManager);
-        return this.WireguardVpnManager;
+    public WireGuardVpnManager getWireGuardVpnManager(){
+        logger.warn(this.WireGuardVpnManager);
+        return this.WireGuardVpnManager;
     }
 
     /**
@@ -110,7 +110,7 @@ public class WireguardVpnApp extends AppBase
      * @param restart
      *      If true, restart
      */
-    public void setSettings(final WireguardVpnSettings newSettings, boolean restart)
+    public void setSettings(final WireGuardVpnSettings newSettings, boolean restart)
     {
         /**
          * First we check for network address space conflicts
@@ -139,11 +139,11 @@ public class WireguardVpnApp extends AppBase
 
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
-        this.WireguardVpnManager.configure();
+        this.WireGuardVpnManager.configure();
 
         // !!! only do this if we're running
         if(restart == true){
-            this.WireguardVpnManager.restart();
+            this.WireGuardVpnManager.restart();
         }
     }
 
@@ -153,7 +153,7 @@ public class WireguardVpnApp extends AppBase
      * @param newSettings
      *        The new settings
      */
-    public void setSettings(final WireguardVpnSettings newSettings)
+    public void setSettings(final WireGuardVpnSettings newSettings)
     {
         setSettings(newSettings, true);
     }
@@ -164,7 +164,7 @@ public class WireguardVpnApp extends AppBase
      */
     public void addTunnel(String publicKey)
     {
-        this.WireguardVpnManager.addTunnel(publicKey);
+        this.WireGuardVpnManager.addTunnel(publicKey);
     }
 
     /**
@@ -173,7 +173,7 @@ public class WireguardVpnApp extends AppBase
      */
     public void deleteTunnel(String publicKey)
     {
-        this.WireguardVpnManager.deleteTunnel(publicKey);
+        this.WireGuardVpnManager.deleteTunnel(publicKey);
     }
 
     /**
@@ -205,19 +205,19 @@ public class WireguardVpnApp extends AppBase
     protected void postStart(boolean isPermanentTransition)
     {
         try {
-            this.WireguardVpnManager.configure();
-            this.WireguardVpnManager.start();
+            this.WireGuardVpnManager.configure();
+            this.WireGuardVpnManager.start();
         } catch (Exception e) {
             logger.error("Error during startup", e);
             try {
-                this.WireguardVpnManager.stop();
+                this.WireGuardVpnManager.stop();
             } catch (Exception stopException) {
                 logger.error("Unable to stop the wireguard process", stopException);
             }
             throw new RuntimeException(e);
         }
 
-        this.WireguardVpnMonitor.start();
+        this.WireGuardVpnMonitor.start();
     }
 
     /**
@@ -229,9 +229,9 @@ public class WireguardVpnApp extends AppBase
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
-        this.WireguardVpnMonitor.stop();
+        this.WireGuardVpnMonitor.stop();
 
-        this.WireguardVpnManager.stop();
+        this.WireGuardVpnManager.stop();
     }
 
     /**
@@ -241,10 +241,10 @@ public class WireguardVpnApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        WireguardVpnSettings readSettings = null;
+        WireGuardVpnSettings readSettings = null;
 
         try {
-            readSettings = settingsManager.load(WireguardVpnSettings.class, this.getSettingsFilename());
+            readSettings = settingsManager.load(WireGuardVpnSettings.class, this.getSettingsFilename());
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
         }
@@ -272,7 +272,7 @@ public class WireguardVpnApp extends AppBase
     {
         logger.info("Initializing Settings...");
 
-        WireguardVpnSettings settings = getDefaultSettings();
+        WireGuardVpnSettings settings = getDefaultSettings();
 
         setSettings(settings);
     }
@@ -282,14 +282,14 @@ public class WireguardVpnApp extends AppBase
      * 
      * @return Default settings
      */
-    private WireguardVpnSettings getDefaultSettings()
+    private WireGuardVpnSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");
 
-        WireguardVpnSettings settings = new WireguardVpnSettings();
+        WireGuardVpnSettings settings = new WireGuardVpnSettings();
 
-        String privateKey = this.getWireguardVpnManager().createPrivateKey().trim();
-        String publicKey = this.getWireguardVpnManager().getPublicKey(privateKey).trim();
+        String privateKey = this.getWireGuardVpnManager().createPrivateKey().trim();
+        String publicKey = this.getWireGuardVpnManager().getPublicKey(privateKey).trim();
         settings.setPrivateKey(privateKey);
         settings.setPublicKey(publicKey);
 
@@ -298,7 +298,7 @@ public class WireguardVpnApp extends AppBase
         settings.setAutoAddressAssignment(true);
         settings.setAddressPool(newSpace);
 
-        settings.setTunnels(new LinkedList<WireguardVpnTunnel>());
+        settings.setTunnels(new LinkedList<WireGuardVpnTunnel>());
 
         return settings;
     }
@@ -331,9 +331,9 @@ public class WireguardVpnApp extends AppBase
      * Function to register all network address blocks configured in this application
      *
      * @param serverPool - server pool address space to validate against
-     * @param tunnelPools - A list of WireguardVpnTunnels to validate address spaces against
+     * @param tunnelPools - A list of WireGuardVpnTunnels to validate address spaces against
      */
-    private void updateNetworkReservations(IPMaskedAddress serverPool, List<WireguardVpnTunnel> tunnelPools)
+    private void updateNetworkReservations(IPMaskedAddress serverPool, List<WireGuardVpnTunnel> tunnelPools)
     {
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
 
@@ -344,7 +344,7 @@ public class WireguardVpnApp extends AppBase
         nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_SERVER, serverPool);
 
         // add reservation for all networks of all configured tunnels 
-        for (WireguardVpnTunnel tunnel : tunnelPools) {
+        for (WireGuardVpnTunnel tunnel : tunnelPools) {
             String[] networks = tunnel.getNetworks().split("\\n");
             for (int x = 0;x < networks.length;x++) {
                 String item = networks[x].trim();
@@ -357,10 +357,10 @@ public class WireguardVpnApp extends AppBase
     /**
      * Function to check all configured network address blocks for conflicts
      * @param serverPool - server pool address space to validate against
-     * @param tunnelPools - A list of WireguardVpnTunnels to validate address spaces against     
+     * @param tunnelPools - A list of WireGuardVpnTunnels to validate address spaces against     
      * @return A string describing the conflict or null if no conflicts are detected
      */
-    private String checkNetworkReservations(IPMaskedAddress serverPool, List<WireguardVpnTunnel> tunnelPools)
+    private String checkNetworkReservations(IPMaskedAddress serverPool, List<WireGuardVpnTunnel> tunnelPools)
     {
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
         NetworkSpace space = null;
@@ -372,7 +372,7 @@ public class WireguardVpnApp extends AppBase
         }
 
         // check all tunnel networks for conflicts
-        for (WireguardVpnTunnel tunnel : tunnelPools) {
+        for (WireGuardVpnTunnel tunnel : tunnelPools) {
             String[] networks = tunnel.getNetworks().split("\\n");
             for (int x = 0;x < networks.length;x++) {
                 String item = networks[x].trim();

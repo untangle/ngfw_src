@@ -68,7 +68,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                 resizable: true,
                 defaultSortable: true,
 
-                emptyText: 'No Active Wireguard Tunnels'.t(),
+                emptyText: 'No Active WireGuard Tunnels'.t(),
 
                 bind: {
                     store: '{tunnelStatusList}'

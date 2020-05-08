@@ -15,14 +15,14 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
- * This class has all the logic for "managing" the WireguardVpn daemon. This includes
+ * This class has all the logic for "managing" the WireGuardVpn daemon. This includes
  * writing all the server and client config files and starting/stopping the
  * daemon
  * 
  * @author mahotz
  * 
  */
-public class WireguardVpnManager
+public class WireGuardVpnManager
 {
     private static final String IPTABLES_SCRIPT = "/etc/untangle/iptables-rules.d/720-wireguard-vpn";
     private static final String WIREGUARD_APP = "/usr/bin/wg";
@@ -30,25 +30,25 @@ public class WireguardVpnManager
     private static final String WIREGUARD_QUICK_CONFIG = "/etc/wireguard/wg0.conf";
 
     private final Logger logger = Logger.getLogger(this.getClass());
-    private final WireguardVpnApp app;
+    private final WireGuardVpnApp app;
 
     /**
      * Constructor
      * 
      * @param app
-     *        The Wireguard Vpn application
+     *        The WireGuard Vpn application
      */
-    protected WireguardVpnManager(WireguardVpnApp app)
+    protected WireGuardVpnManager(WireGuardVpnApp app)
     {
         this.app = app;
     }
 
     /**
-     * Start all Wireguard VPN instances
+     * Start all WireGuard VPN instances
      */
     protected void start()
     {
-        logger.info("Starting Wireguard interface and tunnels");
+        logger.info("Starting WireGuard interface and tunnels");
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_QUICK_APP + " up " + WIREGUARD_QUICK_CONFIG);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -57,17 +57,17 @@ public class WireguardVpnManager
                 logger.info(WIREGUARD_QUICK_APP + ": " + line);
         } catch (Exception e) {
         }
-        if (result.getResult() != 0) logger.error("Failed calling Wireguard start script (return code: " + result.getResult() + ")");
+        if (result.getResult() != 0) logger.error("Failed calling WireGuard start script (return code: " + result.getResult() + ")");
 
         configureIptables();
     }
 
     /**
-     * Stop all Wireguard VPN instances
+     * Stop all WireGuard VPN instances
      */
     protected void stop()
     {
-        logger.info("Stopping Wireguard interface and tunnels");
+        logger.info("Stopping WireGuard interface and tunnels");
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_QUICK_APP + " down " + WIREGUARD_QUICK_CONFIG);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -76,13 +76,13 @@ public class WireguardVpnManager
                 logger.info(WIREGUARD_QUICK_APP + ": " + line);
         } catch (Exception e) {
         }
-        if (result.getResult() != 0) logger.error("Failed calling Wireguard start script (return code: " + result.getResult() + ")");
+        if (result.getResult() != 0) logger.error("Failed calling WireGuard start script (return code: " + result.getResult() + ")");
 
         configureIptables();
     }
 
     /**
-     * Restart all Wireguard VPN instances
+     * Restart all WireGuard VPN instances
      */
     protected void restart()
     {
@@ -91,12 +91,12 @@ public class WireguardVpnManager
     }
 
     /**
-     * Create the Wireguard VPN file from the application settings
+     * Create the WireGuard VPN file from the application settings
      */
     protected void configure()
     {
         /**
-         * Update Wireguard quick config and iptables script.
+         * Update WireGuard quick config and iptables script.
          */
         UvmContextFactory.context().syncSettings().run(app.getSettingsFilename(), UvmContextFactory.context().networkManager().getNetworkSettingsFilename());
     }
@@ -107,8 +107,8 @@ public class WireguardVpnManager
      */
     public void addTunnel(String publicKey)
     {
-        WireguardVpnTunnel addTunnel = null;
-        for(WireguardVpnTunnel tunnel : app.getSettings().getTunnels()){
+        WireGuardVpnTunnel addTunnel = null;
+        for(WireGuardVpnTunnel tunnel : app.getSettings().getTunnels()){
             if(tunnel.getPublicKey().equals(publicKey)){
                 addTunnel = tunnel;
             }
@@ -164,8 +164,8 @@ public class WireguardVpnManager
         }
 
         if (result.getResult() != 0) {
-            logger.error("Failed to configure Wireguard VPN iptables rules (return code: " + result.getResult() + ")");
-            throw new RuntimeException("Failed to configure Wireguard VPN iptables rules");
+            logger.error("Failed to configure WireGuard VPN iptables rules (return code: " + result.getResult() + ")");
+            throw new RuntimeException("Failed to configure WireGuard VPN iptables rules");
         }
     }
 

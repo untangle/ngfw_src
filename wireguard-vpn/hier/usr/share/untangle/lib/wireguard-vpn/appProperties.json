@@ -1,6 +1,6 @@
 {
         "javaClass": "com.untangle.uvm.app.AppProperties",
-        "className" : "com.untangle.app.wireguard_vpn.WireguardVpnApp",
+        "className" : "com.untangle.app.wireguard_vpn.WireGuardVpnApp",
         "name" : "wireguard-vpn",
         "displayName" : "WireGuard VPN",
         "type" : "SERVICE",

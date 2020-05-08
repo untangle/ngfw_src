@@ -298,7 +298,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
     }
 });
 
-Ext.define('Ung.apps.wireguard-vpn.cmp.WireguardVpnTunnelRecordEditor', {
+Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
     xtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
     alias: 'widget.unwireguardvpntunnelrecordeditor',
@@ -306,7 +306,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireguardVpnTunnelRecordEditor', {
     controller: 'unwireguardvpntunnelrecordeditorcontroller'
 });
 
-Ext.define('Ung.apps.wireguard-vpn.cmp.WireguardVpnTunnelRecordEditorController', {
+Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController', {
     extend: 'Ung.cmp.RecordEditorController',
     alias: 'controller.unwireguardvpntunnelrecordeditorcontroller',
 

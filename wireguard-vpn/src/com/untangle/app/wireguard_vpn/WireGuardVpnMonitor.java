@@ -25,14 +25,14 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
 /**
- * Class to monitor Wireguard tunnels. Tasks include collecting traffic
+ * Class to monitor WireGuard tunnels. Tasks include collecting traffic
  * statistics, generating tunnel state transition events, and handling the ping
  * test when configured for a tunnel.
  */
-class WireguardVpnMonitor implements Runnable
+class WireGuardVpnMonitor implements Runnable
 {
     /**
-     * Define an object we can use to keep track of each Wireguard tunnel.
+     * Define an object we can use to keep track of each WireGuard tunnel.
      */
     class TunnelWatcher
     {
@@ -75,7 +75,7 @@ class WireguardVpnMonitor implements Runnable
     private static final long TUNNEL_ACTIVITY_TIMEOUT = 60; // seconds to wait before considering a tunnel down
 
     protected final Logger logger = Logger.getLogger(getClass());
-    private final WireguardVpnApp app;
+    private final WireGuardVpnApp app;
 
     private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<>();
     private Thread thread = null;
@@ -87,7 +87,7 @@ class WireguardVpnMonitor implements Runnable
      * @param app
      *        The Tunnel VPN application
      */
-    protected WireguardVpnMonitor(WireguardVpnApp app)
+    protected WireGuardVpnMonitor(WireGuardVpnApp app)
     {
         this.app = app;
     }
@@ -108,7 +108,7 @@ class WireguardVpnMonitor implements Runnable
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                logger.info("WireguardVpn monitor was interrupted");
+                logger.info("WireGuardVpn monitor was interrupted");
             }
 
             if (!isAlive) break;
@@ -127,14 +127,14 @@ class WireguardVpnMonitor implements Runnable
     {
         isAlive = true;
 
-        logger.debug("Starting WireguardVpn monitor");
+        logger.debug("Starting WireGuardVpn monitor");
 
         /*
          * If thread is not-null, there is a running thread that thinks it is
          * alive
          */
         if (thread != null) {
-            logger.debug("WireguardVpn monitor is already running");
+            logger.debug("WireGuardVpn monitor is already running");
             return;
         }
 
@@ -150,7 +150,7 @@ class WireguardVpnMonitor implements Runnable
         isAlive = false;
 
         if (thread != null) {
-            logger.debug("Stopping WireguardVpn monitor");
+            logger.debug("Stopping WireGuardVpn monitor");
             try {
                 thread.interrupt();
                 thread.join(THREAD_JOIN_TIME_MSEC);
@@ -267,8 +267,8 @@ class WireguardVpnMonitor implements Runnable
                 continue;
             }
 
-            // get the WireguardVpnTunnel tunnel for the peer key
-            WireguardVpnTunnel tunnel = findTunnelByPublicKey(peerkey);
+            // get the WireGuardVpnTunnel tunnel for the peer key
+            WireGuardVpnTunnel tunnel = findTunnelByPublicKey(peerkey);
             if (tunnel == null) {
                 logger.warn("Missing tunnel for " + peerkey);
                 continue;
@@ -315,7 +315,7 @@ class WireguardVpnMonitor implements Runnable
      * @param status
      *        - The status object
      */
-    private void generateTunnelStatistics(WireguardVpnTunnel tunnel, TunnelWatcher watcher, JSONObject status)
+    private void generateTunnelStatistics(WireGuardVpnTunnel tunnel, TunnelWatcher watcher, JSONObject status)
     {
         long inValue = 0;
         long outValue = 0;
@@ -369,7 +369,7 @@ class WireguardVpnMonitor implements Runnable
         watcher.lastRxBytes = inValue;
         watcher.lastTxBytes = outValue;
 
-        WireguardVpnStats event = new WireguardVpnStats(tunnel.getDescription(), tunnel.getPeerAddress(), inBytes, outBytes);
+        WireGuardVpnStats event = new WireGuardVpnStats(tunnel.getDescription(), tunnel.getPeerAddress(), inBytes, outBytes);
         app.logEvent(event);
         logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
     }
@@ -382,7 +382,7 @@ class WireguardVpnMonitor implements Runnable
      * @param watcher
      *        - The watcher object
      */
-    private void handleTunnelPingCheck(WireguardVpnTunnel tunnel, TunnelWatcher watcher)
+    private void handleTunnelPingCheck(WireGuardVpnTunnel tunnel, TunnelWatcher watcher)
     {
         boolean pingSuccess = false;
 
@@ -409,7 +409,7 @@ class WireguardVpnMonitor implements Runnable
         if (pingSuccess == false) {
             // if ping unreachable events are enabled log an unreachable event
             if (tunnel.getPingUnreachableEvents()) {
-                WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.UNREACHABLE);
+                WireGuardVpnEvent event = new WireGuardVpnEvent(tunnel.getDescription(), WireGuardVpnEvent.EventType.UNREACHABLE);
                 app.logEvent(event);
                 logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
             }
@@ -422,7 +422,7 @@ class WireguardVpnMonitor implements Runnable
 
             // clear the virtual state flag, log a disconnect event, and return
             watcher.virtualStateFlag = false;
-            WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.DISCONNECT);
+            WireGuardVpnEvent event = new WireGuardVpnEvent(tunnel.getDescription(), WireGuardVpnEvent.EventType.DISCONNECT);
             app.logEvent(event);
             logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
             return;
@@ -433,26 +433,26 @@ class WireguardVpnMonitor implements Runnable
 
         // set the virtual state flag and log a connect event
         watcher.virtualStateFlag = true;
-        WireguardVpnEvent event = new WireguardVpnEvent(tunnel.getDescription(), WireguardVpnEvent.EventType.CONNECT);
+        WireGuardVpnEvent event = new WireGuardVpnEvent(tunnel.getDescription(), WireGuardVpnEvent.EventType.CONNECT);
         app.logEvent(event);
         logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
     }
 
     /**
-     * Function to find the WireguardVpnTunnel in the application settings that
+     * Function to find the WireGuardVpnTunnel in the application settings that
      * matches a given public key.
      *
      * @param finder
      *        The public key of the tunnel to find
      *
-     * @return The WireguardVpnTunnel if found, otherwise null
+     * @return The WireGuardVpnTunnel if found, otherwise null
      */
-    private WireguardVpnTunnel findTunnelByPublicKey(String finder)
+    private WireGuardVpnTunnel findTunnelByPublicKey(String finder)
     {
-        List<WireguardVpnTunnel> configList = app.getSettings().getTunnels();
+        List<WireGuardVpnTunnel> configList = app.getSettings().getTunnels();
 
         for (int x = 0; x < configList.size(); x++) {
-            WireguardVpnTunnel tunnel = configList.get(x);
+            WireGuardVpnTunnel tunnel = configList.get(x);
             if (tunnel.getPublicKey().equals(finder)) return (tunnel);
         }
 

@@ -60,8 +60,8 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("TunnelVpnEvent","These events are created by [[Tunnel VPN]] and inserted to the [[Database_Schema#tunnel_vpn_events|tunnel_vpn_events]] table when a tunnel connection event occurs.");
         classDescriptions.put("TunnelVpnStatusEvent","These events are created by [[Tunnel VPN]] and inserted to the [[Database_Schema#tunnel_vpn_stats|tunnel_vpn_stats]] table periodically.");
         classDescriptions.put("VirtualUserEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_user_events|ipsec_user_events]] table when a user event occurs.");
-        classDescriptions.put("WireguardVpnStats","These events are created by [[Wireguard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_stats|wireguard_vpn_stats]] table periodically.");
-        classDescriptions.put("WireguardVpnEvent","These events are created by [[Wireguard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_events|wireguard_vpn_events]] table when a Wireguard connection event occurs.");
+        classDescriptions.put("WireGuardVpnStats","These events are created by [[WireGuard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_stats|wireguard_vpn_stats]] table periodically.");
+        classDescriptions.put("WireGuardVpnEvent","These events are created by [[WireGuard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_events|wireguard_vpn_events]] table when a WireGuard connection event occurs.");
         classDescriptions.put("AlertEvent","These events are created by [[Reports]] and inserted to the [[Database_Schema#alerts|alerts]] table when an alert fires.");
         classDescriptions.put("ConfigurationBackupEvent","These events are created by [[Configuration Backup]] and inserted to the [[Database_Schema#configuratio_backup_events|configuratio_backup_events]] table when a backup occurs.");
         classDescriptions.put("WebCacheEvent","These events are created by [[Web Cache]] and inserted to the [[Database_Schema#web_cache_stats|web_cache_stats]] table periodically.");
