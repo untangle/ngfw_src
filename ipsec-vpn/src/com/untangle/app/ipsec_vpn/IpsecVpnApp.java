@@ -380,12 +380,13 @@ public class IpsecVpnApp extends AppBase
     {
         logger.debug("postStart()");
 
-        // our DataTimer class expects to be called once every minute
+        // our DataTimer class expects to run every sixty (60) seconds
         dataTimer = new Timer();
         dataTimer.schedule(new IpsecVpnDataTimer(this), 60000, 60000);
 
+        // our PingTimer class expects to run every twenty (20) seconds
         pingTimer = new Timer();
-        pingTimer.schedule(new IpsecVpnPingTimer(this), 5000, 5000);
+        pingTimer.schedule(new IpsecVpnPingTimer(this), 20000, 20000);
     }
 
     /**
