@@ -5,6 +5,6 @@
         "displayName" : "WireGuard VPN",
         "type" : "SERVICE",
         "viewPosition" : 1080,
-        "autoStart" : "false"
+        "autoStart" : "true"
 }
 
