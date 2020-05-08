@@ -294,8 +294,6 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             networks.push(route.network + '/' + route.prefix);
         });
 
-        console.log(networks);
-
         return networks;
     }
 });
