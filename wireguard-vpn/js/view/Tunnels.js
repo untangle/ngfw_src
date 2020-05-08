@@ -160,8 +160,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Remote Peer IP Address'.t(),
-        vtype: 'isSingleIpValidOrEmpty',
-        allowBlank: true,
+        vtype: 'isSingleIpValid',
+        allowBlank: false,
         bind: {
             value: '{record.peerAddress}'
         }
