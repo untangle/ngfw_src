@@ -1,5 +1,5 @@
 /**
- * $Id: WireguardVpnStats.java 39740 2015-02-26 20:46:19Z dmorris $
+ * $Id: WireGuardVpnStats.java 39740 2015-02-26 20:46:19Z dmorris $
  */
 
 package com.untangle.app.wireguard_vpn;
@@ -17,7 +17,7 @@ import com.untangle.uvm.util.I18nUtil;
  * 
  */
 @SuppressWarnings("serial")
-public class WireguardVpnStats extends LogEvent implements Serializable
+public class WireGuardVpnStats extends LogEvent implements Serializable
 {
     private InetAddress peerAddress;
     private String tunnelName;
@@ -26,13 +26,13 @@ public class WireguardVpnStats extends LogEvent implements Serializable
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
-    public WireguardVpnStats()
+    public WireGuardVpnStats()
     {
         tunnelName = "unknown";
         inBytes = outBytes = 0;
     }
 
-    public WireguardVpnStats(String tunnelName,InetAddress peerAddress,long inBytes,long outBytes)
+    public WireGuardVpnStats(String tunnelName,InetAddress peerAddress,long inBytes,long outBytes)
     {
         this.peerAddress = peerAddress;
         this.tunnelName = tunnelName;
@@ -78,7 +78,7 @@ public class WireguardVpnStats extends LogEvent implements Serializable
     public String toString()
     {
         String detail = new String();
-        detail += ("WireguardVpnStats(");
+        detail += ("WireGuardVpnStats(");
         detail += (" tunnelName:" + tunnelName);
         detail += (" inBytes:" + inBytes);
         detail += (" outBytes:" + outBytes);
@@ -89,7 +89,7 @@ public class WireguardVpnStats extends LogEvent implements Serializable
     @Override
     public String toSummaryString()
     {
-        String summary = "Wireguard Tunnel " + getTunnelName() + " " + I18nUtil.marktr("sent") + " " + getOutBytes() + " " + I18nUtil.marktr("bytes and received") + " " + getInBytes() + " " + I18nUtil.marktr("bytes");
+        String summary = "WireGuard Tunnel " + getTunnelName() + " " + I18nUtil.marktr("sent") + " " + getOutBytes() + " " + I18nUtil.marktr("bytes and received") + " " + getInBytes() + " " + I18nUtil.marktr("bytes");
         return summary;
     }
 }

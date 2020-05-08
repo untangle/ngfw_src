@@ -320,7 +320,7 @@ Conflicts: untangle-node-wireguard-vpn
 Replaces: untangle-node-wireguard-vpn
 Provides: untangle-node-wireguard-vpn
 Depends: ${misc:Depends}, untangle-vm, wireguard-tools, wireguard-dkms
-Description: Wireguard VPN application
+Description: WireGuard VPN application
  The WireGuard VPN application.
 
 Package: untangle-app-tunnel-vpn

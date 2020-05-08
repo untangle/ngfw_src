@@ -13,10 +13,10 @@ import org.json.JSONString;
 import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
- * Settings for the WireguardVpn app.
+ * Settings for the WireGuardVpn app.
  */
 @SuppressWarnings("serial")
-public class WireguardVpnSettings implements Serializable, JSONString
+public class WireGuardVpnSettings implements Serializable, JSONString
 {
     private Integer version = 1;
 
@@ -28,7 +28,7 @@ public class WireguardVpnSettings implements Serializable, JSONString
     private String publicKey = "";
     private boolean autoAddressAssignment = true;
 
-    private List<WireguardVpnTunnel> tunnels;
+    private List<WireGuardVpnTunnel> tunnels;
 
     public Integer getVersion() { return version; }
     public void setVersion( Integer newValue ) { this.version = newValue; }
@@ -54,8 +54,8 @@ public class WireguardVpnSettings implements Serializable, JSONString
     public boolean getAutoAddressAssignment() { return autoAddressAssignment; }
     public void setAutoAddressAssignment( boolean newValue ) { this.autoAddressAssignment = newValue; }
 
-    public List<WireguardVpnTunnel> getTunnels() { return tunnels; }
-    public void setTunnels( List<WireguardVpnTunnel> newValue ) { this.tunnels = newValue; }
+    public List<WireGuardVpnTunnel> getTunnels() { return tunnels; }
+    public void setTunnels( List<WireGuardVpnTunnel> newValue ) { this.tunnels = newValue; }
 
     public String toJSONString()
     {

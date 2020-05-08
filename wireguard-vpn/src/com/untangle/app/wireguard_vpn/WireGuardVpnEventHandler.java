@@ -12,16 +12,16 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import org.apache.log4j.Logger;
 
 /**
- * Event handler for Wireguard nVPN traffic
+ * Event handler for WireGuard nVPN traffic
  * 
  * @author mahotz
  * 
  */
-class WireguardVpnEventHandler extends AbstractEventHandler
+class WireGuardVpnEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(WireguardVpnEventHandler.class);
+    private final Logger logger = Logger.getLogger(WireGuardVpnEventHandler.class);
 
-    private final WireguardVpnApp app;
+    private final WireGuardVpnApp app;
 
     /**
      * Constructor
@@ -29,7 +29,7 @@ class WireguardVpnEventHandler extends AbstractEventHandler
      * @param app
      *        The application that created the handler
      */
-    public WireguardVpnEventHandler(WireguardVpnApp app)
+    public WireGuardVpnEventHandler(WireGuardVpnApp app)
     {
         super(app);
 
@@ -78,11 +78,11 @@ class WireguardVpnEventHandler extends AbstractEventHandler
             /* from the VPN to the VPN? just release it */
             request.release();
         } else if (request.getClientIntf() == InterfaceSettings.WIREGUARD_INTERFACE_ID) {
-            /* Wireguard client going to another interface */
+            /* WireGuard client going to another interface */
             app.incrementPassCount();
             request.release();
         } else {
-            /* Local user trying to reach a Wireguard client */
+            /* Local user trying to reach a WireGuard client */
             app.incrementPassCount();
             request.release();
         }

@@ -11,10 +11,10 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- * WireguardVpn tunnel connection event
+ * WireGuardVpn tunnel connection event
  */
 @SuppressWarnings("serial")
-public class WireguardVpnEvent extends LogEvent implements Serializable, org.json.JSONString
+public class WireGuardVpnEvent extends LogEvent implements Serializable, org.json.JSONString
 {
     public enum EventType
     {
@@ -26,9 +26,9 @@ public class WireguardVpnEvent extends LogEvent implements Serializable, org.jso
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
-    public WireguardVpnEvent() {}
+    public WireGuardVpnEvent() {}
 
-    public WireguardVpnEvent( String tunnelName, EventType type )
+    public WireGuardVpnEvent( String tunnelName, EventType type )
     {
         this.tunnelName    = tunnelName;
         this.type          = type;
@@ -64,7 +64,7 @@ public class WireguardVpnEvent extends LogEvent implements Serializable, org.jso
     @Override
     public String toSummaryString()
     {
-        String summary = "WireguardVpn" + " " + getEventType() + " " + I18nUtil.marktr("event") + ": " + getTunnelName();
+        String summary = "WireGuardVpn" + " " + getEventType() + " " + I18nUtil.marktr("event") + ": " + getTunnelName();
         return summary;
     }
 

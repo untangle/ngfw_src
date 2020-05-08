@@ -888,7 +888,7 @@ public class NetworkManagerImpl implements NetworkManager
             InterfaceSettings virtualIntf;
             LinkedList<InterfaceSettings> virtualInterfaces = new LinkedList<InterfaceSettings>();
 
-            virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"Wireguard VPN");
+            virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"WireGuard VPN");
             virtualIntf.setIsVirtualInterface(true);
             virtualIntf.setConfigType(null);
             virtualIntf.setV4ConfigType(null);
@@ -2127,26 +2127,26 @@ public class NetworkManagerImpl implements NetworkManager
         ruleOpenVpnConditions.add(ruleOpenVpnMatcher3);
         filterRuleOpenVpn.setConditions( ruleOpenVpnConditions );
 
-        FilterRule filterRuleWireguard = new FilterRule();
-        filterRuleWireguard.setReadOnly( true );
-        filterRuleWireguard.setEnabled( true );
-        filterRuleWireguard.setIpv6Enabled( true );
-        filterRuleWireguard.setDescription( "Allow Wireguard" );
-        filterRuleWireguard.setBlocked( false );
-        List<FilterRuleCondition> ruleWireguardConditions = new LinkedList<>();
-        FilterRuleCondition ruleWireguardMatcher1 = new FilterRuleCondition();
-        ruleWireguardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-        ruleWireguardMatcher1.setValue("UDP");
-        FilterRuleCondition ruleWireguardMatcher2 = new FilterRuleCondition();
-        ruleWireguardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-        ruleWireguardMatcher2.setValue("51820");
-        FilterRuleCondition ruleWireguardMatcher3 = new FilterRuleCondition();
-        ruleWireguardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-        ruleWireguardMatcher3.setValue("wan");
-        ruleWireguardConditions.add(ruleWireguardMatcher1);
-        ruleWireguardConditions.add(ruleWireguardMatcher2);
-        ruleWireguardConditions.add(ruleWireguardMatcher3);
-        filterRuleWireguard.setConditions( ruleWireguardConditions );
+        FilterRule filterRuleWireGuard = new FilterRule();
+        filterRuleWireGuard.setReadOnly( true );
+        filterRuleWireGuard.setEnabled( true );
+        filterRuleWireGuard.setIpv6Enabled( true );
+        filterRuleWireGuard.setDescription( "Allow WireGuard" );
+        filterRuleWireGuard.setBlocked( false );
+        List<FilterRuleCondition> ruleWireGuardConditions = new LinkedList<>();
+        FilterRuleCondition ruleWireGuardMatcher1 = new FilterRuleCondition();
+        ruleWireGuardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+        ruleWireGuardMatcher1.setValue("UDP");
+        FilterRuleCondition ruleWireGuardMatcher2 = new FilterRuleCondition();
+        ruleWireGuardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+        ruleWireGuardMatcher2.setValue("51820");
+        FilterRuleCondition ruleWireGuardMatcher3 = new FilterRuleCondition();
+        ruleWireGuardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+        ruleWireGuardMatcher3.setValue("wan");
+        ruleWireGuardConditions.add(ruleWireGuardMatcher1);
+        ruleWireGuardConditions.add(ruleWireGuardMatcher2);
+        ruleWireGuardConditions.add(ruleWireGuardMatcher3);
+        filterRuleWireGuard.setConditions( ruleWireGuardConditions );
 
         FilterRule filterRuleBlock = new FilterRule();
         filterRuleBlock.setReadOnly( true );
@@ -2175,7 +2175,7 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleNatT );
         rules.add( filterRuleL2tp );
         rules.add( filterRuleOpenVpn );
-        rules.add( filterRuleWireguard );
+        rules.add( filterRuleWireGuard );
         rules.add( filterRuleBlock );
 
         return rules;
@@ -2600,28 +2600,28 @@ public class NetworkManagerImpl implements NetworkManager
             for( FilterRule rule : accessRules ) {
                 int pos = 1;
                 if ("Allow OpenVPN".equals(rule.getDescription())) {
-                    FilterRule filterRuleWireguard = new FilterRule();
-                    filterRuleWireguard.setReadOnly( true );
-                    filterRuleWireguard.setEnabled( true );
-                    filterRuleWireguard.setIpv6Enabled( true );
-                    filterRuleWireguard.setDescription( "Allow Wireguard" );
-                    filterRuleWireguard.setBlocked( false );
-                    List<FilterRuleCondition> ruleWireguardConditions = new LinkedList<>();
-                    FilterRuleCondition ruleWireguardMatcher1 = new FilterRuleCondition();
-                    ruleWireguardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleWireguardMatcher1.setValue("UDP");
-                    FilterRuleCondition ruleWireguardMatcher2 = new FilterRuleCondition();
-                    ruleWireguardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleWireguardMatcher2.setValue("51820");
-                    FilterRuleCondition ruleWireguardMatcher3 = new FilterRuleCondition();
-                    ruleWireguardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleWireguardMatcher3.setValue("wan");
-                    ruleWireguardConditions.add(ruleWireguardMatcher1);
-                    ruleWireguardConditions.add(ruleWireguardMatcher2);
-                    ruleWireguardConditions.add(ruleWireguardMatcher3);
-                    filterRuleWireguard.setConditions( ruleWireguardConditions );
+                    FilterRule filterRuleWireGuard = new FilterRule();
+                    filterRuleWireGuard.setReadOnly( true );
+                    filterRuleWireGuard.setEnabled( true );
+                    filterRuleWireGuard.setIpv6Enabled( true );
+                    filterRuleWireGuard.setDescription( "Allow WireGuard" );
+                    filterRuleWireGuard.setBlocked( false );
+                    List<FilterRuleCondition> ruleWireGuardConditions = new LinkedList<>();
+                    FilterRuleCondition ruleWireGuardMatcher1 = new FilterRuleCondition();
+                    ruleWireGuardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+                    ruleWireGuardMatcher1.setValue("UDP");
+                    FilterRuleCondition ruleWireGuardMatcher2 = new FilterRuleCondition();
+                    ruleWireGuardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+                    ruleWireGuardMatcher2.setValue("51820");
+                    FilterRuleCondition ruleWireGuardMatcher3 = new FilterRuleCondition();
+                    ruleWireGuardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+                    ruleWireGuardMatcher3.setValue("wan");
+                    ruleWireGuardConditions.add(ruleWireGuardMatcher1);
+                    ruleWireGuardConditions.add(ruleWireGuardMatcher2);
+                    ruleWireGuardConditions.add(ruleWireGuardMatcher3);
+                    filterRuleWireGuard.setConditions( ruleWireGuardConditions );
 
-                    accessRules.add( pos, filterRuleWireguard );
+                    accessRules.add( pos, filterRuleWireGuard );
 
                     break;
                 }
@@ -2629,7 +2629,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
             List<InterfaceSettings> virtualInterfaces = this.networkSettings.getVirtualInterfaces();
 
-            InterfaceSettings virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"Wireguard VPN");
+            InterfaceSettings virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"WireGuard VPN");
             virtualIntf.setIsVirtualInterface(true);
             virtualIntf.setConfigType(null);
             virtualIntf.setV4ConfigType(null);

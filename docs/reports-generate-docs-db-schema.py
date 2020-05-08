@@ -315,8 +315,8 @@ dict['tunnel_vpn_events'].update({
 
 dict['wireguard_vpn_stats'] = copy.deepcopy(generic)
 dict['wireguard_vpn_stats'].update({
-    'table_description' : 'This table stores Wireguard VPN traffic statistics.',
-    'tunnel_name' : 'The name of the Wireguard tunnel',
+    'table_description' : 'This table stores WireGuard VPN traffic statistics.',
+    'tunnel_name' : 'The name of the WireGuard tunnel',
     'peer_address' : 'The IP address of the tunnel peer',
     'in_bytes' : 'The number of bytes received during this time frame',
     'out_bytes' : 'The number of bytes transmitted during this time frame',
@@ -324,7 +324,7 @@ dict['wireguard_vpn_stats'].update({
 
 dict['wireguard_vpn_events'] = copy.deepcopy(generic)
 dict['wireguard_vpn_events'].update({
-    'table_description' : 'This table stores Wireguard tunnel connection events.',
+    'table_description' : 'This table stores WireGuard tunnel connection events.',
     'tunnel_name' : 'The name of the tunnel',
     'event_type': 'The type of the event (CONNECT,DISCONNECT)',
 })

@@ -5460,8 +5460,8 @@
         },
     ]
     },
-    WireguardVpnStats: {
-    description: "These events are created by [[Wireguard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_stats|wireguard_vpn_stats]] table periodically.",
+    WireGuardVpnStats: {
+    description: "These events are created by [[WireGuard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_stats|wireguard_vpn_stats]] table periodically.",
     fields: [
         {
         name: "class",
@@ -5495,8 +5495,8 @@
         },
     ]
     },
-    WireguardVpnEvent: {
-    description: "These events are created by [[Wireguard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_events|wireguard_vpn_events]] table when a Wireguard connec tion event occurs.",
+    WireGuardVpnEvent: {
+    description: "These events are created by [[WireGuard VPN]] and inserted to the [[Database_Schema#wireguard_vpn_events|wireguard_vpn_events]] table when a WireGuard connec tion event occurs.",
     fields: [
         {
         name: "class",
@@ -5505,7 +5505,7 @@
         },
         {
         name: "eventType",
-        type: "WireguardVpnEvent$EventType",
+        type: "WireGuardVpnEvent$EventType",
         description: "The event type",
         values: [
  "CONNECT",
