@@ -143,6 +143,10 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
             xtype: 'appremove',
             width: '100%'
         }]
-    }]
+    }],
+
+    listeners: {
+        activate: 'getTunnelStatus'
+    }
 
 });
