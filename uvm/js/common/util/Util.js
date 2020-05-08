@@ -829,6 +829,20 @@ Ext.define('Ung.util.Util', {
     },
 
     /**
+     * From the specified IP address and netmask, return the network.
+     * For example, 192.168.1.1/255.255.255.0 returns 192.168.1.0
+     * @param {*} ip
+     * @param {*} netmask
+     */
+    getNetwork: function(ip, netmask){
+        var dots = netmask.split('.');
+        var netmaskInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
+        dots = ip.split('.');
+        var ipInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]) & netmaskInteger;
+        return ( (ipInteger>>>24) +'.' + (ipInteger>>16 & 255) +'.' + (ipInteger>>8 & 255) +'.' + (ipInteger & 255) );
+    },
+
+    /**
      * Increment the passed IP
      * @param  string ip      IP address to increment.
      * @param  int inc        Number to increment by.
@@ -843,5 +857,31 @@ Ext.define('Ung.util.Util', {
         dots.push((ipInteger >>> 8) % 256);
         dots.push(ipInteger % 256);
         return dots.join('.');
+    },
+
+    /**
+     * generic method to copy a string to clipboard.
+     * This expects the the clipboard action is in a button so it will go up a level
+     * (expecting to find itself in a component but could be somthing else) and then
+     * looks for the first non-button component below it such as in:
+     * 
+     *  component
+     *  displayfield button
+     * 
+     * @param {String} str
+     */
+    copyToClipboard: function (component) {
+        var valueElement = component.up().down("[xtype!=button]");
+        var el = document.createElement('textarea');
+        el.value = valueElement.value;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        // this executes the actual copy
+        document.execCommand('copy');
+        // remove the textarea helper
+        document.body.removeChild(el);
     }
   });
