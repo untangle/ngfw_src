@@ -57,11 +57,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         flex: 1,
         dataIndex: 'description',
     }, {
-        header: 'Public Key'.t(),
+        header: 'Remote Public Key'.t(),
         width: 290,
         dataIndex: 'publicKey',
     }, {
-        header: 'Peer IP Address'.t(),
+        header: 'Remote Peer IP Address'.t(),
         width: Renderer.ipWidth,
         dataIndex: 'peerAddress',
     }, {
@@ -70,7 +70,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         flex: 1,
         dataIndex: 'networks'
     }, {
-        header: 'Endpoint'.t(),
+        header: 'Remote Endpoint'.t(),
         width: Renderer.messageWidth,
         dataIndex: 'endpointDynamic',
         renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
@@ -101,14 +101,14 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     }, {
         xtype: 'textfield',
         vtype: 'wireguardPublicKey',
-        fieldLabel: 'Public Key'.t(),
+        fieldLabel: 'Remote Public Key'.t(),
         allowBlank: false,
         bind: {
             value: '{record.publicKey}'
         }
     }, {
         xtype: 'fieldset',
-        title: 'Endpoint'.t(),
+        title: 'Remote Endpoint'.t(),
         layout: {
             type: 'vbox'
         },
@@ -125,7 +125,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             },
             queryMode: 'local',
             store: [
-                [true, 'Dynamic'.t()],
+                [true, 'Roaming'.t()],
                 [false, 'Static'.t()]
             ],
             forceSelection: true,
@@ -159,7 +159,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         }]
     }, {
         xtype: 'textfield',
-        fieldLabel: 'Peer IP Address'.t(),
+        fieldLabel: 'Remote Peer IP Address'.t(),
         vtype: 'isSingleIpValidOrEmpty',
         allowBlank: true,
         bind: {

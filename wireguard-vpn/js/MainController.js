@@ -32,12 +32,15 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             vm.set('settings', result[0]);
             vm.set('panel.saveDisabled', false);
 
+            var networkSettings = result[1];
             var warning = '';
             var listenPort = vm.get('settings.listenPort');
-            if(me.isUDPAccessAllowedForPort(result[1], listenPort) == false) {
+            if(me.isUDPAccessAllowedForPort(networkSettings, listenPort) == false) {
                 warning = '<i class="fa fa-exclamation-triangle fa-red fa-lg"></i> <strong>' + 'There are no enabled access rules to allow traffic on UDP port '.t() + listenPort + '</strong>';
             }
             vm.set('warning', warning);
+
+            vm.set('localNetworks', me.calculateNetworks(networkSettings).join("\r\n"));
 
             v.setLoading(false);
         },function(ex){
@@ -267,6 +270,33 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         },function(ex){
             Util.handleException(ex);
         });
+    },
+
+    /**
+     * Determine likely LAN interfaces to share.
+     * @param {*} networkSettings
+     */
+    calculateNetworks: function(networkSettings){
+        var networks = [];
+
+        networkSettings.interfaces.list.forEach( function(interface){
+            if( interface.configType == 'ADDRESSED' &&
+                interface.v4ConfigType == 'STATIC' &&
+                interface.isWan == false){
+                networks.push(Util.getNetwork(interface.v4StaticAddress, interface.v4StaticNetmask) + '/' + interface.v4StaticPrefix);
+                interface.v4Aliases.list.forEach( function(alias){
+                    networks.push(Util.getNetwork(alias.staticAddress, alias.staticNetmask) + '/' + alias.staticPrefix);
+                });
+            }
+        });
+
+        networkSettings.staticRoutes.list.forEach( function(route){
+            networks.push(route.network + '/' + route.prefix);
+        });
+
+        console.log(networks);
+
+        return networks;
     }
 });
 
