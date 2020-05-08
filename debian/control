@@ -321,7 +321,7 @@ Replaces: untangle-node-wireguard-vpn
 Provides: untangle-node-wireguard-vpn
 Depends: ${misc:Depends}, untangle-vm, wireguard-tools, wireguard-dkms
 Description: Wireguard VPN application
- The Wireguard VPN application.
+ The WireGuard VPN application.
 
 Package: untangle-app-tunnel-vpn
 Architecture: all
