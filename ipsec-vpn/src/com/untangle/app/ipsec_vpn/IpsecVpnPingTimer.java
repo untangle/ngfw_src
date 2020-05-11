@@ -163,8 +163,13 @@ public class IpsecVpnPingTimer extends TimerTask
             // if we haven't reached the fail threshold just continue
             if (watcher.failCounter < PING_FAIL_THRESHOLD) continue;
 
-            // fail threshold reached so bring tunnel down and back up
+            // fail threshold reached so log event and bring tunnel down and back up
             logger.warn("Attempting restart for inactive tunnel " + watcher.controlName);
+
+            IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.RESTART);
+            app.logEvent(event);
+            logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+
             IpsecVpnApp.execManager().exec("ipsec down " + watcher.controlName);
 
             // run the up command in the background as it can block if the other side is unreachable
