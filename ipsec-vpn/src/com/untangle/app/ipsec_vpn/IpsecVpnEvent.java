@@ -22,7 +22,7 @@ public class IpsecVpnEvent extends LogEvent implements Serializable, org.json.JS
 {
     public enum EventType
     {
-        CONNECT, DISCONNECT, UNREACHABLE
+        CONNECT, DISCONNECT, UNREACHABLE, RESTART
     };
 
     private String localAddress;
