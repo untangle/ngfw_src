@@ -1257,6 +1257,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.settingsManager = new SettingsManagerImpl();
 
+        this.syncSettingsImpl = new SyncSettingsImpl();
+
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
             settingsManager.setSerializer(serializer);
@@ -1285,8 +1287,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.userTableImpl = new UserTableImpl();
         
-        this.syncSettingsImpl = new SyncSettingsImpl();
-
         this.cloudManager = CloudManagerImpl.getInstance();
 
         this.servletFileManager = new ServletFileManagerImpl();
