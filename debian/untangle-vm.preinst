@@ -49,11 +49,11 @@ if bay_trail ; then
   fi
 fi
 
-if dpkg --compare-versions $(uname -v | awk '{print $4}') lt "4.19.98-1+untangle2buster" ; then
+if dpkg --compare-versions $(uname -v | awk '{print $4}') lt "4.19.98-1+untangle4buster" ; then
   # force depmod or boxes already on an older version of
   # 4.19.0-8 will have issues (NGFW-13053)
   depmod -a 4.19.0-8-untangle-amd64
-  # reboot to latest 4.19.0 kernel (NGFW-13053)
+  # reboot to latest 4.19.0 kernel
   echo "Rebooting after apt-get completes..."
   nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &  
 fi
