@@ -11,6 +11,6 @@ public interface SyncSettings
     /**
      * Run sync settings on the specified filenames
      */
-    Boolean run (String... filenames);
+    Boolean run (Object... arguments);
 
 }
