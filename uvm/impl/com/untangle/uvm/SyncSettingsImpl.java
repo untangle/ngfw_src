@@ -4,6 +4,8 @@
 
 package com.untangle.uvm;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -19,15 +21,30 @@ public class SyncSettingsImpl implements SyncSettings
     private final Logger logger = Logger.getLogger(this.getClass());
     /**
      * Run sync-settings with filenames.
-     * @param filenames String list of settings paths+filenames to run.
+     * @param arguments Variable length list of arguments to run of the following types:
+     *  String path+filename of settings file (-f)
+     *  Otherwise, an expected Map.Entry to specifiy variables (-v K=V)
      * @return Boolean true if command succeeded. 
      */
-    public Boolean run(String... filenames)
+    public Boolean run(Object... arguments)
     {
         ExecManagerResult result;
         boolean success = true;
         String errorStr = null;
-        String cmd = SYNC_SETTINGS + " -f " + String.join( " -f ", filenames);
+
+        String cmd = SYNC_SETTINGS;
+        try{
+            for(Object argument : arguments){
+                if(argument.getClass() == String.class){
+                    cmd += " -f " + (String) argument;
+                }else{
+                    cmd += " -v " + ((Map.Entry) argument).getKey() + "=" + ((Map.Entry) argument).getValue();
+                }
+            }
+        }catch(Exception e){
+            logger.warn("Unable to build cmd: ", e);
+        }
+        logger.info(cmd);
         result = UvmContextFactory.context().execManager().exec( cmd );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
