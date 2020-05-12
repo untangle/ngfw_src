@@ -7,7 +7,7 @@
     "description": "WireGuard VPN client connection events.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
-    "table": "wireuard_vpn_events",
+    "table": "wireguard_vpn_events",
     "title": "Connection Events",
     "uniqueId": "wireguardvpn-wg0328AZC5E3"
 }
