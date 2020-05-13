@@ -140,7 +140,7 @@ def get_udp_download_speed( receiverip, senderip, targetip=None, targetRate=None
     iperf_tries = 5
     while iperf_tries > 0:  # try iperf a few times if it fails to send UDP packets correctly.
         report=remote_control.run_command("iperf -c " + targetip + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderip, stdout=True)
-        if ' sec ' in report:
+        if '%' in report:
             break
         else:
             iperf_tries -= 1
