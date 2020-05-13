@@ -157,7 +157,7 @@ def get_udp_download_speed( receiverip, senderip, targetip=None, targetRate=None
     lines = report.split("\n")
     udp_speed = 0
     for line in lines:
-        if '%' in line: # results line contains a '%'
+        if ' sec ' in line: # results line contains a '%'
             match = re.search(r'([0-9.]+) ([KM])Bytes/sec', line)
             udp_speed =  match.group(1)
             udp_speed = float(udp_speed)
