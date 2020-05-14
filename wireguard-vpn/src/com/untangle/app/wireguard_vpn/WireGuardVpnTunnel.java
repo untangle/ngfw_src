@@ -20,9 +20,12 @@ import com.untangle.uvm.app.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class WireGuardVpnTunnel implements Serializable, JSONString
 {
+    private Integer id;
     private Boolean enabled = true;
     private String description = "";
+    // Only required for dynamic endpoints
     private String publicKey = "";
+    private String privateKey = "";
     private Boolean endpointDynamic = true;
     private InetAddress endpointAddress; 
     private Integer endpointPort = 51820;
@@ -36,8 +39,14 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
     public Boolean getEnabled() { return enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
 
+    public Integer getId() { return id; }
+    public void setId( Integer newValue ) { this.id = newValue; }
+
     public String getDescription() { return description; }
     public void setDescription( String newValue ) { this.description = newValue; }
+
+    public String getPrivateKey() { return privateKey; }
+    public void setPrivateKey( String newValue ) { this.privateKey = newValue; }
 
     public String getPublicKey() { return publicKey; }
     public void setPublicKey( String newValue ) { this.publicKey = newValue; }
