@@ -7,6 +7,8 @@ package com.untangle.app.wireguard_vpn;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -98,7 +100,12 @@ public class WireGuardVpnManager
         /**
          * Update WireGuard quick config and iptables script.
          */
-        UvmContextFactory.context().syncSettings().run(app.getSettingsFilename(), UvmContextFactory.context().networkManager().getNetworkSettingsFilename());
+        UvmContextFactory.context().syncSettings().run(
+            app.getSettingsFilename(),
+            UvmContextFactory.context().networkManager().getNetworkSettingsFilename(),
+            Map.entry("wireguardUrl", UvmContextFactory.context().networkManager().getPublicUrl()),
+            Map.entry("wireguardHostname", UvmContextFactory.context().networkManager().getNetworkSettings().getHostName())
+        );
     }
 
     /**
@@ -192,6 +199,26 @@ public class WireGuardVpnManager
     }
 
     /**
+     * Return QR code image
+     * @param publicKey Public key identifier for configuration.
+     * @return Base 64 encoded string of image.
+     */
+    public String createQrCode(String publicKey){
+        // check if directory exists
+        return wireguardCommand("/bin/qrencode -t PNG -o - < /etc/wireguard/untangle/remote-"+publicKey+".conf | /bin/base64 -w0");
+    }
+
+    /**
+     * Get remote configuration file.
+     * @param publicKey Public key identifier for configuration.
+     * @return Text of config.
+     */
+    public String getConfig(String publicKey){
+        // check if directory exists
+        return wireguardCommand("/bin/cat /etc/wireguard/untangle/remote-"+publicKey+".conf");
+    }
+
+    /**
      * Call wireguard and get output
      * @param command String of command to pass to wg
      * @return String of result of call to wg.
@@ -204,7 +231,7 @@ public class WireGuardVpnManager
             wireguardResult = result.getOutput();
         } catch (Exception e) {
         }
-        return wireguardResult;
+        return wireguardResult.trim();
     }
 
 }
