@@ -4,6 +4,7 @@
 import getopt
 import sys
 import os
+import os.path
 import signal
 import re
 import subprocess
@@ -114,8 +115,29 @@ def clean():
     log("apt-get clean")
     return cmd_to_log("apt-get clean")
 
+def check_dpkg():
+    dpkg_avail = '/var/lib/dpkg/available'
+
+    log("Checking if " + dpkg_avail + " exists...")
+    if os.path.exists(dpkg_avail) :
+        log(dpkg_avail + " exists.")
+        return
+    else:
+        log(dpkg_avail + " is missing, attempting to create...")
+        dpkg_avail_create = "cat /var/lib/apt/lists/*_Packages >"+dpkg_avail
+        dpkg_config = "dpkg --configure -a"
+        log(dpkg_avail_create)
+        log(dpkg_config)
+        cmd_to_log(dpkg_avail_create)
+        cmd_to_log(dpkg_config)
+        return
+
+
 log_date( os.path.basename( sys.argv[0]) )
 
+log("")
+
+check_dpkg()
 log("")
 
 update()
