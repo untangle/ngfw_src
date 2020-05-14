@@ -19,6 +19,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     itemId: 'server-tunnels-grid',
     viewModel: true,
 
+    controller: 'unwireguardvpntunnelgrid',
+
     emptyText: 'No tunnels defined'.t(),
 
     dockedItems: [{
@@ -31,6 +33,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     listProperty: 'settings.tunnels.list',
     emptyRow: {
         'javaClass': 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel',
+        'id': -1,
         'enabled': true,
         'description': '',
         'publicKey': '',
@@ -84,6 +87,14 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         width: Renderer.portWidth,
         dataIndex: 'endpointPort',
         renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
+    }, {
+        xtype: 'actioncolumn',
+        header: 'Remote Client'.t(),
+        width: Renderer.messageWidth,
+        iconCls: 'fa fa-cog',
+        align: 'center',
+        handler: 'getRemoteConfig',
+        isDisabled: 'remoteConfigDisabled'
     }],
 
     editorXtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
@@ -100,9 +111,9 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         }
     }, {
         xtype: 'textfield',
+        itemId: 'publicKey',
         vtype: 'wireguardPublicKey',
         fieldLabel: 'Remote Public Key'.t(),
-        allowBlank: false,
         bind: {
             value: '{record.publicKey}'
         }
