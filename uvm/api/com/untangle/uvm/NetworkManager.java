@@ -32,6 +32,8 @@ public interface NetworkManager
 
     InetAddress getInterfaceHttpAddress( int clientIntf );
 
+    InetAddress getFirstDnsResolverAddress();
+
     InterfaceSettings findInterfaceId( int interfaceId );
 
     InterfaceSettings findInterfaceSystemDev( String systemDev );
