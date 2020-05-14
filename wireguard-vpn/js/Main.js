@@ -85,7 +85,7 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
 
         statusHandshakeRenderer: function(value){
             if(value == 0){
-                return 'Never'.t();
+                return 'No recent activity'.t();
             }
             return Renderer.timestamp(value);
         },
