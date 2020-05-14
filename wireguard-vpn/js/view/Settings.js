@@ -16,6 +16,8 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         fieldLabel: 'Listen port'.t(),
         xtype: 'textfield',
         vtype: 'isSinglePortValid',
+        maxLength: 5,
+        enforceMaxLength :true,
         bind: {
             value: '{settings.listenPort}'
         },
@@ -23,7 +25,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     },{
         fieldLabel: 'Keepalive interval'.t(),
         xtype: 'textfield',
-        vtype: 'keepalive',
+        maxLength: 5,
         bind: {
             value: '{settings.keepaliveInterval}'
         },
@@ -36,6 +38,32 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             value: '{settings.mtu}'
         },
         allowBlank: false
+    }, {
+        xtype: 'fieldset',
+        title: 'Remote Client Configuration'.t(),
+        layout: {
+            type: 'vbox'
+        },
+        defaults: {
+            labelWidth: 165,
+            padding: "0 0 10 0"
+        },
+        items:[{
+            xtype: 'textfield',
+            fieldLabel: 'DNS Server'.t(),
+            bind: {
+                value: '{settings.dnsServer}'
+            }
+        },{
+            xtype: 'textarea',
+            fieldLabel: 'Networks'.t(),
+            vtype: 'cidrBlockArea',
+            allowBlank: true,
+            height: 50,
+            bind: {
+                value: '{settings.networks}'
+            }
+        }]
     }, {
         xtype: 'fieldset',
         title: 'Peer IP Address Pool'.t(),
