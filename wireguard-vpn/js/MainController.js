@@ -40,8 +40,6 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             }
             vm.set('warning', warning);
 
-            vm.set('localNetworks', me.calculateNetworks(networkSettings).join("\r\n"));
-
             v.setLoading(false);
         },function(ex){
             if(!Util.isDestroyed(v, vm)){
@@ -270,31 +268,30 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         },function(ex){
             Util.handleException(ex);
         });
+    }
+});
+
+Ext.define('Ung.apps.reports.cmp.Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelGridController', {
+    extend: 'Ung.cmp.GridController',
+
+    alias: 'controller.unwireguardvpntunnelgrid',
+
+    remoteConfigDisabled: function(view, rowIndex, colIndex, item, record){
+        if(record.get('id') == "" || record.get('id') == -1){
+            return true;
+        }
+        return false;
     },
 
-    /**
-     * Determine likely LAN interfaces to share.
-     * @param {*} networkSettings
-     */
-    calculateNetworks: function(networkSettings){
-        var networks = [];
-
-        networkSettings.interfaces.list.forEach( function(interface){
-            if( interface.configType == 'ADDRESSED' &&
-                interface.v4ConfigType == 'STATIC' &&
-                interface.isWan == false){
-                networks.push(Util.getNetwork(interface.v4StaticAddress, interface.v4StaticNetmask) + '/' + interface.v4StaticPrefix);
-                interface.v4Aliases.list.forEach( function(alias){
-                    networks.push(Util.getNetwork(alias.staticAddress, alias.staticNetmask) + '/' + alias.staticPrefix);
-                });
-            }
+    getRemoteConfig: function(unk1, unk2, unk3, event, unk5, record){
+        var v = this.getView();
+        var dialog = v.add({
+            xtype: 'app-wireguard-vpn-remote-config',
+            title: 'Remote Configuration'.t(),
+            record: record
         });
-
-        networkSettings.staticRoutes.list.forEach( function(route){
-            networks.push(route.network + '/' + route.prefix);
-        });
-
-        return networks;
+        dialog.setPosition(event.getXY());
+        dialog.show();
     }
 });
 
@@ -358,6 +355,10 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
     endpointTypeComboChange: function(combo, newValue, oldValue){
         var me = this,
             record = me.getViewModel().get('record');
+            form = combo.up('form');
+
+        form.down('[itemId=publicKey]').allowBlank = newValue;
+        form.down('[itemId=publicKey]').validate();
 
         var peerAddress = record.get('peerAddress');
         if(newValue && !peerAddress){
