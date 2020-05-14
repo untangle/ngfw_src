@@ -369,7 +369,7 @@
     },{
         "url": "/admin/index.do#apps/1/web-monitor/advanced",
         "type": "remove_nav"
-	
+
     },{
         "url": "/admin/index.do#apps/1/virus-blocker/status",
         "type": "remove_nav"
@@ -426,7 +426,7 @@
     },{
         "url": "/admin/index.do#apps/1/threat-prevention/lookup",
         "type": "remove_nav"
-              
+
     },{
         "url": "/admin/index.do#apps/1/spam-blocker/status",
         "type": "remove_nav"
@@ -440,7 +440,7 @@
     },{
         "url": "/admin/index.do#apps/1/spam-blocker-lite/email",
         "type": "remove_nav"
-	
+
     },{
         "url": "/admin/index.do#apps/1/phish-blocker/status",
         "type": "remove_nav"
@@ -618,6 +618,16 @@
         "type": "remove_nav"
     },{
         "url": "/admin/index.do#apps/1/ipsec-vpn/l2tp-log",
+        "type": "remove_nav"
+
+    },{
+        "url": "/admin/index.do#apps/1/wireguard-vpn/status",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/wireguard-vpn/settings",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#apps/1/wireguard-vpn/tunnels",
         "type": "remove_nav"
 
     },{
@@ -1420,7 +1430,7 @@
         "url": "/admin/index.do#reports?cat=spam-blocker-lite&rep=tarpit-events",
         "type": "remove_report_nav"
 
-	 
+
       },{
         "url": "/admin/index.do#reports?cat=system&rep=cpu-load",
         "type": "remove_report_nav"
