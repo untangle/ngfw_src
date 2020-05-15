@@ -72,14 +72,14 @@ Ext.define('Ung.cmp.CopyToClipboard', {
                         if(copyComponent.value.stripPrefix != null){
                             value = value.replace( copyComponent.value.stripPrefix, '' );
                         }
-                        if(copyComponent.valueStripSuffix != null){
+                        if(copyComponent.value.stripSuffix != null){
                             value = value.replace( copyComponent.value.stripSuffix, '' );
                         }
                     }
                     if(copyComponent.dataType == 'javascript'){
                         elementValue[key] = value;
                     }else{
-                        elementValue += (el.value.length ? "\n" : "") + key + "=" + value;
+                        elementValue += (el.value.length ? "\n" : "") + (key ? key + "=" : '') + value;
                     }
                 }
             }
