@@ -1095,6 +1095,25 @@
         "type": "remove_report_nav"
 
      },{
+        "url": "/admin/index.do#reports?cat=wireguard-vpn&rep=wireguard-vpn-summary",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=wireguard-vpn&rep=wireguard-vpn-bandwidth-usage",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=wireguard-vpn&rep=wireguard-vpn-event",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=wireguard-vpn&rep=top-remote-clients-(by-usage)",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=wireguard-vpn&rep=connection-events",
+        "type": "remove_report_nav"
+     },{
+        "url": "/admin/index.do#reports?cat=wireguard-vpn&rep=tunnel-traffic-events",
+        "type": "remove_report_nav"
+
+     },{
         "url": "/admin/index.do#reports?cat=intrusion-prevention&rep=intrusion-prevention-summary",
         "type": "remove_report_nav"
      },{
