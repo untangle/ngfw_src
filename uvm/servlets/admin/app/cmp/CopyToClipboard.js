@@ -17,7 +17,6 @@ Ext.define('Ung.cmp.CopyToClipboard', {
         itemId: 'copyClipboard',
         baseCls: 'fa fa-copy',
         margin: '5 0 0 5',
-        width: '100%',
         tooltip: 'Copy to Clipboard'.t(),
         handler: null
     }],
