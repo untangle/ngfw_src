@@ -2,19 +2,22 @@ Ext.define('Ung.cmp.CopyToClipboard', {
     extend: 'Ext.form.FieldContainer',
     alias: 'widget.copytoclipboard',
 
-    stripPrefix: null,
-    stripSuffix: null,
-    targetKey: 'value',
+    key: {},
+    value: {
+        key: 'value'
+    },
 
     layout: {
         type: 'hbox'
     },
+    dataType: 'text',
 
     items: [{
         xtype: 'button',
         itemId: 'copyClipboard',
         baseCls: 'fa fa-copy',
         margin: '5 0 0 5',
+        width: '100%',
         tooltip: 'Copy to Clipboard'.t(),
         handler: null
     }],
@@ -29,16 +32,6 @@ Ext.define('Ung.cmp.CopyToClipboard', {
                 item.handler = me.copy;
             }
         });
-
-        if(config.stripPrefix != null){
-            me.stripPrefix = new RegExp('^' + config.stripPrefix);
-        }
-        if(config.stripSuffix != null){
-            me.stripSuffix = new RegExp(config.stripSuffix + '$');
-        }
-        if(config.targetKey){
-            me.targetKey = config.targetKey;
-        }
 
         if(config.items){
             var buttonExists = false;
@@ -61,21 +54,39 @@ Ext.define('Ung.cmp.CopyToClipboard', {
      * Perform copy to clipboard
      * @param {*} button 
      */
-    copy: function(button)
-    {
+    copy: function(button){
         var me = this,
             copyComponent = button.up(),
-            valueElement = copyComponent.down("[xtype!=button]"),
-            el = document.createElement('textarea');
+            sourceElements = copyComponent.query("[xtype!=button]"),
+            el = document.createElement('textarea'),
+            elementValue = (copyComponent.dataType == 'javascript') ? {} : '';
 
-        el.value = valueElement[copyComponent.targetKey];
+        sourceElements.forEach( function(sourceEl){
+            if(sourceEl.xtype != copyComponent.xtype){
+                var value = sourceEl[copyComponent.value.key];
+                if(value != undefined){
+                    var key = "";
+                    if(copyComponent.key.key != null){
+                        key = sourceEl[copyComponent.key.key];
+                    }
+                    if(typeof(value) == "string"){
+                        if(copyComponent.value.stripPrefix != null){
+                            value = value.replace( copyComponent.value.stripPrefix, '' );
+                        }
+                        if(copyComponent.valueStripSuffix != null){
+                            value = value.replace( copyComponent.value.stripSuffix, '' );
+                        }
+                    }
+                    if(copyComponent.dataType == 'javascript'){
+                        elementValue[key] = value;
+                    }else{
+                        elementValue += (el.value.length ? "\n" : "") + key + "=" + value;
+                    }
+                }
+            }
+        });
 
-        if(copyComponent.stripPrefix != null){
-            el.value = el.value.replace( copyComponent.stripPrefix, '' );
-        }
-        if(copyComponent.stripSuffix != null){
-            el.value = el.value.replace( copyComponent.stripSuffix, '' );
-        }
+        el.value = (copyComponent.dataType == 'javascript') ? JSON.stringify(elementValue) : elementValue;
 
         el.setAttribute('readonly', '');
         el.style.position = 'absolute';
