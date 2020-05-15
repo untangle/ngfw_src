@@ -39,6 +39,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 warning = '<i class="fa fa-exclamation-triangle fa-red fa-lg"></i> <strong>' + 'There are no enabled access rules to allow traffic on UDP port '.t() + listenPort + '</strong>';
             }
             vm.set('warning', warning);
+            vm.set('hostname', networkSettings['hostName']);
 
             v.setLoading(false);
         },function(ex){
@@ -307,6 +308,46 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
     extend: 'Ung.cmp.RecordEditorController',
     alias: 'controller.unwireguardvpntunnelrecordeditorcontroller',
 
+    pasteTunnel: function(component){
+        if(!component.target || 
+           !component.target.dataset.componentid ||
+           !component.target.dataset.componentid){
+            return;
+        }
+        var el = Ext.getCmp(component.target.dataset.componentid);
+        if(!el){
+            return;
+        }
+        var view = el.up('unwireguardvpntunnelrecordeditor'),
+            controller = view.getController(),
+            record = view.record; 
+        if(record.get('id') != -1){
+            // Only on a new record.
+            return;
+        }
+
+        var remote = {};
+        try{
+            remote = JSON.parse(component.event.clipboardData.getData("text/plain"));
+        }catch(e){
+            return;
+        }
+
+        var remoteToRecordTask = new Ext.util.DelayedTask( Ext.bind(function(){
+            if(Util.isDestroyed(remote, record)){
+                return;
+            }
+            record.set('description', remote['hostname']);
+            record.set('endpointDynamic', false);
+            Ext.Object.each(remote, function(key, value){
+                if(key in record.data){
+                    record.set(key, value);
+                }
+            });
+        }, view) );
+        remoteToRecordTask.delay( 150 );
+    },
+
     // Loop through the stored records to see if the passed ip
     // address is already used
     isAddrUsed: function(ip, store) {
@@ -341,15 +382,17 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
     // existing tunnels to make sure we select an address that isn't already used.  After
     // setting the peerAddress, we then call the default onAfterRender.
     onAfterRender: function (view) {
-        var grid = this.mainGrid, vm = this.getViewModel();
-
-        var record = vm.get('record');
+        var me = this,
+            grid = this.mainGrid, vm = this.getViewModel(),
+            record = vm.get('record');
 
         this.callParent([view]);
 
         view.down('form').add(
             Ung.apps['wireguard-vpn'].Main.hostDisplayFields(true, !record.get('markedForNew'), true)
         );
+
+        view.getEl().on('paste', me.pasteTunnel);
     },
 
     endpointTypeComboChange: function(combo, newValue, oldValue){
