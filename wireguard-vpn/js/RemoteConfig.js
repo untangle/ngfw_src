@@ -64,9 +64,11 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
             flex: 1
         },{
             xtype: 'copytoclipboard',
-            stripPrefix: '<pre>',
-            stripSuffix: '</pre>',
-            targetKey: 'html',
+            value:{
+                key: 'html',
+                stripPrefix: '<pre>',
+                stripSuffix: '</pre>'
+            },
             items:[{
                 xtype: 'component',
                 itemId: 'file',
