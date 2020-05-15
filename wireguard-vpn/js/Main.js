@@ -92,72 +92,86 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
 
         hostDisplayFields: function(collapsible, collapsed, recordEditor){
             return {
-                xtype: 'fieldset',
-                title: 'Local Service Information'.t(),
-                collapsible: collapsible ? true : false,
-                collapsed: collapsible && collapsed ? true : false,
-                layout: {
-                    type: 'vbox'
-                },
-                defaults: {
-                    labelWidth: 170,
-                    labelAlign: recordEditor ? 'right' : 'left',
-                    defaults:{
+                    xtype: 'fieldset',
+                    title: 'Local Service Information'.t(),
+                    collapsible: collapsible ? true : false,
+                    collapsed: collapsible && collapsed ? true : false,
+                    layout: {
+                        type: 'vbox'
+                    },
+                    defaults: {
                         labelWidth: 170,
                         labelAlign: recordEditor ? 'right' : 'left',
-                    }
-                },
-                items:[{
-                    xtype: 'copytoclipboard',
-                    items:[{
-                        xtype: 'displayfield',
-                        fieldLabel: 'Public Key'.t(),
-                        cls: 'x-selectable',
-                        bind: {
-                            value: '{settings.publicKey}'
+                        defaults: {
+                            labelWidth: 170,
+                            labelAlign: recordEditor ? 'right' : 'left',
+                            defaults: {
+                                labelWidth: 170,
+                                labelAlign: recordEditor ? 'right' : 'left',
+                            }
                         }
-                    }]
-                }, {
-                    xtype: 'copytoclipboard',
+                    },
                     items:[{
-                        fieldLabel: 'Local Endpoint IP Address'.t(),
-                        xtype: 'displayfield',
-                        cls: 'x-selectable',
-                        bind: {
-                            value: Rpc.directData('rpc.networkManager.getPublicUrl').split(":")[0],
-                        }
+                        xtype: 'copytoclipboard',
+                        key: {
+                            key: 'itemId'
+                        },
+                        dataType: 'javascript',
+                        items: [{
+                            xtype: 'fieldset',
+                            border: false,
+                            width: '100%',
+                            items: [{
+                                xtype: 'displayfield',
+                                itemId: 'hostname',
+                                fieldLabel: 'Hostname'.t(),
+                                cls: 'x-selectable',
+                                bind: {
+                                    value: '{hostname}'
+                                }
+                            }, {
+                                xtype: 'displayfield',
+                                itemId: 'publicKey',
+                                fieldLabel: 'Public Key'.t(),
+                                cls: 'x-selectable',
+                                bind: {
+                                    value: '{settings.publicKey}'
+                                }
+                            }, {
+                                fieldLabel: 'Local Endpoint IP Address'.t(),
+                                itemId: 'endpointAddress',
+                                xtype: 'displayfield',
+                                cls: 'x-selectable',
+                                bind: {
+                                    value: Rpc.directData('rpc.networkManager.getPublicUrl').split(":")[0],
+                                }
+                            },{
+                                fieldLabel: 'Local Endpoint Port'.t(),
+                                itemId: 'endpointPort',
+                                xtype: 'displayfield',
+                                cls: 'x-selectable',
+                                bind: {
+                                    value: '{settings.listenPort}',
+                                }
+                            }, {
+                                xtype: 'displayfield',
+                                itemId: 'peerAddress',
+                                fieldLabel: 'Peer IP Address'.t(),
+                                cls: 'x-selectable',
+                                bind: {
+                                    value: '{peerAddress}',
+                                }
+                            }, {
+                                xtype: 'displayfield',
+                                itemId: 'networks',
+                                fieldLabel: 'Local Networks'.t(),
+                                cls: 'x-selectable',
+                                bind: {
+                                    value: '{settings.networks}',
+                                }
+                            }]
+                        }]
                     }]
-                },{
-                    xtype: 'copytoclipboard',
-                    items:[{
-                        fieldLabel: 'Local Endpoint Port'.t(),
-                        xtype: 'displayfield',
-                        cls: 'x-selectable',
-                        bind: {
-                            value: '{settings.listenPort}',
-                        }
-                    }]
-                }, {
-                    xtype: 'copytoclipboard',
-                    items:[{
-                        xtype: 'displayfield',
-                        fieldLabel: 'Peer IP Address'.t(),
-                        cls: 'x-selectable',
-                        bind: {
-                            value: '{peerAddress}',
-                        }
-                    }]
-                }, {
-                    xtype: 'copytoclipboard',
-                    items:[{
-                        xtype: 'displayfield',
-                        fieldLabel: 'Local Networks'.t(),
-                        cls: 'x-selectable',
-                        bind: {
-                            value: '{settings.networks}',
-                        }
-                    }]
-                }]
             };
         }
     }
