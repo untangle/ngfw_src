@@ -626,7 +626,8 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
             }
 
-            addresses.add(new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix()));
+            maskedAddress = new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix());
+            addresses.add(new IPMaskedAddress( maskedAddress.getMaskedAddress(), interfaceSettings.getV4StaticPrefix()));
             for ( InterfaceSettings.InterfaceAlias alias : interfaceSettings.getV4Aliases() ) {
                 /*
                  * Don't add if already in list
@@ -640,7 +641,7 @@ public class NetworkManagerImpl implements NetworkManager
                     }
                 }
                 if( match == false ){
-                    addresses.add( maskedAddress );
+                    addresses.add( new IPMaskedAddress( maskedAddress.getMaskedAddress(), alias.getStaticPrefix()) );
                 }
             }
         }
@@ -658,7 +659,7 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
             if( match == false ){
-                addresses.add( maskedAddress );
+                addresses.add( new IPMaskedAddress( maskedAddress.getMaskedAddress(), route.getPrefix()) );
             }
         }
 
