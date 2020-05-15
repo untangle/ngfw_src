@@ -39,8 +39,10 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
             fieldLabel: 'Type'.t(),
             xtype: 'combobox',
             editable: false,
+            hidden: false,
             bind:{
-                value: '{type}'
+                value: '{type}',
+                hidden: '{error}',
             },
             queryMode: 'local',
             store: [
@@ -57,7 +59,7 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
             width: 400,
             hidden: true,
             bind: {
-                hidden: '{type != "qrcode" ? true : false}',
+                hidden: '{type != "qrcode" || error ? true : false}',
             },
             flex: 1
         },{
@@ -72,9 +74,20 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
             }],
             hidden: true,
             bind: {
-                hidden: '{type != "file" ? true : false}',
+                hidden: '{type != "file" || error? true : false}',
             },
             flex: 1
+        },{
+            xtype: 'component',
+            style: {
+                'color': 'red',
+                'font-weight': 'bold'
+            },
+            html: 'Unable to retrieve configuration'.t(),
+            hidden: true,
+            bind: {
+                hidden: '{!error}',
+            }
         }]
     }],
 

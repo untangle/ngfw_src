@@ -4,6 +4,8 @@
 
 package com.untangle.app.wireguard_vpn;
 
+import java.io.File;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,6 +32,9 @@ public class WireGuardVpnManager
     private static final String WIREGUARD_APP = "/usr/bin/wg";
     private static final String WIREGUARD_QUICK_APP = "/usr/bin/wg-quick";
     private static final String WIREGUARD_QUICK_CONFIG = "/etc/wireguard/wg0.conf";
+
+    private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY = "%PUBLIC_KEY%";
+    private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE = "/etc/wireguard/untangle/remote-" + WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY + ".conf";
 
     private final Logger logger = Logger.getLogger(this.getClass());
     private final WireGuardVpnApp app;
@@ -204,8 +209,8 @@ public class WireGuardVpnManager
      * @return Base 64 encoded string of image.
      */
     public String createQrCode(String publicKey){
-        // check if directory exists
-        return wireguardCommand("/bin/qrencode -t PNG -o - < /etc/wireguard/untangle/remote-"+publicKey+".conf | /bin/base64 -w0");
+        File file = getRemoteConfigFile(publicKey);
+        return (file != null) ? wireguardCommand("/bin/qrencode -t PNG -o - < " + file.getAbsolutePath() + " | /bin/base64 -w0")  : "";
     }
 
     /**
@@ -214,8 +219,20 @@ public class WireGuardVpnManager
      * @return Text of config.
      */
     public String getConfig(String publicKey){
-        // check if directory exists
-        return wireguardCommand("/bin/cat /etc/wireguard/untangle/remote-"+publicKey+".conf");
+        File file = getRemoteConfigFile(publicKey);
+        return (file != null) ? wireguardCommand("/bin/cat " + file.getAbsolutePath()) : "";
+    }
+
+    /**
+     * Build remote configuration filename and determine if it exists.
+     * @param publicKey publicKey Public Key to lookup.
+     * @return File of valid file.  If not found, null.
+     */
+    private File getRemoteConfigFile(String publicKey)
+    {
+        String filename = WIREGUARD_REMOTE_CONFIG_TEMPLATE.replaceAll(WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY, publicKey);
+        File file = new File(filename);
+        return file.exists() ? file : null;
     }
 
     /**
