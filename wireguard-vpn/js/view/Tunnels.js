@@ -41,6 +41,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'endpointAddress' : '',
         'endpointPort': 51820,
         'peerAddress': '',
+        'networks': '',
         'pingInterval': 60,
         'pingConnectionEvents': true,
         'pingUnreachableEvents': false
