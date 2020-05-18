@@ -6,6 +6,7 @@
 /usr/sbin/ipsec reload 2>&1 1>> /dev/null
 
 # Restart the xlt2pd daemon
+systemctl reset-failed xl2tpd 2>&1 1>> /dev/null
 systemctl restart xl2tpd 2>&1 1>> /dev/null
 
 # Call the script to create the L2TP interface status file
