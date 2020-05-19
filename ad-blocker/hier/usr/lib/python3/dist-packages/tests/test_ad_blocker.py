@@ -85,6 +85,12 @@ class AdBlockerTests(NGFWTestCase):
     def test_022_notBlocked(self):
         result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
         assert (result == 0)
+        events = global_functions.get_events('Ad Blocker','All Ad Events',None,1)
+        assert( events != None )
+        found = global_functions.check_events( events.get('list'), 5,
+                                            'host', 'www.google.com',
+                                            'uri', ("/"),
+                                            'ad_blocker_action', 'P' )
  
     def test_023_eventlog_blockedAd(self):
         fname = sys._getframe().f_code.co_name
