@@ -1468,6 +1468,26 @@ class NetworkTests(NGFWTestCase):
         result = remote_control.run_command("/usr/bin/upnpc -a %s 5559 5559 tcp 2>&1 | grep failed" % (remote_control.client_ip),stdout=False)
         assert(result == 0)
 
+    def test_180_netflow_enable_disable(self):
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['netflowSettings']['enabled'] = True
+        netsettings['netflowSettings']['host'] = global_functions.LIST_SYSLOG_SERVER
+        netsettings['netflowSettings']['port'] = 9555
+        netsettings['netflowSettings']['version'] = "9"
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        # check if netflow is running
+        result1 = subprocess.call("ps aux | grep softflowd | grep -v grep >/dev/null 2>&1", shell=True)
+
+        # check if netflow stops running if disabled.
+        netsettings['netflowSettings']['enabled'] = False
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        result2 = subprocess.call("ps aux | grep softflowd | grep -v grep >/dev/null 2>&1", shell=True)
+
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert(result1 == 0)
+        assert(result2 == 1)
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings
