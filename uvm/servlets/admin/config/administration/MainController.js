@@ -81,6 +81,9 @@ Ext.define('Ung.config.administration.MainController', {
     loadAdmin: function () {
         var me = this, v = me.getView(),vm = me.getViewModel();
 
+        // set expert mode used to show/hide RADIUS section
+        vm.set('expertMode', Rpc.directData('rpc.isExpertMode'));
+
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.getSettings'),
