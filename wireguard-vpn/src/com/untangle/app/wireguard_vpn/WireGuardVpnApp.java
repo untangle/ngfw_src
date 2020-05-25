@@ -5,8 +5,10 @@
 package com.untangle.app.wireguard_vpn;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -51,7 +53,6 @@ public class WireGuardVpnApp extends AppBase
     private static final String NETSPACE_SERVER = "server-network";
     private static final String NETSPACE_TUNNEL = "server-tunnel";
 
-
     /**
      * Constructor
      * 
@@ -89,7 +90,6 @@ public class WireGuardVpnApp extends AppBase
      * @return wireguard manager
      */
     public WireGuardVpnManager getWireGuardVpnManager(){
-        logger.warn(this.WireGuardVpnManager);
         return this.WireGuardVpnManager;
     }
 
@@ -118,6 +118,15 @@ public class WireGuardVpnApp extends AppBase
         String conflict = checkNetworkReservations(newSettings.getAddressPool(), newSettings.getTunnels());
         if (conflict != null) {
             throw new RuntimeException(conflict);
+        }
+
+        int idx = 0;
+        for (WireGuardVpnTunnel tunnel : newSettings.getTunnels()) {
+            tunnel.setId(++idx);
+            if(tunnel.getPublicKey().equals("")){
+                tunnel.setPrivateKey(this.WireGuardVpnManager.createPrivateKey());
+                tunnel.setPublicKey(this.WireGuardVpnManager.getPublicKey(tunnel.getPrivateKey()));
+            }
         }
 
         /**
@@ -293,6 +302,13 @@ public class WireGuardVpnApp extends AppBase
         settings.setPrivateKey(privateKey);
         settings.setPublicKey(publicKey);
 
+        InetAddress dnsAddress = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+        if(dnsAddress != null){
+            logger.warn(dnsAddress.getHostAddress());
+            settings.setDnsServer(dnsAddress.getHostAddress());
+        }
+        settings.setNetworks(UvmContextFactory.context().networkManager().getLocalNetworks().stream().map(Object::toString).collect(Collectors.joining("\r\n")));
+
         IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4, 1, 24);
 
         settings.setAutoAddressAssignment(true);
@@ -314,7 +330,7 @@ public class WireGuardVpnApp extends AppBase
         return (result);
     }
 
- /**
+    /**
      * Returns an address pool that is validated against the netspace manager to not be conflicting
      * 
      *
@@ -326,6 +342,23 @@ public class WireGuardVpnApp extends AppBase
         return newSpace.toString();
     }
 
+    /**
+     * Return QR code image
+     * @param publicKey publickKey for tunnel.
+     * @return Base 64 encoded string of image.
+     */
+    public String createRemoteQrCode(String publicKey){
+        return this.getWireGuardVpnManager().createQrCode(publicKey);
+    }
+
+    /**
+     * Return configuration
+     * @param publicKey publickKey for tunnel.
+     * @return String of configuration.
+     */
+    public String getRemoteConfig(String publicKey){
+        return this.getWireGuardVpnManager().getConfig(publicKey);
+    }
 
     /**
      * Function to register all network address blocks configured in this application

@@ -4,9 +4,13 @@
 
 package com.untangle.app.wireguard_vpn;
 
+import java.io.File;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +32,9 @@ public class WireGuardVpnManager
     private static final String WIREGUARD_APP = "/usr/bin/wg";
     private static final String WIREGUARD_QUICK_APP = "/usr/bin/wg-quick";
     private static final String WIREGUARD_QUICK_CONFIG = "/etc/wireguard/wg0.conf";
+
+    private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY = "%PUBLIC_KEY%";
+    private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE = "/etc/wireguard/untangle/remote-" + WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY + ".conf";
 
     private final Logger logger = Logger.getLogger(this.getClass());
     private final WireGuardVpnApp app;
@@ -98,7 +105,12 @@ public class WireGuardVpnManager
         /**
          * Update WireGuard quick config and iptables script.
          */
-        UvmContextFactory.context().syncSettings().run(app.getSettingsFilename(), UvmContextFactory.context().networkManager().getNetworkSettingsFilename());
+        UvmContextFactory.context().syncSettings().run(
+            app.getSettingsFilename(),
+            UvmContextFactory.context().networkManager().getNetworkSettingsFilename(),
+            Map.entry("wireguardUrl", UvmContextFactory.context().networkManager().getPublicUrl()),
+            Map.entry("wireguardHostname", UvmContextFactory.context().networkManager().getNetworkSettings().getHostName())
+        );
     }
 
     /**
@@ -192,6 +204,38 @@ public class WireGuardVpnManager
     }
 
     /**
+     * Return QR code image
+     * @param publicKey Public key identifier for configuration.
+     * @return Base 64 encoded string of image.
+     */
+    public String createQrCode(String publicKey){
+        File file = getRemoteConfigFile(publicKey);
+        return (file != null) ? wireguardCommand("/bin/qrencode -t PNG -o - < " + file.getAbsolutePath() + " | /bin/base64 -w0")  : "";
+    }
+
+    /**
+     * Get remote configuration file.
+     * @param publicKey Public key identifier for configuration.
+     * @return Text of config.
+     */
+    public String getConfig(String publicKey){
+        File file = getRemoteConfigFile(publicKey);
+        return (file != null) ? wireguardCommand("/bin/cat " + file.getAbsolutePath()) : "";
+    }
+
+    /**
+     * Build remote configuration filename and determine if it exists.
+     * @param publicKey publicKey Public Key to lookup.
+     * @return File of valid file.  If not found, null.
+     */
+    private File getRemoteConfigFile(String publicKey)
+    {
+        String filename = WIREGUARD_REMOTE_CONFIG_TEMPLATE.replaceAll(WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY, publicKey);
+        File file = new File(filename);
+        return file.exists() ? file : null;
+    }
+
+    /**
      * Call wireguard and get output
      * @param command String of command to pass to wg
      * @return String of result of call to wg.
@@ -204,7 +248,7 @@ public class WireGuardVpnManager
             wireguardResult = result.getOutput();
         } catch (Exception e) {
         }
-        return wireguardResult;
+        return wireguardResult.trim();
     }
 
 }

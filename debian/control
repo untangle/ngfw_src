@@ -319,7 +319,7 @@ Architecture: all
 Conflicts: untangle-node-wireguard-vpn
 Replaces: untangle-node-wireguard-vpn
 Provides: untangle-node-wireguard-vpn
-Depends: ${misc:Depends}, untangle-vm, wireguard-tools, wireguard-dkms
+Depends: ${misc:Depends}, untangle-vm, wireguard-tools, wireguard-dkms, qrencode
 Description: WireGuard VPN application
  The WireGuard VPN application.
 
