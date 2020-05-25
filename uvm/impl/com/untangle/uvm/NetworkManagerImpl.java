@@ -460,6 +460,43 @@ public class NetworkManagerImpl implements NetworkManager
         InetAddress address = getInterfaceStatus( intfId ).getV4Address();
         return address;
     }
+
+    /**
+     * Search interfaces and get the first non-WAN DNS resolver.
+     * 
+     * First look at all interfaces that have DHCP enabled and get the first DNS resolver.
+     * If not found, get first non-WAN IP address.
+     @return InetAddress of address.
+     */
+    public InetAddress getFirstDnsResolverAddress()
+    {
+        InetAddress address = null;
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null ) {
+            return address;
+        }
+
+        for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
+            if ( !intfSettings.igetDisabled() && !intfSettings.getIsWan() ) {
+                if(address == null){
+                    address = getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
+                }
+                if(intfSettings.getDhcpEnabled() &&
+                   intfSettings.getDhcpDnsOverride() != null &&
+                   !intfSettings.getDhcpDnsOverride().equals("")){
+                    InetAddress dhcpOverride = null;
+                    try{
+                        dhcpOverride = InetAddress.getByName(intfSettings.getDhcpDnsOverride());
+                    }catch(Exception e){}
+                    if(dhcpOverride != null){
+                        address = dhcpOverride;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return address;
+    }
     
     /**
      * Returns the InterfaceStatus of the specified interface.
@@ -589,7 +626,8 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
             }
 
-            addresses.add(new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix()));
+            maskedAddress = new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix());
+            addresses.add(new IPMaskedAddress( maskedAddress.getMaskedAddress(), interfaceSettings.getV4StaticPrefix()));
             for ( InterfaceSettings.InterfaceAlias alias : interfaceSettings.getV4Aliases() ) {
                 /*
                  * Don't add if already in list
@@ -603,7 +641,7 @@ public class NetworkManagerImpl implements NetworkManager
                     }
                 }
                 if( match == false ){
-                    addresses.add( maskedAddress );
+                    addresses.add( new IPMaskedAddress( maskedAddress.getMaskedAddress(), alias.getStaticPrefix()) );
                 }
             }
         }
@@ -621,7 +659,7 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
             if( match == false ){
-                addresses.add( maskedAddress );
+                addresses.add( new IPMaskedAddress( maskedAddress.getMaskedAddress(), route.getPrefix()) );
             }
         }
 
