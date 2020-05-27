@@ -467,12 +467,29 @@ Ext.define('Ung.config.administration.MainController', {
 
     },
 
-    uploadServerCertificate: function () {
-        var me = this, v = this.getView();
+    //
+    uploadCertificate: function (btn) {
+        var me = this, v = this.getView(), certMode = btn.certMode;
+        
+        //Use the certMode to figure out what type of upload this is
+        if (certMode === "SERVER") {
+            dialogTitle = 'Upload Server Certificate'.t();
+            dialogCertTitle = 'Server Certificate'.t();
+            dialogCertKey = 'Certificate Key'.t();
+
+        } else if (certMode === "ROOT") {
+            dialogTitle = 'Upload Root Certificate Authority (CA)'.t();
+            dialogCertTitle = 'Root Certificate'.t();
+            dialogCertKey = 'Root Key'.t();
+        } else {
+            console.log("uploadCertificate called with certMode:" + certMode);
+            return;
+        }
+
         this.uploadDialog = v.add({
             xtype: 'window',
             modal: true,
-            title: 'Upload Server Certificate'.t(),
+            title: dialogTitle,
             items: [{
                 xtype: 'form',
                 name: 'upload_form',
@@ -482,7 +499,7 @@ Ext.define('Ung.config.administration.MainController', {
                 items: [{
                     xtype: 'textarea',
                     id: 'cert_data',
-                    fieldLabel: 'Server Certificate'.t(),
+                    fieldLabel: dialogCertTitle,
                     labelWidth: 80,
                     anchor: "100%",
                     height: 150,
@@ -490,7 +507,7 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'textarea',
                     id: 'key_data',
-                    fieldLabel: 'Certificate Key'.t(),
+                    fieldLabel: dialogCertKey,
                     labelWidth: 80,
                     anchor: "100%",
                     height: 150,
@@ -499,6 +516,8 @@ Ext.define('Ung.config.administration.MainController', {
                     xtype: 'textarea',
                     id: 'extra_data',
                     fieldLabel: 'Optional Intermediate Certificates'.t(),
+                    hidden: certMode !== 'SERVER',
+                    disabled: certMode !== 'SERVER',
                     labelWidth: 80,
                     anchor: "100%",
                     height: 200,
@@ -532,7 +551,7 @@ Ext.define('Ung.config.administration.MainController', {
                         var cd = Ext.get('cert_data');
                         var kd = Ext.get('key_data');
                         var ed = Ext.get('extra_data');
-                        Rpc.asyncData('rpc.UvmContext.certificateManager.uploadServerCertificate', cd.component.getValue(), kd.component.getValue(), ed.component.getValue())
+                        Rpc.asyncData('rpc.UvmContext.certificateManager.uploadCertificate', cd.component.getValue(), kd.component.getValue(), ed.component.getValue(), certMode)
                         .then(function(status){
                             if (status.result === 0) {
                                 Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
