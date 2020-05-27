@@ -36,7 +36,7 @@ public class NetworkSettings implements Serializable, JSONString
     private List<DhcpStaticEntry> staticDhcpEntries = null;
     private List<FilterRule> accessRules = null;
     private List<FilterRule> filterRules = null;
-    
+
     private String hostName;
     private String domainName;
 
@@ -63,7 +63,7 @@ public class NetworkSettings implements Serializable, JSONString
 
     private int httpPort  = 80;
     private int httpsPort = 443;
-    
+
     private QosSettings qosSettings;
     private UpnpSettings upnpSettings;
     private DnsSettings dnsSettings;
@@ -75,6 +75,9 @@ public class NetworkSettings implements Serializable, JSONString
     private String  publicUrlMethod;
     private String  publicUrlAddress;
     private Integer publicUrlPort;
+
+    private boolean globalCustomBlockPageEnabled = false;
+    private String globalCustomBlockPageUrl = null;
 
     public NetworkSettings() { }
 
@@ -89,7 +92,7 @@ public class NetworkSettings implements Serializable, JSONString
 
     public List<DeviceSettings> getDevices() { return this.devices; }
     public void setDevices( List<DeviceSettings> newValue ) { this.devices = newValue; }
-    
+
     public List<PortForwardRule> getPortForwardRules() { return this.portForwardRules; }
     public void setPortForwardRules( List<PortForwardRule> newValue ) { this.portForwardRules = newValue; }
 
@@ -104,13 +107,13 @@ public class NetworkSettings implements Serializable, JSONString
 
     public List<FilterRule> getAccessRules() { return this.accessRules; }
     public void setAccessRules( List<FilterRule> newValue ) { this.accessRules = newValue; }
-    
+
     public List<StaticRoute> getStaticRoutes() { return this.staticRoutes; }
     public void setStaticRoutes( List<StaticRoute> newValue ) { this.staticRoutes = newValue; }
 
     public List<DhcpStaticEntry> getStaticDhcpEntries() { return this.staticDhcpEntries; }
     public void setStaticDhcpEntries( List<DhcpStaticEntry> newValue ) { this.staticDhcpEntries = newValue; }
-    
+
     public String getHostName() { return this.hostName; }
     public void setHostName( String newValue ) { this.hostName = newValue; }
 
@@ -128,16 +131,16 @@ public class NetworkSettings implements Serializable, JSONString
 
     public String getDynamicDnsServicePassword() { return this.dynamicDnsServicePassword; }
     public void setDynamicDnsServicePassword( String newValue ) { this.dynamicDnsServicePassword = newValue; }
-    
+
     public String getDynamicDnsServiceHostnames() { return this.dynamicDnsServiceHostnames; }
     public void setDynamicDnsServiceHostnames( String newValue ) { this.dynamicDnsServiceHostnames = newValue; }
-    
+
     public int getHttpsPort() { return this.httpsPort; }
     public void setHttpsPort( int newValue ) { this.httpsPort = newValue ; }
 
     public int getHttpPort() { return this.httpPort; }
     public void setHttpPort( int newValue ) { this.httpPort = newValue ; }
-    
+
     public boolean getEnableSipNatHelper() { return this.enableSipNatHelper; }
     public void setEnableSipNatHelper( boolean newValue ) { this.enableSipNatHelper = newValue; }
 
@@ -149,13 +152,13 @@ public class NetworkSettings implements Serializable, JSONString
 
     public boolean getBlockReplayPackets() { return this.blockReplayPackets; }
     public void setBlockReplayPackets( boolean newValue ) { this.blockReplayPackets = newValue; }
-    
+
     public boolean getStrictArpMode() { return this.strictArpMode; }
     public void setStrictArpMode( boolean newValue ) { this.strictArpMode = newValue; }
-    
+
     public boolean getStpEnabled() { return this.stpEnabled; }
     public void setStpEnabled( boolean newValue ) { this.stpEnabled = newValue; }
-    
+
     public boolean getDhcpAuthoritative() { return this.dhcpAuthoritative; }
     public void setDhcpAuthoritative( boolean newValue ) { this.dhcpAuthoritative = newValue; }
 
@@ -170,7 +173,7 @@ public class NetworkSettings implements Serializable, JSONString
 
     public boolean getLogLocalInboundSessions() { return this.logLocalInboundSessions; }
     public void setLogLocalInboundSessions( boolean newValue ) { this.logLocalInboundSessions = newValue; }
-    
+
     public boolean getLogBlockedSessions() { return this.logBlockedSessions; }
     public void setLogBlockedSessions( boolean newValue ) { this.logBlockedSessions = newValue; }
 
@@ -185,10 +188,10 @@ public class NetworkSettings implements Serializable, JSONString
 
     public NetflowSettings getNetflowSettings() { return this.netflowSettings; }
     public void setNetflowSettings( NetflowSettings newValue ) { this.netflowSettings = newValue; }
-    
+
     public DynamicRoutingSettings getDynamicRoutingSettings() { return this.dynamicRoutingSettings; }
     public void setDynamicRoutingSettings( DynamicRoutingSettings newValue ) { this.dynamicRoutingSettings = newValue; }
-    
+
     public String getDnsmasqOptions() { return this.dnsmasqOptions; }
     public void setDnsmasqOptions( String newValue ) { this.dnsmasqOptions = newValue; }
 
@@ -215,6 +218,18 @@ public class NetworkSettings implements Serializable, JSONString
      */
     public Integer getPublicUrlPort() { return this.publicUrlPort; }
     public void setPublicUrlPort( Integer newValue ) { this.publicUrlPort = newValue; }
+
+    /**
+     * This enables a global custom block page that overrides the existing app specific block page settings
+     */
+    public boolean getGlobalCustomBlockPageEnabled() { return this.globalCustomBlockPageEnabled; }
+    public void setGlobalCustomBlockPageEnabled(boolean newValue) { this.globalCustomBlockPageEnabled = newValue; }
+
+    /**
+     * This stores the global custom block page url
+     */
+    public String getGlobalCustomBlockPageUrl() { return this.globalCustomBlockPageUrl; }
+    public void setGlobalCustomBlockPageUrl(String newValue) { this.globalCustomBlockPageUrl = newValue; }
 
     public String toJSONString()
     {

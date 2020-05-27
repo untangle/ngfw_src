@@ -44,8 +44,6 @@ public class WebFilterSettings implements Serializable, JSONString
     private Boolean restrictGoogleApps = false;
     private String restrictGoogleAppsDomain = "";
 
-    private Boolean customBlockPageEnabled = false;
-    private String customBlockPageUrl = "";
     private Boolean closeHttpsBlockEnabled = false;
 
     private List<WebFilterRule> filterRules = new LinkedList<WebFilterRule>();
@@ -55,7 +53,7 @@ public class WebFilterSettings implements Serializable, JSONString
     private List<GenericRule> categories = new LinkedList<GenericRule>();
     private List<GenericRule> searchTerms = new LinkedList<GenericRule>();
 
-    // these are needed during V1 to V2 settings conversion 
+    // these are needed during V1 to V2 settings conversion
     private List<GenericRule> blockedMimeTypes = new LinkedList<GenericRule>();
     private List<GenericRule> blockedExtensions = new LinkedList<GenericRule>();
 
@@ -112,7 +110,7 @@ public class WebFilterSettings implements Serializable, JSONString
 
     public Boolean getEnableHttpsSniIpFallback() { return enableHttpsSniIpFallback; }
     public void setEnableHttpsSniIpFallback( Boolean newValue ) { this.enableHttpsSniIpFallback = newValue; }
-    
+
     public Boolean getEnforceSafeSearch() { return enforceSafeSearch; }
     public void setEnforceSafeSearch( Boolean newValue ) { this.enforceSafeSearch = newValue; }
 
@@ -121,19 +119,19 @@ public class WebFilterSettings implements Serializable, JSONString
 
     public Boolean getRestrictYoutube() { return restrictYoutube; }
     public void setRestrictYoutube( Boolean newValue ) { this.restrictYoutube = newValue; }
-    
+
     public Boolean getBlockQuic() { return blockQuic; }
     public void setBlockQuic( Boolean newValue ) { this.blockQuic = newValue; }
-    
+
     public Boolean getLogQuic() { return logQuic; }
     public void setLogQuic( Boolean newValue ) { this.logQuic = newValue; }
-    
+
     public Boolean getUnblockPasswordEnabled() { return this.unblockPasswordEnabled; }
     public void setUnblockPasswordEnabled( Boolean newValue ) { this.unblockPasswordEnabled = newValue; }
 
     public Boolean getUnblockPasswordAdmin() { return this.unblockPasswordAdmin; }
     public void setUnblockPasswordAdmin( Boolean newValue ) { this.unblockPasswordAdmin = newValue; }
-    
+
     public String getUnblockPassword() { return this.unblockPassword; }
     public void setUnblockPassword( String newValue ) { this.unblockPassword = newValue; }
 
@@ -142,12 +140,6 @@ public class WebFilterSettings implements Serializable, JSONString
 
     public Integer getUnblockTimeout() { return this.unblockTimeout; }
     public void setUnblockTimeout( Integer unblockTimeout ) { this.unblockTimeout = unblockTimeout; }
-
-    public Boolean getCustomBlockPageEnabled() { return customBlockPageEnabled; }
-    public void setCustomBlockPageEnabled( Boolean customBlockPageEnabled ) { this.customBlockPageEnabled = customBlockPageEnabled; }
-
-    public String getCustomBlockPageUrl() { return this.customBlockPageUrl; }
-    public void setCustomBlockPageUrl( String customBlockPageUrl ) { this.customBlockPageUrl = customBlockPageUrl; }
 
     public Boolean getCloseHttpsBlockEnabled() { return closeHttpsBlockEnabled; }
     public void setCloseHttpsBlockEnabled( Boolean closeHttpsBlockEnabled ) { this.closeHttpsBlockEnabled = closeHttpsBlockEnabled; }
@@ -162,7 +154,7 @@ public class WebFilterSettings implements Serializable, JSONString
 
         return null;
     }
-    
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

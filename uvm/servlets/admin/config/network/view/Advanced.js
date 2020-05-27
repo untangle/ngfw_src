@@ -1795,6 +1795,41 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }]
                 }]
             }]
+        }, {
+            title: 'Global Block Page'.t(),
+            itemId: 'global-block-page',
+            scrollable: true,
+            padding: 16,
+            defaults: {
+                labelAlign: 'right'
+            },
+
+            items: [{
+                xtype: 'component',
+                html: 'If enabled, the provided URL will override any App specific block page!',
+                margin: '0 0 8 0'
+            }, {
+                xtype: 'checkbox',
+                boxLabel: 'Global Custom Block Page Enabled'.t(),
+                bind: '{settings.globalCustomBlockPageEnabled}',
+            }, {
+                xtype: 'textfield',
+                fieldLabel: 'Global Custom Block Page URL'.t(),
+                labelAlign: 'top',
+                width: 400,
+                bind: {
+                    disabled: '{!settings.globalCustomBlockPageEnabled}',
+                    value: '{settings.globalCustomBlockPageUrl}'
+                },
+                listeners: {
+                    blur: function(el) {
+                        var url = el.getValue();
+                        if (!url.startsWith('http://') && !url.startsWith("https://")) {
+                            el.setValue('http://' + url);
+                        }
+                    }
+                }
+            }]
         }]
     }]
 });

@@ -151,31 +151,6 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
         }
     }, {
         xtype: 'fieldset',
-        title: 'Custom block page'.t(),
-        checkboxToggle: true,
-        checkbox: {
-            bind: '{settings.customBlockPageEnabled}'
-        },
-        collapsible: true,
-        collapsed: true,
-        padding: 10,
-        cls: 'app-section',
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        items: [{
-            xtype: 'displayfield',
-            value: 'NOTE:'.t() + ' ' + 'Unblock operations are not available for custom block page'.t()
-        },{
-            xtype: 'textfield',
-            fieldLabel: 'Custom block page URL'.t(),
-            labelAlign: 'top',
-            emptyText: 'http://example.com',
-            bind: '{settings.customBlockPageUrl}'
-        }]
-    }, {
-        xtype: 'fieldset',
         title: 'Unblock Options'.t(),
         padding: 10,
         cls: 'app-section',
@@ -187,6 +162,12 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             disabled: '{settings.customBlockPageEnabled}',
         },
         items: [{
+            xtype: 'component',
+            html: 'NOTE: Unblock operations are not working if a global custom block page is used! <br />' +
+                'See <a href="#config/network/advanced/global-block-page">global block page settings</a>',
+            style: 'font-weight: bold;',
+            margin: '0 0 16 0'
+        }, {
             xtype: 'container',
             items: [{
                 xtype: 'combo',

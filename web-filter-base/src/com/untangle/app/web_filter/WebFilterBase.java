@@ -224,7 +224,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Constructor
-     * 
+     *
      * @param appSettings
      *        The application settings
      * @param appProperties
@@ -264,7 +264,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Unblock a site
-     * 
+     *
      * @param nonce
      *        The nonce
      * @param global
@@ -290,7 +290,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Verify password
-     * 
+     *
      * @param password
      *        The password
      * @return True for verify success, otherwise false
@@ -336,7 +336,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the unblock mode
-     * 
+     *
      * @return The unblock mode
      */
     public String getUnblockMode()
@@ -346,7 +346,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Check if HTTPS SNI is enabled
-     * 
+     *
      * @return True if enabled, otherwise false
      */
     public boolean isHttpsEnabledSni()
@@ -356,7 +356,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Check if HTTPS SNI cert fallback is enabled
-     * 
+     *
      * @return True if enabled, otherwise false
      */
     public boolean isHttpsEnabledSniCertFallback()
@@ -366,7 +366,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Check if HTTP SNI IP fallback is enabled
-     * 
+     *
      * @return True if enabled, otherwise false
      */
     public boolean isHttpsEnabledSniIpFallback()
@@ -376,7 +376,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the block details for the argumented nonce
-     * 
+     *
      * @param nonce
      *        The nonce to search
      * @return Block details
@@ -388,7 +388,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Unblock a site or search term based on nonce
-     * 
+     *
      * @param nonce
      *        The nonce
      * @param global
@@ -456,10 +456,10 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                 } else {
                     logger.info("Temporarily unblocking "+ blockType + " : " + blockVal);
                     InetAddress addr = bd.getClientAddress();
-    
+
                     unblockedSitesMonitor.addUnblockedItem(addr, blockVal, blockType);
                     getDecisionEngine().addUnblockedItem(addr, blockVal, blockType);
-    
+
                     return true;
                 }
         }
@@ -476,7 +476,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the application settings
-     * 
+     *
      * @return The application settings
      */
     public WebFilterSettings getSettings()
@@ -486,7 +486,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Set the application settings
-     * 
+     *
      * @param settings
      *        The new settings
      */
@@ -497,7 +497,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the categories
-     * 
+     *
      * @return The categories
      */
     public List<GenericRule> getCategories()
@@ -507,7 +507,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Set the categories
-     * 
+     *
      * @param newCategories
      *        The new list
      */
@@ -519,7 +519,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the blocked URL's
-     * 
+     *
      * @return The blocked URL's
      */
     public List<GenericRule> getBlockedUrls()
@@ -529,7 +529,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Set the blocked URL's
-     * 
+     *
      * @param blockedUrls
      *        The new list
      */
@@ -541,7 +541,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the passed clients
-     * 
+     *
      * @return The passed clients
      */
     public List<GenericRule> getPassedClients()
@@ -551,7 +551,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Set the passed clients
-     * 
+     *
      * @param passedClients
      *        The new list
      */
@@ -563,7 +563,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the passed URL's
-     * 
+     *
      * @return The passed URL's
      */
     public List<GenericRule> getPassedUrls()
@@ -573,7 +573,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Set the passed URL's
-     * 
+     *
      * @param passedUrls
      *        The new list
      */
@@ -585,7 +585,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the filter rules
-     * 
+     *
      * @return The filter rules
      */
     public List<WebFilterRule> getFilterRules()
@@ -595,7 +595,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Set the filter rules
-     * 
+     *
      * @param filterRules
      *        The new list
      */
@@ -607,7 +607,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the application metrics
-     * 
+     *
      * @return The metrics
      */
     public List<AppMetric> getMetrics()
@@ -626,35 +626,35 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Get the decision engine
-     * 
+     *
      * @return The decision engine
      */
     public abstract DecisionEngine getDecisionEngine();
 
     /**
      * Get the app title
-     * 
+     *
      * @return The app title
      */
     public abstract String getAppTitle();
 
     /**
      * Get the name
-     * 
+     *
      * @return The name
      */
     public abstract String getName();
 
     /**
      * Get the app name
-     * 
+     *
      * @return The app name
      */
     public abstract String getAppName();
 
     /**
      * Get the premium flag
-     * 
+     *
      * @return The premium flag
      */
     public abstract boolean isPremium();
@@ -729,7 +729,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Initialize application settings
-     * 
+     *
      * @param settings
      *        The settings
      */
@@ -737,27 +737,18 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Fix settings
-     * 
+     *
      * @param settings
      *        The settings
      */
     public void fixupSetSettings(WebFilterSettings settings)
     {
-        /**
-         * If the user supplied a custom block page url without http:// or https://
-         * then prepend http:// to the supplied url
-         */
-        if(settings.getCustomBlockPageEnabled()){
-            String redirectUrl = settings.getCustomBlockPageUrl();
-            if(!redirectUrl.startsWith("http://") && !redirectUrl.startsWith("https://")){
-                settings.setCustomBlockPageUrl("http://" + redirectUrl);
-            }
-        }
+
     }
 
     /**
      * Initialize common settings
-     * 
+     *
      * @param settings
      *        The settings
      */
@@ -904,17 +895,17 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     /**
     /**
      * Build a replacement generator
-     * 
+     *
      * @return The replacement generator
      */
     protected WebFilterBaseReplacementGenerator buildReplacementGenerator()
     {
-        return new WebFilterBaseReplacementGenerator(getAppSettings(), this);
+        return new WebFilterBaseReplacementGenerator(getAppSettings());
     }
 
     /**
      * Get the pipline connectors
-     * 
+     *
      * @return The pipeline connectors
      */
     @Override
@@ -966,7 +957,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Called before the application is started.
-     * 
+     *
      * @param isPermanentTransition
      *        Permanent transition flag
      */
@@ -979,7 +970,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Called after the application is started.
-     * 
+     *
      * @param isPermanentTransition
      *        Permanent transition flag
      */
@@ -993,7 +984,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Called before the application is stopped.
-     * 
+     *
      * @param isPermanentTransition
      *        Permanent transition flag
      */
@@ -1007,7 +998,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Called after the application is stopped.
-     * 
+     *
      * @param isPermanentTransition
      *        Permanent transition flag.
      */
@@ -1020,7 +1011,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Set the current settings to new Settings And save the settings to disk
-     * 
+     *
      * @param newSettings
      *        The settings
      */
@@ -1099,7 +1090,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      * This is a utility function to reassure that all the current categories
      * are in the settings Returns true if the category was added, false
      * otherwise
-     * 
+     *
      * @param categories
      *        The categories
      * @param id
@@ -1143,7 +1134,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Adds the new v3 categories to the list returns true if any were added
-     * 
+     *
      * @param categories
      *        The categories to add
      * @return True if any were added, otherwise false
@@ -1255,7 +1246,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     /**
      * Undeploy the web app
-     * 
+     *
      * @param logger
      *        The logger
      */
