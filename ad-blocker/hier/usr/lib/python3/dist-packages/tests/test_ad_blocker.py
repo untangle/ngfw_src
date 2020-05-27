@@ -3,6 +3,8 @@ import sys
 import datetime
 import unittest
 import pytest
+import subprocess
+import os
 
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
@@ -65,10 +67,21 @@ class AdBlockerTests(NGFWTestCase):
     @staticmethod
     def module_name():
         # cheap trick to force class variable _app into global namespace as app
-        global app
-        app = AdBlockerTests._app
         return "ad-blocker"
 
+    @classmethod
+    def initial_extra_setup(cls):
+        global app
+        app = AdBlockerTests._app
+        # download a known list so the test URLs are matching
+        if os.path.isdir('/usr/share/untangle/lib/ad-blocker/'):
+            result = subprocess.call("rm /usr/share/untangle/lib/ad-blocker/adblock_easylist_2_0.txt", shell=True)
+            result_download = subprocess.call("wget -q --timeout=3 http://" + global_functions.ACCOUNT_FILE_SERVER + "/adblock_easylist_2_0.txt -O /usr/share/untangle/lib/ad-blocker/adblock_easylist_2_0.txt", shell=True)
+            if result_download == 1:
+                print("Failed to download stock adblock_list")
+        # reload the rules
+        app.initializeSettings()
+    
     # verify client is online
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
