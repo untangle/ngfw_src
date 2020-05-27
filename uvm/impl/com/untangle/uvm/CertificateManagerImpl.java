@@ -85,6 +85,9 @@ public class CertificateManagerImpl implements CertificateManager
         validAlternateList.put(0x08, "RID");
     }
 
+    // DataType enum is used for key/cert validation functions
+    private enum DataType {SERVER_CERT, SERVER_KEY, SERVER_EXTRA}
+
     /**
      * The main certificate manager implementation where we register our upload
      * and download handlers, and do other initialization.
@@ -591,127 +594,44 @@ public class CertificateManagerImpl implements CertificateManager
      *        The key data
      * @param extraData
      *        Optional intermediate certificates
+     * @param certMode
+     *        The certMode upload type
      * @return The result of the operation
      */
-    public ExecManagerResult uploadServerCertificate(String certData, String keyData, String extraData)
+    public ExecManagerResult uploadCertificate(String certData, String keyData, String extraData, String certMode)
     {
         String baseName = Long.toString(System.currentTimeMillis() / 1000l);
-        FileOutputStream fileStream = null;
         int certLen = 0;
         int keyLen = 0;
+        int extraLen = 0;
 
         // make sure all of the strings passed have a trailing newline character
-        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData = certData.concat("\n");
-        if ((keyData.length() > 0) && (!keyData.endsWith("\n"))) keyData = keyData.concat("\n");
-        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData = extraData.concat("\n");
-
-        int certTop = certData.indexOf(MARKER_CERT_HEAD);
-        int certEnd = certData.indexOf(MARKER_CERT_TAIL);
-
-        // if both cert markers found then calculate the length
-        if ((certTop >= 0) && (certEnd >= 0)) certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
+        certLen = validateData(certData, DataType.SERVER_CERT);
         if (certLen == 0) return new ExecManagerResult(1, "The certificate is not valid");
 
-        int keyTop = keyData.indexOf(MARKER_RKEY_HEAD);
-        int keyEnd = keyData.indexOf(MARKER_RKEY_TAIL);
-
-        // if both key markers found then calculate the length
-        // if we didn't find the RSA style we check for generic format
-        if ((keyTop >= 0) && (keyEnd >= 0)) {
-            keyLen = (keyEnd - keyTop + MARKER_RKEY_TAIL.length());
-        } else {
-            keyTop = keyData.indexOf(MARKER_GKEY_HEAD);
-            keyEnd = keyData.indexOf(MARKER_GKEY_TAIL);
-            if ((keyTop >= 0) && (keyEnd >= 0)) {
-                keyLen = (keyEnd - keyTop + MARKER_GKEY_TAIL.length());
-            }
-        }
-
+        keyLen = validateData(keyData, DataType.SERVER_KEY);
         if (keyLen == 0) return new ExecManagerResult(1, "The key is not valid");
 
+        extraLen = validateData(extraData, DataType.SERVER_EXTRA);
+
         // we have a valid cert and key so save the uploaded certificate
-        try {
-            fileStream = new FileOutputStream(CERTIFICATE_UPLOAD_FILE);
-            fileStream.write(certData.getBytes());
-            fileStream.close();
-        } catch (Exception exn) {
-            logger.warn("Exception saving certificate file", exn);
-        } finally {
-            try {
-                if (fileStream != null) {
-                    fileStream.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Unable to close file", ex);
-            }
-            fileStream = null;
-        }
+        storeData(certData, CERTIFICATE_UPLOAD_FILE);
 
         // next we save the uploaded key
-        try {
-            fileStream = new FileOutputStream(KEY_UPLOAD_FILE);
-            fileStream.write(keyData.getBytes());
-            fileStream.close();
-        } catch (Exception exn) {
-            logger.warn("Exception saving key file", exn);
-        } finally {
-            try {
-                if (fileStream != null) {
-                    fileStream.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Unable to close file", ex);
-            }
-            fileStream = null;
-        }
+        storeData(keyData, KEY_UPLOAD_FILE);
 
         // make sure the uploaded cert matches the uploaded key
-        String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + CERTIFICATE_UPLOAD_FILE);
-        logger.info("CRT MODULUS " + CERTIFICATE_UPLOAD_FILE + " = " + certMod);
-        String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + KEY_UPLOAD_FILE);
-        logger.info("KEY MODULUS " + KEY_UPLOAD_FILE + " = " + keyMod);
-
-        // if they cert and key modulus do not match then it's garbage 
-        if (certMod.compareTo(keyMod) != 0) {
+        if (validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, KEY_UPLOAD_FILE)) {
             return new ExecManagerResult(1, "The Server Certificate does not match the Certificate Key.");
         }
 
         // create the crt file with the certData and extraData
-        try {
-            fileStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
-            fileStream.write(certData.getBytes());
-            if (extraData.length() > 0) fileStream.write(extraData.getBytes());
-            fileStream.close();
-        } catch (Exception exn) {
-            logger.warn("Exception saving certificate file", exn);
-        } finally {
-            try {
-                if (fileStream != null) {
-                    fileStream.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Unable to close file", ex);
-            }
-            fileStream = null;
+        if(extraLen > 0) {
+            storeData(extraData, CERT_STORE_PATH + baseName + ".crt");
         }
 
-        // create the key file
-        try {
-            fileStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".key");
-            fileStream.write(keyData.getBytes());
-            fileStream.close();
-        } catch (Exception exn) {
-            logger.warn("Exception saving key file", exn);
-        } finally {
-            try {
-                if (fileStream != null) {
-                    fileStream.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Unable to close file", ex);
-            }
-            fileStream = null;
-        }
+        // create the key file ??? isn't this just the key_upload_file?
+        storeData(keyData, CERT_STORE_PATH + baseName + ".key");
 
         // next create the certificate PEM file from the certificate KEY and CRT files
         UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
@@ -721,6 +641,106 @@ public class CertificateManagerImpl implements CertificateManager
         UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
 
         return new ExecManagerResult(0, "Certificate successfully uploaded");
+    }
+
+    /**
+     * validateCertKeyPair will get the modulus of a certFile and keyFile, compare them, and return whether or not the pair match
+     * 
+     * @param certFileLocation - Location of the cert file
+     * @param keyFileLocation - Location of the key file
+     * @return boolean - True if key/cert pair is valid, false otherwise
+     */
+    private boolean validateCertKeyPair(String certFileLocation, String keyFileLocation) {
+        String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + certFileLocation);
+        logger.info("CRT MODULUS " + certFileLocation + " = " + certMod);
+        String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + keyFileLocation);
+        logger.info("KEY MODULUS " + keyFileLocation + " = " + keyMod);
+
+        // if the cert and key modulus do not match then it's garbage 
+        if (certMod.compareTo(keyMod) != 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * validateData is used to validate a key or certificate using the DataType enumerator,
+     * and returns the length of the data after validation.
+     * 
+     * @param data - the key or cert data
+     * @param type - the type of validation we should handle
+     * @return int - Length of the data
+     */
+    private int validateData(String data, DataType type) {
+        int dataLen = 0;
+
+        // ensure trailing newline
+        if ((data.length() > 0) && (!data.endsWith("\n"))) data = data.concat("\n");
+
+        String headMarker = "";
+        String tailMarker = "";
+
+        // determine markers by type
+        // SERVER_KEY == MARKER_RKEY_HEAD/MARKER_RKEY_TAIL or MARKER_GKEY_HEAD/MARKER_GKEY_TAIL
+        // SERVER_CERT == MARKER_CERT_HEAD/MARKER_CERT_TAIL
+        // SERVER_EXTRA == return full data length (including header/tail)
+        if (type == DataType.SERVER_KEY) {
+            headMarker = MARKER_RKEY_HEAD;
+            tailMarker = MARKER_RKEY_TAIL;
+        } else if (type == DataType.SERVER_CERT) {
+            headMarker = MARKER_CERT_HEAD;
+            tailMarker = MARKER_CERT_TAIL;
+        } else if (type == DataType.SERVER_EXTRA) {
+            // If there's any extra data, just return the full length
+            return data.length();
+        } 
+        // return 0 for any other types passed in
+        else return 0;
+        
+        int dataTop = data.indexOf(headMarker);
+        int dataEnd = data.indexOf(tailMarker);
+
+        // if both key markers found then calculate the length
+        if ((dataTop >= 0) && (dataEnd >= 0)) {
+            dataLen = (dataEnd - dataTop + tailMarker.length());
+        } else if (type == DataType.SERVER_CERT) {
+            // if we didn't find the RSA style during server_cert check, we check for generic format
+            dataTop = data.indexOf(MARKER_GKEY_HEAD);
+            dataEnd = data.indexOf(MARKER_GKEY_TAIL);
+            if ((dataTop >= 0) && (dataEnd >= 0)) {
+                dataLen = (dataEnd - dataTop + MARKER_GKEY_TAIL.length());
+            }
+        }
+
+        return dataLen;
+    }
+
+    /**
+     * storeData uses the FileOutputStream to save data into a fileLocation
+     * 
+     * @param data - the data to save
+     * @param fileLocation - the location to save the data
+     */
+    private void storeData(String data, String fileLocation) {
+        FileOutputStream fileStream = null;
+
+        try {
+            fileStream = new FileOutputStream(fileLocation);
+            fileStream.write(data.getBytes());
+            fileStream.close();
+        } catch (Exception exn) {
+            logger.warn("Exception saving file", exn);
+        } finally {
+            try {
+                if (fileStream != null) {
+                    fileStream.close();
+                }
+            } catch (IOException ex) {
+                logger.error("Unable to close file", ex);
+            }
+            fileStream = null;
+        }
     }
 
     /**
@@ -740,64 +760,24 @@ public class CertificateManagerImpl implements CertificateManager
         int certLen = 0;
         int keyLen = 0;
 
-        // make sure all of the strings passed have a trailing newline character
-        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData = certData.concat("\n");
-        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData = extraData.concat("\n");
-
-        int certTop = certData.indexOf(MARKER_CERT_HEAD);
-        int certEnd = certData.indexOf(MARKER_CERT_TAIL);
-
-        // if both cert markers found then calculate the length
-        if ((certTop >= 0) && (certEnd >= 0)) certLen = (certEnd - certTop + MARKER_CERT_TAIL.length());
-
+        // Validate as a SERVER_CERT
+        certLen = validateData(certData, DataType.SERVER_CERT);
         if (certLen == 0) return new ExecManagerResult(1, "The certificate provided is not valid");
 
+        validateData(extraData, DataType.SERVER_EXTRA);
+
         // start by writing the uploaded cert to a temporary file
-        try {
-            fileStream = new FileOutputStream(CERTIFICATE_UPLOAD_FILE);
-            fileStream.write(certData.getBytes());
-            fileStream.close();
-        } catch (Exception exn) {
-            logger.warn("Exception saving certificate file", exn);
-        } finally {
-            try {
-                if (fileStream != null) {
-                    fileStream.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Unable to close file", ex);
-            }
-            fileStream = null;
-        }
+        storeData(certData, CERTIFICATE_UPLOAD_FILE);
 
-        // Make sure the cert they uploaded matches our private key 
-        String certMod = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -modulus -in " + CERTIFICATE_UPLOAD_FILE);
-        logger.info("CRT MODULUS " + CERTIFICATE_UPLOAD_FILE + " = " + certMod);
-        String keyMod = UvmContextFactory.context().execManager().execOutput("openssl rsa -noout -modulus -in " + LOCAL_KEY_FILE);
-        logger.info("KEY MODULUS " + LOCAL_KEY_FILE + " = " + keyMod);
-
-        // if the cert and key modulus do not match then it's garbage 
-        if (certMod.compareTo(keyMod) != 0) {
-            return new ExecManagerResult(1, "The uploaded certificate does not match the server private key used to create CSR's (certificate signing requests) on this server.");
+        if(!validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, LOCAL_KEY_FILE)) {
+            return new ExecManagerResult(1, "The uploaded certificate does not match the server private key used to create CSR's (certificate signing requests) on this server.");  
         }
 
         // the cert and key match so save the certificate to a file
-        try {
-            fileStream = new FileOutputStream(CERT_STORE_PATH + baseName + ".crt");
-            fileStream.write(certData.getBytes());
-            if (extraData.length() > 0) fileStream.write(extraData.getBytes());
-            fileStream.close();
-        } catch (Exception exn) {
-            logger.warn("Exception saving certificate file", exn);
-        } finally {
-            try {
-                if (fileStream != null) {
-                    fileStream.close();
-                }
-            } catch (IOException ex) {
-                logger.error("Unable to close file", ex);
-            }
-            fileStream = null;
+        if(extraData.length() > 0) {
+            storeData(certData + extraData, CERT_STORE_PATH + baseName + ".crt");
+        } else {
+            storeData(certData, CERT_STORE_PATH + baseName + ".crt");
         }
 
         // make a copy of the server key file in the certificate key file
