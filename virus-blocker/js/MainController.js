@@ -15,6 +15,11 @@ Ext.define('Ung.apps.virusblocker.MainController', {
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
 
+        // set the enabled custom block page based on URL existance
+        vm.bind('{settings.customBlockPageUrl}', function (url) {
+            vm.set('settings.customBlockPageEnabled', url.length > 0);
+        });
+
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getSettings'),
