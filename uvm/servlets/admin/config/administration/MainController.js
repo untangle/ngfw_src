@@ -375,7 +375,8 @@ Ext.define('Ung.config.administration.MainController', {
 
     downloadRootCertificate: function () {
         var downloadForm = document.getElementById('downloadForm');
-        downloadForm.type.value = 'root_certificate_download';
+        downloadForm["type"].value = "certificate_download";
+        downloadForm["arg1"].value = "root";
         downloadForm.submit();
     },
     certGenerator: function () {
@@ -457,9 +458,10 @@ Ext.define('Ung.config.administration.MainController', {
 
         if (certMode === 'CSR') {
             var downloadForm = document.getElementById('downloadForm');
-            downloadForm.type.value = 'certificate_request_download';
-            downloadForm.arg1.value = certSubject;
-            downloadForm.arg2.value = altNames;
+            downloadForm.type.value = 'certificate_download';
+            downloadForm.arg1.value = 'csr';
+            downloadForm.arg2.value = certSubject;
+            downloadForm.arg3.value = altNames;
             downloadForm.submit();
             this.certDialog.close();
             return;
@@ -482,7 +484,7 @@ Ext.define('Ung.config.administration.MainController', {
             dialogCertTitle = 'Root Certificate'.t();
             dialogCertKey = 'Root Key'.t();
         } else {
-            console.log("uploadCertificate called with certMode:" + certMode);
+            console.log("uploadCertificate called with invalid certMode: " + certMode);
             return;
         }
 

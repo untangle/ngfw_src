@@ -30,7 +30,8 @@ Ext.define('Ung.apps.sslinspector.view.Configuration', {
             iconCls: 'fa fa-download',
             handler: Ext.bind(function() {
                 var downloadForm = document.getElementById('downloadForm');
-                downloadForm["type"].value = "root_certificate_download";
+                downloadForm["type"].value = "certificate_download";
+                downloadForm["arg1"].value = "root";
                 downloadForm.submit();
             }, this)
         },{
