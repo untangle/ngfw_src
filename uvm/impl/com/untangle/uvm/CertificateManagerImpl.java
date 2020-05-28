@@ -510,11 +510,9 @@ public class CertificateManagerImpl implements CertificateManager
      * 
      * @param certSubject
      *        The subject for the new CA root certificate
-     * @param dummy
-     *        Not used
      * @return True
      */
-    public boolean generateCertificateAuthority(String certSubject, String dummy)
+    public boolean generateCertificateAuthority(String certSubject)
     {
         logger.info("Creating new root certificate authority: " + certSubject);
         String argList[] = new String[1];
