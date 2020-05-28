@@ -326,6 +326,8 @@ class BandwidthControlTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings( orig_network_settings_with_qos )
 
         print_results( pre_UDP_speed, post_UDP_speed, (wan_limit_kbit/8)*0.1, pre_UDP_speed*.9 )
+        assert (pre_UDP_speed != 0)
+        assert (post_UDP_speed != 0)
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
     def test_015_qos_nobpass_custom_rules_tcp(self):
@@ -405,6 +407,8 @@ class BandwidthControlTests(NGFWTestCase):
         post_UDP_speed = global_functions.get_udp_download_speed( receiverip=global_functions.iperf_server, senderip=remote_control.client_ip, targetRate=targetSpeedMbit )
 
         print_results( pre_UDP_speed, post_UDP_speed, (wan_limit_kbit/8)*0.1, pre_UDP_speed*.9 )
+        assert (pre_UDP_speed != 0)
+        assert (post_UDP_speed != 0)
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
     def test_050_severely_limited_web_filter_flagged(self):
