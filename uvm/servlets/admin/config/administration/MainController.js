@@ -418,7 +418,7 @@ Ext.define('Ung.config.administration.MainController', {
 
         if (certMode === 'ROOT') {
             me.certDialog.setLoading(true);
-            Rpc.asyncData('rpc.UvmContext.certificateManager.generateCertificateAuthority', certSubject, altNames)
+            Rpc.asyncData('rpc.UvmContext.certificateManager.generateCertificateAuthority', certSubject)
             .then(function (result) {
                 if(Util.isDestroyed(me)){
                     return;
