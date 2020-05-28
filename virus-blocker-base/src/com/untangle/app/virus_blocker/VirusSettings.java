@@ -26,10 +26,13 @@ public class VirusSettings implements Serializable, JSONString
 
     private boolean enableCloudScan = true;
     private boolean enableLocalScan = true;
-    
+
     private String  smtpAction= "remove" ; /* "pass" "remove" or "block" */
     private boolean smtpAllowTls = true;
-    
+
+    private Boolean customBlockPageEnabled = false;
+    private String customBlockPageUrl = "";
+
     private List<GenericRule> httpMimeTypes = new LinkedList<GenericRule>();
     private List<GenericRule> httpFileExtensions = new LinkedList<GenericRule>();
     private List<GenericRule> passSites = new LinkedList<GenericRule>();
@@ -57,7 +60,7 @@ public class VirusSettings implements Serializable, JSONString
 
     public boolean getEnableLocalScan() { return enableLocalScan; }
     public void setEnableLocalScan(boolean scanSmtp) { this.enableLocalScan = scanSmtp; }
-    
+
     public String getSmtpAction() { return smtpAction; }
     public void setSmtpAction(String smtpAction) { this.smtpAction = smtpAction; }
 
@@ -75,6 +78,12 @@ public class VirusSettings implements Serializable, JSONString
 
     public boolean getForceMemoryMode() { return forceMemoryMode; }
     public void setForceMemoryMode(boolean newValue ) { this.forceMemoryMode = newValue; }
+
+    public Boolean getCustomBlockPageEnabled() { return customBlockPageEnabled; }
+    public void setCustomBlockPageEnabled(Boolean customBlockPageEnabled) { this.customBlockPageEnabled = customBlockPageEnabled; }
+
+    public String getCustomBlockPageUrl() { return this.customBlockPageUrl; }
+    public void setCustomBlockPageUrl(String customBlockPageUrl) { this.customBlockPageUrl = customBlockPageUrl; }
 
     public String toJSONString()
     {
