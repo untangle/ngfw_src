@@ -98,8 +98,8 @@ public class CertificateManagerImpl implements CertificateManager
         File rootKeyFile = new File(ROOT_KEY_FILE);
 
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new ServerCertificateUploadHandler());
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateDownloadHandler());
-        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateRequestDownloadHandler());
+
+        UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateDownloadHandler());
 
         // in the development environment if the root CA files are missing copy
         // them from the backup area to avoid recreating after every rake clean
@@ -210,7 +210,7 @@ public class CertificateManagerImpl implements CertificateManager
     /**
      * Called by requests to download the root CA certificate file
      */
-    private class RootCertificateDownloadHandler implements DownloadHandler
+    private class CertificateDownloadHandler implements DownloadHandler
     {
         /**
          * Get the name of our download handler
@@ -220,7 +220,7 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public String getName()
         {
-            return "root_certificate_download";
+            return "certificate_download";
         }
 
         /**
@@ -235,91 +235,63 @@ public class CertificateManagerImpl implements CertificateManager
         public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
         {
             FileInputStream certStream = null;
-            try {
-                File certFile = new File(ROOT_CERT_FILE);
-                certStream = new FileInputStream(certFile);
-                byte[] certData = new byte[(int) certFile.length()];
-                certStream.read(certData);
+            String downloadType = req.getParameter("arg1");
 
-                // set the headers.
-                resp.setContentType("application/x-download");
-                resp.setHeader("Content-Disposition", "attachment; filename=root_authority.crt");
-
-                OutputStream webStream = resp.getOutputStream();
-                webStream.write(certData);
-            } catch (Exception exn) {
-                logger.warn("Exception during certificate download", exn);
-            } finally {
+            if (downloadType.equalsIgnoreCase("root")) {
                 try {
-                    if (certStream != null) {
-                        certStream.close();
+                    File certFile = new File(ROOT_CERT_FILE);
+                    certStream = new FileInputStream(certFile);
+                    byte[] certData = new byte[(int) certFile.length()];
+                    certStream.read(certData);
+
+                    // set the headers.
+                    resp.setContentType("application/x-download");
+                    resp.setHeader("Content-Disposition", "attachment; filename=root_authority.crt");
+
+                    OutputStream webStream = resp.getOutputStream();
+                    webStream.write(certData);
+                } catch (Exception exn) {
+                    logger.warn("Exception during certificate download", exn);
+                } finally {
+                    try {
+                        if (certStream != null) {
+                            certStream.close();
+                        }
+                    } catch (IOException ex) {
+                        logger.error("Unable to close file", ex);
                     }
-                } catch (IOException ex) {
-                    logger.error("Unable to close file", ex);
                 }
             }
-        }
-    }
+            else if (downloadType.equalsIgnoreCase("csr")) {
+                String argList[] = new String[3];
+                argList[0] = "REQUEST"; // create CSR for server
+                argList[1] = req.getParameter("arg2"); // cert subject
+                argList[2] = req.getParameter("arg3"); // alt names
+                String argString = UvmContextFactory.context().execManager().argBuilder(argList);
+                UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
 
-    /**
-     * Called in reponse to the creation and download of a certificate signing
-     * request
-     */
-    private class CertificateRequestDownloadHandler implements DownloadHandler
-    {
-        /**
-         * Get the name of our download handler
-         * 
-         * @return The name of our download handler
-         */
-        @Override
-        public String getName()
-        {
-            return "certificate_request_download";
-        }
-
-        /**
-         * Called to handle downloads of certificate signing requests. The cert
-         * subject and alt names enterered on the generation page are passed in
-         * the request and passed to the generator script.
-         * 
-         * @param req
-         *        The web request
-         * @param resp
-         *        The web response
-         */
-        @Override
-        public void serveDownload(HttpServletRequest req, HttpServletResponse resp)
-        {
-            String argList[] = new String[3];
-            argList[0] = "REQUEST"; // create CSR for server
-            argList[1] = req.getParameter("arg1"); // cert subject
-            argList[2] = req.getParameter("arg2"); // alt names
-            String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
-
-            FileInputStream certStream = null;
-            try {
-                File certFile = new File(EXTERNAL_REQUEST_FILE);
-                certStream = new FileInputStream(certFile);
-                byte[] certData = new byte[(int) certFile.length()];
-                certStream.read(certData);
-
-                // set the headers.
-                resp.setContentType("application/x-download");
-                resp.setHeader("Content-Disposition", "attachment; filename=server_certificate.csr");
-
-                OutputStream webStream = resp.getOutputStream();
-                webStream.write(certData);
-            } catch (Exception exn) {
-                logger.warn("Exception during certificate download", exn);
-            } finally {
                 try {
-                    if (certStream != null) {
-                        certStream.close();
+                    File certFile = new File(EXTERNAL_REQUEST_FILE);
+                    certStream = new FileInputStream(certFile);
+                    byte[] certData = new byte[(int) certFile.length()];
+                    certStream.read(certData);
+
+                    // set the headers.
+                    resp.setContentType("application/x-download");
+                    resp.setHeader("Content-Disposition", "attachment; filename=server_certificate.csr");
+
+                    OutputStream webStream = resp.getOutputStream();
+                    webStream.write(certData);
+                } catch (Exception exn) {
+                    logger.warn("Exception during certificate download", exn);
+                } finally {
+                    try {
+                        if (certStream != null) {
+                            certStream.close();
+                        }
+                    } catch (IOException ex) {
+                        logger.error("Unable to close file", ex);
                     }
-                } catch (IOException ex) {
-                    logger.error("Unable to close file", ex);
                 }
             }
         }
