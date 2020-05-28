@@ -21,7 +21,7 @@ public interface CertificateManager
 
     LinkedList<CertificateInformation> getServerCertificateList();
 
-    boolean generateCertificateAuthority(String certSubject, String dummy);
+    boolean generateCertificateAuthority(String certSubject);
 
     boolean generateServerCertificate(String certSubject, String altNames);
 
