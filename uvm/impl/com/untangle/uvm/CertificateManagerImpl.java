@@ -85,8 +85,8 @@ public class CertificateManagerImpl implements CertificateManager
         validAlternateList.put(0x08, "RID");
     }
 
-    // DataType enum is used for key/cert validation functions
-    private enum DataType {SERVER_CERT, SERVER_KEY, SERVER_EXTRA}
+    // CertContent enum is used for key/cert validation functions
+    private enum CertContent {CERT, KEY, EXTRA}
 
     /**
      * The main certificate manager implementation where we register our upload
@@ -558,17 +558,17 @@ public class CertificateManagerImpl implements CertificateManager
     /**
      * Called to create a new server certificate using the data provided.
      * 
+     * @param certMode
+     *   The certMode upload type
      * @param certData
      *        The certificate data
      * @param keyData
      *        The key data
      * @param extraData
      *        Optional intermediate certificates
-     * @param certMode
-     *        The certMode upload type
      * @return The result of the operation
      */
-    public ExecManagerResult uploadCertificate(String certData, String keyData, String extraData, String certMode)
+    public ExecManagerResult uploadCertificate(String certMode, String certData, String keyData, String extraData)
     {
         String baseName = Long.toString(System.currentTimeMillis() / 1000l);
         int certLen = 0;
@@ -576,41 +576,74 @@ public class CertificateManagerImpl implements CertificateManager
         int extraLen = 0;
 
         // make sure all of the strings passed have a trailing newline character
-        certLen = validateData(certData, DataType.SERVER_CERT);
+        certLen = validateData(certData, CertContent.CERT);
         if (certLen == 0) return new ExecManagerResult(1, "The certificate is not valid");
 
-        keyLen = validateData(keyData, DataType.SERVER_KEY);
+        keyLen = validateData(keyData, CertContent.KEY);
         if (keyLen == 0) return new ExecManagerResult(1, "The key is not valid");
 
-        extraLen = validateData(extraData, DataType.SERVER_EXTRA);
+        extraLen = validateData(extraData, CertContent.EXTRA);
 
-        // we have a valid cert and key so save the uploaded certificate
+        // we have a valid cert and key so save the uploaded certificate to a temp upload file
         storeData(certData, CERTIFICATE_UPLOAD_FILE);
 
-        // next we save the uploaded key
+        // next we save the uploaded key to a temp upload file
         storeData(keyData, KEY_UPLOAD_FILE);
 
         // make sure the uploaded cert matches the uploaded key
-        if (validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, KEY_UPLOAD_FILE)) {
+        if (!validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, KEY_UPLOAD_FILE)) {
             return new ExecManagerResult(1, "The Server Certificate does not match the Certificate Key.");
         }
 
-        // create the crt file with the certData and extraData
-        if(extraLen > 0) {
-            storeData(extraData, CERT_STORE_PATH + baseName + ".crt");
+        // store them in permanent locations
+        if(certMode.equalsIgnoreCase("SERVER")) {
+            // create the key file
+            storeData(keyData, CERT_STORE_PATH + baseName + ".key");
+
+            // create the crt file with the certData and extraData
+            if(extraLen > 0) {
+                // append the cert data with extra
+                certData += extraData;
+            }
+
+            storeData(certData, CERT_STORE_PATH + baseName + ".crt");
+
+            // next create the certificate PEM file from the certificate KEY and CRT files
+            UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
+
+            // last thing we do is convert the certificate PEM file to PFX format
+            // for apps that use SSLEngine like web filter and captive portal
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
+
+            return new ExecManagerResult(0, "Certificate successfully uploaded");
+        } else if (certMode.equalsIgnoreCase("ROOT")) {
+
+            var newRootPath = CERT_STORE_PATH + "/" + baseName + "/";
+            var newRootKey = newRootPath + "untangle.key";
+            var newRootCrt = newRootPath + "untangle.crt";
+
+            // create the root cert dir using the basename
+            UvmContextFactory.context().execManager().exec("mkdir -p " + newRootPath);
+
+            // store the key and cert there
+            storeData(keyData, newRootKey);
+            storeData(certData, newRootCrt);
+
+            // we use this certInfo to get the serial and add it to serial.txt
+            var certInfo = get509CertFromString(certData);
+
+            // Root certs also need an index and serial
+            UvmContextFactory.context().execManager().exec("echo " + certInfo.getSerialNumber().toString(16) + ">"+newRootPath+"serial.txt");
+            UvmContextFactory.context().execManager().exec("touch " + newRootPath + "index.txt");
+
+            // symlinks key, cert, index, serial to the untangle-certificates directory
+            symlinkRootCerts(CERT_STORE_PATH, newRootPath, false);
+
+            return new ExecManagerResult(0, "Root Certificate successfully uploaded");
+        } else {
+            return new ExecManagerResult(1, "Invalid certMode in uploadCeritificate call.");
         }
 
-        // create the key file ??? isn't this just the key_upload_file?
-        storeData(keyData, CERT_STORE_PATH + baseName + ".key");
-
-        // next create the certificate PEM file from the certificate KEY and CRT files
-        UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
-
-        // last thing we do is convert the certificate PEM file to PFX format
-        // for apps that use SSLEngine like web filter and captive portal
-        UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
-
-        return new ExecManagerResult(0, "Certificate successfully uploaded");
     }
 
     /**
@@ -635,14 +668,14 @@ public class CertificateManagerImpl implements CertificateManager
     }
 
     /**
-     * validateData is used to validate a key or certificate using the DataType enumerator,
+     * validateData is used to validate a key or certificate using the CertContent enumerator,
      * and returns the length of the data after validation.
      * 
      * @param data - the key or cert data
      * @param type - the type of validation we should handle
      * @return int - Length of the data
      */
-    private int validateData(String data, DataType type) {
+    private int validateData(String data, CertContent type) {
         int dataLen = 0;
 
         // ensure trailing newline
@@ -652,16 +685,16 @@ public class CertificateManagerImpl implements CertificateManager
         String tailMarker = "";
 
         // determine markers by type
-        // SERVER_KEY == MARKER_RKEY_HEAD/MARKER_RKEY_TAIL or MARKER_GKEY_HEAD/MARKER_GKEY_TAIL
-        // SERVER_CERT == MARKER_CERT_HEAD/MARKER_CERT_TAIL
-        // SERVER_EXTRA == return full data length (including header/tail)
-        if (type == DataType.SERVER_KEY) {
+        // KEY == MARKER_RKEY_HEAD/MARKER_RKEY_TAIL or MARKER_GKEY_HEAD/MARKER_GKEY_TAIL
+        // CERT == MARKER_CERT_HEAD/MARKER_CERT_TAIL
+        // EXTRA == return full data length (including header/tail)
+        if (type == CertContent.KEY) {
             headMarker = MARKER_RKEY_HEAD;
             tailMarker = MARKER_RKEY_TAIL;
-        } else if (type == DataType.SERVER_CERT) {
+        } else if (type == CertContent.CERT) {
             headMarker = MARKER_CERT_HEAD;
             tailMarker = MARKER_CERT_TAIL;
-        } else if (type == DataType.SERVER_EXTRA) {
+        } else if (type == CertContent.EXTRA) {
             // If there's any extra data, just return the full length
             return data.length();
         } 
@@ -674,7 +707,7 @@ public class CertificateManagerImpl implements CertificateManager
         // if both key markers found then calculate the length
         if ((dataTop >= 0) && (dataEnd >= 0)) {
             dataLen = (dataEnd - dataTop + tailMarker.length());
-        } else if (type == DataType.SERVER_CERT) {
+        } else if (type == CertContent.KEY) {
             // if we didn't find the RSA style during server_cert check, we check for generic format
             dataTop = data.indexOf(MARKER_GKEY_HEAD);
             dataEnd = data.indexOf(MARKER_GKEY_TAIL);
@@ -714,6 +747,77 @@ public class CertificateManagerImpl implements CertificateManager
     }
 
     /**
+     * get509CertFromFile will read the fileinputstream and return the get509CertFromString
+     * 
+     * @param filePath
+     * @return
+     */
+    private X509Certificate get509CertFromFile(String filePath) {
+        X509Certificate retCert;
+        try
+        {
+            var certStream = new FileInputStream(filePath);
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            retCert = (X509Certificate) factory.generateCertificate(certStream);
+            certStream.close();
+
+        } catch (Exception exn) {
+            logger.error("Exception in get509CertFromFile(): ", exn);
+            return null;
+        }
+
+        return retCert;
+    }
+
+    /**
+     * get509CertInfo will access the cert factory and return cert info for a String of certData
+     * 
+     * @param certData
+     * @return
+     */
+    private X509Certificate get509CertFromString(String certData) {
+        X509Certificate retCert;
+        try
+        {
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            ByteArrayInputStream byteStream = new ByteArrayInputStream(certData.getBytes());
+            retCert = (X509Certificate) factory.generateCertificate(byteStream);
+        } catch (Exception exn) {
+            logger.error("Exception in get509CertFromString(): ", exn);
+            return null;
+        }
+        
+        return retCert;
+    }
+
+    /**
+     * symlinkRootCert is used to link root certificates and associated files to specific directories
+     * 
+     * @param targetDir - The old directory the files were in, the target of the symlinks
+     * @param sourceDir - The new directory the files should be in, the source of the actual files
+     * @param moveCerts - Move the files from the target to the source also
+     */
+    private void symlinkRootCerts(String targetDir, String sourceDir, boolean moveCerts) {
+        // create a sourcedir if we need to
+        UvmContextFactory.context().execManager().exec("mkdir -p " + sourceDir);
+
+        if(moveCerts) {
+            // move cert, key, index, serial from old to new if move is specified
+            UvmContextFactory.context().execManager().exec("mv " + targetDir + "/untangle.crt " + sourceDir);
+            UvmContextFactory.context().execManager().exec("mv " + targetDir + "/untangle.key " + sourceDir);
+            UvmContextFactory.context().execManager().exec("mv " + targetDir + "/index* " + sourceDir);
+            UvmContextFactory.context().execManager().exec("mv " + targetDir + "/serial* " + sourceDir);
+        }
+
+        // symlink cert, key, index, serial from new location to old
+        UvmContextFactory.context().execManager().exec("ln -s " + sourceDir + "/untangle.crt " + targetDir + "/untangle.crt");
+        UvmContextFactory.context().execManager().exec("ln -s " + sourceDir + "/untangle.key " + targetDir + "/untangle.key");
+        UvmContextFactory.context().execManager().exec("ln -s " + sourceDir + "/index.txt " + targetDir + "/index.txt");
+        UvmContextFactory.context().execManager().exec("ln -s " + sourceDir + "/serial.txt " + targetDir + "/serial.txt");
+
+    }
+
+    /**
      * Called to import a signed certificate that originated with a certificate
      * signing request that we generated.
      * 
@@ -731,10 +835,10 @@ public class CertificateManagerImpl implements CertificateManager
         int keyLen = 0;
 
         // Validate as a SERVER_CERT
-        certLen = validateData(certData, DataType.SERVER_CERT);
+        certLen = validateData(certData, CertContent.CERT);
         if (certLen == 0) return new ExecManagerResult(1, "The certificate provided is not valid");
 
-        validateData(extraData, DataType.SERVER_EXTRA);
+        validateData(extraData, CertContent.EXTRA);
 
         // start by writing the uploaded cert to a temporary file
         storeData(certData, CERTIFICATE_UPLOAD_FILE);
