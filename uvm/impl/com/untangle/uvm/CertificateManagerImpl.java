@@ -853,22 +853,28 @@ public class CertificateManagerImpl implements CertificateManager
             return new ExecManagerResult(1, "The uploaded certificate does not match the server private key used to create CSR's (certificate signing requests) on this server.");  
         }
 
+        // Store the CSR base name for subsequent file usage
+        var csrBaseCrt = CERT_STORE_PATH + baseName + ".crt";
+        var csrBaseKey = CERT_STORE_PATH + baseName + ".key";
+        var csrBasePem = CERT_STORE_PATH + baseName + ".pem";
+        var csrBasePfx = CERT_STORE_PATH + baseName + ".pfx";
+
         // the cert and key match so save the certificate to a file
         if(extraData.length() > 0) {
-            storeData(certData + extraData, CERT_STORE_PATH + baseName + ".crt");
+            storeData(certData + extraData, csrBaseCrt);
         } else {
-            storeData(certData, CERT_STORE_PATH + baseName + ".crt");
+            storeData(certData, csrBaseCrt);
         }
 
         // make a copy of the server key file in the certificate key file
-        UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + CERT_STORE_PATH + baseName + ".key");
+        UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + csrBaseKey);
 
         // next create the certificate PEM file from the certificate KEY and CRT files
-        UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
+        UvmContextFactory.context().execManager().exec("cat " + csrBaseCrt + " " + csrBaseKey + " > " + csrBasePem);
 
         // last thing we do is convert the certificate PEM file to PFX format
         // for apps that use SSLEngine like web filter and captive portal
-        UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
+        UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + csrBasePfx + " -in " + csrBasePem);
 
         return new ExecManagerResult(0, "Certificate successfully uploaded");
     }
