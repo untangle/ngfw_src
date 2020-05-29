@@ -17,17 +17,21 @@ public interface CertificateManager
     static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
     static final String CERT_FILE_PASSWORD = "password";
 
-    CertificateInformation getRootCertificateInformation();
-
     LinkedList<CertificateInformation> getServerCertificateList();
 
-    ExecManagerResult uploadCertificate(String certMode, String certData, String keyData, String extraData);
+    public CertificateInformation getServerCertificateInformation(String fileName);
+
+    LinkedList<CertificateInformation> getRootCertificateList();
+
+    CertificateInformation getRootCertificateInformation();
 
     boolean generateCertificateAuthority(String commonName, String certSubject);
 
     boolean generateServerCertificate(String certSubject, String altNames);
 
-    public void removeServerCertificate(String fileName);
+    ExecManagerResult uploadCertificate(String certMode, String certData, String keyData, String extraData);
+
+    public void removeCertificate(String type, String fileName);
 
     public String validateActiveInspectorCertificates();
 }
