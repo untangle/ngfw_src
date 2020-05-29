@@ -477,6 +477,12 @@ public class CertificateManagerImpl implements CertificateManager
         return certInfo;
     }
 
+
+   public LinkedList<CertificateInformation> getRootCertificateList()
+   {
+       return new LinkedList<CertificateInformation>();
+   }
+
     /**
      * Called to get the details from our CA root certificate
      * 
@@ -653,6 +659,228 @@ public class CertificateManagerImpl implements CertificateManager
     }
 
     /**
+     * Called to import a signed certificate that originated with a certificate
+     * signing request that we generated.
+     * 
+     * @param certData
+     *        The certificate data
+     * @param extraData
+     *        Optional intermediate certificates
+     * @return The result of the operation
+     */
+    public ExecManagerResult importSignedRequest(String certData, String extraData)
+    {
+        String baseName = Long.toString(System.currentTimeMillis() / 1000l);
+        FileOutputStream fileStream = null;
+        int certLen = 0;
+        int keyLen = 0;
+
+        // Validate as a SERVER_CERT
+        certLen = validateData(certData, CertContent.CERT);
+        if (certLen == 0) return new ExecManagerResult(1, "The certificate provided is not valid");
+
+        validateData(extraData, CertContent.EXTRA);
+
+        // start by writing the uploaded cert to a temporary file
+        storeData(certData, CERTIFICATE_UPLOAD_FILE);
+
+        if(!validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, LOCAL_KEY_FILE)) {
+            return new ExecManagerResult(1, "The uploaded certificate does not match the server private key used to create CSR's (certificate signing requests) on this server.");  
+        }
+
+        // Store the CSR base name for subsequent file usage
+        var csrBaseCrt = CERT_STORE_PATH + baseName + ".crt";
+        var csrBaseKey = CERT_STORE_PATH + baseName + ".key";
+        var csrBasePem = CERT_STORE_PATH + baseName + ".pem";
+        var csrBasePfx = CERT_STORE_PATH + baseName + ".pfx";
+
+        // the cert and key match so save the certificate to a file
+        if(extraData.length() > 0) {
+            storeData(certData + extraData, csrBaseCrt);
+        } else {
+            storeData(certData, csrBaseCrt);
+        }
+
+        // make a copy of the server key file in the certificate key file
+        UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + csrBaseKey);
+
+        // next create the certificate PEM file from the certificate KEY and CRT files
+        UvmContextFactory.context().execManager().exec("cat " + csrBaseCrt + " " + csrBaseKey + " > " + csrBasePem);
+
+        // last thing we do is convert the certificate PEM file to PFX format
+        // for apps that use SSLEngine like web filter and captive portal
+        UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + csrBasePfx + " -in " + csrBasePem);
+
+        return new ExecManagerResult(0, "Certificate successfully uploaded");
+    }
+
+    /**
+     * Called by the UI to delete a server certificate. To make sure we always
+     * have a certificate we can use for the Web server, we protect the
+     * certificate with the base file name "apache" from ever being removed,
+     * since that's the certificate that is generated during installation.
+     * 
+     * @param type
+     *        The type of certificate to delete
+     * @param fileName
+     *        The certificate file to delete
+     */
+    public void removeCertificate(String type, String fileName)
+    {
+        String fileBase;
+        int dotLocation;
+        File killFile;
+
+        // don't let them delete the original system certificate
+        if (fileName.equals("apache.pem")) return;
+
+        // don't let them delete any certificate that is assigned to a service
+        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getWebCertificate())) return;
+        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getMailCertificate())) return;
+        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate())) return;
+        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate())) return;
+
+        // extract the file name without the extension
+        dotLocation = fileName.indexOf('.');
+        if (dotLocation < 0) return;
+        fileBase = fileName.substring(0, dotLocation);
+
+        // remove all the files we created when the certificate was generated or uploaded
+        killFile = new File(CERT_STORE_PATH + fileBase + ".pem");
+        killFile.delete();
+        killFile = new File(CERT_STORE_PATH + fileBase + ".crt");
+        killFile.delete();
+        killFile = new File(CERT_STORE_PATH + fileBase + ".key");
+        killFile.delete();
+        killFile = new File(CERT_STORE_PATH + fileBase + ".csr");
+        killFile.delete();
+        killFile = new File(CERT_STORE_PATH + fileBase + ".pfx");
+        killFile.delete();
+    }
+
+    /**
+     * For apps and services that depend on certificates to work properly, the
+     * certificates must have all names and addresses that are configured on the
+     * server. Here we grab that list and then check all of the certs to make
+     * sure everything is good. We return our result as a chunk of HTML that is
+     * displayed on the SSL inspector status page in the UI.
+     * 
+     * @return The certificate status
+     */
+    public String validateActiveInspectorCertificates()
+    {
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
+        List<String> machineList = new LinkedList<>();
+        CertificateInformation certInfo = null;
+        String httpsInfo = null;
+        String smtpsInfo = null;
+        String ipsecInfo = null;
+        String radiusInfo = null;
+        String certFile = null;
+
+        String missMessage = i18nUtil.tr("Certificate not found");
+        String goodMessage = i18nUtil.tr("No problems detected");
+        String failMessage = i18nUtil.tr("Missing");
+
+        // grab the hostname and all IP addresses assigned to this server
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        if (hostName != null) machineList.add(hostName);
+
+        for (InterfaceSettings iset : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
+            if (iset.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC) continue;
+            if (iset.getV4StaticAddress() == null) continue;
+            if (iset.igetDisabled()) continue;
+            if (iset.igetBridged()) continue;
+            machineList.add(iset.getV4StaticAddress().getHostAddress());
+        }
+
+        // check the WEB certificate
+        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.crt");
+        certInfo = getServerCertificateInformation(certFile);
+        if (certInfo == null) {
+            httpsInfo = missMessage;
+        } else {
+            for (String item : machineList) {
+                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
+                if (httpsInfo == null) httpsInfo = (new String(failMessage) + " ");
+                else httpsInfo += ", ";
+                httpsInfo += item;
+            }
+            if (httpsInfo == null) httpsInfo = goodMessage;
+        }
+
+        // check the MAIL certificate
+        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.crt");
+        certInfo = getServerCertificateInformation(certFile);
+        if (certInfo == null) {
+            smtpsInfo = missMessage;
+        } else {
+            for (String item : machineList) {
+                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
+                if (smtpsInfo == null) smtpsInfo = (new String(failMessage) + " ");
+                else smtpsInfo += ", ";
+                smtpsInfo += item;
+            }
+            if (smtpsInfo == null) smtpsInfo = goodMessage;
+        }
+
+        // check the IPSEC certificate
+        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.crt");
+        certInfo = getServerCertificateInformation(certFile);
+        if (certInfo == null) {
+            ipsecInfo = missMessage;
+        } else {
+            for (String item : machineList) {
+                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
+                if (ipsecInfo == null) ipsecInfo = (new String(failMessage) + " ");
+                else ipsecInfo += ", ";
+                ipsecInfo += item;
+            }
+
+            // IPsec IKEv2 will not work properly without this OID
+            if ((certInfo.getCertUsage() == null) || (certInfo.getCertUsage().contains("ikeIntermediate") == false)) {
+                if (ipsecInfo == null) ipsecInfo = (new String(failMessage) + " ");
+                else ipsecInfo += ", ";
+                ipsecInfo += "OID 1.3.6.1.5.5.8.2.2 (ikeIntermediate)";
+            }
+            if (ipsecInfo == null) ipsecInfo = goodMessage;
+        }
+
+        // check the RADIUS certificate
+        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate().replaceAll("\\.pem", "\\.crt");
+        certInfo = getServerCertificateInformation(certFile);
+        if (certInfo == null) {
+            radiusInfo = missMessage;
+        } else {
+            for (String item : machineList) {
+                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
+                if (radiusInfo == null) radiusInfo = (new String(failMessage) + " ");
+                else radiusInfo += ", ";
+                radiusInfo += item;
+            }
+            if (radiusInfo == null) radiusInfo = goodMessage;
+        }
+
+        StringBuilder statusInfo = new StringBuilder(1024);
+        statusInfo.append("<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 STYLE=border-collapse:collapse;>");
+        statusInfo.append("<TR><TD COLSPAN=2><CENTER><STRONG>Server Certificate Verification</STRONG></CENTER></TD></TR>");
+        statusInfo.append("<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>");
+        statusInfo.append("<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>");
+        statusInfo.append("<TR><TD WIDTH=120>IPSEC Certificate</TD><TD>" + ipsecInfo + "</TD></TR>");
+        if (UvmContextFactory.context().isExpertMode()) {
+            statusInfo.append("<TR><TD WIDTH=120>RADIUS Certificate</TD><TD>" + radiusInfo + "</TD></TR>");
+        }
+        statusInfo.append("</TABLE>");
+        return (statusInfo.toString());
+    }
+
+    
+    /**
      * validateCertKeyPair will get the modulus of a certFile and keyFile, compare them, and return whether or not the pair match
      * 
      * @param certFileLocation - Location of the cert file
@@ -823,222 +1051,4 @@ public class CertificateManagerImpl implements CertificateManager
 
     }
 
-    /**
-     * Called to import a signed certificate that originated with a certificate
-     * signing request that we generated.
-     * 
-     * @param certData
-     *        The certificate data
-     * @param extraData
-     *        Optional intermediate certificates
-     * @return The result of the operation
-     */
-    public ExecManagerResult importSignedRequest(String certData, String extraData)
-    {
-        String baseName = Long.toString(System.currentTimeMillis() / 1000l);
-        FileOutputStream fileStream = null;
-        int certLen = 0;
-        int keyLen = 0;
-
-        // Validate as a SERVER_CERT
-        certLen = validateData(certData, CertContent.CERT);
-        if (certLen == 0) return new ExecManagerResult(1, "The certificate provided is not valid");
-
-        validateData(extraData, CertContent.EXTRA);
-
-        // start by writing the uploaded cert to a temporary file
-        storeData(certData, CERTIFICATE_UPLOAD_FILE);
-
-        if(!validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, LOCAL_KEY_FILE)) {
-            return new ExecManagerResult(1, "The uploaded certificate does not match the server private key used to create CSR's (certificate signing requests) on this server.");  
-        }
-
-        // Store the CSR base name for subsequent file usage
-        var csrBaseCrt = CERT_STORE_PATH + baseName + ".crt";
-        var csrBaseKey = CERT_STORE_PATH + baseName + ".key";
-        var csrBasePem = CERT_STORE_PATH + baseName + ".pem";
-        var csrBasePfx = CERT_STORE_PATH + baseName + ".pfx";
-
-        // the cert and key match so save the certificate to a file
-        if(extraData.length() > 0) {
-            storeData(certData + extraData, csrBaseCrt);
-        } else {
-            storeData(certData, csrBaseCrt);
-        }
-
-        // make a copy of the server key file in the certificate key file
-        UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + csrBaseKey);
-
-        // next create the certificate PEM file from the certificate KEY and CRT files
-        UvmContextFactory.context().execManager().exec("cat " + csrBaseCrt + " " + csrBaseKey + " > " + csrBasePem);
-
-        // last thing we do is convert the certificate PEM file to PFX format
-        // for apps that use SSLEngine like web filter and captive portal
-        UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + csrBasePfx + " -in " + csrBasePem);
-
-        return new ExecManagerResult(0, "Certificate successfully uploaded");
-    }
-
-    /**
-     * Called by the UI to delete a server certificate. To make sure we always
-     * have a certificate we can use for the Web server, we protect the
-     * certificate with the base file name "apache" from ever being removed,
-     * since that's the certificate that is generated during installation.
-     * 
-     * @param fileName
-     *        The certificate file to delete
-     */
-    public void removeServerCertificate(String fileName)
-    {
-        String fileBase;
-        int dotLocation;
-        File killFile;
-
-        // don't let them delete the original system certificate
-        if (fileName.equals("apache.pem")) return;
-
-        // don't let them delete any certificate that is assigned to a service
-        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getWebCertificate())) return;
-        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getMailCertificate())) return;
-        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate())) return;
-        if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate())) return;
-
-        // extract the file name without the extension
-        dotLocation = fileName.indexOf('.');
-        if (dotLocation < 0) return;
-        fileBase = fileName.substring(0, dotLocation);
-
-        // remove all the files we created when the certificate was generated or uploaded
-        killFile = new File(CERT_STORE_PATH + fileBase + ".pem");
-        killFile.delete();
-        killFile = new File(CERT_STORE_PATH + fileBase + ".crt");
-        killFile.delete();
-        killFile = new File(CERT_STORE_PATH + fileBase + ".key");
-        killFile.delete();
-        killFile = new File(CERT_STORE_PATH + fileBase + ".csr");
-        killFile.delete();
-        killFile = new File(CERT_STORE_PATH + fileBase + ".pfx");
-        killFile.delete();
-    }
-
-    /**
-     * For apps and services that depend on certificates to work properly, the
-     * certificates must have all names and addresses that are configured on the
-     * server. Here we grab that list and then check all of the certs to make
-     * sure everything is good. We return our result as a chunk of HTML that is
-     * displayed on the SSL inspector status page in the UI.
-     * 
-     * @return The certificate status
-     */
-    public String validateActiveInspectorCertificates()
-    {
-        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
-        I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        List<String> machineList = new LinkedList<>();
-        CertificateInformation certInfo = null;
-        String httpsInfo = null;
-        String smtpsInfo = null;
-        String ipsecInfo = null;
-        String radiusInfo = null;
-        String certFile = null;
-
-        String missMessage = i18nUtil.tr("Certificate not found");
-        String goodMessage = i18nUtil.tr("No problems detected");
-        String failMessage = i18nUtil.tr("Missing");
-
-        // grab the hostname and all IP addresses assigned to this server
-        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-        if (hostName != null) machineList.add(hostName);
-
-        for (InterfaceSettings iset : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
-            if (iset.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC) continue;
-            if (iset.getV4StaticAddress() == null) continue;
-            if (iset.igetDisabled()) continue;
-            if (iset.igetBridged()) continue;
-            machineList.add(iset.getV4StaticAddress().getHostAddress());
-        }
-
-        // check the WEB certificate
-        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.crt");
-        certInfo = getServerCertificateInformation(certFile);
-        if (certInfo == null) {
-            httpsInfo = missMessage;
-        } else {
-            for (String item : machineList) {
-                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
-                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
-                if (httpsInfo == null) httpsInfo = (new String(failMessage) + " ");
-                else httpsInfo += ", ";
-                httpsInfo += item;
-            }
-            if (httpsInfo == null) httpsInfo = goodMessage;
-        }
-
-        // check the MAIL certificate
-        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.crt");
-        certInfo = getServerCertificateInformation(certFile);
-        if (certInfo == null) {
-            smtpsInfo = missMessage;
-        } else {
-            for (String item : machineList) {
-                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
-                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
-                if (smtpsInfo == null) smtpsInfo = (new String(failMessage) + " ");
-                else smtpsInfo += ", ";
-                smtpsInfo += item;
-            }
-            if (smtpsInfo == null) smtpsInfo = goodMessage;
-        }
-
-        // check the IPSEC certificate
-        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.crt");
-        certInfo = getServerCertificateInformation(certFile);
-        if (certInfo == null) {
-            ipsecInfo = missMessage;
-        } else {
-            for (String item : machineList) {
-                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
-                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
-                if (ipsecInfo == null) ipsecInfo = (new String(failMessage) + " ");
-                else ipsecInfo += ", ";
-                ipsecInfo += item;
-            }
-
-            // IPsec IKEv2 will not work properly without this OID
-            if ((certInfo.getCertUsage() == null) || (certInfo.getCertUsage().contains("ikeIntermediate") == false)) {
-                if (ipsecInfo == null) ipsecInfo = (new String(failMessage) + " ");
-                else ipsecInfo += ", ";
-                ipsecInfo += "OID 1.3.6.1.5.5.8.2.2 (ikeIntermediate)";
-            }
-            if (ipsecInfo == null) ipsecInfo = goodMessage;
-        }
-
-        // check the RADIUS certificate
-        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate().replaceAll("\\.pem", "\\.crt");
-        certInfo = getServerCertificateInformation(certFile);
-        if (certInfo == null) {
-            radiusInfo = missMessage;
-        } else {
-            for (String item : machineList) {
-                if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
-                if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
-                if (radiusInfo == null) radiusInfo = (new String(failMessage) + " ");
-                else radiusInfo += ", ";
-                radiusInfo += item;
-            }
-            if (radiusInfo == null) radiusInfo = goodMessage;
-        }
-
-        StringBuilder statusInfo = new StringBuilder(1024);
-        statusInfo.append("<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 STYLE=border-collapse:collapse;>");
-        statusInfo.append("<TR><TD COLSPAN=2><CENTER><STRONG>Server Certificate Verification</STRONG></CENTER></TD></TR>");
-        statusInfo.append("<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>");
-        statusInfo.append("<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>");
-        statusInfo.append("<TR><TD WIDTH=120>IPSEC Certificate</TD><TD>" + ipsecInfo + "</TD></TR>");
-        if (UvmContextFactory.context().isExpertMode()) {
-            statusInfo.append("<TR><TD WIDTH=120>RADIUS Certificate</TD><TD>" + radiusInfo + "</TD></TR>");
-        }
-        statusInfo.append("</TABLE>");
-        return (statusInfo.toString());
-    }
 }

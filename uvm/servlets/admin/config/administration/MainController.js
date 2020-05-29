@@ -688,7 +688,7 @@ Ext.define('Ung.config.administration.MainController', {
                     if(Util.isDestroyed(record)){
                         return;
                     }
-                    Rpc.asyncData('rpc.UvmContext.certificateManager.removeServerCertificate', record.get('fileName'))
+                    Rpc.asyncData('rpc.UvmContext.certificateManager.removeCertificate', 'server', record.get('fileName'))
                     .then(function (result) {
                         if(Util.isDestroyed(me)){
                             return;
