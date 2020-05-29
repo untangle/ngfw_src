@@ -553,7 +553,7 @@ Ext.define('Ung.config.administration.MainController', {
                         var cd = Ext.get('cert_data');
                         var kd = Ext.get('key_data');
                         var ed = Ext.get('extra_data');
-                        Rpc.asyncData('rpc.UvmContext.certificateManager.uploadCertificate', cd.component.getValue(), kd.component.getValue(), ed.component.getValue(), certMode)
+                        Rpc.asyncData('rpc.UvmContext.certificateManager.uploadCertificate', certMode, cd.component.getValue(), kd.component.getValue(), ed.component.getValue())
                         .then(function(status){
                             if (status.result === 0) {
                                 Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
