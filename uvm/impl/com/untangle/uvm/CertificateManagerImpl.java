@@ -19,6 +19,8 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
@@ -120,7 +122,10 @@ public class CertificateManagerImpl implements CertificateManager
         // if either of the root CA files are missing create the thing now
         if ((rootCertFile.exists() == false) || (rootKeyFile.exists() == false)) {
             logger.info("Creating default root certificate authority");
-            UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
+            UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + "UntangleRootCA DEFAULT");
+
+            // Symlink them
+            symlinkRootCerts(CERT_STORE_PATH, CERT_STORE_PATH + "UntangleRootCA/", false);
 
             // in the development enviroment save these to a global location
             // so they will survive a rake clean
@@ -128,6 +133,13 @@ public class CertificateManagerImpl implements CertificateManager
                 UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
                 UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
             }
+        }
+
+        // if the root CA files are not symlinks, then we need to move them (to a timestamped directory) and symlink them
+        if(!Files.isSymbolicLink(rootCertFile.toPath()) || !Files.isSymbolicLink(rootKeyFile.toPath())) {
+            String baseName = Long.toString(System.currentTimeMillis() / 1000l);
+
+            symlinkRootCerts(CERT_STORE_PATH, CERT_STORE_PATH + baseName + "/", true);
         }
 
         // we should have a root CA at this point so we check the local apache
@@ -368,10 +380,6 @@ public class CertificateManagerImpl implements CertificateManager
         X509Certificate certObject;
 
         try {
-            // get an instance of the X509 certificate factory that we can
-            // use to create X509Certificates from which we can grab info
-            CertificateFactory factory = CertificateFactory.getInstance("X.509");
-
             // find the certificate inside the file
             File certFile = new File(fileName);
             certStream = new FileInputStream(certFile);
@@ -392,8 +400,7 @@ public class CertificateManagerImpl implements CertificateManager
             // create a new String with just the certificate we isolated
             // and pass it to the certificate factory generatory function
             String certString = new String(pemString.getBytes(), certTop, certLen);
-            ByteArrayInputStream byteStream = new ByteArrayInputStream(certString.getBytes());
-            certObject = (X509Certificate) factory.generateCertificate(byteStream);
+            certObject = get509CertFromString(certString);
 
             certInfo.setDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
             certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
@@ -478,19 +485,10 @@ public class CertificateManagerImpl implements CertificateManager
     public CertificateInformation getRootCertificateInformation()
     {
         CertificateInformation certInfo = new CertificateInformation();
-        FileInputStream certStream;
         X509Certificate certObject;
 
         try {
-            // get an instance of the X509 certificate factory that we can
-            // use to create X509Certificates from which we can grab info
-            CertificateFactory factory = CertificateFactory.getInstance("X.509");
-
-            // Grab the info from our root CA certificate. We can use the file
-            // as is since it only contains the DER cert encoded in Base64
-            certStream = new FileInputStream(ROOT_CERT_FILE);
-            certObject = (X509Certificate) factory.generateCertificate(certStream);
-            certStream.close();
+            certObject = get509CertFromFile(ROOT_CERT_FILE);
 
             certInfo.setDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
             certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
@@ -508,17 +506,25 @@ public class CertificateManagerImpl implements CertificateManager
      * Called by the UI to generate a new root certificate authority. The dummy
      * argument is not used and makes the JavaScript a little simpler.
      * 
+     * @param commonName
+     *        The cert common name, used in creating the CA directory
      * @param certSubject
      *        The subject for the new CA root certificate
      * @return True
      */
-    public boolean generateCertificateAuthority(String certSubject)
+    public boolean generateCertificateAuthority(String commonName, String certSubject)
     {
+        String baseName = commonName +"-"+ Long.toString(System.currentTimeMillis() / 1000l);
+
         logger.info("Creating new root certificate authority: " + certSubject);
-        String argList[] = new String[1];
-        argList[0] = certSubject;
+        String argList[] = new String[2];
+        argList[0] = baseName;
+        argList[1] = certSubject;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
         UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + argString);
+
+        // Symlink generated certs to the CERT_STORE_PATH (ROOT_KEY_FILE and ROOT_CERT_FILE)
+        symlinkRootCerts(CERT_STORE_PATH, CERT_STORE_PATH + baseName + "/", false);
 
         // in the development enviroment save these to a global location
         // so they will survive a rake clean

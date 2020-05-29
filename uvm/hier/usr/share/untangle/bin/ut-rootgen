@@ -9,6 +9,7 @@ OPENSSL_CONF="@PREFIX@/usr/share/untangle/conf/ut-openssl.cnf"
 OPENSSL_TOOL="/usr/bin/openssl"
 CERT_PATH="/var/cache/untangle-ssl"
 SUBJECT="/C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
+CA_NAME="UntangleRootCA"
 
 # Even though these aren't used when creating the root certificate
 # we have to define and export them since they are referenced
@@ -30,16 +31,23 @@ export RANDFILE
 show_usage()
 {
 echo " "
-echo "  USAGE: ut-rootgen subject"
+echo "  USAGE: ut-rootgen name subject"
 echo " "
+echo "  name = UntangleRootCA"
 echo "  subject = /C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
 echo " "
-echo "  WARNING: Any existing root CA files will be deleted and created from scratch!"
+echo "  WARNING: Any existing root CA files with the same name will be deleted and created from scratch!"
 echo " "
 }
 
-# The first argument should be the subject field for the root certificate
+# The first argument should be a unique name for us to identify the root CA
 if [ -z $1 ]; then
+    show_usage
+    exit 1
+fi
+
+# The second argument is the subject field for the root CA
+if [ -z $2 ]; then
     show_usage
     exit 1
 fi
@@ -54,9 +62,14 @@ if [ ! -d $CERT_PATH ]; then
     mkdir -p $CERT_PATH
 fi
 
-# if they pass anything other than DEFAULT then we use the provided subject
+# if they pass anything other than DEFAULT for name ($1) then we use the provided name
 if [ "$1" != "DEFAULT" ]; then
-    SUBJECT="$1"
+    CA_NAME="$1"
+fi
+
+# if they pass anything other than DEFAULT for subject ($2) then we use the provided subject
+if [ "$2" != "DEFAULT" ]; then
+    SUBJECT="$2"
 fi
 
 # next cleanup any existing files
@@ -65,15 +78,22 @@ rm -f $UT_ROOT_PATH/untangle.crt
 rm -f $UT_ROOT_PATH/untangle.key
 rm -f $UT_ROOT_PATH/index*
 rm -f $UT_ROOT_PATH/serial*
+rm -f $UT_ROOT_PATH/$CA_NAME/untangle.crt
+rm -f $UT_ROOT_PATH/$CA_NAME/untangle.key
+rm -f $UT_ROOT_PATH/$CA_NAME/index*
+rm -f $UT_ROOT_PATH/$CA_NAME/serial*
+
+# create the CA_NAME directory
+mkdir -p $UT_ROOT_PATH/$CA_NAME/
 
 # create the initial serial using the current epoch time plus six extra digits
-date +%s000000 > $UT_ROOT_PATH/serial.txt
+date +%s000000 > $UT_ROOT_PATH/$CA_NAME/serial.txt
 
 # create the certificate index file
-touch $UT_ROOT_PATH/index.txt
+touch $UT_ROOT_PATH/$CA_NAME/index.txt
 
 # create the CA certificate and key
-$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_root -newkey rsa:2048 -keyout $UT_ROOT_PATH/untangle.key -out $UT_ROOT_PATH/untangle.crt -days 7305 -subj "$SUBJECT"
+$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_root -newkey rsa:2048 -keyout $UT_ROOT_PATH/$CA_NAME/untangle.key -out $UT_ROOT_PATH/$CA_NAME/untangle.crt -days 7305 -subj "$SUBJECT"
 
 # only root should have access to the key
-chmod 600 $UT_ROOT_PATH/untangle.key
+chmod 600 $UT_ROOT_PATH/$CA_NAME/untangle.key

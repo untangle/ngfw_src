@@ -23,6 +23,8 @@ public interface CertificateManager
 
     ExecManagerResult uploadCertificate(String certMode, String certData, String keyData, String extraData);
 
+    boolean generateCertificateAuthority(String commonName, String certSubject);
+
     boolean generateServerCertificate(String certSubject, String altNames);
 
     public void removeServerCertificate(String fileName);
