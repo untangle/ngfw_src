@@ -127,6 +127,7 @@ Ext.define('Ung.config.administration.MainController', {
             Rpc.asyncPromise('rpc.UvmContext.certificateManager.getRootCertificateInformation'),
             Rpc.asyncPromise('rpc.UvmContext.certificateManager.validateActiveInspectorCertificates'),
             Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+            Rpc.asyncPromise('rpc.UvmContext.certificateManager.getRootCertificateList')
         ], this)
         .then(function(result) {
             if(Util.isDestroyed(v, vm)){
@@ -137,7 +138,8 @@ Ext.define('Ung.config.administration.MainController', {
                 serverCertificates: result[0],
                 rootCertificateInformation: result[1],
                 serverCertificateVerification: result[2],
-                hostName: hostname
+                hostName: hostname,
+                rootCertificates: result[4]
             });
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -149,6 +151,25 @@ Ext.define('Ung.config.administration.MainController', {
         });
     },
 
+    refreshRootCertificateList: function() {
+        var me = this, v = me.getView().down('#rootCertificateView'), vm = me.getViewModel();
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.UvmContext.certificateManager.getRootCertificateList')
+        .then(function (result) {
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+            vm.set('rootCertificates', result);
+            v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+        });
+    },
     refreshRootCertificate: function () {
         var me = this, v = me.getView().down('#rootCertificateView'), vm = me.getViewModel();
 
@@ -426,6 +447,7 @@ Ext.define('Ung.config.administration.MainController', {
                 Util.successToast('Certificate Authority generation successfully completed.'.t());
                 me.certDialog.close();
                 me.refreshRootCertificate();
+                me.refreshRootCertificateList();
                 me.certDialog.setLoading(false);
             }, function (ex) {
                 Util.handleException('Error during Certificate Authority generation.  Click OK to continue.'.t());
@@ -558,7 +580,15 @@ Ext.define('Ung.config.administration.MainController', {
                             if (status.result === 0) {
                                 Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
                                 me.uploadDialog.close();
-                                me.refreshServerCertificate();
+
+                                if(certMode == 'SERVER') {
+                                    me.refreshServerCertificate();
+                                }
+
+                                if(certMode == 'ROOT') {
+                                    me.refreshRootCertificate(); 
+                                    me.refreshRootCertificateList(); 
+                                }
                             } else {
                                 Ext.MessageBox.alert('Certificate Upload Error'.t(), status.output);
                             }
@@ -585,6 +615,79 @@ Ext.define('Ung.config.administration.MainController', {
         this.uploadDialog.show();
     },
 
+    showRootCertificateModal: function(btn) {
+        var me = this, v = this.getView();
+
+        this.RootCAView = v.add({
+            xtype: 'window',
+            modal: true,
+    
+            title: 'Current Root CAs'.t(),
+            items: [{
+                xtype: 'component',
+                padding: 10,
+                html: 'The Root CA selector let\'s you set a default Root CA or delete other root CAs'.t()
+            }, {
+                xtype: 'grid',
+                itemId: 'rootCertificateView',
+                flex: 1,
+                bind: '{rootCertStore}',
+                layout: 'fit',
+    
+                sortableColumns: false,
+                enableColumnHide: false,
+    
+                columns: [
+                    {
+                        header: 'Subject'.t(),
+                        dataIndex: 'certSubject',
+                        width: 220
+                    }, {
+                        header: 'Date Valid'.t(),
+                        width: 140,
+                        dataIndex: 'dateValid',
+                        renderer: function (date) {
+                            return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
+                        }
+                    }, {
+                        header: 'Date Expires'.t(),
+                        width: 140,
+                        dataIndex: 'dateExpires',
+                        renderer: function (date) {
+                            return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
+                        }
+                    }, {
+                        xtype: 'actioncolumn',
+                        header: 'Set as current root CA'.t(),
+                        width: 60,
+                        align: 'center',
+                        resizable: false,
+                        iconCls: 'fa fa-file-text',
+                        tdCls: 'action-cell',
+                        handler: 'setRootCert',
+                        isDisabled: function (view, rowIndex, colIndex, item, record) {
+                            return record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer') || record.get('radiusServer');
+                        }
+                    }, {
+                        xtype: 'actioncolumn',
+                        header: 'Delete',
+                        width: 60,
+                        align: 'center',
+                        resizable: false,
+                        iconCls: 'fa fa-trash-o fa-red',
+                        tdCls: 'action-cell',
+                        certMode: 'ROOT',
+                        handler: 'deleteCert',
+                        isDisabled: function (view, rowIndex, colIndex, item, record) {
+                            return record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer') || record.get('radiusServer');
+                        }
+                    }]
+            }]
+        });
+
+        this.RootCAView.show();
+
+    },
     importSignedRequest: function () {
         var me = this, v = this.getView();
         this.uploadDialog = v.add({
@@ -671,7 +774,7 @@ Ext.define('Ung.config.administration.MainController', {
         this.uploadDialog.show();
     },
 
-    deleteServerCert: function (view, rowIndex, colIndex, item, e, record) {
+    deleteCert: function (view, rowIndex, colIndex, item, e, record) {
         var me = this;
         if (record.get('fileName') === 'apache.pem') {
             Ext.MessageBox.alert('System Certificate'.t(), 'This is the default system certificate and cannot be removed.'.t());
@@ -688,12 +791,21 @@ Ext.define('Ung.config.administration.MainController', {
                     if(Util.isDestroyed(record)){
                         return;
                     }
-                    Rpc.asyncData('rpc.UvmContext.certificateManager.removeCertificate', 'server', record.get('fileName'))
+                    Rpc.asyncData('rpc.UvmContext.certificateManager.removeCertificate', item.certMode, record.get('fileName'))
                     .then(function (result) {
                         if(Util.isDestroyed(me)){
                             return;
                         }
-                        me.refreshServerCertificate();
+
+                        if(item.certMode == 'SERVER') {
+                            me.refreshServerCertificate();
+                        }
+
+                        if(item.certMode == 'ROOT') {
+                            me.refreshRootCertificate(); 
+                            me.refreshRootCertificateList(); 
+                        }
+
                         Util.successToast('Certificate removed'.t());
                     });
                 }

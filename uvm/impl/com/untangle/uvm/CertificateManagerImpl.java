@@ -477,10 +477,33 @@ public class CertificateManagerImpl implements CertificateManager
         return certInfo;
     }
 
+    /**
+     * getRootCertificateList will return any root CAs that are currently in the untangle-certificates directory
+     * 
+     * 
+     * @return - A list of CertificateInformation of Root Certificates
+     */
+    public LinkedList<CertificateInformation> getRootCertificateList()
+    {
+        LinkedList<CertificateInformation> certList = new LinkedList<>();
 
-   public LinkedList<CertificateInformation> getRootCertificateList()
-   {
-       return new LinkedList<CertificateInformation>();
+        File filePath = new File(CERT_STORE_PATH);
+
+        //Iterate directories in the CERT_STORE_PATH, if they contain files that end with CRT then add to the file arraylist
+        for(File certs : filePath.listFiles()) {
+            if(certs.isDirectory()) {
+                for(File crt : certs.listFiles()) {
+                    if(crt.getName().endsWith(".crt")){
+                        // Call getServerCertificateInformation and add the results into the certificateinformation list
+                        var certInfo = getServerCertificateInformation(crt.getAbsolutePath());
+                        certList.add(certInfo);
+                    }
+                }
+            }
+        }
+        logger.info("Root CA File List:" + certList);
+
+       return certList;
    }
 
     /**

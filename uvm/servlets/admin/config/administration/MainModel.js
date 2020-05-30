@@ -14,11 +14,13 @@ Ext.define('Ung.config.administration.MainModel', {
         serverCertificates: null,
         rootCertificateInformation: null,
         serverCertificateVerification: null,
-        skinsList: null
+        skinsList: null,
+        rootCertificates: null
     },
     stores: {
         accounts: { data: '{adminSettings.users.list}' },
         certificates: { data: '{serverCertificates.list}' },
-        skins: { data: '{skinsList.list}' }
+        skins: { data: '{skinsList.list}' },
+        rootCertStore: {data: '{rootCertificates.list}'}
     }
 });
