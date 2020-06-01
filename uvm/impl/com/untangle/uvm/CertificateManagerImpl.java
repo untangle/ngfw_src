@@ -657,8 +657,12 @@ public class CertificateManagerImpl implements CertificateManager
         certLen = validateData(certData, CertContent.CERT);
         if (certLen == 0) return new ExecManagerResult(1, "The certificate is not valid");
 
-        keyLen = validateData(keyData, CertContent.KEY);
-        if (keyLen == 0) return new ExecManagerResult(1, "The key is not valid");
+        // we don't need the key for the root cert
+        if(!certMode.equalsIgnoreCase("ROOT")) {
+            keyLen = validateData(keyData, CertContent.KEY);
+            if (keyLen == 0) return new ExecManagerResult(1, "The key is not valid");
+        }
+
 
         extraLen = validateData(extraData, CertContent.EXTRA);
 
@@ -668,9 +672,11 @@ public class CertificateManagerImpl implements CertificateManager
         // next we save the uploaded key to a temp upload file
         storeData(keyData, KEY_UPLOAD_FILE);
 
-        // make sure the uploaded cert matches the uploaded key
-        if (!validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, KEY_UPLOAD_FILE)) {
-            return new ExecManagerResult(1, "The Server Certificate does not match the Certificate Key.");
+        if(!certMode.equalsIgnoreCase("ROOT")) {
+            // make sure the uploaded cert matches the uploaded key
+            if (!validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, KEY_UPLOAD_FILE)) {
+                return new ExecManagerResult(1, "The Server Certificate does not match the Certificate Key.");
+            }
         }
 
         // store them in permanent locations
@@ -704,7 +710,9 @@ public class CertificateManagerImpl implements CertificateManager
             UvmContextFactory.context().execManager().exec("mkdir -p " + newRootPath);
 
             // store the key and cert there
-            storeData(keyData, newRootKey);
+            if(keyLen > 0) {
+                storeData(keyData, newRootKey);
+            }
             storeData(certData, newRootCrt);
 
             // we use this certInfo to get the serial and add it to serial.txt
