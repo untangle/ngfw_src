@@ -696,7 +696,7 @@ public class CertificateManagerImpl implements CertificateManager
             return new ExecManagerResult(0, "Certificate successfully uploaded");
         } else if (certMode.equalsIgnoreCase("ROOT")) {
 
-            var newRootPath = CERT_STORE_PATH + "/" + baseName + "/";
+            var newRootPath = CERT_STORE_PATH + baseName + "/";
             var newRootKey = newRootPath + "untangle.key";
             var newRootCrt = newRootPath + "untangle.crt";
 
