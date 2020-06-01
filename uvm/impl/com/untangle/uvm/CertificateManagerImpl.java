@@ -99,8 +99,7 @@ public class CertificateManagerImpl implements CertificateManager
         File rootCertFile = new File(ROOT_CERT_FILE);
         File rootKeyFile = new File(ROOT_KEY_FILE);
 
-        UvmContextFactory.context().servletFileManager().registerUploadHandler(new ServerCertificateUploadHandler());
-
+        UvmContextFactory.context().servletFileManager().registerUploadHandler(new CertificateUploadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateDownloadHandler());
 
         // in the development environment if the root CA files are missing copy
@@ -179,7 +178,7 @@ public class CertificateManagerImpl implements CertificateManager
     /**
      * Called by the UI to upload server certificates
      */
-    private class ServerCertificateUploadHandler implements UploadHandler
+    private class CertificateUploadHandler implements UploadHandler
     {
         /**
          * Get the name of our upload handler
@@ -189,7 +188,7 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public String getName()
         {
-            return "server_cert";
+            return "certificate_upload";
         }
 
         /**
@@ -211,7 +210,7 @@ public class CertificateManagerImpl implements CertificateManager
             fileStream.close();
 
             // call the external utility to parse the uploaded file
-            String certData = UvmContextFactory.context().execManager().execOutput(CERTIFICATE_PARSER_SCRIPT + " " + CERTIFICATE_PARSER_FILE);
+            String certData = UvmContextFactory.context().execManager().execOutput(CERTIFICATE_PARSER_SCRIPT + " " + CERTIFICATE_PARSER_FILE + " " + argument);
 
             // returned the results 
             ExecManagerResult result = new ExecManagerResult(0, certData);

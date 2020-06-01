@@ -568,11 +568,11 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'hidden',
                     name: 'type',
-                    value: 'server_cert'
+                    value: 'certificate_upload'
                 }, {
                     xtype: 'hidden',
                     name: 'argument',
-                    value: 'upload_server'
+                    value: certMode === 'SERVER' ?  'upload_server' : 'upload_root',
                 }],
                 buttons: [{
                     text: 'Upload Certificate'.t(),
@@ -755,7 +755,7 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'hidden',
                     name: 'type',
-                    value: 'server_cert'
+                    value: 'certificate_upload'
                 }, {
                     xtype: 'hidden',
                     name: 'argument',
