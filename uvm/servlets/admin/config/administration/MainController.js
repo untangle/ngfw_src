@@ -668,11 +668,8 @@ Ext.define('Ung.config.administration.MainController', {
                             var detail = '';
                             detail += '<b>VALID:</b> ' + Ext.util.Format.date(new Date(record.get('dateValid').time), 'timestamp_fmt'.t()) + '<br/><br/>';
                             detail += '<b>EXPIRES:</b> ' + Ext.util.Format.date(new Date(record.get('dateExpires').time), 'timestamp_fmt'.t()) + '<br/><br/>';
-                            detail += '<b>ISSUER:</b> ' + record.get('certIssuer') + '<br/><br/>';
                             detail += '<b>SUBJECT:</b> ' + record.get('certSubject') + '<br/><br/>';
-                            detail += '<b>SAN:</b> ' + record.get('certNames') + '<br/><br/>';
-                            detail += '<b>EKU:</b> ' + record.get('certUsage') + '<br/><br/>';
-                            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Certificate Details'.t(), msg: '<tt>' + detail + '</tt>' });
+                            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Root CA Details'.t(), msg: '<tt>' + detail + '</tt>' });
                         }
                     }, {
                         xtype: 'actioncolumn',

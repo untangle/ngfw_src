@@ -387,8 +387,6 @@ public class CertificateManagerImpl implements CertificateManager
             certStream.read(certData);
             certStream.close();
 
-            certInfo.setFileName(fileName);
-
             // look for the header and trailer strings
             String pemString = new String(certData);
             int certTop = pemString.indexOf(MARKER_CERT_HEAD);
@@ -496,8 +494,8 @@ public class CertificateManagerImpl implements CertificateManager
             if(certs.isDirectory()) {
                 for(File crt : certs.listFiles()) {
                     if(crt.getName().endsWith(".crt")){
-                        // Call getServerCertificateInformation and add the results into the certificateinformation list
-                        var certInfo = getServerCertificateInformation(crt.getAbsolutePath());
+                        // Call getRootCertificateInformation and add the results into the certificateinformation list
+                        var certInfo = getRootCertificateInformation(crt.getAbsolutePath());
                         certList.add(certInfo);
                     }
                 }
@@ -508,22 +506,39 @@ public class CertificateManagerImpl implements CertificateManager
        return certList;
    }
 
+   /**
+    * getRootCertificateInformation is used to get the details of the current ROOT_CERT_FILE
+    *
+    * @return The CA root certificate details
+    */
+   public CertificateInformation getRootCertificateInformation()
+   {
+       return getRootCertificateInformation(ROOT_CERT_FILE);
+   }
+
     /**
      * Called to get the details from our CA root certificate
      * 
+     * @param fileName 
+     *          The filename to get details of
+     * 
      * @return The CA root certificate details
      */
-    public CertificateInformation getRootCertificateInformation()
+    public CertificateInformation getRootCertificateInformation(String fileName)
     {
         CertificateInformation certInfo = new CertificateInformation();
         X509Certificate certObject;
 
         try {
-            certObject = get509CertFromFile(ROOT_CERT_FILE);
+            certObject = get509CertFromFile(fileName);
 
-            certInfo.setDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
-            certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
-            certInfo.setCertSubject(certObject.getSubjectDN().toString());
+            certInfo.setFileName(fileName);
+
+            if(certObject != null) {
+                certInfo.setDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
+                certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
+                certInfo.setCertSubject(certObject.getSubjectDN().toString());
+            }
         }
 
         catch (Exception exn) {
@@ -1076,10 +1091,10 @@ public class CertificateManagerImpl implements CertificateManager
      * @param moveCerts - Move the files from the target to the source also
      */
     private void symlinkRootCerts(String targetDir, String sourceDir, boolean moveCerts) {
-        // create a sourcedir if we need to
-        UvmContextFactory.context().execManager().exec("mkdir -p " + sourceDir);
-
         if(moveCerts) {
+            // create a sourcedir if we need to
+            UvmContextFactory.context().execManager().exec("mkdir -p " + sourceDir);
+
             // move cert, key, index, serial from old to new if move is specified
             UvmContextFactory.context().execManager().exec("mv " + targetDir + "/untangle.crt " + sourceDir);
             UvmContextFactory.context().execManager().exec("mv " + targetDir + "/untangle.key " + sourceDir);
@@ -1088,10 +1103,10 @@ public class CertificateManagerImpl implements CertificateManager
         }
 
         // symlink cert, key, index, serial from new location to old
-        UvmContextFactory.context().execManager().exec("ln -s " + sourceDir + "/untangle.crt " + targetDir + "/untangle.crt");
-        UvmContextFactory.context().execManager().exec("ln -s " + sourceDir + "/untangle.key " + targetDir + "/untangle.key");
-        UvmContextFactory.context().execManager().exec("ln -s " + sourceDir + "/index.txt " + targetDir + "/index.txt");
-        UvmContextFactory.context().execManager().exec("ln -s " + sourceDir + "/serial.txt " + targetDir + "/serial.txt");
+        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "/untangle.crt " + targetDir + "/untangle.crt");
+        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "/untangle.key " + targetDir + "/untangle.key");
+        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "/index.txt " + targetDir + "/index.txt");
+        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "/serial.txt " + targetDir + "/serial.txt");
 
     }
 
