@@ -536,6 +536,8 @@ Ext.define('Ung.config.administration.MainController', {
                     xtype: 'textarea',
                     id: 'key_data',
                     fieldLabel: dialogCertKey,
+                    hidden: certMode !== 'SERVER',
+                    disabled: certMode !== 'SERVER',
                     labelWidth: 80,
                     anchor: "100%",
                     height: 150,
