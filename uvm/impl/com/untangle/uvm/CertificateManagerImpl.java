@@ -387,6 +387,8 @@ public class CertificateManagerImpl implements CertificateManager
             certStream.read(certData);
             certStream.close();
 
+            certInfo.setFileName(fileName);
+
             // look for the header and trailer strings
             String pemString = new String(certData);
             int certTop = pemString.indexOf(MARKER_CERT_HEAD);
@@ -763,22 +765,41 @@ public class CertificateManagerImpl implements CertificateManager
         if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate())) return;
         if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate())) return;
 
-        // extract the file name without the extension
-        dotLocation = fileName.indexOf('.');
-        if (dotLocation < 0) return;
-        fileBase = fileName.substring(0, dotLocation);
+        if(type.equalsIgnoreCase("SERVER")){
+            // extract the file name without the extension
+            dotLocation = fileName.indexOf('.');
+            if (dotLocation < 0) return;
+            fileBase = fileName.substring(0, dotLocation);
 
-        // remove all the files we created when the certificate was generated or uploaded
-        killFile = new File(CERT_STORE_PATH + fileBase + ".pem");
-        killFile.delete();
-        killFile = new File(CERT_STORE_PATH + fileBase + ".crt");
-        killFile.delete();
-        killFile = new File(CERT_STORE_PATH + fileBase + ".key");
-        killFile.delete();
-        killFile = new File(CERT_STORE_PATH + fileBase + ".csr");
-        killFile.delete();
-        killFile = new File(CERT_STORE_PATH + fileBase + ".pfx");
-        killFile.delete();
+            // remove all the files we created when the certificate was generated or uploaded
+            killFile = new File(CERT_STORE_PATH + fileBase + ".pem");
+            killFile.delete();
+            killFile = new File(CERT_STORE_PATH + fileBase + ".crt");
+            killFile.delete();
+            killFile = new File(CERT_STORE_PATH + fileBase + ".key");
+            killFile.delete();
+            killFile = new File(CERT_STORE_PATH + fileBase + ".csr");
+            killFile.delete();
+            killFile = new File(CERT_STORE_PATH + fileBase + ".pfx");
+            killFile.delete();
+        } else if(type.equalsIgnoreCase("ROOT")) {
+            // Use filename to get the parent dir
+            File rootCert = new File(fileName);
+            var certParent = rootCert.getParent();
+
+            // verify dotLocation is not top level
+            if(certParent != CERT_STORE_PATH) {
+                File parentFile = new File(certParent);
+
+                // rm the index, crt, key, serial files in here
+                for(File child : parentFile.listFiles()) {
+                    child.delete();
+                }
+                
+                // rm the directory
+                parentFile.delete();
+            }
+        }
     }
 
     /**
