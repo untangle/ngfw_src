@@ -77,7 +77,7 @@ Ext.define('Ung.config.administration.MainController', {
         [ 'VE', 'Venezuela'.t() ], [ 'VN', 'Vietnam'.t() ], [ 'WF', 'Wallis and Futuna'.t() ], [ 'EH', 'Western Sahara'.t() ],
         [ 'YE', 'Yemen'.t() ], [ 'ZM', 'Zambia'.t() ], [ 'ZW', 'Zimbabwe'.t() ]
     ],
-
+    // loadAdmin is used to load settings into the admin panel from specific RPC managers
     loadAdmin: function () {
         var me = this, v = me.getView(),vm = me.getViewModel();
 
@@ -117,7 +117,7 @@ Ext.define('Ung.config.administration.MainController', {
 
         me.googleRefreshTaskBuild();
     },
-
+    // loadCertificates loads certificates from the certificateManager into appropriate stores
     loadCertificates: function () {
         var me = this, v = me.getView(), vm = me.getViewModel();
 
@@ -151,8 +151,9 @@ Ext.define('Ung.config.administration.MainController', {
         });
     },
 
+    // refreshRootCertificateList is used to refresh the rootCertificates VM object using the certificatemanager getRootCertificateList API
     refreshRootCertificateList: function() {
-        var me = this, v = me.getView().down('#rootCertificateView'), vm = me.getViewModel();
+        var me = this, v = me.getView(), vm = me.getViewModel();
 
         v.setLoading(true);
         Rpc.asyncData('rpc.UvmContext.certificateManager.getRootCertificateList')
@@ -170,6 +171,8 @@ Ext.define('Ung.config.administration.MainController', {
             }
         });
     },
+
+    //refreshRootCertificate is used to refresh the rootCertificateInformation VM object with the CertificateManager.getRootCertificateInformation API
     refreshRootCertificate: function () {
         var me = this, v = me.getView().down('#rootCertificateView'), vm = me.getViewModel();
 
@@ -188,7 +191,7 @@ Ext.define('Ung.config.administration.MainController', {
             }
         });
     },
-
+    // refreshServerCertificate is used to refresh the serverCertificates VM Object array with the certificate manager getServerCertificateList API
     refreshServerCertificate: function () {
         var me = this, v = me.getView().down('#serverCertificateView'), vm = me.getViewModel();
 
@@ -208,7 +211,7 @@ Ext.define('Ung.config.administration.MainController', {
             }
         });
     },
-
+    // saveSettings is used to save admin settings
     saveSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
@@ -280,7 +283,7 @@ Ext.define('Ung.config.administration.MainController', {
             }
         });
     },
-
+    // generateCertificate is used for ROOT and Server certificates to generate a ROOT CA or a new Certificate issued by the chosen root CA
     generateCertificate: function (btn) {
         var me = this,
             certMode = btn.certMode,
@@ -393,13 +396,14 @@ Ext.define('Ung.config.administration.MainController', {
         });
         this.certDialog.show();
     },
-
+    // downloadRootCertificate calls the downloadForm to submit a root Certificate download request
     downloadRootCertificate: function () {
         var downloadForm = document.getElementById('downloadForm');
         downloadForm["type"].value = "certificate_download";
         downloadForm["arg1"].value = "root";
         downloadForm.submit();
     },
+    // certGenerator is a buton handler for generating Root CAs and Server certificates
     certGenerator: function () {
         var me = this,
             form = this.certDialog.down('form'),
@@ -491,7 +495,7 @@ Ext.define('Ung.config.administration.MainController', {
 
     },
 
-    //
+    // uploadCertificate is a button handler to handle uploading of Server and Root certificates
     uploadCertificate: function (btn) {
         var me = this, v = this.getView(), certMode = btn.certMode;
         
@@ -615,6 +619,7 @@ Ext.define('Ung.config.administration.MainController', {
         this.uploadDialog.show();
     },
 
+    // showRootCertificateModal is a button handler that displays the Root Certificate selector modal
     showRootCertificateModal: function(btn) {
         var me = this, v = this.getView();
 
@@ -702,6 +707,8 @@ Ext.define('Ung.config.administration.MainController', {
 
         me.RootCAView.show();
     },
+
+    // importSignedRequest is a button handler that displays the CSR import dialog
     importSignedRequest: function () {
         var me = this, v = this.getView();
         this.uploadDialog = v.add({
@@ -788,6 +795,7 @@ Ext.define('Ung.config.administration.MainController', {
         this.uploadDialog.show();
     },
 
+    // deleteCert is used by Root CA grid selector and also the Server Certificate grid to delete specific certificates
     deleteCert: function (view, rowIndex, colIndex, item, e, record) {
         var me = this;
         if (record.get('fileName') === 'apache.pem') {
@@ -832,6 +840,7 @@ Ext.define('Ung.config.administration.MainController', {
             });
     },
 
+    // setRootCert is a grid row handler that allows setting of a root CA to the current active root CA option
     setRootCert: function (v, rowIndex, colIndex, item, e, record) {
         var me = this;
         Ext.MessageBox.confirm('Are you sure you want to set this as your current root CA certificate?'.t(),
@@ -859,6 +868,7 @@ Ext.define('Ung.config.administration.MainController', {
         });
     },
 
+    // skinChange is a change handler to handle skin changes to the UI
     skinChange: function(combo, newValue, oldValue){
         var me = this,
             vm = me.getViewModel();
@@ -920,6 +930,7 @@ Ext.define('Ung.config.administration.MainController', {
         });
     },
 
+    // googleRefreshTaskBuild is used by the loadAdmin function to verify if google drive is connected
     googleRefreshTaskBuild: function() {
         var me = this;
 
@@ -985,11 +996,13 @@ Ext.define('Ung.config.administration.MainController', {
         };
     },
 
+    // googleDriveConfigure is a button handler to attempt and configure the google drive connector
     googleDriveConfigure: function(){
         this.refreshGoogleTask.start();
         window.open(Rpc.directData('rpc.UvmContext.googleManager.getAuthorizationUrl', window.location.protocol, window.location.host));
     },
 
+    // googledrivedisconnect is a button handler to attempt to disconnect google drive using the disconnectGoogleDrive RPC call
     googleDriveDisconnect: function(){
         var me = this, v = this.getView(), vm = this.getViewModel();
         Rpc.directData('rpc.UvmContext.googleManager.disconnectGoogleDrive');
@@ -997,7 +1010,9 @@ Ext.define('Ung.config.administration.MainController', {
         vm.set('settings.googleSettings.authenticationEnabled', false);
     }
 });
-
+/**
+ * AdminGridController is a grid component controller used by admin panels 
+ */
 Ext.define('Ung.cmp.AdminGridController', {
     extend: 'Ung.cmp.GridController',
 
