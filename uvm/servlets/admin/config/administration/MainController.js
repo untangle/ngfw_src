@@ -621,18 +621,21 @@ Ext.define('Ung.config.administration.MainController', {
         this.RootCAView = v.add({
             xtype: 'window',
             modal: true,
-    
+            width: 500,
+            height: 200,
+            autoScroll: true,
+            frame: false,
+            autoWidth: true,
+            autoHeight: true,
             title: 'Current Root CAs'.t(),
             items: [{
                 xtype: 'component',
                 padding: 10,
-                html: 'The Root CA selector let\'s you set a default Root CA or delete other root CAs'.t()
+                html: 'The Root CA selector let\'s you set the current Root CA or delete other root CAs'.t()
             }, {
                 xtype: 'grid',
                 itemId: 'rootCertificateView',
-                flex: 1,
                 bind: '{rootCertStore}',
-                layout: 'fit',
     
                 sortableColumns: false,
                 enableColumnHide: false,
@@ -641,46 +644,55 @@ Ext.define('Ung.config.administration.MainController', {
                     {
                         header: 'Subject'.t(),
                         dataIndex: 'certSubject',
-                        width: 220
                     }, {
                         header: 'Date Valid'.t(),
-                        width: 140,
                         dataIndex: 'dateValid',
                         renderer: function (date) {
                             return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
                         }
                     }, {
                         header: 'Date Expires'.t(),
-                        width: 140,
                         dataIndex: 'dateExpires',
                         renderer: function (date) {
                             return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
                         }
                     }, {
                         xtype: 'actioncolumn',
-                        header: 'Set as current root CA'.t(),
-                        width: 60,
+                        header: 'View'.t(),
                         align: 'center',
                         resizable: false,
+                        width: 60,
                         iconCls: 'fa fa-file-text',
                         tdCls: 'action-cell',
-                        handler: 'setRootCert',
-                        isDisabled: function (view, rowIndex, colIndex, item, record) {
-                            return record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer') || record.get('radiusServer');
+                        handler: function(view, rowIndex, colIndex, item, e, record) {
+                            var detail = '';
+                            detail += '<b>VALID:</b> ' + Ext.util.Format.date(new Date(record.get('dateValid').time), 'timestamp_fmt'.t()) + '<br/><br/>';
+                            detail += '<b>EXPIRES:</b> ' + Ext.util.Format.date(new Date(record.get('dateExpires').time), 'timestamp_fmt'.t()) + '<br/><br/>';
+                            detail += '<b>ISSUER:</b> ' + record.get('certIssuer') + '<br/><br/>';
+                            detail += '<b>SUBJECT:</b> ' + record.get('certSubject') + '<br/><br/>';
+                            detail += '<b>SAN:</b> ' + record.get('certNames') + '<br/><br/>';
+                            detail += '<b>EKU:</b> ' + record.get('certUsage') + '<br/><br/>';
+                            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Certificate Details'.t(), msg: '<tt>' + detail + '</tt>' });
                         }
                     }, {
                         xtype: 'actioncolumn',
-                        header: 'Delete',
-                        width: 60,
+                        header: 'Select'.t(),
                         align: 'center',
                         resizable: false,
+                        width: 60,
+                        iconCls: 'fa fa-file-text',
+                        tdCls: 'action-cell',
+                        handler: 'setRootCert'
+                    }, {
+                        xtype: 'actioncolumn',
+                        header: 'Delete',
+                        align: 'center',
+                        resizable: false,
+                        width: 60,
                         iconCls: 'fa fa-trash-o fa-red',
                         tdCls: 'action-cell',
                         certMode: 'ROOT',
-                        handler: 'deleteCert',
-                        isDisabled: function (view, rowIndex, colIndex, item, record) {
-                            return record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer') || record.get('radiusServer');
-                        }
+                        handler: 'deleteCert'
                     }]
             }]
         });
