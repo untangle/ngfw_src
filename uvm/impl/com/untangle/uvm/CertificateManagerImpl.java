@@ -608,6 +608,20 @@ public class CertificateManagerImpl implements CertificateManager
     }
 
     /**
+     * setActiveRootCertificate will set a specific root CA to the active root certificate
+     * @param fileName
+     */
+    public void setActiveRootCertificate(String fileName) {
+        // Use filename to get the parent dir
+        File rootCert = new File(fileName);
+        var certParent = rootCert.getParent();
+
+        // Use symlink function to replace CERT_STORE_PATH root certs
+        symlinkRootCerts(CERT_STORE_PATH, certParent, false);
+    }
+
+
+    /**
      * Called to create a new server certificate using the data provided.
      * 
      * @param certMode

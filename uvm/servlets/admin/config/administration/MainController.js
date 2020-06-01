@@ -821,6 +821,30 @@ Ext.define('Ung.config.administration.MainController', {
             });
     },
 
+    setRootCert: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        Ext.MessageBox.confirm('Are you sure you want to set this as your current root CA certificate?'.t(),
+        '<strong>SUBJECT:</strong> ' + record.get('certSubject'),
+        function(button) {
+            if (button === 'yes') {
+                if(Util.isDestroyed(record)){
+                    return;
+                }
+                Rpc.asyncData('rpc.UvmContext.certificateManager.setActiveRootCertificate', record.get('fileName'))
+                .then(function (result) {
+                    if(Util.isDestroyed(me)){
+                        return;
+                    }
+
+                    me.refreshRootCertificate(); 
+                    me.refreshRootCertificateList(); 
+
+                    Util.successToast('Root CA Updated'.t());
+                });
+            }
+        });
+    },
+
     skinChange: function(combo, newValue, oldValue){
         var me = this,
             vm = me.getViewModel();
