@@ -134,25 +134,27 @@ def get_udp_download_speed( receiverip, senderip, targetip=None, targetRate=None
         targetRate = "50M"
 
     # Use iperf to get UDP speed.  Returns number the udp speed
-    # start iperf receivier on server
-    remote_control.run_command("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverip)
-    # start the UDP generator on the client behind the Untangle.
     iperf_tries = 5
     while iperf_tries > 0:  # try iperf a few times if it fails to send UDP packets correctly.
+        # start iperf receivier on server
+        remote_control.run_command("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverip)
+
+        # start the UDP generator on the client behind the Untangle.
         report=remote_control.run_command("iperf -c " + targetip + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderip, stdout=True)
+
+        # kill iperf receiver and verify
+        iperfRunning = 0
+        timeout = 60
+        while iperfRunning == 0 and timeout > 0:
+            timeout -= 1
+            remote_control.run_command("pkill --signal 9 iperf", host=receiverip)
+            time.sleep(1)
+            iperfRunning = remote_control.run_command("pidof iperf", host=receiverip)
+
         if '%' in report:
             break
         else:
             iperf_tries -= 1
-
-    # kill iperf receiver and verify
-    iperfRunning = 0
-    timeout = 60
-    while iperfRunning == 0 and timeout > 0:
-        timeout -= 1
-        remote_control.run_command("pkill iperf", host=receiverip)
-        time.sleep(1)
-        iperfRunning = remote_control.run_command("pidof iperf", host=receiverip)
 
     lines = report.split("\n")
     udp_speed = 0
