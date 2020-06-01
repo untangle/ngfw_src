@@ -629,7 +629,7 @@ public class CertificateManagerImpl implements CertificateManager
         var certParent = rootCert.getParent();
 
         // Use symlink function to replace CERT_STORE_PATH root certs
-        symlinkRootCerts(CERT_STORE_PATH, certParent, false);
+        symlinkRootCerts(CERT_STORE_PATH, certParent + "/", false);
     }
 
 
@@ -1122,17 +1122,17 @@ public class CertificateManagerImpl implements CertificateManager
             UvmContextFactory.context().execManager().exec("mkdir -p " + sourceDir);
 
             // move cert, key, index, serial from old to new if move is specified
-            UvmContextFactory.context().execManager().exec("mv " + targetDir + "/untangle.crt " + sourceDir);
-            UvmContextFactory.context().execManager().exec("mv " + targetDir + "/untangle.key " + sourceDir);
-            UvmContextFactory.context().execManager().exec("mv " + targetDir + "/index* " + sourceDir);
-            UvmContextFactory.context().execManager().exec("mv " + targetDir + "/serial* " + sourceDir);
+            UvmContextFactory.context().execManager().exec("mv " + targetDir + "untangle.crt " + sourceDir);
+            UvmContextFactory.context().execManager().exec("mv " + targetDir + "untangle.key " + sourceDir);
+            UvmContextFactory.context().execManager().exec("mv " + targetDir + "index* " + sourceDir);
+            UvmContextFactory.context().execManager().exec("mv " + targetDir + "serial* " + sourceDir);
         }
 
         // symlink cert, key, index, serial from new location to old
-        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "/untangle.crt " + targetDir + "/untangle.crt");
-        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "/untangle.key " + targetDir + "/untangle.key");
-        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "/index.txt " + targetDir + "/index.txt");
-        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "/serial.txt " + targetDir + "/serial.txt");
+        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "untangle.crt " + targetDir + "untangle.crt");
+        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "untangle.key " + targetDir + "untangle.key");
+        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "index.txt " + targetDir + "index.txt");
+        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "serial.txt " + targetDir + "serial.txt");
 
     }
 
