@@ -487,6 +487,12 @@ public class CertificateManagerImpl implements CertificateManager
     {
         LinkedList<CertificateInformation> certList = new LinkedList<>();
 
+        // Use readlink to find where the current untangle.crt is linked to
+        // We do this instead of loading the File because it seems the JVM
+        // is caching the symlink path for a few seconds after we update
+        // the symlinks with symlinkRootCerts
+        String symlinkPath = UvmContextFactory.context().execManager().exec("readlink " + ROOT_CERT_FILE).getOutput().trim();
+        
         File filePath = new File(CERT_STORE_PATH);
 
         //Iterate directories in the CERT_STORE_PATH, if they contain files that end with CRT then add to the file arraylist
@@ -496,6 +502,12 @@ public class CertificateManagerImpl implements CertificateManager
                     if(crt.getName().endsWith(".crt")){
                         // Call getRootCertificateInformation and add the results into the certificateinformation list
                         var certInfo = getRootCertificateInformation(crt.getAbsolutePath());
+
+                        // If this is the root CA, then set the property
+                        if(symlinkPath.equalsIgnoreCase(certInfo.getFileName())) {
+                            certInfo.setActiveRootCA(true);
+                        }
+
                         certList.add(certInfo);
                     }
                 }
@@ -503,7 +515,7 @@ public class CertificateManagerImpl implements CertificateManager
         }
         logger.info("Root CA File List:" + certList);
 
-       return certList;
+       return (certList);
    }
 
    /**

@@ -618,8 +618,9 @@ Ext.define('Ung.config.administration.MainController', {
     showRootCertificateModal: function(btn) {
         var me = this, v = this.getView();
 
-        this.RootCAView = v.add({
+        me.RootCAView = v.add({
             xtype: 'window',
+            itemId: 'rootCertificateListView',
             modal: true,
             width: 500,
             height: 200,
@@ -634,7 +635,6 @@ Ext.define('Ung.config.administration.MainController', {
                 html: 'The Root CA selector let\'s you set the current Root CA or delete other root CAs'.t()
             }, {
                 xtype: 'grid',
-                itemId: 'rootCertificateView',
                 bind: '{rootCertStore}',
     
                 sortableColumns: false,
@@ -679,6 +679,9 @@ Ext.define('Ung.config.administration.MainController', {
                         width: 60,
                         iconCls: 'fa fa-file-text',
                         tdCls: 'action-cell',
+                        isDisabled: function (view, rowIndex, colIndex, item, record) {
+                            return record.get('activeRootCA');
+                        },
                         handler: 'setRootCert'
                     }, {
                         xtype: 'actioncolumn',
@@ -689,13 +692,15 @@ Ext.define('Ung.config.administration.MainController', {
                         iconCls: 'fa fa-trash-o fa-red',
                         tdCls: 'action-cell',
                         certMode: 'ROOT',
+                        isDisabled: function (view, rowIndex, colIndex, item, record) {
+                            return record.get('activeRootCA');
+                        },
                         handler: 'deleteCert'
                     }]
             }]
         });
 
-        this.RootCAView.show();
-
+        me.RootCAView.show();
     },
     importSignedRequest: function () {
         var me = this, v = this.getView();
@@ -793,8 +798,14 @@ Ext.define('Ung.config.administration.MainController', {
             Ext.MessageBox.alert('Certificate In Use'.t(), 'You can not delete a certificate that is assigned to one or more services.'.t());
             return;
         }
+
+        var msg = '<strong>SUBJECT:</strong> ' + record.get('certSubject');
+         if(item.certMode == 'SERVER') {
+             msg += '<br/><br/><strong>ISSUER:</strong> ' + record.get('certIssuer');
+         }
+
         Ext.MessageBox.confirm('Are you sure you want to delete this certificate?'.t(),
-            '<strong>SUBJECT:</strong> ' + record.get('certSubject') + '<br/><br/><strong>ISSUER:</strong> ' + record.get('certIssuer'),
+            msg,
             function(button) {
                 if (button === 'yes') {
                     if(Util.isDestroyed(record)){
@@ -821,24 +832,27 @@ Ext.define('Ung.config.administration.MainController', {
             });
     },
 
-    setRootCert: function (view, rowIndex, colIndex, item, e, record) {
+    setRootCert: function (v, rowIndex, colIndex, item, e, record) {
         var me = this;
         Ext.MessageBox.confirm('Are you sure you want to set this as your current root CA certificate?'.t(),
         '<strong>SUBJECT:</strong> ' + record.get('certSubject'),
         function(button) {
             if (button === 'yes') {
+                v.setLoading(true);
                 if(Util.isDestroyed(record)){
                     return;
                 }
                 Rpc.asyncData('rpc.UvmContext.certificateManager.setActiveRootCertificate', record.get('fileName'))
                 .then(function (result) {
                     if(Util.isDestroyed(me)){
+                        v.setLoading(false);
                         return;
                     }
 
+                    // Refresh certs 
                     me.refreshRootCertificate(); 
                     me.refreshRootCertificateList(); 
-
+                    v.setLoading(false);
                     Util.successToast('Root CA Updated'.t());
                 });
             }

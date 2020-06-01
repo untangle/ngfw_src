@@ -26,6 +26,7 @@ public class CertificateInformation implements JSONString, Serializable
     private boolean smtpsServer;
     private boolean ipsecServer;
     private boolean radiusServer;
+    private boolean activeRootCA;
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -61,6 +62,9 @@ public class CertificateInformation implements JSONString, Serializable
 
     public void setRadiusServer(boolean argValue) { radiusServer = argValue; }
     public boolean getRadiusServer() { return radiusServer; }
+
+    public void setActiveRootCA(boolean argValue) { activeRootCA = argValue; }
+    public boolean getActiveRootCA() { return activeRootCA; }
 
     public String toJSONString()
     {
