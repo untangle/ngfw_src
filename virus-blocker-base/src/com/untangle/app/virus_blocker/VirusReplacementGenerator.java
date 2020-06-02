@@ -9,6 +9,9 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.http.client.utils.URIBuilder;
 
 /**
@@ -16,6 +19,13 @@ import org.apache.http.client.utils.URIBuilder;
  */
 class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
 {
+    private static final HashMap<String, Object> CustomBlockRedirectParameters;
+    static {
+        CustomBlockRedirectParameters = new HashMap<>();
+        CustomBlockRedirectParameters.put("host", null);
+        CustomBlockRedirectParameters.put("url", null);
+    };
+
     private VirusBlockerBaseApp virusblockerApp = null;
 
     private static final String BLOCK_TEMPLATE
@@ -73,6 +83,20 @@ class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
             return redirectUri;
         } else {
             return super.getRedirectUri();
+        }
+    }
+
+    /**
+     * If using a custom block page, use set of custom parameters instead of
+     * defaults.
+     *
+     * @return New copy of map for parameters.
+     */
+    protected Map<String, Object> getRedirectParameters() {
+        if (virusblockerApp.getSettings().getCustomBlockPageEnabled()) {
+            return new HashMap<String, Object>(CustomBlockRedirectParameters);
+        } else {
+            return super.getRedirectParameters();
         }
     }
 }
