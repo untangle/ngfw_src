@@ -299,7 +299,7 @@ class BandwidthControlTests(NGFWTestCase):
 
     def test_014_qos_bypass_custom_rules_udp(self):
         global wan_limit_mbit
-        targetSpeedMbit = str(wan_limit_mbit)+"M"
+        targetSpeedMbit = str(wan_limit_mbit*.3)+"M"
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
