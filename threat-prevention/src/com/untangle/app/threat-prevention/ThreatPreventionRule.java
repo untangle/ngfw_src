@@ -91,23 +91,23 @@ public class ThreatPreventionRule implements JSONString, Serializable
         }
 
         /**
-         * It match, return true.
+         * It everything doesn't match, then return false.
          */
         for ( ThreatPreventionRuleCondition matcher : matchers ) {
-            if (matcher.matches(protocol,
+            if (!matcher.matches(protocol,
                             srcIntf, dstIntf,
                             srcAddress, dstAddress,
                             srcPort, dstPort,
                             attachments) ){
 
-                return true;
+                return false;
             }
         }
 
         /**
-         * Otherwise no match.
+         * Otherwise these all match.
          */
-        return false;
+        return true;
     }
 
     public boolean isMatch( AppSession session)
@@ -126,18 +126,16 @@ public class ThreatPreventionRule implements JSONString, Serializable
         }
 
         /**
-         * It match, return true.
+         * IF any matcher doesn't match - return false
          */
-        for ( ThreatPreventionRuleCondition matcher : matchers ) {
-            if (matcher.matches(session) ){
-                return true;
-            }
+        for (ThreatPreventionRuleCondition item : matchers) {
+            if (!item.matches(session)) return false;
         }
 
         /**
-         * Otherwise no match.
+         * Otherwise everything is matching.
          */
-        return false;
+        return true;
     }
 
     
