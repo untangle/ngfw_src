@@ -510,7 +510,6 @@ Ext.define('Ung.config.administration.MainController', {
             dialogCertTitle = 'Root Certificate'.t();
             dialogCertKey = 'Root Key'.t();
         } else {
-            console.log("uploadCertificate called with invalid certMode: " + certMode);
             return;
         }
 
@@ -536,8 +535,6 @@ Ext.define('Ung.config.administration.MainController', {
                     xtype: 'textarea',
                     id: 'key_data',
                     fieldLabel: dialogCertKey,
-                    hidden: certMode !== 'SERVER',
-                    disabled: certMode !== 'SERVER',
                     labelWidth: 80,
                     anchor: "100%",
                     height: 150,
