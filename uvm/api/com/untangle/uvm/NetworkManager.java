@@ -64,4 +64,6 @@ public interface NetworkManager
 
     String getNetworkSettingsFilename();
 
+    void updateReservedAccessRulePort(String oldPort, String newPort);
+
 }

@@ -139,6 +139,8 @@ public class WireGuardVpnApp extends AppBase
             return;
         }
 
+        Integer oldListenPort = this.settings.getListenPort();
+
         /**
          * Change current settings and update network reservations
          * any time settings are saved.
@@ -150,8 +152,17 @@ public class WireGuardVpnApp extends AppBase
 
         this.WireGuardVpnManager.configure();
 
-        // !!! only do this if we're running
-        if(restart == true){
+        if(!oldListenPort.equals(this.settings.getListenPort())){
+            /**
+             * Listen port changed; update reserved access rule.
+             */
+            UvmContextFactory.context().networkManager().updateReservedAccessRulePort( String.valueOf(oldListenPort), String.valueOf(this.settings.getListenPort()));
+            restart = true;
+        }
+
+
+        if( ( this.getRunState() == AppSettings.AppState.RUNNING ) &&
+            ( restart == true ) ){
             this.WireGuardVpnManager.restart();
         }
     }
