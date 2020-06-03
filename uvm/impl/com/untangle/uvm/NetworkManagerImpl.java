@@ -668,6 +668,34 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Modify reserved access rules by changing old port to new port.
+     * This is used by some services where it is common to change the listening port, like WireGuard.
+     *
+     * @param oldPort Existing port to match.
+     * @param newPort New port number.
+     */
+    public void updateReservedAccessRulePort(String oldPort, String newPort)
+    {
+        boolean changed = false;
+        for ( FilterRule rule : this.networkSettings.getAccessRules() ) {
+            if(rule.getReadOnly()){
+                List<FilterRuleCondition> conditions = rule.getConditions();
+                if ( conditions != null )
+                    for ( RuleCondition condition : conditions ) {
+                        if(condition.getConditionType() == RuleCondition.ConditionType.DST_PORT &&
+                           condition.getValue().equals(oldPort) ){
+                            condition.setValue(newPort);
+                            changed = true;
+                        }
+                    }
+            }
+        }
+        if(changed){
+            setNetworkSettings( this.networkSettings );
+        }
+    }
+
+    /**
      * Insert the iptables rules for capturing traffic
      */
     protected void insertRules( )
