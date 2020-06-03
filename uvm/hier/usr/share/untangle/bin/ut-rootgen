@@ -73,7 +73,6 @@ if [ "$2" != "DEFAULT" ]; then
 fi
 
 # next cleanup any existing files
-rm -f $CERT_PATH/*
 rm -f $UT_ROOT_PATH/untangle.crt
 rm -f $UT_ROOT_PATH/untangle.key
 rm -f $UT_ROOT_PATH/index*

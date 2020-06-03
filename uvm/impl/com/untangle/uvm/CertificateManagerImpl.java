@@ -52,6 +52,8 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
 
+    private static final String SSL_INSPECTOR_LOCATION = "/var/cache/untangle-ssl/";
+
     private static final String CERTIFICATE_UPLOAD_FILE = CERT_STORE_PATH + "upload.crt";
     private static final String KEY_UPLOAD_FILE = CERT_STORE_PATH + "upload.key";
     private static final String EXTERNAL_REQUEST_FILE = CERT_STORE_PATH + "request.csr";
@@ -108,13 +110,14 @@ public class CertificateManagerImpl implements CertificateManager
             logger.info("Restoring dev enviroment CA certificate and key files");
             UvmContextFactory.context().execManager().exec("mkdir -p " + CERT_STORE_PATH);
             if (!rootKeyFile.exists()) {
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.key " + ROOT_KEY_FILE);
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.crt " + ROOT_CERT_FILE);
+                UvmContextFactory.context().execManager().exec("cp -faR /etc/untangle/UntangleRootCA/" + CERT_STORE_PATH);
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.crt " + LOCAL_CSR_FILE);
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.crt " + LOCAL_CRT_FILE);
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.key " + LOCAL_KEY_FILE);
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pem " + LOCAL_PEM_FILE);
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pfx " + LOCAL_PFX_FILE);
+
+                symlinkRootCerts(CERT_STORE_PATH, CERT_STORE_PATH + "UntangleRootCA/", false);
             }
         }
 
@@ -129,8 +132,7 @@ public class CertificateManagerImpl implements CertificateManager
             // in the development enviroment save these to a global location
             // so they will survive a rake clean
             if (UvmContextFactory.context().isDevel()) {
-                UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
-                UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
+                UvmContextFactory.context().execManager().exec("cp -faR " + CERT_STORE_PATH + "/UntangleRootCA/ /etc/untangle/UntangleRootCA/");
             }
         }
 
@@ -512,7 +514,7 @@ public class CertificateManagerImpl implements CertificateManager
                 }
             }
         }
-        logger.info("Root CA File List:" + certList);
+        logger.debug("Root CA File List:" + certList);
 
        return (certList);
    }
@@ -586,8 +588,7 @@ public class CertificateManagerImpl implements CertificateManager
         // in the development enviroment save these to a global location
         // so they will survive a rake clean
         if (UvmContextFactory.context().isDevel()) {
-            UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
-            UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
+            UvmContextFactory.context().execManager().exec("cp -faR " + CERT_STORE_PATH + "/UntangleRootCA/ /etc/untangle/UntangleRootCA/");
         }
 
         return (true);
@@ -656,11 +657,8 @@ public class CertificateManagerImpl implements CertificateManager
         certLen = validateData(certData, CertContent.CERT);
         if (certLen == 0) return new ExecManagerResult(1, "The certificate is not valid");
 
-        // we don't need the key for the root cert
-        if(!certMode.equalsIgnoreCase("ROOT")) {
-            keyLen = validateData(keyData, CertContent.KEY);
-            if (keyLen == 0) return new ExecManagerResult(1, "The key is not valid");
-        }
+        keyLen = validateData(keyData, CertContent.KEY);
+        if (keyLen == 0) return new ExecManagerResult(1, "The key is not valid");
 
 
         extraLen = validateData(extraData, CertContent.EXTRA);
@@ -671,12 +669,11 @@ public class CertificateManagerImpl implements CertificateManager
         // next we save the uploaded key to a temp upload file
         storeData(keyData, KEY_UPLOAD_FILE);
 
-        if(!certMode.equalsIgnoreCase("ROOT")) {
-            // make sure the uploaded cert matches the uploaded key
-            if (!validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, KEY_UPLOAD_FILE)) {
-                return new ExecManagerResult(1, "The Server Certificate does not match the Certificate Key.");
-            }
+        // make sure the uploaded cert matches the uploaded key
+        if (!validateCertKeyPair(CERTIFICATE_UPLOAD_FILE, KEY_UPLOAD_FILE)) {
+            return new ExecManagerResult(1, "The Server Certificate does not match the Certificate Key.");
         }
+        
 
         // store them in permanent locations
         if(certMode.equalsIgnoreCase("SERVER")) {
@@ -708,10 +705,8 @@ public class CertificateManagerImpl implements CertificateManager
             // create the root cert dir using the basename
             UvmContextFactory.context().execManager().exec("mkdir -p " + newRootPath);
 
-            // store the key and cert there
-            if(keyLen > 0) {
-                storeData(keyData, newRootKey);
-            }
+            storeData(keyData, newRootKey);
+            
             storeData(certData, newRootCrt);
 
             // we use this certInfo to get the serial and add it to serial.txt
@@ -836,7 +831,7 @@ public class CertificateManagerImpl implements CertificateManager
             var certParent = rootCert.getParent();
 
             // verify dotLocation is not top level
-            if(certParent != CERT_STORE_PATH) {
+            if(!certParent.equalsIgnoreCase(CERT_STORE_PATH)) {
                 File parentFile = new File(certParent);
 
                 // rm the index, crt, key, serial files in here
@@ -1140,6 +1135,9 @@ public class CertificateManagerImpl implements CertificateManager
         UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "untangle.key " + targetDir + "untangle.key");
         UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "index.txt " + targetDir + "index.txt");
         UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "serial.txt " + targetDir + "serial.txt");
+
+        // Cleanup the untangle-ssl directory also
+        UvmContextFactory.context().execManager().exec("rm -f " + SSL_INSPECTOR_LOCATION + "*");
 
     }
 
