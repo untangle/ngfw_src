@@ -9,6 +9,7 @@ import pprint
 import time
 import copy
 import runtests
+import json
 
 from .global_functions import uvmContext
 from tests.common import NGFWTestCase
@@ -1487,6 +1488,28 @@ class NetworkTests(NGFWTestCase):
 
         assert(result1 == 0)
         assert(result2 == 1)
+
+    def test_190_qos_statistics(self):
+        # Check of the QoS Statistics script is returning the proper string.        
+        # Enable QoS if not enabled
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['qosSettings']['qosEnabled'] = True
+        i = 0
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWan']:
+                netsettings['interfaces']['list'][i]['downloadBandwidthKbps']=10000
+                netsettings['interfaces']['list'][i]['uploadBandwidthKbps']=10000
+            i += 1
+        netsettings['bypassRules']['list'] = []
+        netsettings['qosSettings']['qosRules']['list'] = []
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        qos_query_output = subprocess.check_output("/usr/share/untangle/bin/qos-status.py", shell=True)
+        qos_output_decode = qos_query_output.decode("utf-8")
+        # The JSON returned is using single quotes which is not JSON spec RFC7159 
+        qos_output_decode = qos_output_decode.replace("\'", "\"")
+        qos_data = json.loads(qos_output_decode)
+        assert(qos_data[0]["priority"] != '')
 
     @classmethod
     def final_extra_tear_down(cls):
