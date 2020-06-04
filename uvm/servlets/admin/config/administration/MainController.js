@@ -77,7 +77,7 @@ Ext.define('Ung.config.administration.MainController', {
         [ 'VE', 'Venezuela'.t() ], [ 'VN', 'Vietnam'.t() ], [ 'WF', 'Wallis and Futuna'.t() ], [ 'EH', 'Western Sahara'.t() ],
         [ 'YE', 'Yemen'.t() ], [ 'ZM', 'Zambia'.t() ], [ 'ZW', 'Zimbabwe'.t() ]
     ],
-
+    // loadAdmin is used to load settings into the admin panel from specific RPC managers
     loadAdmin: function () {
         var me = this, v = me.getView(),vm = me.getViewModel();
 
@@ -117,7 +117,7 @@ Ext.define('Ung.config.administration.MainController', {
 
         me.googleRefreshTaskBuild();
     },
-
+    // loadCertificates loads certificates from the certificateManager into appropriate stores
     loadCertificates: function () {
         var me = this, v = me.getView(), vm = me.getViewModel();
 
@@ -127,6 +127,7 @@ Ext.define('Ung.config.administration.MainController', {
             Rpc.asyncPromise('rpc.UvmContext.certificateManager.getRootCertificateInformation'),
             Rpc.asyncPromise('rpc.UvmContext.certificateManager.validateActiveInspectorCertificates'),
             Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+            Rpc.asyncPromise('rpc.UvmContext.certificateManager.getRootCertificateList')
         ], this)
         .then(function(result) {
             if(Util.isDestroyed(v, vm)){
@@ -137,7 +138,8 @@ Ext.define('Ung.config.administration.MainController', {
                 serverCertificates: result[0],
                 rootCertificateInformation: result[1],
                 serverCertificateVerification: result[2],
-                hostName: hostname
+                hostName: hostname,
+                rootCertificates: result[4]
             });
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -149,6 +151,28 @@ Ext.define('Ung.config.administration.MainController', {
         });
     },
 
+    // refreshRootCertificateList is used to refresh the rootCertificates VM object using the certificatemanager getRootCertificateList API
+    refreshRootCertificateList: function() {
+        var me = this, v = me.getView(), vm = me.getViewModel();
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.UvmContext.certificateManager.getRootCertificateList')
+        .then(function (result) {
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+
+            vm.set('rootCertificates', result);
+            v.setLoading(false);
+        }, function (ex) {
+            if(!Util.isDestroyed(v, vm)){
+                vm.set('panel.saveDisabled', true);
+                v.setLoading(false);
+            }
+        });
+    },
+
+    //refreshRootCertificate is used to refresh the rootCertificateInformation VM object with the CertificateManager.getRootCertificateInformation API
     refreshRootCertificate: function () {
         var me = this, v = me.getView().down('#rootCertificateView'), vm = me.getViewModel();
 
@@ -167,7 +191,7 @@ Ext.define('Ung.config.administration.MainController', {
             }
         });
     },
-
+    // refreshServerCertificate is used to refresh the serverCertificates VM Object array with the certificate manager getServerCertificateList API
     refreshServerCertificate: function () {
         var me = this, v = me.getView().down('#serverCertificateView'), vm = me.getViewModel();
 
@@ -187,7 +211,7 @@ Ext.define('Ung.config.administration.MainController', {
             }
         });
     },
-
+    // saveSettings is used to save admin settings
     saveSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
@@ -259,7 +283,7 @@ Ext.define('Ung.config.administration.MainController', {
             }
         });
     },
-
+    // generateCertificate is used for ROOT and Server certificates to generate a ROOT CA or a new Certificate issued by the chosen root CA
     generateCertificate: function (btn) {
         var me = this,
             certMode = btn.certMode,
@@ -372,12 +396,14 @@ Ext.define('Ung.config.administration.MainController', {
         });
         this.certDialog.show();
     },
-
+    // downloadRootCertificate calls the downloadForm to submit a root Certificate download request
     downloadRootCertificate: function () {
         var downloadForm = document.getElementById('downloadForm');
-        downloadForm.type.value = 'root_certificate_download';
+        downloadForm["type"].value = "certificate_download";
+        downloadForm["arg1"].value = "root";
         downloadForm.submit();
     },
+    // certGenerator is a buton handler for generating Root CAs and Server certificates
     certGenerator: function () {
         var me = this,
             form = this.certDialog.down('form'),
@@ -417,7 +443,7 @@ Ext.define('Ung.config.administration.MainController', {
 
         if (certMode === 'ROOT') {
             me.certDialog.setLoading(true);
-            Rpc.asyncData('rpc.UvmContext.certificateManager.generateCertificateAuthority', certSubject, altNames)
+            Rpc.asyncData('rpc.UvmContext.certificateManager.generateCertificateAuthority', values.commonName, certSubject)
             .then(function (result) {
                 if(Util.isDestroyed(me)){
                     return;
@@ -425,6 +451,7 @@ Ext.define('Ung.config.administration.MainController', {
                 Util.successToast('Certificate Authority generation successfully completed.'.t());
                 me.certDialog.close();
                 me.refreshRootCertificate();
+                me.refreshRootCertificateList();
                 me.certDialog.setLoading(false);
             }, function (ex) {
                 Util.handleException('Error during Certificate Authority generation.  Click OK to continue.'.t());
@@ -457,9 +484,10 @@ Ext.define('Ung.config.administration.MainController', {
 
         if (certMode === 'CSR') {
             var downloadForm = document.getElementById('downloadForm');
-            downloadForm.type.value = 'certificate_request_download';
-            downloadForm.arg1.value = certSubject;
-            downloadForm.arg2.value = altNames;
+            downloadForm.type.value = 'certificate_download';
+            downloadForm.arg1.value = 'csr';
+            downloadForm.arg2.value = certSubject;
+            downloadForm.arg3.value = altNames;
             downloadForm.submit();
             this.certDialog.close();
             return;
@@ -467,12 +495,28 @@ Ext.define('Ung.config.administration.MainController', {
 
     },
 
-    uploadServerCertificate: function () {
-        var me = this, v = this.getView();
+    // uploadCertificate is a button handler to handle uploading of Server and Root certificates
+    uploadCertificate: function (btn) {
+        var me = this, v = this.getView(), certMode = btn.certMode;
+        
+        //Use the certMode to figure out what type of upload this is
+        if (certMode === "SERVER") {
+            dialogTitle = 'Upload Server Certificate'.t();
+            dialogCertTitle = 'Server Certificate'.t();
+            dialogCertKey = 'Certificate Key'.t();
+
+        } else if (certMode === "ROOT") {
+            dialogTitle = 'Upload Root Certificate Authority (CA)'.t();
+            dialogCertTitle = 'Root Certificate'.t();
+            dialogCertKey = 'Root Key'.t();
+        } else {
+            return;
+        }
+
         this.uploadDialog = v.add({
             xtype: 'window',
             modal: true,
-            title: 'Upload Server Certificate'.t(),
+            title: dialogTitle,
             items: [{
                 xtype: 'form',
                 name: 'upload_form',
@@ -482,7 +526,7 @@ Ext.define('Ung.config.administration.MainController', {
                 items: [{
                     xtype: 'textarea',
                     id: 'cert_data',
-                    fieldLabel: 'Server Certificate'.t(),
+                    fieldLabel: dialogCertTitle,
                     labelWidth: 80,
                     anchor: "100%",
                     height: 150,
@@ -490,7 +534,7 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'textarea',
                     id: 'key_data',
-                    fieldLabel: 'Certificate Key'.t(),
+                    fieldLabel: dialogCertKey,
                     labelWidth: 80,
                     anchor: "100%",
                     height: 150,
@@ -499,6 +543,8 @@ Ext.define('Ung.config.administration.MainController', {
                     xtype: 'textarea',
                     id: 'extra_data',
                     fieldLabel: 'Optional Intermediate Certificates'.t(),
+                    hidden: certMode !== 'SERVER',
+                    disabled: certMode !== 'SERVER',
                     labelWidth: 80,
                     anchor: "100%",
                     height: 200,
@@ -519,11 +565,11 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'hidden',
                     name: 'type',
-                    value: 'server_cert'
+                    value: 'certificate_upload'
                 }, {
                     xtype: 'hidden',
                     name: 'argument',
-                    value: 'upload_server'
+                    value: certMode === 'SERVER' ?  'upload_server' : 'upload_root',
                 }],
                 buttons: [{
                     text: 'Upload Certificate'.t(),
@@ -532,12 +578,20 @@ Ext.define('Ung.config.administration.MainController', {
                         var cd = Ext.get('cert_data');
                         var kd = Ext.get('key_data');
                         var ed = Ext.get('extra_data');
-                        Rpc.asyncData('rpc.UvmContext.certificateManager.uploadServerCertificate', cd.component.getValue(), kd.component.getValue(), ed.component.getValue())
+                        Rpc.asyncData('rpc.UvmContext.certificateManager.uploadCertificate', certMode, cd.component.getValue(), kd.component.getValue(), ed.component.getValue())
                         .then(function(status){
                             if (status.result === 0) {
                                 Ext.MessageBox.alert('Certificate Upload Success'.t(), status.output);
                                 me.uploadDialog.close();
-                                me.refreshServerCertificate();
+
+                                if(certMode == 'SERVER') {
+                                    me.refreshServerCertificate();
+                                }
+
+                                if(certMode == 'ROOT') {
+                                    me.refreshRootCertificate(); 
+                                    me.refreshRootCertificateList(); 
+                                }
                             } else {
                                 Ext.MessageBox.alert('Certificate Upload Error'.t(), status.output);
                             }
@@ -564,6 +618,96 @@ Ext.define('Ung.config.administration.MainController', {
         this.uploadDialog.show();
     },
 
+    // showRootCertificateModal is a button handler that displays the Root Certificate selector modal
+    showRootCertificateModal: function(btn) {
+        var me = this, v = this.getView();
+
+        me.RootCAView = v.add({
+            xtype: 'window',
+            itemId: 'rootCertificateListView',
+            modal: true,
+            width: 500,
+            height: 200,
+            autoScroll: true,
+            frame: false,
+            autoWidth: true,
+            autoHeight: true,
+            title: 'Current Root CAs'.t(),
+            items: [{
+                xtype: 'component',
+                padding: 10,
+                html: 'The Root CA selector let\'s you set the current Root CA or delete other root CAs'.t()
+            }, {
+                xtype: 'grid',
+                bind: '{rootCertStore}',
+    
+                sortableColumns: false,
+                enableColumnHide: false,
+    
+                columns: [
+                    {
+                        header: 'Subject'.t(),
+                        dataIndex: 'certSubject',
+                    }, {
+                        header: 'Date Valid'.t(),
+                        dataIndex: 'dateValid',
+                        renderer: function (date) {
+                            return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
+                        }
+                    }, {
+                        header: 'Date Expires'.t(),
+                        dataIndex: 'dateExpires',
+                        renderer: function (date) {
+                            return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
+                        }
+                    }, {
+                        xtype: 'actioncolumn',
+                        header: 'View'.t(),
+                        align: 'center',
+                        resizable: false,
+                        width: 60,
+                        iconCls: 'fa fa-file-text',
+                        tdCls: 'action-cell',
+                        handler: function(view, rowIndex, colIndex, item, e, record) {
+                            var detail = '';
+                            detail += '<b>VALID:</b> ' + Ext.util.Format.date(new Date(record.get('dateValid').time), 'timestamp_fmt'.t()) + '<br/><br/>';
+                            detail += '<b>EXPIRES:</b> ' + Ext.util.Format.date(new Date(record.get('dateExpires').time), 'timestamp_fmt'.t()) + '<br/><br/>';
+                            detail += '<b>SUBJECT:</b> ' + record.get('certSubject') + '<br/><br/>';
+                            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Root CA Details'.t(), msg: '<tt>' + detail + '</tt>' });
+                        }
+                    }, {
+                        xtype: 'actioncolumn',
+                        header: 'Select'.t(),
+                        align: 'center',
+                        resizable: false,
+                        width: 60,
+                        iconCls: 'fa fa-file-text',
+                        tdCls: 'action-cell',
+                        isDisabled: function (view, rowIndex, colIndex, item, record) {
+                            return record.get('activeRootCA');
+                        },
+                        handler: 'setRootCert'
+                    }, {
+                        xtype: 'actioncolumn',
+                        header: 'Delete',
+                        align: 'center',
+                        resizable: false,
+                        width: 60,
+                        iconCls: 'fa fa-trash-o fa-red',
+                        tdCls: 'action-cell',
+                        certMode: 'ROOT',
+                        isDisabled: function (view, rowIndex, colIndex, item, record) {
+                            return record.get('activeRootCA');
+                        },
+                        handler: 'deleteCert'
+                    }]
+            }]
+        });
+
+        me.RootCAView.show();
+    },
+
+    // importSignedRequest is a button handler that displays the CSR import dialog
     importSignedRequest: function () {
         var me = this, v = this.getView();
         this.uploadDialog = v.add({
@@ -608,7 +752,7 @@ Ext.define('Ung.config.administration.MainController', {
                 }, {
                     xtype: 'hidden',
                     name: 'type',
-                    value: 'server_cert'
+                    value: 'certificate_upload'
                 }, {
                     xtype: 'hidden',
                     name: 'argument',
@@ -650,7 +794,8 @@ Ext.define('Ung.config.administration.MainController', {
         this.uploadDialog.show();
     },
 
-    deleteServerCert: function (view, rowIndex, colIndex, item, e, record) {
+    // deleteCert is used by Root CA grid selector and also the Server Certificate grid to delete specific certificates
+    deleteCert: function (view, rowIndex, colIndex, item, e, record) {
         var me = this;
         if (record.get('fileName') === 'apache.pem') {
             Ext.MessageBox.alert('System Certificate'.t(), 'This is the default system certificate and cannot be removed.'.t());
@@ -660,25 +805,69 @@ Ext.define('Ung.config.administration.MainController', {
             Ext.MessageBox.alert('Certificate In Use'.t(), 'You can not delete a certificate that is assigned to one or more services.'.t());
             return;
         }
+
+        var msg = '<strong>SUBJECT:</strong> ' + record.get('certSubject');
+         if(item.certMode == 'SERVER') {
+             msg += '<br/><br/><strong>ISSUER:</strong> ' + record.get('certIssuer');
+         }
+
         Ext.MessageBox.confirm('Are you sure you want to delete this certificate?'.t(),
-            '<strong>SUBJECT:</strong> ' + record.get('certSubject') + '<br/><br/><strong>ISSUER:</strong> ' + record.get('certIssuer'),
+            msg,
             function(button) {
                 if (button === 'yes') {
                     if(Util.isDestroyed(record)){
                         return;
                     }
-                    Rpc.asyncData('rpc.UvmContext.certificateManager.removeServerCertificate', record.get('fileName'))
+                    Rpc.asyncData('rpc.UvmContext.certificateManager.removeCertificate', item.certMode, record.get('fileName'))
                     .then(function (result) {
                         if(Util.isDestroyed(me)){
                             return;
                         }
-                        me.refreshServerCertificate();
+
+                        if(item.certMode == 'SERVER') {
+                            me.refreshServerCertificate();
+                        }
+
+                        if(item.certMode == 'ROOT') {
+                            me.refreshRootCertificate(); 
+                            me.refreshRootCertificateList(); 
+                        }
+
                         Util.successToast('Certificate removed'.t());
                     });
                 }
             });
     },
 
+    // setRootCert is a grid row handler that allows setting of a root CA to the current active root CA option
+    setRootCert: function (v, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        Ext.MessageBox.confirm('Are you sure you want to set this as your current root CA certificate?'.t(),
+        '<strong>SUBJECT:</strong> ' + record.get('certSubject'),
+        function(button) {
+            if (button === 'yes') {
+                v.setLoading(true);
+                if(Util.isDestroyed(record)){
+                    return;
+                }
+                Rpc.asyncData('rpc.UvmContext.certificateManager.setActiveRootCertificate', record.get('fileName'))
+                .then(function (result) {
+                    if(Util.isDestroyed(me)){
+                        v.setLoading(false);
+                        return;
+                    }
+
+                    // Refresh certs 
+                    me.refreshRootCertificate(); 
+                    me.refreshRootCertificateList(); 
+                    v.setLoading(false);
+                    Util.successToast('Root CA Updated'.t());
+                });
+            }
+        });
+    },
+
+    // skinChange is a change handler to handle skin changes to the UI
     skinChange: function(combo, newValue, oldValue){
         var me = this,
             vm = me.getViewModel();
@@ -740,6 +929,7 @@ Ext.define('Ung.config.administration.MainController', {
         });
     },
 
+    // googleRefreshTaskBuild is used by the loadAdmin function to verify if google drive is connected
     googleRefreshTaskBuild: function() {
         var me = this;
 
@@ -805,11 +995,13 @@ Ext.define('Ung.config.administration.MainController', {
         };
     },
 
+    // googleDriveConfigure is a button handler to attempt and configure the google drive connector
     googleDriveConfigure: function(){
         this.refreshGoogleTask.start();
         window.open(Rpc.directData('rpc.UvmContext.googleManager.getAuthorizationUrl', window.location.protocol, window.location.host));
     },
 
+    // googledrivedisconnect is a button handler to attempt to disconnect google drive using the disconnectGoogleDrive RPC call
     googleDriveDisconnect: function(){
         var me = this, v = this.getView(), vm = this.getViewModel();
         Rpc.directData('rpc.UvmContext.googleManager.disconnectGoogleDrive');
@@ -817,7 +1009,9 @@ Ext.define('Ung.config.administration.MainController', {
         vm.set('settings.googleSettings.authenticationEnabled', false);
     }
 });
-
+/**
+ * AdminGridController is a grid component controller used by admin panels 
+ */
 Ext.define('Ung.cmp.AdminGridController', {
     extend: 'Ung.cmp.GridController',
 
