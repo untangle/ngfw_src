@@ -676,17 +676,26 @@ Ext.define('Ung.config.administration.MainController', {
                             Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Root CA Details'.t(), msg: '<tt>' + detail + '</tt>' });
                         }
                     }, {
-                        xtype: 'actioncolumn',
+                        xtype: 'checkcolumn',
                         header: 'Select'.t(),
-                        align: 'center',
-                        resizable: false,
-                        width: 60,
-                        iconCls: 'fa fa-file-text',
-                        tdCls: 'action-cell',
-                        isDisabled: function (view, rowIndex, colIndex, item, record) {
-                            return record.get('activeRootCA');
-                        },
-                        handler: 'setRootCert'
+                        width: 80,
+                        dataIndex: 'activeRootCA',
+                        listeners: {
+                            // don't allow uncheck - they must pick a different cert
+                            beforecheckchange: function (el, rowIndex, checked) {
+                                return checked ? true : false;
+                            },
+                            // when a new cert is selected uncheck all others
+                            checkchange: function (el, rowIndex, checked, record) {
+                                el.up('grid').getStore().each(function (rec) {
+                                    if (rec !== record) {
+                                        rec.set('activeRootCA', false);
+                                    }
+                                });
+
+                                me.setRootCert(el, record);
+                            }
+                        }
                     }, {
                         xtype: 'actioncolumn',
                         header: 'Delete',
@@ -839,8 +848,8 @@ Ext.define('Ung.config.administration.MainController', {
             });
     },
 
-    // setRootCert is a grid row handler that allows setting of a root CA to the current active root CA option
-    setRootCert: function (v, rowIndex, colIndex, item, e, record) {
+    // setRootCert is a function that takes in a view and record and calls the setActiveRootCertificate API
+    setRootCert: function (v, record) {
         var me = this;
         Ext.MessageBox.confirm('Are you sure you want to set this as your current root CA certificate?'.t(),
         '<strong>SUBJECT:</strong> ' + record.get('certSubject'),
