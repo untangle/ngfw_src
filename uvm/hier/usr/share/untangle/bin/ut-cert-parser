@@ -19,6 +19,7 @@ tempFile = "/tmp/ut-cert-parser.tmp"
 certData = ""
 keyData = ""
 extraData = ""
+isRootCA = False
 
 def errorExit(message):
     problem = {}
@@ -33,6 +34,10 @@ if not os.access(sys.argv[1],os.R_OK):
     errorExit("Unable to read file")
 
 list = pem.parse_file(sys.argv[1])
+
+# Read the type of cert the parser was executed with
+if sys.argv[2] == "upload_root":
+    isRootCA = True
 
 if len(list) == 0:
     errorExit("The file does not contain any valid certificates or keys")
@@ -53,8 +58,9 @@ for item in list:
         # remove the temporary file
         os.remove(tempFile)
 
-        # if we found CA:TRUE then we have an intermediate certificate
-        if endFlag == 0:
+        # if we found CA:TRUE then we have an intermediate certificate, 
+        # unless this IS a root CA, as determined by the cert upload argument
+        if not isRootCA and endFlag == 0:
             extraData += item.as_text()
         # we did not find CA:TRUE so this must be the end-entity certificate
         else:
