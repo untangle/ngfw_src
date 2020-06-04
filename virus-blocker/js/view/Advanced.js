@@ -19,7 +19,6 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
             xtype: 'textfield',
             emptyText: 'http://example.com',
             bind: '{settings.customBlockPageUrl}',
-            vtype: 'url',
             listeners: {
                 // add 'http://' prefix if missing
                 blur: function(el) {

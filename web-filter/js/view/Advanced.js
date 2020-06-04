@@ -172,8 +172,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             fieldLabel: 'Custom block page URL'.t(),
             labelAlign: 'top',
             emptyText: 'http://example.com',
-            bind: '{settings.customBlockPageUrl}',
-            vtype: 'url'
+            bind: '{settings.customBlockPageUrl}'
         }]
     }, {
         xtype: 'fieldset',
