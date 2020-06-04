@@ -139,7 +139,10 @@ public class WireGuardVpnApp extends AppBase
             return;
         }
 
-        Integer oldListenPort = this.settings.getListenPort();
+        Integer oldListenPort = 51820;
+        if(this.settings != null){
+            oldListenPort = this.settings.getListenPort();
+        }
 
         /**
          * Change current settings and update network reservations
