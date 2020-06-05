@@ -60,6 +60,35 @@ class ThreatpreventionTests(NGFWTestCase):
         rules["list"].append(newRule)
         self._app.setRules(rules)
 
+    def multiple_rule_add(self, conditionType, conditionData, conditionType2, conditionData2, action="block", flagged=True, description="description"):
+        newRule =  {
+            "flag": flagged,
+            "enabled": True,
+            "description": description,
+            "action": action,
+            "javaClass": "com.untangle.app.threat_prevention.ThreatPreventionRule",
+                "conditions": {
+                    "javaClass": "java.util.LinkedList",
+                    "list": [
+                        {
+                            "conditionType": conditionType,
+                            "invert": False,
+                            "javaClass": "com.untangle.app.threat_prevention.ThreatPreventionRuleCondition",
+                            "value": conditionData
+                        },
+                        {
+                            "conditionType": conditionType2,
+                            "invert": False,
+                            "javaClass": "com.untangle.app.threat_prevention.ThreatPreventionRuleCondition",
+                            "value": conditionData2
+                        }
+                    ]
+                }
+            }
+        rules = self._app.getRules()
+        rules["list"].append(newRule)
+        self._app.setRules(rules)
+
     def rules_clear(self):
         rules = self._app.getRules()
         rules["list"] = []
@@ -163,6 +192,23 @@ class ThreatpreventionTests(NGFWTestCase):
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             "c_client_addr",remote_control.client_ip,
+                                            self.eventAppName() + '_blocked', False,
+                                            self.eventAppName() + '_flagged', False )
+        assert( found )
+
+    def test_080_multiple_rule_conditions_matching(self):
+        """Verify that conditions are AND logic"""
+        self.rules_clear()
+        self.multiple_rule_add("DST_ADDR",global_functions.test_server_ip,"DST_PORT","443")
+        result = remote_control.run_command("wget -q -4 -t 2 -O - https://test.untangle.com 2>&1 | grep -q Hi")
+        assert (result == 0)
+        result = remote_control.run_command("wget -q -4 -t 2 -O - https://test.untangle.com 2>&1 | grep -q blocked")
+        self.rules_clear()
+        assert (result == 0)
+        events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host","test.untangle.com",
                                             self.eventAppName() + '_blocked', False,
                                             self.eventAppName() + '_flagged', False )
         assert( found )

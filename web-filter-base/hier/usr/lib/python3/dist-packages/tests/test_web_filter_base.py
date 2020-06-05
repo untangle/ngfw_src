@@ -75,6 +75,35 @@ class WebFilterBaseTests(NGFWTestCase):
         rules["list"].append(newRule)
         self._app.setFilterRules(rules)
 
+    def multiple_rule_add(self, conditionType, conditionData, conditionType2, conditionData2, blocked=True, flagged=True, description="description"):
+        newRule =  {
+            "blocked": blocked,
+            "flagged": flagged,
+            "enabled": True,
+            "description": description,
+            "javaClass": "com.untangle.app.web_filter.WebFilterRule",
+                "conditions": {
+                    "javaClass": "java.util.LinkedList",
+                    "list": [
+                        {
+                            "conditionType": conditionType,
+                            "invert": False,
+                            "javaClass": "com.untangle.app.web_filter.WebFilterRuleCondition",
+                            "value": conditionData
+                        },
+                        {
+                            "conditionType": conditionType2,
+                            "invert": False,
+                            "javaClass": "com.untangle.app.web_filter.WebFilterRuleCondition",
+                            "value": conditionData2
+                        }
+                    ]
+                }
+            }
+        rules = self._app.getFilterRules()
+        rules["list"].append(newRule)
+        self._app.setFilterRules(rules)
+
     def rules_clear(self):
         rules = self._app.getFilterRules()
         rules["list"] = []
@@ -443,6 +472,18 @@ class WebFilterBaseTests(NGFWTestCase):
         self.rules_clear()
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/test/test.txt?argument", True)
+        assert( found )
+
+    def test_080_multiple_rule_conditions_matching(self):
+        """Verify that conditions are AND logic"""
+        self.rules_clear()
+        self.multiple_rule_add("DST_ADDR",global_functions.test_server_ip,"DST_PORT","443")
+        result = self.get_web_request_results(url="http://test.untangle.com/", expected="'Hi'")
+        assert (result == 0)
+        result = self.get_web_request_results(url="https://test.untangle.com/", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+        found = self.check_events("test.untangle.com", "/", True)
         assert( found )
 
     def test_101_reports_flagged_url(self):
