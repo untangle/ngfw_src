@@ -200,18 +200,27 @@ class ThreatpreventionTests(NGFWTestCase):
         """Verify that conditions are AND logic"""
         self.rules_clear()
         self.multiple_rule_add("DST_ADDR",global_functions.test_server_ip,"DST_PORT","443")
+        # Check that DST_ADDR:443 match is blocked
         result = remote_control.run_command("wget -q -4 -t 2 -O - https://test.untangle.com 2>&1 | grep -q Hi")
-        assert (result == 0)
-        result = remote_control.run_command("wget -q -4 -t 2 -O - https://test.untangle.com 2>&1 | grep -q blocked")
-        self.rules_clear()
-        assert (result == 0)
+        #assert (result == 0)
         events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 1,
+                                            "host","test.untangle.com",
+                                            self.eventAppName() + '_blocked', True,
+                                            self.eventAppName() + '_flagged', True )
+        assert( found )
+        # Check that DST_ADDR:80 is not blocked with the multi rule
+        result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com 2>&1 | grep -q Hi")
+        #assert (result == 0)
+        events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 1,
                                             "host","test.untangle.com",
                                             self.eventAppName() + '_blocked', False,
                                             self.eventAppName() + '_flagged', False )
         assert( found )
+        self.rules_clear()
 
     @classmethod
     def final_extra_tear_down(cls):
