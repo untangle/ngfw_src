@@ -1517,7 +1517,7 @@ class NetworkTests(NGFWTestCase):
                 found = True
             else:
                 timeout -= 1
-                time.sleep()
+                time.sleep(1)
         assert(qos_data[0]["priority"] != '')
 
     @classmethod
