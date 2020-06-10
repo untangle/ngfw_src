@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,6 +135,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         else {
             checkForNewDevices( readSettings );
+            checkForRemovedDevices( readSettings );
             
             this.networkSettings = readSettings;
             updateNetworkReservations(readSettings);
@@ -840,6 +842,33 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
     }
+
+     /**
+     * Remove any devices without a corresponding interface
+     * @param netSettings
+     */
+    private void checkForRemovedDevices( NetworkSettings netSettings )
+    {
+        List<DeviceSettings> deviceSettings = netSettings.getDevices();
+        Predicate<DeviceSettings> predicateTest = d -> {
+            boolean foundMatchingInterface = false;
+
+            for ( InterfaceSettings interfaceSettings : netSettings.getInterfaces() ) {
+                if ( d.getDeviceName().equals( interfaceSettings.getPhysicalDev() ) )
+                    foundMatchingInterface = true;
+            }
+
+            if ( ! foundMatchingInterface ) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        deviceSettings.removeIf(predicateTest);
+
+        netSettings.setDevices(deviceSettings);
+    }
     
     /**
      * Create the default NetworkSettings
@@ -1535,6 +1564,13 @@ public class NetworkManagerImpl implements NetworkManager
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             sanitizeInterfaceSettings( intf );
         }
+
+        /**
+         * Sanitize the device settings
+         * If an interface was deleted, delete the corresponding device
+         * from the device list
+         */
+        checkForRemovedDevices( networkSettings );
 
         /**
          * Sort Interfaces
