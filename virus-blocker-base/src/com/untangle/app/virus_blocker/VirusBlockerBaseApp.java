@@ -91,7 +91,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
         /**
          * Session matcher checker and handler where we kill all FTP, HTTP, and
          * SMTP sessions
-         * 
+         *
          * @param policyId
          *        The policy ID
          * @param protocol
@@ -135,7 +135,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Constructor
-     * 
+     *
      * @param appSettings
      *        The application settings
      * @param appProperties
@@ -161,14 +161,14 @@ public abstract class VirusBlockerBaseApp extends AppBase
         this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http", this, null, virusHttpHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, getHttpStrength(), isPremium());
         this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp", this, null, virusSmtpHandler, Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, getSmtpStrength(), isPremium());
         this.connectors = new PipelineConnector[] { virusFtpCtl, virusFtpData, virusHttp, virusSmtp };
-        this.replacementGenerator = new VirusReplacementGenerator(getAppSettings());
+        this.replacementGenerator = buildReplacementGenerator();
 
         String appName = getName();
     }
 
     /**
      * Get the application settings
-     * 
+     *
      * @return The application settings
      */
     public VirusSettings getSettings()
@@ -178,7 +178,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Set the application settings
-     * 
+     *
      * @param newSettings
      *        The new settings
      */
@@ -189,7 +189,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Get the list of HTTP file extensions
-     * 
+     *
      * @return The list of extensions
      */
     public List<GenericRule> getHttpFileExtensions()
@@ -199,7 +199,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Set the list of HTTP file extensions
-     * 
+     *
      * @param fileExtensions
      *        The list of extensions
      */
@@ -211,7 +211,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Get the HTTP mime types
-     * 
+     *
      * @return The list of mime types
      */
     public List<GenericRule> getHttpMimeTypes()
@@ -221,7 +221,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Set the HTTP mime types
-     * 
+     *
      * @param mimeTypes
      *        The list of mime types
      */
@@ -233,7 +233,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Get the pass sites
-     * 
+     *
      * @return The list of pass sites
      */
     public List<GenericRule> getPassSites()
@@ -243,7 +243,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Get the pass sites
-     * 
+     *
      * @param passSites
      *        The list of pass sites
      */
@@ -255,7 +255,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Get the virus block details
-     * 
+     *
      * @param nonce
      *        The nonce
      * @return The details
@@ -267,7 +267,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Generate a response
-     * 
+     *
      * @param redirectDetails
      *        Block details
      * @param session
@@ -283,7 +283,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Generate a response
-     * 
+     *
      * @param redirectDetails
      *        The nonce
      * @param session
@@ -301,7 +301,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Get the date of the last virus signature update
-     * 
+     *
      * @return The date of the last virus signature update
      */
     public Date getLastSignatureUpdate()
@@ -311,7 +311,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Checks to see if the local file scanner is available
-     * 
+     *
      * @return True if available, otherwise false
      */
     public boolean isFileScannerAvailable()
@@ -321,42 +321,42 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Gets the HTTP strength
-     * 
+     *
      * @return The HTTP strength
      */
     protected abstract int getHttpStrength();
 
     /**
      * Gets the FTP strength
-     * 
+     *
      * @return The FTP strength
      */
     protected abstract int getFtpStrength();
 
     /**
      * Gets the SMTP strength
-     * 
+     *
      * @return The SMTP strength
      */
     protected abstract int getSmtpStrength();
 
     /**
      * Gets the name
-     * 
+     *
      * @return The name
      */
     public abstract String getName();
 
     /**
      * Gets the application name
-     * 
+     *
      * @return The application name
      */
     public abstract String getAppName();
 
     /**
      * Checks to see if application is free or premium
-     * 
+     *
      * @return False for free, true for premium
      */
     public abstract boolean isPremium();
@@ -385,7 +385,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Get the pipeline connectors
-     * 
+     *
      * @return The pipeline connectors
      */
     @Override
@@ -409,7 +409,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Initialize the mime types
-     * 
+     *
      * @param vs
      *        The virus settings
      */
@@ -432,7 +432,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Initialize the pass sites
-     * 
+     *
      * @param vs
      *        The virus settings
      */
@@ -449,7 +449,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Initialize the file extensions
-     * 
+     *
      * @param vs
      *        The virus settings
      */
@@ -503,6 +503,15 @@ public abstract class VirusBlockerBaseApp extends AppBase
     }
 
     /**
+     * /** Build a replacement generator
+     *
+     * @return The replacement generator
+     */
+    protected VirusReplacementGenerator buildReplacementGenerator() {
+        return new VirusReplacementGenerator(getAppSettings(), this);
+    }
+
+    /**
      * Called after the application has been initialized
      */
     @Override
@@ -541,7 +550,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Called before the application is started
-     * 
+     *
      * @param isPermanentTransition
      *        Permanent transition flag
      */
@@ -554,7 +563,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Called after the application is started
-     * 
+     *
      * @param isPermanentTransition
      *        Permanent transition flag
      */
@@ -569,7 +578,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Called after the application is stopped
-     * 
+     *
      * @param isPermanentTransition
      *        Permanent transition flag
      */
@@ -580,7 +589,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Gets the virus scanner
-     * 
+     *
      * @return The virus scanner
      */
     protected VirusScanner getScanner()
@@ -590,7 +599,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Sets the virus scanner
-     * 
+     *
      * @param scanner
      *        The scanner
      */
@@ -601,7 +610,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Gets the trickle rate percentage
-     * 
+     *
      * @return The trickle rate percentage
      */
     protected int getTricklePercent()
@@ -652,7 +661,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Deploy the web application
-     * 
+     *
      * @param logger
      *        The logger
      */
@@ -671,7 +680,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Undeploy the web application
-     * 
+     *
      * @param logger
      *        The logger
      */
@@ -691,7 +700,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     /**
      * Set the current settings to new Settings And save the settings to disk
-     * 
+     *
      * @param newSettings
      *        The new settings
      */
