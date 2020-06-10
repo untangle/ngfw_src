@@ -5,12 +5,11 @@ Get signature updates
 import sys
 import getopt
 import os
+import subprocess
 import re
 import shutil
 import tarfile
 import requests
-# import urllib3
-# import urllib3.PoolManager()
 
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
@@ -25,6 +24,8 @@ DEBUG = False
 CHUNK_SIZE = 1024 * 1024
 FORCE_SYNC = False
 UVM_CONTEXT = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
+SURICATA_VERSION_RE = re.compile(r'Suricata version (\d+)\.')
+SIGNATURE_URL_TEMPLATE = "https://ids.untangle.com/suricatasignatures{version}.tar.gz"
 
 class Update:
     """
@@ -33,6 +34,7 @@ class Update:
     DEBUG = False
     errors = []
     settings_file_name_regex = re.compile(r'^settings_(\d+).js$')
+    downloaded_status_code = 0
 
     def __init__(self, base_directory, url):
         self.debug = DEBUG
@@ -105,6 +107,10 @@ class Update:
                 'msg': "Cannot open url=" + self.url,
                 'error': "\n".join(str(v) for v in sys.exc_info())
             })
+            return False
+
+        self.downloaded_status_code = request.status_code
+        if self.downloaded_status_code == 404:
             return False
 
         url_file_size = int(request.headers['content-length'])
@@ -282,7 +288,7 @@ def main(argv):
     global DEBUG
     global FORCE_SYNC
     signatures_template_directory = "/usr/share/untangle-suricata-config"
-    url = UVM_CONTEXT.uriManager().getUri("https://ids.untangle.com/suricatasignatures.tar.gz")
+    urls = []
     update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
     force_download = False
 
@@ -305,33 +311,55 @@ def main(argv):
         elif opt in ("-r", "--signatures_template_directory"):
             signatures_template_directory = arg
         elif opt in ("-u", "--url"):
-            url = arg
+            # url = arg
+            urls.append(arg)
+
+    if len(urls) == 0:
+        """
+        Determine default urls to download
+        """
+        # Determine current signature set based on Suricata version.
+        uri_manager_template = UVM_CONTEXT.uriManager().getUri(SIGNATURE_URL_TEMPLATE)
+        suricata_version = subprocess.check_output(["/bin/suricata","-V"])
+        match = re.search(SURICATA_VERSION_RE, suricata_version.decode('ascii'))
+        if match:
+            urls.append(uri_manager_template.format(version=match.group(1)))
+        # Default fallback signture set.
+        urls.append(uri_manager_template.format(version=""))
+
 
     if DEBUG is True:
         print("signatures_template_directory = " + signatures_template_directory)
-        print("url = " + url)
+        print("urls = " + ", ".join(urls))
 
-    update = Update(signatures_template_directory, url)
-    update.setup()
-    if FORCE_SYNC is True:
-        update.synchronize()
-    else:
-        if (force_download or update.app_ids) and update.download() is True and update.validate() and update.install():
+    for url in urls:
+        update = Update(signatures_template_directory, url)
+        update.setup()
+        if FORCE_SYNC is True:
             update.synchronize()
+        else:
+            if (force_download or update.app_ids) and update.download() is True and update.validate() and update.install():
+                update.synchronize()
 
-    """
-    Always update last updated time even if nothing was downloaded 
-    (suricata signatures aren't updated every day)
-    Otherwise customers will call to complain.
-    """
-    if os.path.exists(update_ran_file_name):
-        os.utime(update_ran_file_name, None)
-    else:
-        update_ran_file = open(update_ran_file_name, "a")
-        update_ran_file.close()
+        """
+        Always update last updated time even if nothing was downloaded 
+        (suricata signatures aren't updated every day)
+        Otherwise customers will call to complain.
+        """
+        if os.path.exists(update_ran_file_name):
+            os.utime(update_ran_file_name, None)
+        else:
+            update_ran_file = open(update_ran_file_name, "a")
+            update_ran_file.close()
 
-    if update.errors:
-        print(update.errors)
+        if update.downloaded_status_code == 404:
+            # If errored on download, try failover.
+            continue
+
+        if update.errors:
+            print(update.errors)
+        else:
+            break
     sys.exit()
 
 if __name__ == "__main__":
