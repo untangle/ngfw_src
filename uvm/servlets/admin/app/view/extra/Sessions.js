@@ -680,7 +680,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: Renderer.stringFilter
             },{
                 hidden: true,
-                header: 'Referer'.t(),
+                header: 'Referrer'.t(),
                 dataIndex: "http-referer",
                 width: Renderer.messageWidth,
                 filter: Renderer.stringFilter
