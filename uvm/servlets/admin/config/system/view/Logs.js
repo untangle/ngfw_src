@@ -20,17 +20,17 @@ Ext.define('Ung.config.system.view.Logs', {
         items: [{
             xtype: 'displayfield',
             fieldLabel: 'Disk space used by logs'.t(),
-            labelWidth: 150,
+            labelWidth: 250,
             bind:{
                 value: '{logDirectorySizeHuman}'
             }
         },{
-            fieldLabel: 'Log retention'.t(),
+            fieldLabel: 'For each log type, number of logs to retain'.t(),
             xtype: 'numberfield',
             bind: '{systemSettings.logRetention}',
             toValidate: true,
-            labelWidth: 150,
-            width: 220,
+            labelWidth: 250,
+            width: 300,
             allowDecimals: false,
             minValue: 1,
             maxValue: 366,
