@@ -51,6 +51,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         items:[{
             xtype: 'textfield',
             fieldLabel: 'DNS Server'.t(),
+            vtype: 'ipMatcher',
             bind: {
                 value: '{settings.dnsServer}'
             }
