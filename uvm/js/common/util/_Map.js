@@ -436,7 +436,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         referer: {
-            col: { text: 'Referer'.t(), width: 120 },
+            col: { text: 'Referrer'.t(), width: 120 },
             fld: { type: 'string' }
         },
         remote_addr: {
