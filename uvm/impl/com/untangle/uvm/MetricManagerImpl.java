@@ -530,7 +530,7 @@ public class MetricManagerImpl implements MetricManager
     {
         File root = new File("/");
         m.put("totalDiskSpace", root.getTotalSpace());
-        m.put("freeDiskSpace", root.getFreeSpace());
+        m.put("freeDiskSpace", root.getUsableSpace());
 
         long diskReads0 = 0, diskReads1 = 0;
         long diskWrites0 = 0, diskWrites1 = 0;
