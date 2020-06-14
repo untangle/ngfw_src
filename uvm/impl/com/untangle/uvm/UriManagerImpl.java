@@ -199,7 +199,7 @@ public class UriManagerImpl implements UriManager
         LinkedList<UriTranslation> uriTranslations = new LinkedList<>();
 
         UriTranslation uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://ids.untangle.com/suricatasignatures{version}.tar.gz");
+        uriTranslation.setUri("https://ids.untangle.com/suricatasignatures.tar.gz");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
