@@ -25,7 +25,7 @@ CHUNK_SIZE = 1024 * 1024
 FORCE_SYNC = False
 UVM_CONTEXT = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
 SURICATA_VERSION_RE = re.compile(r'Suricata version (\d+)\.')
-SIGNATURE_URL_TEMPLATE = "https://ids.untangle.com/suricatasignatures{version}.tar.gz"
+SIGNATURE_URL_TEMPLATE = "https://ids.untangle.com/suricatasignatures.tar.gz"
 
 class Update:
     """
@@ -320,6 +320,8 @@ def main(argv):
         """
         # Determine current signature set based on Suricata version.
         uri_manager_template = UVM_CONTEXT.uriManager().getUri(SIGNATURE_URL_TEMPLATE)
+        # Set version parameter
+        uri_manager_template = uri_manager_template.replace(".tar.gz", "{version}.tar.gz")
         suricata_version = subprocess.check_output(["/bin/suricata","-V"])
         match = re.search(SURICATA_VERSION_RE, suricata_version.decode('ascii'))
         if match:
