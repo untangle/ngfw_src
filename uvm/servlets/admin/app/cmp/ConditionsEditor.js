@@ -627,7 +627,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             type: 'textfield'
         },{
             name:'HTTP_REFERER',
-            displayName: 'HTTP: Referer'.t(),
+            displayName: 'HTTP: Referrer'.t(),
             type: 'textfield'
         },{
             name:'HTTP_URI', 

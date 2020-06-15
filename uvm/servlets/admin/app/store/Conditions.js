@@ -37,7 +37,7 @@ Ext.define('Ung.store.Conditions', {
         {name:'CLIENT_QUOTA_ATTAINMENT',displayName: 'Client Quota Attainment'.t(), editorType: 'textfield', visible: false},
         {name:'SERVER_QUOTA_ATTAINMENT',displayName: 'Server Quota Attainment'.t(), editorType: 'textfield', visible: false},
         {name:'HTTP_HOST',displayName: 'HTTP: Hostname'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_REFERER',displayName: 'HTTP: Referer'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_REFERER',displayName: 'HTTP: Referrer'.t(), editorType: 'textfield', visible: true},
         {name:'HTTP_URI',displayName: 'HTTP: URI'.t(), editorType: 'textfield', visible: true},
         {name:'HTTP_URL',displayName: 'HTTP: URL'.t(), editorType: 'textfield', visible: true},
         {name:'HTTP_CONTENT_TYPE',displayName: 'HTTP: Content Type'.t(), editorType: 'textfield', visible: true},

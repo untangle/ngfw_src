@@ -55,7 +55,7 @@ Ext.define('Ung.config.system.view.Protocols', {
             }]
         }, {
             xtype: 'checkbox',
-            boxLabel: 'Log Referer in HTTP events.'.t(),
+            boxLabel: 'Log Referrer in HTTP events.'.t(),
             bind: '{httpSettings.logReferer}'
         }]
     }, {
