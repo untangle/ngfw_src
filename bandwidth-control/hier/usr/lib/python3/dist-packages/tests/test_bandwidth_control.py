@@ -299,7 +299,14 @@ class BandwidthControlTests(NGFWTestCase):
 
     def test_014_qos_bypass_custom_rules_udp(self):
         global wan_limit_mbit
-        targetSpeedMbit = str(wan_limit_mbit*.3)+"M"
+
+        # severely limited means 10% of wan download bandwidth
+        expectedSpeedMbit = wan_limit_mbit*.1
+
+        # a udp iperf test will fail if it loses more than 40% of sent
+        # packets, so make sure expectedSpeedMbit is a little less than
+        # 60% of targetSpeedMbit
+        targetSpeedMbit = str(expectedSpeedMbit*1.6)+"M"
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
@@ -381,10 +388,14 @@ class BandwidthControlTests(NGFWTestCase):
 
     def test_021_severely_limited_udp(self):
         global wan_limit_mbit
-        # only use 30% because QoS will limit to 10% and we want to make sure it takes effect
-        # really high levels will actually be limited by the untangle-vm throughput instead of QoS
-        # which can interfere with the test
-        targetSpeedMbit = str(wan_limit_mbit*.3)+"M"
+
+        # severely limited means 10% of wan download bandwidth
+        expectedSpeedMbit = wan_limit_mbit*.1
+
+        # a udp iperf test will fail if it loses more than 40% of sent
+        # packets, so make sure expectedSpeedMbit is a little less than
+        # 60% of targetSpeedMbit
+        targetSpeedMbit = str(expectedSpeedMbit*1.6)+"M"
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
