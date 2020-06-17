@@ -23,7 +23,9 @@ public class IPMatcher
     private static final String MARKER_SEPERATOR = ",";
     private static final String MARKER_RANGE = "-";
     private static final String MARKER_SUBNET = "/";
-    private static final String IPADDR_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+    // Standard IP address.
+    public static final String IPADDR_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+    // Java matcher for IP addresses with leading slashes.
     public static final Pattern JAVA_IPADDR_REGEX = Pattern.compile("^/(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
 
     private static IPMatcher ANY_MATCHER = new IPMatcher(MARKER_ANY);
