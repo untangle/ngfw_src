@@ -14,6 +14,7 @@ Ext.define('Ung.apps.threatprevention.MainModel', {
     },
     stores: {
         rules: { data: '{settings.rules.list}' },
+        passSites: { data: '{settings.passSites.list}' },
         threatLookupInfo: {
             model: 'Ung.apps.threatprevention.ThreatLookupInfo'
         }
