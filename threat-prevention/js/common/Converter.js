@@ -1,34 +1,53 @@
 Ext.define('Ung.common.Converter.threatprevention', {
     singleton: true,
 
+    reason: function (v) { return Map.webReasons[v] || 'no rule applied'.t(); },
+
     ruleIdMap: {},
     ruleId: function (value, record) {
         if (value == 0) {
             return '';
         }
         var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
-        if (!Ung.common.Renderer.threatprevention.ruleIdMap[policyId] ||
-            !Ung.common.Renderer.threatprevention.ruleIdMap[policyId] ||
-            (value != Ung.common.Renderer.threatprevention.listKey && !(value in Ung.common.Renderer.threatprevention.ruleIdMap[policyId]))) {
-            if (!Ung.common.Renderer.threatprevention.ruleIdMap[policyId]) {
+        var reason = record && record.get && record.get('threat_prevention_reason') ? record.get('threat_prevention_reason') : 'N';
+        if(reason != 'N'){
+            for(var id in Map.webReasons){
+                if(Map.webReasons.hasOwnProperty(id)){
+                    if(Map.webReasons[id] == reason){
+                        reason = id;
+                        if(reason == 'default'){
+                            reason = 'N';
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if(!Ung.common.Renderer.threatprevention.ruleIdMap[policyId] ||
+            !Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason] ||
+            (value != Renderer.listKey && !(value in Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason]))){
+            if(!Ung.common.Renderer.threatprevention.ruleIdMap[policyId]){
                 Ung.common.Renderer.threatprevention.ruleIdMap[policyId] = {};
             }
-            var ruleInfo = Renderer.getReportInfo(record, ["threat-prevention"], "rules");
+            if(!Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason]){
+                Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason] = {};
+            }
 
-            if (ruleInfo) {
-                ruleInfo.forEach(function (rule) {
-                    Ung.common.Renderer.threatprevention.ruleIdMap[policyId][rule["ruleId"]] = rule["description"];
+            var ruleInfo = Renderer.getReportInfo(record, ["threat-prevention"], reason == 'I' ? "passSites" : "rules");
+            if(ruleInfo){
+                ruleInfo.forEach( function(rule){
+                    Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason][rule["id"] ? rule["id"] : rule["ruleId"]] = rule["description"] ? rule["description"] : rule["string"];
                 });
             }
-            if (!(value in Ung.common.Renderer.threatprevention.ruleIdMap[policyId]) && (value != Ung.common.Renderer.threatprevention.listKey)) {
+            if(!(value in Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason]) && (value != Renderer.listKey)){
                 // If category cannot be found, don't just keep coming back for more.
-                Ung.common.Renderer.threatprevention.ruleIdMap[policyId][value] = 'Unknown'.t();
+                Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason][value] = 'Unknown'.t();
             }
         }
         if (value == Renderer.listKey) {
-            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId] + ' [' + value + ']';
+            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason] + ' [' + value + ']';
         } else {
-            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId][value] + ' [' + value + ']';
+            return Ung.common.Renderer.threatprevention.ruleIdMap[policyId][reason][value] + ' [' + value + ']';
         }
     },
 
