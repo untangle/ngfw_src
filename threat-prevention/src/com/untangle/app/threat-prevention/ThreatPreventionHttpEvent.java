@@ -18,6 +18,7 @@ public class ThreatPreventionHttpEvent extends LogEvent
     private SessionEvent sessionEvent;
     private Boolean blocked;
     private Boolean flagged;
+    private ThreatPreventionReason  reason;
     private Integer ruleId = 0;
     private Integer clientReputation = 0;
     private Integer clientCategories = 0;
@@ -26,12 +27,13 @@ public class ThreatPreventionHttpEvent extends LogEvent
     
     public ThreatPreventionHttpEvent() { }
 
-    public ThreatPreventionHttpEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Integer ruleId, int clientReputation, int clientCategories, int serverReputation, int serverCategories)
+    public ThreatPreventionHttpEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, ThreatPreventionReason reason, Integer ruleId, int clientReputation, int clientCategories, int serverReputation, int serverCategories)
     {
         this.requestLine = requestLine;
         this.sessionEvent = sessionEvent;
         this.blocked = blocked;
         this.flagged = flagged;
+        this.reason = reason;
         this.ruleId = ruleId;
         this.clientReputation = clientReputation;
         this.clientCategories = clientCategories;
@@ -44,6 +46,9 @@ public class ThreatPreventionHttpEvent extends LogEvent
 
     public Boolean getFlagged() { return flagged; }
     public void setFlagged( Boolean newValue ) { this.flagged = newValue; }
+
+    public ThreatPreventionReason getReason() { return reason; }
+    public void setReason( ThreatPreventionReason reason ) { this.reason = reason; }
 
     public Integer getRuleId() { return ruleId; }
     public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
@@ -74,6 +79,7 @@ public class ThreatPreventionHttpEvent extends LogEvent
             "SET " +
             "threat_prevention_blocked  = ?, " + 
             "threat_prevention_flagged  = ?, " +
+            "threat_prevention_reason = ?, " + 
             "threat_prevention_rule_id  = ?, " +
             "threat_prevention_client_reputation = ?, " +
             "threat_prevention_client_categories = ?, " +
@@ -87,6 +93,7 @@ public class ThreatPreventionHttpEvent extends LogEvent
         int i = 0;
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setBoolean(++i, getFlagged());
+        pstmt.setString(++i, ((getReason() == null) ? "" : Character.toString(getReason().getKey())));
         pstmt.setInt(++i, getRuleId());
         pstmt.setInt(++i, getClientReputation());
         pstmt.setInt(++i, getClientCategories());
