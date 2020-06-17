@@ -4,6 +4,17 @@ Ext.define('Ung.widget.Resources', {
 
     controller: 'widget',
 
+    viewModel: {
+        formulas: {
+            diskBackgroundStyle: function(get){
+                if(get('stats.freeDiskPercent') < 5){
+                    return 'background-color: red;';
+                }
+                return 'background-color:;';
+            }
+        }
+    },
+
     border: false,
     baseCls: 'widget',
     cls: 'small',
@@ -60,7 +71,7 @@ Ext.define('Ung.widget.Resources', {
             bind: {
                 html: '<div>' +
                         '<p style="margin: 2px; text-align: left; font-weight: bold; font-size: 14px;">' + 'Disk'.t() + '</p>' +
-                        '<div class="load-bar"><div class="load-bar-inner" style="left: -{stats.freeDiskPercent}%;"></div><p>{stats.totalDisk}</p></div>' +
+                        '<div class="load-bar"><div class="load-bar-inner" style="left: -{stats.freeDiskPercent}%;{diskBackgroundStyle}"></div><p>{stats.totalDisk}</p></div>' +
                         '<div class="load-bar-values">' +
                             '<div class="load-used"><strong>{stats.usedDiskPercent}%</strong> used<br/><span>{stats.usedDisk}</span></div>' +
                             '<div class="load-free">free <strong>{stats.freeDiskPercent}%</strong><br/><span>{stats.freeDisk}</span></div>' +

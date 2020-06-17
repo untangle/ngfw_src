@@ -503,4 +503,31 @@ class UvmTests(NGFWTestCase):
 
         assert(result)
 
+    def test_200_dashboard_free_disk_space(self):
+        """Check if full disk space is within range """
+        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('ascii').split(' ')
+        used = float(df_fields[2]) * 1024
+        available = float(df_fields[3]) * 1024
+        total_size = used + available
+        in_threshold = int((total_size * .97) - used)
+        out_threshold = int((total_size * .93) - used)
+
+        full_filename = '/full.txt';
+
+        subprocess.call("/bin/fallocate -l " + str(in_threshold) + " " + full_filename, shell=True)
+        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('ascii').split(' ')
+        time.sleep(60)
+        metrics_and_stats = uvmContext.metricManager().getMetricsAndStats()
+        uvm_free_disk_percent = (float(metrics_and_stats["systemStats"]["freeDiskSpace"]) / float(metrics_and_stats["systemStats"]["totalDiskSpace"]) * 100)
+        os.remove(full_filename)
+        assert(uvm_free_disk_percent < 5)
+
+        subprocess.call("/bin/fallocate -l " + str(out_threshold) + " " + full_filename, shell=True)
+        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('ascii').split(' ')
+        time.sleep(60)
+        metrics_and_stats = uvmContext.metricManager().getMetricsAndStats()
+        uvm_free_disk_percent = (float(metrics_and_stats["systemStats"]["freeDiskSpace"]) / float(metrics_and_stats["systemStats"]["totalDiskSpace"]) * 100)
+        os.remove(full_filename)
+        assert(uvm_free_disk_percent > 5)
+
 test_registry.register_module("uvm", UvmTests)
