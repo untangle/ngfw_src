@@ -5,6 +5,7 @@ package com.untangle.app.threat_prevention;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.app.GenericRule;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -28,12 +29,14 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     private Boolean flag = true;
 
     private List<ThreatPreventionRule> rules = null;
+    private List<GenericRule> passSites = null;
 
     private Boolean closeHttpsBlockEnabled = false;
     
     public ThreatPreventionSettings()
     {
         this.rules = new LinkedList<>();
+        this.passSites = new LinkedList<>();
     }
 
     public ThreatPreventionSettings(List<ThreatPreventionRule> rules)
@@ -55,6 +58,9 @@ public class ThreatPreventionSettings implements Serializable, JSONString
 
     public List<ThreatPreventionRule> getRules() { return rules; }
     public void setRules( List<ThreatPreventionRule> newValue ) { this.rules = newValue; }
+
+    public List<GenericRule> getPassSites() { return passSites; }
+    public void setPassSites( List<GenericRule> newValue ) { this.passSites = newValue; }
 
     public Boolean getCloseHttpsBlockEnabled() { return closeHttpsBlockEnabled; }
     public void setCloseHttpsBlockEnabled( Boolean closeHttpsBlockEnabled ) { this.closeHttpsBlockEnabled = closeHttpsBlockEnabled; }
