@@ -33,6 +33,7 @@ import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
@@ -230,6 +231,10 @@ public class ThreatPreventionApp extends AppBase
         for (ThreatPreventionRule rule : newSettings.getRules()) {
             rule.setRuleId(++idx);
         }
+        idx = this.getAppSettings().getPolicyId().intValue() * 100000;
+        for(GenericRule rule : newSettings.getPassSites()){
+            rule.setId(++idx);
+        }
 
         /**
          * Save the settings
@@ -374,6 +379,17 @@ public class ThreatPreventionApp extends AppBase
             result = new JSONArray();
             try{
                 for(ThreatPreventionRule rule : getSettings().getRules()){
+                    JSONObject jo = new JSONObject(rule);
+                    jo.remove("class");
+                    result.put(index++, jo);
+                }
+            }catch(Exception e){
+                logger.warn("getReportnfo:", e);
+            }
+        }else if(key.equals("passSites")){
+            result = new JSONArray();
+            try{
+                for(GenericRule rule : getSettings().getPassSites()){
                     JSONObject jo = new JSONObject(rule);
                     jo.remove("class");
                     result.put(index++, jo);
@@ -592,6 +608,7 @@ public class ThreatPreventionApp extends AppBase
             logger.warn("Invalid settings: null");
         } else {
             otherHandler.configure(settings);
+            engine.configure(settings);
         }
     }
 
