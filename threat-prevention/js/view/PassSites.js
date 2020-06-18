@@ -33,7 +33,7 @@ Ext.define('Ung.apps.threatprevention.view.PassSites', {
         dataIndex: 'string',
         editor: {
             xtype: 'textfield',
-            emptyText: '[enter site]'.t(),
+            emptyText: '[enter URL or IP address]'.t(),
             allowBlank: false
         }
     }, {
@@ -56,7 +56,7 @@ Ext.define('Ung.apps.threatprevention.view.PassSites', {
         xtype: 'textfield',
         bind: '{record.string}',
         fieldLabel: 'Site'.t(),
-        emptyText: '[enter site]'.t(),
+        emptyText: '[enter URL or IP address]'.t(),
         allowBlank: false,
         width: 400
     }, {
