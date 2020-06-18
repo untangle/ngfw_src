@@ -11,6 +11,11 @@ Ext.define('Ung.apps.threatprevention.MainController', {
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
 
+        // set the enabled custom block page based on URL existance
+        vm.bind('{settings.customBlockPageUrl}', function (url) {
+            vm.set('settings.customBlockPageEnabled', url.length > 0);
+        });
+
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'getSettings')
         .then( function(result){
