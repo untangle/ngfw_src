@@ -70,7 +70,7 @@ public class UrlMatchingUtil
 
     /**
      * checkSiteList checks the host+uri against the provided list
-     * 
+     *
      * @param domain
      *        host of the URL
      * @param uri
@@ -119,6 +119,21 @@ public class UrlMatchingUtil
      */
     public static GenericRule checkClientList(InetAddress clientIp, List<GenericRule> rulesList)
     {
+        return checkClientServerList(clientIp, null, rulesList);
+    }
+    /**
+     * checkClientServerPassList checks the clientIp and serverIP against the client pass list
+     * 
+     * @param clientIp
+     *        IP of the client
+     * @param serverIp
+     *        IP of the server
+     * @param rulesList
+     *        The list of rules
+     * @return the rule that matches, null if DNE
+     */
+    public static GenericRule checkClientServerList(InetAddress clientIp, InetAddress serverIp, List<GenericRule> rulesList)
+    {
         for (GenericRule rule : rulesList) {
             if (rule.getEnabled() != null && !rule.getEnabled()) continue;
 
@@ -137,8 +152,8 @@ public class UrlMatchingUtil
                 matcher = (IPMatcher) matcherO;
             }
 
-            if (matcher.isMatch(clientIp)) {
-                logger.debug("LOG: " + clientIp + " in client pass list");
+            if (matcher.isMatch(clientIp) ||
+                ( serverIp != null && matcher.isMatch(serverIp)) ) {
                 return rule;
             }
         }

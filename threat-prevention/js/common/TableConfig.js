@@ -27,7 +27,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             },
             threat_prevention_reason: {
                 col: { text: 'Reason'.t() + ' (Threat Prevention)', width: 100 },
-                fld: { type: 'string' }
+                fld: { type: 'string', convert: Ung.common.Converter.threatprevention.reason }
             },
             threat_prevention_rule_id: { // should use converter instead
                 col: { text: 'Rule Id'.t() + ' (Threat Prevention)', width: 120 },
@@ -47,6 +47,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             sessions: [
                 'threat_prevention_blocked',
                 'threat_prevention_flagged',
+                'threat_prevention_reason',
                 'threat_prevention_rule_id',
                 'threat_prevention_client_reputation',
                 'threat_prevention_client_categories',
@@ -56,6 +57,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             http_events: [
                 'threat_prevention_blocked',
                 'threat_prevention_flagged',
+                'threat_prevention_reason',
                 'threat_prevention_rule_id',
                 'threat_prevention_client_reputation',
                 'threat_prevention_client_categories',

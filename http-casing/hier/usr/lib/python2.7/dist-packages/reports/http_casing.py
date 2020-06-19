@@ -56,6 +56,7 @@ CREATE TABLE reports.http_events (
     virus_blocker_name text,
     threat_prevention_blocked boolean,
     threat_prevention_flagged boolean,
+    threat_prevention_reason character(1),
     threat_prevention_rule_id integer,
     threat_prevention_client_reputation int2,
     threat_prevention_client_categories integer,
@@ -80,18 +81,6 @@ CREATE TABLE reports.http_events (
                                  "threat_prevention_flagged",
                                  "threat_prevention_blocked",
                                  "ad_blocker_action"])
-    sql_helper.add_column('http_events','threat_prevention_blocked','boolean') # 15.0
-    sql_helper.add_column('http_events','threat_prevention_flagged','boolean') # 15.0
-    sql_helper.add_column('http_events','threat_prevention_rule_id','integer') # 15.0
-    sql_helper.add_column('http_events','threat_prevention_client_reputation','int2') # 15.0
-    sql_helper.add_column('http_events','threat_prevention_client_categories','integer') # 15.0
-    sql_helper.add_column('http_events','threat_prevention_server_reputation','int2') # 15.0
-    sql_helper.add_column('http_events','threat_prevention_server_categories','integer') # 15.0
-    sql_helper.add_column('http_events','client_country','text') # 15.0
-    sql_helper.add_column('http_events','client_latitude','real') # 15.0
-    sql_helper.add_column('http_events','client_longitude','real') # 15.0
-    sql_helper.add_column('http_events','server_country','text') # 15.0
-    sql_helper.add_column('http_events','server_latitude','real') # 15.0
-    sql_helper.add_column('http_events','server_longitude','real') # 15.0
+    sql_helper.add_column('http_events','threat_prevention_reason','character') # 16.0
 
 

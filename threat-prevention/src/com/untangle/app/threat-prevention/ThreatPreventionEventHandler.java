@@ -12,7 +12,10 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.IPMatcher;
+import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
@@ -28,7 +31,10 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(ThreatPreventionEventHandler.class);
 
-    private List<ThreatPreventionRule> threatPreventionRuleList = null;
+    private String action = ThreatPreventionApp.ACTION_BLOCK;
+    private Boolean flag = true;
+    private List<GenericRule> passSites = null;
+    private List<ThreatPreventionRule> rules = null;
 
     private boolean blockSilently = true;
 
@@ -87,8 +93,9 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
             return;
         }
 
-        boolean block = app.getSettings().getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
-        boolean flag = app.getSettings().getFlag();
+        boolean block = this.action.equals(ThreatPreventionApp.ACTION_BLOCK);
+        boolean flag = this.flag;
+        ThreatPreventionReason reason = ThreatPreventionReason.DEFAULT;
         Integer ruleIndex = null;
 
         Boolean match = false;
@@ -108,23 +115,40 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
             app.incrementThreatCount(serverReputation);
         }
 
-        if(threatPreventionRuleList != null){
-            for (ThreatPreventionRule rule : threatPreventionRuleList){
-                if( rule.isMatch(request.getProtocol(),
+        if(block){
+            GenericRule rule = UrlMatchingUtil.checkClientServerList(request.getOrigClientAddr(), request.getNewServerAddr(), passSites);
+            if(rule != null){
+                match = true;
+                block = false;
+                flag = true;
+                ruleIndex = rule.getId();
+                reason = ThreatPreventionReason.PASS_SITE;
+            }
+        }
+        if(ruleIndex == null){
+            if(rules != null){
+                for (ThreatPreventionRule rule : rules){
+                    if( rule.isMatch(request.getProtocol(),
                             request.getClientIntf(), request.getServerIntf(),
                             request.getOrigClientAddr(), request.getNewServerAddr(),
                             request.getOrigClientPort(), request.getNewServerPort(),
                             request) ){
-                    match = true;
-                    block = rule.getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
-                    flag = rule.getFlag();
-                    ruleIndex = rule.getRuleId();
-                    break;
+                        match = true;
+                        block = rule.getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
+                        flag = rule.getFlag();
+                        reason = ThreatPreventionReason.RULE;
+                        ruleIndex = rule.getRuleId();
+                        break;
+                    }
                 }
             }
         }
 
-        ThreatPreventionEvent fwe = new ThreatPreventionEvent(request.sessionEvent(), block && match, match && flag, 
+        ThreatPreventionEvent fwe = new ThreatPreventionEvent(
+            request.sessionEvent(), 
+            match && block,
+            match && flag,
+            reason,
             ruleIndex != null ? ruleIndex : 0, 
             clientReputation != null ? clientReputation : 0, 
             clientThreatmask != null ? clientThreatmask : 0, 
@@ -178,7 +202,20 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
      */
     public void configure(ThreatPreventionSettings settings)
     {
-        this.threatPreventionRuleList = settings.getRules();
+        this.action = settings.getAction();
+        this.flag = settings.getFlag();
+
+        LinkedList<GenericRule> newIpPassSites = new LinkedList<>();
+        /**
+         * Build list that only matches IP addresses.
+         */
+        for(GenericRule rule : settings.getPassSites()){
+            if(rule.getString().matches(IPMatcher.IPADDR_REGEX)){
+                newIpPassSites.add(rule);
+            }
+        }
+        this.passSites = newIpPassSites;
+        this.rules = settings.getRules();
     }
 
 }
