@@ -421,6 +421,9 @@
         "url": "/admin/index.do#apps/1/threat-prevention/threats",
         "type": "remove_nav"
     },{
+        "url": "/admin/index.do#apps/1/threat-prevention/pass-sites",
+        "type": "remove_nav"
+    },{
         "url": "/admin/index.do#apps/1/threat-prevention/rules",
         "type": "remove_nav"
     },{

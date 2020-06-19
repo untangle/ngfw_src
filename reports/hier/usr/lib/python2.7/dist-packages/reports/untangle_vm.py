@@ -122,14 +122,6 @@ CREATE TABLE reports.sessions (
                                  "application_control_application",
                                  "application_control_blocked",
                                  "application_control_flagged"])
-    sql_helper.add_column('sessions','threat_prevention_blocked','boolean') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_flagged','boolean') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_reason','character') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_rule_id','integer') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_client_reputation','int2') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_client_categories','integer') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_server_reputation','int2') # 15.0
-    sql_helper.add_column('sessions','threat_prevention_server_categories','integer') # 15.0
 
 @sql_helper.print_timing
 def __create_session_minutes_table(  ):
@@ -209,14 +201,6 @@ CREATE TABLE reports.session_minutes (
                                  "client_intf",
                                  "server_intf",
                                  "application_control_application"])
-    sql_helper.add_column('session_minutes','threat_prevention_blocked','boolean') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_flagged','boolean') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_reason','character') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_rule_id','integer') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_client_reputation','int2') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_client_categories','integer') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_server_reputation','int2') # 15.0
-    sql_helper.add_column('session_minutes','threat_prevention_server_categories','integer') # 15.0
         
 
 @sql_helper.print_timing
