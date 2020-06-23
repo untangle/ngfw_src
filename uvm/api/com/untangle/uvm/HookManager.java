@@ -8,6 +8,7 @@ public interface HookManager
     public static String APPLICATION_INSTANTIATE = "application-instantiate";
     public static String APPLICATION_DESTROY = "application-destroy";
     public static String SETTINGS_CHANGE = "settings-change";
+    public static String PRE_NETWORK_SETTINGS_CHANGE = "pre-network-settings-change";
     public static String NETWORK_SETTINGS_CHANGE = "network-settings-change";
     public static String URIS_SETTINGS_CHANGE = "uris-settings-change";
     public static String AUTHENTICATION_OAUTHDOMAIN_CHANGE = "authentication-oauthdomain-change";
