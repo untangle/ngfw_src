@@ -199,6 +199,9 @@ public class NetworkManagerImpl implements NetworkManager
     {
         String downCommand, upCommand;
 
+        // notify interested parties that the network settings are about to change (send old settings in args)
+        UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.networkSettings );
+
         /**
          * validate settings
          */
