@@ -46,8 +46,21 @@ public class SystemSettings implements Serializable, JSONString
     private String ipsecCertificate = "apache.pem";
     private String radiusCertificate = "apache.pem";
 
+    /**
+     * These are used for LocalDirectory RADIUS server support
+     */
     private boolean radiusServerEnabled = false;
     private String radiusServerSecret = "SharedSecret";
+
+    /**
+     * These are used for RADIUS proxy support
+     */
+    private boolean radiusProxyEnabled = false;
+    private String radiusProxyServer = "";
+    private String radiusProxyWorkgroup = "";
+    private String radiusProxyRealm = "";
+    private String radiusProxyUsername = "";
+    private String radiusProxyPassword = "";
 
     private String installType = "";
 
@@ -158,6 +171,22 @@ public class SystemSettings implements Serializable, JSONString
     public void setRadiusServerEnabled(boolean newValue) { this.radiusServerEnabled = newValue; }
     public String getRadiusServerSecret() { return radiusServerSecret; }
     public void setRadiusServerSecret(String newValue) { this.radiusServerSecret = newValue; }
+
+    /**
+     * These are used to get and set the radius proxy settings
+     */
+    public boolean getRadiusProxyEnabled() { return radiusProxyEnabled; }
+    public void setRadiusProxyEnabled(boolean newValue) { this.radiusProxyEnabled = newValue; }
+    public String getRadiusProxyServer() { return radiusProxyServer; }
+    public void setRadiusProxyServer(String newValue) { this.radiusProxyServer = newValue; }
+    public String getRadiusProxyWorkgroup() { return radiusProxyWorkgroup; }
+    public void setRadiusProxyWorkgroup(String newValue) { this.radiusProxyWorkgroup = newValue; }
+    public String getRadiusProxyRealm() { return radiusProxyRealm; }
+    public void setRadiusProxyRealm(String newValue) { this.radiusProxyRealm = newValue; }
+    public String getRadiusProxyUsername() { return radiusProxyUsername; }
+    public void setRadiusProxyUsername(String newValue) { this.radiusProxyUsername = newValue; }
+    public String getRadiusProxyPassword() { return radiusProxyPassword; }
+    public void setRadiusProxyPassword(String newValue) { this.radiusProxyPassword = newValue; }
 
     /* DEPRECATED in 12.2 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
