@@ -3,10 +3,12 @@
 /etc/init.d/untangle-vm stop
 
 
-for ver in 9.1 9.4 9.6 ; do
-  if [ -f /etc/postgresql/$ver/main/postgresql.conf ] ; then
-    sed -i -e "s/.*max_locks_per_transaction.*=.*/max_locks_per_transaction = 2048/" /etc/postgresql/$ver/main/postgresql.conf
-  fi
+for d in /etc/postgresql/* ; do
+    if [ -d "${d}" ] ; then
+        if [ -f "${d}/main/postgresql.conf" ] ; then
+            sed -i -e "s/.*max_locks_per_transaction.*=.*/max_locks_per_transaction = 2048/" "${d}/main/postgresql.conf"
+        fi
+    fi
 done
 
 if [ -x /etc/init.d/postgresql ] ; then
@@ -16,12 +18,27 @@ if [ -x /etc/init.d/postgresql ] ; then
     sleep 10
 fi
 
-psql -U postgres uvm -c"drop schema reports cascade;"
+x=0
+while [ $x -le 10 ]
+do  
+    echo "Drop schema attempt #$x"
+    # Drop the reports schema
+    dc=$(psql -A -U postgres uvm -c "drop schema reports cascade;" 2>&1)
+    echo $dc
+    # Parse the stdout to get a substring and see if we see that the schema doesn't exist anymore
+    case "$dc" in
+    *'schema "reports" does not exist'*) break ;;
+    esac
 
-for ver in 9.1 9.4 9.6 ; do
-  if [ -f /etc/postgresql/$ver/main/postgresql.conf ] ; then
-    sed -i -e "s/.*max_locks_per_transaction.*=.*/#max_locks_per_transaction = 64/" /etc/postgresql/$ver/main/postgresql.conf
-  fi
+    x=$((x+1))
+done
+
+for d in /etc/postgresql/* ; do
+    if [ -d "${d}" ] ; then
+        if [ -f "${d}/main/postgresql.conf" ] ; then
+            sed -i -e "s/.*max_locks_per_transaction.*=.*/#max_locks_per_transaction = 64/" "${d}/main/postgresql.conf"
+        fi
+    fi
 done
 
 if [ -x /etc/init.d/postgresql ] ; then
