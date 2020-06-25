@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.NetspaceManager;
 import com.untangle.uvm.NetspaceManager.IPVersion;
 import com.untangle.uvm.NetspaceManager.NetworkSpace;
@@ -49,6 +50,12 @@ public class WireGuardVpnApp extends AppBase
     private WireGuardVpnManager WireGuardVpnManager = null;
     private final WireGuardVpnEventHandler handler;
 
+    private final WireguardVpnHookCallback wireguardVpnHookCallback;
+    private final WireguardVpnPreHookCallback wireguardVpnPreHookCallback;
+
+    private InetAddress localDnsResolver = null;
+    private List<IPMaskedAddress> localNetworks = null;
+
     private static final String NETSPACE_OWNER = "wireguard-vpn";
     private static final String NETSPACE_SERVER = "server-network";
     private static final String NETSPACE_TUNNEL = "server-tunnel";
@@ -72,6 +79,14 @@ public class WireGuardVpnApp extends AppBase
         this.handler = new WireGuardVpnEventHandler(this);
         this.connector = UvmContextFactory.context().pipelineFoundry().create("wireguard-vpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 10, false);
         this.connectors = new PipelineConnector[] { connector };
+
+        this.wireguardVpnHookCallback = new WireguardVpnHookCallback();
+        this.wireguardVpnPreHookCallback= new WireguardVpnPreHookCallback();
+
+
+        this.localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
+        this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+
     }
 
     /**
@@ -244,6 +259,19 @@ public class WireGuardVpnApp extends AppBase
     }
 
     /**
+     * Called before the application is started
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    @Override
+    protected void preStart(boolean isPermanentTransition)
+    {
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.wireguardVpnPreHookCallback);
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.wireguardVpnHookCallback);
+    }
+
+    /**
      * Called before the application is stopped
      * 
      * @param isPermanentTransition
@@ -252,6 +280,9 @@ public class WireGuardVpnApp extends AppBase
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.wireguardVpnHookCallback);
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.wireguardVpnHookCallback);
+
         this.WireGuardVpnMonitor.stop();
 
         this.WireGuardVpnManager.stop();
@@ -316,12 +347,12 @@ public class WireGuardVpnApp extends AppBase
         settings.setPrivateKey(privateKey);
         settings.setPublicKey(publicKey);
 
-        InetAddress dnsAddress = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+        InetAddress dnsAddress = this.localDnsResolver;
         if(dnsAddress != null){
-            logger.warn(dnsAddress.getHostAddress());
-            settings.setDnsServer(dnsAddress.getHostAddress());
+            logger.warn(dnsAddress);
+            settings.setDnsServer(dnsAddress);
         }
-        settings.setNetworks(UvmContextFactory.context().networkManager().getLocalNetworks().stream().map(Object::toString).collect(Collectors.joining("\r\n")));
+        settings.setNetworks(this.localNetworks);
 
         IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4, 1, 24);
 
@@ -438,5 +469,132 @@ public class WireGuardVpnApp extends AppBase
         }
 
         return null;
+    }
+    /**
+     * Called when network settings have changed
+     * @throws Exception
+     */
+    private void networkSettingsEvent() throws Exception
+    {
+        logger.info("Network Settings have changed. Syncing new settings...");
+
+        // Check if the localDnsResolver and localNetworks were being used in WG
+        if(settings != null) {          
+            InetAddress newDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+            List<IPMaskedAddress> newNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
+
+            if(settings.getDnsServer() == this.localDnsResolver && this.localDnsResolver != newDnsResolver) {
+                // Set newDnsResolver in the settings and also the local variable
+                logger.warn(newDnsResolver);
+                settings.setDnsServer(newDnsResolver);
+                this.localDnsResolver = newDnsResolver;
+            }
+
+            if(settings.getNetworks() == this.localNetworks && this.localNetworks != newNetworks) {
+                // set newLocalNetworks in settings and also the local variable
+                logger.warn(newNetworks);
+                settings.setNetworks(newNetworks);
+                this.localNetworks = newNetworks;
+            }
+        }
+    }
+
+    /**
+     * preNetworkSettingsEvent stores the localNetworks and localDnsResolver settings prior to the network settings change
+     * 
+     */
+    private void preNetworkSettingsEvent()
+    {
+        logger.info("Network Settings will change, storing local settings...");
+        //get the localnetworks and dnsresolver into the local variables before the settings change
+        this.localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
+        this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+    }
+
+     /**
+     * Callback hook for changes to network settings
+     * 
+     * @author mahotz
+     * 
+     */
+    private class WireguardVpnHookCallback implements HookCallback
+    {
+
+        /**
+         * Gets the name for the callback hook
+         * 
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "wireguard-network-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         * 
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            Object o = args[0];
+            if (!(o instanceof NetworkSettings)) {
+                logger.warn("Invalid network settings: " + o);
+                return;
+            }
+
+            NetworkSettings settings = (NetworkSettings) o;
+
+            if (logger.isDebugEnabled()) logger.debug("network settings changed:" + settings);
+
+            try {
+                networkSettingsEvent();
+            } catch (Exception e) {
+                logger.error("Unable to reconfigure the NAT app");
+            }
+        }
+    }
+
+    /**
+     * WireguardVpnPreHookCallback is used to load the old network settings locally before the network settings have changed
+     */
+    private class WireguardVpnPreHookCallback implements HookCallback
+    {
+
+        /**
+         * Gets the name for the callback hook
+         * 
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "wireguard-pre-network-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         * 
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            Object o = args[0];
+            if (!(o instanceof NetworkSettings)) {
+                logger.warn("Invalid network settings: " + o);
+                return;
+            }
+
+            NetworkSettings settings = (NetworkSettings) o;
+
+            if (logger.isDebugEnabled()) logger.debug("network settings changed:" + settings);
+
+            try {
+                preNetworkSettingsEvent();
+            } catch (Exception e) {
+                logger.error("Unable to reconfigure the Wireguard VPN app");
+            }
+        }
     }
 }
