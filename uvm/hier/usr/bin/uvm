@@ -150,6 +150,10 @@ def prepareSystem():
     if developmentEnv:
         devEnvSetup()
 
+    # load tun (if not already loaded)
+    # this ensures that /dev/net/tun exists before we try to initialize netcap
+    os.system('/sbin/modprobe -q tun');
+
     # load nfnetlink_queue (if not already loaded)
     os.system('/sbin/modprobe -q nfnetlink_queue');
 
