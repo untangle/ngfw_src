@@ -804,6 +804,12 @@ public class LocalDirectoryImpl implements LocalDirectory
         if (systemSettings.getRadiusServerEnabled()) {
             UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
         }
+        /*
+         * If proxy is enabled restart the winbind service
+         */
+        if (systemSettings.getRadiusServerEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl restart winbind.service");
+        }
     }
 
     /**
