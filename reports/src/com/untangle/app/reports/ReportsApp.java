@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.EventManager;
@@ -1095,10 +1096,15 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                         String oStr = "";
                         if (o != null)
                             /**
+                             * Unescape any html
+                             */
+                            oStr = StringEscapeUtils.unescapeHtml4(o.toString());
+
+                            /**
                              * remove any commas in the string, and escape leading -, ", @, +, and =
                              * with a single quote to prevent formula injections
                              */
-                            oStr = o.toString().replaceAll(",","").replaceAll("(^|,)([-\"@+=])","$1'$2");
+                            oStr = oStr.replaceAll(",","").replaceAll("(^|,)([-\"@+=])","$1'$2");
                     
                         if (writtenColumnCount != 0)
                             resp.getWriter().write(",");
