@@ -370,11 +370,20 @@ Ext.define('Ung.view.reports.EventReport', {
                     }
 
                     /**
+                     * For any strings, first unescape any html and then
                      * remove any commas in the string, and escape leading -, ", @, +, and =
                      * with a single quote to prevent formula injections
                      * This was moved from the ReportsApp toCSV java function
                      */
                     if (typeof fieldValue  === 'string') {
+
+                        /**
+                         * Unescape any html
+                         */
+                        var txt = document.createElement('textarea');
+                        txt.innerHTML = fieldValue;
+                        fieldValue = txt.value;
+
                         fieldValue = fieldValue.replace(new RegExp(",", 'gi'), "").replace(new RegExp("(^|,)([-\"@+=])", 'gi'), "$1'$2");
                     }
                     recordData[fieldName] = fieldValue;
