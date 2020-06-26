@@ -109,7 +109,7 @@ public class SystemManagerImpl implements SystemManager
         } else {
             this.settings = readSettings;
 
-            if(this.settings.getVersion() < SETTINGS_VERSION){
+            if (this.settings.getVersion() < SETTINGS_VERSION) {
                 this.settings.setVersion(SETTINGS_VERSION);
                 this.settings.setLogRetention(7);
                 this.setSettings(this.settings);
@@ -160,7 +160,8 @@ public class SystemManagerImpl implements SystemManager
          * re-sync them
          */
         pyconnectorSync();
-        freeradiusSync();
+        radiusServerSync();
+        radiusProxySync();
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new SystemSupportLogDownloadHandler());
 
@@ -233,7 +234,8 @@ public class SystemManagerImpl implements SystemManager
         UvmContextFactory.context().syncSettings().run(this.SettingsFileName);
 
         pyconnectorSync();
-        freeradiusSync();
+        radiusServerSync();
+        radiusProxySync();
     }
 
     /**
@@ -637,10 +639,10 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
-     * If radius server in enabled, start freeradius.service and enable on
+     * If radius server is enabled, start freeradius.service and enable on
      * startup. If not, stop it and disable on startup
      */
-    protected void freeradiusSync()
+    protected void radiusServerSync()
     {
         Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled freeradius.service");
         // if running and should not be, stop it
@@ -652,6 +654,25 @@ public class SystemManagerImpl implements SystemManager
         if ((0 != exitValue) && settings.getRadiusServerEnabled()) {
             UvmContextFactory.context().execManager().exec("systemctl enable freeradius.service");
             UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
+        }
+    }
+
+    /**
+     * If radius proxy is enabled, start winbind.service and enable on startup.
+     * If not, stop it and disable on startup.
+     */
+    protected void radiusProxySync()
+    {
+        Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled winbind.service");
+        // if running and should not be, stop it
+        if ((0 == exitValue) && !settings.getRadiusProxyEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl disable winbind.service");
+            UvmContextFactory.context().execManager().exec("systemctl stop winbind.service");
+        }
+        // if not running and should be, start it
+        if ((0 != exitValue) && settings.getRadiusProxyEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl enable winbind.service");
+            UvmContextFactory.context().execManager().exec("systemctl restart winbind.service");
         }
     }
 
