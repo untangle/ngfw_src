@@ -39,6 +39,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
 
     private final static String FREERADIUS_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-logfile";
+    private final static String FREERADIUS_PROXY_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-proxy";
     private final static String FREERADIUS_LOCAL_SECRETS = "/etc/freeradius/3.0/mods-config/files/untangle.local";
     private final static String FREERADIUS_AUTHORIZE = "/etc/freeradius/3.0/mods-config/files/authorize";
     private final static String FREERADIUS_RADIUSD = "/etc/freeradius/3.0/radiusd.conf";
@@ -74,13 +75,45 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public String getRadiusLogFile()
     {
-        logger.debug("getRadiusLogFile()");
         return UvmContextFactory.context().execManager().execOutput(FREERADIUS_LOGFILE_SCRIPT);
     }
 
     /**
-     * Checks to see if user is expired
+     * Gets the status of the account status in Active Directory
+     *
+     * @return The status returned by the script
+     */
+    public String getRadiusProxyStatus()
+    {
+        SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
+        String command = (FREERADIUS_PROXY_SCRIPT + " " + systemSettings.getRadiusProxyUsername() + " " + systemSettings.getRadiusProxyPassword());
+
+        return UvmContextFactory.context().execManager().execOutput(command);
+    }
+
+    /**
+     * Adds a computer account to the configured AD domain controller using the
+     * configured credentials.
      * 
+     * @return The result of the join attempt
+     */
+    public String addRadiusComputerAccount()
+    {
+        SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
+
+        String command = ("/usr/bin/net ads --no-dns-updates join");
+        command += (" -U " + systemSettings.getRadiusProxyUsername() + "%" + systemSettings.getRadiusProxyPassword());
+        command += (" -S " + systemSettings.getRadiusProxyServer());
+        command += (" osName=\"Untangle NG Firewall\"");
+//        command += (" osVer=\"" + UvmContextFactory.context().adminManager().getFullVersionAndRevision() + "\"");
+        command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
+
+        return UvmContextFactory.context().execManager().execOutput(command);
+    }
+
+    /**
+     * Checks to see if user is expired
+     *
      * @param user
      *        The user to check
      * @return True if expired, otherwise false
@@ -297,7 +330,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         // update xauth.secrets and chap-secrets for IPsec and untangle.local for RADIUS
         updateXauthSecrets(list);
         updateChapSecrets(list);
-        updateRadiusSecrets(list);
+        updateRadiusConfiguration(list);
         this.currentList = list;
     }
 
@@ -327,7 +360,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         else {
             updateXauthSecrets(users);
             updateChapSecrets(users);
-            updateRadiusSecrets(users);
+            updateRadiusConfiguration(users);
             this.currentList = users;
         }
     }
@@ -461,7 +494,7 @@ public class LocalDirectoryImpl implements LocalDirectory
      * @param list
      *        The list of LocalDirectoryUsers
      */
-    private void updateRadiusSecrets(LinkedList<LocalDirectoryUser> list)
+    private void updateRadiusConfiguration(LinkedList<LocalDirectoryUser> list)
     {
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
         FileWriter fw = null;
@@ -631,13 +664,10 @@ public class LocalDirectoryImpl implements LocalDirectory
                 fw.write("\tpassword server = " + systemSettings.getRadiusProxyServer() + "\n");
                 fw.write("\trealm = " + systemSettings.getRadiusProxyRealm() + "\n");
                 fw.write("\twinbind use default domain = yes\n");
-                fw.write("\tbind interfaces only = no\n");
                 fw.write("\tserver role = standalone server\n");
-                fw.write("\n");
-                fw.write("[homes]\n");
-                fw.write("\tcomment = Home Directories\n");
-                fw.write("\tbrowseable = no\n");
-                fw.write("\twritable = yes\n");
+                fw.write("\tbind interfaces only = no\n");
+                fw.write("\tload printers = no\n");
+                fw.write("\tlocal master = no\n");
             }
             fw.flush();
             fw.close();
@@ -663,7 +693,7 @@ public class LocalDirectoryImpl implements LocalDirectory
                 fw.write("[libdefaults]\n");
                 fw.write("\tdefault_realm = " + systemSettings.getRadiusProxyRealm().toUpperCase() + "\n");
                 fw.write("\tdns_lookup_realm = false\n");
-                fw.write("\tdns_lookup_kds = false\n");
+                fw.write("\tdns_lookup_kdc = false\n");
                 fw.write("\n");
                 fw.write("[realms]\n");
                 fw.write("\t" + systemSettings.getRadiusProxyRealm().toUpperCase() + " {\n");

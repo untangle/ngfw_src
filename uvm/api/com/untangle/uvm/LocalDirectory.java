@@ -6,8 +6,9 @@ package com.untangle.uvm;
 import java.util.LinkedList;
 
 /**
- * The Local Directory API provides functions for managing and authenticating "local users."
- * This is useful for some apps with lists of users (like Captive Portal)
+ * The Local Directory API provides functions for managing and authenticating
+ * "local users." This is useful for some apps with lists of users (like Captive
+ * Portal)
  */
 public interface LocalDirectory
 {
@@ -16,7 +17,7 @@ public interface LocalDirectory
      *
      * @returns true if valid uid/password, false otherwise
      */
-    public boolean authenticate( String username, String password );
+    public boolean authenticate(String username, String password);
 
     /**
      * Return a list of users
@@ -28,7 +29,7 @@ public interface LocalDirectory
     /**
      * Save a new list of users
      */
-    public void setUsers( LinkedList<LocalDirectoryUser> users );
+    public void setUsers(LinkedList<LocalDirectoryUser> users);
 
     /**
      * Adds a new user
@@ -55,6 +56,18 @@ public interface LocalDirectory
      */
     public void cleanupExpiredUsers();
 
+    /**
+     * Gets the freeRadius log file
+     */
+    public String getRadiusLogFile();
+
+    /**
+     * Gets the Active Directory account status
+     */
+    public String getRadiusProxyStatus();
+
+    /**
+     * Adds computer account to the Active Directory domain controller
+     */
+    public String addRadiusComputerAccount();
 }
-
-
