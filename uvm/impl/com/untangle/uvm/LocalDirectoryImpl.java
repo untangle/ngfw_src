@@ -86,7 +86,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     public String getRadiusProxyStatus()
     {
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
-        String command = (FREERADIUS_PROXY_SCRIPT + " " + systemSettings.getRadiusProxyUsername() + " " + systemSettings.getRadiusProxyPassword());
+        String command = (FREERADIUS_PROXY_SCRIPT + " \"" + systemSettings.getRadiusProxyUsername() + "\" \"" + systemSettings.getRadiusProxyPassword() + "\"");
 
         return UvmContextFactory.context().execManager().execOutput(command);
     }
@@ -102,11 +102,31 @@ public class LocalDirectoryImpl implements LocalDirectory
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
 
         String command = ("/usr/bin/net ads --no-dns-updates join");
-        command += (" -U " + systemSettings.getRadiusProxyUsername() + "%" + systemSettings.getRadiusProxyPassword());
+        command += (" -U \"" + systemSettings.getRadiusProxyUsername() + "%" + systemSettings.getRadiusProxyPassword() + "\"");
         command += (" -S " + systemSettings.getRadiusProxyServer());
         command += (" osName=\"Untangle NG Firewall\"");
-//        command += (" osVer=\"" + UvmContextFactory.context().adminManager().getFullVersionAndRevision() + "\"");
         command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
+
+        return UvmContextFactory.context().execManager().execOutput(command);
+    }
+
+    /**
+     * Called to test Active Directory authentication
+     *
+     * @param userName
+     *        The username for the test
+     * @param userPass
+     *        The password for the test
+     * @param userDomain
+     *        The domain for the test
+     * @return The result of the test
+     */
+    public String testRadiusProxyLogin(String userName, String userPass, String userDomain)
+    {
+        String command = ("/usr/bin/ntlm_auth --request-nt-key");
+        command += (" --domain=\"" + userDomain + "\"");
+        command += (" --username=\"" + userName + "\"");
+        command += (" --password=\"" + userPass + "\"");
 
         return UvmContextFactory.context().execManager().execOutput(command);
     }

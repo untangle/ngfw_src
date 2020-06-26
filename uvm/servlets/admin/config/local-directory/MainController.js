@@ -7,7 +7,8 @@ Ext.define('Ung.config.local-directory.MainController', {
         '#': {
             beforerender: 'loadSettings'
         },
-        '#radius-log': { afterrender: 'refreshRadiusLogFile' }
+        '#radius-log': { afterrender: 'refreshRadiusLogFile' },
+        '#radius-proxy': { afterrender: 'refreshRadiusProxyStatus' }
     },
 
     loadSettings: function () {
@@ -166,6 +167,20 @@ Ext.define('Ung.config.local-directory.MainController', {
         .then(function(result){
             v.setLoading(false);
             Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Account Creation Status'.t(), msg: '<tt>' + result + '</tt>' });
+        });
+    },
+
+    testRadiusProxyLogin: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var testuser = v.down("[fieldIndex='testUsername']").getValue();
+        var testpass = v.down("[fieldIndex='testPassword']").getValue();
+        var testdom = v.down("[fieldIndex='testDomain']").getValue();
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.UvmContext.localDirectory.testRadiusProxyLogin', testuser, testpass, testdom)
+        .then(function(result){
+            v.setLoading(false);
+            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Test Authentication Result'.t(), msg: '<tt>' + result + '</tt>' });
         });
     },
 
