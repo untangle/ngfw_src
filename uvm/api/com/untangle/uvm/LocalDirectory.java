@@ -70,4 +70,9 @@ public interface LocalDirectory
      * Adds computer account to the Active Directory domain controller
      */
     public String addRadiusComputerAccount();
+
+    /**
+     * Tests Active Directory authentication with passed credentials
+     */
+    public String testRadiusProxyLogin(String userName, String userPass, String userDomain);
 }
