@@ -141,6 +141,34 @@ Ext.define('Ung.config.local-directory.MainController', {
         });
     },
 
+    refreshRadiusProxyStatus: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var target = v.down('textarea');
+
+        target.setValue('');
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.UvmContext.localDirectory.getRadiusProxyStatus')
+        .then(function(result){
+            if(Util.isDestroyed(v, target)){
+                return;
+            }
+            target.setValue(result);
+            v.setLoading(false);
+        });
+    },
+
+    createComputerAccount: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.UvmContext.localDirectory.addRadiusComputerAccount')
+        .then(function(result){
+            v.setLoading(false);
+            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Account Creation Status'.t(), msg: '<tt>' + result + '</tt>' });
+        });
+    },
+
     statics:{
         expirationRenderer: function( value ){
             var date;
