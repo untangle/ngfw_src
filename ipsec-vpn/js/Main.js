@@ -127,12 +127,25 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                 fields: [ 'name', 'value' ],
                 data: [
                     { name: '3DES', value: '3des' },
-                    { name: 'AES128', value: 'aes128' },
-                    { name: 'AES256', value: 'aes256' },
+                    { name: '128 bit AES-CBC', value: 'aes128' },
+                    { name: '128 bit AES-GCM with 8 bit ICV', value: 'aes128gcm8' },
+                    { name: '128 bit AES-GCM with 12 bit ICV', value: 'aes128gcm12' },
+                    { name: '128 bit AES-GCM with 16 bit ICV', value: 'aes128gcm16' },
+                    { name: '128 bit AES-GCM with 64 bit ICV', value: 'aes128gcm64' },
+                    { name: '128 bit AES-GCM with 96 bit ICV', value: 'aes128gcm96' },
+                    { name: '128 bit AES-GCM with 128 bit ICV', value: 'aes128gcm128' },
+                    { name: '256 bit AES-CBC', value: 'aes256' },
+                    { name: '256 bit AES-GCM with 8 bit ICV', value: 'aes256gcm8' },
+                    { name: '256 bit AES-GCM with 12 bit ICV', value: 'aes256gcm12' },
+                    { name: '256 bit AES-GCM with 16 bit ICV', value: 'aes256gcm16' },
+                    { name: '256 bit AES-GCM with 64 bit ICV', value: 'aes256gcm64' },
+                    { name: '256 bit AES-GCM with 96 bit ICV', value: 'aes256gcm96' },
+                    { name: '256 bit AES-GCM with 128 bit ICV', value: 'aes256gcm128' },
                     { name: 'Camellia', value: 'camellia' },
                     { name: 'Blowfish', value: 'blowfish' },
                     { name: 'Twofish', value: 'twofish' },
                     { name: 'Serpent', value: 'serpent' }
+
                 ]
             },
 
@@ -143,7 +156,11 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                     { name: 'SHA-1', value: 'sha1' },
                     { name: 'SHA-256', value: 'sha2_256' },
                     { name: 'SHA-384', value: 'sha2_384' },
-                    { name: 'SHA-512', value: 'sha2_512' }
+                    { name: 'SHA-512', value: 'sha2_512' },
+                    { name: 'AES XCBC', value: 'aesxcbc' },
+                    { name: '128-bit AES-GMAC', value: 'aes128gmac' },
+                    { name: '192-bit AES-GMAC', value: 'aes192gmac' },
+                    { name: '256-bit AES-GMAC', value: 'aes256gmac' }
                 ]
             },
 
