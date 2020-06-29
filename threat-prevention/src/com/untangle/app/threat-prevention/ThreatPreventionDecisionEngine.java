@@ -60,6 +60,11 @@ public class ThreatPreventionDecisionEngine
     public static Pattern CONSECUTIVE_SLASHES_URI_PATTERN = Pattern.compile("(?<!:)/+");
     public static Pattern CONSECUTIVE_SLASHES_PATH_PATTERN = Pattern.compile("/+");
 
+    private Integer threatLevel;
+    private String action = ThreatPreventionApp.ACTION_BLOCK;
+    private Boolean flag = true;
+    private List<GenericRule> passSites = null;
+    private List<ThreatPreventionRule> rules = null;
 
     /**
      * This is the base app that owns this decision engine
@@ -216,13 +221,10 @@ public class ThreatPreventionDecisionEngine
     {
         Integer clientReputation = (Integer) sessionAttachments.globalAttachment(AppSession.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
         Integer serverReputation = (Integer) sessionAttachments.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
-        Integer threatLevel = app.getSettings().getReputationThreshold();
 
-        // time of getSettings().getValue() vs synchronized values.
-
-        return ( ( ( serverReputation != null ) && serverReputation > 0 && serverReputation <= app.getSettings().getReputationThreshold() ) )
+        return ( ( ( serverReputation != null ) && serverReputation > 0 && serverReputation <= this.threatLevel ) )
                 ||
-                ( ( ( clientReputation != null ) && clientReputation > 0 && clientReputation <= app.getSettings().getReputationThreshold() ) );
+                ( ( ( clientReputation != null ) && clientReputation > 0 && clientReputation <= this.threatLevel ) );
     }
 
     /**
@@ -284,19 +286,33 @@ public class ThreatPreventionDecisionEngine
             match = isMatch(sess);
         }
 
-        boolean block = app.getSettings().getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
-        boolean flag = app.getSettings().getFlag();
+        boolean block = this.action.equals(ThreatPreventionApp.ACTION_BLOCK);
+        boolean flag = this.flag;
+        ThreatPreventionReason reason = ThreatPreventionReason.DEFAULT;
         Integer ruleIndex = null;
-
         ThreatPreventionRule matchRule = null;
-        for (ThreatPreventionRule rule : app.getSettings().getRules()){
-            if( rule.isMatch(sess) ){
+
+        if(block){
+            GenericRule rule = UrlMatchingUtil.checkSiteList(host, uri, passSites);
+            if(rule != null){
                 match = true;
-                matchRule = rule;
-                block = rule.getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
-                flag = rule.getFlag();
-                ruleIndex = rule.getRuleId();
-                break;
+                block = false;
+                flag = true;
+                ruleIndex = rule.getId();
+                reason = ThreatPreventionReason.PASS_SITE;
+            }
+        }
+        if(ruleIndex == null){
+            for (ThreatPreventionRule rule : rules){
+                if( rule.isMatch(sess) ){
+                    match = true;
+                    matchRule = rule;
+                    block = rule.getAction().equals(ThreatPreventionApp.ACTION_BLOCK);
+                    flag = rule.getFlag();
+                    reason = ThreatPreventionReason.RULE;
+                    ruleIndex = rule.getRuleId();
+                    break;
+                }
             }
         }
 
@@ -322,8 +338,9 @@ public class ThreatPreventionDecisionEngine
         ThreatPreventionHttpEvent fwe = new ThreatPreventionHttpEvent(
             requestLine.getRequestLine(),
             sess.sessionEvent(),
-            match && block, 
-            match && flag, 
+            match && block,
+            match && flag,
+            reason,
             ruleIndex != null ? ruleIndex : 0, 
             clientReputation,
             clientThreatmask,
@@ -365,6 +382,19 @@ public class ThreatPreventionDecisionEngine
             i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
             i18nMapLastUpdated = System.currentTimeMillis();
         }
+    }
+
+    /**
+     * Configure this event handler with the provided settings
+     * @param settings
+     */
+    public void configure(ThreatPreventionSettings settings)
+    {
+        this.threatLevel = settings.getReputationThreshold();
+        this.action = settings.getAction();
+        this.flag = settings.getFlag();
+        this.passSites = settings.getPassSites();
+        this.rules = settings.getRules();
     }
 
 }

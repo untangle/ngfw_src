@@ -124,7 +124,7 @@ public class CertificateManagerImpl implements CertificateManager
         // if either of the root CA files are missing create the thing now
         if ((rootCertFile.exists() == false) || (rootKeyFile.exists() == false)) {
             logger.info("Creating default root certificate authority");
-            UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + "UntangleRootCA DEFAULT");
+            UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " UntangleRootCA DEFAULT");
 
             // Symlink them
             symlinkRootCerts(CERT_STORE_PATH, CERT_STORE_PATH + "UntangleRootCA/", false);

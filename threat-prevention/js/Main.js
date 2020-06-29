@@ -11,6 +11,7 @@ Ext.define('Ung.apps.threatprevention.Main', {
     items: [
         { xtype: 'app-threat-prevention-status' },
         { xtype: 'app-threat-prevention-threats' },
+        { xtype: 'app-threat-prevention-pass-sites' },
         { xtype: 'app-threat-prevention-rules' },
         { xtype: 'app-threat-prevention-threatlookup' },
         { xtype: 'app-threat-prevention-advanced' }
