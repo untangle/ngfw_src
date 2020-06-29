@@ -17,6 +17,7 @@ public class ThreatPreventionEvent extends LogEvent
     private long    ruleId;
     private boolean blocked;
     private boolean flagged;
+    private ThreatPreventionReason  reason;
     private int     clientReputation;
     private int     clientCategories;
     private int     serverReputation;
@@ -24,12 +25,13 @@ public class ThreatPreventionEvent extends LogEvent
 
     public ThreatPreventionEvent() { }
 
-    public ThreatPreventionEvent( SessionEvent sessionEvent, boolean blocked,  boolean flagged, int ruleId , int clientReputation, int clientCategories, int serverReputation, int serverCategories)
+    public ThreatPreventionEvent( SessionEvent sessionEvent, boolean blocked,  boolean flagged, ThreatPreventionReason reason, int ruleId , int clientReputation, int clientCategories, int serverReputation, int serverCategories)
     {
         this.sessionEvent = sessionEvent;
         this.blocked = blocked;
         this.flagged = flagged;
         this.ruleId  = ruleId;
+        this.reason = reason;
         this.clientReputation  = clientReputation;
         this.clientCategories  = clientCategories;
         this.serverReputation  = serverReputation;
@@ -41,7 +43,10 @@ public class ThreatPreventionEvent extends LogEvent
 
     public boolean getFlagged() { return flagged; }
     public void setFlagged( boolean flagged ) { this.flagged = flagged; }
-    
+
+    public ThreatPreventionReason getReason() { return reason; }
+    public void setReason( ThreatPreventionReason reason ) { this.reason = reason; }
+
     public long getRuleId() { return ruleId; }
     public void setRuleId( long ruleId ) { this.ruleId = ruleId; }
 
@@ -66,12 +71,13 @@ public class ThreatPreventionEvent extends LogEvent
         String sql =
             "UPDATE " + schemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             "SET threat_prevention_blocked = ?, " +
-            "    threat_prevention_flagged = ?, " + 
-            "    threat_prevention_rule_id = ?, " + 
-            "    threat_prevention_client_reputation = ?, " + 
-            "    threat_prevention_client_categories = ?, " + 
-            "    threat_prevention_server_reputation = ?, " + 
-            "    threat_prevention_server_categories = ? " + 
+            "threat_prevention_flagged = ?, " + 
+            "threat_prevention_reason = ?, " + 
+            "threat_prevention_rule_id = ?, " + 
+            "threat_prevention_client_reputation = ?, " + 
+            "threat_prevention_client_categories = ?, " + 
+            "threat_prevention_server_reputation = ?, " + 
+            "threat_prevention_server_categories = ? " + 
             "WHERE session_id = ? ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -79,6 +85,7 @@ public class ThreatPreventionEvent extends LogEvent
         int i=0;
         pstmt.setBoolean(++i, getBlocked());
         pstmt.setBoolean(++i, getFlagged());
+        pstmt.setString(++i, ((getReason() == null) ? "" : Character.toString(getReason().getKey())));
         pstmt.setLong(++i, getRuleId());
         pstmt.setInt(++i, getClientReputation());
         pstmt.setInt(++i, getClientCategories());
