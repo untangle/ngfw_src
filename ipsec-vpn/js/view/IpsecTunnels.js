@@ -504,6 +504,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             },
             fieldLabel: 'Encryption'.t(),
             labelWidth: 120,
+            width: 350,
             editable: false,
             displayField: 'name',
             valueField: 'value'

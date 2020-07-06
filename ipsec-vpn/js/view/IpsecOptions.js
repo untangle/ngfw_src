@@ -36,6 +36,6 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecOptions', {
     }, {
         xtype: 'component',
         margin: '0 0 20 10',
-        html: 'When enable, IPsec traffic will bypass processing by all Apps and Service Apps'.t(),
+        html: 'When enabled, IPsec traffic will bypass processing by all Apps and Service Apps'.t(),
     }]
 });
