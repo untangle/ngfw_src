@@ -1,5 +1,6 @@
 """wireguard-vpn tests"""
 import time
+import copy
 import re
 import subprocess
 import base64
@@ -118,5 +119,112 @@ class WireGuardVpnTests(NGFWTestCase):
         result = waitForPing(global_functions.WG_VPN_SERVER_LAN_IP,0)
         assert(result)
         tunnelUp = True
-	
+
+    def test_031_netSettingsAndDefaultWGNetworks(self):
+        """Test if changing the Network Settings LAN address properly updates the wireguard local networks"""
+        
+        # Address we want to test with
+        testingAddressNet = "192.168.90"
+        testingAddress = testingAddressNet + ".1"
+        testingDhcpStart = testingAddressNet + ".100"
+        testingDhcpEnd = testingAddressNet + ".200"
+
+        # Pull out the current WG settings and the current Network Settings
+        wgSettings = self._app.getSettings()
+        origNetSettings = uvmContext.networkManager().getNetworkSettings()
+
+        # deepcopy WG network settings for manipulation
+        newNetSettings = copy.deepcopy( origNetSettings )
+
+        # Verify the WG settings don't already have this address stored
+        assert(testingAddressNet not in wgSettings['networks'])
+
+        # Find a DHCP LAN device and set it's address to the testing address
+        for intf in newNetSettings['interfaces']['list']:
+            if not intf['isWan']:
+                intf['v4StaticAddress'] = testingAddress
+                if intf['dhcpEnabled']:
+                    intf['dhcpRangeStart'] = testingDhcpStart
+                    intf['dhcpRangeEnd'] = testingDhcpEnd
+                break
+
+        # Set the settings to new config
+        uvmContext.networkManager().setNetworkSettings( newNetSettings )
+
+        # Query the WG settings to assert if that address made it in
+        newWGSettings = self._app.getSettings()
+
+        # Test that new WG LAN matches network LAN
+        assert(testingAddressNet in newWGSettings['networks'])
+
+        # Set network settings back to normal
+        uvmContext.networkManager().setNetworkSettings( origNetSettings )
+
+        # Get the WG settings again to verify
+        wgSettings = self._app.getSettings()
+
+        # Assert that old settings were set back properly proper now
+        assert(testingAddressNet not in wgSettings['networks'])
+
+    def test_032_netSettingsAndCustomWGNetworks(self):
+        """Test if changing the Network Settings LAN address DOES NOT update custom local networks in the WG app"""
+        
+        # Address we want to test with
+        testingAddressNet = "192.168.90"
+        testingAddress = testingAddressNet + ".1"
+        testingDhcpStart = testingAddressNet + ".100"
+        testingDhcpEnd = testingAddressNet + ".200"
+        testingCustomWGAddr = "192.168.92.0/24"
+
+        # Pull out the current WG settings and the current Network Settings
+        origWGSettings = self._app.getSettings()
+        origNetSettings = uvmContext.networkManager().getNetworkSettings()
+
+        # Verify the WG settings don't already have this address stored
+        assert(testingAddressNet not in origWGSettings['networks'])
+
+        # deepcopy network settings for manipulation
+        newNetSettings = copy.deepcopy( origNetSettings )
+
+        # deepcopy WG settings for manipulation
+        newWGSettings = copy.deepcopy( origWGSettings )
+
+        # update WG settings with a custom configuration
+        newWGSettings['networks'] = testingCustomWGAddr
+        self._app.setSettings(newWGSettings)
+
+        # Verify custom configuration is returned with get settings
+        assert(testingCustomWGAddr in self._app.getSettings()['networks'])
+
+        # Find a DHCP LAN device and set it's address to the testing address
+        for intf in newNetSettings['interfaces']['list']:
+            if not intf['isWan']:
+                intf['v4StaticAddress'] = testingAddress
+                if intf['dhcpEnabled']:
+                    intf['dhcpRangeStart'] = testingDhcpStart
+                    intf['dhcpRangeEnd'] = testingDhcpEnd
+                break
+
+        # Set the settings to new config
+        uvmContext.networkManager().setNetworkSettings( newNetSettings )
+
+        # Test that the custom WG network exists in the latest WG networks list, and that the local networks are not
+        wgSettings = self._app.getSettings()
+        assert(testingAddressNet not in wgSettings['networks'])
+        assert(testingCustomWGAddr in wgSettings['networks'])
+
+        # Set app back to normal
+        self._app.setSettings(origWGSettings)
+
+        # Set network settings back to normal
+        uvmContext.networkManager().setNetworkSettings( origNetSettings )
+
+        # Get the WG settings again to verify
+        wgSettings = self._app.getSettings()
+
+        # Assert that old settings were set back properly
+        assert(testingAddressNet not in wgSettings['networks'])
+        assert(testingCustomWGAddr not in wgSettings['networks'])
+
+
 test_registry.register_module("wireguard-vpn", WireGuardVpnTests)
