@@ -483,12 +483,14 @@ public class WireGuardVpnApp extends AppBase
         if(settings != null) {          
             String newDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress().getHostAddress();
             String newNetworks = UvmContextFactory.context().networkManager().getLocalNetworks().stream().map(Object::toString).collect(Collectors.joining("\r\n"));
+            boolean setNewSettings = false;
 
             if(settings.getDnsServer().equals(this.localDnsResolver) && !this.localDnsResolver.equals(newDnsResolver)) {
                 // Set newDnsResolver in the settings and also the local variable
                 logger.warn(newDnsResolver);
                 settings.setDnsServer(newDnsResolver);
                 this.localDnsResolver = newDnsResolver;
+                setNewSettings = true;
             }
 
             if(settings.getNetworks().equals(this.localNetworks) && !this.localNetworks.equals(newNetworks)) {
@@ -496,6 +498,11 @@ public class WireGuardVpnApp extends AppBase
                 logger.warn(newNetworks);
                 settings.setNetworks(newNetworks);
                 this.localNetworks = newNetworks;
+                setNewSettings = true;
+            }
+
+            if(setNewSettings) {
+                setSettings(settings);
             }
         }
     }
