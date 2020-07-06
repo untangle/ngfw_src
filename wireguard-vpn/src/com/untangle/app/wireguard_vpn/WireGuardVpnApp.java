@@ -53,8 +53,8 @@ public class WireGuardVpnApp extends AppBase
     private final WireguardVpnHookCallback wireguardVpnHookCallback;
     private final WireguardVpnPreHookCallback wireguardVpnPreHookCallback;
 
-    private InetAddress localDnsResolver = null;
-    private List<IPMaskedAddress> localNetworks = null;
+    private String localDnsResolver = null;
+    private String localNetworks = null;
 
     private static final String NETSPACE_OWNER = "wireguard-vpn";
     private static final String NETSPACE_SERVER = "server-network";
@@ -84,8 +84,8 @@ public class WireGuardVpnApp extends AppBase
         this.wireguardVpnPreHookCallback= new WireguardVpnPreHookCallback();
 
 
-        this.localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
-        this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+        this.localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks().stream().map(Object::toString).collect(Collectors.joining("\r\n"));
+        this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress().getHostAddress();
 
     }
 
@@ -347,7 +347,7 @@ public class WireGuardVpnApp extends AppBase
         settings.setPrivateKey(privateKey);
         settings.setPublicKey(publicKey);
 
-        InetAddress dnsAddress = this.localDnsResolver;
+        String dnsAddress = this.localDnsResolver;
         if(dnsAddress != null){
             logger.warn(dnsAddress);
             settings.setDnsServer(dnsAddress);
@@ -478,19 +478,20 @@ public class WireGuardVpnApp extends AppBase
     {
         logger.info("Network Settings have changed. Syncing new settings...");
 
-        // Check if the localDnsResolver and localNetworks were being used in WG
+        // Check if the old settings (settings.getdnsserver) were being used previously (this.localdnsresolver)
+        // if so and the old settings do not match the new settings, we should update them using the new data
         if(settings != null) {          
-            InetAddress newDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
-            List<IPMaskedAddress> newNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
+            String newDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress().getHostAddress();
+            String newNetworks = UvmContextFactory.context().networkManager().getLocalNetworks().stream().map(Object::toString).collect(Collectors.joining("\r\n"));
 
-            if(settings.getDnsServer() == this.localDnsResolver && this.localDnsResolver != newDnsResolver) {
+            if(settings.getDnsServer().equals(this.localDnsResolver) && !this.localDnsResolver.equals(newDnsResolver)) {
                 // Set newDnsResolver in the settings and also the local variable
                 logger.warn(newDnsResolver);
                 settings.setDnsServer(newDnsResolver);
                 this.localDnsResolver = newDnsResolver;
             }
 
-            if(settings.getNetworks() == this.localNetworks && this.localNetworks != newNetworks) {
+            if(settings.getNetworks().equals(this.localNetworks) && !this.localNetworks.equals(newNetworks)) {
                 // set newLocalNetworks in settings and also the local variable
                 logger.warn(newNetworks);
                 settings.setNetworks(newNetworks);
@@ -507,8 +508,8 @@ public class WireGuardVpnApp extends AppBase
     {
         logger.info("Network Settings will change, storing local settings...");
         //get the localnetworks and dnsresolver into the local variables before the settings change
-        this.localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
-        this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+        this.localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks().stream().map(Object::toString).collect(Collectors.joining("\r\n"));
+        this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress().getHostAddress();
     }
 
      /**
