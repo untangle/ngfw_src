@@ -76,7 +76,7 @@ public class ThreatPreventionApp extends AppBase
     private static final String STAT_LOOKUP_AVG = "lookup_avg";
 
     protected final ThreatPreventionReplacementGenerator replacementGenerator;
-    
+
     private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
 
     public static final Map<Integer, Integer> UrlCatThreatMap;
@@ -131,7 +131,7 @@ public class ThreatPreventionApp extends AppBase
                 //     return false;
 
                 ThreatPreventionRule matchedRule = null;
-                
+
                 /**
                  * Find the matching rule compute block/log verdicts
                  */
@@ -145,7 +145,7 @@ public class ThreatPreventionApp extends AppBase
                         break;
                     }
                 }
-        
+
                 if (matchedRule == null)
                     return false;
 
@@ -157,7 +157,7 @@ public class ThreatPreventionApp extends AppBase
                 return matchedRule.getAction() == "pass";
             }
     };
-    
+
     /**
      * IP Reputation App constructor
      * @param appSettings - the AppSettings
@@ -170,7 +170,7 @@ public class ThreatPreventionApp extends AppBase
         this.replacementGenerator = buildReplacementGenerator();
 
         this.otherHandler = new ThreatPreventionEventHandler(this);
-        
+
         localNetworks = UvmContextFactory.context().networkManager().getLocalNetworks();
         localNetworks.add(new IPMaskedAddress("192.168.0.0/16"));
         localNetworks.add(new IPMaskedAddress("172.16.0.0/12"));
@@ -198,7 +198,7 @@ public class ThreatPreventionApp extends AppBase
 
     /**
      * Called to get our decision engine instance
-     * 
+     *
      * @return The decision engine
      */
     public ThreatPreventionDecisionEngine getDecisionEngine()
@@ -265,7 +265,7 @@ public class ThreatPreventionApp extends AppBase
     {
         if (getSettings() == null)
             return null;
-        
+
         return getSettings().getRules();
     }
 
@@ -289,7 +289,7 @@ public class ThreatPreventionApp extends AppBase
     /**
      * Increment the block stat
      */
-    public void incrementBlockCount() 
+    public void incrementBlockCount()
     {
         this.incrementMetric(STAT_BLOCK);
     }
@@ -297,7 +297,7 @@ public class ThreatPreventionApp extends AppBase
     /**
      * Increment the pass stat
      */
-    public void incrementPassCount() 
+    public void incrementPassCount()
     {
         this.incrementMetric(STAT_PASS);
     }
@@ -305,7 +305,7 @@ public class ThreatPreventionApp extends AppBase
     /**
      * Increment the flag stat
      */
-    public void incrementFlagCount() 
+    public void incrementFlagCount()
     {
         this.incrementMetric(STAT_FLAG);
     }
@@ -314,7 +314,7 @@ public class ThreatPreventionApp extends AppBase
      * Increment high risk stat counter.
      * @param reputation integer of Reputation.
      */
-    public void incrementThreatCount(int reputation) 
+    public void incrementThreatCount(int reputation)
     {
         if(reputation == 0){
             this.incrementMetric(STAT_THREAT_NO_REPUTATION);
@@ -404,7 +404,7 @@ public class ThreatPreventionApp extends AppBase
 
     /**
      * Generate a response
-     * 
+     *
      * @param redirectDetails
      *        ThreatPreventionBlockDetails to build rediect.
      * @param session
@@ -446,17 +446,17 @@ public class ThreatPreventionApp extends AppBase
 
     /**
      * Build a replacement generator
-     * 
+     *
      * @return The replacement generator
      */
     protected ThreatPreventionReplacementGenerator buildReplacementGenerator()
     {
-        return new ThreatPreventionReplacementGenerator(getAppSettings());
+        return new ThreatPreventionReplacementGenerator(getAppSettings(), this);
     }
 
     /**
      * Get the block details for the argumented nonce
-     * 
+     *
      * @param nonce
      *        The nonce to search
      * @return Block details
@@ -537,7 +537,7 @@ public class ThreatPreventionApp extends AppBase
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
-        
+
         /**
          * If there are still no settings, just initialize
          */
@@ -549,7 +549,7 @@ public class ThreatPreventionApp extends AppBase
             logger.info("Loading Settings...");
 
             // UPDATE settings if necessary
-            
+
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
@@ -573,7 +573,7 @@ public class ThreatPreventionApp extends AppBase
         ThreatPreventionSettings settings = new ThreatPreventionSettings(ruleList);
         settings.setPassSites(passSites);
         settings.setVersion(1);
-        
+
         return settings;
     }
 
@@ -581,7 +581,7 @@ public class ThreatPreventionApp extends AppBase
      * Call reconfigure() after setting settings to
      * affect all new settings
      */
-    private void reconfigure() 
+    private void reconfigure()
     {
         /* check for any sessions that should be killed according to new rules */
         this.killMatchingSessions(THREAT_PREVENTION_SESSION_MATCHER);
@@ -617,7 +617,7 @@ public class ThreatPreventionApp extends AppBase
 
     /**
      * Undeploy the web app
-     * 
+     *
      * @param logger
      *        The logger
      */
