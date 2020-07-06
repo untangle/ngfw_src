@@ -567,29 +567,11 @@ public class ThreatPreventionApp extends AppBase
 
         /* A few sample settings */
         List<ThreatPreventionRule> ruleList = new LinkedList<>();
+        List<GenericRule> passSites = new LinkedList<>();
         LinkedList<ThreatPreventionRuleCondition> matcherList = null;
-
-        // /* example rule 1 */
-        // ThreatPreventionRuleCondition portMatch1 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.DST_PORT, "21");
-        // matcherList = new LinkedList<>();
-        // matcherList.add(portMatch1);
-        // ruleList.add(new ThreatPreventionRule(false, matcherList, true, true, "Block and flag all traffic destined to port 21"));
-
-        // /* example rule 2 */
-        // ThreatPreventionRuleCondition addrMatch2 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.SRC_ADDR, "1.2.3.4/255.255.255.0");
-        // matcherList = new LinkedList<>();
-        // matcherList.add(addrMatch2);
-        // ruleList.add(new ThreatPreventionRule(false, matcherList, true, true, "Block and flag all TCP traffic from 1.2.3.0 netmask 255.255.255.0"));
-
-        // /* example rule 3 */
-        // ThreatPreventionRuleCondition addrMatch3 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.DST_ADDR, "1.2.3.4/255.255.255.0");
-        // ThreatPreventionRuleCondition portMatch3 = new ThreatPreventionRuleCondition(ThreatPreventionRuleCondition.ConditionType.DST_PORT, "1000-5000");
-        // matcherList = new LinkedList<>();
-        // matcherList.add(addrMatch3);
-        // matcherList.add(portMatch3);
-        // ruleList.add(new ThreatPreventionRule(false, matcherList, true, false, "Accept and flag all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
-
+            
         ThreatPreventionSettings settings = new ThreatPreventionSettings(ruleList);
+        settings.setPassSites(passSites);
         settings.setVersion(1);
 
         return settings;
