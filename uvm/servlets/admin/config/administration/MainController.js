@@ -626,6 +626,10 @@ Ext.define('Ung.config.administration.MainController', {
             xtype: 'window',
             itemId: 'rootCertificateListView',
             modal: true,
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
             width: 500,
             height: 200,
             autoScroll: true,
@@ -638,9 +642,8 @@ Ext.define('Ung.config.administration.MainController', {
                 padding: 10,
                 html: 'The Root CA selector let\'s you set the current Root CA or delete other root CAs'.t()
             }, {
-                xtype: 'grid',
+                xtype: 'ungrid',
                 bind: '{rootCertStore}',
-    
                 sortableColumns: false,
                 enableColumnHide: false,
     
@@ -648,18 +651,21 @@ Ext.define('Ung.config.administration.MainController', {
                     {
                         header: 'Subject'.t(),
                         dataIndex: 'certSubject',
+                        flex: 1,
                     }, {
                         header: 'Date Valid'.t(),
                         dataIndex: 'dateValid',
                         renderer: function (date) {
                             return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
-                        }
+                        },
+                        flex: 1,
                     }, {
                         header: 'Date Expires'.t(),
                         dataIndex: 'dateExpires',
                         renderer: function (date) {
                             return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
-                        }
+                        },
+                        flex: 1,
                     }, {
                         xtype: 'actioncolumn',
                         header: 'View'.t(),
@@ -687,12 +693,6 @@ Ext.define('Ung.config.administration.MainController', {
                             },
                             // when a new cert is selected uncheck all others
                             checkchange: function (el, rowIndex, checked, record) {
-                                el.up('grid').getStore().each(function (rec) {
-                                    if (rec !== record) {
-                                        rec.set('activeRootCA', false);
-                                    }
-                                });
-
                                 me.setRootCert(el, record);
                             }
                         }
@@ -855,6 +855,13 @@ Ext.define('Ung.config.administration.MainController', {
         '<strong>SUBJECT:</strong> ' + record.get('certSubject'),
         function(button) {
             if (button === 'yes') {
+                // Uncheck everything except for the selected record
+                v.up('grid').getStore().each(function (rec) {
+                    if (rec !== record) {
+                        rec.set('activeRootCA', false);
+                    }
+                });
+
                 v.setLoading(true);
                 if(Util.isDestroyed(record)){
                     return;
@@ -872,6 +879,9 @@ Ext.define('Ung.config.administration.MainController', {
                     v.setLoading(false);
                     Util.successToast('Root CA Updated'.t());
                 });
+            } else {
+                // Uncheck the checkbox
+                record.set('activeRootCA', false);
             }
         });
     },
