@@ -280,7 +280,7 @@ public class WireGuardVpnApp extends AppBase
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
-        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.wireguardVpnHookCallback);
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.wireguardVpnPreHookCallback);
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.wireguardVpnHookCallback);
 
         this.WireGuardVpnMonitor.stop();
@@ -487,7 +487,6 @@ public class WireGuardVpnApp extends AppBase
 
             if(settings.getDnsServer().equals(this.localDnsResolver) && !this.localDnsResolver.equals(newDnsResolver)) {
                 // Set newDnsResolver in the settings and also the local variable
-                logger.warn(newDnsResolver);
                 settings.setDnsServer(newDnsResolver);
                 this.localDnsResolver = newDnsResolver;
                 setNewSettings = true;
@@ -495,7 +494,6 @@ public class WireGuardVpnApp extends AppBase
 
             if(settings.getNetworks().equals(this.localNetworks) && !this.localNetworks.equals(newNetworks)) {
                 // set newLocalNetworks in settings and also the local variable
-                logger.warn(newNetworks);
                 settings.setNetworks(newNetworks);
                 this.localNetworks = newNetworks;
                 setNewSettings = true;
