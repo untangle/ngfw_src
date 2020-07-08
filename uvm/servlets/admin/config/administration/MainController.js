@@ -708,7 +708,9 @@ Ext.define('Ung.config.administration.MainController', {
                         isDisabled: function (view, rowIndex, colIndex, item, record) {
                             return record.get('activeRootCA');
                         },
-                        handler: 'deleteCert'
+                        handler: function(view, rowIndex, colIndex, item, e, record) {
+                            me.deleteCert(view, rowIndex, colIndex, item, e, record);
+                        }
                     }]
             }]
         });
