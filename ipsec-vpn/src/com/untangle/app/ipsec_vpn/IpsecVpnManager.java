@@ -322,6 +322,7 @@ public class IpsecVpnManager
                         ipsec_conf.write(TAB + "leftprotoport=17/1701" + RET);
                         ipsec_conf.write(TAB + "right=%any" + RET);
                         ipsec_conf.write(TAB + "rightprotoport=17/%any" + RET);
+                        ipsec_conf.write(TAB + "ike=aes256-sha384-modp1024" + RET);
                         ipsec_conf.write(RET);
 
                         // -----------------------------------------------------------
