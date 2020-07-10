@@ -43,7 +43,7 @@ public class ExecManagerImpl implements ExecManager
 
     private Level level;
 
-    private boolean showAllStatistics = false;
+    private boolean showAllStatistics = true;
     private ConcurrentHashMap<String, ExecManagerStatus> execStatistics = new ConcurrentHashMap<>();
 
     /**
