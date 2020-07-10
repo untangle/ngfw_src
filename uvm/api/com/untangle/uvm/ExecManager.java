@@ -60,4 +60,10 @@ public interface ExecManager
      * Also escapes any quote characters in the arguments themselves
      */
     String argBuilder( String[] args );
+
+    /**
+     * Override default statistics display control.
+     * @param showAllStatistics If true, show all exec stats, otherwise use time limiting.
+     */
+    void showAllStatistics(boolean showAllStatistics);
 }
