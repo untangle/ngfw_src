@@ -39,6 +39,16 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private String virtualDnsTwo = "";
     private String charonDebug = "";
     private String uniqueIds = "yes";
+    private boolean phase1Manual = false;
+    private String phase1Cipher = "3des";
+    private String phase1Hash = "md5";
+    private String phase1Group = "modp2048";
+    private String phase1Lifetime = "28800";
+    private boolean phase2Manual = false;
+    private String phase2Cipher = "3des";
+    private String phase2Hash = "md5";
+    private String phase2Group = "modp2048";
+    private String phase2Lifetime = "3600";
     private String phase1DefaultLifetime = "8h";
     private String phase2DefaultLifetime = "1h";
 
@@ -104,6 +114,36 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
 
     public String getPhase2DefaultLifetime() { return(phase2DefaultLifetime); }
     public void setPhase2DefaultLifetime(String argString) { this.phase2DefaultLifetime = argString; }
+
+    public boolean getPhase1Manual() { return (phase1Manual); }
+    public void setPhase1Manual(boolean phase1Manual) { this.phase1Manual = phase1Manual; }
+
+    public String getPhase1Cipher() { return (phase1Cipher); }
+    public void setPhase1Cipher(String phase1Cipher) { this.phase1Cipher = phase1Cipher; }
+
+    public String getPhase1Hash() { return (phase1Hash); }
+    public void setPhase1Hash(String phase1Hash) { this.phase1Hash = phase1Hash; }
+
+    public String getPhase1Group() { return (phase1Group); }
+    public void setPhase1Group(String phase1Group) { this.phase1Group = phase1Group; }
+
+    public String getPhase1Lifetime() { return (phase1Lifetime); }
+    public void setPhase1Lifetime(String phase1Lifetime) { this.phase1Lifetime = phase1Lifetime; }
+
+    public boolean getPhase2Manual() { return (phase2Manual); }
+    public void setPhase2Manual(boolean phase2Manual) { this.phase2Manual = phase2Manual; }
+
+    public String getPhase2Cipher() { return (phase2Cipher); }
+    public void setPhase2Cipher(String phase2Cipher) { this.phase2Cipher = phase2Cipher; }
+
+    public String getPhase2Hash() { return (phase2Hash); }
+    public void setPhase2Hash(String phase2Hash) { this.phase2Hash = phase2Hash; }
+
+    public String getPhase2Group() { return (phase2Group); }
+    public void setPhase2Group(String phase2Group) { this.phase2Group = phase2Group; }
+
+    public String getPhase2Lifetime() { return (phase2Lifetime); }
+    public void setPhase2Lifetime(String phase2Lifetime) { this.phase2Lifetime = phase2Lifetime; }
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
