@@ -299,7 +299,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
     extend: 'Ung.cmp.GridController',
     alias: 'controller.app-openvpn-special',
 
-    downloadClient: function(view, row, colIndex, item, e, record) {
+    getClientConfig: function(view, row, colIndex, item, e, record) {
         if( record.dirty ){
             Ext.MessageBox.alert(
                 "Cannot download".t(),
@@ -312,7 +312,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
 
     getDistributeWindow: function() {
         this.distributeWindow = Ext.create('Ext.window.Window', {
-            title: 'Download OpenVPN Client'.t(),
+            title: 'Download Client Configuration'.t(),
             items: [{
                 xtype: 'panel',
                 items: [{
@@ -341,6 +341,12 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                         xtype: 'component',
                         name: 'downloadChromebookConfigurationFile',
                         html: " "
+                    }, {
+                        xtype: 'component',
+                        html: '<BR>'
+                    }, {
+                        xtype: 'component',
+                        html: "<a href='https://wiki.untangle.com/index.php/OpenVPN'>See our OpenVPN documentation for information and download links for common VPN clients</a>"
                     }]
                 }]
             }],
@@ -359,7 +365,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
             populate: function( record ) {
                 var me = this;
                 this.record = record;
-                this.setTitle('Download OpenVPN Client'.t() + ' | ' + record.data.name);
+                this.setTitle('Download Client Configuration'.t() + ' | ' + record.data.name);
 
                 var clients = [{
                   name: 'downloadUntangleConfigurationFile',
