@@ -1616,7 +1616,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     // appManager not initialized yet
                     if (this.appManager == null) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("Reports app not found, discarding event(s)");
+                            logger.warn("App manager not initialized, discarding event(s)");
                             this.lastLoggedWarningTime = System.currentTimeMillis();
                         }
                         return;
@@ -1625,10 +1625,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     this.reportsApp = (Reporting) this.appManager().app("reports");
                     // no reports app
                     if (this.reportsApp == null) {
-                        if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("Reports app not found, discarding event(s)");
-                            this.lastLoggedWarningTime = System.currentTimeMillis();
-                        }
                         return;
                     }
                 } catch (Exception e) {
