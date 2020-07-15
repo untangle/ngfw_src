@@ -18,7 +18,6 @@ env:
   jobs:
     - ARCHITECTURE: amd64
     - ARCHITECTURE: i386
-    - ARCHITECTURE: arm64
 
 before_install:
 - docker pull untangleinc/ngfw:${REPOSITORY}-build-${ARCHITECTURE}
