@@ -1623,10 +1623,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     }
                     
                     this.reportsApp = (Reporting) this.appManager().app("reports");
-                    // no reports app
-                    if (this.reportsApp == null) {
-                        return;
-                    }
                 } catch (Exception e) {
                     logger.warn("Unable to initialize reports app", e);
                     return;

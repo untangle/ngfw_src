@@ -260,11 +260,6 @@ public class EventWriterImpl implements Runnable
     public void logEvent(LogEvent event)
     {
         if ( this.thread == null ) {
-            if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
-                //LOOK HERE; boolean for if reports not running and already logged? increase time?
-                logger.warn("Reports app not running, discarding event");
-                this.lastLoggedWarningTime = System.currentTimeMillis();
-            }
             return;
         }
         if ( this.overloadedFlag ) {
