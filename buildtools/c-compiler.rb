@@ -81,7 +81,7 @@ class CCompilerEnv
   end
 
   def CCompilerEnv.defaultStripCommand
-    ( $DevelBuild ) ? "echo \"[nostrip ] \"" : "strip --strip-debug --remove-section=.note --remove-section=.comment -x"
+    ($DevelBuild || ARCH == "arm64") ? "echo \"[nostrip ] \"" : "strip --strip-debug --remove-section=.note --remove-section=.comment -x"
   end
 
   attr_reader     :warnings, :optimizations, :cc, :ranlib
