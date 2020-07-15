@@ -1,8 +1,8 @@
-Ext.define('Ung.config.local-directory.view.Radius', {
+Ext.define('Ung.config.local-directory.view.RadiusServer', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config-local-directory-radius',
-    itemId: 'radius',
-    title: 'RADIUS',
+    alias: 'widget.config-local-directory-radius-server',
+    itemId: 'radius-server',
+    title: 'RADIUS Server',
     scrollable: true,
     viewModel: true,
 
@@ -11,8 +11,9 @@ Ext.define('Ung.config.local-directory.view.Radius', {
     items: [{
         xtype: 'fieldset',
         padding: '10 20',
-        width: 500,
-        title: 'Wi-Fi Authentication (RADIUS server)'.t(),
+        itemId: 'radius-server',
+        width: 600,
+        title: 'Wi-Fi Authentication (RADIUS Server)'.t(),
         items: [{
             xtype: 'checkbox',
             reference: 'externalAccess',
@@ -40,32 +41,6 @@ Ext.define('Ung.config.local-directory.view.Radius', {
                 disabled: '{!systemSettings.radiusServerEnabled}',
             },
             handler: 'configureCertificate'
-        }]
-    }, {
-        xtype: 'fieldset',
-        padding: '10 20',
-        itemId: 'radius-log',
-        width: '80%',
-        title: 'RADIUS Server Log'.t(),
-        items: [{
-            xtype: 'button',
-            iconCls: 'fa fa-refresh',
-            text: 'Refresh',
-            target: 'radiusLogFile',
-            handler: 'refreshRadiusLogFile'
-        }, {
-            xtype: 'textarea',
-            itemId: 'radiusLogFile',
-            spellcheck: false,
-            padding: '5 0',
-            border: true,
-            width: '100%',
-            height: 500,
-            bind: '{radiusLogFile}',
-            fieldStyle: {
-                'fontFamily'   : 'courier new',
-                'fontSize'     : '12px'
-            }
         }]
     }]
 });
