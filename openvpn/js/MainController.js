@@ -346,7 +346,11 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                         html: '<BR>'
                     }, {
                         xtype: 'component',
-                        html: "<a href='https://wiki.untangle.com/index.php/OpenVPN'>See our OpenVPN documentation for information and download links for common VPN clients</a>"
+                        autoEl: {
+                            tag: 'a',
+                            href: 'https://wiki.untangle.com/index.php/OpenVPN',
+                            html: 'See our OpenVPN documentation for information and download links for common VPN clients'
+                        }   
                     }]
                 }]
             }],
