@@ -17,11 +17,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -36,9 +39,15 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
 
     private final static String FREERADIUS_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-logfile";
+    private final static String FREERADIUS_PROXY_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-proxy";
     private final static String FREERADIUS_LOCAL_SECRETS = "/etc/freeradius/3.0/mods-config/files/untangle.local";
     private final static String FREERADIUS_AUTHORIZE = "/etc/freeradius/3.0/mods-config/files/authorize";
     private final static String FREERADIUS_RADIUSD = "/etc/freeradius/3.0/radiusd.conf";
+    private final static String FREERADIUS_SAMBA_CONFIG = "/etc/samba/smb.conf";
+    private final static String FREERADIUS_KRB5_CONFIG = "/etc/krb5.conf";
+    private final static String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-available/mschap";
+    private final static String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-available/ntlm_auth";
+    private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-available/eap";
 
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
@@ -66,13 +75,65 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public String getRadiusLogFile()
     {
-        logger.debug("getRadiusLogFile()");
         return UvmContextFactory.context().execManager().execOutput(FREERADIUS_LOGFILE_SCRIPT);
     }
 
     /**
-     * Checks to see if user is expired
+     * Gets the status of the account status in Active Directory
+     *
+     * @return The status returned by the script
+     */
+    public String getRadiusProxyStatus()
+    {
+        SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
+        String command = (FREERADIUS_PROXY_SCRIPT + " \"" + systemSettings.getRadiusProxyUsername() + "\" \"" + systemSettings.getRadiusProxyPassword() + "\"");
+
+        return UvmContextFactory.context().execManager().execOutput(command);
+    }
+
+    /**
+     * Adds a computer account to the configured AD domain controller using the
+     * configured credentials.
      * 
+     * @return The result of the join attempt
+     */
+    public String addRadiusComputerAccount()
+    {
+        SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
+
+        String command = ("/usr/bin/net ads --no-dns-updates join");
+        command += (" -U \"" + systemSettings.getRadiusProxyUsername() + "%" + systemSettings.getRadiusProxyPassword() + "\"");
+        command += (" -S " + systemSettings.getRadiusProxyServer());
+        command += (" osName=\"Untangle NG Firewall\"");
+        command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
+
+        return UvmContextFactory.context().execManager().execOutput(command);
+    }
+
+    /**
+     * Called to test Active Directory authentication
+     *
+     * @param userName
+     *        The username for the test
+     * @param userPass
+     *        The password for the test
+     * @param userDomain
+     *        The domain for the test
+     * @return The result of the test
+     */
+    public String testRadiusProxyLogin(String userName, String userPass, String userDomain)
+    {
+        String command = ("/usr/bin/ntlm_auth --request-nt-key");
+        command += (" --domain=\"" + userDomain + "\"");
+        command += (" --username=\"" + userName + "\"");
+        command += (" --password=\"" + userPass + "\"");
+
+        return UvmContextFactory.context().execManager().execOutput(command);
+    }
+
+    /**
+     * Checks to see if user is expired
+     *
      * @param user
      *        The user to check
      * @return True if expired, otherwise false
@@ -289,7 +350,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         // update xauth.secrets and chap-secrets for IPsec and untangle.local for RADIUS
         updateXauthSecrets(list);
         updateChapSecrets(list);
-        updateRadiusSecrets(list);
+        updateRadiusConfiguration(list);
         this.currentList = list;
     }
 
@@ -319,7 +380,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         else {
             updateXauthSecrets(users);
             updateChapSecrets(users);
-            updateRadiusSecrets(users);
+            updateRadiusConfiguration(users);
             this.currentList = users;
         }
     }
@@ -453,7 +514,7 @@ public class LocalDirectoryImpl implements LocalDirectory
      * @param list
      *        The list of LocalDirectoryUsers
      */
-    private void updateRadiusSecrets(LinkedList<LocalDirectoryUser> list)
+    private void updateRadiusConfiguration(LinkedList<LocalDirectoryUser> list)
     {
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
         FileWriter fw = null;
@@ -472,7 +533,7 @@ public class LocalDirectoryImpl implements LocalDirectory
                 for (LocalDirectoryUser user : list) {
                     byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
                     String userPassword = new String(rawPassword);
-                    fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\"\n");
+                    fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\", MS-CHAP-Use-NTLM-Auth := 0\n");
                 }
             }
             fw.flush();
@@ -611,10 +672,143 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         /*
+         * Create the smb.conf file
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_SAMBA_CONFIG, false);
+            fw.write(FILE_DISCLAIMER);
+            if (systemSettings.getRadiusProxyEnabled()) {
+                fw.write("[global]\n");
+                fw.write("\tworkgroup = " + systemSettings.getRadiusProxyWorkgroup() + "\n");
+                fw.write("\tsecurity = ads\n");
+                fw.write("\tpassword server = " + systemSettings.getRadiusProxyServer() + "\n");
+                fw.write("\trealm = " + systemSettings.getRadiusProxyRealm() + "\n");
+                fw.write("\twinbind use default domain = yes\n");
+                fw.write("\tserver role = standalone server\n");
+                fw.write("\tbind interfaces only = no\n");
+                fw.write("\tload printers = no\n");
+                fw.write("\tlocal master = no\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating SAMBA configuration file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing SAMBA configuration file", ex);
+                }
+            }
+        }
+
+        /*
+         * Create the krb5.conf file
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_KRB5_CONFIG, false);
+            fw.write(FILE_DISCLAIMER);
+            if (systemSettings.getRadiusProxyEnabled()) {
+                fw.write("[libdefaults]\n");
+                fw.write("\tdefault_realm = " + systemSettings.getRadiusProxyRealm().toUpperCase() + "\n");
+                fw.write("\tdns_lookup_realm = false\n");
+                fw.write("\tdns_lookup_kdc = false\n");
+                fw.write("\n");
+                fw.write("[realms]\n");
+                fw.write("\t" + systemSettings.getRadiusProxyRealm().toUpperCase() + " {\n");
+                fw.write("\t\tkdc = " + systemSettings.getRadiusProxyServer() + "\n");
+                fw.write("\t\tadmin_server = " + systemSettings.getRadiusProxyServer() + "\n");
+                fw.write("\t\tdefault_domain = " + systemSettings.getRadiusProxyRealm() + "\n");
+                fw.write("\t}\n");
+                fw.write("[domain_realm]\n");
+                fw.write("\t." + systemSettings.getRadiusProxyRealm().toLowerCase() + " = " + systemSettings.getRadiusProxyRealm().toUpperCase() + "\n");
+                fw.write("\t" + systemSettings.getRadiusProxyRealm().toLowerCase() + " = " + systemSettings.getRadiusProxyRealm().toUpperCase() + "\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating KRB5 configuration file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing KRB5 configuration file", ex);
+                }
+            }
+        }
+
+        /*
+         * Create the mschap config file
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_MSCHAP_CONFIG, false);
+            fw.write(FILE_DISCLAIMER);
+            if (systemSettings.getRadiusProxyEnabled()) {
+                fw.write("mschap {\n");
+                fw.write("\twith_ntdomain_hack = yes\n");
+                fw.write("\tntlm_auth = \"/usr/bin/ntlm_auth --request-nt-key --username=%{%{Stripped-User-Name}:-%{%{User-Name}:-None}} --challenge=%{%{mschap:Challenge}:-00} --nt-response=%{%{mschap:NT-Response}:-00}\"\n");
+                fw.write("}\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating MSCHAP configuration file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing MSCHAP configuration file", ex);
+                }
+            }
+        }
+
+        /*
+         * Create the ntlm_auth config file
+         */
+        try {
+            fw = new FileWriter(FREERADIUS_NTLM_CONFIG, false);
+            fw.write(FILE_DISCLAIMER);
+            if (systemSettings.getRadiusProxyEnabled()) {
+                fw.write("exec ntlm_auth {\n");
+                fw.write("\twait = yes\n");
+                fw.write("\tprogram = \"/usr/bin/ntlm_auth --request-nt-key --domain=MYDOMAIN --username=%{mschap:User-Name} --password=%{User-Password}\"\n");
+                fw.write("}\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception exn) {
+            logger.error("Exception creating NTLM configuration file", exn);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    logger.error("Exception closing NTLM configuration file", ex);
+                }
+            }
+        }
+
+        // Update the eap config file
+        try {
+            updateFreeradiusEapConfig(FREERADIUS_EAP_CONFIG, "default_eap_type", "peap");
+        } catch (Exception exn) {
+            logger.error("Exception modifying EAP configuration file", exn);
+        }
+
+        /*
          * If server is enabled restart the freeradius service
          */
         if (systemSettings.getRadiusServerEnabled()) {
             UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
+        }
+        /*
+         * If proxy is enabled restart the winbind service
+         */
+        if (systemSettings.getRadiusServerEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl restart winbind.service");
         }
     }
 
@@ -736,6 +930,70 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         return (secbuff.toString());
+    }
+
+    /**
+     * Modify the freeradius eap configuration file in place
+     *
+     * Note that this function will not currently allow modifying config items
+     * on lines that are commented. We simply look for the name and replace
+     * everything after it with the new value. It also won't work if you're
+     * dealing with partial matches or config items with short names that might
+     * occur in other configuration items. It also stops looking once it
+     * replaces the first occurrence so we don't make unwanted changes in the
+     * nested configuration sections within eap { inside the eap config file.
+     *
+     * @param fileName
+     *        The file to modify
+     * @param configItem
+     *        The configuration item to modify
+     * @param configValue
+     *        The new value for the configuration item
+     * @throws Exception
+     */
+    public void updateFreeradiusEapConfig(String fileName, String configItem, String configValue) throws Exception
+    {
+        int counter = 0;
+
+        java.util.Scanner scanner = new Scanner(new File(fileName));
+        List<String> config = new ArrayList<String>();
+        while (scanner.hasNextLine()) {
+            config.add(scanner.nextLine());
+        }
+        scanner.close();
+
+        FileWriter fw = new FileWriter(fileName, false);
+
+        for (String line : config) {
+            // if we already processed a match write without modification
+            if (counter > 0) {
+                fw.write(line + "\n");
+                continue;
+            }
+
+            // lines with comments are written without modification
+            if (line.contains("#")) {
+                fw.write(line + "\n");
+                continue;
+            }
+
+            // look for the configItem in the line
+            int cfgloc = line.indexOf(configItem);
+
+            // lines without the configItem are written without modification
+            if (cfgloc < 0) {
+                fw.write(line + "\n");
+                continue;
+            }
+
+            // write the configItem file entries using our configured crt file
+            fw.write(line.substring(0, cfgloc));
+            fw.write(configItem + " = " + configValue + "\n");
+            counter++;
+        }
+
+        fw.flush();
+        fw.close();
     }
 
     /**
