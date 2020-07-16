@@ -337,8 +337,6 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "replay_window=0" + RET);
                         }
 
-                        ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
-                        ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
                         ipsec_conf.write(TAB + "dpddelay=10" + RET);
                         ipsec_conf.write(TAB + "dpdtimeout=90" + RET);
                         ipsec_conf.write(TAB + "dpdaction=clear" + RET);
@@ -347,6 +345,27 @@ public class IpsecVpnManager
                         ipsec_conf.write(TAB + "leftprotoport=17/1701" + RET);
                         ipsec_conf.write(TAB + "right=%any" + RET);
                         ipsec_conf.write(TAB + "rightprotoport=17/%any" + RET);
+
+                        if (settings.getPhase1Manual() == true) {
+                            ipsec_conf.write(TAB + "ike=" + settings.getPhase1Cipher() + "-" + settings.getPhase1Hash() + "-" + settings.getPhase1Group() + "!" + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1Lifetime() + "s" + RET);
+                        } else {
+                            ipsec_conf.write(TAB + "ike=" + ike_default + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                        }
+
+                        if (settings.getPhase2Manual() == true) {
+                            if (settings.getPhase2Group().equals("disabled") == true) {
+                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "!" + RET);
+                            } else {
+                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "-" + settings.getPhase2Group() + "!" + RET);
+                            }
+                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2Lifetime() + "s" + RET);
+                        } else {
+                            ipsec_conf.write(TAB + "esp=" + esp_default + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
+                        }
+
                         ipsec_conf.write(RET);
 
                         // -----------------------------------------------------------
@@ -376,8 +395,6 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "replay_window=0" + RET);
                         }
 
-                        ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
-                        ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
                         ipsec_conf.write(TAB + "left=" + listen.getAddress() + RET);
                         ipsec_conf.write(TAB + "leftsubnet=0.0.0.0/0" + RET);
                         ipsec_conf.write(TAB + "leftupdown=" + XAUTH_UPDOWN_SCRIPT + RET);
@@ -404,6 +421,26 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsOne() + "," + settings.getVirtualDnsTwo() + RET);
                         }
 
+                        if (settings.getPhase1Manual() == true) {
+                            ipsec_conf.write(TAB + "ike=" + settings.getPhase1Cipher() + "-" + settings.getPhase1Hash() + "-" + settings.getPhase1Group() + "!" + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1Lifetime() + "s" + RET);
+                        } else {
+                            ipsec_conf.write(TAB + "ike=" + ike_default + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                        }
+
+                        if (settings.getPhase2Manual() == true) {
+                            if (settings.getPhase2Group().equals("disabled") == true) {
+                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "!" + RET);
+                            } else {
+                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "-" + settings.getPhase2Group() + "!" + RET);
+                            }
+                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2Lifetime() + "s" + RET);
+                        } else {
+                            ipsec_conf.write(TAB + "esp=" + esp_default + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
+                        }
+
                         ipsec_conf.write(RET);
 
                         // -----------------------------------------------------------
@@ -414,8 +451,6 @@ public class IpsecVpnManager
                         ipsec_conf.write(TAB + "keyexchange=ikev2" + RET);
                         ipsec_conf.write(TAB + "auto=add" + RET);
                         ipsec_conf.write(TAB + "type=tunnel" + RET);
-                        ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
-                        ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
 
                         if (osArch.equals("arm") == true) {
                             ipsec_conf.write(TAB + "replay_window=0" + RET);
@@ -475,6 +510,26 @@ public class IpsecVpnManager
                         // add the L2TP PSK to the shared secrets file
                         ipsec_secrets.write("# VPN-L2TP-" + Integer.toString(x) + RET);
                         ipsec_secrets.write(listen.getAddress() + " %any : PSK 0x" + StringHexify(settings.getVirtualSecret()) + RET);
+
+                        if (settings.getPhase1Manual() == true) {
+                            ipsec_conf.write(TAB + "ike=" + settings.getPhase1Cipher() + "-" + settings.getPhase1Hash() + "-" + settings.getPhase1Group() + "!" + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1Lifetime() + "s" + RET);
+                        } else {
+                            ipsec_conf.write(TAB + "ike=" + ike_default + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                        }
+
+                        if (settings.getPhase2Manual() == true) {
+                            if (settings.getPhase2Group().equals("disabled") == true) {
+                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "!" + RET);
+                            } else {
+                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "-" + settings.getPhase2Group() + "!" + RET);
+                            }
+                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2Lifetime() + "s" + RET);
+                        } else {
+                            ipsec_conf.write(TAB + "esp=" + esp_default + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
+                        }
                     }
                 }
 
