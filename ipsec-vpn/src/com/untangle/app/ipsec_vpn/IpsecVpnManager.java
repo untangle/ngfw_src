@@ -505,6 +505,8 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "esp=" + esp_default + RET);
                             ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
                         }
+
+                        ipsec_conf.write(RET);
                     }
                 }
 
@@ -558,7 +560,8 @@ public class IpsecVpnManager
                 // now we create the xl2tpd.conf file
                 xl2tpd_conf.write("[global]" + RET);
                 xl2tpd_conf.write(TAB + "listen-addr = 0.0.0.0" + RET);
-                xl2tpd_conf.write(TAB + "ipsec saref = no" + RET);
+                xl2tpd_conf.write(TAB + "ipsec saref = yes" + RET);
+                xl2tpd_conf.write(TAB + "force userspace = yes" + RET);
                 xl2tpd_conf.write(TAB + "port = 1701" + RET);
                 xl2tpd_conf.write(TAB + "debug network = " + (settings.getDebugflag() ? "yes" : "no") + RET);
                 xl2tpd_conf.write(TAB + "debug packet = " + (settings.getDebugflag() ? "yes" : "no") + RET);
