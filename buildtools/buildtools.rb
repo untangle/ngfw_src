@@ -1,7 +1,7 @@
 # Sebastien Delafond <seb@untangle.com>
 # Dirk Morris <dmorris@untangle.com>
 
-arch = `dpkg-architecture -qDEB_TARGET_ARCH_CPU`.strip()
+arch = `dpkg-architecture -qDEB_BUILD_ARCH_CPU`.strip()
 openjdk8 = "java-8-openjdk-#{arch}"
 openjdk11 = "java-11-openjdk-#{arch}"
 
