@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+#
+# Script to get the status of the computer in the Active Directory
+# domain controller
+
+import subprocess
+import json
+import sys
+
+# -----------------------------------------------------------------------------
+
+def parse_output(parse_data):
+    parse_lines = parse_data.split('\n')
+    status_info = ""
+
+    # look at every line
+    for line in parse_lines:
+
+        # strip the line and look for fields we want
+        line = line.strip()
+
+        spot = line.find("distinguishedName: ")
+        if (spot >= 0):
+            status_info += line + "\n"
+
+        spot = line.find("whenCreated: ")
+        if (spot >= 0):
+            status_info += line + "\n"
+
+        spot = line.find("whenChanged: ")
+        if (spot >= 0):
+            status_info += line + "\n"
+
+    # return the status
+    return status_info
+
+# -----------------------------------------------------------------------------
+
+if len(sys.argv) < 3:
+    print "ERROR: You must provide the AD username and password"
+    sys.exit(1)
+
+netcmd = "/usr/bin/net ads status -U %s%%%s" % (sys.argv[1], sys.argv[2])
+
+status_proc = subprocess.Popen(netcmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+(status_out,status_err) = status_proc.communicate()
+status_txt = parse_output(status_out)
+
+if (len(status_txt) != 0):
+    print status_txt
+else:
+    if (len(status_out) != 0):
+        print status_out
+    if (len(status_err) != 0):
+        print status_err

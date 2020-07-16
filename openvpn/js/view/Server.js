@@ -206,11 +206,11 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         renderer: Ung.apps.openvpn.SpecialGridController.groupRenderer
     }, {
         xtype: 'actioncolumn',
-        header: 'Download Client'.t(),
-        width: Renderer.usernameWidth,
+        header: 'Get Client Configuration'.t(),
+        width: Renderer.emailWidth,
         iconCls: 'fa fa-download',
         align: 'center',
-        handler: 'downloadClient',
+        handler: 'getClientConfig',
     }],
 
     editorFields: [{
