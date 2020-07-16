@@ -297,7 +297,7 @@ Ext.define('Ung.view.reports.EventReport', {
         },
 
         /**
-         * bindExportButtons handles the binding of the ungrid component and store to the exportCsv and exportXls buttons
+         * bindExportButtons handles the binding of the ungrid component and store to the exportCsv button
          * Within this functionality we create an Ext.js default grid panel and set the current columns and store to the grid.
          * The grid is not rendered, but passed directly into the Exporter tools, which handle proper exporting of the data.
          *
@@ -308,11 +308,15 @@ Ext.define('Ung.view.reports.EventReport', {
             var me = this,
             entry = me.getViewModel().get('entry'),
             export_title = 'export', // default export title
-            csvButton = me.getView().up().up().down('#exportCsv'),
-            xlsButton = me.getView().up().up().down('#exportXls'),
+            csvButton,
+            exportButton = me.getView().up().up().down('#exportData');
             grid = me.getView().down('grid');
 
-            if (!csvButton || !xlsButton || !grid) { return; }
+            if (!exportButton || !grid) { return; }
+
+            csvButton = exportButton.down('#exportCsv');
+
+            if (!csvButton) { return; }
 
             if (entry) {
                 export_title = (entry.get('category') + '-' + entry.get('title')).replace(/ /g, '_');
@@ -323,7 +327,6 @@ Ext.define('Ung.view.reports.EventReport', {
              * given that the title is altered so it contains the report entry category/title
              */
             csvButton.title = export_title;
-            xlsButton.title = export_title;
 
             /**
              * it is necessary to generate a different grid which is decoupled from original one
@@ -404,10 +407,8 @@ Ext.define('Ung.view.reports.EventReport', {
             });
 
             csvButton.component = exportGrid;
-            xlsButton.component = exportGrid;
 
             csvButton.store = exportStore;
-            xlsButton.store = exportStore;
         }
     },
     statics:{
