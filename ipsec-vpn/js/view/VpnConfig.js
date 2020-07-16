@@ -84,6 +84,196 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
             xtype: 'checkbox',
             bind: '{settings.allowConcurrentLogins}',
             fieldLabel: 'Allow Concurrent Logins',
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 0',
+            items: [{
+                xtype:'checkbox',
+                bind: '{settings.phase1Manual}',
+                fieldLabel: 'Phase 1 IKE/ISAKMP Manual Configuration'.t(),
+                labelWidth: 300
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 40',
+            bind: { hidden: '{!settings.phase1Manual}' },
+            items: [{
+                xtype:'combobox',
+                bind: {
+                    value: '{settings.phase1Cipher}',
+                    store: '{P1CipherStore}'
+                },
+                fieldLabel: 'Encryption'.t(),
+                labelWidth: 120,
+                editable: false,
+                displayField: 'name',
+                valueField: 'value'
+            }, {
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: 'Default = 3DES'.t()
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 40',
+            bind: { hidden: '{!settings.phase1Manual}' },
+            items: [{
+                xtype:'combobox',
+                bind: {
+                    value: '{settings.phase1Hash}',
+                    store: '{P1HashStore}'
+                },
+                fieldLabel: 'Hash'.t(),
+                labelWidth: 120,
+                editable: false,
+                displayField: 'name',
+                valueField: 'value'
+            }, {
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: 'Default = MD5'.t()
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 40',
+            bind: { hidden: '{!settings.phase1Manual}' },
+            items: [{
+                xtype:'combobox',
+                bind: {
+                    value: '{settings.phase1Group}',
+                    store: '{P1GroupStore}'
+                },
+                fieldLabel: 'DH Key Group'.t(),
+                labelWidth: 120,
+                editable: false,
+                displayField: 'name',
+                valueField: 'value'
+            }, {
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: 'Default = 14 (modp2048)'.t()
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 40',
+            bind: { hidden: '{!settings.phase1Manual}' },
+            items: [{
+                xtype:'numberfield',
+                bind: {
+                    value: '{settings.phase1Lifetime}',
+                },
+                fieldLabel: 'Lifetime'.t(),
+                labelWidth: 120,
+                allowBlank: false,
+                allowDecimals: false,
+                minValue: 3600,
+                maxValue: 86400
+            }, {
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: 'Default = 28800 seconds, min = 3600, max = 86400'.t()
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 0',
+            items: [{
+                xtype:'checkbox',
+                bind: '{settings.phase2Manual}',
+                fieldLabel: 'Phase 2 ESP Manual Configuration'.t(),
+                labelWidth: 300
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 40',
+            bind: { hidden: '{!settings.phase2Manual}' },
+            items: [{
+                xtype:'combobox',
+                bind: {
+                    value: '{settings.phase2Cipher}',
+                    store: '{P2CipherStore}'
+                },
+                fieldLabel: 'Encryption'.t(),
+                labelWidth: 120,
+                editable: false,
+                displayField: 'name',
+                valueField: 'value'
+            }, {
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: 'Default = 3DES'.t()
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 40',
+            bind: { hidden: '{!settings.phase2Manual}' },
+            items: [{
+                xtype:'combobox',
+                bind: {
+                    value: '{settings.phase2Hash}',
+                    store: '{P2HashStore}'
+                },
+                fieldLabel: 'Hash'.t(),
+                labelWidth: 120,
+                editable: false,
+                displayField: 'name',
+                valueField: 'value'
+            }, {
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: 'Default = MD5'.t()
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 40',
+            bind: { hidden: '{!settings.phase2Manual}' },
+            items: [{
+                xtype:'combobox',
+                bind: {
+                    value: '{settings.phase2Group}',
+                    hidden: '{!settings.phase2Manual}',
+                    store: '{P2GroupStore}'
+                },
+                fieldLabel: 'PFS Key Group'.t(),
+                labelWidth: 120,
+                editable: false,
+                displayField: 'name',
+                valueField: 'value'
+            }, {
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: 'Default = 14 (modp2048)'.t()
+            }]
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 40',
+            bind: { hidden: '{!settings.phase2Manual}' },
+            items: [{
+                xtype:'numberfield',
+                bind: {
+                    value: '{settings.phase2Lifetime}',
+                    hidden: '{!settings.phase2Manual}'
+                },
+                fieldLabel: 'Lifetime'.t(),
+                labelWidth: 120,
+                allowBlank: false,
+                allowDecimals: false,
+                minValue: 3600,
+                maxValue: 86400
+            }, {
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: 'Default = 3600 seconds, min = 3600, max = 86400'.t()
+            }]
         },{
             xtype: 'radiogroup',
             bind: '{settings.authenticationType}',

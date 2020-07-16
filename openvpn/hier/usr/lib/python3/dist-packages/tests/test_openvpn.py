@@ -24,9 +24,9 @@ vpnHostResult = 0
 vpnClientResult = 0 
 vpnServerResult = 0
 vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip"
-vpnSite2SiteHostname = "untangle-268"
+vpnSite2SiteHostname = "untangle-ats-vpn-8251"
 vpnSite2SiteUserPassFile = "http://test.untangle.com/test/openvpn-site2siteUserPass-config.zip"
-vpnSite2SiteUserPassHostname = "untangle93-8874"
+vpnSite2SiteUserPassHostname = "untangle93-6105"
 tunnelUp = False
 ovpnlocaluser = "ovpnlocaluser"
 ovpnPasswd = "passwd"
@@ -353,11 +353,10 @@ class OpenVpnTests(NGFWTestCase):
         assert(result == 0)
 
         #start openvpn tunnel
-        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn " + siteName + ".conf >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
 
         timeout = waitForClientVPNtoConnect(self._app)
         # If VPN tunnel has failed to connect so fail the test,
-        assert(timeout > 0)
         # ping the test host behind the Untangle from the remote testbox
         result = remote_control.run_command("ping -c 2 " + remote_control.client_ip, host=global_functions.VPN_CLIENT_IP)
         
@@ -374,6 +373,8 @@ class OpenVpnTests(NGFWTestCase):
         remote_control.run_command("sudo pkill openvpn", host=global_functions.VPN_CLIENT_IP)
         time.sleep(3) # openvpn takes time to shut down
 
+        # Do all the asserts at the end so the tunnel is remmoved.
+        assert(timeout > 0)
         assert(result==0)
         assert(listOfClients['list'][0]['address'] == global_functions.VPN_CLIENT_IP)
 
