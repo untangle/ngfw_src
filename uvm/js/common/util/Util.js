@@ -857,6 +857,145 @@ Ext.define('Ung.util.Util', {
         dots.push((ipInteger >>> 8) % 256);
         dots.push(ipInteger % 256);
         return dots.join('.');
+    },
+
+    /**
+     * From the specified store, get modified records and sort any into
+     * a changes object that tracks added/deleted records using the specified
+     * idField.  Also uses enabledField value to determine.
+     * @param store ExtJs store of records.
+     * @param string idField Name of identifier field.  Defaults to 'id'
+     * @param string enabledField Name of enabled field.  Defaults to 'enabled'.
+     * @return object containing arrays of added and deleted records as json strings
+     */
+    storeGetChangedRecords: function(store, idField, enabledField){
+        if(idField == undefined){
+            enabledField = 'id';
+        }
+        if(enabledField == undefined){
+            enabledField = 'enabled';
+        }
+        var changes = {
+            added: [],
+            deleted: []
+        };
+
+        store.getModifiedRecords().forEach(function(record){
+            // Get changed and added entries
+            var id = record.get(idField);
+            var jsonRecord = JSON.stringify(record.data);
+            // Build previous record using previous values.
+            var jsonPreviousRecord = JSON.parse(JSON.stringify(record.data));
+            Ext.Object.each(record.previousValues, function(key, value){
+                jsonPreviousRecord[key] = value;
+            });
+            jsonPreviousRecord = JSON.stringify(jsonPreviousRecord);
+
+            if(id != -1 && changes.deleted.indexOf(jsonPreviousRecord) == -1){
+                changes.deleted.push(jsonPreviousRecord);
+            }
+            if( record.get(enabledField) &&
+                ( id == -1 ||
+                  changes.added.indexOf(jsonRecord) == -1)){
+                changes.added.push(jsonRecord);
+            }
+        });
+        store.getRemovedRecords().forEach(function(record){
+            // Deleted entries
+            var jsonRecord = JSON.stringify(record.data);
+            if(changes.deleted.indexOf(jsonRecord) == -1){
+                changes.deleted.push(jsonRecord);
+            }
+        });
+        return changes;
+    },
+
+    /**
+     * Analyze changes from components with stores (like grids) and return list of 
+     * changed values into keys by the components listProperty value.
+     * @param Array components  Array of components to review.
+     * @param Object viewModel  Object listProperty grouping with objects that contain result from storeGetChangedRecords.
+     */
+    updateListStoresToSettings: function( components, viewModel, listFields){
+        var changes = {};
+        components.forEach(function(component) {
+            var store = component.getStore();
+            var listId = component.listProperty;
+            if(listId == null){
+                return;
+            }
+            var idField = 'id';
+            var enabledField = 'enabled';
+            if(listFields != undefined){
+                if(listId in listFields){
+                    if('idField' in listFields[listId]){
+                        idField = listFields[listId]['idField'];
+                    }
+                    if('enabledField' in listFields[listId]){
+                        enabledField = listFields[listId]['enabledField'];
+                    }
+                }
+            }
+            var values = Ext.Array.pluck(component.getBind().store.getDataObject().getRange(), 'data');
+            if (store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0 ||
+                store.isReordered) {
+                var deleted = false;
+                store.each(function(record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                        deleted = true;
+                    }
+                });
+                if(deleted){
+                    // Need to pull values again if records were dropped.
+                    values = Ext.Array.pluck(component.getBind().store.getDataObject().getRange(), 'data');
+                }
+                store.isReordered = undefined;
+                if(listId == 'settings.tunnels.list' ){
+                    // Determine what tunnels have changed.
+                    changes[listId] = Util.storeGetChangedRecords(store, idField, enabledField);
+                }
+            }
+            // Strip out ExtJs fields for comparision.
+            values.forEach(function(row){
+                Ext.Object.each(row, function(key){
+                    if(key == '_id'){
+                        delete row[key];
+                    }
+                });
+            });
+            viewModel.set(listId, values);
+        });
+        return changes;
+    },
+
+    /**
+     * From original and current settings objects, determine if settings have changed.
+     * If ignoreKeys is non-empty, ignore these fields for the purpsoes of considering the change.
+     * @param object originalSettings Original settings.
+     * @param object settings current settings
+     * @return true if changes, false if nto.
+     */
+    isSettingsChanged: function(originalSettings, settings, ignoreKeys){
+        if(ignoreKeys == undefined){
+            ignoreKeys = [];
+        }
+        var changed = true;
+        var compareOriginalSettings = {};
+        Ext.Object.each(originalSettings, function(key, value){
+            if(ignoreKeys.indexOf(key) == -1){
+                compareOriginalSettings[key] = value;
+            }
+        });
+        var compareSettings = {};
+        Ext.Object.each(settings, function(key, value){
+            if(ignoreKeys.indexOf(key) == -1){
+                compareSettings[key] = value;
+            }
+        });
+        return JSON.stringify(compareSettings) != JSON.stringify(compareOriginalSettings);
     }
 
 });
