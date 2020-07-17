@@ -270,7 +270,6 @@ class WireGuardVpnMonitor implements Runnable
             // get the WireGuardVpnTunnel tunnel for the peer key
             WireGuardVpnTunnel tunnel = findTunnelByPublicKey(peerkey);
             if (tunnel == null) {
-                logger.warn("Missing tunnel for " + peerkey);
                 continue;
             }
 
