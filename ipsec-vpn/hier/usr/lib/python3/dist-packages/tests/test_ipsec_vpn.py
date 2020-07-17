@@ -1,5 +1,6 @@
 """ipsec_vpn tests"""
 import time
+import copy
 import subprocess
 import base64
 import unittest
@@ -287,6 +288,82 @@ class IPsecTests(NGFWTestCase):
         vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         assert(found)
+
+    def test_042_windowsL2TPAlias(self):
+        orig_net_set = uvmContext.networkManager().getNetworkSettings()
+        orig_app_settings = self._app.getSettings()
+
+        wan_addresses = []
+
+        # Check if we have more than one WAN intf for aliases
+        for intf in orig_net_set['interfaces']['list']:
+            if (intf['isWan']):
+                intf_status = uvmContext.networkManager().getInterfaceStatus(intf['interfaceId'])
+                wan_addresses.append(intf_status['v4Address'])
+
+        if (not len(wan_addresses) > 1):
+            raise unittest.SkipTest("Not enough WAN Interfaces to test L2TP Aliases")
+
+        if (l2tpClientHostResult != 0):
+            raise unittest.SkipTest("l2tpClientHostResult not available")
+
+        # Set Local Directory users
+        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+        newAppSettings = copy.deepcopy(orig_app_settings)
+        newAppSettings = createL2TPconfig(newAppSettings,"LOCAL_DIRECTORY")
+
+        # Set aliases for L2TP
+        wan_alias = []
+        for idx, val in enumerate(wan_addresses):
+            wan_alias.append({'address': val, 'javaClass': 'com.untangle.app.ipsec_vpn.VirtualListen', 'id': idx})
+
+        newAppSettings['virtualListenList']['list'] = wan_alias
+
+        # Set the settings
+        self._app.setSettings(newAppSettings)
+
+        # Test both aliases for connectivity
+        for wan_addr in wan_addresses:
+            timeout = 480
+            found = False
+            # Send command for Windows VPN connect.
+            vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_addr,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
+            if vpnServerResult == 0:
+                while not found and timeout > 0:
+                    timeout -= 1
+                    time.sleep(1)
+                    virtUsers = self._app.getVirtualUsers()
+                    for user in virtUsers['list']:
+                        if user['clientUsername'] == l2tpLocalUser:
+                            found = True
+                # Send command for Windows VPN disconnect.
+            vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=l2tpClientHost)
+            uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+            assert(found)
+            # Use same user with different password
+            new_user_password = "testtest"
+            uvmContext.localDirectory().setUsers(createLocalDirectoryUser(userpassword=new_user_password))
+            appData = createL2TPconfig(appData,"LOCAL_DIRECTORY")
+            self._app.setSettings(appData)
+            timeout = 480
+            found = False
+            # Send command for Windows VPN connect.
+            vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_addr,l2tpLocalUser,new_user_password), host=l2tpClientHost)
+            if vpnServerResult == 0:
+                while not found and timeout > 0:
+                    timeout -= 1
+                    time.sleep(1)
+                    virtUsers = self._app.getVirtualUsers()
+                    for user in virtUsers['list']:
+                        if user['clientUsername'] == l2tpLocalUser:
+                            found = True
+            # Send command for Windows VPN disconnect.
+            vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=l2tpClientHost)
+            assert(found)
+
+        # Clean up settings
+        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        self._app.setSettings(orig_app_settings)
 
     def test_050_windowsL2TPRadiusDirectory(self):
         global appAD
