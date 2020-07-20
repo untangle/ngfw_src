@@ -1,3 +1,20 @@
+20-JUL-2020
+
+The previous method and tools are still valid. See the comment from
+the 16-OCT-2018 update below for instructions.
+
+I combined the latest certs from Windows Update with the latest certs from Mozilla
+with everything in /usr/share/ca-certificates on an fully updated Debian Buster
+system to generate the most recent trusted-ca-list.jks
+
+Imported 413 certificates.  Skipped 261 certificates.
+
+In the previous update there were 362 certificates stored in the keystore.
+I did not remove any certificates this time, since our primary goal with
+this list is to ensure SSL Inspector trusts all of the same certificates
+that would be trusted by Chrome, Firefox, or MSIE/Edge.
+
+------------------------------------------------------------------------------
 16-OCT-2018
 
 I came up with new sources for creating our trusted-ca-list.jks file
