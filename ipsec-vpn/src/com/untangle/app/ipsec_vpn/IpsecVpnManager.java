@@ -562,6 +562,7 @@ public class IpsecVpnManager
                 xl2tpd_conf.write(TAB + "listen-addr = 0.0.0.0" + RET);
                 xl2tpd_conf.write(TAB + "ipsec saref = yes" + RET);
                 xl2tpd_conf.write(TAB + "force userspace = yes" + RET);
+                xl2tpd_conf.write(TAB + "saref refinfo = 1" + RET);
                 xl2tpd_conf.write(TAB + "port = 1701" + RET);
                 xl2tpd_conf.write(TAB + "debug network = " + (settings.getDebugflag() ? "yes" : "no") + RET);
                 xl2tpd_conf.write(TAB + "debug packet = " + (settings.getDebugflag() ? "yes" : "no") + RET);
