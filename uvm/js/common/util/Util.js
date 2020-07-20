@@ -915,6 +915,7 @@ Ext.define('Ung.util.Util', {
      * changed values into keys by the components listProperty value.
      * @param Array components  Array of components to review.
      * @param Object viewModel  Object listProperty grouping with objects that contain result from storeGetChangedRecords.
+     * @param listFields Object of list key to override id and enabled like {'settings.tunnels.list': { 'enabledField': 'active' } }
      */
     updateListStoresToSettings: function( components, viewModel, listFields){
         var changes = {};
