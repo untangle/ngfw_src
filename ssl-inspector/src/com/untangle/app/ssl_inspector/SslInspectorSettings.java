@@ -35,12 +35,14 @@ public class SslInspectorSettings implements Serializable, JSONString
     private boolean client_TLSv10;
     private boolean client_TLSv11;
     private boolean client_TLSv12;
+    private boolean client_TLSv13;
 
     private boolean server_SSLv2Hello;
     private boolean server_SSLv3;
     private boolean server_TLSv10;
     private boolean server_TLSv11;
     private boolean server_TLSv12;
+    private boolean server_TLSv13;
 
     public SslInspectorSettings()
     {
@@ -57,12 +59,14 @@ public class SslInspectorSettings implements Serializable, JSONString
         client_TLSv10 = true;
         client_TLSv11 = true;
         client_TLSv12 = true;
+        client_TLSv13 = true;
 
         server_SSLv2Hello = false;
         server_SSLv3 = false;
         server_TLSv10 = true;
         server_TLSv11 = true;
         server_TLSv12 = true;
+        server_TLSv13 = true;
     }
 
     public LinkedList<SslInspectorRule> getIgnoreRules()
@@ -123,6 +127,9 @@ public class SslInspectorSettings implements Serializable, JSONString
     public boolean getClient_TLSv12() { return (client_TLSv12); }
     public void setClient_TLSv12(boolean flag) { this.client_TLSv12 = flag; }
 
+    public boolean getClient_TLSv13() { return (client_TLSv13); }
+    public void setClient_TLSv13(boolean flag) { this.client_TLSv13 = flag; }
+
     // ----- server side protocols ----- server side protocols -----
     
     public boolean getServer_SSLv2Hello() { return (server_SSLv2Hello); }
@@ -139,6 +146,9 @@ public class SslInspectorSettings implements Serializable, JSONString
 
     public boolean getServer_TLSv12() { return (server_TLSv12); }
     public void setServer_TLSv12(boolean flag) { this.server_TLSv12 = flag; }
+
+    public boolean getServer_TLSv13() { return (server_TLSv13); }
+    public void setServer_TLSv13(boolean flag) { this.server_TLSv13 = flag; }
 
     // THIS IS FOR ECLIPSE - @formatter:on
 

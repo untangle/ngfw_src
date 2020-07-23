@@ -97,7 +97,7 @@ public class IncomingSocketQueue extends Sink
         }
 
         /* Once the client reads the shutdown crumb, the socket queue is closed */
-        if  ( crumb.isShutdown()) isShutdown = true;
+        if  ( crumb != null && crumb.isShutdown()) isShutdown = true;
 
         return crumb;
     }
