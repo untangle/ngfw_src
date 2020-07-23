@@ -125,25 +125,26 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
             return;
         }
 
-        v.query('ungrid').forEach(function(grid) {
-            var store = grid.getStore();
-            if (store.getModifiedRecords().length > 0 ||
-                store.getNewRecords().length > 0 ||
-                store.getRemovedRecords().length > 0 ||
-                store.isReordered) {
-                store.each(function(record) {
-                    if (record.get('markedForDelete')) {
-                        record.drop();
-                    }
-                });
-                store.isReordered = undefined;
-                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+        var changes = Util.updateListStoresToSettings(v.query('ungrid'), vm, {
+            'settings.tunnels.list': {
+                'enabledField': 'active'
             }
         });
 
+        // Build list of sequential commands to run
+        var sequence = [
+            Rpc.directPromise(v.appManager, 'setSettings', vm.get('settings'))
+        ];
+
+        if('settings.tunnels.list' in changes){
+            changes['settings.tunnels.list'].deleted.forEach(function(jsonRecord){
+                var recordObj = JSON.parse(jsonRecord);
+                sequence.unshift(Rpc.directPromise(v.appManager, 'deleteTunnel', me.getTunnelWorkMName(recordObj['id'], recordObj['description'])));
+            });
+        }
+
         v.setLoading(true);
-        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
-        .then(function(result){
+        Ext.Deferred.sequence(sequence).then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
@@ -160,6 +161,16 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
             }
             Util.handleException(ex);
         });
+    },
+
+    /**
+     * Return configu/shell-friendly workname of tunnel from id and description.
+     * @param integer id Numeric id
+     * @param String description Description
+     * @return String of configu/shell-friendly name.
+     */
+    getTunnelWorkMName: function(id, description){
+        return Ext.String.format('UT{0}_{1}', id, description.replace(/\W/g, "-"));
     },
 
     calculateNetworks: function(netSettings, intStatus) {

@@ -140,14 +140,19 @@ public class WireGuardVpnManager
             if (networks[x].trim().length() == 0) continue;
             allowedIps.add(networks[x].trim());
         }
-        String command = WIREGUARD_APP +
+        String command =
+            // Add tunnel to WireGuard
+            WIREGUARD_APP +
             " set wg0 peer " + publicKey +
             ( addTunnel.getEndpointDynamic() != true
                 ? " endpoint " + addTunnel.getEndpointAddress().getHostAddress() + ":" + addTunnel.getEndpointPort()
                 : ""
             ) +
             " persistent-keepalive " + app.getSettings().getKeepaliveInterval() +
-            " allowed-ips " + String.join(",", allowedIps);
+            " allowed-ips " + String.join(",", allowedIps) +
+            // Add peer address to WireGuard interface
+            ";" +
+            "ip -4 route add " + addTunnel.getPeerAddress().getHostAddress() + "/32" + " dev wg0";
         this.wireguardCommand(command);
     }
 
@@ -157,7 +162,17 @@ public class WireGuardVpnManager
      */
     public void deleteTunnel(String publicKey)
     {
-        String command = WIREGUARD_APP + " set wg0 peer " + publicKey + " remove";
+        WireGuardVpnTunnel removeTunnel = null;
+        for(WireGuardVpnTunnel tunnel : app.getSettings().getTunnels()){
+            if(tunnel.getPublicKey().equals(publicKey)){
+                removeTunnel = tunnel;
+            }
+        }
+        String command =
+            // Remote peer address to WireGuard interface
+            (removeTunnel != null ? "ip -4 route delete " + removeTunnel.getPeerAddress().getHostAddress() + "/32" + " dev wg0; " : "") +
+            // Remove WireGuard tunnel
+            WIREGUARD_APP + " set wg0 peer " + publicKey + " remove";
         this.wireguardCommand(command);
     }
 
