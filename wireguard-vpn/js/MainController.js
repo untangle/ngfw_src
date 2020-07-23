@@ -8,13 +8,9 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         }
     },
 
-    // General settings that are checked and if different, force
-    // a full restart of wireguard.
-    fullRestartSettingsKeys: [
-        'keepaliveInterval',
-        'listenPort',
-        'mtu',
-        'addressPool'
+    // When comparing settings for conditional restarts, ignore these values.
+    conditionalRestartIgnoreKeys: [
+        'tunnels'
     ],
 
     getSettings: function () {
@@ -69,119 +65,130 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             return;
         }
 
-        if (me.validateSettings() != true) return;
+        var changes = Util.updateListStoresToSettings(v.query('ungrid'), vm);
 
-        var tunnelsAdded = [],
-            tunnelsDeleted = [],
-            settingsChanged = false;
-
-        v.query('ungrid').forEach(function (grid) {
-            var store = grid.getStore();
-            if (store.getModifiedRecords().length > 0 ||
-                store.getNewRecords().length > 0 ||
-                store.getRemovedRecords().length > 0 ||
-                store.isReordered) {
-                store.each(function (record) {
-                    if (record.get('markedForDelete')) {
-                        record.drop();
-                    }
-                });
-                store.isReordered = undefined;
-                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-                if(grid.listProperty == 'settings.tunnels.list'){
-                    store.getModifiedRecords().forEach(function(record){
-                        var previousPublicKey = record.getPrevious('publicKey');
-                        if(previousPublicKey == undefined ){
-                            previousPublicKey = record.get('publicKey');
-                        }
-                        if(previousPublicKey != ""){
-                            if(tunnelsDeleted.indexOf(previousPublicKey) == -1){
-                                tunnelsDeleted.push(previousPublicKey);
-                            }
-                        }
-                        if( record.get("enabled") &&
-                            tunnelsAdded.indexOf(record.get('publicKey')) == -1){
-                            tunnelsAdded.push(record.get('publicKey'));
-                        }
-                    });
-                    store.getNewRecords().forEach(function(record){
-                        if( record.get("enabled") &&
-                            tunnelsAdded.indexOf(record.get('publicKey')) == -1){
-                            tunnelsAdded.push(record.get('publicKey'));
-                        }
-                    });
-                    store.getRemovedRecords().forEach(function(record){
-                        if(tunnelsDeleted.indexOf(record.get('publicKey')) == -1){
-                            tunnelsDeleted.push(record.get('publicKey'));
-                        }
-                    });
-                }
-            }
-        });
-
-        // Determine if settings changed, requiring a full restart.
-        me.fullRestartSettingsKeys.forEach( function(key){
-            if(vm.get('originalSettings')[key] != vm.get('settings')[key]){
-                settingsChanged = true;
-            }
-        });
-        if(tunnelsDeleted.length == 0 && tunnelsAdded == 0){
+        // Determine if non-tunnel changes have been made.
+        var settingsChanged = Util.isSettingsChanged(vm.get('originalSettings'), vm.get('settings'), me.conditionalRestartIgnoreKeys);
+        if(settingsChanged == false && Ext.Object.isEmpty(changes)){
+            // If no changes but no tunnel changes either, consider this a call to perform full restart.
             settingsChanged = true;
         }
 
+        // Build list of sequential commands to run
+        var sequence = [
+            Rpc.directPromise(v.appManager, 'setSettings', vm.get('settings'), settingsChanged)
+        ];
+
+        if('settings.tunnels.list' in changes){
+            changes['settings.tunnels.list'].deleted.forEach(function(jsonRecord){
+                // Delete tunnel commands inserted before settings commit.
+                var recordObj = JSON.parse(jsonRecord);
+                sequence.unshift(Rpc.directPromise(v.appManager, 'deleteTunnel', recordObj['publicKey']));
+            });
+        }
+
         v.setLoading(true);
-        vm.set('panel.saveDisabled', true);
-        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'), settingsChanged)
-        .then(function(result){
+        Ext.Deferred.sequence(sequence).then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
             Util.successToast('Settings saved');
 
-            if(settingsChanged == false){
-                me.updateTunnels(tunnelsDeleted, tunnelsAdded);
-            }
-
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
 
             me.getSettings();
+
+            if('settings.tunnels.list' in changes){
+                me.addTunnels(changes['settings.tunnels.list']);
+            }
+
             Ext.fireEvent('resetfields', v);
         }, function(ex) {
             if(!Util.isDestroyed(v, vm)){
-                vm.set('panel.saveDisabled', false);
+                vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
             }
             Util.handleException(ex);
         });
     },
 
-    updateTunnels: function( deleted, added ){
+    /**
+     * From Util.storeGetChangedRecords result, add tunnels by waiting
+     * for tunnel store to be reloaded then pulling publicKeys.
+     * 
+     * This is neccessary because on new tunnels, the keypair is added when
+     * the records are written and not known until after we reload.
+     * 
+     * @param {*} changes Util.storeGetChangedRecords result with added field.
+     */
+    addTunnels: function( changes ){
+        if(changes == undefined || !changes.added.length){
+            // No adds.
+            return;
+        }
         var me = this, v = this.getView(), vm = this.getViewModel();
-        var rpcSequence = [];
 
-        deleted.forEach(function(publicKey){
-            rpcSequence.push(Rpc.asyncPromise(v.appManager, 'deleteTunnel', publicKey));
-        });
-        added.forEach(function(publicKey){
-            rpcSequence.push(Rpc.asyncPromise(v.appManager, 'addTunnel', publicKey));
-        });
-        Ext.Deferred.sequence(rpcSequence, this)
-        .then(function(result){
-            if(Util.isDestroyed(vm)){
+        var tunnels = vm.get('tunnels');
+        var tunnelsLoadCount = tunnels.loadCount;
+
+        var tunnelLoadTaskDelay = 100;
+        var tunnelLoadTaskCountMax = 500;
+        var tunnelLoadTaskCount = 0;
+        var tunnelLoadTask = new Ext.util.DelayedTask( Ext.bind(function(){
+            if(Util.isDestroyed(vm, changes)){
                 return;
             }
-        }, function(ex) {
-            if(!Util.isDestroyed(v, vm)){
-                vm.set('panel.saveDisabled', true);
-                v.setLoading(false);
+            tunnelLoadTaskCount++;
+            if(tunnelLoadTaskCount > tunnelLoadTaskCountMax){
+                // Too many attempts
+                return;
             }
-        });
-    },
+            var tunnels = vm.get('tunnels');
+            if(tunnels.loadCount == tunnelsLoadCount){
+                /** Store has not been updated yet, so delay */
+                tunnelLoadTask.delay( tunnelLoadTaskDelay );
+                return;
+            }
+            var sequence = [];
+            changes.added.forEach(function(jsonRecord){
+                var recordObj = JSON.parse(jsonRecord);
 
-    validateSettings: function() {
-        return(true);
-    },
+                // Attempt to find based on publicKey and if not that, the peerAddress.
+                var recordIndex = tunnels.find('publicKey', recordObj['publicKey']);
+                if(recordIndex == -1){
+                    recordIndex = tunnels.find('peerAddress', recordObj['peerAddress']);
+                }
+                if(recordIndex != -1){
+                    // With updated record, get its publicKey for addTunnel call.
+                    var record = tunnels.getAt(recordIndex);
+                    if(record != null){
+                        var publicKey = record.get('publicKey');
+                        if(publicKey != ""){
+                            sequence.push(Rpc.asyncPromise(v.appManager, 'addTunnel', publicKey));
+                        }
+                    }
+                }
+            });
+
+            // Perform addTunnel operations.
+            if(sequence.length){
+                Ext.Deferred.sequence(sequence, this)
+                .then(function(result){
+                    if(Util.isDestroyed(vm)){
+                        return;
+                    }
+                }, function(ex) {
+                    if(!Util.isDestroyed(v, vm)){
+                        vm.set('panel.saveDisabled', true);
+                        v.setLoading(false);
+                    }
+                });
+
+            }
+        }, me) );
+        tunnelLoadTask.delay( tunnelLoadTaskDelay );
+   },
 
     getTunnelStatus: function () {
         var me = this,

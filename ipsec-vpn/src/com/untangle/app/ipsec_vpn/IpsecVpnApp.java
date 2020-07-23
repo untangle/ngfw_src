@@ -238,6 +238,15 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
+     * Delete a tunnel by work name.
+     * @param workName String of tunnel work name to delete.
+     */
+    public void deleteTunnel(String workName)
+    {
+        this.manager.deleteTunnel(workName);
+    }
+
+    /**
      * Gets the contents of the IPsec log file
      * 
      * @return The contents of the IPsec log file

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ExecManagerResult;
 
 /**
  * This class uses the application settings to dynamically generate the
@@ -34,6 +35,8 @@ public class IpsecVpnManager
     private static final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
     private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
+
+    private static final String IPSEC_APP = "/sbin/ipsec";
 
     private static final String IPSEC_UNTANGLE_FILE = "/etc/ipsec.untangle";
     private static final String IPSEC_CONF_FILE = "/etc/ipsec.conf";
@@ -127,8 +130,7 @@ public class IpsecVpnManager
         try {
             for(IpsecVpnTunnel tun : tunnelConfigs) {
                 if(!tun.getActive()) {
-                    logger.info("disconnecting tunnel: " + tun.getWorkName());
-                    UvmContextFactory.context().execManager().exec("ipsec down " + tun.getWorkName());
+                    deleteTunnel(tun.getWorkName());
                 }
             }
         } catch (Exception e) {
@@ -677,6 +679,22 @@ public class IpsecVpnManager
         // options_xl2tpd.close();
         // xl2tpd_conf.close();
         // strongswan_conf.close();
+    }
+
+    /**
+     * Remove a tunnel by work name.
+     * @param workName String of tunnel work name.
+     */
+    public void deleteTunnel(String workName)
+    {
+        logger.warn(IPSEC_APP + " down " + workName + ";" +
+            IPSEC_APP + " stroke down " + workName + ";" +
+            IPSEC_APP + " unroute " + workName);
+        UvmContextFactory.context().execManager().exec(
+            IPSEC_APP + " down " + workName + ";" +
+            IPSEC_APP + " stroke down " + workName + ";" +
+            IPSEC_APP + " unroute " + workName
+        );
     }
 
     /**
