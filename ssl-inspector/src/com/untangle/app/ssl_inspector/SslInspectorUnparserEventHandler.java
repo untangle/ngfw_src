@@ -20,6 +20,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
@@ -224,11 +225,14 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         }
 
         catch (SSLException ssl) {
+            logger.warn("SSL Exception");
+            success = false;
             sslProblem = ssl.getMessage();
             if (sslProblem == null) sslProblem = "Unknown SSL exception";
 
             // for normal close we kill both sides and return  
             if (sslProblem.contains("close_notify")) {
+                logger.debug("SSL exception because of close_notify");
                 shutdownOtherSide(session, true);
                 session.killSession();
                 return;
@@ -237,6 +241,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
         catch (Exception exn) {
             logger.debug("Exception calling unparseWorker", exn);
+            success = false;
         }
 
         // no success result means something went haywire so we kill the session 
@@ -252,8 +257,9 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
             app.logEvent(logevt);
             app.incrementMetric(SslInspectorApp.STAT_ABANDONED);
 
-            // only log a warning if we didn't get an exception message for the event log            
+            // only log a warning if we didn't get an exception message for the event log, otherwise log a debug            
             if (sslProblem == null) logger.warn("Session abandon on unparseWorker false return for " + logDetail);
+            else logger.debug("SSL Exception: Log detail: " + logDetail);
 
             // kill the session on the other side and kill our session
             shutdownOtherSide(session, true);
@@ -363,7 +369,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
             // should never happen since this will only be returned from
             // a call to wrap or unwrap but we include it to be complete
             case FINISHED:
-                logger.error("Unexpected FINISHED in unparseWorker loop");
+                logger.error("Unexpected FINISHED in unparseWorker loop"); 
                 return false;
 
                 // handle outstanding tasks during handshake
@@ -373,10 +379,10 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
             // the parser handles most handshake stuff so we can ignore
             case NEED_UNWRAP:
-                logger.error("Unexpected NEED_UNWRAP in unparseWorker loop");
-                return false;
+                done = doNeedUnwrap(session, data);
+                break;
 
-                // handle wrap during handshake
+            // handle wrap during handshake
             case NEED_WRAP:
                 done = doNeedWrap(session, data, target);
                 break;
@@ -421,6 +427,55 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         return false;
     }
 
+        /**
+     * Called when SSLEngine status = NEED_UNWRAP
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The data received
+     * @return True to continue the parser loop, false to break out
+     * @throws Exception
+     */
+    private boolean doNeedUnwrap(AppTCPSession session, ByteBuffer data) throws Exception
+    {
+        SslInspectorManager manager = getManager(session);
+        ByteBuffer target = ByteBuffer.allocate(32768);
+        SSLEngineResult result;
+
+        // unwrap the argumented data into the engine buffer - we expect all 
+        // all the data to be consumed internally with no bytes produced
+        result = manager.getSSLEngine().unwrap(data, target);
+        logger.debug("EXEC_UNWRAP " + result.toString());
+
+        if (result.getStatus() == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
+
+            // underflow during unwrap means the SSLEngine needs more data
+            // but it's also possible it used some of the passed data so we
+            // compact the receive buffer which leaves the position at the
+            // end of the existing data and ready to receive more
+            data.compact();
+            logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
+
+            if (manager.getClientSide()) session.setClientBuffer(data);
+            else session.setServerBuffer(data);
+            return true;
+        }
+
+        // check for engine problems
+        if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine unwrap fault");
+
+        // if the engine result hasn't changed we need more processing
+        if (result.getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP) return false;
+
+        // the unwrap call shouldn't produce data during handshake and if that
+        // is the case we return done=false here allowing the loop to continue
+        if (result.bytesProduced() == 0) return false;
+
+        // unwrap calls during handshake should never produce data
+        throw new Exception("SSLEngine produced unexpected data during handshake unwrap");
+    }
+
     /**
      * Called when SSLEngine status = NEED_WRAP
      * 
@@ -445,9 +500,9 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         logger.debug("EXEC_WRAP " + result.toString());
         if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
-        // during the handshake we only expect to need a single wrap call
-        // so if the status did not transition we have a big problem
-        if (result.getHandshakeStatus() != HandshakeStatus.NEED_UNWRAP) throw new Exception("SSLEngine logic fault");
+        // during the handshake we only expect to need a single wrap call for TLS1.2
+        // with TLS1.3, this is not the case, so return false instead of throwing an exception
+        if (result.getHandshakeStatus() != HandshakeStatus.NEED_UNWRAP) return false;
 
         // if the wrap call didn't produce any data return done=false
         if (result.bytesProduced() == 0) return false;
