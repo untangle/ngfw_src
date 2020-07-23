@@ -312,7 +312,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             if (sslProblem.contains("protocol_version") || sslProblem.contains("handshake_failure")) {
                 String protocolVersionError = ": Website likely uses a TLS/SSL protocol that is not enabled in your configuration. " +
                                               "Please enable an additional protocol.";
-                logger.debug(protocolVersionError);
                 sslProblem += protocolVersionError;
             }
         }
