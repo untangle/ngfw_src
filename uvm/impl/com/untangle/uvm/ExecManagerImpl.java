@@ -130,9 +130,10 @@ public class ExecManagerImpl implements ExecManager
         try {
             cmd = (String) execArguments[0];
             if (execArguments.length == 2) rateLimit = (boolean) execArguments[1];
-        }
-        catch (ClassCastException exn) {
+        } catch (ClassCastException exn) {
             logger.warn("Exception during exec", exn);
+            initDaemon();
+            return new ExecManagerResult(-1, exn.toString());
         }
 
         if (in == null | out == null || proc == null) {
@@ -221,8 +222,7 @@ public class ExecManagerImpl implements ExecManager
                 rateLimit = (boolean) execOutputArguments[1];
                 useRateLimit = true;
             }
-        }
-        catch (ClassCastException exn) {
+        } catch (ClassCastException exn) {
             logger.warn("Exception during execOutput", exn);
         }
 
