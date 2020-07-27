@@ -371,9 +371,7 @@ public class WireGuardVpnApp extends AppBase
      */
     public String getTunnelStatus()
     {
-        UvmContextFactory.context().execManager().showAllStatistics(false);
-        String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT);
-        UvmContextFactory.context().execManager().showAllStatistics(true);
+        String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT, true);
         return (result);
     }
 
