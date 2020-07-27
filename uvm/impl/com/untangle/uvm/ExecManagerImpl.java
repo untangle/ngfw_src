@@ -118,12 +118,23 @@ public class ExecManagerImpl implements ExecManager
     /**
      * Executes a command and returns the result object
      * 
-     * @param cmd
-     *        The command to execute
+     * @param execArguments
+     *        The String command to execute and optionally the rate limit flag
      * @return The execution result object
      */
-    public synchronized ExecManagerResult exec(String cmd)
+    public synchronized ExecManagerResult exec(Object... execArguments)
     {
+        String cmd = null;
+        boolean rateLimit = false;
+        if (!this.showAllStatistics) rateLimit = true;
+        try {
+            cmd = (String) execArguments[0];
+            if (execArguments.length == 2) rateLimit = (boolean) execArguments[1];
+        }
+        catch (ClassCastException exn) {
+            logger.warn("Exception during exec", exn);
+        }
+
         if (in == null | out == null || proc == null) {
             initDaemon();
         }
@@ -139,10 +150,7 @@ public class ExecManagerImpl implements ExecManager
                 status = new ExecManagerStatus();
                 execStatistics.put(cmd, status);
             }
-            boolean showStatus = status.showStatus();
-            if(this.showAllStatistics){
-                showStatus = true;
-            }
+            boolean showStatus = status.showStatus(rateLimit);
             if(showStatus){
                 logger.log(this.level, "ExecManager.exec(" + cmd + ")");
             }
@@ -198,13 +206,29 @@ public class ExecManagerImpl implements ExecManager
     /**
      * Execute a command and return the command output
      * 
-     * @param cmd
-     *        The command to execute
+     * @param execOutputArguments
+     *        The String command to execute and optionally the rateLimit flag
      * @return The output from the command
      */
-    public String execOutput(String cmd)
+    public String execOutput(Object... execOutputArguments)
     {
-        return exec(cmd).getOutput();
+        String cmd = null;
+        boolean rateLimit = false;
+        boolean useRateLimit = false;
+        try {
+            cmd = (String) execOutputArguments[0];
+            if (execOutputArguments.length == 2) {
+                rateLimit = (boolean) execOutputArguments[1];
+                useRateLimit = true;
+            }
+        }
+        catch (ClassCastException exn) {
+            logger.warn("Exception during execOutput", exn);
+        }
+
+        if (useRateLimit) return exec(cmd, rateLimit).getOutput();
+        else return exec(cmd).getOutput();
+
     }
 
     /**
@@ -373,11 +397,12 @@ public class ExecManagerImpl implements ExecManager
 
         /**
          * Determine if should show status
+         * @param rateLimit if rateLimit should be done, always return true
          * @return true if lastRun is greater than minimum display interval.
          */
-        public boolean showStatus()
+        public boolean showStatus(boolean rateLimit)
         {
-            if (this.firstRun == 0){
+            if (this.firstRun == 0 || !rateLimit) {
                 return true;
             }
             return ( firstRun + MINIUM_LAST_RUN_INTERVAL) < System.currentTimeMillis();
