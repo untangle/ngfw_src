@@ -27,6 +27,8 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                     name: 'preshared-key'
                 },{
                     name: 'endpoint'
+                }, {
+                    name: 'configured-endpoint',
                 },{
                     name: 'allowed-ips'
                 },{
