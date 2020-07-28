@@ -71,6 +71,7 @@ public class OpenVpnAppImpl extends AppBase
     private final OpenVpnPreHookCallback openVpnPreHookCallback;
 
     private List<OpenVpnExport> localExports = null;
+    private String localHostName = "";
 
     private OpenVpnSettings settings;
 
@@ -1023,6 +1024,7 @@ public class OpenVpnAppImpl extends AppBase
     private void networkSettingsEvent(NetworkSettings settings) throws Exception
     {
         boolean setNewSettings = false;
+        String currentSiteName = this.settings.getSiteName();
         String currentExportsString = this.settings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""));
 
         // refresh iptables rules in case WAN config has changed
@@ -1038,6 +1040,19 @@ public class OpenVpnAppImpl extends AppBase
 
             if(newExports.stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(currentExportsString) != 0) {
                 this.settings.setExports(newExports);
+                setNewSettings = true;
+            }
+        }
+
+        /**
+         * if the sitename matches the old hostname (plus -XXXXX),
+         * but doesn't match the new hostname (plus -XXXXX),then update
+         * the sitename to match the new hostname (plus -XXXXX)
+         */
+        if(currentSiteName.matches("^" + this.localHostName + "-[0-9]{1,5}$")) {
+            String newHostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+            if(!currentSiteName.matches("^" + newHostName + "-[0-9]{1,5}$")) {
+                this.settings.setSiteName(currentSiteName.replaceAll(this.localHostName, newHostName));
                 setNewSettings = true;
             }
         }
@@ -1067,6 +1082,7 @@ public class OpenVpnAppImpl extends AppBase
     private void preNetworkSettingsEvent(NetworkSettings settings) throws Exception
     {
         this.localExports = getCurrentExportList();
+        this.localHostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
     }
 
     /**
