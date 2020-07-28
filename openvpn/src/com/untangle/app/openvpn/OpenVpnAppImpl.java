@@ -68,6 +68,9 @@ public class OpenVpnAppImpl extends AppBase
     private final OpenVpnManager openVpnManager;
 
     private final OpenVpnHookCallback openVpnHookCallback;
+    private final OpenVpnPreHookCallback openVpnPreHookCallback;
+
+    private List<OpenVpnExport> localExports = null;
 
     private OpenVpnSettings settings;
 
@@ -93,6 +96,7 @@ public class OpenVpnAppImpl extends AppBase
         this.openVpnMonitor = new OpenVpnMonitor(this);
         this.openVpnManager = new OpenVpnManager(this);
         this.openVpnHookCallback = new OpenVpnHookCallback();
+        this.openVpnPreHookCallback = new OpenVpnPreHookCallback();
 
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new AppMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
@@ -172,6 +176,7 @@ public class OpenVpnAppImpl extends AppBase
             throw new RuntimeException(e);
         }
 
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.openVpnPreHookCallback);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.openVpnHookCallback);
 
         this.openVpnMonitor.start();
@@ -187,6 +192,7 @@ public class OpenVpnAppImpl extends AppBase
     @Override
     protected void preStop(boolean isPermanentTransition)
     {
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.openVpnPreHookCallback);
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.openVpnHookCallback);
 
         try {
@@ -1016,13 +1022,51 @@ public class OpenVpnAppImpl extends AppBase
      */
     private void networkSettingsEvent(NetworkSettings settings) throws Exception
     {
+        boolean setNewSettings = false;
+        String currentExportsString = this.settings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""));
+
         // refresh iptables rules in case WAN config has changed
         logger.info("Network Settings have changed. Syncing new settings...");
 
-        // Several openvpn settings rely on network settings.
-        // As such when the network settings change, re-sync the openvpn settings
-        // They aren't critical though so don't restart the server.
-        this.openVpnManager.configure(this.settings);
+        /**
+         * if the exported networks list matches the old local network list,
+         * but doesn't match the new local network list, then update the
+         * openvpn exported networks list to match the new network settings
+         */
+        if(this.localExports.stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(currentExportsString) == 0) {
+            List<OpenVpnExport> newExports = getCurrentExportList();
+
+            if(newExports.stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(currentExportsString) != 0) {
+                this.settings.setExports(newExports);
+                setNewSettings = true;
+            }
+        }
+
+        /**
+         * If we updated any openvpn settings because of a network settings change
+         * then set them here.  For network settings changes that don't result in
+         * a change to openvpn settings, just call configure
+         */
+        if(setNewSettings) {
+            this.setSettings(this.settings);
+        } else {
+            // Several openvpn settings rely on network settings.
+            // As such when the network settings change, re-sync the openvpn settings
+            // They aren't critical though so don't restart the server.
+            this.openVpnManager.configure(this.settings);
+        }
+    }
+
+    /**
+     * Called before network settings are changed
+     *
+     * @param settings
+     *        The current network settings
+     * @throws Exception
+     */
+    private void preNetworkSettingsEvent(NetworkSettings settings) throws Exception
+    {
+        this.localExports = getCurrentExportList();
     }
 
     /**
@@ -1188,6 +1232,48 @@ public class OpenVpnAppImpl extends AppBase
                 networkSettingsEvent(settings);
             } catch (Exception e) {
                 logger.error("Unable to reconfigure the NAT app");
+            }
+        }
+    }
+
+    /**
+     * Callback pre hook for changes to network settings
+     */
+    private class OpenVpnPreHookCallback implements HookCallback
+    {
+
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "openvpn-pre-network-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         *
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            Object o = args[0];
+            if (!(o instanceof NetworkSettings)) {
+                logger.warn("Invalid network settings: " + o);
+                return;
+            }
+
+            NetworkSettings settings = (NetworkSettings) o;
+
+            if (logger.isDebugEnabled()) logger.debug("network settings are about to change:" + settings);
+
+            try {
+                preNetworkSettingsEvent(settings);
+            } catch (Exception e) {
+                logger.error("Unable to reconfigure the openvpn app");
             }
         }
     }
