@@ -672,16 +672,12 @@ public class OpenVpnAppImpl extends AppBase
     }
 
     /**
-     * Get the default application settings
-     * 
-     * @return The default settings
+     * Create exported networks list from current network settings
+     *
+     * @return a list of exported networks
      */
-    private OpenVpnSettings getDefaultSettings()
+    private List<OpenVpnExport> getCurrentExportList()
     {
-        OpenVpnSettings newSettings = new OpenVpnSettings();
-
-        newSettings.setSiteName(UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() + "-" + (new Random().nextInt(10000)));
-
         /**
          * create a list of default exports - use all static non-WANs by default
          */
@@ -698,7 +694,22 @@ public class OpenVpnAppImpl extends AppBase
             export.setNetwork(new IPMaskedAddress(intfSettings.getV4StaticAddress(), intfSettings.getV4StaticNetmask()));
             exports.add(export);
         }
-        newSettings.setExports(exports);
+
+        return exports;
+    }
+
+    /**
+     * Get the default application settings
+     *
+     * @return The default settings
+     */
+    private OpenVpnSettings getDefaultSettings()
+    {
+        OpenVpnSettings newSettings = new OpenVpnSettings();
+
+        newSettings.setSiteName(UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() + "-" + (new Random().nextInt(10000)));
+
+        newSettings.setExports(getCurrentExportList());
 
         /**
          * create a list of default groups (just one)
