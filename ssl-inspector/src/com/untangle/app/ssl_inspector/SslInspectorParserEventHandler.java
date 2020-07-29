@@ -285,10 +285,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
 
         catch (SSLException ssl) {
+            logger.warn("SSL Exception");
+            success = false;
             sslProblem = ssl.getMessage();
             if (sslProblem == null) sslProblem = "Unknown SSL exception";
 
             if (sslProblem.contains("unrecognized_name")) {
+                logger.debug("SSL Exception was unrecogized_name");
                 String targetName = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
                 String targetHost = session.getServerAddr().getHostAddress().toString();
                 if ((targetName != null) && (targetHost != null)) {
@@ -300,14 +303,22 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
             // for normal close we kill both sides and return  
             if (sslProblem.contains("close_notify")) {
+                logger.debug("SSL Exception was close_notify");
                 shutdownOtherSide(session, true);
                 session.killSession();
                 return;
+            }
+
+            if (sslProblem.contains("protocol_version") || sslProblem.contains("handshake_failure")) {
+                String protocolVersionError = ": Website likely uses a TLS/SSL protocol that is not enabled in your configuration. " +
+                                              "Please enable an additional protocol.";
+                sslProblem += protocolVersionError;
             }
         }
 
         catch (Exception exn) {
             logger.warn("Exception calling parseWorker", exn);
+            success = false;
         }
 
         // no success result means something went haywire so we kill the session
@@ -323,8 +334,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             app.logEvent(logevt);
             app.incrementMetric(SslInspectorApp.STAT_ABANDONED);
 
-            // only log a warning if we didn't get an exception message for the event log 
-            if (sslProblem == null) logger.warn("Session abandon on parseWorker false return for " + logDetail);
+            // only log a warning if we didn't get an exception message for the event log, otherwise log as debug  
+            if (sslProblem == null) {
+                logger.warn("Session abandon on parseWorker false return for " + logDetail);
+            }
+            else {
+                logger.debug("SSL Exception: Log detail/sslProblem : " + logDetail);
+            }
 
             // kill the session on the other side and kill our session
             shutdownOtherSide(session, true);
@@ -770,6 +786,51 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     }
 
     /**
+     * Called when handshake is shown to be finished 
+     *
+     * @param session 
+     *        The TCP session 
+     * @return Boolean value of completing finish 
+     * @throws Exception
+     */
+    private boolean doFinished(AppTCPSession session) throws Exception {
+        //Get the manager for the session
+        SslInspectorManager manager = getManager(session);
+
+        // set the datamode flag
+        manager.setDataMode(true);
+
+        // nothing to do on the client side when handshake is finished
+        if (manager.getClientSide() == true) {
+            return false;
+        }
+
+        // grab the server certificate and save in our mananger so we can
+        // use on the client side to create our fake certificate
+        java.security.cert.Certificate peerCert = manager.getSSLEngine().getSession().getPeerCertificates()[0];
+        manager.setPeerCertificate(session.getServerAddr().getHostAddress(), (java.security.cert.X509Certificate) peerCert);
+        logger.debug("CERTIFICATE = " + peerCert.toString());
+
+        // if not SMTP we also save the certificate in the global
+        // certificate cache so it will always be up to date
+        if (session.getServerPort() != 25) {
+            UvmContextFactory.context().certCacheManager().updateServerCertificate(session.getServerAddr().getHostAddress().toString(), (java.security.cert.X509Certificate) peerCert);
+        }
+    
+        // Once the server side handshake is finished we need to handle the
+        // client side handshake so we craft a wakeup message and send
+        // it directly to the client side casing using simulateServerData
+        // inside the client side casing
+        ByteBuffer wakeup = ByteBuffer.allocate(256);
+        wakeup.put(SslInspectorManager.IPC_WAKEUP_MESSAGE);
+        wakeup.flip();
+        SslInspectorManager client = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+        client.getSession().simulateServerData(wakeup);
+
+        return true;        
+    }
+
+    /**
      * Called when SSLEngine status = NEED_TASK. We call run for all outstanding
      * tasks and then return false to break out of the parser processing loop so
      * we can receive more data.
@@ -837,34 +898,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // handle transition from handshaking to finished
         if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) {
-            // set the datamode flag
-            manager.setDataMode(true);
-
-            // nothing to do on the client side when handshake is finished
-            if (manager.getClientSide() == true) return false;
-
-            // grab the server certificate and save in our mananger so we can
-            // use on the client side to create our fake certificate
-            java.security.cert.Certificate peerCert = manager.getSSLEngine().getSession().getPeerCertificates()[0];
-            manager.setPeerCertificate(session.getServerAddr().getHostAddress(), (java.security.cert.X509Certificate) peerCert);
-            logger.debug("CERTIFICATE = " + peerCert.toString());
-
-            // if not SMTP we also save the certificate in the global
-            // certificate cache so it will always be up to date
-            if (session.getServerPort() != 25) {
-                UvmContextFactory.context().certCacheManager().updateServerCertificate(session.getServerAddr().getHostAddress().toString(), (java.security.cert.X509Certificate) peerCert);
-            }
-
-            // Once the server side handshake is finished we need to handle the
-            // client side handshake so we craft a wakeup message and send
-            // it directly to the client side casing using simulateServerData
-            // inside the client side casing
-            ByteBuffer wakeup = ByteBuffer.allocate(256);
-            wakeup.put(SslInspectorManager.IPC_WAKEUP_MESSAGE);
-            wakeup.flip();
-            SslInspectorManager client = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
-            client.getSession().simulateServerData(wakeup);
-            return true;
+            return doFinished(session);
         }
 
         // the unwrap call shouldn't produce data during handshake and if that
@@ -910,14 +944,19 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 session.sendDataToServer(target);
             }
         }
-
+        
         // if the engine result hasn't changed we need more processing
         if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP) return false;
 
-        // if the handshake completed set the dataMode flag
-        if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) manager.setDataMode(true);
+        // handle transition from handshaking to finished
+        if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) {
+            return doFinished(session);
+        }
 
-        if (data.position() < data.limit()) return (false);
+        if (data.position() < data.limit()) {
+            logger.debug("EXEC_WRAP data postion < data limit");
+            return (false);
+        }
 
         return true;
     }
@@ -950,7 +989,11 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         logger.debug("EXEC_HANDSHAKING " + result.toString());
 
         if (result.getStatus() == SSLEngineResult.Status.CLOSED) {
+            //For TLS1.3, need to shutdown other side and kill session otherwise errors occur
+            shutdownOtherSide(session, true);
+
             // if the target buffer is empty we are finished so return done=true 
+            logger.debug("TARGET " + target.toString());
             if (target.position() == 0) {
                 return true;
             }
@@ -991,14 +1034,20 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         if (result.getStatus() == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
             // if the data buffer is full allocate a new larger buffer
             // and copy the leftover data from the passed buffer
-            if (data.limit() == data.capacity()) {
-                ByteBuffer special = ByteBuffer.allocate(data.capacity() * 2);
+            logger.debug("DATA: " + data.toString());
+            logger.debug("TARGET: " + target.toString());
+            int netSize = manager.getSSLEngine().getSession().getPacketBufferSize();
+            logger.debug("NETSIZE: " + netSize);
+            if (netSize > data.capacity()) {
+                logger.debug("Increasing capacity to netsize");
+                ByteBuffer special = ByteBuffer.allocate(netSize);
                 special.put(data);
                 data = special;
             }
 
             // passed buffer has room to receive more data so just compact
             else {
+                logger.debug("Compacting");
                 data.compact();
             }
 
@@ -1006,13 +1055,15 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             // of any existing data in the buffer and ready to receive more 
             logger.debug("UNDERFLOW_LEFTOVER = " + data.toString());
 
+            if (manager.getClientSide()) {
+                session.setClientBuffer(data);
+            } else {
+                session.setServerBuffer(data);
+            }
+
             // use the partially filled buffer for the next receive
             if (target.position() == 0) {
-                if (manager.getClientSide()) {
-                    session.setClientBuffer(data);
-                } else {
-                    session.setServerBuffer(data);
-                }
+                logger.debug("Using partially refilled buffer");
                 return true;
             }
 
@@ -1023,10 +1074,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             // unparse data from the client to the server and vice versa
             if (manager.getClientSide()) {
                 session.sendDataToServer(target);
-                session.setClientBuffer(data);
             } else {
                 session.sendDataToClient(target);
-                session.setServerBuffer(data);
             }
 
             return true;
@@ -1037,7 +1086,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // if we have gone back into handshake mode we return done=false so the caller
         // can detect and abandon the session since the SSLEngine doesn't support rehandshake
-        if (result.getHandshakeStatus() != HandshakeStatus.NOT_HANDSHAKING) {
+        if (result.getHandshakeStatus() != HandshakeStatus.NOT_HANDSHAKING && result.getHandshakeStatus() != HandshakeStatus.FINISHED) {
             manager.setDataMode(false);
             return false;
         }
@@ -1061,7 +1110,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         // to let the processing continue
         if (data.position() < data.limit()) {
             logger.debug("PARTIAL_LEFTOVER = " + data.toString());
-            return (false);
+            return false;
         }
 
         return true;
