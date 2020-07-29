@@ -371,6 +371,7 @@ public class WireGuardVpnApp extends AppBase
      */
     public String getTunnelStatus()
     {
+        //Set rateLimit to true when calling execOutput as this log message can be chatty in logs
         String result = UvmContextFactory.context().execManager().execOutput(WIREGUARD_STATUS_SCRIPT, true);
         return (result);
     }
