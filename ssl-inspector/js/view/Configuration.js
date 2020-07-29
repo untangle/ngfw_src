@@ -102,6 +102,12 @@ Ext.define('Ung.apps.sslinspector.view.Configuration', {
             fieldLabel: "TLSv1.2".t(),
             name: 'client_TLSv12',
             bind: '{settings.client_TLSv12}'
+        },
+        {
+            xtype: 'checkbox',
+            fieldLabel: "TLSv1.3".t(),
+            name: 'client_TLSv13',
+            bind: '{settings.client_TLSv13}'
         }]
     }, {
         xtype: 'fieldset',
@@ -140,6 +146,12 @@ Ext.define('Ung.apps.sslinspector.view.Configuration', {
             fieldLabel: "TLSv1.2".t(),
             name: 'server_TLSv12',
             bind: '{settings.server_TLSv12}'
+        },
+        {
+            xtype: 'checkbox',
+            fieldLabel: "TLSv1.3".t(),
+            name: 'server_TLSv13',
+            bind: '{settings.server_TLSv13}'
         }]
     }, {
         xtype: 'fieldset',

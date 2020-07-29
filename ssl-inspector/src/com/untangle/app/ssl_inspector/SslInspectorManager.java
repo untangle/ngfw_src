@@ -717,6 +717,7 @@ for more data when a full packet has not yet been received.
             if (app.getSettings().getClient_TLSv10()) protoList.add("TLSv1");
             if (app.getSettings().getClient_TLSv11()) protoList.add("TLSv1.1");
             if (app.getSettings().getClient_TLSv12()) protoList.add("TLSv1.2");
+            if (app.getSettings().getClient_TLSv13()) protoList.add("TLSv1.3");
             break;
         case SERVER:
             if (app.getSettings().getServer_SSLv2Hello()) protoList.add("SSLv2Hello");
@@ -724,6 +725,7 @@ for more data when a full packet has not yet been received.
             if (app.getSettings().getServer_TLSv10()) protoList.add("TLSv1");
             if (app.getSettings().getServer_TLSv11()) protoList.add("TLSv1.1");
             if (app.getSettings().getServer_TLSv12()) protoList.add("TLSv1.2");
+            if (app.getSettings().getServer_TLSv13()) protoList.add("TLSv1.3");
             break;
         }
 
