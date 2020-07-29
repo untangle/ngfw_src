@@ -96,13 +96,18 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
                     flex: 1,
                     hidden: true
                 }, {
+                    header: 'Remote Endpoint'.t(),
+                    dataIndex: 'configured-endpoint',
+                    width: Renderer.ipWidth + Renderer.portWidth
+                }, {
+                    header: 'Detected Endpoint'.t(),
+                    dataIndex: 'endpoint',
+                    width: Renderer.ipWidth + Renderer.portWidth,
+                    hidden: true
+                }, {
                     header: 'Remote Networks'.t(),
                     dataIndex: 'allowed-ips',
                     width: Renderer.networkWidth,
-                }, {
-                    header: 'Remote Endpoint'.t(),
-                    dataIndex: 'endpoint',
-                    width: Renderer.ipWidth + Renderer.portWidth
                 }, {
                     header: 'Last Handshake'.t(),
                     dataIndex: 'latest-handshake',

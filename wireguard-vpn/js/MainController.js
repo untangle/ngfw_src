@@ -116,10 +116,10 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
     /**
      * From Util.storeGetChangedRecords result, add tunnels by waiting
      * for tunnel store to be reloaded then pulling publicKeys.
-     * 
+     *
      * This is neccessary because on new tunnels, the keypair is added when
      * the records are written and not known until after we reload.
-     * 
+     *
      * @param {*} changes Util.storeGetChangedRecords result with added field.
      */
     addTunnels: function( changes ){
@@ -217,6 +217,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                     status.wireguard.forEach(function(status){
                         if(tunnel.get('publicKey') == status['peer-key']){
                             status['tunnel-description'] = tunnel.get('description');
+                            status['configured-endpoint'] = tunnel.get('endpointAddress');
                         }
                     });
                 });
@@ -316,7 +317,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
     alias: 'controller.unwireguardvpntunnelrecordeditorcontroller',
 
     pasteTunnel: function(component){
-        if(!component.target || 
+        if(!component.target ||
            !component.target.dataset.componentid ||
            !component.target.dataset.componentid){
             return;
@@ -327,7 +328,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
         }
         var view = el.up('unwireguardvpntunnelrecordeditor'),
             controller = view.getController(),
-            record = view.record; 
+            record = view.record;
         if(record.get('id') != -1){
             // Only on a new record.
             return;
