@@ -322,7 +322,7 @@ def main(argv):
         uri_manager_template = UVM_CONTEXT.uriManager().getUri(SIGNATURE_URL_TEMPLATE)
         # Set version parameter
         uri_manager_template = uri_manager_template.replace(".tar.gz", "{version}.tar.gz")
-        suricata_version = subprocess.check_output(["/bin/suricata","-V"])
+        suricata_version = subprocess.check_output(["/usr/bin/suricata","-V"])
         match = re.search(SURICATA_VERSION_RE, suricata_version.decode('ascii'))
         if match:
             urls.append(uri_manager_template.format(version=match.group(1)))
