@@ -9,6 +9,7 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.HookManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -103,6 +104,26 @@ public class WanFailoverTesterMonitor
                 this.app.logEvent(new WanFailoverEvent(WanFailoverEvent.Action.DISCONNECTED, interfaceId, ic.getName(), ic.getSystemDev()));
             }
         }
+
+        updateActiveWanId();
+
+    }
+
+    /**
+     * Get active wan interface identifer and send to hook listeners.
+     */
+    private void updateActiveWanId()
+    {
+        int activeWanId = 0;
+        for (activeWanId = 1; activeWanId < InterfaceSettings.MAX_INTERFACE_ID + 1; activeWanId++) {
+            if(wanStatusArray[activeWanId] == null){
+                continue;
+            }
+            if(wanStatusArray[activeWanId]){
+                break;
+            }
+        }
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.WAN_FAILOVER_CHANGE, activeWanId );
     }
 
     /**
@@ -152,6 +173,7 @@ public class WanFailoverTesterMonitor
         }
 
         syncStateToSystem();
+        updateActiveWanId();
     }
 
     /**
