@@ -33,6 +33,7 @@ public interface HookManager
     public static String USER_TABLE_QUOTA_REMOVED = "user-table-quota-removed";
     public static String CAPTURE_USERNAME_CHECK = "capture-username-check";
     public static String WEBFILTER_BASE_CATEGORIZE_SITE = "webfilter-base-categorize-site";
+    public static String WAN_FAILOVER_CHANGE = "wan-failover-change";
     
     public boolean isRegistered( String hookName, HookCallback callback );
 
