@@ -66,6 +66,7 @@ public class IpsecVpnPingTimer extends TimerTask
     private final long PING_FAIL_THRESHOLD = 3;
 
     private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<>();
+    private Hashtable<String, String> lastLeftConnectAddressTable = new Hashtable<>();
     private long cycleCounter = 0;
 
     /**
@@ -109,12 +110,15 @@ public class IpsecVpnPingTimer extends TimerTask
             if (tunnel.getPingAddress() == null) continue;
             if (tunnel.getPingAddress().length() == 0) continue;
 
+            String leftAddress = app.getManager().resolveLeftAddress(tunnel.getLeft());
+
             // see if there is an existing entry in the watch table
             watcher = watchTable.get(tunnel.getDescription());
 
             if (watcher == null) {
                 logger.debug("Creating new ping table entry for " + tunnel.getDescription());
                 watcher = new TunnelWatcher(tunnel.getDescription(), tunnel.getId());
+                lastLeftConnectAddressTable.put(tunnel.getDescription(), leftAddress);
                 watchTable.put(tunnel.getDescription(), watcher);
             }
 
@@ -128,13 +132,23 @@ public class IpsecVpnPingTimer extends TimerTask
             // check the ping target
             boolean active = CheckTunnelPingTarget(tunnel);
 
+            String lastLeftAddress = lastLeftConnectAddressTable.get(tunnel.getDescription());
+            boolean leftAddressChanged = !leftAddress.equals(lastLeftAddress);
+            lastLeftConnectAddressTable.put(tunnel.getDescription(), leftAddress);
+
             // if the tunnel is active increment the active counter
             if (active == true) {
+                if(leftAddressChanged){
+                    // Fake a disconnect message on address change before our new connect event.
+                    IpsecVpnEvent event = new IpsecVpnEvent(lastLeftAddress, tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.DISCONNECT);
+                    app.logEvent(event);
+                }
+
                 // if the active flag is false we transition from down to up 
-                if (watcher.activeFlag == false) {
+                if (watcher.activeFlag == false || leftAddressChanged) {
                     watcher.activeFlag = true;
                     watcher.failCounter = 0;
-                    IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.CONNECT);
+                    IpsecVpnEvent event = new IpsecVpnEvent(leftAddress, tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.CONNECT);
                     app.logEvent(event);
                     logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
                 }
@@ -150,9 +164,10 @@ public class IpsecVpnPingTimer extends TimerTask
              */
 
             // if our active flag is true we need to log a down event
-            if (watcher.activeFlag == true) {
+            if (watcher.activeFlag == true ||
+                leftAddressChanged) {
                 watcher.activeFlag = false;
-                IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.DISCONNECT);
+                IpsecVpnEvent event = new IpsecVpnEvent(leftAddress, tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.DISCONNECT);
                 app.logEvent(event);
                 logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
             }
@@ -166,7 +181,7 @@ public class IpsecVpnPingTimer extends TimerTask
             // fail threshold reached so log event and bring tunnel down and back up
             logger.warn("Attempting restart for inactive tunnel " + watcher.controlName);
 
-            IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.RESTART);
+            IpsecVpnEvent event = new IpsecVpnEvent(leftAddress, tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.RESTART);
             app.logEvent(event);
             logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
 
@@ -216,7 +231,7 @@ public class IpsecVpnPingTimer extends TimerTask
             logger.debug("PING EXCEPTION: " + tunnel.getPingAddress(), exn);
         }
 
-        IpsecVpnEvent event = new IpsecVpnEvent(tunnel.getLeft(), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.UNREACHABLE);
+        IpsecVpnEvent event = new IpsecVpnEvent(app.getManager().resolveLeftAddress(tunnel.getLeft()), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.UNREACHABLE);
         app.logEvent(event);
         logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
         return (false);
