@@ -69,7 +69,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
                     header: 'Status'.t(),
                     dataIndex: 'mode',
                     sortable: true,
-                    width: Renderer.messagwWidth,
+                    width: Renderer.actionWidth,
                     renderer: Ung.apps.ipsecvpn.MainController.modeRenderer,
                     filter: Renderer.stringFilter
                 }, {
