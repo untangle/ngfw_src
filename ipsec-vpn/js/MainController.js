@@ -59,6 +59,12 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
                 return;
             }
 
+            result.list.forEach(function(status){
+                if(status['dst'] == '%any'){
+                    status['dst'] = 'Any Remote Host'.t();
+                }
+            });
+
             vm.set('tunnelStatusData', result.list);
 
             grid.setLoading(false);
@@ -73,16 +79,28 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     getSettings: function() {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        v.setLoading(true);
-        Ext.Deferred.sequence([
+
+        var sequence = [
             Rpc.asyncPromise(v.appManager, 'getSettings'),
             Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
-            Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus')
-        ]).then( function(result){
+            Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
+            Rpc.asyncPromise(v.appManager, 'getActiveWanAddress')
+        ];
+        var wanFailoverApp = Rpc.directData('rpc.appManager.app', 'wan-failover');
+        if(wanFailoverApp != null){
+            sequence.push(Rpc.asyncPromise(wanFailoverApp, 'getRunState'));
+        }
+
+        v.setLoading(true);
+        Ext.Deferred.sequence(sequence).then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
+            vm.set('activeWanAddress', result[3]);
             var wanListData = me.calculateNetworks( result[1], result[2] );
+            if(result[4] && result[4] == 'RUNNING'){
+                wanListData.push([wanListData.length, 'active_wan_address', 'Active WAN'.t()]);
+            }
             vm.set('wanListData', wanListData);
 
             var settings = result[0];
@@ -182,7 +200,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         // we need the interface list and the status list so we can get the IP address of active interfaces
         var counter = 0;
 
-        wanListData.push([ counter++ , '' , '- ' + 'Custom'.t() + ' -' ]);
+        wanListData.push([ counter++ , '' , 'Custom'.t() ]);
 
         // build the list of active WAN networks for the interface combo box and set the defaults for left and leftSubnet
         for( x = 0 ; x <  netSettings.interfaces.list.length ; x++ )
@@ -348,5 +366,78 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
             }
             return '<i class="' + showico + '">&nbsp;&nbsp;</i>' + showtxt;
         }
+    }
+});
+
+Ext.define('Ung.apps.ipsecvpn.cmp.TunnelRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unipsecvpntunnelsrecordeditor',
+
+    controller: 'unipsecvpntunnelsrecordeditorcontroller',
+});
+
+Ext.define('Ung.apps.ipsecvpn.cmp.TunnelRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unipsecvpntunnelsrecordeditorcontroller',
+
+    onAfterRender: function(cmp){
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            record = vm.get('record');
+
+        if(record.get('right') == '%any'){
+            record.set('rightAny', true);
+        }
+        this.callParent([cmp]);
+    },
+
+    lastRight: null,
+    lasRunMode: null,
+    anyRemoteHostChange: function(cmp, newValue, oldValue){
+        var me = this,
+            record = cmp.bind.value.owner.get('record');
+
+        if(newValue == true){
+            if(record.get('right') != '%any'){
+                me.lastRight = record.get('right');
+            }
+            if(record.get('runmode') != 'route'){
+                me.lastRunMode = record.get('runmode');
+            }
+            record.set('right', '%any');
+            record.set('runmode', 'route');
+        }else{
+            record.set('right', me.lastRight != null ? me.lastRight : '');
+            record.set('runmode', me.lastRunMode != null ? me.lastRunMode : 'start');
+        }
+    },
+    interfaceChange: function(cmp, newValue, oldValue){
+        var vm = cmp.ownerCt.ownerCt.ownerCt.getViewModel();
+        var wanlist = vm.get('wanListData');
+        var recordField = cmp.ownerCt.ownerCt.down("[itemId=externalAddress]");
+        var displayField = cmp.ownerCt.ownerCt.down("[itemId=externalAddressCurrent]");
+        var value = '';
+        var displayValue = '';
+        for( var i = 0 ; i < wanlist.length ; i++ ) {
+            if(newValue != i){
+                continue;
+            }
+            value = wanlist[i][1];
+            if(value == ''){
+                value = recordField.getValue();
+                if(value == 'active_wan_address'){
+                    value = vm.get('activeWanAddress');
+                }
+            }else if(value == 'active_wan_address'){
+                displayValue = vm.get('activeWanAddress');
+            }else{
+                displayValue = value;
+            }
+            displayField.setValue(displayValue);
+            if (newValue == wanlist[i][0]){
+                recordField.setValue(value);
+            }
+        }
+
     }
 });
