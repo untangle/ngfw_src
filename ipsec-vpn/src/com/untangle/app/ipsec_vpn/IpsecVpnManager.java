@@ -4,6 +4,7 @@
 
 package com.untangle.app.ipsec_vpn;
 
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.Formatter;
 import java.io.FileWriter;
@@ -64,6 +65,40 @@ public class IpsecVpnManager
                                               "aes128-sha1-modp2048,aes128-sha1-modp1536,aes128-sha1-modp1024," +
                                               "aes256-md5-modp2048,aes256-md5-modp1536,aes256-md5-modp1024," +
                                               "aes256-sha1-modp2048,aes256-sha1-modp1536,aes256-sha1-modp1024";
+
+    public static final String ACTIVE_WAN_ADDRESS = "active_wan_address";
+    private InetAddress activeWanAddress = null;
+
+    /**
+     * Set the current active WAN address.
+     * @param address InetAddress of active WAN address.
+     */
+    public void setActiveWanAddress(InetAddress address)
+    {
+        this.activeWanAddress = address;
+    }
+
+    /**
+     * Get the current WAN address.
+     * @return InetAddress of active WAN interface.
+     */
+    public InetAddress getActiveWanAddress()
+    {
+        return this.activeWanAddress;
+    }
+
+    /**
+     * Determine left address.  If ACTIVE_WAN_ADDRESS, return string of current active WAN address.
+     * @param address String of left address.
+     * @return String of resolved address.
+     */
+    public String resolveLeftAddress(String address)
+    {
+        if(address.equals(ACTIVE_WAN_ADDRESS)){
+            address = this.activeWanAddress.getHostAddress().toString();
+        }
+        return address;
+    }
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
@@ -156,6 +191,10 @@ public class IpsecVpnManager
         String ipsecKeyFile = CertificateManager.CERT_STORE_PATH + ipsecCertFile.replaceAll("\\.pem", "\\.key");
         String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+
+        if(this.activeWanAddress == null){
+            this.activeWanAddress = UvmContextFactory.context().networkManager().getFirstWanAddress();
+        }
 
         LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
         LinkedList<VirtualListen> listenList = settings.getVirtualListenList();
@@ -277,7 +316,7 @@ public class IpsecVpnManager
                         ipsec_conf.write(TAB + "dpdaction=restart" + RET);
                     }
 
-                    ipsec_conf.write(TAB + "left=" + data.getLeft() + RET);
+                    ipsec_conf.write(TAB + "left=" + this.resolveLeftAddress(data.getLeft()) + RET);
 
                     // use the configured leftid if available otherwise use left
                     if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
@@ -302,7 +341,7 @@ public class IpsecVpnManager
 
                     // add the tunnel PSK to the ipsec.secrets file
                     ipsec_secrets.write("# " + workname + RET);
-                    ipsec_secrets.write(data.getLeft() + " " + data.getRight() + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
+                    ipsec_secrets.write(data.getLeft() + " " + data.getRight().replaceAll("\\s*,\\s*", " ") + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
 
                     // start with left but prefer leftid if not null and not empty
                     String lid = data.getLeft();
@@ -532,8 +571,6 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "esp=" + esp_default + RET);
                             ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
                         }
-
-                        ipsec_conf.write(RET);
                     }
                 }
 
@@ -687,12 +724,9 @@ public class IpsecVpnManager
      */
     public void deleteTunnel(String workName)
     {
-        logger.warn(IPSEC_APP + " down " + workName + ";" +
-            IPSEC_APP + " stroke down " + workName + ";" +
-            IPSEC_APP + " unroute " + workName);
         UvmContextFactory.context().execManager().exec(
-            IPSEC_APP + " down " + workName + ";" +
-            IPSEC_APP + " stroke down " + workName + ";" +
+            IPSEC_APP + " down " + workName + "; " +
+            IPSEC_APP + " stroke down-nb " + workName + ";" +
             IPSEC_APP + " unroute " + workName
         );
     }
