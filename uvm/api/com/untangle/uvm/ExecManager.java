@@ -10,7 +10,12 @@ public interface ExecManager
     /**
      * Execute the specified command and return the result
      */
-    ExecManagerResult exec( Object... execArguments );
+    ExecManagerResult exec( String cmd );
+
+    /**
+     * Execute the specified command and return the stdout
+     */
+    ExecManagerResult exec( String cmd, boolean rateLimit );
 
     void setLevel( org.apache.log4j.Level level );
     
@@ -22,7 +27,12 @@ public interface ExecManager
     /**
      * Execute the specified command and return the stdout
      */
-    String  execOutput( Object... execOutputArguments );
+    String execOutput( String cmd );
+
+    /**
+     * Execute the specified command and return the stdout
+     */
+    String execOutput( String cmd, boolean rateLimit );
 
     /**
      * Execute the specified command and return the process
