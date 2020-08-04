@@ -118,23 +118,26 @@ public class ExecManagerImpl implements ExecManager
     /**
      * Executes a command and returns the result object
      * 
-     * @param execArguments
+     * @param cmd
      *        The String command to execute and optionally the rate limit flag
      * @return The execution result object
      */
-    public synchronized ExecManagerResult exec(Object... execArguments)
+    public synchronized ExecManagerResult exec(String cmd)
     {
-        String cmd = null;
-        boolean rateLimit = false;
-        if (!this.showAllStatistics) rateLimit = true;
-        try {
-            cmd = (String) execArguments[0];
-            if (execArguments.length == 2) rateLimit = (boolean) execArguments[1];
-        } catch (ClassCastException exn) {
-            logger.warn("Exception during exec", exn);
-            initDaemon();
-            return new ExecManagerResult(-1, exn.toString());
-        }
+        return exec(cmd, false);
+    }
+
+    /**
+     * Executes a command and returns the result object
+     * 
+     * @param cmd
+     *        The String command to execute and optionally the rate limit flag
+     * @param rateLimit
+     *        A boolean controlling if the output should be rate controlled or not
+     * @return The execution result object
+     */
+    public synchronized ExecManagerResult exec(String cmd, boolean rateLimit)
+    {
 
         if (in == null | out == null || proc == null) {
             initDaemon();
@@ -207,28 +210,29 @@ public class ExecManagerImpl implements ExecManager
     /**
      * Execute a command and return the command output
      * 
-     * @param execOutputArguments
+     * @param cmd
      *        The String command to execute and optionally the rateLimit flag
      * @return The output from the command
      */
-    public String execOutput(Object... execOutputArguments)
+    public String execOutput(String cmd)
     {
-        String cmd = null;
-        boolean rateLimit = false;
-        boolean useRateLimit = false;
-        try {
-            cmd = (String) execOutputArguments[0];
-            if (execOutputArguments.length == 2) {
-                rateLimit = (boolean) execOutputArguments[1];
-                useRateLimit = true;
-            }
-        } catch (ClassCastException exn) {
-            logger.warn("Exception during execOutput", exn);
-        }
+        return exec(cmd, false).getOutput();
+    }
 
-        if (useRateLimit) return exec(cmd, rateLimit).getOutput();
-        else return exec(cmd).getOutput();
 
+    /**
+     * Execute a command and return the command output
+     * 
+     * @param cmd
+     *        The String command to execute and optionally the rateLimit flag
+     * @param rateLimit
+     *        If this request should be rate limited or not
+     * @return The output from the command
+     */
+    public String execOutput(String cmd, boolean rateLimit)
+    {
+
+           return exec(cmd, rateLimit).getOutput();
     }
 
     /**
