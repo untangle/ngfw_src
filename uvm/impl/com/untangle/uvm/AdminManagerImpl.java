@@ -262,6 +262,28 @@ public class AdminManagerImpl implements AdminManager
     }
 
     /**
+     * Return true if any admin users have weak password hashes
+     *
+     * @return
+     *     true if any users have weak password hashes, false otherwise
+     */
+    public boolean getWeakPasswordHashes()
+    {
+        AdminSettings adminSettings = getSettings();
+
+        if(adminSettings == null)
+            return false;
+
+        for ( AdminUserSettings user : adminSettings.getUsers() ) {
+            String passwordHashBase64 = user.getPasswordHashBase64();
+            if ( passwordHashBase64 != null && !"".equals(passwordHashBase64) )
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Send adminstrator login result to event log.
      * 
      * @param login
