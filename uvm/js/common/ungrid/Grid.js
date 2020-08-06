@@ -240,10 +240,25 @@ Ext.define('Ung.cmp.Grid', {
                         align: 'center',
                         resizable: false,
                         tdCls: 'action-cell',
-                        iconCls: 'fa fa-lock',
                         menuDisabled: true,
                         hideable: false,
-                        handler: 'changePassword'
+                        handler: 'changePassword',
+                        items: [{
+                            getClass: function(v, meta, record) {
+                                if (record.get('passwordHashBase64') != '') {
+                                    return 'fa fa-exclamation-triangle fa-orange';
+                                } else {
+                                    return 'fa fa-lock';
+                                }
+                            },
+                            getTip: function(value, metadata, record, row, col, store) {
+                                if (record.get('passwordHashBase64') != '') {
+                                    return 'This user\'s password is stored using a weak hash.  Change immediately!'.t();
+                                } else {
+                                    return '';
+                                }
+                            }
+                        }]
                     };
                     columns.push(column);
                     initialConfigColumns.push(column);
