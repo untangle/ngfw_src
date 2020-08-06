@@ -1,0 +1,10 @@
+#! /bin/bash
+
+SYSTEMD_DIRECTORY=/etc/systemd/system/suricata.service.d
+LOCAL_CONF_FILE=local.conf
+if [ ! -f $SYSTEMD_DIRECTORY/$LOCAL_CONF_FILE ] ; then
+   cp -f $SYSTEMD_DIRECTORY/$LOCAL_CONF_FILE.dpkg-new $SYSTEMD_DIRECTORY/$LOCAL_CONF_FILE
+fi
+
+exit 0
+
