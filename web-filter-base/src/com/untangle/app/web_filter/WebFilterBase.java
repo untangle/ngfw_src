@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.commons.codec.digest.Crypt;
 
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
@@ -315,9 +316,20 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         if (settings.getUnblockPasswordAdmin()) {
             AdminSettings as = UvmContextFactory.context().adminManager().getSettings();
             for (AdminUserSettings user : as.getUsers()) {
+                /*
+                 * if the admin user has a hash shadow defined, use that to
+                 * authenticate, otherwise use the older password hash
+                 */
                 if (user.getUsername().equals("admin")) {
-                    if (PasswordUtil.check(password, user.trans_getPasswordHash())) {
-                        return true;
+                    String shadow = user.getPasswordHashShadow();
+                    if (shadow != null && !shadow.equals("")) {
+                        if (shadow.equals(Crypt.crypt(password,shadow))) {
+                            return true;
+                        }
+                    } else {
+                        if (PasswordUtil.check(password, user.trans_getPasswordHash())) {
+                            return true;
+                        }
                     }
 
                     return false;
