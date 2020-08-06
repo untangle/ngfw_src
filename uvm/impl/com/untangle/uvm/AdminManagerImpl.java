@@ -309,12 +309,8 @@ public class AdminManagerImpl implements AdminManager
         String passwordHashShadow = admin.getPasswordHashShadow();
         if ( pass != null ) {
             logger.info("Setting root password.");
-            String cmd = "echo 'root:" + pass + "' | chpasswd";
                     
-            // turn down logging so we dont log password
-            UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.DEBUG );
-            ExecManagerResult result = UvmContextImpl.context().execManager().exec( cmd );
-            UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.INFO );
+            ExecManagerResult result = UvmContextImpl.context().execManager().exec( "usermod -p '" + passwordHashShadow + "' root" );
                     
             int exitCode = result.getResult();
             if ( exitCode != 0 ) {
@@ -322,24 +318,9 @@ public class AdminManagerImpl implements AdminManager
             }
 
             String shadowHash = UvmContextImpl.context().execManager().execOutput("awk -F: '/root/ {print $2}' /etc/shadow");
+            admin.setPasswordHashShadow( shadowHash.trim() );
+            setSettings( settings, false ); // save settings but do not set root password again
 
-            /**
-             * If the shadowHash is different than the value in settings
-             * Change the settings and resave them, but this time without setting
-             * the root password because we just did that
-             *
-             * We have to save twice because we dont know the hash until
-             * after we apply the first save to the system
-             */
-            if ( shadowHash != null ) {
-                shadowHash = shadowHash.trim();
-                if ( !shadowHash.equals( admin.getPasswordHashShadow() )) { 
-                    logger.info("Re-saving admin settings with root password hash included.");
-                    admin.setPasswordHashShadow( shadowHash );
-                    setSettings( settings, false ); // save settings but do not set root password again
-                }
-            }
-                    
         } else {
             if ( passwordHashShadow == null ) {
                 passwordHashShadow = "!";
