@@ -43,6 +43,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String FREERADIUS_LOCAL_SECRETS = "/etc/freeradius/3.0/mods-config/files/untangle.local";
     private final static String FREERADIUS_AUTHORIZE = "/etc/freeradius/3.0/mods-config/files/authorize";
     private final static String FREERADIUS_RADIUSD = "/etc/freeradius/3.0/radiusd.conf";
+    private final static String FREERADIUS_SAMBA_DIRECTORY = "/etc/samba";
     private final static String FREERADIUS_SAMBA_CONFIG = "/etc/samba/smb.conf";
     private final static String FREERADIUS_KRB5_CONFIG = "/etc/krb5.conf";
     private final static String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-available/mschap";
@@ -672,33 +673,36 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         /*
-         * Create the smb.conf file
+         * Create the smb.conf file if /etc/samba exists
          */
-        try {
-            fw = new FileWriter(FREERADIUS_SAMBA_CONFIG, false);
-            fw.write(FILE_DISCLAIMER);
-            if (systemSettings.getRadiusProxyEnabled()) {
-                fw.write("[global]\n");
-                fw.write("\tworkgroup = " + systemSettings.getRadiusProxyWorkgroup() + "\n");
-                fw.write("\tsecurity = ads\n");
-                fw.write("\tpassword server = " + systemSettings.getRadiusProxyServer() + "\n");
-                fw.write("\trealm = " + systemSettings.getRadiusProxyRealm() + "\n");
-                fw.write("\twinbind use default domain = yes\n");
-                fw.write("\tserver role = standalone server\n");
-                fw.write("\tbind interfaces only = no\n");
-                fw.write("\tload printers = no\n");
-                fw.write("\tlocal master = no\n");
-            }
-            fw.flush();
-            fw.close();
-        } catch (Exception exn) {
-            logger.error("Exception creating SAMBA configuration file", exn);
-        } finally {
-            if (fw != null) {
-                try {
-                    fw.close();
-                } catch (IOException ex) {
-                    logger.error("Exception closing SAMBA configuration file", ex);
+        File sambaTarget = new File(FREERADIUS_SAMBA_DIRECTORY);
+        if (sambaTarget.isDirectory()) {
+            try {
+                fw = new FileWriter(FREERADIUS_SAMBA_CONFIG, false);
+                fw.write(FILE_DISCLAIMER);
+                if (systemSettings.getRadiusProxyEnabled()) {
+                    fw.write("[global]\n");
+                    fw.write("\tworkgroup = " + systemSettings.getRadiusProxyWorkgroup() + "\n");
+                    fw.write("\tsecurity = ads\n");
+                    fw.write("\tpassword server = " + systemSettings.getRadiusProxyServer() + "\n");
+                    fw.write("\trealm = " + systemSettings.getRadiusProxyRealm() + "\n");
+                    fw.write("\twinbind use default domain = yes\n");
+                    fw.write("\tserver role = standalone server\n");
+                    fw.write("\tbind interfaces only = no\n");
+                    fw.write("\tload printers = no\n");
+                    fw.write("\tlocal master = no\n");
+                }
+                fw.flush();
+                fw.close();
+            } catch (Exception exn) {
+                logger.error("Exception creating SAMBA configuration file", exn);
+            } finally {
+                if (fw != null) {
+                    try {
+                        fw.close();
+                    } catch (IOException ex) {
+                        logger.error("Exception closing SAMBA configuration file", ex);
+                    }
                 }
             }
         }
