@@ -56,14 +56,38 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 value: '{settings.dnsServer}'
             }
         },{
-            xtype: 'textarea',
-            fieldLabel: 'Networks'.t(),
-            vtype: 'cidrBlockArea',
-            allowBlank: true,
-            height: 50,
-            bind: {
-                value: '{settings.networks}'
-            }
+            xtype: 'fieldcontainer',
+            layout: 'hbox',
+            items: [{
+                xtype: 'label',
+                text: 'Local Networks:'.t(),
+                width: 170
+            },{
+                xtype: 'ungrid',
+                itemId: 'localNetworkGrid',
+                tbar: ['@addInline'],
+                recordActions: ['delete'],
+                listProperty: 'settings.networks.list',
+                width: 300,
+                bind: '{networks}',
+                emptyRow: {
+                    javaClass: 'com.untangle.app.wireguard_vpn.WireGuardVpnNetwork',
+                    address: '10.0.0.0/24'
+                },
+                columns: [{
+                    dataIndex: 'address',
+                    header: 'Network Address',
+                    width: 200,
+                    flex: 1,
+                    editor:{
+                        xtype: 'textfield',
+                        vtype: 'cidrBlock',
+                        allowBlank: false,
+                        emptyText: '[enter address]'.t(),
+                        blankText: 'Invalid address specified'.t()
+                    }
+                }]
+            }]
         }]
     }, {
         xtype: 'fieldset',
@@ -117,4 +141,3 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         }]
     }]
 });
-

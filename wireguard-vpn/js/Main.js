@@ -43,6 +43,9 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
             },
             tunnels: {
                 data:'{settings.tunnels.list}'
+            },
+            networks: {
+                data: '{settings.networks.list}'
             }
         },
 
