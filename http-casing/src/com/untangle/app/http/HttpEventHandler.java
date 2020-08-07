@@ -35,6 +35,10 @@ public abstract class HttpEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String CONNECTION_HEADER = "connection";
+    private static final String HOST_HEADER = "host";
+    private static final String KEEP_ALIVE = "keep-alive";
+
     private static final String SESSION_STATE_KEY = "http-session-state";
 
     protected enum ClientState {
@@ -593,7 +597,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
 
                 h = doRequestHeader( session, h );
 
-                String host = h.getValue("host");
+                String host = h.getValue(HOST_HEADER);
                 state.hosts.put( state.requestLineToken, host );
                 
                 switch ( state.requestMode ) {
@@ -1003,7 +1007,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
      */
     private boolean isPersistent(HeaderToken header)
     {
-        String con = header.getValue("connection");
-        return null == con ? false : con.equalsIgnoreCase("keep-alive");
+        String con = header.getValue(CONNECTION_HEADER);
+        return null == con ? false : con.equalsIgnoreCase(KEEP_ALIVE);
     }
 }
