@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.lang.Class;
 import java.lang.reflect.Method;
 
+import java.sql.Timestamp;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -38,8 +40,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.Collection;
@@ -62,6 +64,29 @@ public class EventManagerImpl implements EventManager
 
     private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
 
+    /**
+     * If the event queue length reaches the high water mark
+     * Then the eventWriter is not able to keep up with demand
+     * In this case the overloadedFlag is set to true
+     */
+    private static int HIGH_WATER_MARK = 1000000;
+
+    /**
+     * If overloadedFlag is set to true and the queue shrinks to this size
+     * then overloadedFlag will be set to false
+     */
+    private static int LOW_WATER_MARK = 100000;
+    /**
+     * If true then the eventWriter is considered "overloaded" and can not keep up with demand
+     * This is set if the event queue length reaches the high water mark
+     * In this case we stop logging events entirely until we are no longer overloaded
+     */
+    private boolean localOverloadedFlag = false;
+    private boolean remoteOverloadedFlag = false;
+
+    private long lastLocalLoggedWarningTime = System.currentTimeMillis();
+    private long lastRemoteLoggedWarningTime = System.currentTimeMillis();
+
     private static EventManagerImpl instance = null;
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "events.js";
@@ -79,12 +104,14 @@ public class EventManagerImpl implements EventManager
     private static final String PREVIEW_EVENT_CLASS_NAME = "SystemStatEvent";
     private LogEvent mostRecentPreviewEvent = null;
 
+    private final HookCallback settingsChangeHook = new SettingsHook();;
+
     /**
      * The current event settings
      */
     private EventSettings settings;
 
-    private Pattern classesToProcess = Pattern.compile("");
+    private static Map<String, Boolean> classesToProcess = new HashMap<>();
 
     /**
      * Initialize event manager.
@@ -128,6 +155,7 @@ public class EventManagerImpl implements EventManager
         remoteEventWriter.start();
 
         SyslogManagerImpl.reconfigureCheck(settingsFilename, this.settings);
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.SETTINGS_CHANGE, this.settingsChangeHook );
     }
 
     /**
@@ -245,7 +273,10 @@ public class EventManagerImpl implements EventManager
         }
 
         synchronized (classesToProcess) {
-            classesToProcess = Pattern.compile(GlobUtil.globToRegex(classes.size() == 0 ? "*" : String.join("|", classes) ));
+            classesToProcess.clear();
+            for(String className : classes ){
+                classesToProcess.put(className.replaceAll("\\*", ""), true);
+            }
         }
     }
 
@@ -817,7 +848,7 @@ public class EventManagerImpl implements EventManager
             @Override
             public String getValue(AlertRule rule, LogEvent event, boolean convert)
             {
-                return event.getTimeStamp().toString();
+                return new Timestamp(event.getTimeStamp()).toString();
             }
         };
         eventTemplateVariables.put(etv.getName(), etv);
@@ -946,12 +977,29 @@ public class EventManagerImpl implements EventManager
      */
     public void logEvent( LogEvent event )
     {
-        synchronized (classesToProcess) {
-            if(classesToProcess.matcher(event.getClass().getName()).matches()){
+        if ( this.localOverloadedFlag ) {
+            if ( System.currentTimeMillis() - this.lastLocalLoggedWarningTime > 60000 ) {
+                logger.warn("Local event queue overloaded, discarding event");
+                this.lastLocalLoggedWarningTime = System.currentTimeMillis();
+            }
+            return;
+        }else{
+            if(classesToProcess.size() == 0 ||
+                classesToProcess.get(event.getClass().getSimpleName()) != null){
                 localEventWriter.inputQueue.offer(event);
             }
         }
-        remoteEventWriter.inputQueue.offer(event);
+        if ( this.remoteOverloadedFlag ) {
+            if ( System.currentTimeMillis() - this.lastRemoteLoggedWarningTime > 60000 ) {
+                logger.warn("Remote event queue overloaded, discarding event");
+                this.lastRemoteLoggedWarningTime = System.currentTimeMillis();
+            }
+            return;
+        }else{
+            if(remoteEventWriter.enabled){
+                remoteEventWriter.inputQueue.offer(event);
+            }
+        }
     }
 
     /**
@@ -983,6 +1031,7 @@ public class EventManagerImpl implements EventManager
         } catch ( Exception e ) {
             logger.warn("Failed to evaluate syslog rules.", e);
         }
+        event = null;
     }
 
     /**
@@ -1451,7 +1500,7 @@ public class EventManagerImpl implements EventManager
     private class LocalEventWriter implements Runnable
     {
         private volatile Thread thread;
-        private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<>();
+        private final LinkedTransferQueue<LogEvent> inputQueue = new LinkedTransferQueue<>();
 
         /**
          * Run event queue.
@@ -1474,6 +1523,17 @@ public class EventManagerImpl implements EventManager
                         }
 
                         runEvent( inputQueue.take() );
+                        /**
+                         * Check queue lengths
+                         */
+                        if (!localOverloadedFlag && inputQueue.size() > HIGH_WATER_MARK)  {
+                            logger.warn("OVERLOAD: High Water Mark reached for local event queue.");
+                            localOverloadedFlag = true;
+                        }
+                        if (localOverloadedFlag && inputQueue.size() < LOW_WATER_MARK) {
+                            logger.warn("OVERLOAD: Low Water Mark reached for local event queue. Continuing normal operation.");
+                            localOverloadedFlag = false;
+                        }
 
                     } catch (Exception e) {
                         logger.warn("Failed to run event rules.", e);
@@ -1489,6 +1549,7 @@ public class EventManagerImpl implements EventManager
         protected void start()
         {
             UvmContextFactory.context().newThread(this).start();
+            Thread.currentThread().setPriority(4);
         }
 
         /**
@@ -1510,7 +1571,8 @@ public class EventManagerImpl implements EventManager
     private class RemoteEventWriter implements Runnable
     {
         private volatile Thread thread;
-        private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<>();
+        private final LinkedTransferQueue<LogEvent> inputQueue = new LinkedTransferQueue<>();
+        public Boolean enabled = false;
 
         /**
          * Run event queue.
@@ -1532,7 +1594,20 @@ public class EventManagerImpl implements EventManager
                             lastLoggedWarningTime = System.currentTimeMillis();
                         }
 
-                        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, inputQueue.take());
+                        LogEvent event = inputQueue.take();
+                        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event);
+                        event = null;
+                        /**
+                         * Check queue lengths
+                         */
+                        if (!remoteOverloadedFlag && inputQueue.size() > HIGH_WATER_MARK)  {
+                            logger.warn("OVERLOAD: High Water Mark reached for remote event queue.");
+                            remoteOverloadedFlag = true;
+                        }
+                        if (remoteOverloadedFlag && inputQueue.size() < LOW_WATER_MARK) {
+                            logger.warn("OVERLOAD: Low Water Mark reached for remote event queue. Continuing normal operation.");
+                            remoteOverloadedFlag = false;
+                        }
 
                     } catch (Exception e) {
                         logger.warn("Failed to run event rules.", e);
@@ -1548,6 +1623,7 @@ public class EventManagerImpl implements EventManager
         protected void start()
         {
             UvmContextFactory.context().newThread(this).start();
+            enabled = UvmContextFactory.context().systemManager().getSettings().getCloudEnabled();
         }
 
         /**
@@ -1605,5 +1681,32 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+    /**
+     * Hook into setting saves to look for system settings
+     */
+    private class SettingsHook implements HookCallback
+    {
+        /**
+        * @return Name of callback hook
+        */
+        public String getName()
+        {
+            return "event-manager-settings-change-hook";
+        }
 
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
+        public void callback( Object... args )
+        {
+            Object o = args[1];
+            if ( ! (o instanceof SystemSettings) ) {
+                return;
+            }
+            SystemSettings settings = (SystemSettings)o;
+            remoteEventWriter.enabled = settings.getCloudEnabled();
+        }
+    }
 }
