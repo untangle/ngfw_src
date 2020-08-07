@@ -59,7 +59,7 @@ public class SmtpMessageAddressEvent extends LogEvent implements Serializable
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setLong(++i, se.getSessionId());
         pstmt.setInt(++i, se.getClientIntf());
         pstmt.setInt(++i, se.getServerIntf());

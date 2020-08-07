@@ -57,7 +57,7 @@ public class AdminLoginEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,getSqlTimeStamp());
         pstmt.setString(++i, getLogin());
         pstmt.setBoolean(++i, getLocal());
         pstmt.setObject(++i, getClientAddress().getHostAddress(), java.sql.Types.OTHER);

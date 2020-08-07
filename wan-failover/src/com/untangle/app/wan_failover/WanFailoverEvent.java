@@ -55,7 +55,7 @@ public class WanFailoverEvent extends LogEvent implements Serializable, JSONStri
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setInt(++i, getInterfaceId());
         pstmt.setString(++i, getName());
         pstmt.setString(++i, getOsName());

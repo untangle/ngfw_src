@@ -92,7 +92,7 @@ public class SpamSmtpTarpitEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache(sql, statementCache, conn);
 
         int i = 0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setObject(++i, getIPAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setString(++i, getHostname());
         pstmt.setString(++i, getVendorName());

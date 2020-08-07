@@ -63,7 +63,7 @@ public class WireGuardVpnStats extends LogEvent implements Serializable
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setString(++i, getTunnelName());
         pstmt.setObject(++i, getPeerAddress().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setLong(++i, getInBytes());
