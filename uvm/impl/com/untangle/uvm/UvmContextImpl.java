@@ -124,6 +124,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
     private volatile List<String> annotatedClasses = new LinkedList<>();
+
+    private static HookCallback appInstantiateHook;
+    private static HookCallback appDestroyHook;
     
     /**
      * UvmContextImpl - private because its a singleton and cannot be instantiated
@@ -1044,12 +1047,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      */
     public void logEvent(LogEvent evt)
     {
-        if (this.reportsApp == null)
-            getReportsApp();
-        if (this.reportsApp == null)
-            return;
+        if (this.reportsApp != null){
+            this.reportsApp.logEvent(evt);
+        }
 
-        this.reportsApp.logEvent(evt);
         this.eventManager.logEvent(evt);
     }
 
@@ -1402,6 +1403,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         // call startup hook
         callPostStartupHooks();
+
+        // Hook for reports app if added/removed.
+        appInstantiateHook = new AppInstantiateHook();
+        appDestroyHook = new AppDestroyHook();
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.APPLICATION_INSTANTIATE, appInstantiateHook );
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.APPLICATION_DESTROY, appDestroyHook );
+        // Pull if it already added.
+        this.reportsApp = (Reporting) this.appManager().app("reports");
     }
 
     /**
@@ -1410,6 +1419,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void destroy()
     {
+        UvmContextFactory.context().hookManager().unregisterCallback( HookManager.APPLICATION_INSTANTIATE, appInstantiateHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( HookManager.APPLICATION_DESTROY, appDestroyHook );
         // the will be removed again by the wrapper
         // this is just so traffic will pass while the untangle-vm shutsdown
         try {
@@ -1606,32 +1617,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
-     * getReportsApp finds the reports application sets this.reportsApp to it
-     */
-    private void getReportsApp()
-    {
-        synchronized (this) {
-            if (this.reportsApp == null) {
-                try {
-                    // appManager not initialized yet
-                    if (this.appManager == null) {
-                        if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("App manager not initialized, discarding event(s)");
-                            this.lastLoggedWarningTime = System.currentTimeMillis();
-                        }
-                        return;
-                    }
-                    
-                    this.reportsApp = (Reporting) this.appManager().app("reports");
-                } catch (Exception e) {
-                    logger.warn("Unable to initialize reports app", e);
-                    return;
-                }
-            }
-        }
-    }
-
-    /**
      * callPostStartupHooks calls any registered UVM_START_COMPLETE hooks with the hookManager
      * and also runs run-parts on /etc/untangle/post-uvm-hook.d
      */
@@ -1654,6 +1639,73 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 }
             } catch (IOException e) {
                 logger.warn("Failed to run post-startup hooks",e);
+            }
+        }
+    }
+
+    /**
+     * Hook into application instantiations.
+     */
+    private class AppInstantiateHook implements HookCallback
+    {
+        /**
+        * @return Name of callback hook
+        */
+        public String getName()
+        {
+            return "uvmcontext-application-instantiate-hook";
+        }
+
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
+        public void callback( Object... args )
+        {
+            String appName = (String) args[0];
+            Object app = args[1];
+
+            if(appName == null){
+                return;
+            }
+            if(appName.equals("reports")){
+                synchronized(this){
+                    reportsApp = (Reporting) app;
+                }
+            }
+        }
+    }
+
+    /**
+     * Hook into application destroys.
+     */
+    private class AppDestroyHook implements HookCallback
+    {
+        /**
+        * @return Name of callback hook
+        */
+        public String getName()
+        {
+            return "uvmcontext-application-destroy-hook";
+        }
+
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
+        public void callback( Object... args )
+        {
+            String appName = (String) args[0];
+
+            if(appName == null){
+                return;
+            }
+            if(appName.equals("reports")){
+                synchronized(this){
+                    reportsApp = null;
+                }
             }
         }
     }
