@@ -166,7 +166,7 @@ public abstract class DecisionEngine
         GenericRule rule = UrlMatchingUtil.checkClientList(clientIp, app.getSettings().getPassedClients());
         if (rule != null) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, bestCategory.getId(), rule.getId(), rule.getString(), app.getName());
-            logger.debug("LOG: in client pass list: " + requestLine.getRequestLine());
+            if (logger.isDebugEnabled())  logger.debug("LOG: in client pass list: " + requestLine.getRequestLine());
             app.logEvent(hbe);
             return null;
         }
@@ -176,7 +176,7 @@ public abstract class DecisionEngine
         rule = UrlMatchingUtil.checkSiteList(host, uri.toString(), app.getSettings().getPassedUrls());
         if (rule != null) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, bestCategory.getId(), rule.getId(), rule.getString(), app.getName());
-            logger.debug("LOG: in site pass list: " + requestLine.getRequestLine());
+            if (logger.isDebugEnabled()) logger.debug("LOG: in site pass list: " + requestLine.getRequestLine());
             app.logEvent(hbe);
             return null;
         }
@@ -194,7 +194,7 @@ public abstract class DecisionEngine
                 rule = UrlMatchingUtil.checkSiteList(refererHost, refererUri.getPath().toString(), app.getSettings().getPassedUrls());
                 if (rule != null) {
                     WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_REFERER_URL, bestCategory.getId(), rule.getId(), rule.getString(), app.getName());
-                    logger.debug("LOG: Referer in pass list: " + requestLine.getRequestLine());
+                    if (logger.isDebugEnabled()) logger.debug("LOG: Referer in pass list: " + requestLine.getRequestLine());
                     app.logEvent(hbe);
                     return null;
                 }
@@ -208,7 +208,7 @@ public abstract class DecisionEngine
         if (checkUnblockedSites(host, uri, clientIp)) {
             // !!!! make -1 be a constant
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, bestCategory.getId(), -1, "", app.getName());
-            logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
+            if (logger.isDebugEnabled()) logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
             app.logEvent(hbe);
             return null;
         }
@@ -218,7 +218,7 @@ public abstract class DecisionEngine
             if (host == null || IP_PATTERN.matcher(host).matches()) {
                 // -2 constant for block IPs
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, bestCategory.getId(), -2, "", app.getName());
-                logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
+                if (logger.isDebugEnabled()) logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
 
@@ -236,7 +236,7 @@ public abstract class DecisionEngine
         if (urlRule != null) {
             if (urlRule.getBlocked()) {
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, bestCategory.getId(), urlRule.getId(), urlRule.getString(), app.getName());
-                logger.debug("LOG: matched block rule: " + requestLine.getRequestLine());
+                if (logger.isDebugEnabled()) logger.debug("LOG: matched block rule: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
                 app.incrementFlagCount();
 
@@ -250,7 +250,7 @@ public abstract class DecisionEngine
                 if (urlRule.getFlagged()) isFlagged = true;
 
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, isFlagged, Reason.BLOCK_URL, bestCategory.getId(), urlRule.getId(), urlRule.getString(), app.getName());
-                logger.debug("LOG: matched pass rule: " + requestLine.getRequestLine());
+                if (logger.isDebugEnabled()) logger.debug("LOG: matched pass rule: " + requestLine.getRequestLine());
                 app.logEvent(hbe);
                 if (isFlagged) app.incrementFlagCount();
                 return null;
@@ -370,7 +370,7 @@ public abstract class DecisionEngine
         if (checkUnblockedSites(host, uri, clientIp)) return null;
         if (checkUnblockedTerms(clientIp, requestLine, header)) return null;
 
-        logger.debug("checkResponse: " + host + uri);
+        if (logger.isDebugEnabled()) logger.debug("checkResponse: " + host + uri);
 
         // not in any of the block or pass lists so check the filter rules
         WebFilterRule filterRule = checkFilterRules(sess, "RESPONSE");
@@ -514,7 +514,7 @@ public abstract class DecisionEngine
         host = host.toLowerCase();
 
         if (isItemUnblocked(host, clientIp)) {
-            logger.debug("LOG: " + host + uri + " in unblock list for " + clientIp);
+            if (logger.isDebugEnabled()) logger.debug("LOG: " + host + uri + " in unblock list for " + clientIp);
             return true;
         }
 
@@ -537,7 +537,7 @@ public abstract class DecisionEngine
         String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
 
         if(isItemUnblocked(term, clientIp)) {
-            logger.debug("LOG: " + term + " in unblock list for " + clientIp);
+            if (logger.isDebugEnabled()) logger.debug("LOG: " + term + " in unblock list for " + clientIp);
             return true;
         }
 
@@ -564,7 +564,7 @@ public abstract class DecisionEngine
     {
         String catStr = null;
 
-        logger.debug("checkUrlList( " + host + " , " + uri + " ...)");
+        if (logger.isDebugEnabled()) logger.debug("checkUrlList( " + host + " , " + uri + " ...)");
         GenericRule rule = UrlMatchingUtil.checkSiteList(host, uri, app.getSettings().getBlockedUrls());
 
         if (rule == null) return null;
@@ -621,7 +621,7 @@ public abstract class DecisionEngine
 
         uri = CONSECUTIVE_SLASHES_PATH_PATTERN.matcher(uri).replaceAll("/");
 
-        logger.debug("checkCategory: " + host + uri);
+        if (logger.isDebugEnabled()) logger.debug("checkCategory: " + host + uri);
 
         List<Integer> categories = categorizeSite(sess, host, uri);
 
@@ -722,9 +722,9 @@ public abstract class DecisionEngine
 
         List<WebFilterRule> ruleList = this.app.getSettings().getFilterRules();
 
-        logger.debug("Checking rules against " + checkCaller + " session : " + sess.getProtocol() + " " + sess.getOrigClientAddr().getHostAddress() + ":" + sess.getOrigClientPort() + " -> " + sess.getNewServerAddr().getHostAddress() + ":" + sess.getNewServerPort());
+        if (ruleList == null || ruleList.size() == 0) return null;
 
-        if (ruleList == null) return null;
+        if (logger.isDebugEnabled())  logger.debug("Checking rules against " + checkCaller + " session : " + sess.getProtocol() + " " + sess.getOrigClientAddr().getHostAddress() + ":" + sess.getOrigClientPort() + " -> " + sess.getNewServerAddr().getHostAddress() + ":" + sess.getNewServerPort());
 
         for (WebFilterRule filterRule : ruleList) {
             Boolean result;
@@ -734,12 +734,12 @@ public abstract class DecisionEngine
             result = filterRule.matches(sess);
 
             if (result == true) {
-                logger.debug(checkCaller + " MATCHED WebFilterRule \"" + filterRule.getDescription() + "\"");
+                if (logger.isDebugEnabled())  logger.debug(checkCaller + " MATCHED WebFilterRule \"" + filterRule.getDescription() + "\"");
                 return filterRule;
             }
 
             else {
-                logger.debug(checkCaller + " CHECKED WebFilterRule \"" + filterRule.getDescription() + "\"");
+                if (logger.isDebugEnabled())  logger.debug(checkCaller + " CHECKED WebFilterRule \"" + filterRule.getDescription() + "\"");
             }
         }
 
