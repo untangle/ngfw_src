@@ -19,6 +19,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetspaceManager;
 import com.untangle.uvm.NetspaceManager.IPVersion;
 import com.untangle.uvm.NetspaceManager.NetworkSpace;
+import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManager;
@@ -68,6 +69,8 @@ public class IpsecVpnApp extends AppBase
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
     private final IpsecVpnHookCallback ipsecVpnHookCallback;
+    private final PreNetworkSettingsHookCallback netSetPreHook;
+    private final PostNetworkSettingsHookCallback netSetPostHook;
     private final WanFailoverHookCallback wanFailoverHookCallback;
     protected static ExecManager execManager = null;
 
@@ -98,6 +101,8 @@ public class IpsecVpnApp extends AppBase
         logger.debug("IpsecVpnApp()");
 
         this.ipsecVpnHookCallback = new IpsecVpnHookCallback();
+        this.netSetPreHook = new PreNetworkSettingsHookCallback();
+        this.netSetPostHook = new PostNetworkSettingsHookCallback();
         this.wanFailoverHookCallback = new WanFailoverHookCallback();
 
         this.addMetric(new AppMetric(STAT_CONFIGURED, I18nUtil.marktr("Configured Tunnels")));
@@ -383,6 +388,8 @@ public class IpsecVpnApp extends AppBase
 
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
 
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.netSetPreHook);
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.netSetPostHook);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
@@ -424,6 +431,8 @@ public class IpsecVpnApp extends AppBase
 
         super.preStop(isPermanentTransition);
 
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.netSetPreHook);
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.netSetPostHook);
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
@@ -912,6 +921,30 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
+     * Called before network settings are changed
+     *
+     * @param settings
+     *        The current network settings
+     * @throws Exception
+     */
+    private void preNetworkSettingsEvent(NetworkSettings settings) throws Exception
+    {
+        logger.warn("IPSEC Pre network settings hook");
+    }
+
+    /**
+     * Called after network settings are changed
+     *
+     * @param settings
+     *        The current network settings
+     * @throws Exception
+     */
+    private void postNetworkSettingsEvent(NetworkSettings settings) throws Exception
+    {
+        logger.warn("IPSEC Post Network Settings hook");
+    }
+
+    /**
      * Callback hook for changes to UVM settings so we know when the certificate
      * assigned to IPsec has been changed.
      *
@@ -977,6 +1010,90 @@ public class IpsecVpnApp extends AppBase
             logger.info("Reconfiguring due to certificate change from " + activeCertificate + " to " + adminCertificate);
             activeCertificate = adminCertificate;
             reconfigure();
+        }
+    }
+
+    /**
+     * Callback pre hook for changes to network settings
+     */
+    private class PreNetworkSettingsHookCallback implements HookCallback
+    {
+        
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "ipsec-vpn-pre-network-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         *
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            Object o = args[0];
+            if (!(o instanceof NetworkSettings)) {
+                logger.warn("Invalid network settings: " + o);
+                return;
+            }
+
+            NetworkSettings settings = (NetworkSettings) o;
+
+            if (logger.isDebugEnabled()) logger.debug("network settings are about to change:" + settings);
+
+            try {
+                preNetworkSettingsEvent(settings);
+            } catch (Exception e) {
+                logger.error("Unable to reconfigure the ipsec VPN app");
+            }
+        }
+    }
+
+    /**
+     * Callback post hook for changes to network settings
+     */
+    private class PostNetworkSettingsHookCallback implements HookCallback
+    {
+        
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "ipsec-vpn-post-network-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         *
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            Object o = args[0];
+            if (!(o instanceof NetworkSettings)) {
+                logger.warn("Invalid network settings: " + o);
+                return;
+            }
+
+            NetworkSettings settings = (NetworkSettings) o;
+
+            if (logger.isDebugEnabled()) logger.debug("network settings have been updated:" + settings);
+
+            try {
+                postNetworkSettingsEvent(settings);
+            } catch (Exception e) {
+                logger.error("Unable to reconfigure the ipsec VPN app");
+            }
         }
     }
 
