@@ -23,7 +23,5 @@ if [ -f $EVENT_MAP ] ; then
     rm -f $EVENT_MAP
 fi
 
-systemctl stop suricata
-
 exit 0
 
