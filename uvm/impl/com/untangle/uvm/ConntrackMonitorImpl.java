@@ -28,8 +28,8 @@ public class ConntrackMonitorImpl
 {
     private static final int CONNTRACK_PULSE_FREQUENCY_MS = 60 * 1000; // 1 minute
     private static final float CONNTRACK_PULSE_FREQUENCY_SEC = 60f; // 1 minute
-    private static final int CLEANER_PULSE_FREQUENCY = 560 * 1000; // 5 minutes
-    private static final long LIFETIME_MS = (long) 1000 * 60 * 3; // 2 minutes (amount of time to keep complete sessions in table)
+    private static final int CLEANER_PULSE_FREQUENCY = 5 * 60 * 1000; // 5 minutes
+    private static final long LIFETIME_MS = 2 * 60 * 1000;// 2 minutes (amount of time to keep complete sessions in table)
     private static final Logger logger = Logger.getLogger(ConntrackMonitorImpl.class);
 
     private static ConntrackMonitorImpl INSTANCE = null;
@@ -371,6 +371,8 @@ public class ConntrackMonitorImpl
                  */
                 conntrackEntries = newConntrackEntries;
             }
+            oldConntrackEntries = null;
+            dumpEntries = null;
         }
     }
 
@@ -419,6 +421,7 @@ public class ConntrackMonitorImpl
                     }
                 }
             }
+            UvmContextFactory.context().gc();
             return;
         }
     }
