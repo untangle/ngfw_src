@@ -10,6 +10,7 @@ def usage():
 usage: %s [options] <retention in days>
 Options:
     -d <driver>     : "postgresql" or "sqlite"
+    -h <int>        : hourly retention NOTE: Using this param will overwrite any daily retention passed in
 """ % sys.argv[0])
 
 class ArgumentParser(object):
@@ -19,14 +20,19 @@ class ArgumentParser(object):
     def set_driver( self, arg ):
         global DRIVER
         DRIVER = arg
+
+    def set_hourly( self, arg):
+          global HOURLYRETENTION
+          HOURLYRETENTION = arg
         
     def parse_args( self ):
         handlers = {
             '-d' : self.set_driver,
+            '-h' : self.set_hourly
         }
 
         try:
-             (optlist, args) = getopt.getopt(sys.argv[1:], 'd:')
+             (optlist, args) = getopt.getopt(sys.argv[1:], 'd:h:')
              for opt in optlist:
                   handlers[opt[0]](opt[1])
              return args
@@ -38,6 +44,7 @@ class ArgumentParser(object):
 DRIVER = 'postgresql'
 PYTHON_DIR = '@PREFIX@/usr/lib/python2.7/dist-packages'
 REPORTS_PYTHON_DIR = '%s/reports' % (PYTHON_DIR)
+HOURLYRETENTION = None
 
 if '@PREFIX@' != '':
      sys.path.insert(0, PYTHON_DIR)
@@ -60,6 +67,10 @@ except:
      usage()
      
 cutoff = mx.DateTime.today() - mx.DateTime.DateTimeDelta(db_retention)
+
+# If we receive anything in the hourly retention, use this instead of the daily cutoff
+if HOURLYRETENTION > 0:
+     cutoff = mx.DateTime.now() - mx.DateTime.TimeDelta(float(HOURLYRETENTION))
 
 for f in os.listdir(REPORTS_PYTHON_DIR):
      if f.endswith('py'):
