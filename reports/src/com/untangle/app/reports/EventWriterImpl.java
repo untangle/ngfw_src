@@ -348,8 +348,8 @@ public class EventWriterImpl implements Runnable
          */
         LogEvent first = null;
         try {first = logQueue.getFirst();} catch (Exception e) {}
-        if (first != null && first.getTimeStamp() != null) {
-            this.writeDelaySec = (System.currentTimeMillis() - first.getTimeStamp().getTime())/1000L;
+        if (first != null) {
+            this.writeDelaySec = (System.currentTimeMillis() - first.getTimeStamp())/1000L;
         }
         
         int count = logQueue.size();
@@ -558,6 +558,7 @@ public class EventWriterImpl implements Runnable
     {
         this.app = app;
         UvmContextFactory.context().newThread(this).start();
+        Thread.currentThread().setPriority(4);
     }
 
     /**
@@ -569,6 +570,7 @@ public class EventWriterImpl implements Runnable
         // forceFlush(); /* flush last few events */
 
         Thread tmp = thread;
+        inputQueue.clear();
         thread = null; /* thread will exit if thread is null */
         if (tmp != null) {
             tmp.interrupt();
