@@ -52,7 +52,7 @@ public class HostTableEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,getSqlTimeStamp());
         pstmt.setObject(++i, address.getHostAddress(), java.sql.Types.OTHER);
         pstmt.setString(++i, getKey());
         pstmt.setString(++i, getValue());

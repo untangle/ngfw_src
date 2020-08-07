@@ -79,7 +79,7 @@ public class AlertEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,getSqlTimeStamp());
         pstmt.setString(++i, getDescription());
         pstmt.setString(++i, getSummaryText());
         pstmt.setString(++i, json.toString());

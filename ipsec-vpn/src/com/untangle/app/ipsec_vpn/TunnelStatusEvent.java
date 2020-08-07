@@ -74,7 +74,7 @@ public class TunnelStatusEvent extends LogEvent implements Serializable
         java.sql.PreparedStatement pstmt = getStatementFromCache(sql, statementCache, conn);
 
         int i = 0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setString(++i, getTunnelName());
         pstmt.setLong(++i, getInBytes());
         pstmt.setLong(++i, getOutBytes());

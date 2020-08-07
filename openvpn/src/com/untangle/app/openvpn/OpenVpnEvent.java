@@ -66,7 +66,7 @@ public class OpenVpnEvent extends LogEvent implements Serializable, org.json.JSO
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,getSqlTimeStamp());
         pstmt.setObject(++i, getAddress().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setObject(++i, getPoolAddress().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setString(++i, getClientName());

@@ -133,7 +133,7 @@ public class SystemStatEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setLong(++i, memTotal);
         pstmt.setLong(++i, memFree);
         pstmt.setFloat(++i, load1);

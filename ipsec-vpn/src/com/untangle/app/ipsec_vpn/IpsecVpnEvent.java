@@ -66,7 +66,7 @@ public class IpsecVpnEvent extends LogEvent implements Serializable, org.json.JS
         java.sql.PreparedStatement pstmt = getStatementFromCache(sql, statementCache, conn);
 
         int i = 0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setString(++i, localAddress);
         pstmt.setString(++i, remoteAddress);
         pstmt.setString(++i, getTunnelDescription());

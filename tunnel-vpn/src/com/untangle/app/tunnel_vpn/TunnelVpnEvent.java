@@ -64,7 +64,7 @@ public class TunnelVpnEvent extends LogEvent implements Serializable, org.json.J
         String localAddress = (getLocalAddress() == null ? "unknown" : getLocalAddress().getHostAddress().toString());
 
         int i=0;
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,getSqlTimeStamp());
         pstmt.setObject(++i, serverAddress, java.sql.Types.OTHER);
         pstmt.setObject(++i, localAddress, java.sql.Types.OTHER);
         pstmt.setString(++i, getTunnelName());

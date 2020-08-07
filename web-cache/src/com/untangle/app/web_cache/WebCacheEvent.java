@@ -78,7 +78,7 @@ public class WebCacheEvent extends LogEvent implements Serializable
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setLong(++i, getHitCount());
         pstmt.setLong(++i, getMissCount());
         pstmt.setLong(++i, getBypassCount());

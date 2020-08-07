@@ -279,7 +279,7 @@ public class SessionEvent extends LogEvent
         pstmt.setLong(++i,getSessionId());
         pstmt.setBoolean(++i,getBypassed());
         pstmt.setBoolean(++i,getEntitled());
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,getSqlTimeStamp());
         pstmt.setInt(++i,getProtocol());
         pstmt.setObject(++i,getIcmpType(), java.sql.Types.OTHER);
         pstmt.setTimestamp(++i,timeStampPlusSeconds(1)); // default end_time
