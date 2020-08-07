@@ -13,38 +13,47 @@ import sys
 
 if (len(sys.argv) < 2):
     raise Exception("Invalid number of arguments")
+work_name = sys.argv[1]
 
-status_proc = subprocess.Popen("/usr/sbin/ipsec statusall " + sys.argv[1], stdout=subprocess.PIPE, shell=True)
+status_proc = subprocess.Popen("/usr/sbin/ipsec statusall " + work_name, stdout=subprocess.PIPE, shell=True)
 (status_out,status_err) = status_proc.communicate()
 
 wordlist = status_out.split()
 svalue = "down"
 lvalue = "unknown"
 rvalue = "unknown"
-ivalue = "0"
-ovalue = "0"
+ivalue = 0
+ovalue = 0
 index = 0
+current_established_seconds = -1
 
 for token in wordlist:
     if (token.startswith("ESTABLISHED") == True):
         svalue = "active"
+        established_seconds = int(wordlist[index + 1])
+        interval = wordlist[index + 2]
+        if interval == "minutes":
+            established_seconds *= 60
+        elif interval == "hours":
+            established_seconds *= 3600
+        elif interval == "days":
+            established_seconds *= 86400
+        if current_established_seconds == -1 or established_seconds < current_established_seconds:
+            current_established_seconds = established_seconds
+            [lvalue,rvalue] = wordlist[index+4].split('...')
+            [lvalue,x] = lvalue.split('[')
+            [rvalue,x] = rvalue.split('[')
 
-    if (token.startswith("local") == True) and (wordlist[index + 1].find("[") != -1) and (wordlist[index + 1].find("]") != -1):
-        lvalue = wordlist[index + 1]
-        lvalue = lvalue.lstrip("[")
-        lvalue = lvalue.rstrip("]")
-
-    if (token.startswith("remote") == True) and (wordlist[index + 1].find("[") != -1) and (wordlist[index + 1].find("]") != -1):
-        rvalue = wordlist[index + 1]
-        rvalue = rvalue.lstrip("[")
-        rvalue = rvalue.rstrip("]")
+    if lvalue != "unknown" and token.startswith(work_name+":") and "..." in wordlist[index+1]:
+        [lvalue,rvalue] = wordlist[index+1].split('...')
+        print(rvalue)
 
     if (token.startswith("bytes_i") == True):
-        ivalue = wordlist[index - 1]
+        ivalue += int(wordlist[index - 1])
 
     if (token.startswith("bytes_o") == True):
-        ovalue = wordlist[index - 1]
+        ovalue += int(wordlist[index - 1])
 	
     index += 1
 
-print "| TUNNEL:%s LOCAL:%s REMOTE:%s STATE:%s IN:%s OUT:%s |" % (sys.argv[1] , lvalue, rvalue, svalue, ivalue , ovalue)
+print "| TUNNEL:%s LOCAL:%s REMOTE:%s STATE:%s IN:%d OUT:%d |" % (sys.argv[1] , lvalue, rvalue, svalue, ivalue , ovalue)

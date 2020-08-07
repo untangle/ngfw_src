@@ -74,6 +74,8 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                 data: '{wanListData}'
             },
 
+            activeWanAddress: '',
+
             P1CipherStore: {
                 fields: [ 'name', 'value' ],
                 data: [
@@ -203,6 +205,21 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
         { xtype: 'app-ipsec-vpn-ipsecpolicy' },
         { xtype: 'app-ipsec-vpn-ipseclog' },
         { xtype: 'app-ipsec-vpn-l2tplog' }
-    ]
+    ],
 
+    statics:{
+        leftRenderer: function(value, meta, record, rowIndex, columnIndex, store, table){
+            var vm = table.up('apppanel').getViewModel();
+            if(value == 'active_wan_address'){
+                return Ext.String.format('{0} [{1}]', 'Active WAN'.t(), vm.get('activeWanAddress'));
+            }
+            return value;
+        },
+        rightRenderer: function(value, meta, record, rowIndex, columnIndex, store, table){
+            if(value == '%any'){
+                return 'Any Remote Host'.t();
+            }
+            return value;
+        }
+    }
 });

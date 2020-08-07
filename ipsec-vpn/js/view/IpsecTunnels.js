@@ -52,6 +52,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'description': '',
         'secret': '',
         'localInterface': 0,
+        'rightAny': false,
         'pingAddress': ''
         },
 
@@ -65,12 +66,14 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         resizable: false
     }, {
         header: 'External IP'.t(),
-        width: Renderer.ipWidth,
+        width: 200,
         dataIndex: 'left',
+        renderer: Ung.apps.ipsecvpn.Main.leftRenderer
     }, {
         header: 'Remote Host'.t(),
         width: Renderer.hostnameWidth,
         dataIndex: 'right',
+        renderer: Ung.apps.ipsecvpn.Main.rightRenderer
     }, {
         header: 'Local Network'.t(),
         width: Renderer.networkWidth,
@@ -89,6 +92,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     editorHeight: Ext.getBody().getViewSize().height - 60,
     editorWidth: Ext.getBody().getViewSize().width - 60,
 
+    editorXtype: 'ung.cmp.unipsecvpntunnelsrecordeditor',
     editorFields: [{
         xtype: 'container',
         layout: 'column',
@@ -153,7 +157,10 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             fieldLabel: 'Connect Mode'.t(),
             labelWidth: 120,
             editable: false,
-            bind: '{record.runmode}',
+            bind: {
+                disabled: '{record.rightAny == true}',
+                value: '{record.runmode}',
+            },
             store: [['start','Always Connected'],['route','On Demand']]
         }]
     }, {
@@ -174,13 +181,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             displayField: 'name',
             valueField: 'index',
             listeners: {
-                change: function(cmp, nval, oval, opts) {
-                    var wanlist = this.ownerCt.ownerCt.ownerCt.getViewModel().get('wanListData'); // FIXME - this feels really ugly
-                    var finder = this.ownerCt.ownerCt.down("[fieldIndex='externalAddress']"); // FIXME - this feels ugly too
-                    for( var i = 1 ; i < wanlist.length ; i++ ) {
-                        if (nval == wanlist[i][0]) finder.setValue(wanlist[i][1]);
-                    }
-                }
+                change: 'interfaceChange'
             }
         }]
     }, {
@@ -189,24 +190,55 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         margin: '0 0 5 0',
         items: [{
             xtype: 'textfield',
+            itemId: 'externalAddress',
             bind: {
                 value: '{record.left}',
-                disabled: '{record.localInterface != 0}'
-                },
-            fieldLabel: 'External IP'.t(),
+                hidden: '{record.localInterface != 0}'
+            },
+            fieldLabel: 'Local Address'.t(),
             fieldIndex: 'externalAddress',
             labelWidth: 120,
             allowBlank: false,
-            vtype: 'ipAddress'
+            // vtype: 'ipAddress'
+        },{
+            xtype: 'displayfield',
+            fieldLabel: 'Local Address'.t(),
+            labelWidth: 120,
+            itemId: 'externalAddressCurrent',
+            value: '',
+            bind: {
+                hidden: '{record.localInterface == 0}'
+            },
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: 'The external IP address of this server'.t()
+            value: 'WAN IP address of this server'.t()
+        }]
+    },{
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
+            xtype:'checkbox',
+            bind: '{record.rightAny}',
+            fieldLabel: 'Any Remote Host'.t(),
+            labelWidth: 120,
+            listeners: {
+                change: 'anyRemoteHostChange'
+            }
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: 'Allow connections from any IP address'.t()
         }]
     }, {
         xtype: 'container',
         layout: 'column',
         margin: '0 0 5 0',
+        bind: {
+            hidden: '{record.rightAny == true}',
+            disabled: '{record.rightAny == true}'
+        },
         items: [{
             xtype: 'textfield',
             bind: '{record.right}',
