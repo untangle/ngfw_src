@@ -8,9 +8,13 @@ import java.util.Map;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 import java.net.InetAddress;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.apache.log4j.Logger;
@@ -34,10 +38,15 @@ public class SessionMonitorImpl implements SessionMonitor
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private final String conntrackCommand = "/usr/sbin/conntrack -L -f ipv6";
+
     public static final short PROTO_TCP = 6;
     public static final short PROTO_UDP = 17;
 
     private static ExecManager execManager = null;
+
+    private static final Pattern SPACES_PATTERN = Pattern.compile("\\s+");
+    private static final Pattern EQUAL_PATTERN = Pattern.compile("=");
 
     UvmContext uvmContext;
 
@@ -90,8 +99,10 @@ public class SessionMonitorImpl implements SessionMonitor
             if ( session.getServerIntf() == null || session.getServerIntf() == 0 ) {
                 session.setServerIntf(Integer.valueOf(-1));
             }
+            boolean clientIsWanInterface = session.getClientIntf() != 0 && UvmContextFactory.context().networkManager().isWanInterface( session.getClientIntf() );
+            boolean serverIsWanInterface = session.getServerIntf() != 0 && UvmContextFactory.context().networkManager().isWanInterface( session.getServerIntf() );
             if ( session.getHostname() == null || session.getHostname().length() == 0 ) {
-                session.setHostname( SessionEvent.determineBestHostname( session.getPreNatClient(), session.getClientIntf(), session.getPostNatServer(), session.getServerIntf() ) );
+                session.setHostname( SessionEvent.determineBestHostname( session.getPreNatClient(), session.getClientIntf(), session.getPostNatServer(), session.getServerIntf(), clientIsWanInterface ) );
             }
             session.setPriority(session.getQosPriority());
 
@@ -100,10 +111,10 @@ public class SessionMonitorImpl implements SessionMonitor
             SessionGlobalState sessionState = SessionTableImpl.getInstance().lookupTuple(tuple);
             ConntrackMonitorImpl.ConntrackEntryState conntrackState = ConntrackMonitorImpl.getInstance().lookupTuple(tuple);
 
-            if ( logger.isDebugEnabled() )
+            if ( logger.isDebugEnabled() ){
                 logger.debug("Lookup session table (" + tuple + ") -> " + sessionState);
-            if ( logger.isDebugEnabled() )
                 logger.debug("Lookup conntrack table (" + tuple + ") -> " + conntrackState);
+            }
 
             if ( conntrackState != null ) {
                 session.setClientKBps( conntrackState.c2sRateBps/1000.0f );
@@ -187,7 +198,7 @@ public class SessionMonitorImpl implements SessionMonitor
                 // session.setBypassed(Boolean.TRUE);
             }
 
-            if ( UvmContextFactory.context().networkManager().isWanInterface( session.getClientIntf() ) ) {
+            if(clientIsWanInterface){
                 session.setLocalAddr( session.getPostNatServer() );
                 session.setRemoteAddr( session.getPreNatClient() );
             } else {
@@ -429,30 +440,36 @@ public class SessionMonitorImpl implements SessionMonitor
      */
     private List<SessionMonitorEntry> parseProcNetIpConntrack()
     {
-        BufferedReader br = null;
-        String line;
         LinkedList<SessionMonitorEntry> list = new LinkedList<>();
-        String conntrackFilename;
-        if ( Files.exists(Paths.get("/proc/net/ip_conntrack")) )
-            conntrackFilename = "/proc/net/ip_conntrack";
-        else
-            conntrackFilename = "/proc/net/nf_conntrack";
+
+        Process proc = null;
+        OutputStreamWriter out = null;
+        BufferedReader in = null;
+
+        // Reading the results of running the conntrack command instead of reading /proc/net/ip_conntrack
+        // is magnitudes faster, especially on systems with 100k+ sessions.
+        try {
+            proc = Runtime.getRuntime().exec(conntrackCommand);
+        } catch (IOException e) {
+            logger.error("Couldn't start parseProcNetIpConntrack", e);
+            return list;
+        }
+
+        String line;
+        // Cache for parsed IP addresseses.  This may sound a little ridiculous, but it helps
+        // memory on large 100k+ session systems.
+        Map<String, InetAddress> parsedInetAddresses = new HashMap<>();
+        out = new OutputStreamWriter(proc.getOutputStream());
+        in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
         try {
-            br = new BufferedReader(new FileReader(conntrackFilename));
-            while ((line = br.readLine()) != null) {
+            int partsIndexStart = 0;
+            while ((line = in.readLine()) != null) {
                 try {
                     if ( logger.isDebugEnabled() )
                         logger.debug("parseProcNetIpConntrack line: " + line);
-                    String[] parts = line.split("\\s+");
+                    String[] parts = SPACES_PATTERN.split(line);
                     SessionMonitorEntry newEntry = new SessionMonitorEntry();
-
-                    // if using the new nf_conntrack, remove first two fields
-                    if ( conntrackFilename == "/proc/net/nf_conntrack" ) {
-                        String[] newArray=new String[parts.length];
-                        System.arraycopy(parts,2,newArray,0,parts.length-2);
-                        parts = newArray;
-                    }
 
                     if ( parts.length < 10 ) {
                         logger.warn("Too few parts: " + line);
@@ -460,7 +477,7 @@ public class SessionMonitorImpl implements SessionMonitor
                     }
 
                     // part[0] is either "udp" or "tcp"
-                    if ( !"udp".equals(parts[0]) && !"tcp".equals(parts[0]) ) {
+                    if ( !"udp".equals(parts[partsIndexStart]) && !"tcp".equals(parts[partsIndexStart]) ) {
                         if ( logger.isDebugEnabled() )
                             logger.debug("parseProcNetIpConntrack skip line: " + line);
                         continue;
@@ -471,17 +488,17 @@ public class SessionMonitorImpl implements SessionMonitor
                         continue;
                     }
 
-                    newEntry.setProtocol(parts[0].toUpperCase());
+                    newEntry.setProtocol(parts[partsIndexStart].toUpperCase());
 
                     int src_count = 0;
                     int dst_count = 0;
                     int sport_count = 0;
                     int dport_count = 0;
-                    for ( int i = 0 ; i < parts.length ; i++ ) {
+                    for ( int i = partsIndexStart ; i < parts.length ; i++ ) {
                         String part = parts[i];
                         if ( part == null )
                             continue;
-                        String[] subparts = part.split("=");
+                        String[] subparts = EQUAL_PATTERN.split(part);
                         if ( subparts.length != 2 )
                             continue;
 
@@ -490,19 +507,27 @@ public class SessionMonitorImpl implements SessionMonitor
                         String varname = subparts[0];
                         String varval = subparts[1];
 
+                        switch(varname){
+                        case "src":
+                        case "dst":
+                            if(parsedInetAddresses.get(varval) == null){
+                                parsedInetAddresses.put(varval, InetAddress.getByName( varval ));
+                            }
+                        }
+
                         switch ( varname ) {
                         case "src":
                             if ( src_count == 0 )
-                                newEntry.setPreNatClient( InetAddress.getByName( varval ) ); // request src is pre nat client
+                                newEntry.setPreNatClient( parsedInetAddresses.get(varval) ); // request src is pre nat client
                             else
-                                newEntry.setPostNatServer( InetAddress.getByName( varval ) ); // reply src is post nat server
+                                newEntry.setPostNatServer( parsedInetAddresses.get(varval) ); // reply src is post nat server
                             src_count++;
                             break;
                         case "dst":
                             if ( dst_count == 0 )
-                                newEntry.setPreNatServer( InetAddress.getByName( varval ) ); // request dst is pre nat server
+                                newEntry.setPreNatServer( parsedInetAddresses.get(varval) ); // request dst is pre nat server
                             else
-                                newEntry.setPostNatClient( InetAddress.getByName( varval ) ); // reply dst is pre nat client
+                                newEntry.setPostNatClient( parsedInetAddresses.get(varval) ); // reply dst is pre nat client
                             dst_count++;
                             break;
                         case "sport":
@@ -540,12 +565,24 @@ public class SessionMonitorImpl implements SessionMonitor
                     logger.warn("Failed to parse /proc/net/ip_conntrack line: " + line, lineException);
                 }
             }
-        } catch (Exception e) {
-            logger.warn("Failed to parse /proc/net/ip_conntrack",e);
-        } finally {
-            if ( br != null ) {
-                try {br.close();} catch(Exception ex) {}
-            }
+        } catch (IOException exn) {
+            logger.warn("Exception reading conntrack", exn);
+        }finally{
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Exception ex) {}
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (Exception ex) {}
+            try {
+                if (proc != null) {
+                    proc.destroy();
+                }
+            } catch (Exception ex) {}
         }
 
         return list;
