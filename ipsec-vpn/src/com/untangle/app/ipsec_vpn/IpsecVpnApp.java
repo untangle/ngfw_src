@@ -27,6 +27,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppBase;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.HostTableEntry;
@@ -67,6 +68,7 @@ public class IpsecVpnApp extends AppBase
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
     private final IpsecVpnHookCallback ipsecVpnHookCallback;
+    private final WanFailoverHookCallback wanFailoverHookCallback;
     protected static ExecManager execManager = null;
 
     private enum MatchMode
@@ -96,6 +98,7 @@ public class IpsecVpnApp extends AppBase
         logger.debug("IpsecVpnApp()");
 
         this.ipsecVpnHookCallback = new IpsecVpnHookCallback();
+        this.wanFailoverHookCallback = new WanFailoverHookCallback();
 
         this.addMetric(new AppMetric(STAT_CONFIGURED, I18nUtil.marktr("Configured Tunnels")));
         this.addMetric(new AppMetric(STAT_DISABLED, I18nUtil.marktr("Disabled Tunnels")));
@@ -247,6 +250,15 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
+     * Get current active WAN address.
+     * @return Active WAN address
+     */
+    public InetAddress getActiveWanAddress()
+    {
+        return this.manager.getActiveWanAddress();
+    }
+
+    /**
      * Gets the contents of the IPsec log file
      * 
      * @return The contents of the IPsec log file
@@ -372,6 +384,7 @@ public class IpsecVpnApp extends AppBase
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
 
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().incrementUsageCount("ipsec");
@@ -412,6 +425,7 @@ public class IpsecVpnApp extends AppBase
         super.preStop(isPermanentTransition);
 
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
         dataTimer.cancel();
         pingTimer.cancel();
@@ -719,6 +733,15 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
+     * Get the VPN manager.
+     * @return IpsecVpnManager object.
+     */
+    public IpsecVpnManager getManager()
+    {
+        return this.manager;
+    }
+
+    /**
      * Creates a UI status display record for an IpsecVpnTunnel
      * 
      * @param tunnel
@@ -956,6 +979,52 @@ public class IpsecVpnApp extends AppBase
             reconfigure();
         }
     }
+
+    /**
+     * Callback hook for changes to wan failover so we can reconfigure left sides.
+     *
+     * @author mahotz
+     *
+     */
+    private class WanFailoverHookCallback implements HookCallback
+    {
+
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "ipsecvpn-wan-failvoer-change-hook";
+        }
+
+        /**
+         * Callback handler
+         *
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            int activeWanInterfaceId = (int) args[0];
+
+            // Also need to shut down existing active interfaces.
+            LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
+            for(IpsecVpnTunnel tunnel : settings.getTunnels()){
+                if (tunnel.getActive() != true) continue;
+                if(tunnel.getLeft().equals(IpsecVpnManager.ACTIVE_WAN_ADDRESS)){
+                    manager.deleteTunnel(tunnel.getWorkName());
+                }
+            }
+
+            InterfaceSettings activeWanInterface = UvmContextFactory.context().networkManager().findInterfaceId(activeWanInterfaceId);
+            manager.setActiveWanAddress(activeWanInterface.getV4StaticAddress());
+
+            manager.generateConfig(settings, activeCertificate);
+        }
+    }
+
 
     /**
      * Function to register all network address blocks configured in this
