@@ -37,6 +37,14 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             vm.set('warning', warning);
             vm.set('hostname', networkSettings['hostName']);
 
+            var networks = vm.get('settings.networks.list');
+            var netlist = "";
+            for(x = 0;x < networks.length;x++) {
+                if (x != 0) netlist += ", ";
+                netlist += networks[x].address;
+            }
+            vm.set('localNetworkList', netlist);
+
             v.setLoading(false);
         },function(ex){
             if(!Util.isDestroyed(v, vm)){
