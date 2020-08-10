@@ -6,6 +6,7 @@ import sys
 import re
 import pycurl
 import json
+import crypt
 from StringIO import StringIO
 
 from mod_python import apache, Session, util
@@ -168,18 +169,30 @@ def _reports_valid_login(req, realm, username, password, log=True):
     for user in users['list']:
         if user['emailAddress'] != username:
             continue;
-        pw_hash_base64 = user['passwordHashBase64']
-        pw_hash = base64.b64decode(pw_hash_base64)
-        raw_pw = pw_hash[0:len(pw_hash) - 8]
-        salt = pw_hash[len(pw_hash) - 8:]
-        if raw_pw == md5.new(password + salt).digest():
-            if log:
-                uvm_login.log_login(req, username, True, None)
-            return True
+
+        pw_hash_shadow = user.get('passwordHashShadow')
+        if pw_hash_shadow:
+            if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
+                if log:
+                    uvm_login.log_login(req, username, True, None)
+                return True
+            else:
+                if log:
+                    uvm_login.log_login(req, username, False, 'P')
+                return False
         else:
-            if log:
-                uvm_login.log_login(req, username, False, 'P')
-            return False
+            pw_hash_base64 = user['passwordHashBase64']
+            pw_hash = base64.b64decode(pw_hash_base64)
+            raw_pw = pw_hash[0:len(pw_hash) - 8]
+            salt = pw_hash[len(pw_hash) - 8:]
+            if raw_pw == md5.new(password + salt).digest():
+                if log:
+                    uvm_login.log_login(req, username, True, None)
+                return True
+            else:
+                if log:
+                    uvm_login.log_login(req, username, False, 'P')
+                return False
     if log:
         uvm_login.log_login(req, username, False, 'U')
     return False
@@ -193,18 +206,29 @@ def _admin_valid_login(req, realm, username, password, log=True):
     for user in users['list']:
         if user['username'] != username:
             continue;
-        pw_hash_base64 = user['passwordHashBase64']
-        pw_hash = base64.b64decode(pw_hash_base64)
-        raw_pw = pw_hash[0:len(pw_hash) - 8]
-        salt = pw_hash[len(pw_hash) - 8:]
-        if raw_pw == md5.new(password + salt).digest():
-            if log:
-                uvm_login.log_login(req, username, True, None)
-            return True
+        pw_hash_shadow = user.get('passwordHashShadow')
+        if pw_hash_shadow:
+            if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
+                if log:
+                    uvm_login.log_login(req, username, True, None)
+                return True
+            else:
+                if log:
+                    uvm_login.log_login(req, username, False, 'P')
+                return False
         else:
-            if log:
-                uvm_login.log_login(req, username, False, 'P')
-            return False
+            pw_hash_base64 = user['passwordHashBase64']
+            pw_hash = base64.b64decode(pw_hash_base64)
+            raw_pw = pw_hash[0:len(pw_hash) - 8]
+            salt = pw_hash[len(pw_hash) - 8:]
+            if raw_pw == md5.new(password + salt).digest():
+                if log:
+                    uvm_login.log_login(req, username, True, None)
+                return True
+            else:
+                if log:
+                    uvm_login.log_login(req, username, False, 'P')
+                return False
     if log:
         uvm_login.log_login(req, username, False, 'U')
     return False

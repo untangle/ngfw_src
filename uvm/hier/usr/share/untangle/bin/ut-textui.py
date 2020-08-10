@@ -13,6 +13,7 @@ import signal
 import sys
 import subprocess
 import traceback
+import crypt
 
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
@@ -1536,15 +1537,23 @@ class Login(Screen):
         adminSettings = uvm.context.adminManager().getSettings()
         for user in adminSettings["users"]["list"]:
             if user["username"] == "admin":
-                pw_hash_base64 = user['passwordHashBase64']
-                pw_hash = base64.b64decode(pw_hash_base64)
-                raw_pw = pw_hash[0:len(pw_hash) - 8]
-                salt = pw_hash[len(pw_hash) - 8:]
-                if raw_pw == md5.new(password.strip() + salt).digest():
-                    self.authorized = True
-                    self.process_continue = False
+                pw_hash_shadow = user.get('passwordHashShadow')
+                if pw_hash_shadow:
+                    if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
+                        self.authorized = True
+                        self.process_continue = False
+                    else:
+                        self.authorized = False
                 else:
-                    self.authorized = False
+                    pw_hash_base64 = user['passwordHashBase64']
+                    pw_hash = base64.b64decode(pw_hash_base64)
+                    raw_pw = pw_hash[0:len(pw_hash) - 8]
+                    salt = pw_hash[len(pw_hash) - 8:]
+                    if raw_pw == md5.new(password.strip() + salt).digest():
+                        self.authorized = True
+                        self.process_continue = False
+                    else:
+                        self.authorized = False
         uvm = None
 
         if self.authorized == False:

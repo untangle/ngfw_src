@@ -176,6 +176,11 @@ public class NotificationManagerImpl implements NotificationManager
         } catch (Exception e) {
             logger.warn("Notification test exception", e);
         }
+        try {
+            testUserPasswords(notificationList);
+        } catch (Exception e) {
+            logger.warn("Notification test exception", e);
+        }
 
         /**
          * Disabled Tests
@@ -907,6 +912,19 @@ public class NotificationManagerImpl implements NotificationManager
     {
         if (timezoneChanged) {
             String notificationText = i18nUtil.tr("The timezone has been changed since boot. A reboot is required.");
+            notificationList.add(notificationText);
+        }
+    }
+
+    /**
+     * Test that users have SHA-512 hashes, instead of the old MD5 hashes
+     *
+     * @param notificationList - the current list of notifications
+     */
+    private void testUserPasswords(List<String> notificationList)
+    {
+        if (UvmContextFactory.context().adminManager().getWeakPasswordHashes()) {
+            String notificationText = i18nUtil.tr("Some admin user accounts are using weak password hashes.  <a href='/admin/index.do#config/administration/admin'> Update them here </a>");
             notificationList.add(notificationText);
         }
     }
