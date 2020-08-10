@@ -2,48 +2,21 @@ Ext.define('Ung.cmp.CopyToClipboard', {
     extend: 'Ext.form.FieldContainer',
     alias: 'widget.copytoclipboard',
 
-    key: {},
-    value: {
-        key: 'value'
-    },
-
-    layout: {
-        type: 'hbox'
-    },
-    dataType: 'text',
-
-    items: [{
-        xtype: 'button',
-        itemId: 'copyClipboard',
-        baseCls: 'fa fa-copy',
-        margin: '5 0 0 5',
-        tooltip: 'Copy to Clipboard'.t(),
-        handler: null
-    }],
-
     constructor: function(config) {
         var me = this;
 
         // Attach our local handler to the copy button
-        me.items.forEach(function(item){
-            if(item.itemId == 'copyClipboard' && 
-               item.handler == null){
-                item.handler = me.copy;
-            }
-        });
-
-        if(config.items){
-            var buttonExists = false;
+        if(config.items) {
             config.items.forEach(function(item){
-                if(item.itemId == 'copyClipboard'){
-                    buttonExists = true;
+                if (item.dataType == 'javascript') {
+                    item.items.forEach(function(item2) {
+                        if(item2.itemId == 'copyClipboard' && 
+                        item2.handler == null){
+                            item2.handler = me.copy;
+                        }
+                    });
                 }
             });
-            if(buttonExists == false){
-                me.items.forEach(function(item){
-                    config.items.push(item);
-                });    
-            }
         }
 
         me.callParent(arguments);
