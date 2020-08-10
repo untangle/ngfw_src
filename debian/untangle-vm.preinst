@@ -7,16 +7,14 @@ if [ "$1" = "upgrade" ] ; then
   oldVersion="$2"
 fi
 
-if dpkg --compare-versions "$oldVersion" le 15.1~ ; then
-  # if we are upgrading to 15.1, we need to mask some services so they
-  # are not forcibly restarted by their respective postinsts (thus
-  # failing the entire dist-upgrade). They will be unmask'ed in
-  # untangle-vm's postinst (we could instead use untangle-foo-config
-  # to do that, but for the sake of centralizing those fixes in a
-  # single repository we choose not to)
-  systemctl mask freeradius # NGFW-12934
-  systemctl mask suricata # NGFW-12939
-fi
+# Each time a new version of those packages (from Debian's -stable or
+# -security) is included in our release, the entire dist-upgrade fails
+# because their respective postinsts try, as per policy, to forcibly
+# restart the corresponding services.
+# We choose to mask those services, so the restarts don't fail, before
+# unmasking them again in untangle-vm's postinst
+systemctl mask freeradius-dhcp # NGFW-12934
+systemctl mask suricata # NGFW-12939, NGFW-13217
 
 get_cpuinfo_field () {
   line=$(grep -m1 ^"$1" /proc/cpuinfo)
