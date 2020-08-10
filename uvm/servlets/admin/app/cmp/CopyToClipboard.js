@@ -2,21 +2,72 @@ Ext.define('Ung.cmp.CopyToClipboard', {
     extend: 'Ext.form.FieldContainer',
     alias: 'widget.copytoclipboard',
 
+    key: {},
+    value: {
+        key: 'value',
+    },
+
+    layout: {
+        type: 'hbox'
+    },
+    dataType: 'text',
+    below: 'false', //If the items to copy are embedded a level below the component with copytoclipboard type
+
+    items: [{
+        xtype: 'button',
+        itemId: 'copyClipboard',
+        baseCls: 'fa fa-copy',
+        margin: '5 0 0 5',
+        tooltip: 'Copy to Clipboard'.t(),
+        handler: null
+    }],
+
     constructor: function(config) {
         var me = this;
 
         // Attach our local handler to the copy button
-        if(config.items) {
-            config.items.forEach(function(item){
-                if (item.dataType == 'javascript') {
-                    item.items.forEach(function(item2) {
-                        if(item2.itemId == 'copyClipboard' && 
-                        item2.handler == null){
-                            item2.handler = me.copy;
-                        }
-                    });
+        me.items.forEach(function(item){
+            if(item.itemId == 'copyClipboard' && 
+               item.handler == null){
+                item.handler = me.copy;
+            }
+        });
+
+        if(config.items){
+            var buttonExists = false;
+
+            //Determine if items to copy are embedded below
+            var itemsToLoop = config.items;
+            if (config.below == 'true') itemsToLoop = config.items[0].items;
+
+            //Determine if button already exists in configuration
+            itemsToLoop.forEach(function(item){
+                if(item.itemId == 'copyClipboard'){
+                    buttonExists = true;
                 }
             });
+
+            //If button does not exist, add the button to the configuration
+            if(buttonExists == false){
+                me.items.forEach(function(item){
+                    itemsToLoop.push(item);
+                });    
+            }
+
+            //If items to copy are embedded below copytoclipboard component, set the properties appropriately
+            if (config.below && config.below == 'true') {
+                if (config.dataType) config.items[0].dataType = config.dataType;
+                else config.items[0].dataType = me.dataType;
+
+                if (config.layout) config.items[0].layout = config.layout;
+                else config.items[0].layout = me.layout; 
+
+                if (config.value) config.items[0].value = config.value;
+                else config.items[0].value = me.value;
+                
+                if (config.key) config.items[0].key = config.key;
+                else config.items[0].key = me.key;
+            }
         }
 
         me.callParent(arguments);

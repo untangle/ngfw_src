@@ -109,8 +109,12 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                         labelAlign: recordEditor ? 'right' : 'left',
                     },
                     items:[{
-                        xtype: 'copytoclipboard',
-                        datatype: 'javascript',
+                        xtype: 'copytoclipboard',   
+                        below: 'true',
+                        key: {
+                            key: 'itemId'
+                        },
+                        dataType: 'javascript',    
                         items: [{
                             xtype: 'fieldset',
                             border: false,
@@ -123,16 +127,6 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                                     labelAlign: recordEditor ? 'right' : 'left',
                                 }
                             },
-                            layout: {
-                                type: 'hbox'
-                            },
-                            key: {
-                                key: 'itemId'
-                            },
-                            dataType: 'javascript',
-                            value: {
-                                key: 'value'
-                            },                   
                             items: [{
                                 xtype: 'fieldset',
                                 border: false,
@@ -186,13 +180,6 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                                         value: '{localNetworkList}',
                                     }
                                 }]
-                            }, {
-                                xtype: 'button',
-                                itemId: 'copyClipboard',
-                                baseCls: 'fa fa-copy',
-                                margin: '5 0 0 5',
-                                tooltip: 'Copy to Clipboard'.t(),
-                                handler: null
                             }]
                         }]
                     }]
