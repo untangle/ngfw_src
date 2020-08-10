@@ -8,8 +8,7 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.commons.codec.binary.Base64;
-
-import com.untangle.uvm.PasswordUtil;
+import org.apache.commons.codec.digest.Crypt;
 
 /**
  * Uvm administrator user settings.
@@ -52,7 +51,13 @@ public class AdminUserSettings implements Serializable, JSONString
     public void setDescription( String newValue ) { this.description = newValue; }
 
     public String getPasswordHashShadow() { return this.passwordHashShadow; }
-    public void setPasswordHashShadow( String newValue ) { this.passwordHashShadow = newValue; }
+
+    public void setPasswordHashShadow( String newValue )
+    {
+        if ( this.passwordHashShadow == null ) {
+            this.passwordHashShadow = newValue;
+        }
+    }
     
     public byte[] trans_getPasswordHash()
     {
@@ -76,12 +81,14 @@ public class AdminUserSettings implements Serializable, JSONString
         if ( "".equals(password) )
             return;
         this.password = password;
-        this.passwordHash = PasswordUtil.encrypt(password);
+        this.passwordHashShadow = Crypt.crypt(password);
     }
 
     public String getPasswordHashBase64()
     {
         if ( this.passwordHash == null || "".equals(this.passwordHash) )
+            return "";
+        else if ( this.passwordHashShadow != null )
             return "";
         else
             return new String(Base64.encodeBase64(passwordHash));

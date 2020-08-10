@@ -70,6 +70,14 @@ public interface AdminManager
     String getAdminEmail();
 
     /**
+     * Return true if any admin users have weak password hashes
+     *
+     * @return
+     *     true if any users have weak password hashes, false otherwise
+     */
+    boolean getWeakPasswordHashes();
+
+    /**
      * Send adminstrator login result to event log.
      * 
      * @param login

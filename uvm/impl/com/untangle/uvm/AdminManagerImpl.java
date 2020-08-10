@@ -56,7 +56,7 @@ public class AdminManagerImpl implements AdminManager
             logger.warn("No settings found - Initializing new settings.");
 
             AdminSettings newSettings = new AdminSettings();
-            newSettings.setVersion(2L); /* start with version 2 */
+            newSettings.setVersion(3L); /* version 3 as of v16.0 */
             newSettings.addUser(new AdminUserSettings(INITIAL_USER_LOGIN, INITIAL_USER_PASSWORD, INITIAL_USER_DESCRIPTION, ""));
             this.setSettings(newSettings);
         }
@@ -64,6 +64,17 @@ public class AdminManagerImpl implements AdminManager
             logger.debug("Loading Settings...");
 
             this.settings = readSettings;
+
+            if (this.settings.getVersion() == 2) {
+                /*
+                 * If we just loaded version 2 settings, doing a setSettings will blank the passwordHashBase64
+                 * field for any user that already has passwordHashShadow defined (which should just be the
+                 * 'admin' user.
+                 */
+                this.settings.setVersion(3L);
+                this.setSettings(this.settings);
+            }
+
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
@@ -262,6 +273,28 @@ public class AdminManagerImpl implements AdminManager
     }
 
     /**
+     * Return true if any admin users have weak password hashes
+     *
+     * @return
+     *     true if any users have weak password hashes, false otherwise
+     */
+    public boolean getWeakPasswordHashes()
+    {
+        AdminSettings adminSettings = getSettings();
+
+        if(adminSettings == null)
+            return false;
+
+        for ( AdminUserSettings user : adminSettings.getUsers() ) {
+            String passwordHashBase64 = user.getPasswordHashBase64();
+            if ( passwordHashBase64 != null && !"".equals(passwordHashBase64) )
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Send adminstrator login result to event log.
      * 
      * @param login
@@ -309,12 +342,8 @@ public class AdminManagerImpl implements AdminManager
         String passwordHashShadow = admin.getPasswordHashShadow();
         if ( pass != null ) {
             logger.info("Setting root password.");
-            String cmd = "echo 'root:" + pass + "' | chpasswd";
                     
-            // turn down logging so we dont log password
-            UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.DEBUG );
-            ExecManagerResult result = UvmContextImpl.context().execManager().exec( cmd );
-            UvmContextImpl.context().execManager().setLevel(  org.apache.log4j.Level.INFO );
+            ExecManagerResult result = UvmContextImpl.context().execManager().exec( "usermod -p '" + passwordHashShadow + "' root" );
                     
             int exitCode = result.getResult();
             if ( exitCode != 0 ) {
@@ -322,24 +351,9 @@ public class AdminManagerImpl implements AdminManager
             }
 
             String shadowHash = UvmContextImpl.context().execManager().execOutput("awk -F: '/root/ {print $2}' /etc/shadow");
+            admin.setPasswordHashShadow( shadowHash.trim() );
+            setSettings( settings, false ); // save settings but do not set root password again
 
-            /**
-             * If the shadowHash is different than the value in settings
-             * Change the settings and resave them, but this time without setting
-             * the root password because we just did that
-             *
-             * We have to save twice because we dont know the hash until
-             * after we apply the first save to the system
-             */
-            if ( shadowHash != null ) {
-                shadowHash = shadowHash.trim();
-                if ( !shadowHash.equals( admin.getPasswordHashShadow() )) { 
-                    logger.info("Re-saving admin settings with root password hash included.");
-                    admin.setPasswordHashShadow( shadowHash );
-                    setSettings( settings, false ); // save settings but do not set root password again
-                }
-            }
-                    
         } else {
             if ( passwordHashShadow == null ) {
                 passwordHashShadow = "!";
