@@ -56,7 +56,7 @@ public class AdminManagerImpl implements AdminManager
             logger.warn("No settings found - Initializing new settings.");
 
             AdminSettings newSettings = new AdminSettings();
-            newSettings.setVersion(2L); /* start with version 2 */
+            newSettings.setVersion(3L); /* version 3 as of v16.0 */
             newSettings.addUser(new AdminUserSettings(INITIAL_USER_LOGIN, INITIAL_USER_PASSWORD, INITIAL_USER_DESCRIPTION, ""));
             this.setSettings(newSettings);
         }
@@ -64,6 +64,17 @@ public class AdminManagerImpl implements AdminManager
             logger.debug("Loading Settings...");
 
             this.settings = readSettings;
+
+            if (this.settings.getVersion() == 2) {
+                /*
+                 * If we just loaded version 2 settings, doing a setSettings will blank the passwordHashBase64
+                 * field for any user that already has passwordHashShadow defined (which should just be the
+                 * 'admin' user.
+                 */
+                this.settings.setVersion(3L);
+                this.setSettings(this.settings);
+            }
+
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
