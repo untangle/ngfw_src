@@ -582,6 +582,25 @@ public class NetworkManagerImpl implements NetworkManager
         }
         return statuses;
     }
+
+    /**
+     * getWanInterfaceStatuses will return InterfaceStatus for all WAN interfaces
+     * @return a list of InterfaceStatus for WAN interfaces
+     */
+    public List<InterfaceStatus> getWanInterfaceStatuses()
+    {
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null ) {
+            return null;
+        }
+        
+        List<InterfaceStatus> statuses = new LinkedList<InterfaceStatus>();
+        for (InterfaceSettings intfSettings : this.networkSettings.getInterfaces()) {
+            if ( !intfSettings.igetDisabled() && intfSettings.getIsWan() ) {
+                statuses.add( getInterfaceStatus( intfSettings.getInterfaceId() ) );
+            }
+        }
+        return statuses;
+    }
     
     /**
      * Returns a list of all the current device status'
