@@ -110,11 +110,11 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                     },
                     items:[{
                         xtype: 'copytoclipboard',   
-                        below: 'true',
                         key: {
                             key: 'itemId'
                         },
-                        dataType: 'javascript',    
+                        dataType: 'javascript',
+                        below: 'true',
                         items: [{
                             xtype: 'fieldset',
                             border: false,

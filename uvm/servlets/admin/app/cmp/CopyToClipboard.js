@@ -4,7 +4,7 @@ Ext.define('Ung.cmp.CopyToClipboard', {
 
     key: {},
     value: {
-        key: 'value',
+        key: 'value'
     },
 
     layout: {
@@ -38,7 +38,7 @@ Ext.define('Ung.cmp.CopyToClipboard', {
 
             //Determine if items to copy are embedded below
             var itemsToLoop = config.items;
-            if (config.below == 'true') itemsToLoop = config.items[0].items;
+            if (config.below && config.below == 'true') itemsToLoop = config.items[0].items;
 
             //Determine if button already exists in configuration
             itemsToLoop.forEach(function(item){
