@@ -1548,8 +1548,7 @@ public class EventManagerImpl implements EventManager
          */
         protected void start()
         {
-            UvmContextFactory.context().newThread(this).start();
-            Thread.currentThread().setPriority(4);
+            UvmContextFactory.context().newThread(this,"Local event writer", Thread.NORM_PRIORITY - 1).start();
         }
 
         /**
@@ -1622,7 +1621,7 @@ public class EventManagerImpl implements EventManager
          */
         protected void start()
         {
-            UvmContextFactory.context().newThread(this).start();
+            UvmContextFactory.context().newThread(this,"Remote event writer", Thread.NORM_PRIORITY - 1).start();
             enabled = UvmContextFactory.context().systemManager().getSettings().getCloudEnabled();
         }
 
