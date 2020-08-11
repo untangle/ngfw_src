@@ -601,24 +601,49 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     /**
      * newThread starts a new thread
      * @param runnable
-     * @return Thread
+     * @return Thread running at normal priority
      */
     public Thread newThread(final Runnable runnable)
+    {
+        return newThread(runnable, Thread.NORM_PRIORITY);
+    }
+
+    /**
+     * newThread starts a new thread
+     * @param runnable
+     * @param priority 
+     * @return Thread running at specified priority.
+     */
+    public Thread newThread(final Runnable runnable, int priority)
     {
         int threadNum;
         synchronized( UvmContextImpl.class ) {
             threadNum = threadNumber++;
         }
-        return newThread(runnable, "UTThread-" + threadNum);
+        Thread thread = new Thread(runnable, "UTThread-" + threadNum);
+        thread.setPriority(priority);
+        return thread;
     }
 
     /**
      * newThread starts a new thread
      * @param runnable
      * @param name
-     * @return Thread
+     * @return Thread running at normal priority
      */
     public Thread newThread(final Runnable runnable, final String name)
+    {
+        return newThread(runnable, name, Thread.NORM_PRIORITY);
+    }
+
+    /**
+     * newThread starts a new thread
+     * @param runnable
+     * @param name
+     * @param priority Thread priority
+     * @return Thread running at specified priority.
+     */
+    public Thread newThread(final Runnable runnable, final String name, int priority)
     {
         Runnable task = new Runnable()
         {
@@ -634,7 +659,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 }
             }
         };
-        return new Thread(task, name);
+        Thread thread = new Thread(task, name);
+        thread.setPriority(priority);
+        return thread;
     }
 
     /**
