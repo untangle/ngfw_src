@@ -461,6 +461,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     public Connection getDbConnection()
     {
+        if(!this.running){
+            return null;
+        }
         try {
             String url = null;
             Properties props = new Properties();
