@@ -450,6 +450,9 @@ public class ReportsManagerImpl implements ReportsManager
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit )
     {
         Connection conn = app.getDbConnection();
+        if(conn == null){
+            return null;
+        }
         PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType);
 
         if ( app != null ) {
@@ -583,6 +586,9 @@ public class ReportsManagerImpl implements ReportsManager
     {
         ArrayList<String> tableNames = new ArrayList<>();
         Connection conn = app.getDbConnection();
+        if(conn == null){
+            return null;
+        }
         try {
             ResultSet rs = cacheTablesResults;
             if ( rs == null ) {
@@ -658,6 +664,9 @@ public class ReportsManagerImpl implements ReportsManager
         }
 
         Connection conn = app.getDbConnection();
+        if(conn == null){
+            return null;
+        }
         PreparedStatement statement = entry.toSql( conn, null, null, null, extraConditions, null, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
@@ -764,6 +773,9 @@ public class ReportsManagerImpl implements ReportsManager
         }
 
         Connection conn = app.getDbConnection();
+        if(conn == null){
+            return null;
+        }
         PreparedStatement statement = entry.toSql( conn, startDate, endDate, null, extraConditions, null, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
@@ -1091,7 +1103,6 @@ public class ReportsManagerImpl implements ReportsManager
     {
         Connection conn = app.getDbConnection();
         if ( conn == null ) {
-            logger.warn("Failed to get DB Connection");
             return null;
         }
 
