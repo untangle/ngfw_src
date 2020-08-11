@@ -557,8 +557,7 @@ public class EventWriterImpl implements Runnable
     protected void start( ReportsApp app )
     {
         this.app = app;
-        UvmContextFactory.context().newThread(this).start();
-        Thread.currentThread().setPriority(4);
+        UvmContextFactory.context().newThread(this,"Report writer", Thread.NORM_PRIORITY - 1).start();
     }
 
     /**
