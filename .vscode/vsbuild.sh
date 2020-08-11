@@ -26,6 +26,7 @@ fi
 
 if [ -f .vscode/remote-hosts ]; then
     while read address; do
+        [[ $address = \#* ]] && continue
         echo "Synchronzing begin with $address"
         rsync -a dist/usr/share/untangle/lib root@$address:/usr/share/untangle
         rsync -a dist/usr/share/untangle/bin root@$address:/usr/share/untangle
