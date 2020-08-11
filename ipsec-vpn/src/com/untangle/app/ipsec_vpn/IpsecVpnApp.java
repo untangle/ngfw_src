@@ -79,8 +79,9 @@ public class IpsecVpnApp extends AppBase
     private final WanFailoverHookCallback wanFailoverHookCallback;
     protected static ExecManager execManager = null;
 
-    private List<InterfaceStatus> wanStatuses = null;
+    private List<InterfaceStatus> intfStatus = null;
     private Hashtable<IpsecVpnTunnel, InterfaceStatus> wanTunnelLink = null;
+    private Hashtable<IpsecVpnTunnel, InterfaceStatus> lanTunnelLink = null;
 
     private enum MatchMode
     {
@@ -118,7 +119,7 @@ public class IpsecVpnApp extends AppBase
         this.addMetric(new AppMetric(STAT_ENABLED, I18nUtil.marktr("Enabled Tunnels")));
         this.addMetric(new AppMetric(STAT_VIRTUAL, I18nUtil.marktr("VPN Clients")));
 
-        this.wanStatuses = UvmContextFactory.context().networkManager().getWanInterfaceStatuses();
+        this.intfStatus = UvmContextFactory.context().networkManager().getInterfaceStatus();
 
         try {
             fixStrongswanConfig();
@@ -141,7 +142,7 @@ public class IpsecVpnApp extends AppBase
         LinkedList<VirtualListen> listenList = new LinkedList<>();
 
         // listen on the first WAN interface for the initial L2TP config
-        InetAddress firstWan = this.wanStatuses != null ? this.wanStatuses.get(0).getV4Address() : null;
+        InetAddress firstWan = UvmContextFactory.context().networkManager().getFirstWanAddress();
         if (firstWan != null) {
             VirtualListen item = new VirtualListen();
             item.setAddress(firstWan.getHostAddress().toString());
@@ -948,16 +949,28 @@ public class IpsecVpnApp extends AppBase
      */
     private void preNetworkSettingsEvent(NetworkSettings settings) throws Exception
     {
-        this.wanStatuses = UvmContextFactory.context().networkManager().getWanInterfaceStatuses();
-        wanTunnelLink = new Hashtable<IpsecVpnTunnel, InterfaceStatus>();
+        this.intfStatus = UvmContextFactory.context().networkManager().getInterfaceStatus();
 
-        // See if any tunnels are currently using a WAN address from the WAN status and store them in the wanTunnelLink
+        this.wanTunnelLink = new Hashtable<IpsecVpnTunnel, InterfaceStatus>();
+        this.lanTunnelLink = new Hashtable<IpsecVpnTunnel, InterfaceStatus>();
+
+        // See if any tunnels are currently using a WAN address or LAN address and put them in the appropriate hashtables
         for(IpsecVpnTunnel tun : this.settings.getTunnels()) {
             if(tun.getActive()) {
-                for(InterfaceStatus wanIntf : this.wanStatuses) {
+                for(InterfaceStatus intf : this.intfStatus) {
+
+                    logger.warn("Checking intf: " + intf.toJSONString() + " against tunnels: " + tun.toJSONString());
+
                     // Check if the v4 or v6 address exists before calling .getHostAddress to prevent null pointer exceptions
-                    if((wanIntf.getV4Address() != null && tun.getLeft().equals(wanIntf.getV4Address().getHostAddress())) || (wanIntf.getV6Address() != null && tun.getLeft().equals(wanIntf.getV6Address().getHostAddress()))) {
-                        wanTunnelLink.put(tun, wanIntf);
+                    if((intf.getV4Address() != null && tun.getLeft().equals(intf.getV4Address().getHostAddress())) || (intf.getV6Address() != null && tun.getLeft().equals(intf.getV6Address().getHostAddress()))) {
+                        logger.warn("intf: " + intf.getInterfaceId() + " and tun: " + tun.getId() + " have common WAN addresses");
+                        this.wanTunnelLink.put(tun, intf);
+                    }
+
+                    // Check if the v4 or v6 LAN addresses are assigned to the Local Networks (LeftSubnet)
+                    if((intf.getV4Address() != null && tun.getLeftSubnet().equals(intf.getV4Address().getHostAddress()+ "/" + intf.getV4PrefixLength())) || (intf.getV6Address() != null && tun.getLeftSubnet().equals(intf.getV6Address().getHostAddress() + "/" + intf.getV6PrefixLength()))) {
+                        logger.warn("intf: " + intf.getInterfaceId() + " and tun: " + tun.getId() + " have common LAN addresses");
+                        this.lanTunnelLink.put(tun, intf);
                     }
                 }
             }
@@ -984,9 +997,34 @@ public class IpsecVpnApp extends AppBase
             for(IpsecVpnTunnel newTun : currentTuns) {
                 if(newTun.getId() == tun.getId()) {
                     if(newStatus != null && newTun.getActive()) {
-                        if(!oldStatus.getV4Address().equals(newStatus.getV4Address()) || !oldStatus.getV6Address().equals(newStatus.getV6Address())) {
+                        logger.warn("tun: " + tun.getId() + " oldStatus addr: " + oldStatus.getV4Address() + " newStatus addr: " + newStatus.getV4Address());
+                        if((oldStatus.getV4Address() != null && newStatus.getV4Address() != null && !oldStatus.getV4Address().equals(newStatus.getV4Address())) 
+                        || (oldStatus.getV6Address() != null && newStatus.getV6Address() != null && !oldStatus.getV6Address().equals(newStatus.getV6Address()))) {
                             //Address on this interface has changed, update the ipsec settings
                             newTun.setLeft(newStatus.getV4Address().getHostAddress());
+                            updateAppSettings.set(true);
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Only update the Lan subnets if they have changed
+        this.lanTunnelLink.forEach((tun, oldStatus) -> {
+            //Get the new status for the interface attached to this tunnel
+            InterfaceStatus newStatus = UvmContextFactory.context().networkManager().getInterfaceStatus(oldStatus.getInterfaceId());
+            for(IpsecVpnTunnel newTun : currentTuns) {
+                if(newTun.getId() == tun.getId()) {
+                    if(newStatus != null && newTun.getActive()) {
+                        if(oldStatus.getV4Address() != null && newStatus.getV4Address() != null && (!oldStatus.getV4Address().equals(newStatus.getV4Address()) || oldStatus.getV4PrefixLength() != newStatus.getV4PrefixLength())) {
+                            //IPv4 Address on this interface has changed, update the ipsec settings
+                            newTun.setLeftSubnet(newStatus.getV4Address().getHostAddress() + "/" + newStatus.getV4PrefixLength());
+                            updateAppSettings.set(true);
+                        }
+
+                        if(oldStatus.getV6Address() != null && newStatus.getV6Address() != null && (!oldStatus.getV6Address().equals(newStatus.getV6Address()) || oldStatus.getV6PrefixLength() != newStatus.getV6PrefixLength())) {
+                            //IPv6 Address on this interface has changed, update the ipsec settings
+                            newTun.setLeftSubnet(newStatus.getV6Address().getHostAddress()+ "/" + newStatus.getV6PrefixLength());
                             updateAppSettings.set(true);
                         }
                     }
