@@ -329,7 +329,6 @@ public class HttpRequestEvent extends LogEvent
             host = host.substring(0, portPos);
         }
 
-        // String[] parts = host.split("\\.");
         String[] parts = DOT_MATCH.split(host);
         int len = parts.length;
         
