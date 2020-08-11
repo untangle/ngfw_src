@@ -9,7 +9,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.File;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 
 import org.apache.log4j.Logger;
@@ -19,6 +23,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetspaceManager;
 import com.untangle.uvm.NetspaceManager.IPVersion;
 import com.untangle.uvm.NetspaceManager.NetworkSpace;
+import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.HookCallback;
@@ -74,6 +79,9 @@ public class IpsecVpnApp extends AppBase
     private final WanFailoverHookCallback wanFailoverHookCallback;
     protected static ExecManager execManager = null;
 
+    private List<InterfaceStatus> wanStatuses = null;
+    private Hashtable<IpsecVpnTunnel, InterfaceStatus> wanTunnelLink = null;
+
     private enum MatchMode
     {
         STATE, IN, OUT, FWD
@@ -110,6 +118,8 @@ public class IpsecVpnApp extends AppBase
         this.addMetric(new AppMetric(STAT_ENABLED, I18nUtil.marktr("Enabled Tunnels")));
         this.addMetric(new AppMetric(STAT_VIRTUAL, I18nUtil.marktr("VPN Clients")));
 
+        this.wanStatuses = UvmContextFactory.context().networkManager().getWanInterfaceStatuses();
+
         try {
             fixStrongswanConfig();
         }
@@ -131,7 +141,7 @@ public class IpsecVpnApp extends AppBase
         LinkedList<VirtualListen> listenList = new LinkedList<>();
 
         // listen on the first WAN interface for the initial L2TP config
-        InetAddress firstWan = UvmContextFactory.context().networkManager().getFirstWanAddress();
+        InetAddress firstWan = this.wanStatuses != null ? this.wanStatuses.get(0).getV4Address() : null;
         if (firstWan != null) {
             VirtualListen item = new VirtualListen();
             item.setAddress(firstWan.getHostAddress().toString());
@@ -139,6 +149,15 @@ public class IpsecVpnApp extends AppBase
         }
 
         settings.setVirtualListenList(listenList);
+
+        InetAddress exampleAddress = null;
+
+        try {
+            // Default Client Address
+            exampleAddress = InetAddress.getByName("203.0.113.1");
+        } catch(UnknownHostException ue) {
+            logger.warn(ue);
+        }
 
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
         LinkedList<IpsecVpnTunnel> tunnelList = new LinkedList<>();
@@ -151,8 +170,8 @@ public class IpsecVpnApp extends AppBase
         tmp.setDescription("Example 1");
         tmp.setSecret("NOTICEhowWEuseAniceLONGstringINthisEXAMPLEwhichWILLbeMUCHmoreSECUREthanAsingleWORD");
         tmp.setRunmode("start");
-        tmp.setLeft("198.51.100.1");
-        tmp.setRight("203.0.113.1");
+        tmp.setLeft(firstWan.getHostAddress());
+        tmp.setRight(exampleAddress.getHostAddress());
 
         tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
         tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
@@ -166,8 +185,8 @@ public class IpsecVpnApp extends AppBase
         tmp.setDescription("Example 2");
         tmp.setSecret("thisISanotherGREATexampleOFaPREsharedSECRETthatISveryLONGandTHUSreasonablySECURE");
         tmp.setRunmode("start");
-        tmp.setLeft("198.51.100.1");
-        tmp.setRight("203.0.113.1");
+        tmp.setLeft(firstWan.getHostAddress());
+        tmp.setRight(exampleAddress.getHostAddress());
 
         tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
         tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
@@ -929,7 +948,20 @@ public class IpsecVpnApp extends AppBase
      */
     private void preNetworkSettingsEvent(NetworkSettings settings) throws Exception
     {
-        logger.warn("IPSEC Pre network settings hook");
+        this.wanStatuses = UvmContextFactory.context().networkManager().getWanInterfaceStatuses();
+        wanTunnelLink = new Hashtable<IpsecVpnTunnel, InterfaceStatus>();
+
+        // See if any tunnels are currently using a WAN address from the WAN status and store them in the wanTunnelLink
+        for(IpsecVpnTunnel tun : this.settings.getTunnels()) {
+            if(tun.getActive()) {
+                for(InterfaceStatus wanIntf : this.wanStatuses) {
+                    // Check if the v4 or v6 address exists before calling .getHostAddress to prevent null pointer exceptions
+                    if((wanIntf.getV4Address() != null && tun.getLeft().equals(wanIntf.getV4Address().getHostAddress())) || (wanIntf.getV6Address() != null && tun.getLeft().equals(wanIntf.getV6Address().getHostAddress()))) {
+                        wanTunnelLink.put(tun, wanIntf);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -941,7 +973,30 @@ public class IpsecVpnApp extends AppBase
      */
     private void postNetworkSettingsEvent(NetworkSettings settings) throws Exception
     {
-        logger.warn("IPSEC Post Network Settings hook");
+        //This boolean is an AtomicBoolean so that we can update it within the forEach lambda
+        AtomicBoolean updateAppSettings = new AtomicBoolean(false);
+        LinkedList<IpsecVpnTunnel> currentTuns = this.settings.getTunnels();
+
+        // Only update Active tunnels with the configured WAN addresses IF the address changed
+        this.wanTunnelLink.forEach((tun, oldStatus) -> {
+            //Get the new status for the interface attached to this tunnel
+            InterfaceStatus newStatus = UvmContextFactory.context().networkManager().getInterfaceStatus(oldStatus.getInterfaceId());
+            for(IpsecVpnTunnel newTun : currentTuns) {
+                if(newTun.getId() == tun.getId()) {
+                    if(newStatus != null && newTun.getActive()) {
+                        if(!oldStatus.getV4Address().equals(newStatus.getV4Address()) || !oldStatus.getV6Address().equals(newStatus.getV6Address())) {
+                            //Address on this interface has changed, update the ipsec settings
+                            newTun.setLeft(newStatus.getV4Address().getHostAddress());
+                            updateAppSettings.set(true);
+                        }
+                    }
+                }
+            }
+        });
+
+        if(updateAppSettings.get()) {
+            setSettings(this.settings);
+        }
     }
 
     /**
@@ -1050,7 +1105,7 @@ public class IpsecVpnApp extends AppBase
             try {
                 preNetworkSettingsEvent(settings);
             } catch (Exception e) {
-                logger.error("Unable to reconfigure the ipsec VPN app");
+                logger.error("Pre Network Settings Hook: Unable to reconfigure the ipsec VPN app", e);
             }
         }
     }
@@ -1092,7 +1147,7 @@ public class IpsecVpnApp extends AppBase
             try {
                 postNetworkSettingsEvent(settings);
             } catch (Exception e) {
-                logger.error("Unable to reconfigure the ipsec VPN app");
+                logger.error("Post Network Settings Hook: Unable to reconfigure the ipsec VPN app", e);
             }
         }
     }
