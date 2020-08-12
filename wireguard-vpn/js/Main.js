@@ -107,73 +107,79 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                     defaults: {
                         labelWidth: 170,
                         labelAlign: recordEditor ? 'right' : 'left',
-                        defaults: {
-                            labelWidth: 170,
-                            labelAlign: recordEditor ? 'right' : 'left',
-                            defaults: {
-                                labelWidth: 170,
-                                labelAlign: recordEditor ? 'right' : 'left',
-                            }
-                        }
                     },
                     items:[{
-                        xtype: 'copytoclipboard',
+                        xtype: 'copytoclipboard',   
                         key: {
                             key: 'itemId'
                         },
                         dataType: 'javascript',
+                        below: 'true',
                         items: [{
                             xtype: 'fieldset',
                             border: false,
                             width: '100%',
+                            defaults: {
+                                labelWidth: 150,
+                                labelAlign: recordEditor ? 'right' : 'left',
+                                defaults: {
+                                    labelWidth: 150,
+                                    labelAlign: recordEditor ? 'right' : 'left',
+                                }
+                            },
                             items: [{
-                                xtype: 'displayfield',
-                                itemId: 'hostname',
-                                fieldLabel: 'Hostname'.t(),
-                                cls: 'x-selectable',
-                                bind: {
-                                    value: '{hostname}'
-                                }
-                            }, {
-                                xtype: 'displayfield',
-                                itemId: 'publicKey',
-                                fieldLabel: 'Public Key'.t(),
-                                cls: 'x-selectable',
-                                bind: {
-                                    value: '{settings.publicKey}'
-                                }
-                            }, {
-                                fieldLabel: 'Local Endpoint IP Address'.t(),
-                                itemId: 'endpointAddress',
-                                xtype: 'displayfield',
-                                cls: 'x-selectable',
-                                bind: {
-                                    value: Rpc.directData('rpc.networkManager.getPublicUrl').split(":")[0],
-                                }
-                            },{
-                                fieldLabel: 'Local Endpoint Port'.t(),
-                                itemId: 'endpointPort',
-                                xtype: 'displayfield',
-                                cls: 'x-selectable',
-                                bind: {
-                                    value: '{settings.listenPort}',
-                                }
-                            }, {
-                                xtype: 'displayfield',
-                                itemId: 'peerAddress',
-                                fieldLabel: 'Peer IP Address'.t(),
-                                cls: 'x-selectable',
-                                bind: {
-                                    value: '{peerAddress}',
-                                }
-                            }, {
-                                xtype: 'displayfield',
-                                itemId: 'networks',
-                                fieldLabel: 'Local Networks'.t(),
-                                cls: 'x-selectable',
-                                bind: {
-                                    value: '{localNetworkList}',
-                                }
+                                xtype: 'fieldset',
+                                border: false,
+                                width: '100%',
+                                items: [{
+                                    xtype: 'displayfield',
+                                    itemId: 'hostname',
+                                    fieldLabel: 'Hostname'.t(),
+                                    cls: 'x-selectable',
+                                    bind: {
+                                        value: '{hostname}'
+                                    }
+                                }, {
+                                    xtype: 'displayfield',
+                                    itemId: 'publicKey',
+                                    fieldLabel: 'Public Key'.t(),
+                                    cls: 'x-selectable',
+                                    bind: {
+                                        value: '{settings.publicKey}'
+                                    }
+                                }, {
+                                    fieldLabel: 'Local Endpoint IP Address'.t(),
+                                    itemId: 'endpointAddress',
+                                    xtype: 'displayfield',
+                                    cls: 'x-selectable',
+                                    bind: {
+                                        value: Rpc.directData('rpc.networkManager.getPublicUrl').split(":")[0],
+                                    }
+                                },{
+                                    fieldLabel: 'Local Endpoint Port'.t(),
+                                    itemId: 'endpointPort',
+                                    xtype: 'displayfield',
+                                    cls: 'x-selectable',
+                                    bind: {
+                                        value: '{settings.listenPort}',
+                                    }
+                                }, {
+                                    xtype: 'displayfield',
+                                    itemId: 'peerAddress',
+                                    fieldLabel: 'Peer IP Address'.t(),
+                                    cls: 'x-selectable',
+                                    bind: {
+                                        value: '{peerAddress}',
+                                    }
+                                }, {
+                                    xtype: 'displayfield',
+                                    itemId: 'networks',
+                                    fieldLabel: 'Local Networks'.t(),
+                                    cls: 'x-selectable',
+                                    bind: {
+                                        value: '{localNetworkList}',
+                                    }
+                                }]
                             }]
                         }]
                     }]
