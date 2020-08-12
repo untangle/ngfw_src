@@ -958,18 +958,13 @@ public class IpsecVpnApp extends AppBase
         for(IpsecVpnTunnel tun : this.settings.getTunnels()) {
             if(tun.getActive()) {
                 for(InterfaceStatus intf : this.intfStatus) {
-
-                    logger.warn("Checking intf: " + intf.toJSONString() + " against tunnels: " + tun.toJSONString());
-
                     // Check if the v4 or v6 address exists before calling .getHostAddress to prevent null pointer exceptions
                     if((intf.getV4Address() != null && tun.getLeft().equals(intf.getV4Address().getHostAddress())) || (intf.getV6Address() != null && tun.getLeft().equals(intf.getV6Address().getHostAddress()))) {
-                        logger.warn("intf: " + intf.getInterfaceId() + " and tun: " + tun.getId() + " have common WAN addresses");
                         this.wanTunnelLink.put(tun, intf);
                     }
 
                     // Check if the v4 or v6 LAN addresses are assigned to the Local Networks (LeftSubnet)
                     if((intf.getV4Address() != null && tun.getLeftSubnet().equals(intf.getV4Address().getHostAddress()+ "/" + intf.getV4PrefixLength())) || (intf.getV6Address() != null && tun.getLeftSubnet().equals(intf.getV6Address().getHostAddress() + "/" + intf.getV6PrefixLength()))) {
-                        logger.warn("intf: " + intf.getInterfaceId() + " and tun: " + tun.getId() + " have common LAN addresses");
                         this.lanTunnelLink.put(tun, intf);
                     }
                 }
@@ -997,7 +992,6 @@ public class IpsecVpnApp extends AppBase
             for(IpsecVpnTunnel newTun : currentTuns) {
                 if(newTun.getId() == tun.getId()) {
                     if(newStatus != null && newTun.getActive()) {
-                        logger.warn("tun: " + tun.getId() + " oldStatus addr: " + oldStatus.getV4Address() + " newStatus addr: " + newStatus.getV4Address());
                         if((oldStatus.getV4Address() != null && newStatus.getV4Address() != null && !oldStatus.getV4Address().equals(newStatus.getV4Address())) 
                         || (oldStatus.getV6Address() != null && newStatus.getV6Address() != null && !oldStatus.getV6Address().equals(newStatus.getV6Address()))) {
                             //Address on this interface has changed, update the ipsec settings
