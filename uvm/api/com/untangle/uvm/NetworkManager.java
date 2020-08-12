@@ -28,8 +28,6 @@ public interface NetworkManager
     
     InetAddress getFirstWanAddress();
 
-    List<InterfaceStatus> getWanInterfaceStatuses();
-
     InetAddress getFirstNonWanAddress();
 
     InetAddress getInterfaceHttpAddress( int clientIntf );
