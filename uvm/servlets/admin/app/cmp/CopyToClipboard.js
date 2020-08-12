@@ -11,7 +11,7 @@ Ext.define('Ung.cmp.CopyToClipboard', {
         type: 'hbox'
     },
     dataType: 'text',
-    below: 'false', //If the items to copy are embedded a level below the component with copytoclipboard type
+    below: 'false', //NGFW-13105: If the items to copy are embedded a level below the component with copytoclipboard type
 
     items: [{
         xtype: 'button',
@@ -37,6 +37,11 @@ Ext.define('Ung.cmp.CopyToClipboard', {
             var buttonExists = false;
 
             //Determine if items to copy are embedded below
+            //NGFW-13105: the main hostDisplayFields items for wireguard-vpn needs to be put in a fieldset embedded below the copytoclipboard
+            //itemsToLoop will be the items that we check for the button and the items are will be copied
+            //This could be the main items of copytoclipboard 
+            //If set to below, the itemsToLoop are in the first item of copytoclipboard. 
+            //The below setting allows the add modal for wireguard-vpn to render on Safari and allow other items using copytoclipboard to remain unchanged
             var itemsToLoop = config.items;
             if (config.below && config.below == 'true') itemsToLoop = config.items[0].items;
 
@@ -54,6 +59,8 @@ Ext.define('Ung.cmp.CopyToClipboard', {
                 });    
             }
 
+            //NGFW-13105: to render on safari, some items using copytoclipboard needs to be embedeed below in a fieldset
+            //This logic sets the fieldset properties to the same as the copytoclipboard object so the copy handler works
             //If items to copy are embedded below copytoclipboard component, set the properties appropriately
             if (config.below && config.below == 'true') {
                 if (config.dataType) config.items[0].dataType = config.dataType;
