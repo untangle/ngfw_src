@@ -4,6 +4,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -13,6 +14,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -22,6 +24,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -31,6 +34,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -40,6 +44,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -49,6 +54,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -58,6 +64,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -67,6 +74,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -76,6 +84,7 @@ size 500k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
@@ -85,6 +94,7 @@ size 50k
 compress
 notifempty
 copytruncate
+delaycompress
 missingok
 }
 
