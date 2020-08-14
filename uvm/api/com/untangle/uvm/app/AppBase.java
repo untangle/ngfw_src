@@ -34,6 +34,8 @@ public abstract class AppBase implements App
     private static final Logger staticLogger = Logger.getLogger(AppBase.class);
     private final Logger logger = Logger.getLogger(AppBase.class);
 
+    private String eventTag = "";
+
     /**
      * These are the (generic) settings for this app The app usually stores more
      * app-specific settings in "settings" This holds the generic AppSettings
@@ -89,6 +91,8 @@ public abstract class AppBase implements App
         this.appProperties = appProperties;
 
         currentState = AppState.LOADED;
+
+        this.eventTag = appProperties.getDisplayName().replaceAll("\\s+", "_") + " [" + appSettings.getId() + "]:";
     }
 
     /**
@@ -313,8 +317,7 @@ public abstract class AppBase implements App
      */
     public void logEvent(LogEvent evt)
     {
-        String tag = appProperties.getDisplayName().replaceAll("\\s+", "_") + " [" + appSettings.getId() + "]:";
-        evt.setTag(tag);
+        evt.setTag(this.eventTag);
 
         UvmContextFactory.context().logEvent(evt);
     }
