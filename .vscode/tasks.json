@@ -11,6 +11,11 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },{
+            "label": "Setup glowroot",
+            "type": "shell",
+            "command": "./.vscode/glowroot.sh",
+            "problemMatcher": []
         }
     ]
 }
