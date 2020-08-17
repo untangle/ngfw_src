@@ -19,7 +19,8 @@ tunnelUp = False
 orig_netsettings = None
 
 # hardcoded for ats testing
-l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.111.0.134","10.111.56.91","10.111.56.94","10.111.56.57","10.111.56.58"]
+l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.111.0.134",
+                    "10.111.56.91","10.111.56.94","10.111.56.57","10.111.56.58","10.111.56.59"]
 l2tpClientHost = "10.111.56.84"  # Windows 10 using builtin OpenSSH
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
@@ -34,7 +35,8 @@ configuredHostIPs = [('10.111.0.134','192.168.2.1','192.168.2.0/24'), # ATS
                      ('10.111.56.56','10.111.56.56','10.111.56.15/32'), # QA 3 Bridged
                      ('10.111.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
                      ('10.111.56.57','192.168.4.1','192.168.4.0/24'), # QA box .57
-                     ('10.111.56.58','192.168.43.1','192.168.43.0/24')] # QA box .58
+                     ('10.111.56.58','192.168.43.1','192.168.43.0/24'), # QA box .58
+                     ('10.111.56.59','192.168.23.1','192.168.23.0/24')] # QA box .59
 
 
 def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLANRange=""):
@@ -290,6 +292,11 @@ class IPsecTests(NGFWTestCase):
         assert(found)
 
     def test_042_windowsL2TPAlias(self):
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if (l2tpClientHostResult != 0):
+            raise unittest.SkipTest("l2tpClientHostResult not available")
+        if (not wan_IP in l2tpServerHosts):
+            raise unittest.SkipTest("No paried L2TP client available")
         orig_net_set = uvmContext.networkManager().getNetworkSettings()
         orig_app_settings = self._app.getSettings()
 
