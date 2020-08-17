@@ -1,0 +1,241 @@
+{
+  "transactions": {
+    "slowThresholdMillis": 2000,
+    "profilingIntervalMillis": 250,
+    "captureThreadStats": true
+  },
+  "jvm": {
+    "maskSystemProperties": [
+      "*password*"
+    ],
+    "maskMBeanAttributes": [
+      "*password*"
+    ]
+  },
+  "uiDefaults": {
+    "defaultTransactionType": "uvm",
+    "defaultPercentiles": [
+      50.0,
+      95.0,
+      99.0
+    ],
+    "defaultGaugeNames": [
+      "java.lang:type=Memory:HeapMemoryUsage.used"
+    ]
+  },
+  "advanced": {
+    "immediatePartialStoreThresholdSeconds": 60,
+    "maxTransactionAggregates": 500,
+    "maxQueryAggregates": 500,
+    "maxServiceCallAggregates": 500,
+    "maxTraceEntriesPerTransaction": 2000,
+    "maxProfileSamplesPerTransaction": 50000,
+    "mbeanGaugeNotFoundDelaySeconds": 60
+  },
+  "gauges": [
+    {
+      "mbeanObjectName": "java.lang:type=Memory",
+      "mbeanAttributes": [
+        {
+          "name": "HeapMemoryUsage.used"
+        }
+      ]
+    },
+    {
+      "mbeanObjectName": "java.lang:type=GarbageCollector,name=*",
+      "mbeanAttributes": [
+        {
+          "name": "CollectionCount",
+          "counter": true
+        },
+        {
+          "name": "CollectionTime",
+          "counter": true
+        }
+      ]
+    },
+    {
+      "mbeanObjectName": "java.lang:type=MemoryPool,name=*",
+      "mbeanAttributes": [
+        {
+          "name": "Usage.used"
+        }
+      ]
+    },
+    {
+      "mbeanObjectName": "java.lang:type=OperatingSystem",
+      "mbeanAttributes": [
+        {
+          "name": "FreePhysicalMemorySize"
+        },
+        {
+          "name": "ProcessCpuLoad"
+        },
+        {
+          "name": "SystemCpuLoad"
+        }
+      ]
+    }
+  ],
+  "plugins": [
+    {
+      "id": "cassandra",
+      "properties": {
+        "stackTraceThresholdMillis": 1000.0
+      }
+    },
+    {
+      "id": "elasticsearch",
+      "properties": {
+        "stackTraceThresholdMillis": 1000.0
+      }
+    },
+    {
+      "id": "java-http-server",
+      "properties": {
+        "captureRequestHeaders": [ ],
+        "maskRequestHeaders": [
+          "Authorization"
+        ],
+        "captureRequestRemoteAddr": false,
+        "captureRequestRemoteHost": false,
+        "captureResponseHeaders": [ ],
+        "traceErrorOn4xxResponseCode": false
+      }
+    },
+    {
+      "id": "jaxrs",
+      "properties": {
+        "useAltTransactionNaming": false
+      }
+    },
+    {
+      "id": "jdbc",
+      "properties": {
+        "captureBindParametersIncludes": [
+          ".*"
+        ],
+        "captureBindParametersExcludes": [ ],
+        "captureResultSetNavigate": true,
+        "captureResultSetGet": false,
+        "captureConnectionPoolLeaks": false,
+        "captureConnectionPoolLeakDetails": false,
+        "captureGetConnection": true,
+        "captureConnectionClose": false,
+        "capturePreparedStatementCreation": false,
+        "captureStatementClose": false,
+        "captureTransactionLifecycleTraceEntries": false,
+        "captureConnectionLifecycleTraceEntries": false,
+        "stackTraceThresholdMillis": 1000.0
+      }
+    },
+    {
+      "id": "logger",
+      "properties": {
+        "traceErrorOnErrorWithThrowable": true,
+        "traceErrorOnErrorWithoutThrowable": false,
+        "traceErrorOnWarningWithThrowable": false,
+        "traceErrorOnWarningWithoutThrowable": false
+      }
+    },
+    {
+      "id": "mongodb",
+      "properties": {
+        "stackTraceThresholdMillis": 1000.0
+      }
+    },
+    {
+      "id": "play",
+      "properties": {
+        "useAltTransactionNaming": false
+      }
+    },
+    {
+      "id": "servlet",
+      "properties": {
+        "sessionUserAttribute": "",
+        "captureSessionAttributes": [ ],
+        "captureRequestParameters": [
+          "*"
+        ],
+        "maskRequestParameters": [
+          "*password*"
+        ],
+        "captureRequestHeaders": [ ],
+        "captureResponseHeaders": [ ],
+        "traceErrorOn4xxResponseCode": false,
+        "captureRequestRemoteAddr": false,
+        "captureRequestRemoteHostname": false,
+        "captureRequestRemotePort": false,
+        "captureRequestLocalAddr": false,
+        "captureRequestLocalHostname": false,
+        "captureRequestLocalPort": false,
+        "captureRequestServerHostname": false,
+        "captureRequestServerPort": false
+      }
+    },
+    {
+      "id": "spring",
+      "properties": {
+        "useAltTransactionNaming": false
+      }
+    }
+  ],
+  "instrumentation": [
+    {
+      "className": "com.untangle.app.web_filter.WebFilterDecisionEngine",
+      "methodName": "checkRequest",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "uvm",
+      "transactionNameTemplate": "WebFilterDecisonEngine",
+      "alreadyInTransactionBehavior": "capture-new-transaction",
+      "traceEntryMessageTemplate": "WebFilterDecisonEngine",
+      "traceEntryCaptureSelfNested": true,
+      "timerName": "WebFilterDecisionEngine checkRequest"
+    },
+    {
+      "className": "com.untangle.app.http.HttpParserEventHandler",
+      "methodName": "parse",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "uvm",
+      "transactionNameTemplate": "HttpParserEventHandler:parse",
+      "alreadyInTransactionBehavior": "capture-new-transaction",
+      "traceEntryMessageTemplate": "HttpParserEventHandler:parse",
+      "traceEntryCaptureSelfNested": true,
+      "timerName": "HttpParserEventHandler parse"
+    },
+    {
+      "className": "com.untangle.uvm.NetcapHook",
+      "methodName": "run",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "uvm",
+      "transactionNameTemplate": "NetcapHook: run",
+      "alreadyInTransactionBehavior": "capture-trace-entry",
+      "traceEntryMessageTemplate": "NetcapHook: run",
+      "traceEntryCaptureSelfNested": true,
+      "timerName": "NetcapHook run"
+    },
+    {
+      "className": "com.untangle.app.http.HttpRequestEvent",
+      "methodName": "getDomainForHost",
+      "methodParameterTypes": [
+        ".."
+      ],
+      "captureKind": "transaction",
+      "transactionType": "uvm",
+      "transactionNameTemplate": "HttpRequestEvent {{methodName}}",
+      "alreadyInTransactionBehavior": "capture-new-transaction",
+      "traceEntryMessageTemplate": "HttpRequestEvent {{methodName}}",
+      "timerName": "HttpRequestEvent"
+    }
+  ]
+}
