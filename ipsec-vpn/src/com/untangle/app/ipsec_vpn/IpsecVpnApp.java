@@ -9,7 +9,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.File;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 
 import org.apache.log4j.Logger;
@@ -19,6 +23,8 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetspaceManager;
 import com.untangle.uvm.NetspaceManager.IPVersion;
 import com.untangle.uvm.NetspaceManager.NetworkSpace;
+import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManager;
@@ -68,8 +74,14 @@ public class IpsecVpnApp extends AppBase
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
     private final IpsecVpnHookCallback ipsecVpnHookCallback;
+    private final PreNetworkSettingsHookCallback netSetPreHook;
+    private final PostNetworkSettingsHookCallback netSetPostHook;
     private final WanFailoverHookCallback wanFailoverHookCallback;
     protected static ExecManager execManager = null;
+
+    private List<InterfaceStatus> intfStatus = null;
+    private Hashtable<IpsecVpnTunnel, InterfaceStatus> wanTunnelLink = null;
+    private Hashtable<IpsecVpnTunnel, InterfaceStatus> lanTunnelLink = null;
 
     private enum MatchMode
     {
@@ -98,12 +110,16 @@ public class IpsecVpnApp extends AppBase
         logger.debug("IpsecVpnApp()");
 
         this.ipsecVpnHookCallback = new IpsecVpnHookCallback();
+        this.netSetPreHook = new PreNetworkSettingsHookCallback();
+        this.netSetPostHook = new PostNetworkSettingsHookCallback();
         this.wanFailoverHookCallback = new WanFailoverHookCallback();
 
         this.addMetric(new AppMetric(STAT_CONFIGURED, I18nUtil.marktr("Configured Tunnels")));
         this.addMetric(new AppMetric(STAT_DISABLED, I18nUtil.marktr("Disabled Tunnels")));
         this.addMetric(new AppMetric(STAT_ENABLED, I18nUtil.marktr("Enabled Tunnels")));
         this.addMetric(new AppMetric(STAT_VIRTUAL, I18nUtil.marktr("VPN Clients")));
+
+        this.intfStatus = UvmContextFactory.context().networkManager().getInterfaceStatus();
 
         try {
             fixStrongswanConfig();
@@ -135,6 +151,15 @@ public class IpsecVpnApp extends AppBase
 
         settings.setVirtualListenList(listenList);
 
+        InetAddress exampleAddress = null;
+
+        try {
+            // Default Client Address
+            exampleAddress = InetAddress.getByName("203.0.113.1");
+        } catch(UnknownHostException ue) {
+            logger.warn(ue);
+        }
+
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
         LinkedList<IpsecVpnTunnel> tunnelList = new LinkedList<>();
         IpsecVpnTunnel tmp;
@@ -146,8 +171,8 @@ public class IpsecVpnApp extends AppBase
         tmp.setDescription("Example 1");
         tmp.setSecret("NOTICEhowWEuseAniceLONGstringINthisEXAMPLEwhichWILLbeMUCHmoreSECUREthanAsingleWORD");
         tmp.setRunmode("start");
-        tmp.setLeft("198.51.100.1");
-        tmp.setRight("203.0.113.1");
+        tmp.setLeft(firstWan.getHostAddress());
+        tmp.setRight(exampleAddress.getHostAddress());
 
         tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
         tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
@@ -161,8 +186,8 @@ public class IpsecVpnApp extends AppBase
         tmp.setDescription("Example 2");
         tmp.setSecret("thisISanotherGREATexampleOFaPREsharedSECRETthatISveryLONGandTHUSreasonablySECURE");
         tmp.setRunmode("start");
-        tmp.setLeft("198.51.100.1");
-        tmp.setRight("203.0.113.1");
+        tmp.setLeft(firstWan.getHostAddress());
+        tmp.setRight(exampleAddress.getHostAddress());
 
         tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
         tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
@@ -383,6 +408,8 @@ public class IpsecVpnApp extends AppBase
 
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
 
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.netSetPreHook);
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.netSetPostHook);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
@@ -424,6 +451,8 @@ public class IpsecVpnApp extends AppBase
 
         super.preStop(isPermanentTransition);
 
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.netSetPreHook);
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.netSetPostHook);
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
@@ -912,6 +941,97 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
+     * Called before network settings are changed
+     *
+     * @param settings
+     *        The current network settings
+     * @throws Exception
+     */
+    private void preNetworkSettingsEvent(NetworkSettings settings) throws Exception
+    {
+        this.intfStatus = UvmContextFactory.context().networkManager().getInterfaceStatus();
+
+        this.wanTunnelLink = new Hashtable<IpsecVpnTunnel, InterfaceStatus>();
+        this.lanTunnelLink = new Hashtable<IpsecVpnTunnel, InterfaceStatus>();
+
+        // See if any tunnels are currently using a WAN address or LAN address and put them in the appropriate hashtables
+        for(IpsecVpnTunnel tun : this.settings.getTunnels()) {
+            if(tun.getActive()) {
+                for(InterfaceStatus intf : this.intfStatus) {
+                    // Check if the v4 or v6 address exists before calling .getHostAddress to prevent null pointer exceptions
+                    if((intf.getV4Address() != null && tun.getLeft().equals(intf.getV4Address().getHostAddress())) || (intf.getV6Address() != null && tun.getLeft().equals(intf.getV6Address().getHostAddress()))) {
+                        this.wanTunnelLink.put(tun, intf);
+                    }
+
+                    // Check if the v4 or v6 LAN addresses are assigned to the Local Networks (LeftSubnet)
+                    if((intf.getV4Address() != null && tun.getLeftSubnet().equals(intf.getV4Address().getHostAddress()+ "/" + intf.getV4PrefixLength())) || (intf.getV6Address() != null && tun.getLeftSubnet().equals(intf.getV6Address().getHostAddress() + "/" + intf.getV6PrefixLength()))) {
+                        this.lanTunnelLink.put(tun, intf);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Called after network settings are changed
+     *
+     * @param settings
+     *        The current network settings
+     * @throws Exception
+     */
+    private void postNetworkSettingsEvent(NetworkSettings settings) throws Exception
+    {
+        //This boolean is an AtomicBoolean so that we can update it within the forEach lambda
+        AtomicBoolean updateAppSettings = new AtomicBoolean(false);
+        LinkedList<IpsecVpnTunnel> currentTuns = this.settings.getTunnels();
+
+        // Only update Active tunnels with the configured WAN addresses IF the address changed
+        this.wanTunnelLink.forEach((tun, oldStatus) -> {
+            //Get the new status for the interface attached to this tunnel
+            InterfaceStatus newStatus = UvmContextFactory.context().networkManager().getInterfaceStatus(oldStatus.getInterfaceId());
+            for(IpsecVpnTunnel newTun : currentTuns) {
+                if(newTun.getId() == tun.getId()) {
+                    if(newStatus != null && newTun.getActive()) {
+                        if((oldStatus.getV4Address() != null && newStatus.getV4Address() != null && !oldStatus.getV4Address().equals(newStatus.getV4Address())) 
+                        || (oldStatus.getV6Address() != null && newStatus.getV6Address() != null && !oldStatus.getV6Address().equals(newStatus.getV6Address()))) {
+                            //Address on this interface has changed, update the ipsec settings
+                            newTun.setLeft(newStatus.getV4Address().getHostAddress());
+                            updateAppSettings.set(true);
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Only update the Lan subnets if they have changed
+        this.lanTunnelLink.forEach((tun, oldStatus) -> {
+            //Get the new status for the interface attached to this tunnel
+            InterfaceStatus newStatus = UvmContextFactory.context().networkManager().getInterfaceStatus(oldStatus.getInterfaceId());
+            for(IpsecVpnTunnel newTun : currentTuns) {
+                if(newTun.getId() == tun.getId()) {
+                    if(newStatus != null && newTun.getActive()) {
+                        if(oldStatus.getV4Address() != null && newStatus.getV4Address() != null && (!oldStatus.getV4Address().equals(newStatus.getV4Address()) || oldStatus.getV4PrefixLength() != newStatus.getV4PrefixLength())) {
+                            //IPv4 Address on this interface has changed, update the ipsec settings
+                            newTun.setLeftSubnet(newStatus.getV4Address().getHostAddress() + "/" + newStatus.getV4PrefixLength());
+                            updateAppSettings.set(true);
+                        }
+
+                        if(oldStatus.getV6Address() != null && newStatus.getV6Address() != null && (!oldStatus.getV6Address().equals(newStatus.getV6Address()) || oldStatus.getV6PrefixLength() != newStatus.getV6PrefixLength())) {
+                            //IPv6 Address on this interface has changed, update the ipsec settings
+                            newTun.setLeftSubnet(newStatus.getV6Address().getHostAddress()+ "/" + newStatus.getV6PrefixLength());
+                            updateAppSettings.set(true);
+                        }
+                    }
+                }
+            }
+        });
+
+        if(updateAppSettings.get()) {
+            setSettings(this.settings);
+        }
+    }
+
+    /**
      * Callback hook for changes to UVM settings so we know when the certificate
      * assigned to IPsec has been changed.
      *
@@ -977,6 +1097,90 @@ public class IpsecVpnApp extends AppBase
             logger.info("Reconfiguring due to certificate change from " + activeCertificate + " to " + adminCertificate);
             activeCertificate = adminCertificate;
             reconfigure();
+        }
+    }
+
+    /**
+     * Callback pre hook for changes to network settings
+     */
+    private class PreNetworkSettingsHookCallback implements HookCallback
+    {
+        
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "ipsec-vpn-pre-network-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         *
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            Object o = args[0];
+            if (!(o instanceof NetworkSettings)) {
+                logger.warn("Invalid network settings: " + o);
+                return;
+            }
+
+            NetworkSettings settings = (NetworkSettings) o;
+
+            if (logger.isDebugEnabled()) logger.debug("network settings are about to change:" + settings);
+
+            try {
+                preNetworkSettingsEvent(settings);
+            } catch (Exception e) {
+                logger.error("Pre Network Settings Hook: Unable to reconfigure the ipsec VPN app", e);
+            }
+        }
+    }
+
+    /**
+     * Callback post hook for changes to network settings
+     */
+    private class PostNetworkSettingsHookCallback implements HookCallback
+    {
+        
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "ipsec-vpn-post-network-settings-change-hook";
+        }
+
+        /**
+         * Callback handler
+         *
+         * @param args
+         *        The callback arguments
+         */
+        public void callback(Object... args)
+        {
+            Object o = args[0];
+            if (!(o instanceof NetworkSettings)) {
+                logger.warn("Invalid network settings: " + o);
+                return;
+            }
+
+            NetworkSettings settings = (NetworkSettings) o;
+
+            if (logger.isDebugEnabled()) logger.debug("network settings have been updated:" + settings);
+
+            try {
+                postNetworkSettingsEvent(settings);
+            } catch (Exception e) {
+                logger.error("Post Network Settings Hook: Unable to reconfigure the ipsec VPN app", e);
+            }
         }
     }
 
