@@ -20,23 +20,17 @@ public class IntrusionPreventionDaySchedule implements Serializable, JSONString
     private boolean isAm = true;
     private String colon = ":";
 
+   /**
+      Blank constructor
+    */
    public IntrusionPreventionDaySchedule() {}
    
+   /**
+      Constructor that set day
+      @param day 
+    */
    public IntrusionPreventionDaySchedule(String day) {
       this.day = day;
-   }
-   
-   public IntrusionPreventionDaySchedule(Integer hour) {
-      this.hour = hour;
-      this.minute = 0;
-   }
-
-   /**
-      Constructor
-    */
-   public IntrusionPreventionDaySchedule(Integer hour, Integer minute) {
-      this.hour = hour;
-      this.minute = minute;
    }
 
    public Integer getHour() { return this.hour; }
@@ -57,6 +51,10 @@ public class IntrusionPreventionDaySchedule implements Serializable, JSONString
    public String getColon() { return this.colon; }
    public void setColon(String colon) { this.colon = colon; }
 
+   /**
+      Set defaults for the day
+      @param isWeeklyItem if the day being set back to defaults is the weekly schedule
+    */
    public void setToDefaults(boolean isWeeklyItem) {
       this.hour = -1;
       this.minute = -1;

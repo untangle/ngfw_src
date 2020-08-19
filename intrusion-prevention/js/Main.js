@@ -100,7 +100,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         updateSignatureHour: Ext.create('Ext.data.ArrayStore', {
             fields: [ 'stringTime', 'intTime' ],
             data: [
-                [ 'Default', -1],
+                [ 'Default'.t(), -1],
                 [ '1', 1 ],
                 [ '2', 2 ],
                 [ '3', 3 ],
@@ -119,7 +119,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         updateSignatureMinute: Ext.create('Ext.data.ArrayStore', {
             fields: [ 'stringTime', 'intTime' ],
             data: [
-                [ 'Default', -1]
+                [ 'Default'.t(), -1]
             ]
         }),
 
@@ -496,7 +496,5 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         categoryRenderer: function(value, meta, record){
             return record.get('description');
         },
-
-
     }
 });
