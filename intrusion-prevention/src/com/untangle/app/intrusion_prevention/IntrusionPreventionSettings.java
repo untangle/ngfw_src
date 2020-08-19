@@ -31,10 +31,23 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     private String iptablesProcessing = "pre";
     private String blockAction = "reject";
     private JSONObject suricataSettings = new JSONObject();
+    private String updateSignatureFrequency = "Daily";
+    private List<IntrusionPreventionDaySchedule> updateSignatureSchedule = new LinkedList<>();
+    private IntrusionPreventionDaySchedule updateSignatureWeekly = new IntrusionPreventionDaySchedule();
 
-    public IntrusionPreventionSettings() { }
+    public IntrusionPreventionSettings() 
+    { 
+        //Default is a 7 day schedule with -1 for hours/minute
+        updateSignatureSchedule.add(new IntrusionPreventionDaySchedule("Sunday"));
+        updateSignatureSchedule.add(new IntrusionPreventionDaySchedule("Monday"));
+        updateSignatureSchedule.add(new IntrusionPreventionDaySchedule("Tuesday"));
+        updateSignatureSchedule.add(new IntrusionPreventionDaySchedule("Wednesday"));
+        updateSignatureSchedule.add(new IntrusionPreventionDaySchedule("Thursday"));
+        updateSignatureSchedule.add(new IntrusionPreventionDaySchedule("Friday"));
+        updateSignatureSchedule.add(new IntrusionPreventionDaySchedule("Saturday"));
+    }
 
-    public IntrusionPreventionSettings(List<IntrusionPreventionRule> rules, List<IntrusionPreventionSignature> signatures, List<IntrusionPreventionVariable> variables, Integer iptablesNfqNumber, Integer iptablesMaxScanSize, String iptablesProcessing)
+    public IntrusionPreventionSettings(List<IntrusionPreventionRule> rules, List<IntrusionPreventionSignature> signatures, List<IntrusionPreventionVariable> variables, Integer iptablesNfqNumber, Integer iptablesMaxScanSize, String iptablesProcessing, List<IntrusionPreventionDaySchedule> updateSignatureSchedule, String updateSignatureFrequency, IntrusionPreventionDaySchedule updateSignatureWeekly)
     {
         this.rules = rules;
         this.signatures = signatures;
@@ -42,6 +55,9 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
         this.iptablesNfqNumber = iptablesNfqNumber;
         this.iptablesMaxScanSize = iptablesMaxScanSize;
         this.iptablesProcessing = iptablesProcessing;
+        this.updateSignatureSchedule = updateSignatureSchedule;
+        this.updateSignatureFrequency = updateSignatureFrequency;
+        this.updateSignatureWeekly = updateSignatureWeekly;
     }
 
     public Integer getVersion() { return version; }
@@ -82,6 +98,15 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
 
     public String getBlockAction() { return blockAction; }
     public void setBlockAction(String blockAction) { this.blockAction = blockAction; }
+
+    public List<IntrusionPreventionDaySchedule> getUpdateSignatureSchedule() { return this.updateSignatureSchedule; }
+    public void setUpdateSignatureSchedule(List<IntrusionPreventionDaySchedule> updateSignatureSchedule) { this.updateSignatureSchedule = updateSignatureSchedule; }
+
+    public String getUpdateSignatureFrequency() { return this.updateSignatureFrequency; }
+    public void setUpdateSignatureFrequency(String updateSignatureFrequency) { this.updateSignatureFrequency = updateSignatureFrequency; }
+
+    public IntrusionPreventionDaySchedule getUpdateSignatureWeekly() { return this.updateSignatureWeekly; }
+    public void setUpdateSignatureWeekly(IntrusionPreventionDaySchedule updateSignatureWeekly) { this.updateSignatureWeekly = updateSignatureWeekly; }
 
     /**
      * Returns settings as a JSON string.
