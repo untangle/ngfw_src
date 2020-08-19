@@ -98,6 +98,7 @@ public class IntrusionPreventionApp extends AppBase
     private static final Pattern SMAP_KERNEL_PAGE_SIZE = Pattern.compile("^KernelPageSize:\\s*(.+)");
     private static final String RELOAD_RULES_COMMAND = "/usr/bin/suricatasc -c 'reload-rules'";
     private static final String GET_SURICATA_ERRORS="/bin/journalctl -u suricata --no-pager -S \"$(/bin/systemctl show suricata | grep StateChangeTimestamp= | cut -d= -f2)\" | grep '<Error' | grep -v 'libnet_write_raw_ipv6 failed'";
+    private static final String GET_UPDATES= System.getProperty("prefix") + "/usr/share/untangle/bin/intrusion-prevention-get-updates";
 
     private long kernelPageSize = 0;
     private boolean updatedSettingsFlag = false;
@@ -245,6 +246,15 @@ public class IntrusionPreventionApp extends AppBase
         for (BypassRule bypass : newSettings.getBypassRules()) {
             idx = ++idx;
             bypass.setRuleId(idx);
+        }
+
+        //Set to defaults if updateSignatureFrequency is None
+        if (newSettings.getUpdateSignatureFrequency().equals("None")) {
+            for(IntrusionPreventionDaySchedule day : newSettings.getUpdateSignatureSchedule()) {
+                day.setToDefaults(false);
+            }
+
+            newSettings.getUpdateSignatureWeekly().setToDefaults(true);
         }
 
         /**
@@ -739,6 +749,22 @@ public class IntrusionPreventionApp extends AppBase
         }
 
         return status;
+    }
+
+    /**
+        Update signatures manually
+        @return boolean
+     */
+    public boolean updateSignatureManual(){
+        boolean update = false;
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(GET_UPDATES + " --force_download");
+
+        if(result.getResult() != 0) {
+            logger.error("updateSignatureManual: intrusion-prevention-get-updates failed to execute: \n" + result.getOutput());
+            return false;
+        }
+
+        return true;
     }
 
     // private methods ---------------------------------------------------------

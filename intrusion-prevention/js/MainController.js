@@ -451,6 +451,20 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         return status;
     },
 
+    updateSignatureManual: function() {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        v.setLoading('Updating Signatures...'.t());
+        Rpc.asyncData( v.appManager, 'updateSignatureManual')
+        .then(function(result){
+            if(Util.isDestroyed(me, v, vm)){
+                return;
+            }
+            v.setLoading(false);
+            if (result == true) Util.successToast("Updating Signatures Successful".t());
+            else Util.handleException('Update Signatures Failed'.t());
+        });
+    },
+
     statics:{
         // Example: Jan 29 09:57:07 devhostname.example.com suricata[126833]: [126833] <Error> -- [ERRCODE: SC_ERR_INVALID_ACTION(142)] - An invalid...
         regexDaemonError:  /\] \- (.*)$/,

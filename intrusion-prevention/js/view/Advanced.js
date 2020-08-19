@@ -54,5 +54,26 @@ Ext.define('Ung.apps.intrusionprevention.view.Advanced', {
                 ['drop', 'drop'.t()]
             ]
         }]
+    }, {
+        title: 'Update Signatures and Signatures Schedule'.t(),
+        defaults: {
+            margin: '5 0'
+        },
+        items: [{
+            xtype: 'component',
+            html: 'You can manually update signatures or set a schedule.'.t()
+        }, {
+            xtype: 'combo',
+            fieldLabel: 'Frequency'.t(),
+            store: Ung.apps.intrusionprevention.Main.updateSignatureFrequency,
+            bind: '{settings.updateSignatureFrequency}',
+            queryMode: 'local',
+            editable: false,
+            displayField: 'name',
+            valueField: 'value'
+        },
+        Ung.apps['intrusionprevention'].Main.updateSignatureDaily(),
+        Ung.apps['intrusionprevention'].Main.updateSignatureWeekly(),
+        Ung.apps['intrusionprevention'].Main.updateSignatureButton]
     }]
 });
