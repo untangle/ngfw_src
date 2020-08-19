@@ -753,18 +753,25 @@ public class IntrusionPreventionApp extends AppBase
 
     /**
         Update signatures manually
-        @return boolean
+        @return JSONObject containing if successful
      */
-    public boolean updateSignatureManual(){
-        boolean update = false;
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(GET_UPDATES + " --force_download");
+    public JSONObject updateSignatureManual(){
+        JSONObject status = null;
+        boolean update = true;
+        try {
+            status = new JSONObject();
+            ExecManagerResult result = UvmContextFactory.context().execManager().exec(GET_UPDATES + " --force_download");
 
-        if(result.getResult() != 0) {
-            logger.error("updateSignatureManual: intrusion-prevention-get-updates failed to execute: \n" + result.getOutput());
-            return false;
+            if(result.getResult() != 0) {
+                logger.error("updateSignatureManual: intrusion-prevention-get-updates failed to execute: \n" + result.getOutput());
+                update = false;
+            } 
+            status.put("updateSuccess", update);
+        } catch (Exception e){
+            logger.error("getStatus: jsonobject",e);
         }
 
-        return true;
+        return status;
     }
 
     // private methods ---------------------------------------------------------
