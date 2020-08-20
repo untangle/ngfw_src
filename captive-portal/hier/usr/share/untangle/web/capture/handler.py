@@ -469,11 +469,11 @@ def generate_page(req,captureSettings,args,extra=''):
         if (captureSettings.get("alwaysUseSecureCapture" == True)):
             target += "https://"
             if (networkSettings.get('httpsPort') != 443):
-                port = str(httpsPort)
+                port = str(networkSettings.get('httpsPort'))
         else:
             target += "http://"
             if (networkSettings.get('httpPort') != 80):
-                port = str(httpPort)
+                port = str(networkSettings.get('httpPort'))
 
         target += req.hostname
         if (port != None):

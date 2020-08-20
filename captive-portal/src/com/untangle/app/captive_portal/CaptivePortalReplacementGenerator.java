@@ -142,9 +142,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
             // Http is already configured.  Change to https.
             redirectUri.setScheme("https");
             int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
-            if (httpsPort != 443){
-                redirectUri.setPort(httpsPort);
-            }
+            redirectUri.setPort(httpsPort);
         }
 
         URIBuilder externalAuthenticationUri = null;
