@@ -459,7 +459,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             if(Util.isDestroyed(me, v, vm)){
                 return;
             }
-            console.log(result);
             v.setLoading(false);
             if (result.updateSuccess === true) Util.successToast("Updating Signatures Successful".t());
             else Util.handleException('Update Signatures Failed'.t());
