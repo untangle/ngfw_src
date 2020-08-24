@@ -65,6 +65,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             bypassRules: {
                 data: '{settings.bypassRules.list}'
             },
+            updateSignatureSchedule: {
+                data: '{settings.updateSignatureSchedule.list}'
+            }
         }
     },
 
@@ -85,6 +88,217 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     ],
 
     statics: {
+        updateSignatureFrequency: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'name', 'value' ],
+            data: [
+                [ 'None'.t(), 'None' ],
+                [ 'Daily'.t(), 'Daily' ],
+                [ 'Weekly'.t(), 'Weekly' ]
+            ]
+        }),
+
+        updateSignatureHour: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'stringTime', 'intTime' ],
+            data: [
+                [ 'Default'.t(), -1],
+                [ '1', 1 ],
+                [ '2', 2 ],
+                [ '3', 3 ],
+                [ '4', 4 ],
+                [ '5', 5 ],
+                [ '6', 6 ],
+                [ '7', 7 ],
+                [ '8', 8 ],
+                [ '9', 9 ],
+                [ '10', 10 ],
+                [ '11', 11 ],
+                [ '12', 12 ]
+            ]
+        }),
+
+        updateSignatureMinute: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'stringTime', 'intTime' ],
+            data: [
+                [ 'Default'.t(), -1]
+            ]
+        }),
+
+        getAllMinutes: function() {
+            var store = Ung.apps.intrusionprevention.Main.updateSignatureMinute;
+            var i;
+            for (i = 0; i < 60; i++) {
+                if (i < 10)
+                    store.add({'stringTime': '0'+i, 'intTime': i});
+                else
+                    store.add({'stringTime': i, 'intTime': i});
+            }
+            return store;
+        },
+
+        updateSignatureDays: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'displayValue', 'value' ],
+            data: [
+                [ ' '.t(), "None" ],
+                [ 'Sunday'.t(), "Sunday" ],
+                [ 'Monday'.t(), "Monday" ],
+                [ 'Tuesday'.t(), "Tuesday" ],
+                [ 'Wednesday'.t(), "Wednesday" ],
+                [ 'Thursday'.t(), "Thursday" ],
+                [ 'Friday'.t(), "Friday" ],
+                [ 'Saturday'.t(), "Saturday" ]
+            ]
+        }),
+
+        updateSignatureIsAm: Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'displayValue', 'value' ],
+            data: [
+                [ 'AM', true ],
+                [ 'PM', false ]
+            ]
+        }),
+
+        updateSignatureDaily: function() {
+            return {
+                xtype: 'grid',
+    
+                hideHeaders: true,
+                bodyBorder: false,
+                border: false,
+                hidden: true,
+
+                bind: {
+                    store: '{updateSignatureSchedule}',
+                    hidden: '{settings.updateSignatureFrequency != \'Daily\'}'
+                },
+                columns: [{
+                    xtype: 'widgetcolumn',
+                    dataIndex: 'enabled',
+                    width: 30,
+                    widget: {
+                        xtype: 'checkbox',
+                        bind: '{record.enabled}',
+                    }
+                }, {
+                    dataIndex: 'day',
+                    width: 80,
+                }, {
+                    dataIndex: 'hour',
+                    xtype: 'widgetcolumn',
+                    widget: {
+                        xtype: 'combo',
+                        editable: false,
+                        queryMode: 'local',
+                        bind: '{record.hour}',
+                        store: Ung.apps.intrusionprevention.Main.updateSignatureHour,
+                        displayField: 'stringTime',
+                        valueField: 'intTime'
+                    }
+                }, {
+                    dataIndex: 'colon',
+                    width: 20
+                }, {
+                    dataIndex: 'minute',
+                    xtype: 'widgetcolumn',
+                    widget: {
+                        xtype: 'combo',
+                        editable: false,
+                        queryMode: 'local',
+                        bind: '{record.minute}',
+                        store: Ung.apps.intrusionprevention.Main.updateSignatureMinute,
+                        displayField: 'stringTime',
+                        valueField: 'intTime'
+                    }
+                }, {
+                    dataIndex: 'isAm',
+                    xtype: 'widgetcolumn',
+                    width: 70,
+                    widget: {
+                        xtype: 'combo',
+                        editable: false,
+                        width: 60,
+                        padding: '0 0 0 10',
+                        queryMode: 'local',
+                        bind: '{record.isAm}',
+                        store: Ung.apps.intrusionprevention.Main.updateSignatureIsAm,
+                        displayField: 'displayValue',
+                        valueField: 'value'
+                    }
+                }]
+            };
+            
+        },
+
+        updateSignatureWeekly: function() {
+            return {
+                xtype: 'fieldset',
+
+                layout: {
+                    type: 'hbox'
+                },
+    
+                border: false,
+                hidden: true,
+                padding: '0 0 0 0',
+
+                bind: {
+                    hidden: '{settings.updateSignatureFrequency != \'Weekly\'}'
+                },
+                    
+                items: [{
+                    xtype: 'combo',
+                    editable: false,
+                    queryMode: 'local',
+                    bind: '{settings.updateSignatureWeekly.day}',
+                    store: Ung.apps.intrusionprevention.Main.updateSignatureDays,
+                    displayField: 'displayValue',
+                    valueField: 'value',
+                    width: 100
+                }, {
+                    xtype: 'combo',
+                    editable: false,
+                    queryMode: 'local',
+                    bind: '{settings.updateSignatureWeekly.hour}',
+                    store: Ung.apps.intrusionprevention.Main.updateSignatureHour,
+                    displayField: 'stringTime',
+                    valueField: 'intTime',
+                    padding: '0 0 0 20',
+                    width: 105
+                }, {
+                    xtype: 'component',
+                    html: ':',
+                    width: 20,
+                    padding: '0 0 0 8'
+                }, {
+                    xtype: 'combo',
+                    editable: false,
+                    queryMode: 'local',
+                    bind: '{settings.updateSignatureWeekly.minute}',
+                    store: Ung.apps.intrusionprevention.Main.getAllMinutes(),
+                    displayField: 'stringTime',
+                    valueField: 'intTime',
+                    width: 105
+                }, {
+                    xtype: 'combo',
+                    editable: false,
+                    queryMode: 'local',
+                    bind: '{settings.updateSignatureWeekly.isAm}',
+                    store: Ung.apps.intrusionprevention.Main.updateSignatureIsAm,
+                    displayField: 'displayValue',
+                    valueField: 'value',
+                    padding: '0 0 0 10',
+                    width: 60
+                }]
+            };
+            
+        },
+
+        updateSignatureButton: {
+            xtype: 'button',
+            text: 'Update Now'.t(),
+            handler: 'updateSignatureManual'
+        },
+
+
         processingStage: Ext.create('Ext.data.ArrayStore', {
             fields: [ 'value', 'description', 'detail'],
             data: [
