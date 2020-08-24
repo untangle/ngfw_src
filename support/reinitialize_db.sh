@@ -2,12 +2,14 @@
 
 /etc/init.d/postgresql stop
 
-if [ -d /var/lib/postgresql/9.4/main ] ; then
-    rm -rf /var/lib/postgresql/9.4/main/*
-fi
-if [ -d /var/lib/postgresql/9.6/main ] ; then
-    rm -rf /var/lib/postgresql/9.6/main/*
-fi
+for d in /var/lib/postgresql/* ; do
+    if [ -d "${d}" ] ; then
+        if [ -d "${d}/main/" ] ; then
+            rm -rf ${d}/main/*
+        fi
+    fi
+done
+
 apt-get --yes --reinstall install untangle-postgresql-config
 
 /etc/init.d/postgresql start
