@@ -114,7 +114,7 @@ public class OpenVpnStatusEvent extends LogEvent implements Serializable, org.js
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,getSqlTimeStamp());
         pstmt.setTimestamp(++i,getStart());
         pstmt.setTimestamp(++i,getEnd());
         pstmt.setLong(++i, getBytesRxDelta());

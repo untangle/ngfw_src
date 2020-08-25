@@ -51,7 +51,7 @@ public class WireGuardVpnEvent extends LogEvent implements Serializable, org.jso
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );
 
         int i=0;
-        pstmt.setTimestamp(++i,getTimeStamp());
+        pstmt.setTimestamp(++i,getSqlTimeStamp());
         pstmt.setString(++i, getTunnelName());
         pstmt.setString(++i, getEventType().toString());
 

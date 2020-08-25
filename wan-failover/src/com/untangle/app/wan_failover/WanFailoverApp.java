@@ -340,7 +340,7 @@ public class WanFailoverApp extends AppBase
          */
         public int compare(WanFailoverEvent event1, WanFailoverEvent event2)
         {
-            long diff = event1.getTimeStamp().getTime() - event2.getTimeStamp().getTime();
+            long diff = event1.getTimeStamp() - event2.getTimeStamp();
 
             /* Simple long to int conversion for huge time differences */
             if (diff < 0) return -1 * this.order;

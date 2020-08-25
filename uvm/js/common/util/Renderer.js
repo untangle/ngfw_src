@@ -752,11 +752,6 @@ Ext.define('Ung.util.Renderer', {
                 });
             }
         }
-        if(reportInfo == null){
-            reportInfo = {
-                list: []
-            };
-        }
         return reportInfo;
     },
 

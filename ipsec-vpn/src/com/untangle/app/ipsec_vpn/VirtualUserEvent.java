@@ -49,7 +49,7 @@ public class VirtualUserEvent extends LogEvent
 
     public void updateEvent(String elapsedTime, Long netRXbytes, Long netTXbytes)
     {
-        setTimeStamp(new Timestamp((new Date()).getTime()));
+        setTimeStamp(System.currentTimeMillis());
         setElapsedTime(elapsedTime);
         setNetRXbytes(netRXbytes);
         setNetTXbytes(netTXbytes);
@@ -173,8 +173,8 @@ public class VirtualUserEvent extends LogEvent
             java.sql.PreparedStatement pstmt = getStatementFromCache(insert, statementCache, conn);
 
             pstmt.setLong(++i, getEventId().longValue());
-            pstmt.setTimestamp(++i, getTimeStamp());
-            pstmt.setTimestamp(++i, getTimeStamp());
+            pstmt.setTimestamp(++i, getSqlTimeStamp());
+            pstmt.setTimestamp(++i, getSqlTimeStamp());
             pstmt.setString(++i, getClientAddress().getHostAddress().toString());
             pstmt.setString(++i, getClientProtocol());
             pstmt.setString(++i, getClientUsername());
@@ -187,7 +187,7 @@ public class VirtualUserEvent extends LogEvent
         // the updateMode flag is set so we prepare the update statement
         java.sql.PreparedStatement pstmt = getStatementFromCache(update, statementCache, conn);
 
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setString(++i, getElapsedTime());
         pstmt.setLong(++i, getNetRXbytes());
         pstmt.setLong(++i, getNetTXbytes());

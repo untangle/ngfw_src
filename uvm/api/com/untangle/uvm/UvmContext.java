@@ -386,7 +386,9 @@ public interface UvmContext
      * Thread utilities
      */
     Thread newThread( Runnable runnable );
+    Thread newThread( Runnable runnable, int priority );
     Thread newThread( Runnable runnable, String name );
+    Thread newThread( Runnable runnable, String name, int priority );
 
     /**
      * The pipeline compiler.
