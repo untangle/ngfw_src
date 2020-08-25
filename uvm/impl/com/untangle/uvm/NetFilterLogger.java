@@ -246,8 +246,10 @@ public class NetFilterLogger
                     hostname = entry.getHostname();
                 }
 
+                boolean srcIsWanInterface = srcIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( srcIntf );
+
                 if (hostname == null || hostname.length() == 0) {
-                    hostname = SessionEvent.determineBestHostname(srcAddress, srcIntf, dstAddress, dstIntf);
+                    hostname = SessionEvent.determineBestHostname(srcAddress, srcIntf, dstAddress, dstIntf, srcIsWanInterface);
                 }
 
                 // Since zero is a valid ICMP type, both the untangle-nflogd daemon as well
@@ -275,7 +277,7 @@ public class NetFilterLogger
                 event.setClientIntf(srcIntf);
                 event.setServerIntf(dstIntf);
 
-                if (srcIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface(srcIntf)) {
+                if(srcIsWanInterface){
                     event.setLocalAddr(dstAddress);
                     event.setRemoteAddr(srcAddress);
                 } else {

@@ -139,8 +139,9 @@ public class NetcapConntrackHook implements NetcapCallback
                 hostname = entry.getHostname();
             }
 
+            boolean clientIsWanInterface = clientIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( clientIntf );
             if ( hostname == null || hostname.length() == 0 ) {
-                hostname = SessionEvent.determineBestHostname( cClientAddr, clientIntf, sServerAddr, serverIntf );
+                hostname = SessionEvent.determineBestHostname( cClientAddr, clientIntf, sServerAddr, serverIntf, clientIsWanInterface );
             }
         
             if ( type == CONNTRACK_TYPE_NEW ) { /* New Session */
@@ -178,7 +179,7 @@ public class NetcapConntrackHook implements NetcapCallback
                      * If the client is on a WAN, the the local address is the server address
                      * If not, then the local address is the client
                      */
-                    if ( clientIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+                    if(clientIsWanInterface){
                         sessionEvent.setLocalAddr( sServerAddr );
                         sessionEvent.setRemoteAddr( cClientAddr );
                     } else {
