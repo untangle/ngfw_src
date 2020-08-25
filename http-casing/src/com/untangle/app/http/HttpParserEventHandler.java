@@ -6,7 +6,9 @@ package com.untangle.app.http;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -36,12 +38,29 @@ public class HttpParserEventHandler extends AbstractEventHandler
     private final Logger logger = Logger.getLogger(HttpParserEventHandler.class);
     private static final String STATE_KEY = "http-parser-state";
 
+    private static final String CONTENT_LENGTH_HEADER = "content-length";
+    private static final String CONTENT_TYPE_HEADER = "content-type";
+    private static final String REFERER_HEADER = "referer";
+    private static final String HOST_HEADER = "host";
+    private static final String USER_AGENT_HEADER = "user-agent";
+    private static final String CONTENT_DISPOSITION_HEADER = "content-disposition";
+    private static final String SLASH_STRING = "/";
+    private static final String DOT_STRING = ".";
+    private static final String HTTP_PREFIX="HTTP/";
+    private static final String EXPECT_KEY="expect";
+
+    private static final char DOT_CHAR = '.';
+    private static final char COLON_CHAR = ':';
+    private static final char SLASH_CHAR = '/';
+
     private static final byte SP = ' ';
     private static final byte HT = '\t';
     private static final byte CR = '\r';
     private static final byte LF = '\n';
 
     private static final int TIMEOUT = 30000;
+    private static final Pattern DUPLICATE_SLASH_MATCH = Pattern.compile("(?<!:)/+");
+    private static final Pattern WHITESPACE_MATCH = Pattern.compile("(?<!:)/+");
 
     private static enum BodyEncoding {
         NO_BODY, // no body
@@ -66,14 +85,17 @@ public class HttpParserEventHandler extends AbstractEventHandler
     
     private final HttpImpl app;
     
-    private int maxHeader;
-    private boolean blockLongHeaders;
-    private int maxUri;
-    private int maxRequestLine;
-    private boolean blockLongUris;
+    public static int maxHeader;
+    public static boolean blockLongHeaders;
+    public static int maxUri;
+    public static int maxRequestLine;
+    public static boolean blockLongUris;
+    public static boolean logReferer;
 
     private boolean clientSide;
-    
+
+    private static final LinkedHashMap<InetAddress,String> ClientUserAgents = new LinkedHashMap<>(100);
+
     /**
      * HttpParserSessionState stores all the parser state for the session
      */
@@ -112,13 +134,6 @@ public class HttpParserEventHandler extends AbstractEventHandler
          * FIXME move this somewhere else
          * cant put it in initializer because settings aren't read yet
          */
-        HttpSettings settings = app.getHttpSettings();
-        this.maxHeader = settings.getMaxHeaderLength();
-        this.blockLongHeaders = settings.getBlockLongHeaders();
-        this.maxUri = settings.getMaxUriLength();
-        this.maxRequestLine = maxUri + 13;
-        this.blockLongUris = settings.getBlockLongUris();
-
         HttpParserSessionState state = new HttpParserSessionState();
         state.buf = null;
         state.currentState = ParseState.PRE_FIRST_LINE_STATE;
@@ -503,8 +518,8 @@ public class HttpParserEventHandler extends AbstractEventHandler
                             state.transferEncoding = BodyEncoding.NO_BODY;
                         }
                     }
-                    String contentType = state.header.getValue("content-type");
-                    String contentLength = state.header.getValue("content-length");
+                    String contentType = state.header.getValue(CONTENT_TYPE_HEADER);
+                    String contentLength = state.header.getValue(CONTENT_LENGTH_HEADER);
                     String fileName = findContentDispositionFilename(state.header);
 
                     /**
@@ -522,15 +537,16 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     if (fileName != null) {
                         session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_NAME, fileName);
                         // find the last dot to extract the file extension
-                        int loc = fileName.lastIndexOf(".");
+                        int loc = fileName.lastIndexOf(DOT_CHAR);
                         if (loc != -1)
                             session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
                     }
 
                 } else {
                     /* the request event is saved internally and used later with getRequestEvent */
-                    String referer = ( app.getHttpSettings().getLogReferer() ? state.header.getValue("referer") : null);
-                    HttpRequestEvent evt = new HttpRequestEvent( state.requestLineToken.getRequestLine(), state.header.getValue("host"), referer, state.lengthCounter );
+                    // String referer = ( app.getHttpSettings().getLogReferer() ? state.header.getValue(REFERER_HEADER) : null);
+                    String referer = logReferer ? state.header.getValue(REFERER_HEADER) : null;
+                    HttpRequestEvent evt = new HttpRequestEvent( state.requestLineToken.getRequestLine(), state.header.getValue(HOST_HEADER), referer, state.lengthCounter );
                     state.requestLineToken.getRequestLine().setHttpRequestEvent(evt);
                 }
 
@@ -673,7 +689,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                 state.currentState = ParseState.PRE_FIRST_LINE_STATE;
 
                 if (!clientSide) {
-                    String contentType = state.header.getValue("content-type");
+                    String contentType = state.header.getValue(CONTENT_TYPE_HEADER);
                     String mimeType = null == contentType ? null : MimeType.getType(contentType);
                     RequestLine rl = null == state.requestLineToken ? null : state.requestLineToken.getRequestLine();
                     String filename = findContentDispositionFilename(state.header);
@@ -698,23 +714,13 @@ public class HttpParserEventHandler extends AbstractEventHandler
                      * if an entry already exists for this host
                      */
                     InetAddress clientAddr = session.sessionEvent().getCClientAddr();
-                    String agentString = state.header.getValue("user-agent");
-                    String host = state.header.getValue("host");
-                    String referer = state.header.getValue("referer");
-                    String userAgent = state.header.getValue("user-agent");
+                    String agentString = state.header.getValue(USER_AGENT_HEADER);
+                    String host = state.header.getValue(HOST_HEADER);
+                    String referer = state.header.getValue(REFERER_HEADER);
+                    String userAgent = state.header.getValue(USER_AGENT_HEADER);
                     String rmethod = state.requestLineToken.getMethod().toString();
-                    /**
-                     * XXX what is this: .replaceAll("(?<!:)/+", "/")
-                     * -dmorris
-                     */
-                    String uri = state.requestLineToken.getRequestLine().getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/");
-                    String path = state.requestLineToken.getRequestLine().getRequestUri().normalize().getPath();
-                    HostTableEntry hostEntry = null;
-                    DeviceTableEntry deviceEntry = null;
-                    if ( clientAddr != null )
-                        hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
-                    if ( hostEntry != null )
-                        deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacAddress() );
+                    URI requestUri =  state.requestLineToken.getRequestLine().getRequestUri().normalize();
+                    String uri = DUPLICATE_SLASH_MATCH.matcher(requestUri.toString()).replaceAll(SLASH_STRING);
 
                     session.globalAttach( AppSession.KEY_HTTP_HOSTNAME, host );
                     session.globalAttach( AppSession.KEY_HTTP_REFERER, referer );
@@ -727,35 +733,46 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     String fname = null;
                     String fext = null;
                     int loc;
-                    try {
-                        // extract the full file path ignoring all params
-                        fpath = (new URI(path)).toString();
-                        fname = fpath;
 
-                        // find the last slash to extract the file name
-                        loc = fpath.lastIndexOf("/");
-                        if (loc != -1) fname = fpath.substring(loc + 1);
-                        else fname = fpath;
+                    // extract the full file path ignoring all params
+                    fpath = requestUri.getPath().toString();
+                    // fname = fpath;
 
-                        // find the last dot to extract the file extension
-                        loc = fname.lastIndexOf(".");
-                        if (loc != -1) fext = fname.substring(loc + 1);
+                    // find the last slash to extract the file name
+                    loc = fpath.lastIndexOf(SLASH_CHAR);
+                    // if (loc != -1) fname = fpath.substring(loc + 1);
+                    // else fname = fpath;
+                    fname = (loc != -1) ? fpath.substring(loc + 1) : fpath;
 
-                        if (fpath != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
-                        // FILE_NAME can be set from earlier in the header, only overwrite if it is null
-                        if (fname != null && session.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_NAME) == null) {
-                            session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
-                        }
-                        // FILE_EXTENSION can be set from earlier in the header, only overwrite if it is null
-                        if (fext != null && session.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION) == null)
-                            session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
-                    } catch (URISyntaxException e) {}
+                    // find the last dot to extract the file extension
+                    loc = fname.lastIndexOf(".");
+                    if (loc != -1) fext = fname.substring(loc + 1);
+
+                    if (fpath != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
+                    // FILE_NAME can be set from earlier in the header, only overwrite if it is null
+                    if (fname != null && session.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_NAME) == null) {
+                        session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
+                    }
+                    // FILE_EXTENSION can be set from earlier in the header, only overwrite if it is null
+                    if (fext != null && session.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION) == null)
+                        session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
 
                     if ( agentString != null ) {
-                        if ( hostEntry != null )
-                            hostEntry.setHttpUserAgent( agentString );
-                        if ( deviceEntry != null )
-                            deviceEntry.setHttpUserAgent( agentString );
+                        String currentAgent = ClientUserAgents.get(clientAddr);
+                        if(currentAgent == null ||
+                           !currentAgent.equals(agentString)){                    
+                            HostTableEntry hostEntry = null;
+                            DeviceTableEntry deviceEntry = null;
+                            if ( clientAddr != null )
+                                hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+                            if ( hostEntry != null )
+                                deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacAddress() );
+                            if ( hostEntry != null )
+                                hostEntry.setHttpUserAgent( agentString );
+                            if ( deviceEntry != null )
+                                deviceEntry.setHttpUserAgent( agentString );
+                            ClientUserAgents.put(clientAddr, agentString);
+                        }
                     }
                 }
 
@@ -1025,13 +1042,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
      */
     private String version(ByteBuffer data)
     {
-        eat(data, "HTTP");
-        eat(data, '/');
+        eat(data, HTTP_PREFIX);
         int maj = eatDigits(data);
-        eat(data, '.');
+        eat(data, DOT_CHAR);
         int min = eatDigits(data);
 
-        return "HTTP/" + maj + "." + min;
+        return HTTP_PREFIX + maj + DOT_STRING + min;
     }
 
     /**
@@ -1113,7 +1129,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
         String key = token( session, data ).trim();
-        eat(data, ':');
+        eat(data, COLON_CHAR);
         String value = eatText( session, data ).trim();
 
         // 4.3: The presence of a message-body in a request is signaled by the
@@ -1129,7 +1145,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
             } else {
                 logger.warn("don't know transfer-encoding: " + value);
             }
-        } else if ( key.equalsIgnoreCase("content-length") && state.transferEncoding != BodyEncoding.CHUNKED_ENCODING ) {
+        } else if ( key.equalsIgnoreCase(CONTENT_LENGTH_HEADER) && state.transferEncoding != BodyEncoding.CHUNKED_ENCODING ) {
 
             if (logger.isDebugEnabled()) {
                 logger.debug("using content length encoding");
@@ -1144,7 +1160,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         // Some servers do not support 100-continue so clients should send the data anyway immediately (section 8.2.3)
         // However, some clients do not, and since we do not support a continue state and it complicates the logic, 
         // as a hack, we spoof a response to tell the client to continue immediately.
-        if (key.equalsIgnoreCase("expect") && value.equalsIgnoreCase("100-continue")) {
+        if (key.equalsIgnoreCase(EXPECT_KEY) && value.equalsIgnoreCase("100-continue")) {
             String response = state.requestLineToken.getHttpVersion() + " 100 Continue\r\n\r\n";
             if (logger.isDebugEnabled()) {
                 logger.debug("Expect Header " + key + "=" + value);
@@ -1680,7 +1696,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
      */
     public static String findContentDispositionFilename( HeaderToken header )
     {
-        String contentDisposition = header.getValue("content-disposition");
+        String contentDisposition = header.getValue(CONTENT_DISPOSITION_HEADER);
 
         if ( contentDisposition == null )
             return null;
@@ -1698,7 +1714,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
 
         filename = filename.replace("\"","");
         filename = filename.replace("'","");
-        filename = filename.replaceAll("\\s","");
+        filename = WHITESPACE_MATCH.matcher(filename).replaceAll("");
 
         return filename;
     }
@@ -1712,7 +1728,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     @SuppressWarnings("unchecked")
     RequestLineToken dequeueRequest( AppTCPSession session, int statusCode )
     {
-        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "http-request-queue" );
+        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( HttpUnparserEventHandler.REQUEST_QUEUE_KEY );
 
         if ( requests != null && requests.size() > 0 ) {
             return requests.remove(0);
@@ -1723,5 +1739,19 @@ public class HttpParserEventHandler extends AbstractEventHandler
             return null;
         }
     }
-    
+
+    /**
+     * Configure this event handler with the provided settings
+     * @param settings
+     */
+    static public void configure(HttpSettings settings)
+    {
+        HttpParserEventHandler.maxHeader = settings.getMaxHeaderLength();
+        HttpParserEventHandler.blockLongHeaders = settings.getBlockLongHeaders();
+        HttpParserEventHandler.maxUri = settings.getMaxUriLength();
+        HttpParserEventHandler.maxRequestLine = maxUri + 13;
+        HttpParserEventHandler.blockLongUris = settings.getBlockLongUris();
+        HttpParserEventHandler.logReferer = settings.getLogReferer();
+    }
+
 }

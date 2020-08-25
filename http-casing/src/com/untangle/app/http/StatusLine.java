@@ -62,10 +62,7 @@ public class StatusLine implements Token
      */
     public String getString()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append(httpVersion).append(" ").append(statusCode)
-            .append(" ").append(reasonPhrase).append("\r\n");
-        return sb.toString();
+        return httpVersion + " " + statusCode + " " + reasonPhrase + "\r\n";
     }
 
     /**

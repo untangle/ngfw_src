@@ -96,6 +96,7 @@ public class HttpImpl extends AppBase
         if ( settings != null ) {
             for ( PipelineConnector connector : this.connectors ) 
                 connector.setEnabled( settings.isEnabled() );
+            HttpParserEventHandler.configure(settings);
         }
     }
 
