@@ -28,8 +28,13 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
 {
     private static final Logger logger = Logger.getLogger(HttpUnparserEventHandler.class);
 
+    private static final String CONTENT_LENGTH_HEADER = "content-length";
+    private static final String TRANSFER_ENCODING_HEADER = "transfer-encoding";
+    private static final String CHUNKED = "chunked";;
+
     private static final String STATE_KEY = "http-unparser-state";
-    
+    public static final String REQUEST_QUEUE_KEY = "http-request-queue";
+ 
     private static final byte[] LAST_CHUNK = "0\r\n\r\n".getBytes();
     private static final byte[] CRLF = "\r\n".getBytes();
 
@@ -328,10 +333,10 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
             logger.debug(" header");
         }
 
-        String encoding = header.getValue("transfer-encoding");
-        if ( encoding != null && encoding.equalsIgnoreCase("chunked") ) {
+        String encoding = header.getValue(TRANSFER_ENCODING_HEADER);
+        if ( encoding != null && encoding.equalsIgnoreCase(CHUNKED) ) {
             state.transferEncoding = CHUNKED_ENCODING;
-        } else if ( header.getValue("content-length") != null ) {
+        } else if ( header.getValue(CONTENT_LENGTH_HEADER) != null ) {
             state.transferEncoding = CONTENT_LENGTH_ENCODING;
         }
 
@@ -477,11 +482,11 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
     @SuppressWarnings("unchecked")
     void queueRequest( AppTCPSession session, RequestLineToken request )
     {
-        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "http-request-queue" );
+        List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( REQUEST_QUEUE_KEY );
 
         if ( requests == null ) {
             requests = new LinkedList<>();
-            session.globalAttach( "http-request-queue", requests );
+            session.globalAttach( REQUEST_QUEUE_KEY, requests );
         }
 
         requests.add(request);

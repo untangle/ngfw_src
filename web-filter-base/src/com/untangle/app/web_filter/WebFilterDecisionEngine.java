@@ -108,7 +108,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                     if(super.isItemUnblocked(term, clientIp)) {
 
                         WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, getApp().getName());
-                        logger.debug("LOG: term "+ term + " in unblock list: " + requestLine.getRequestLine());
+                        if (logger.isDebugEnabled()) logger.debug("LOG: term "+ term + " in unblock list: " + requestLine.getRequestLine());
                         getApp().logEvent(hbqe);
                         return null;
                     }
