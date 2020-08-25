@@ -225,7 +225,7 @@ public class SessionEvent extends LogEvent
         }
     }
     
-    public static String determineBestHostname( InetAddress clientAddr, int clientIntf, InetAddress serverAddr, int serverIntf )
+    public static String determineBestHostname( InetAddress clientAddr, int clientIntf, InetAddress serverAddr, int serverIntf, boolean clientIsWanInterface )
     {
         try {
 
@@ -242,7 +242,7 @@ public class SessionEvent extends LogEvent
             /**
              * 2) If the client is on a WAN - check for the hostname of the server (the local address)
              */
-            if ( clientIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+            if ( clientIntf != 0 && clientIsWanInterface ) {
                 HostTableEntry serverEntry = null;
                 if ( serverAddr != null )
                     serverEntry = UvmContextFactory.context().hostTable().getHostTableEntry( serverAddr );
@@ -254,7 +254,7 @@ public class SessionEvent extends LogEvent
             /**
              * 3) If neither is known just use the address if fallbackToIp otherwise null
              */
-            if ( clientIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+            if ( clientIntf != 0 && clientIsWanInterface ) {
                 return (serverAddr != null ? serverAddr.getHostAddress() : "");
             } else {
                 return (clientAddr != null ? clientAddr.getHostAddress() : "");

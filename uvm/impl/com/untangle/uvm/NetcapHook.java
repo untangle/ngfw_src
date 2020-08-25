@@ -134,6 +134,8 @@ public abstract class NetcapHook implements Runnable
             } else {
                 netcapSession.setServerIntf(serverIntf);
             }
+            boolean clientIsWanInterface = UvmContextFactory.context().networkManager().isWanInterface( clientIntf );
+            boolean serverIsWanInterface = UvmContextFactory.context().networkManager().isWanInterface( serverIntf );
             sessionGlobalState.setClientIntf( clientIntf );
             sessionGlobalState.setServerIntf( serverIntf );
             
@@ -167,11 +169,11 @@ public abstract class NetcapHook implements Runnable
              */
             if ( hostEntry == null ) {
                 /* If the client is a non-wan, use the client's host */
-                if ( ! UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+                if(!clientIsWanInterface){
                     hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
                 }
                 /* Lastly if use the server's host if there is still no host and the server is local */
-                if ( hostEntry == null && ! UvmContextFactory.context().networkManager().isWanInterface( serverIntf ) ) {
+                if ( hostEntry == null && !serverIsWanInterface ) {
                     hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( serverAddr, true ); /* create/get host */
                 }
             } 
@@ -242,10 +244,9 @@ public abstract class NetcapHook implements Runnable
              * If at this point the hostname is not known, determine it by all methods but do not update host table.
              */
             if ( hostname == null || hostname.length() == 0 ) {
-                hostname = SessionEvent.determineBestHostname( clientAddr, clientIntf, serverAddr, serverIntf );
+                hostname = SessionEvent.determineBestHostname( clientAddr, clientIntf, serverAddr, serverIntf, clientIsWanInterface );
             }
             
-
             /**
              * Determine the policy to process this session
              */
@@ -291,16 +292,11 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setSServerPort( serverSide.getServerPort() );
             sessionEvent.setTagsString( sessionGlobalState.getTagsString() );
             
-            if ( UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+            if ( clientIsWanInterface ) {
                 sessionEvent.setLocalAddr( serverSide.getServerAddr() );
                 sessionEvent.setRemoteAddr( clientSide.getClientAddr() );
-            } else {
-                sessionEvent.setLocalAddr( clientSide.getClientAddr() );
-                sessionEvent.setRemoteAddr( serverSide.getServerAddr() );
-            }
 
-            // lookup the country, latitude, and longitude for WAN clients
-            if ( UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+                // lookup the country, latitude, and longitude for WAN clients
                 GeographyManager.Coordinates clientGeoip = UvmContextFactory.context().geographyManager().getCoordinates(clientSide.getClientAddr().getHostAddress());
                 if (clientGeoip != null) {
                     sessionEvent.setClientCountry(clientGeoip.country);
@@ -310,11 +306,14 @@ public abstract class NetcapHook implements Runnable
                     sessionEvent.setClientCountry("XU");
                 }
             } else {
+                sessionEvent.setLocalAddr( clientSide.getClientAddr() );
+                sessionEvent.setRemoteAddr( serverSide.getServerAddr() );
+
                 sessionEvent.setClientCountry("XL");
             }
 
             // lookup the country, latitude, and longitude for WAN servers
-            if ( UvmContextFactory.context().networkManager().isWanInterface( serverIntf ) ) {
+            if(serverIsWanInterface){
                 GeographyManager.Coordinates serverGeoip = UvmContextFactory.context().geographyManager().getCoordinates(serverSide.getServerAddr().getHostAddress());
                 if (serverGeoip != null) {
                     sessionEvent.setServerCountry(serverGeoip.country);
@@ -693,7 +692,9 @@ public abstract class NetcapHook implements Runnable
             } while ( true ) ;
         }
 
-        printRelays( relayList );
+        if ( logger.isDebugEnabled()){
+            printRelays( relayList );
+        } 
 
         vector = new Vector( relayList );
     }
@@ -894,7 +895,7 @@ public abstract class NetcapHook implements Runnable
             //statEvent.setS2pChunks(sessionGlobalState.serverSideListener().rxChunks);
             //statEvent.setP2sChunks(sessionGlobalState.serverSideListener().txChunks);
             statEvent.setEndTime(sessionGlobalState.getEndTime());
-                
+
             UvmContextFactory.context().logEvent( statEvent );
         } catch ( Exception e ) {
             logger.error( "Exception logging session stats.", e );
@@ -920,12 +921,10 @@ public abstract class NetcapHook implements Runnable
      */
     protected void printRelays( List<Relay> relayList )
     {
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "Relays: " );
-            for ( Iterator<Relay>iter = relayList.iterator() ; iter.hasNext() ;) {
-                Relay relay = iter.next();
-                logger.debug( "" + relay.source() + " --> " + relay.sink());
-            }
+        logger.debug( "Relays: " );
+        for ( Iterator<Relay>iter = relayList.iterator() ; iter.hasNext() ;) {
+            Relay relay = iter.next();
+            logger.debug( "" + relay.source() + " --> " + relay.sink());
         }
     }
 

@@ -493,7 +493,7 @@ public class SessionGlobalState implements SessionAttachments
      */
     public Object attach(String key, Object attachment)
     {
-        logger.debug("globalAttach( " + key + " , " + attachment + " )");
+        if (logger.isDebugEnabled()) logger.debug("globalAttach( " + key + " , " + attachment + " )");
         return this.stringAttachments.put(key,attachment);
     }
 
