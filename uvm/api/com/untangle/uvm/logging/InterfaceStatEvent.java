@@ -47,7 +47,7 @@ public class InterfaceStatEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setLong(++i, interfaceId);
         pstmt.setDouble(++i, rxRate);
         pstmt.setDouble(++i, rxBytes);

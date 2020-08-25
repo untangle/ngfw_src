@@ -456,7 +456,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
             serverReputation = record.get('threat_prevention_server_reputation'),
             ipAddresses = [];
 
-        if (clientReputation != null && clientReputation > 0) {
+        if (clientReputation) {
             Ext.Deferred.sequence([
                 Rpc.asyncPromise(
                     'rpc.reportsManager.getReportInfo',
@@ -493,7 +493,7 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
                 console.log(ex);
             });
         }
-        if (serverReputation != null && serverReputation > 0) {
+        if (serverReputation != null) {
             Ext.Deferred.sequence([
                 Rpc.asyncPromise(
                     'rpc.reportsManager.getReportInfo',

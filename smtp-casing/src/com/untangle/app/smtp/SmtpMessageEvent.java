@@ -186,7 +186,7 @@ public class SmtpMessageEvent extends LogEvent implements Serializable
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i = 0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setLong(++i, getSessionEvent().getSessionId());
         pstmt.setInt(++i, getSessionEvent().getClientIntf());
         pstmt.setInt(++i, getSessionEvent().getServerIntf());

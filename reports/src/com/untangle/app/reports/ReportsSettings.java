@@ -20,6 +20,7 @@ public class ReportsSettings implements Serializable, JSONString
     private Integer version = 2;
     
     private Integer dbRetention = 7; // days
+    private Integer dbRetentionHourly = 0;
     private Integer generationHour = 2;
     private Integer generationMinute = 0;
     private LinkedList<ReportsHostnameMapEntry> hostnameMap = new LinkedList<>();
@@ -54,6 +55,9 @@ public class ReportsSettings implements Serializable, JSONString
 
     public int getDbRetention() { return dbRetention; }
     public void setDbRetention( int dbRetention ) { this.dbRetention = dbRetention; }
+
+    public int getDbRetentionHourly() { return dbRetentionHourly; }
+    public void setDbRetentionHourly( int dbRetentionHourly ) { this.dbRetentionHourly = dbRetentionHourly; }
 
     public int getGenerationHour() { return generationHour; }
     public void setGenerationHour( int generationHour ) { this.generationHour = generationHour; }

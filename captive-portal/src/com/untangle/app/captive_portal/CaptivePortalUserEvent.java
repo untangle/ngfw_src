@@ -75,7 +75,7 @@ public class CaptivePortalUserEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache(sql, statementCache, conn);
 
         int i = 0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setInt(++i, getPolicyId());
         pstmt.setString(++i, getLoginName());
         pstmt.setString(++i, getEvent().toString());

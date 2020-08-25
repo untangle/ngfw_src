@@ -4,6 +4,9 @@
 package com.untangle.app.http;
 
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;
@@ -16,6 +19,8 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class HttpRequestEvent extends LogEvent
 {
+    private static final Pattern DOT_MATCH = Pattern.compile("\\.");
+
     private Long requestId;
     private HttpMethod method;
     private URI requestUri;
@@ -24,6 +29,74 @@ public class HttpRequestEvent extends LogEvent
     private String domain;
     private String referer;
     private long contentLength;
+
+    public static final Set<String> COUNTRY_CODES;
+
+    static {
+        COUNTRY_CODES = new HashSet<>();
+        COUNTRY_CODES.add("ao");
+        COUNTRY_CODES.add("ar");
+        COUNTRY_CODES.add("arpa");
+        COUNTRY_CODES.add("au");
+        COUNTRY_CODES.add("bd");
+        COUNTRY_CODES.add("bn");
+        COUNTRY_CODES.add("br");
+        COUNTRY_CODES.add("co");
+        COUNTRY_CODES.add("cr");
+        COUNTRY_CODES.add("cy");
+        COUNTRY_CODES.add("do");
+        COUNTRY_CODES.add("eg");
+        COUNTRY_CODES.add("et");
+        COUNTRY_CODES.add("fj");
+        COUNTRY_CODES.add("fk");
+        COUNTRY_CODES.add("gh");
+        COUNTRY_CODES.add("gn");
+        COUNTRY_CODES.add("gu");
+        COUNTRY_CODES.add("id");
+        COUNTRY_CODES.add("il");
+        COUNTRY_CODES.add("jm");
+        COUNTRY_CODES.add("ke");
+        COUNTRY_CODES.add("kh");
+        COUNTRY_CODES.add("kw");
+        COUNTRY_CODES.add("kz");
+        COUNTRY_CODES.add("lb");
+        COUNTRY_CODES.add("lc");
+        COUNTRY_CODES.add("lr");
+        COUNTRY_CODES.add("ls");
+        COUNTRY_CODES.add("ml");
+        COUNTRY_CODES.add("mm");
+        COUNTRY_CODES.add("mv");
+        COUNTRY_CODES.add("mw");
+        COUNTRY_CODES.add("mx");
+        COUNTRY_CODES.add("my");
+        COUNTRY_CODES.add("ng");
+        COUNTRY_CODES.add("ni");
+        COUNTRY_CODES.add("np");
+        COUNTRY_CODES.add("nz");
+        COUNTRY_CODES.add("om");
+        COUNTRY_CODES.add("pa");
+        COUNTRY_CODES.add("pe");
+        COUNTRY_CODES.add("pg");
+        COUNTRY_CODES.add("pw");
+        COUNTRY_CODES.add("py");
+        COUNTRY_CODES.add("qa");
+        COUNTRY_CODES.add("sa");
+        COUNTRY_CODES.add("sb");
+        COUNTRY_CODES.add("sv");
+        COUNTRY_CODES.add("sy");
+        COUNTRY_CODES.add("th");
+        COUNTRY_CODES.add("tn");
+        COUNTRY_CODES.add("tz");
+        COUNTRY_CODES.add("uk");
+        COUNTRY_CODES.add("uy");
+        COUNTRY_CODES.add("va");
+        COUNTRY_CODES.add("ve");
+        COUNTRY_CODES.add("ye");
+        COUNTRY_CODES.add("yu");
+        COUNTRY_CODES.add("za");
+        COUNTRY_CODES.add("zm");
+        COUNTRY_CODES.add("zw");
+    }
 
     /**
      * Create an HttpRequestEvent.
@@ -178,7 +251,7 @@ public class HttpRequestEvent extends LogEvent
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
         int i=0;
-        pstmt.setTimestamp(++i, getTimeStamp());
+        pstmt.setTimestamp(++i, getSqlTimeStamp());
         pstmt.setLong(++i, getSessionEvent().getSessionId());
         pstmt.setInt(++i, getSessionEvent().getClientIntf());
         pstmt.setInt(++i, getSessionEvent().getServerIntf());
@@ -256,7 +329,7 @@ public class HttpRequestEvent extends LogEvent
             host = host.substring(0, portPos);
         }
 
-        String[] parts = host.split("\\.");
+        String[] parts = DOT_MATCH.split(host);
         int len = parts.length;
         
         if (parts.length <= 2) {
@@ -265,85 +338,29 @@ public class HttpRequestEvent extends LogEvent
         
         String lastPart = parts[len-1];
 
-        try {
+        boolean isNumber = true;
+        for(var i = 0; i < lastPart.length(); i++){
+            if(Character.isDigit(lastPart.charAt(i))){
+                isNumber = false;
+                break;
+            }
+        }
+        if(isNumber){
             /*
              * If the last part is an int, its probably an IP
              * Just return the whole IP.
              */
-            int parseInt = Integer.parseInt( lastPart );
             return host;
-        } catch ( Exception e ) {}
-        
-        // https://wiki.mozilla.org/TLD_List
-        switch ( lastPart ) {
-        case "ao":
-        case "ar":
-        case "arpa":
-        case "au":
-        case "bd":
-        case "bn":
-        case "br":
-        case "co":
-        case "cr":
-        case "cy":
-        case "do":
-        case "eg":
-        case "et":
-        case "fj":
-        case "fk":
-        case "gh":
-        case "gn":
-        case "gu":
-        case "id":
-        case "il":
-        case "jm":
-        case "ke":
-        case "kh":
-        case "kw":
-        case "kz":
-        case "lb":
-        case "lc":
-        case "lr":
-        case "ls":
-        case "ml":
-        case "mm":
-        case "mv":
-        case "mw":
-        case "mx":
-        case "my":
-        case "ng":
-        case "ni":
-        case "np":
-        case "nz":
-        case "om":
-        case "pa":
-        case "pe":
-        case "pg":
-        case "pw":
-        case "py":
-        case "qa":
-        case "sa":
-        case "sb":
-        case "sv":
-        case "sy":
-        case "th":
-        case "tn":
-        case "tz":
-        case "uk":
-        case "uy":
-        case "va":
-        case "ve":
-        case "ye":
-        case "yu":
-        case "za":
-        case "zm":
-        case "zw":
-        if ( parts.length > 2 )
-            return parts[len-3] + "." + parts[len-2] + "." + parts[len-1];
-        else
-            return host;
-        
-        default:
+        }
+
+        if(COUNTRY_CODES.contains(lastPart)){
+            // If last part is a country suffix, include the next previous part.
+            // https://wiki.mozilla.org/TLD_List
+            if ( parts.length > 2 )
+                return parts[len-3] + "." + parts[len-2] + "." + parts[len-1];
+            else
+                return host;
+        }else{
             return parts[len-2] + "." + parts[len-1];
         }
     }

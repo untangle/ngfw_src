@@ -27,7 +27,7 @@ public class RequestLine implements Serializable
     private URI requestUri;
     private SessionEvent sessionEvent;
     private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
-    protected Timestamp timeStamp = new Timestamp((new java.util.Date()).getTime());
+    protected long timeStamp = System.currentTimeMillis();
     private long requestId = 0;
 
     private static long nextId = 0;
@@ -136,13 +136,13 @@ public class RequestLine implements Serializable
      * Time the event was logged, as filled in by logger.
      * @return time logged.
      */
-    public Timestamp getTimeStamp() { return timeStamp; }
+    public long getTimeStamp() { return timeStamp; }
 
     /**
      * Set the timestamp
      * @param newValue
      */
-    public void setTimeStamp(Timestamp newValue) { this.timeStamp = newValue; }
+    public void setTimeStamp(long newValue) { this.timeStamp = newValue; }
 
     /**
      * The HttpRequestEvent that logged this item.
