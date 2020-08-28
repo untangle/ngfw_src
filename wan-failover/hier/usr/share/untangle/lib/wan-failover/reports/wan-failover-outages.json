@@ -10,7 +10,7 @@
 	    "value": "false"
 	}
     ],
-    "description": "The fails tests of each interface over time.",
+    "description": "The failed tests of each interface over time.",
     "displayOrder": 315,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -25,7 +25,7 @@
     "timeDataDynamicValue": "success",
     "timeDataInterval": "AUTO",
     "timeStyle": "AREA",
-    "title": "WAN Interface Outages",
+    "title": "WAN Test Failures",
     "type": "TIME_GRAPH_DYNAMIC",
     "uniqueId": "wan-failover-ir298joso3",
     "units": "disconnects"
