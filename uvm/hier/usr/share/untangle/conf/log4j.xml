@@ -234,6 +234,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.app.threat_prevention">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.app.wireguard_vpn">
     <priority value="INFO"/>
   </category>
