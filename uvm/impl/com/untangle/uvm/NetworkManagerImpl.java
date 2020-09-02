@@ -1603,6 +1603,17 @@ public class NetworkManagerImpl implements NetworkManager
         networkSettings.setInterfaces(interfaceList);
         
         /**
+         * Check if all interfaceIds are unique
+         */
+        for ( InterfaceSettings intf1 : networkSettings.getInterfaces() ) {
+            for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
+                if ( intf1.getInterfaceId() == intf2.getInterfaceId() &&
+                     intf1 != intf2 )
+                    throw new RuntimeException( intf1.getName() + " & " + intf2.getName() + " interfaceId conflict." );
+            }
+        }
+
+        /**
          *  Sanitize dynamic routing settings
          */
         if (networkSettings.getDynamicRoutingSettings() != null ){
