@@ -273,6 +273,7 @@ public class WireGuardVpnManager
         try {
             wireguardResult = result.getOutput();
         } catch (Exception e) {
+            logger.info("wireguardCommand exception:", e);
         }
         return wireguardResult.trim();
     }
