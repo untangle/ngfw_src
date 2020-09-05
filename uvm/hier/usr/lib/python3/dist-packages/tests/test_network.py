@@ -1504,20 +1504,25 @@ class NetworkTests(NGFWTestCase):
         netsettings['qosSettings']['qosRules']['list'] = []
         uvmContext.networkManager().setNetworkSettings(netsettings)
         
-        remote_control.is_online() # generate some traffic.
         found = False
         timeout = 60
+        qos_data = []
         while not found and timeout > 0:
-            qos_query_output = subprocess.check_output("/usr/share/untangle/bin/qos-status.py", shell=True)
+            remote_control.is_online() # generate some traffic.
+            timeout -= 1
+            time.sleep(1)
+            qos_output_obj = subprocess.run("/usr/share/untangle/bin/qos-status.py", capture_output=True)
+            if qos_output_obj.returncode != 0 or qos_output_obj.stdout is None :
+                timeout -= 1
+                time.sleep(1)
+                continue
+            qos_query_output = qos_output_obj.stdout
             qos_output_decode = qos_query_output.decode("utf-8")
             # The JSON returned is using single quotes which is not JSON spec RFC7159 
             qos_output_decode = qos_output_decode.replace("\'", "\"")
             qos_data = json.loads(qos_output_decode)
             if qos_data:
                 found = True
-            else:
-                timeout -= 1
-                time.sleep(1)
         assert(qos_data[0]["priority"] != '')
 
     @classmethod
