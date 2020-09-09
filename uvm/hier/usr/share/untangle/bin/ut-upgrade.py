@@ -115,6 +115,14 @@ def clean():
     log("apt-get clean")
     return cmd_to_log("apt-get clean")
 
+def depmod():
+    """
+    Call depmod -a to ensure we have up-to-date module information
+    for any kernels we may have just installed
+    """
+    log("depmod -a")
+    return cmd_to_log("depmod -a")
+
 def check_dpkg():
     dpkg_avail = '/var/lib/dpkg/available'
 
@@ -165,6 +173,11 @@ log_date("")
 log("")
 
 clean()
+
+log_date("")
+log("")
+
+depmod()
 
 log_date("")
 log("")
