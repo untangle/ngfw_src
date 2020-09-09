@@ -30,7 +30,6 @@ Ext.define('Ung.apps.reports.view.Data', {
             allowDecimals: false,
             minValue: 1,
             maxValue: 366,
-            // hideTrigger:true,
         },{
             xtype: 'numberfield',
             fieldLabel: 'Data Retention Hours'.t(),
@@ -40,7 +39,6 @@ Ext.define('Ung.apps.reports.view.Data', {
             width: 220,
             allowDecimals: false,
             minValue: 0
-            // hideTrigger:true,
         }]
     },{
         title: 'Google Drive Backup'.t(),
@@ -98,9 +96,6 @@ Ext.define('Ung.apps.reports.view.Data', {
                 disabled: '{!googleDriveConfigured}'
             },
             listeners: {
-                // change: Ext.bind(function(elem, checked) {
-                //     this.getSettings().googleDriveDirectory = checked;
-                // }, this),
                 render: function(obj) {
                     obj.getEl().set({'data-qtip': 'The destination directory in google drive.'.t()});
                 }
