@@ -1426,6 +1426,16 @@ public class EventManagerImpl implements EventManager
                 keys.remove();
                 continue;
             }
+            if ("sqlTimeStamp".equals(key)) {
+                keys.remove();
+                continue;
+            }
+            if ("timeStamp".equals(key)) {
+                try{
+                    jsonObject.put("timeStamp", new Timestamp(jsonObject.getLong("timeStamp")).toString());
+                }catch(Exception e){}
+            }
+
 
             try{
                 String ipAddress = jsonObject.getString(key);
