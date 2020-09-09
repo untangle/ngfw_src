@@ -37,11 +37,13 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             vm.set('warning', warning);
             vm.set('hostname', networkSettings['hostName']);
 
-            var networks = vm.get('settings.networks.list');
+            var networks = result[0]['networks']['list'];
             var netlist = "";
-            for(x = 0;x < networks.length;x++) {
-                if (x != 0) netlist += ", ";
-                netlist += networks[x].address;
+            if(networks != null){
+                for(x = 0;x < networks.length;x++) {
+                    if (x != 0) netlist += ", ";
+                    netlist += networks[x].address;
+                }
             }
             vm.set('localNetworkList', netlist);
 
@@ -360,6 +362,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
                     record.set(key, value);
                 }
             });
+            record.set('networks',record.get('networks').split(/\s*,\s*/).join("\r\n"));
         }, view) );
         remoteToRecordTask.delay( 150 );
     },
