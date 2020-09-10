@@ -16,18 +16,29 @@ Ext.define('Ung.apps.reports.view.Data', {
         items: [{
             xtype: 'component',
             margin: '0 0 5 0',
-            html: 'Keep event data for this number of days. The smaller the number the lower the disk space requirements.'.t()
+            html: 'Keep event data for this number of days or hours. The smaller the number the lower the disk space requirements.'.t()
         },{
             xtype: 'numberfield',
-            fieldLabel: 'Data Retention days'.t(),
-            bind: '{settings.dbRetention}',
+            fieldLabel: 'Data Retention Days'.t(),
+            bind: {
+                value: '{settings.dbRetention}',
+                disabled: '{settings.dbRetentionHourly !== null && settings.dbRetentionHourly !== 0}'
+            },
             toValidate: true,
             labelWidth: 150,
             width: 220,
             allowDecimals: false,
             minValue: 1,
             maxValue: 366,
-            // hideTrigger:true,
+        },{
+            xtype: 'numberfield',
+            fieldLabel: 'Data Retention Hours'.t(),
+            bind: '{settings.dbRetentionHourly}',
+            toValidate: true,
+            labelWidth: 150,
+            width: 220,
+            allowDecimals: false,
+            minValue: 0
         }]
     },{
         title: 'Google Drive Backup'.t(),
@@ -85,9 +96,6 @@ Ext.define('Ung.apps.reports.view.Data', {
                 disabled: '{!googleDriveConfigured}'
             },
             listeners: {
-                // change: Ext.bind(function(elem, checked) {
-                //     this.getSettings().googleDriveDirectory = checked;
-                // }, this),
                 render: function(obj) {
                     obj.getEl().set({'data-qtip': 'The destination directory in google drive.'.t()});
                 }
