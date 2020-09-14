@@ -377,11 +377,11 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                 var clients = [{
                   name: 'downloadUntangleConfigurationFile',
                   type: 'zip',
-                  message: 'Click here to download this client\'s configuration zip file for remote Untangle OpenVPN clients or other OS\'s (apple/linux/etc).'.t()
+                  message: 'Click here to download this client\'s configuration zip file for remote Untangle OpenVPN site to site connections.'.t()
                 },{
                   name: 'downloadGenericConfigurationFile',
                   type: 'ovpn',
-                  message: 'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline.'.t()
+                  message: 'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline (For use with OpenVPN Connect App).'.t()
                 },{
                   name: 'downloadChromebookConfigurationFile',
                   type: 'onc',
