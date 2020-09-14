@@ -77,8 +77,8 @@ class AdBlockerTests(NGFWTestCase):
         if os.path.isdir('/usr/share/untangle/lib/ad-blocker/'):
             result = subprocess.call("rm /usr/share/untangle/lib/ad-blocker/adblock_easylist_2_0.txt", shell=True)
             result_download = subprocess.call("wget -q --timeout=3 http://" + global_functions.ACCOUNT_FILE_SERVER + "/adblock_easylist_2_0.txt -O /usr/share/untangle/lib/ad-blocker/adblock_easylist_2_0.txt", shell=True)
-            if result_download == 1:
-                print("Failed to download stock adblock_list")
+            if result_download != 0:
+                NGFWTestCase.skipTest(cls,"Failed to download stock adblock_list")
         # reload the rules
         app.initializeSettings()
     
