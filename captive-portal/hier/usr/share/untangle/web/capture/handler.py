@@ -104,12 +104,12 @@ def index(req):
             port = ""
             if ut['port'] != -1:
                 ut['port'] = ":" + str(ut['port'])
-            uri_base = ut['scheme'] + '://' + ut['host'] + port + "/cgi-bin/getAccessToken?authType={authenticationType}&authCode={authcode}"
+            uri_base = ut['scheme'] + '://' + ut['host'] + port + "/cgi-bin/getClientToken?authPlatform={authPlatform}&authCode={authCode}"
 
         if (authenticationType == "GOOGLE") or ((authenticationType == "ANY_OAUTH") and (authmode == "GOOGLE")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authenticationType="GOOGLE", authcode=authcode)).geturl()))
+            altres = urllib.urlopen(str(urlparse(uri_base.format(authPlatform="365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com", authCode=authcode)).geturl()))
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
@@ -142,7 +142,7 @@ def index(req):
         if (authenticationType == "FACEBOOK") or ((authenticationType == "ANY_OAUTH") and (authmode == "FACEBOOK")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authenticationType="FACEBOOK", authcode=authcode)).geturl()))
+            altres = urllib.urlopen(str(urlparse(uri_base.format(authPlatform="1840471182948119", authCode=authcode)).geturl()))
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
@@ -175,7 +175,7 @@ def index(req):
         if (authenticationType == "MICROSOFT") or ((authenticationType == "ANY_OAUTH") and (authmode == "MICROSOFT")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authenticationType="MICROSOFT", authcode=authcode)).geturl()))
+            altres = urllib.urlopen(str(urlparse(uri_base.format(authPlatform="f8285e96-b240-4036-8ea5-f37cf6b981bb", authCode=authcode)).geturl()))
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
