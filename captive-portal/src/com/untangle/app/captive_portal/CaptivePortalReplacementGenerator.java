@@ -56,7 +56,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
     protected static final String MICROSOFT_AUTH_HOST = "login.microsoftonline.com";
     protected static final String MICROSOFT_AUTH_PATH = "/common/oauth2/v2.0/authorize";
-    protected static final String MICROSOFT_CLIENT_ID = "f963a9b1-4d6c-4970-870d-3a75014e1364";
+    protected static final String MICROSOFT_CLIENT_ID = "f8285e96-b240-4036-8ea5-f37cf6b981bb";
     protected static final Map<String,Object> MICROSOFT_PARAMETERS;
 
     static {
