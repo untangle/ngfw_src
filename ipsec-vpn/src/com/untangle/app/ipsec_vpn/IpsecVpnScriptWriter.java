@@ -47,10 +47,6 @@ public class IpsecVpnScriptWriter
 
         int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
         int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
-        LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels(); //CHECK: Assume settings are not null???
-
-        IpsecVpnTunnel data;
-        int x;
 
         FileWriter script = null;
         try {
@@ -85,16 +81,22 @@ public class IpsecVpnScriptWriter
             }
             else {
                 //Rules to bypass local to local traffic so traffic will flow(NGFW-13426)
-                for (x = 0; x < tunnelList.size(); x++) {
-                        data = tunnelList.get(x);
-                        if (data.getActive() != true) continue;
+                if (settings != null) {
+                    LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
 
-                        String leftSubnet = data.getLeftSubnet();
-                        String rightSubnet = data.getRightSubnet();
+                    IpsecVpnTunnel data;
+                    int x;
+                    for (x = 0; x < tunnelList.size(); x++) {
+                            data = tunnelList.get(x);
+                            if (data.getActive() != true) continue;
 
-                        script.write("# Bypass local to local traffic on IPsec if bypass flag is not set" + RET);
-                        script.write("${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir in -s " + rightSubnet + " -d " + leftSubnet + " --goto set-bypass-mark >/dev/null 2>&1" + RET);
-                        script.write("${IPTABLES} -t filter -I bypass-rules -m policy --pol ipsec --dir in -s " + rightSubnet + " -d " + leftSubnet + " --goto set-bypass-mark" + RET + RET);
+                            String leftSubnet = data.getLeftSubnet();
+                            String rightSubnet = data.getRightSubnet();
+
+                            script.write("# Bypass local to local traffic on IPsec if bypass flag is not set" + RET);
+                            script.write("${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir in -s " + rightSubnet + " -d " + leftSubnet + " --goto set-bypass-mark >/dev/null 2>&1" + RET);
+                            script.write("${IPTABLES} -t filter -I bypass-rules -m policy --pol ipsec --dir in -s " + rightSubnet + " -d " + leftSubnet + " --goto set-bypass-mark" + RET + RET);
+                    }
                 }
             }
 
