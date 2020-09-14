@@ -155,11 +155,7 @@ Ext.define('Ung.apps.reports.MainController', {
     },
 
     configureGoogleDrive: function () {
-        if(Rpc.directData('rpc.appManager.app', 'directory-connector')){
-            Ung.app.redirectTo('#service/directory-connector/google');
-        } else {
-            Ext.MessageBox.alert('Error'.t(), 'Google Drive requires Directory Connector application.'.t());
-        }
+        Ung.app.redirectTo('#config/administration/google');
     },
 
     onUpload: function (btn) {
