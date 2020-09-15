@@ -421,7 +421,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             ["inappropriate", 'Porn, Kiddy porn, sites you shouldn\'t visit at work, etc. Warning: These are generally quite Regex heavy and thus high load and frequent false positives. Only run these if you\'re really interested.'.t() ],
             ["info", 'Signatures that attempt to send informaton to commonly known malware sites.'.t() ],
             ["ipsec-events", 'These rules log events related to insecure IPsec.'.t() ],
-            ["kerberos-events", 'These rules log events related to insecure and wrong Kerberos.'.t() ],
+            ["kerberos-events", 'These rules log events related to insecure and wrongly configured Kerberos.'.t() ],
             ["malware", 'This category is malware and spyware related with no criminal intent. The threshold for inclusion in this set is typically some form of tracking that stops short of obvious criminal activity.'.t() ],
             ["misc", 'Various, otherwise uncategorizable exploit attempts.'.t() ],
             ["mobile_malware", 'This category contains signatures for the detection of traffic on mobile devices.'.t() ],
