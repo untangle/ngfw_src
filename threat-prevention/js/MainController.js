@@ -17,13 +17,17 @@ Ext.define('Ung.apps.threatprevention.MainController', {
         });
 
         v.setLoading(true);
-        Rpc.asyncData(v.appManager, 'getSettings')
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'localNetworks'),
+        ], this)
         .then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
 
-            vm.set('settings', result);
+            vm.set('settings', result[0]);
+            vm.set('localNetworks', result[1]);
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -117,47 +121,87 @@ Ext.define('Ung.apps.threatprevention.MainController', {
     handleThreatLookup: function() {
         var v = this.getView(), vm = this.getViewModel();
         var lookupInput = vm.get('threatLookupInfo.inputVal');
-        if(!lookupInput) {return;}
+        var lookupTarget = vm.get('threatLookupInfo.target');
+        vm.set( 'threatLookupInfo.address', '');
+        vm.set( 'threatLookupInfo.recentCount', '');
+        vm.set( 'threatLookupInfo.level', 0);
+        vm.set( 'threatLookupInfo.popularity', 0);
+        vm.set( 'threatLookupInfo.history', '');
+        vm.set( 'threatLookupInfo.country', '');
+        vm.set( 'threatLookupInfo.age', 0);
 
+        if(!lookupInput) {
+            return;
+        }
+
+        // Don't perform lookup if local
+        var local = false;
+        vm.get('localNetworks').forEach( function(network){
+            if(Util.ipMatchesNetwork(lookupInput, network['address'], network['netmask'])){
+                local = true;
+            }
+        });
+
+        vm.set( 'threatLookupInfo.local', local);
+        if(local){
+            return;
+        }
+
+        promises = [];
+        // if(lookupInput.match(Ext.form.field.VTypes.mask.ip4AddrMaskRe) != null && lookupTarget == 'client'){
+        if(lookupTarget == 'client'){
+                promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpInfo', [lookupInput]));
+            promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpHistory', [lookupInput]));
+        }else{
+            promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlInfo', [lookupInput]));
+            promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput]));
+        }
         v.setLoading(true);
-        Ext.Deferred.sequence([Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput])], this)
-        .then(function(result){
+        Ext.Deferred.sequence(promises, this)
+        .then(function(results){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
             v.setLoading(false);
+            var result = null;
 
-            for(var i in result) {
-                for(var j in result[i]) {
-                    if(result[i][j].hasOwnProperty('queries')) {
-                            //Parse the getrepinfo data
-                            if(result[i][j].queries.hasOwnProperty('getinfo')) {
-                                vm.set('threatLookupInfo.level', result[i][j].queries.getinfo[0].reputation);
-                            }else if(result[i][j].queries.hasOwnProperty('getrepinfo')) {
-                                vm.set('threatLookupInfo.address', result[i][j].hasOwnProperty('url') ? result[i][j].url : result[i][j].ip);
-                                vm.set('threatLookupInfo.popularity', result[i][j].queries.getrepinfo.popularity);
-                                vm.set('threatLookupInfo.age', result[i][j].queries.getrepinfo.age);
-                                vm.set('threatLookupInfo.country', result[i][j].queries.getrepinfo.country);
-                                vm.set('threatLookupInfo.recentCount', result[i][j].queries.getrepinfo.threathistory);
+            if(results[0] != null){
+                result = results[0][0];
+                vm.set('threatLookupInfo.level', result.reputation);
+                vm.set('threatLookupInfo.address', result.hasOwnProperty('url') ? result.url : result.ip);
+            }
+            if( results[1] != null ){
+                results[1].forEach(function(result){
+                    if(result.hasOwnProperty('queries')) {
+                        if(result.queries.hasOwnProperty('getrepinfo')) {
+                            if(result.queries.getrepinfo.hasOwnProperty('popularity')){
+                                vm.set('threatLookupInfo.popularity', result.queries.getrepinfo.popularity);
                             }
-
+                            if(result.queries.getrepinfo.hasOwnProperty('age')){
+                                vm.set('threatLookupInfo.age', result.queries.getrepinfo.age);
+                            }
+                            if(result.queries.getrepinfo.hasOwnProperty('country')){
+                                vm.set('threatLookupInfo.country', result.queries.getrepinfo.country);
+                            }
+                            if(result.queries.getrepinfo.hasOwnProperty('threathistory')){
+                                vm.set('threatLookupInfo.recentCount', result.queries.getrepinfo.threathistory);
+                            }
+                        }else if(result.queries.hasOwnProperty('geturlhistory')) {
                             //parse the geturlhistory or getiphistory data
-                            if(result[i][j].queries.hasOwnProperty('geturlhistory')) {
-                                //current category info
-                                if(result[i][j].queries.geturlhistory.hasOwnProperty('current_categorization')) {
-                                    if(result[i][j].queries.geturlhistory.current_categorization.hasOwnProperty('categories')) {
-                                        vm.set('threatLookupInfo.categories', result[i][j].queries.geturlhistory.current_categorization.categories);
-                                    }
+                            //current category info
+                            if(result.queries.geturlhistory.hasOwnProperty('current_categorization')) {
+                                if(result.queries.geturlhistory.current_categorization.hasOwnProperty('categories')) {
+                                    vm.set('threatLookupInfo.categories', result.queries.geturlhistory.current_categorization.categories);
                                 }
-
+                            }else if(result.queries.geturlhistory.hasOwnProperty('security_history')) {
                                 //security history
-                                if(result[i][j].queries.geturlhistory.hasOwnProperty('security_history')) {
-                                    vm.set('threatLookupInfo.history', result[i][j].queries.geturlhistory.security_history);
-                                }
+                                vm.set('threatLookupInfo.history', result.queries.geturlhistory.security_history);
                             }
                         }
                     }
-                }
+            });
+        }
+
             }, function(ex) {
             if(!Util.isDestroyed(v)){
                 v.setLoading(false);
