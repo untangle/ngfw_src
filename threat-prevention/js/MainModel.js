@@ -9,14 +9,16 @@ Ext.define('Ung.apps.threatprevention.MainModel', {
 
         threatMeter: null,
         currentThreatDescription: null,
-        threatList: null
+        threatList: null,
 
     },
     stores: {
         rules: { data: '{settings.rules.list}' },
         passSites: { data: '{settings.passSites.list}' },
         threatLookupInfo: {
-            model: 'Ung.apps.threatprevention.ThreatLookupInfo'
+            model: 'Ung.apps.threatprevention.ThreatLookupInfo',
+            target: 'server', 
+            local: false
         }
     }
 });
@@ -27,11 +29,13 @@ Ext.define('Ung.apps.threatprevention.ThreatLookupInfo', {
     extend: 'Ext.data.Model',
     fields: [
          {name: 'inputVal', type: 'string'},
+         {name: 'target', type: 'string'},
+         {name: 'local', type: 'boolean'},
          {name: 'address', type: 'string'},
          {name: 'recentCount', type: 'string'},
          {name: 'level', type: 'int'},
          {name: 'popularity', type: 'int'},
-         {name: 'threathistory', type: 'string'},
+         {name: 'history', type: 'string'},
          {name: 'country', type: 'string'},
          {name: 'age', type: 'int'}
     ],
@@ -43,7 +47,6 @@ Ext.define('Ung.apps.threatprevention.ThreatLookupInfo', {
         model: 'ThreatHistory',
         name: 'history'
     }]
-
 });
 
 /**
