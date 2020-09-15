@@ -113,11 +113,10 @@ def handle_microsoft(logfile,authcode,cid,secret):
 
 #------------------------------------------------------------------------------
 
+# The list of applications and corresponding secrets for each platform
 platform_data = [
-# OAuth applications created and owned by Untangle corporate accounts on each provider platform
 	{ "vendor": "GOOGLE", "cid": "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com", "secret": "76RDgNAPNwZ6-frswmLPDaRJ" },
 	{ "vendor": "MICROSOFT", "cid": "f8285e96-b240-4036-8ea5-f37cf6b981bb", "secret": "7lA3P6.aO3Y2.-w2B6v33i1P.cP1DSpCCT" },
-# Legacy applications created under personal accounts that can be removed once NGFW 16.0 is fully deployed
 	{ "vendor": "FACEBOOK", "cid": "1840471182948119", "secret": "0f93a8ce9631adf41115447354432bb8" }
 ]
 
