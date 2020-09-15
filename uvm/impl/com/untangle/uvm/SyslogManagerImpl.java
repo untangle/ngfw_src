@@ -30,7 +30,7 @@ public class SyslogManagerImpl
     public static final String LOG_TAG_PREFIX = LOG_TAG + "[0]: ";
 
     private static final File CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
-    private static final String CONF_LINE = "if $msg startswith ' " + LOG_TAG + "[' then @";
+    private static final String CONF_LINE = "if ($syslogfacility-text == 'local5') then @";
 
     private static boolean enabled;
 
@@ -110,7 +110,8 @@ public class SyslogManagerImpl
             if (protocol.equalsIgnoreCase("TCP")) {
                 conf += "@";
             }
-            conf += hostname + ":" + port;
+            conf += hostname + ":" + port +"\n";
+            conf += "& stop" + "\n";
 
             // write conf file
             BufferedWriter out = null;
