@@ -373,6 +373,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             [ "unusual-client-port-connection", "A client was using an unusual port".t(), "medium" ],
             [ "web-application-activity", "Access to a potentially vulnerable web application".t(), "medium" ],
 
+            [ "general", "General traffic".t(), "low" ],
             [ "misc-activity", "Misc activity".t(), "low" ],
             [ "network-scan", "Detection of a Network Scan".t(), "low" ],
             [ "not-suspicious", "Not Suspicious Traffic".t(), "low" ],
