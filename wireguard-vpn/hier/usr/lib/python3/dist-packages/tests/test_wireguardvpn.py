@@ -137,7 +137,7 @@ class WireGuardVpnTests(NGFWTestCase):
         newNetSettings = copy.deepcopy( origNetSettings )
 
         # Verify the WG settings don't already have this address stored
-        assert(testingAddressNet not in wgSettings['networks'])
+        assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
 
         # Find a DHCP LAN device and set it's address to the testing address
         for intf in newNetSettings['interfaces']['list']:
@@ -155,7 +155,7 @@ class WireGuardVpnTests(NGFWTestCase):
         newWGSettings = self._app.getSettings()
 
         # Test that new WG LAN matches network LAN
-        assert(testingAddressNet in newWGSettings['networks'])
+        assert(testingAddressNet in newWGSettings['networks']['list'][0]['address'])
 
         # Set network settings back to normal
         uvmContext.networkManager().setNetworkSettings( origNetSettings )
@@ -164,7 +164,7 @@ class WireGuardVpnTests(NGFWTestCase):
         wgSettings = self._app.getSettings()
 
         # Assert that old settings were set back properly proper now
-        assert(testingAddressNet not in wgSettings['networks'])
+        assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
 
     def test_032_netSettingsAndCustomWGNetworks(self):
         """Test if changing the Network Settings LAN address DOES NOT update custom local networks in the WG app"""
@@ -181,7 +181,7 @@ class WireGuardVpnTests(NGFWTestCase):
         origNetSettings = uvmContext.networkManager().getNetworkSettings()
 
         # Verify the WG settings don't already have this address stored
-        assert(testingAddressNet not in origWGSettings['networks'])
+        assert(testingAddressNet not in origWGSettings['networks']['list'][0]['address'])
 
         # deepcopy network settings for manipulation
         newNetSettings = copy.deepcopy( origNetSettings )
@@ -194,7 +194,7 @@ class WireGuardVpnTests(NGFWTestCase):
         self._app.setSettings(newWGSettings)
 
         # Verify custom configuration is returned with get settings
-        assert(testingCustomWGAddr in self._app.getSettings()['networks'])
+        assert(testingCustomWGAddr in self._app.getSettings()['networks']['list'][0]['address'])
 
         # Find a DHCP LAN device and set it's address to the testing address
         for intf in newNetSettings['interfaces']['list']:
@@ -210,8 +210,8 @@ class WireGuardVpnTests(NGFWTestCase):
 
         # Test that the custom WG network exists in the latest WG networks list, and that the local networks are not
         wgSettings = self._app.getSettings()
-        assert(testingAddressNet not in wgSettings['networks'])
-        assert(testingCustomWGAddr in wgSettings['networks'])
+        assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
+        assert(testingCustomWGAddr in wgSettings['networks']['list'][0]['address'])
 
         # Set app back to normal
         self._app.setSettings(origWGSettings)
@@ -223,8 +223,8 @@ class WireGuardVpnTests(NGFWTestCase):
         wgSettings = self._app.getSettings()
 
         # Assert that old settings were set back properly
-        assert(testingAddressNet not in wgSettings['networks'])
-        assert(testingCustomWGAddr not in wgSettings['networks'])
+        assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
+        assert(testingCustomWGAddr not in wgSettings['networks']['list'][0]['address'])
 
 
 test_registry.register_module("wireguard-vpn", WireGuardVpnTests)
