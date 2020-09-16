@@ -148,7 +148,6 @@ Ext.define('Ung.apps.threatprevention.MainController', {
         }
 
         promises = [];
-        // if(lookupInput.match(Ext.form.field.VTypes.mask.ip4AddrMaskRe) != null && lookupTarget == 'client'){
         if(lookupTarget == 'client'){
                 promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpInfo', [lookupInput]));
             promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpHistory', [lookupInput]));
