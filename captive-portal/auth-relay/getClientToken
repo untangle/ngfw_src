@@ -1,5 +1,22 @@
 #!/usr/bin/python
 
+# NOTE: This is a CGI script that will be called by Apache so it must follow
+# the Common Gateway Interface specifications:
+# https://httpd.apache.org/docs/2.4/howto/cgi.html
+#
+# This script will be called by handler.py on an Untangle NGFW during Captive
+# Portal login using an OAuth provider. We should return a single line of text.
+#
+# If the text we return includes the string ERROR: the script will treat the
+# result as a login failure and display an error page with the error text we
+# return. Any other return value will be treated as a successful login and
+# the string we return will be used as the user identification.
+#
+# For all supported providers, we look for and prefer the user email address.
+# If the email is not available in the response from the provider we fall
+# back to using the user name. If that is not available we return an error
+# indicating we couldn't find the identity for the user.
+
 import urlparse
 import requests
 import json
@@ -7,7 +24,9 @@ import sys
 import os
 
 #------------------------------------------------------------------------------
-
+# Function to retrieve user details from Google using the passed auth code,
+# client id, and secret. Details are logged to the passed open logfile.
+# Returns the most specific user identification detail we're able to extract.
 def handle_google(logfile,authcode,cid,secret):
 	authdata = {}
 	authdata['code'] = authcode
@@ -43,7 +62,9 @@ def handle_google(logfile,authcode,cid,secret):
 	return("ERROR: missing identity")
 
 #------------------------------------------------------------------------------
-
+# Function to retrieve user details from Facebook using the passed auth code,
+# client id, and secret. Details are logged to the passed open logfile.
+# Returns the most specific user identification detail we're able to extract.
 def handle_facebook(logfile,authcode,cid,secret):
 	authdata = {}
 	authdata['code'] = authcode
@@ -78,7 +99,9 @@ def handle_facebook(logfile,authcode,cid,secret):
 	return("ERROR: missing identity")
 
 #------------------------------------------------------------------------------
-
+# Function to retrieve user details from Microsoft using the passed auth code,
+# client id, and secret. Details are logged to the passed open logfile.
+# Returns the most specific user identification detail we're able to extract.
 def handle_microsoft(logfile,authcode,cid,secret):
 	authdata = {}
 	authdata['code'] = authcode
@@ -112,6 +135,8 @@ def handle_microsoft(logfile,authcode,cid,secret):
 	return("ERROR: missing identity")
 
 #------------------------------------------------------------------------------
+# SCRIPT EXECUTION BEGINS HERE
+#------------------------------------------------------------------------------
 
 # The list of applications and corresponding secrets for each platform
 platform_data = [
@@ -122,29 +147,36 @@ platform_data = [
 
 qstring = None
 
+# This is a CGI script so we MUST write the MIME type header first
 sys.stdout.write("Content-type: text\n\n")
 
+# Pull the GET request from the environment
 if ("QUERY_STRING" in os.environ):
 	qstring = os.environ['QUERY_STRING']
 
+# Can't do anything without the query string
 if (qstring == None):
 	sys.stdout.write("ERROR: missing query string in getClientToken script")
 	sys.exit()
 
+# Parse the individual parameters from the query string
 qparams = urlparse.parse_qs(qstring)
 
+# Get the authPlatform parameter, return error if missing
 if ('authPlatform' in qparams):
 	auth_platform = qparams['authPlatform'][0]
 else:
 	sys.stdout.write("ERROR: missing authPlatform in getClientToken script")
 	sys.exit()
 
+# Get the authCode parameter, return error if missing
 if ('authCode' in qparams):
 	auth_code = qparams['authCode'][0]
 else:
 	sys.stdout.write("ERROR: missing authCode in getClientToken script")
 	sys.exit()
 
+# Append everything to the logfile to assist with debugging
 logfile = open("/tmp/getClientToken.log","a")
 logfile.write("%s\n" % ("--------------------"));
 logfile.write("QUERY: %s\n" % (qstring));
@@ -154,6 +186,8 @@ logfile.write("AUTHCODE: %s\n" % (auth_code));
 # start with an error that will get replaced if we find valid data
 result = "ERROR: Unknown authPlatform in getClientToken script"
 
+# Check each entry in platform_data to find the cid that matches
+# the auth_platform we extracted from the query string
 for entry in platform_data:
 	if entry['cid'] != auth_platform:
 		continue
@@ -165,8 +199,10 @@ for entry in platform_data:
 		result = handle_microsoft(logfile,auth_code,entry['cid'],entry['secret'])
 	break
 
+# Log the result that will be returned to the caller
 logfile.write("XMIT: %s\n" % (result));
 logfile.close()
 
+# Return the result to the caller
 sys.stdout.write(result)
 sys.exit()
