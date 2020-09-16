@@ -86,7 +86,8 @@ sed -e 's/stable-150\s/stable-151 /g' -i /etc/apt/sources.list.d/untangle.list
 
 # see corresponding comment in preinst: we need to unmask those
 # services that were masked just so the dist-upgrade could succeed
-systemctl unmask freeradius-dhcp # NGFW-12934
+systemctl unmask freeradius-dhcp # NGFW-12934, NGFW-13249
+systemctl unmask freeradius # NGFW-12934, NGFW-13249
 systemctl unmask suricata # NGFW-12939, NGFW-13217
 
 
