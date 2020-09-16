@@ -2,9 +2,6 @@
 
 set -e
 
-#rm -rf $1/apache-log4j-1.2.16
-#rmdir $1/apache-log4j-1.2.16
-
 patch_file=`pwd`/logging-log4j-1.2.16.patch
 
 cd $1/apache-log4j-1.2.16 && {
