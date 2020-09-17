@@ -38,6 +38,11 @@ public class WireGuardVpnNetwork implements JSONString, Serializable
     {
         return (address.toString());
     }
+    
+    public IPMaskedAddress getMaskedAddress()
+    {
+        return address;
+    }
 
     public void setId(int id)
     {
@@ -47,6 +52,11 @@ public class WireGuardVpnNetwork implements JSONString, Serializable
     public void setAddress(String address)
     {
         this.address = new IPMaskedAddress(address);
+    }
+
+    public void setAddress(IPMaskedAddress address)
+    {
+        this.address = address;
     }
 
     public String toJSONString()
