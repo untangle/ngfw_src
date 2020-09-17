@@ -6,6 +6,8 @@ package com.untangle.uvm.network;
 import java.io.Serializable;
 import java.net.InetAddress;
 
+import com.untangle.uvm.app.IPMaskedAddress;
+
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -58,6 +60,8 @@ public class InterfaceStatus implements Serializable, JSONString
     public Integer getV4PrefixLength( ) { return this.v4PrefixLength; }
     public void setV4PrefixLength( Integer newValue ) { this.v4PrefixLength = newValue; }
 
+    public IPMaskedAddress getV4MaskedAddress() { if (this.v4Address != null && this.v4PrefixLength != null) { return new IPMaskedAddress(this.v4Address, this.v4PrefixLength); } else return null; }
+
     public InetAddress getV6Address( ) { return this.v6Address; }
     public void setV6Address( InetAddress newValue ) { this.v6Address = newValue; }
 
@@ -67,4 +71,6 @@ public class InterfaceStatus implements Serializable, JSONString
     public InetAddress getV6Gateway( ) { return this.v6Gateway; }
     public void setV6Gateway( InetAddress newValue ) { this.v6Gateway = newValue; }
     
+    public IPMaskedAddress getV6MaskedAddress() { if (this.v6Address != null && this.v6PrefixLength != null) { return new IPMaskedAddress(this.v6Address, this.v6PrefixLength); } else return null; }
+
 }
