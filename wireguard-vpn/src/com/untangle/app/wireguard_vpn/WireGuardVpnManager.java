@@ -236,7 +236,7 @@ public class WireGuardVpnManager
      */
     public String createQrCode(String publicKey){
         File file = getRemoteConfigFile(publicKey);
-        return (file != null) ? wireguardCommand("/bin/qrencode -t PNG -o - < " + file.getAbsolutePath() + " | /bin/base64 -w0")  : "";
+        return (file != null) ? wireguardCommand("/usr/bin/qrencode -t PNG -o - < " + file.getAbsolutePath() + " | /usr/bin/base64 -w0")  : "";
     }
 
     /**
