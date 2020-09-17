@@ -46,6 +46,7 @@ packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
 
 $(OUTPUT_DIRECTORY)/jabsorb-1.2.2-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 jabsorb-1.2.2-src.patch
+$(OUTPUT_DIRECTORY)/apache-log4j-1.2.16: $(OUTPUT_DIRECTORY)/logging-log4j-1.2.16.tar.gz $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 apache-log4j-1.2.16.patch
 
 all: $(packages) ;
 # remove files and directories with spaces in names
