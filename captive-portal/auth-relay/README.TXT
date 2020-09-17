@@ -20,7 +20,7 @@ time the request will include the authcode added by the auth-relay
 callback handler.
 
 5) The handler.py script will detect the authcode, and pass it to
-getAccessToken on auth-relay, which will exchange the code for an
+getClientToken on auth-relay, which will exchange the code for an
 access token, and then use the access token to retrieve the email address
 of the user. The email address will be returned to the handler.py script
 which will use it to call the Captive Portal userLogin function, logging
