@@ -142,6 +142,14 @@ public class WireGuardVpnApp extends AppBase
             }
         }
 
+        /*
+        * Fix up the WGN network ids
+        */
+        int wgnIdx = 0;
+        for(WireGuardVpnNetwork localNets : newSettings.getNetworks()) {
+            localNets.setId(++wgnIdx);
+        }
+
         /**
          * Save the settings
          */
