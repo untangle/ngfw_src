@@ -56,11 +56,6 @@ class IntrusionPreventionEventMonitor implements Runnable
     protected IntrusionPreventionEventMonitor( IntrusionPreventionApp app )
     {
         this.app = app;
-
-        File f = new File( IntrusionPreventionSnortUnified2Parser.EVENT_MAP );
-        if(!f.exists()){
-            this.app.reconfigure(false);
-        }
     }
 
     /**
