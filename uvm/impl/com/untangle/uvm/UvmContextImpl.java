@@ -1078,7 +1078,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             this.reportsApp.logEvent(evt);
         }
 
-        this.eventManager.logEvent(evt);
+        if (this.eventManager != null) {
+            this.eventManager.logEvent(evt);
+        }
     }
 
     /**
