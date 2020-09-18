@@ -505,29 +505,39 @@ class UvmTests(NGFWTestCase):
 
     def test_200_dashboard_free_disk_space(self):
         """Check if full disk space is within range """
-        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('ascii').split(' ')
+        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('utf-8').split(' ')
         used = float(df_fields[2]) * 1024
         available = float(df_fields[3]) * 1024
         total_size = used + available
         in_threshold = int((total_size * .97) - used)
         out_threshold = int((total_size * .93) - used)
-
-        full_filename = '/full.txt';
-
-        subprocess.call("/bin/fallocate -l " + str(in_threshold) + " " + full_filename, shell=True)
-        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('ascii').split(' ')
+        fallocate_path = ""
+        full_filename = "/full.txt";
+        # check if fallocate exists and if in /bin or /usr/bin
+        fallocate_output_obj = subprocess.run(["which", "fallocate"], capture_output=True)
+        if fallocate_output_obj.returncode != 0 or fallocate_output_obj.stdout is None :
+            raise unittest.SkipTest("fallocate not available")
+        else:
+            fallocate_path = fallocate_output_obj.stdout.decode("utf-8")
+            fallocate_path = fallocate_path.replace("\n","")
+        filename_output_obj = subprocess.run([fallocate_path,"-l",str(in_threshold),full_filename])
+        if filename_output_obj.returncode != 0:
+            raise unittest.SkipTest(full_filename + " not available")
+        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('utf-8').split(' ')
         time.sleep(60)
         metrics_and_stats = uvmContext.metricManager().getMetricsAndStats()
         uvm_free_disk_percent = (float(metrics_and_stats["systemStats"]["freeDiskSpace"]) / float(metrics_and_stats["systemStats"]["totalDiskSpace"]) * 100)
-        os.remove(full_filename)
+        subprocess.run(["rm", "-f", full_filename])
         assert(uvm_free_disk_percent < 5)
 
-        subprocess.call("/bin/fallocate -l " + str(out_threshold) + " " + full_filename, shell=True)
-        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('ascii').split(' ')
+        filename_output_obj= subprocess.run([fallocate_path, "-l", str(out_threshold), full_filename])
+        if filename_output_obj.returncode != 0:
+            raise unittest.SkipTest(full_filename + " not available 2nd")
+        df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('utf-8').split(' ')
         time.sleep(60)
         metrics_and_stats = uvmContext.metricManager().getMetricsAndStats()
         uvm_free_disk_percent = (float(metrics_and_stats["systemStats"]["freeDiskSpace"]) / float(metrics_and_stats["systemStats"]["totalDiskSpace"]) * 100)
-        os.remove(full_filename)
+        subprocess.run(["rm", "-f", full_filename])
         assert(uvm_free_disk_percent > 5)
 
 test_registry.register_module("uvm", UvmTests)
