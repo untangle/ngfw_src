@@ -374,7 +374,11 @@ public class ThreatPreventionApp extends AppBase
         }else if(key.equals("getUrlHistory")){
             return webrootQuery != null ? webrootQuery.getUrlHistory(arguments) : null;
         }else if(key.equals("getIpHistory")){
-            return webrootQuery != null ? webrootQuery.getIpHistory(arguments) : null;
+            return webrootQuery != null ? webrootQuery.getIpHistory(resolveAddresses(arguments)) : null;
+        }else if(key.equals("getUrlInfo")){
+            return webrootQuery != null ? webrootQuery.urlGetInfo(arguments) : null;
+        }else if(key.equals("getIpInfo")){
+            return webrootQuery != null ? webrootQuery.ipGetInfo(resolveAddresses(arguments)) : null;
         }else if(key.equals("rules")){
             result = new JSONArray();
             try{
@@ -400,6 +404,24 @@ public class ThreatPreventionApp extends AppBase
         }
 
         return result;
+    }
+
+    /**
+     * Convert string of hostnames to string of IP addresses.
+     * @param addresses
+     * @return String array of resolved IP addresses.
+     */
+    private String[] resolveAddresses(String... addresses){
+        String ipAddresses[] = new String[addresses.length];
+        for(int i = 0; i < addresses.length; i++){
+            ipAddresses[i] = "";
+            try{
+                ipAddresses[i] = InetAddress.getByName(addresses[i]).getHostAddress();
+            }catch( Exception e){
+                logger.warn("resolveAddresses: Unable to resolve: " + addresses[i]);
+            }
+        }
+        return ipAddresses;
     }
 
     /**
