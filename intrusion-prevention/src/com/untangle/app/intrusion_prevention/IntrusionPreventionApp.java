@@ -194,7 +194,7 @@ public class IntrusionPreventionApp extends AppBase
         updated = synchronizeSettingsWithVariables() || updated;
 
         if(updated){
-            this.setSettings(this.settings);
+            this.setSettings(this.settings, true, false);
         }
 
         this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
@@ -219,7 +219,7 @@ public class IntrusionPreventionApp extends AppBase
      */
     public void setSettings(final IntrusionPreventionSettings newSettings)
     {
-        setSettings(newSettings, false);
+        setSettings(newSettings, false, true);
     }
 
     /**
@@ -229,8 +229,10 @@ public class IntrusionPreventionApp extends AppBase
      *      New settings to configure.
      * @param block
      *      Daemon blocking to send to reconfigure.
+     * @param reconfigure
+     *      If true, reconfigure, otherwise don't.
      */
-    public void setSettings(final IntrusionPreventionSettings newSettings, boolean block)
+    public void setSettings(final IntrusionPreventionSettings newSettings, boolean block, boolean reconfigure)
     {
         /**
          * Set the rule ids.
@@ -275,7 +277,9 @@ public class IntrusionPreventionApp extends AppBase
         this.settings = newSettings;
         try { logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
 
-        this.reconfigure(block);
+        if(reconfigure){
+            this.reconfigure(block);
+        }
     }
 
     /**
@@ -600,7 +604,11 @@ public class IntrusionPreventionApp extends AppBase
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         UvmContextFactory.context().daemonManager().incrementUsageCount( DAEMON_NAME );
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
-        this.ipsEventMonitor.start();
+        try{
+            this.ipsEventMonitor.start();
+        }catch( Exception e ){
+            logger.warn( "Error starting Intrusion Prevention Event Monitor", e );
+        }
         updateMetricsMemory();
     }
 
