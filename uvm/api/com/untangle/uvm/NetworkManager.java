@@ -43,6 +43,8 @@ public interface NetworkManager
     InterfaceStatus getInterfaceStatus( int interfaceId );
 
     List<InterfaceStatus> getInterfaceStatus( );
+
+    List<InterfaceStatus> getLocalInterfaceStatuses();
     
     List<DeviceStatus> getDeviceStatus( );
 
