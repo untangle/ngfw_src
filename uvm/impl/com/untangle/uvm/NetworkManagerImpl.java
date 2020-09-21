@@ -582,6 +582,26 @@ public class NetworkManagerImpl implements NetworkManager
         }
         return statuses;
     }
+
+    /**
+     * Return the status of non-WAN type interfaces
+     * @return a list of InterfaceStatus for non-WAN type interfaces
+     */
+    public List<InterfaceStatus> getLocalInterfaceStatuses()
+    {
+        List<InterfaceStatus> allStatuses = getInterfaceStatus();
+        List<InterfaceStatus> returnStatuses = new LinkedList<InterfaceStatus>();
+
+        for(InterfaceStatus intfStatus : allStatuses) {
+            InterfaceSettings intfSettings = findInterfaceId(intfStatus.getInterfaceId());
+            if(intfSettings != null && intfSettings.getConfigType().equals(InterfaceSettings.ConfigType.ADDRESSED) && !intfSettings.getIsWan()) {
+                returnStatuses.add(intfStatus);
+            }
+        }
+
+        return returnStatuses;
+    }
+
     
     /**
      * Returns a list of all the current device status'
