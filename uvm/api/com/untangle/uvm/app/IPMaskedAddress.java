@@ -228,6 +228,18 @@ public class IPMaskedAddress implements Serializable
     }
 
     /**
+     * This bitwise ANDs the mask with addr and returns an IPMaskedAddress
+     * @return The masked address as an IPMaskedAddress type
+     */
+    public IPMaskedAddress getIPMaskedAddress() {
+        var maskedAddr = this.getMaskedAddress();
+        var prefix = this.getPrefixLength();
+
+        return new IPMaskedAddress(maskedAddr, prefix);
+
+    }
+
+    /**
      * This bitwise ANDs the mask with addr and returns the result: Example
      * getMaskedAddress of 192.168.1.1 and 255.255.0.0 returns 192.168.0.0
      * 
