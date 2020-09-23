@@ -1,0 +1,208 @@
+#!/usr/bin/python
+
+# NOTE: This is a CGI script that will be called by Apache so it must follow
+# the Common Gateway Interface specifications:
+# https://httpd.apache.org/docs/2.4/howto/cgi.html
+#
+# This script will be called by handler.py on an Untangle NGFW during Captive
+# Portal login using an OAuth provider. We should return a single line of text.
+#
+# If the text we return includes the string ERROR: the script will treat the
+# result as a login failure and display an error page with the error text we
+# return. Any other return value will be treated as a successful login and
+# the string we return will be used as the user identification.
+#
+# For all supported providers, we look for and prefer the user email address.
+# If the email is not available in the response from the provider we fall
+# back to using the user name. If that is not available we return an error
+# indicating we couldn't find the identity for the user.
+
+import urlparse
+import requests
+import json
+import sys
+import os
+
+#------------------------------------------------------------------------------
+# Function to retrieve user details from Google using the passed auth code,
+# client id, and secret. Details are logged to the passed open logfile.
+# Returns the most specific user identification detail we're able to extract.
+def handle_google(logfile,authcode,cid,secret):
+	authdata = {}
+	authdata['code'] = authcode
+	authdata['client_id'] = cid
+	authdata['client_secret'] = secret
+	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+	authdata['grant_type'] = 'authorization_code'
+	authresp = requests.post("https://www.googleapis.com/oauth2/v4/token", data=authdata)
+	authtext = authresp.text;
+
+	logfile.write("AUTH: %s\n" % (authtext));
+	authjson = json.loads(authtext)
+
+	if (not "access_token" in authjson):
+		return("ERROR: missing access")
+
+	userdata = {}
+	userdata['access_token'] = authjson['access_token']
+	userresp = requests.get("https://www.googleapis.com/plus/v1/people/me", params=userdata)
+	usertext = userresp.text
+
+	logfile.write("USER: %s\n" % (usertext));
+	userjson = json.loads(usertext)
+
+	if ("emails" in userjson):
+		for item in userjson['emails']:
+			if (item['type'].upper() == 'ACCOUNT'):
+				return(item['value'])
+
+	if ("displayName" in userjson):
+		return(userjson['displayName'])
+
+	return("ERROR: missing identity")
+
+#------------------------------------------------------------------------------
+# Function to retrieve user details from Facebook using the passed auth code,
+# client id, and secret. Details are logged to the passed open logfile.
+# Returns the most specific user identification detail we're able to extract.
+def handle_facebook(logfile,authcode,cid,secret):
+	authdata = {}
+	authdata['code'] = authcode
+	authdata['client_id'] = cid
+	authdata['client_secret'] = secret
+	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+	authdata['grant_type'] = 'authorization_code'
+	authresp = requests.get("https://graph.facebook.com/v2.9/oauth/access_token", params=authdata)
+	authtext = authresp.text;
+
+	logfile.write("AUTH: %s\n" % (authtext));
+	authjson = json.loads(authtext)
+
+	if (not "access_token" in authjson):
+		return("ERROR: missing access")
+
+	userdata = {}
+	userdata['access_token'] = authjson['access_token']
+	userdata['fields'] = 'id,name,email'
+	userresp = requests.get("https://graph.facebook.com/me", params=userdata)
+	usertext = userresp.text
+
+	logfile.write("USER: %s\n" % (usertext));
+	userjson = json.loads(usertext)
+
+	if ("email" in userjson):
+		return(userjson['email'])
+
+	if ("name" in userjson):
+		return(userjson['name'])
+
+	return("ERROR: missing identity")
+
+#------------------------------------------------------------------------------
+# Function to retrieve user details from Microsoft using the passed auth code,
+# client id, and secret. Details are logged to the passed open logfile.
+# Returns the most specific user identification detail we're able to extract.
+def handle_microsoft(logfile,authcode,cid,secret):
+	authdata = {}
+	authdata['code'] = authcode
+	authdata['client_id'] = cid
+	authdata['client_secret'] = secret
+	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+	authdata['grant_type'] = 'authorization_code'
+	authresp = requests.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", data=authdata)
+	authtext = authresp.text;
+
+	logfile.write("AUTH: %s\n" % (authtext));
+	authjson = json.loads(authtext)
+
+	if (not "access_token" in authjson):
+		return("ERROR: missing access")
+
+	userhead = {}
+	userhead['Authorization'] = ('Bearer ' + authjson['access_token'])
+	userresp = requests.get("https://graph.microsoft.com/v1.0/me", headers=userhead)
+	usertext = userresp.text
+
+	logfile.write("USER: %s\n" % (usertext));
+	userjson = json.loads(usertext)
+
+	if ("userPrincipalName" in userjson):
+		return(userjson['userPrincipalName'])
+
+	if ("displayName" in userjson):
+		return(userjson['displayName'])
+
+	return("ERROR: missing identity")
+
+#------------------------------------------------------------------------------
+# SCRIPT EXECUTION BEGINS HERE
+#------------------------------------------------------------------------------
+
+# The list of applications and corresponding secrets for each platform
+platform_data = [
+	{ "vendor": "GOOGLE", "cid": "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com", "secret": "76RDgNAPNwZ6-frswmLPDaRJ" },
+	{ "vendor": "MICROSOFT", "cid": "f8285e96-b240-4036-8ea5-f37cf6b981bb", "secret": "7lA3P6.aO3Y2.-w2B6v33i1P.cP1DSpCCT" },
+	{ "vendor": "FACEBOOK", "cid": "1840471182948119", "secret": "0f93a8ce9631adf41115447354432bb8" }
+]
+
+qstring = None
+
+# This is a CGI script so we MUST write the MIME type header first
+sys.stdout.write("Content-type: text\n\n")
+
+# Pull the GET request from the environment
+if ("QUERY_STRING" in os.environ):
+	qstring = os.environ['QUERY_STRING']
+
+# Can't do anything without the query string
+if (qstring == None):
+	sys.stdout.write("ERROR: missing query string in getClientToken script")
+	sys.exit()
+
+# Parse the individual parameters from the query string
+qparams = urlparse.parse_qs(qstring)
+
+# Get the authPlatform parameter, return error if missing
+if ('authPlatform' in qparams):
+	auth_platform = qparams['authPlatform'][0]
+else:
+	sys.stdout.write("ERROR: missing authPlatform in getClientToken script")
+	sys.exit()
+
+# Get the authCode parameter, return error if missing
+if ('authCode' in qparams):
+	auth_code = qparams['authCode'][0]
+else:
+	sys.stdout.write("ERROR: missing authCode in getClientToken script")
+	sys.exit()
+
+# Append everything to the logfile to assist with debugging
+logfile = open("/tmp/getClientToken.log","a")
+logfile.write("%s\n" % ("--------------------"));
+logfile.write("QUERY: %s\n" % (qstring));
+logfile.write("PLATFORM: %s\n" % (auth_platform));
+logfile.write("AUTHCODE: %s\n" % (auth_code));
+
+# start with an error that will get replaced if we find valid data
+result = "ERROR: Unknown authPlatform in getClientToken script"
+
+# Check each entry in platform_data to find the cid that matches
+# the auth_platform we extracted from the query string
+for entry in platform_data:
+	if entry['cid'] != auth_platform:
+		continue
+	if entry['vendor'] == "GOOGLE":
+		result = handle_google(logfile,auth_code,entry['cid'],entry['secret'])
+	if entry['vendor'] == "FACEBOOK":
+		result = handle_facebook(logfile,auth_code,entry['cid'],entry['secret'])
+	if entry['vendor'] == "MICROSOFT":
+		result = handle_microsoft(logfile,auth_code,entry['cid'],entry['secret'])
+	break
+
+# Log the result that will be returned to the caller
+logfile.write("XMIT: %s\n" % (result));
+logfile.close()
+
+# Return the result to the caller
+sys.stdout.write(result)
+sys.exit()

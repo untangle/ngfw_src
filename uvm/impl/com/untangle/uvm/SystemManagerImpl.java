@@ -683,7 +683,7 @@ public class SystemManagerImpl implements SystemManager
      */
     public Integer getLogDirectorySize()
     {
-        return Integer.parseInt(UvmContextFactory.context().execManager().execOutput("/bin/du -sb /var/log").split("\\t")[0]);
+        return Integer.parseInt(UvmContextFactory.context().execManager().execOutput("/usr/bin/du -sb /var/log").split("\\t")[0]);
     }
 
     /**
