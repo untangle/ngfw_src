@@ -107,7 +107,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                 type="tcp"))
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
-        app.setSettings(appSettings, True)
+        app.setSettings(appSettings, True, True)
 
         self.do_wait_for_daemon_ready()
 
@@ -126,7 +126,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                'blocked', True,
                                                min_date=startTime)
         # del appSettings['rules']['list'][0] # delete the first rule just added
-        # app.setSettings(appSettings, True)
+        # app.setSettings(appSettings, True, True)
         assert(found)
 
     def test_031_rule_modify(self):
@@ -142,7 +142,7 @@ class IntrusionPreventionTests(NGFWTestCase):
             raise unittest.SkipTest('Skipping as test test_030_rule_add is needed')
         else:
             appSettings['rules']['list'][0]['action'] = "log"
-            app.setSettings(appSettings, True)
+            app.setSettings(appSettings, True, True)
 
         self.do_wait_for_daemon_ready()
 
@@ -161,7 +161,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                'blocked', False,
                                                min_date=startTime)
         del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings, True)
+        app.setSettings(appSettings, True, True)
         assert(found)
 
     def test_052_functional_icmp_log(self):
@@ -183,7 +183,7 @@ class IntrusionPreventionTests(NGFWTestCase):
 
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="log", rule_type="CATEGORY", type_value="scan"))
-        app.setSettings(appSettings, True)
+        app.setSettings(appSettings, True, True)
 
         self.do_wait_for_daemon_ready()
 
@@ -200,7 +200,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                'blocked', False,
                                                min_date=startTime)
         del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings, True)
+        app.setSettings(appSettings, True, True)
         assert(found)
 
     def test_054_functional_udp_block(self):
@@ -220,7 +220,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                 
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
-        app.setSettings(appSettings, True)
+        app.setSettings(appSettings, True, True)
 
         self.do_wait_for_daemon_ready()
 
@@ -235,7 +235,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                min_date=startTime)
 
         del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings, True)
+        app.setSettings(appSettings, True, True)
         assert(found)
 
     def test_060_app_stats(self):
@@ -259,7 +259,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                 type="tcp"))
         # insert rule at the beginning of the list so other rules do not interfere. 
         appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
-        app.setSettings(appSettings, True)
+        app.setSettings(appSettings, True, True)
         self.do_wait_for_daemon_ready()
 
         app.forceUpdateStats()
@@ -288,7 +288,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         post_events_block = global_functions.get_app_metric_value(app,"block")
 
         del appSettings['rules']['list'][0] # delete the first rule just added
-        app.setSettings(appSettings, True)
+        app.setSettings(appSettings, True, True)
         assert(found)
 
         print("pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan)))

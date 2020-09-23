@@ -40,7 +40,7 @@ public class IntrusionPreventionSnortUnified2Parser
     private byte[] ipv6bytes;
     
     private IntrusionPreventionSnortUnified2SerialHeader serialHeader;
-    private IntrusionPreventionEventMap ipsEventMap;
+    private IntrusionPreventionEventMap ipsEventMap = new IntrusionPreventionEventMap();
     
     /* Serial Header */
     public static final int SERIAL_HEADER_TYPE_SIZE = 4;

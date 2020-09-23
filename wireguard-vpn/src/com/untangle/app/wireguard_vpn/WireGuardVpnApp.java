@@ -5,8 +5,11 @@
 package com.untangle.app.wireguard_vpn;
 
 import java.io.File;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -54,7 +58,8 @@ public class WireGuardVpnApp extends AppBase
     private final WireguardVpnPreHookCallback wireguardVpnPreHookCallback;
 
     private InetAddress localDnsResolver = null;
-    private List<WireGuardVpnNetwork> localNetworks = null;
+    private List<InterfaceStatus> lanStatuses = null;
+    private Hashtable<InterfaceStatus, WireGuardVpnNetwork> settingsLink = null;
 
     private static final String NETSPACE_OWNER = "wireguard-vpn";
     private static final String NETSPACE_SERVER = "server-network";
@@ -83,7 +88,7 @@ public class WireGuardVpnApp extends AppBase
         this.wireguardVpnHookCallback = new WireguardVpnHookCallback();
         this.wireguardVpnPreHookCallback= new WireguardVpnPreHookCallback();
 
-        this.localNetworks = buildNetworkList(UvmContextFactory.context().networkManager().getLocalNetworks());
+        this.lanStatuses = UvmContextFactory.context().networkManager().getLocalInterfaceStatuses();
         this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
     }
 
@@ -140,6 +145,14 @@ public class WireGuardVpnApp extends AppBase
                 tunnel.setPrivateKey(this.WireGuardVpnManager.createPrivateKey());
                 tunnel.setPublicKey(this.WireGuardVpnManager.getPublicKey(tunnel.getPrivateKey()));
             }
+        }
+
+        /*
+        * Fix up the WGN network ids
+        */
+        int wgnIdx = 0;
+        for(WireGuardVpnNetwork localNets : newSettings.getNetworks()) {
+            localNets.setId(++wgnIdx);
         }
 
         /**
@@ -351,7 +364,8 @@ public class WireGuardVpnApp extends AppBase
             settings.setDnsServer(dnsAddress);
         }
 
-        settings.setNetworks(this.localNetworks);
+
+        settings.setNetworks(buildNetworkList(lanStatuses));
 
         IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4, 1, 24);
 
@@ -473,18 +487,18 @@ public class WireGuardVpnApp extends AppBase
 
     /**
      * Creates a list of WireGuardVpnNetwork objects from the passed list of
-     * IPMaskedAddress objects.
+     * InterfaceStatus objects.
      *
-     * @param addressList
-     *        - The list of IPMaskedAddress objects
+     * @param intfStatuses
+     *        - The list of InterfaceStatus objects
      * @return The list of WireGuardVpnNetwork objects
      */
-    protected List<WireGuardVpnNetwork> buildNetworkList(List<IPMaskedAddress> addressList)
+    protected List<WireGuardVpnNetwork> buildNetworkList(List<InterfaceStatus> intfStatuses)
     {
         LinkedList<WireGuardVpnNetwork> networkList = new LinkedList<WireGuardVpnNetwork>();
 
-        for (IPMaskedAddress address : addressList) {
-            networkList.add(new WireGuardVpnNetwork(address));
+        for (InterfaceStatus intfStatus : intfStatuses) {
+            networkList.add(new WireGuardVpnNetwork(intfStatus.getV4MaskedAddress().getIPMaskedAddress()));
         }
 
         return networkList;
@@ -502,7 +516,7 @@ public class WireGuardVpnApp extends AppBase
         // if so and the old settings do not match the new settings, we should update them using the new data
         if(settings != null) {          
             InetAddress newDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
-            List<WireGuardVpnNetwork> newNetworks = buildNetworkList(UvmContextFactory.context().networkManager().getLocalNetworks());
+            List<InterfaceStatus> newLanStatuses = UvmContextFactory.context().networkManager().getLocalInterfaceStatuses();
             boolean setNewSettings = false;
 
             if(settings.getDnsServer().equals(this.localDnsResolver) && !this.localDnsResolver.equals(newDnsResolver)) {
@@ -512,11 +526,37 @@ public class WireGuardVpnApp extends AppBase
                 setNewSettings = true;
             }
 
-            if(settings.getNetworks().equals(this.localNetworks) && !this.localNetworks.equals(newNetworks)) {
-                // set newLocalNetworks in settings and also the local variable
-                settings.setNetworks(newNetworks);
-                this.localNetworks = newNetworks;
-                setNewSettings = true;
+            // Check the newNetworks against our hash table to see if any of the networks have changed
+            for(InterfaceStatus oldIntf : this.settingsLink.keySet())
+            {
+                for(InterfaceStatus intf : newLanStatuses) {
+                    // Found this interface in the interface lookup
+                    if(intf.getInterfaceId() == oldIntf.getInterfaceId()){
+                        //pull old wireguard settings out for this network
+                        WireGuardVpnNetwork oldWgn =  this.settingsLink.get(oldIntf);
+                        // Check if the wireguard network is configured for this IP family and has changed
+                        if(intf.getV4MaskedAddress() != null && oldWgn.getMaskedAddress().getAddress() instanceof Inet4Address && ! oldWgn.getMaskedAddress().getIPMaskedAddress().equals(intf.getV4MaskedAddress().getIPMaskedAddress())){
+                            // This interface has changed, find the settings in new settings and fix it
+                            for(WireGuardVpnNetwork wvn : settings.getNetworks()) {
+                                if( wvn.getId() ==  oldWgn.getId()) {
+                                    wvn.setAddress(intf.getV4MaskedAddress().getIPMaskedAddress());
+                                    setNewSettings = true;
+                                }
+                            }
+                        }
+
+                        // Check if the wireguard network is configured for this IP family and has changed
+                        if(intf.getV6MaskedAddress() != null &&  oldWgn.getMaskedAddress().getAddress() instanceof Inet6Address && ! oldWgn.getMaskedAddress().getIPMaskedAddress().equals(intf.getV6MaskedAddress().getIPMaskedAddress())){
+                            // This interface has changed, find the settings in new settings and fix it
+                            for(WireGuardVpnNetwork wvn : settings.getNetworks()) {
+                                if( wvn.getId() ==  oldWgn.getId()) {
+                                    wvn.setAddress(intf.getV6MaskedAddress().getIPMaskedAddress());
+                                    setNewSettings = true;
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             if(setNewSettings) {
@@ -533,8 +573,18 @@ public class WireGuardVpnApp extends AppBase
     {
         logger.info("Network Settings will change, storing local settings...");
         //get the localnetworks and dnsresolver into the local variables before the settings change
-        this.localNetworks = buildNetworkList(UvmContextFactory.context().networkManager().getLocalNetworks());
+        this.lanStatuses = UvmContextFactory.context().networkManager().getLocalInterfaceStatuses();
         this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+        this.settingsLink = new Hashtable<InterfaceStatus, WireGuardVpnNetwork>();
+
+        // Store the WG settings and the interface status to watch through the network settings change
+        for(var wgNet : settings.getNetworks() ) {
+            for(InterfaceStatus intfStatus : this.lanStatuses) {
+                if(wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV4MaskedAddress().getIPMaskedAddress()) || wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV6MaskedAddress().getIPMaskedAddress())) {
+                    settingsLink.put(intfStatus, wgNet);
+                }
+            }
+        }
     }
 
      /**

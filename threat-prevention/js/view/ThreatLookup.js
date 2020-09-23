@@ -32,7 +32,20 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             bind: {
                 hidden: '{state.on == false}',
                 value: '{threatLookupInfo.inputVal}'
+            }
+        },{
+            xtype: 'combo',
+            labelWidth: 150,
+            fieldLabel: 'Source/Destination'.t(),
+            editable: false,
+            matchFieldWidth: false,
+            queryMode: 'local',
+            valueField: 'value',
+            displayField: 'description',
+            bind:{
+                value: '{threatLookupInfo.target}'
             },
+            store: Ung.common.threatprevention.references.direction        
         }, {
             xtype: 'button',
             reference: 'searchButton',
@@ -45,13 +58,19 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 hidden: '{state.on == false}',
                 disabled: '{threatLookupInfo.inputVal.length === 0}'
             }
+        },{
+            xtype: 'displayfield',
+            value: 'IP Address is in local network, no lookup performed.'.t(),
+            bind: {
+                hidden: '{threatLookupInfo.local === false}'
+            }
         }, {
             xtype: 'fieldset',
             title: 'Threat Results'.t(),
             layout: 'vbox',
             hidden: true,
             bind: {
-                hidden: '{!threatLookupInfo.address.length === 0}'
+                hidden: '{threatLookupInfo.address.length === 0}'
             },
             items: [{
                 xtype: 'displayfield',
@@ -80,7 +99,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 renderer: Ung.common.Renderer.threatprevention.ipPopularity,
                 bind: {
                     value: '{threatLookupInfo.popularity}',
-                    hidden: '{threatLookupInfo.popularity.length === 0}'
+                    hidden: '{threatLookupInfo.popularity === 0}'
                 }
             }, {
                 xtype: 'displayfield',
@@ -110,7 +129,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 renderer: Ung.common.Renderer.threatprevention.age,
                 bind: {
                     value: '{threatLookupInfo.age}',
-                    hidden: '{threatLookupInfo.age.length === 0}'
+                    hidden: '{threatLookupInfo.age === 0}'
                 }
             },{
                 xtype: 'displayfield',
