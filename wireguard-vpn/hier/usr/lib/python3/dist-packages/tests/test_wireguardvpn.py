@@ -19,6 +19,7 @@ appData = None
 app = None
 appWeb = None
 tunnelUp = False
+wanIP = None
 
 #remote WireGuard Untangle from global_functions
 remotePublicKey = global_functions.WG_VPN_SERVICE_INFO["publicKey"]
@@ -83,11 +84,12 @@ class WireGuardVpnTests(NGFWTestCase):
         
     @classmethod
     def initial_extra_setup(cls):
-        global appData, vpnHostResult, vpnClientResult, vpnServerResult
+        global appData, vpnHostResult, vpnClientResult, vpnServerResult, wanIP
 
         vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.WG_VPN_SERVER_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_CLIENT_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         wanIP = uvmContext.networkManager().getFirstWanAddress()
+
         if vpnClientResult == 0:
             vpnServerResult = remote_control.run_command("ping -W 5 -c 1 " + wanIP, host=global_functions.VPN_CLIENT_IP)
         else:
@@ -122,6 +124,10 @@ class WireGuardVpnTests(NGFWTestCase):
 
     def test_031_netSettingsAndDefaultWGNetworks(self):
         """Test if changing the Network Settings LAN address properly updates the wireguard local networks"""
+
+        #if the configuration is Bridged, Local Networks are not imported into WireGuard's settings, so this test would fail. Skip it.
+        if global_functions.is_bridged(wanIP):
+            raise unittest.SkipTest("skipping on Bridged configuration, no Local Networks")
         
         # Address we want to test with
         testingAddressNet = "192.168.90"
@@ -168,6 +174,10 @@ class WireGuardVpnTests(NGFWTestCase):
 
     def test_032_netSettingsAndCustomWGNetworks(self):
         """Test if changing the Network Settings LAN address DOES NOT update custom local networks in the WG app"""
+
+        #if the configuration is Bridged, Local Networks are not imported into WireGuard's settings, so this test would fail. Skip it.
+        if global_functions.is_bridged(wanIP):
+            raise unittest.SkipTest("skipping on Bridged configuration, no Local Networks")
         
         # Address we want to test with
         testingAddressNet = "192.168.90"
@@ -190,7 +200,17 @@ class WireGuardVpnTests(NGFWTestCase):
         newWGSettings = copy.deepcopy( origWGSettings )
 
         # update WG settings with a custom configuration
-        newWGSettings['networks'] = testingCustomWGAddr
+        newWGSettings['networks'] = {
+                                        "javaClass": "java.util.LinkedList", 
+                                        "list": [
+                                            {
+                                                "address": testingCustomWGAddr, 
+                                                "maskedAddress": testingCustomWGAddr, 
+                                                "javaClass": "com.untangle.app.wireguard_vpn.WireGuardVpnNetwork", 
+                                                "id": 1
+                                            }
+                                        ]
+                                    }
         self._app.setSettings(newWGSettings)
 
         # Verify custom configuration is returned with get settings
