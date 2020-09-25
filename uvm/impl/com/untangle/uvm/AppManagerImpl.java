@@ -1146,6 +1146,8 @@ public class AppManagerImpl implements AppManager
                         if (app == null) {
                             logger.error("Failed to load app:" + name);
                             loadedAppsMap.remove(appSettings);
+                        }else{
+                            UvmContextFactory.context().hookManager().callCallbacks( HookManager.APPLICATION_INSTANTIATE, name, app);
                         }
                     }
                 };
