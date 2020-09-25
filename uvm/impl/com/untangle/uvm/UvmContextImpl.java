@@ -1285,6 +1285,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.execManager = new ExecManagerImpl();
 
+        this.hookManager = HookManagerImpl.getInstance();
+
         this.settingsManager = new SettingsManagerImpl();
 
         this.syncSettingsImpl = new SyncSettingsImpl();
@@ -1298,8 +1300,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
 
         this.netcapManager = NetcapManagerImpl.getInstance();
-        
-        this.hookManager = HookManagerImpl.getInstance();
 
         this.uriManager = new UriManagerImpl();
 
