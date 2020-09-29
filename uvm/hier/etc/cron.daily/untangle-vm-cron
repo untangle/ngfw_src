@@ -3,7 +3,7 @@
 exec > /dev/null 2>&1
 
 # run apt-get update periodically
-apt-get update >/dev/null 2>&1
+apt-get update --yes --allow-releaseinfo-change >/dev/null 2>&1
 
 # remove old temp files older than 7 days (safety mechanism)
 /usr/bin/find /tmp -mtime +7 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
