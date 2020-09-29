@@ -116,28 +116,28 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
     /**
      * handleThreatLookup is the click event handler to retrieve threat prevention data on a URL or IP Address from the getUrlHistory API
-     *
      */
     handleThreatLookup: function() {
-        var v = this.getView(), vm = this.getViewModel();
-        var lookupInput = vm.get('threatLookupInfo.inputVal');
-        var lookupTarget = vm.get('threatLookupInfo.target');
-        vm.set( 'threatLookupInfo.address', '');
-        vm.set( 'threatLookupInfo.recentCount', '');
-        vm.set( 'threatLookupInfo.level', 0);
-        vm.set( 'threatLookupInfo.popularity', 0);
-        vm.set( 'threatLookupInfo.history', '');
-        vm.set( 'threatLookupInfo.country', '');
-        vm.set( 'threatLookupInfo.age', 0);
+        var me = this,
+            v = this.getView(),
+            vm = this.getViewModel(),
+            lookupInput = vm.get('threatLookupInfo.inputVal');
+
+        // Clear current values.
+        vm.set( 'threatLookupInfo.resultAddress', '');
+        vm.set( 'threatLookupInfo.resultServerReputation', '');
+        vm.set( 'threatLookupInfo.resultClientReputation', '');
 
         if(!lookupInput) {
             return;
         }
 
+        var urlParts = lookupInput.match(Ext.form.field.VTypes.mask.urlAddrRe);
+
         // Don't perform lookup if local
         var local = false;
         vm.get('localNetworks').forEach( function(network){
-            if(Util.ipMatchesNetwork(lookupInput, network['address'], network['netmask'])){
+            if(Util.ipMatchesNetwork(urlParts[3] ? urlParts[3] : urlParts[0], network['address'], network['netmask'])){
                 local = true;
             }
         });
@@ -147,67 +147,74 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             return;
         }
 
-        promises = [];
-        if(lookupTarget == 'client'){
-                promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpInfo', [lookupInput]));
-            promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpHistory', [lookupInput]));
-        }else{
-            promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlInfo', [lookupInput]));
-            promises.push(Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput]));
-        }
         v.setLoading(true);
-        Ext.Deferred.sequence(promises, this)
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpInfo', [lookupInput]),
+            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlInfo', [lookupInput]),
+            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpHistory', [lookupInput]),
+            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput])
+        ], this)
         .then(function(results){
-            if(Util.isDestroyed(v, vm)){
+            if(Util.isDestroyed(me, v, vm)){
                 return;
             }
             v.setLoading(false);
-            var result = null;
 
-            if(results[0] != null){
-                result = results[0][0];
-                vm.set('threatLookupInfo.level', result.reputation);
-                vm.set('threatLookupInfo.address', result.hasOwnProperty('url') ? result.url : result.ip);
+            urlAddress = lookupInput;
+            ipAddress = null;
+
+            var ipResult = results[0][0];
+            if(ipResult.hasOwnProperty('ip')){
+                ipAddress = ipResult.ip;
             }
-            if( results[1] != null ){
-                results[1].forEach(function(result){
-                    if(result.hasOwnProperty('queries')) {
-                        if(result.queries.hasOwnProperty('getrepinfo')) {
-                            if(result.queries.getrepinfo.hasOwnProperty('popularity')){
-                                vm.set('threatLookupInfo.popularity', result.queries.getrepinfo.popularity);
-                            }
-                            if(result.queries.getrepinfo.hasOwnProperty('age')){
-                                vm.set('threatLookupInfo.age', result.queries.getrepinfo.age);
-                            }
-                            if(result.queries.getrepinfo.hasOwnProperty('country')){
-                                vm.set('threatLookupInfo.country', result.queries.getrepinfo.country);
-                            }
-                            if(result.queries.getrepinfo.hasOwnProperty('threathistory')){
-                                vm.set('threatLookupInfo.recentCount', result.queries.getrepinfo.threathistory);
-                            }
-                        }else if(result.queries.hasOwnProperty('geturlhistory')) {
-                            //parse the geturlhistory or getiphistory data
-                            //current category info
-                            if(result.queries.geturlhistory.hasOwnProperty('current_categorization')) {
-                                if(result.queries.geturlhistory.current_categorization.hasOwnProperty('categories')) {
-                                    vm.set('threatLookupInfo.categories', result.queries.geturlhistory.current_categorization.categories);
-                                }
-                            }else if(result.queries.geturlhistory.hasOwnProperty('security_history')) {
-                                //security history
-                                vm.set('threatLookupInfo.history', result.queries.geturlhistory.security_history);
-                            }
-                        }
-                    }
-            });
-        }
+            var ipOccurances = results[2][0]['queries']['getrephistory']['history_count'];
+            ipOccurances = (ipOccurances > 0) ? Ext.String.format('{0} occurrences', ipOccurances) : null;
 
-            }, function(ex) {
+            var urlResult = results[1][0];
+            if(urlResult.hasOwnProperty('url')){
+                urlAddress = urlResult.url;
+            }
+            var urlOccurances = results[3][1]['queries']['getrepinfo']['threathistory'];
+            urlOccurances = (urlOccurances > 0) ? Ext.String.format('{0} occurrences', urlOccurances) : null;
+
+            if(ipAddress != null && ipAddress != urlAddress){
+                vm.set( 'threatLookupInfo.resultAddress', Ext.String.format("{0} ({1})", urlAddress, ipAddress));
+            }else{
+                vm.set( 'threatLookupInfo.resultAddress', urlAddress);
+            }
+            if(ipResult.hasOwnProperty('reputation')){
+                vm.set( 'threatLookupInfo.resultServerReputation', me.getReputationStatus(ipResult.reputation, ipOccurances));
+            }
+            if(urlResult.hasOwnProperty('reputation')){
+                vm.set( 'threatLookupInfo.resultClientReputation', me.getReputationStatus(urlResult.reputation, urlOccurances));
+            }
+
+        }, function(ex) {
             if(!Util.isDestroyed(v)){
                 v.setLoading(false);
                 return;
             }
             Util.handleException(ex);
         });
+    },
+
+    /**
+     * Get formatted reputation with description and detail
+     * @param  reputation Integer value of reputation
+     */
+    getReputationStatus: function(reputation, extra){
+        var reputationStatus = "";
+        Ung.common.threatprevention.references.reputations.each(function(record){
+            if(reputation >= record.get('rangeBegin') &&
+               reputation <= record.get('rangeEnd')){
+                if(extra){
+                    reputationStatus = Ext.String.format("<b>{0}</b> ({1}) - {2}", record.get('description'), extra, record.get('details'));
+                }else{
+                    reputationStatus = Ext.String.format("<b>{0}</b> - {1}", record.get('description'), record.get('details'));
+                }
+            }
+        });
+        return reputationStatus;
     }
 });
 
