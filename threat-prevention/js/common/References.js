@@ -1,5 +1,4 @@
 Ext.define('Ung.common.threatprevention.references', {
-    // alternateClassName: 'IpReputationReferences',
     singleton: true,
 
     reputations: Ext.create('Ext.data.ArrayStore', {
@@ -106,17 +105,5 @@ Ext.define('Ung.common.threatprevention.references', {
             ["block", 'Block'.t()],
             ["pass", 'Pass'.t()]
         ]
-    }),
-
-    direction: Ext.create('Ext.data.ArrayStore', {
-        fields: [ 'value', 'description'],
-        sorters: [{
-            property: 'value',
-            direction: 'ASC'
-        }],
-        data: [
-            ["server", 'Server'.t()],
-            ["client", 'Client'.t()]
-        ]
-    }),
+    })
 });
