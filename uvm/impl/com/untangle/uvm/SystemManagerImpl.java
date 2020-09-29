@@ -582,7 +582,7 @@ public class SystemManagerImpl implements SystemManager
      */
     public boolean upgradesAvailable(boolean forceUpdate)
     {
-        if (forceUpdate) UvmContextFactory.context().execManager().execResult("apt-get update");
+        if (forceUpdate) UvmContextFactory.context().execManager().execResult("apt-get update --yes --allow-releaseinfo-change");
         int retCode = UvmContextFactory.context().execManager().execResult("apt-get -s dist-upgrade | grep -q '^Inst'");
         return (retCode == 0);
     }
