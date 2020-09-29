@@ -512,7 +512,7 @@ class UvmTests(NGFWTestCase):
         in_threshold = int((total_size * .97) - used)
         out_threshold = int((total_size * .93) - used)
         fallocate_path = ""
-        full_filename = "/full.txt";
+        full_filename = "/tmp/full.txt";
         # check if fallocate exists and if in /bin or /usr/bin
         fallocate_output_obj = subprocess.run(["which", "fallocate"], capture_output=True)
         if fallocate_output_obj.returncode != 0 or fallocate_output_obj.stdout is None :
