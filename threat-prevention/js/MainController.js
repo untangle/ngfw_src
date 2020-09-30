@@ -201,6 +201,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
     /**
      * Get formatted reputation with description and detail
      * @param  reputation Integer value of reputation
+     * @param  extra Extra values to show in parens after the reputation level.
      */
     getReputationStatus: function(reputation, extra){
         var reputationStatus = "";
