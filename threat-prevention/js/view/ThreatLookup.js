@@ -26,26 +26,13 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
             labelWidth: 150,
             _neverDirty: true,
             fieldIndex: 'threatLookupInput',
-            width: 400,
+            width: 500,
             vtype: 'ipOrUrl',
             margin: '10 0 0 0',
             bind: {
                 hidden: '{state.on == false}',
                 value: '{threatLookupInfo.inputVal}'
             }
-        },{
-            xtype: 'combo',
-            labelWidth: 150,
-            fieldLabel: 'Source/Destination'.t(),
-            editable: false,
-            matchFieldWidth: false,
-            queryMode: 'local',
-            valueField: 'value',
-            displayField: 'description',
-            bind:{
-                value: '{threatLookupInfo.target}'
-            },
-            store: Ung.common.threatprevention.references.direction        
         }, {
             xtype: 'button',
             reference: 'searchButton',
@@ -67,101 +54,37 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
         }, {
             xtype: 'fieldset',
             title: 'Threat Results'.t(),
-            layout: 'vbox',
             hidden: true,
+            layout: {
+                type :'vbox',
+                align : 'stretch'
+            },
             bind: {
-                hidden: '{threatLookupInfo.address.length === 0}'
+                hidden: '{threatLookupInfo.resultAddress.length === 0}'
             },
             items: [{
                 xtype: 'displayfield',
                 labelWidth: 160,
-                fieldLabel: 'Address/URL'.t(),
-                fieldIndex: 'threatLookupAddress',
+                fieldLabel: 'URL (IP Address)'.t(),
                 bind: {
-                    value: '{threatLookupInfo.address}',
-                    hidden: '{threatLookupInfo.address.length === 0}'
-                }
-            }, {
-                xtype: 'displayfield',
-                labelWidth: 160,
-                fieldLabel: 'Country'.t(),
-                fieldIndex: 'threatLookupCountry',
-                renderer: Renderer.country,
-                bind: {
-                    value: '{threatLookupInfo.country}',
-                    hidden: '{threatLookupInfo.country.length === 0}'
-                }
-            }, {
-                xtype: 'displayfield',
-                labelWidth: 160,
-                fieldLabel: 'Popularity'.t(),
-                fieldIndex: 'threatLookupPopularity',
-                renderer: Ung.common.Renderer.threatprevention.ipPopularity,
-                bind: {
-                    value: '{threatLookupInfo.popularity}',
-                    hidden: '{threatLookupInfo.popularity === 0}'
-                }
-            }, {
-                xtype: 'displayfield',
-                labelWidth: 160,
-                fieldLabel: 'Category'.t(),
-                hidden: true,
-                fieldIndex: 'threatLookupCategories',
-                renderer: Ung.common.Renderer.threatprevention.webCategories,
-                bind: {
-                    value: '{threatLookupInfo.categories}'
-                }
-            }, {
-                xtype: 'displayfield',
-                labelWidth: 160,
-                fieldLabel: 'Recent Threat Count'.t(),
-                fieldIndex: 'threatLookupRecentCount',
-                renderer: Ung.common.Renderer.threatprevention.recentOccurrences,
-                bind: {
-                    value: '{threatLookupInfo.recentCount}',
-                    hidden: '{threatLookupInfo.recentCount.length === 0}'
-                }
-            }, {
-                xtype: 'displayfield',
-                labelWidth: 160,
-                fieldLabel: 'Age'.t(),
-                fieldIndex: 'threatLookupReputationAge',
-                renderer: Ung.common.Renderer.threatprevention.age,
-                bind: {
-                    value: '{threatLookupInfo.age}',
-                    hidden: '{threatLookupInfo.age === 0}'
+                    value: '{threatLookupInfo.resultAddress}',
+                    hidden: '{threatLookupInfo.resultAddress.length === 0}'
                 }
             },{
                 xtype: 'displayfield',
                 labelWidth: 160,
-                fieldLabel: 'Reputation'.t(),
-                fieldIndex: 'threatLookupReputationLevel',
-                renderer: Ung.common.Renderer.threatprevention.reputation,
+                fieldLabel: 'Server Reputation'.t(),
                 bind: {
-                    value: '{threatLookupInfo.level}',
-                    hidden: '{threatLookupInfo.level.length === 0}'
+                    value: '{threatLookupInfo.resultServerReputation}',
+                    hidden: '{threatLookupInfo.resultServerReputation.length === 0}'
                 }
-            }, {
+            },{
                 xtype: 'displayfield',
                 labelWidth: 160,
-                fieldLabel: 'Details'.t(),
-                fieldIndex: 'threatLookupReputationLevelDetails',
-                renderer: Ung.common.Renderer.threatprevention.reputationDetails,
-                width: '100%',
+                fieldLabel: 'Client Reputation'.t(),
                 bind: {
-                    value: '{threatLookupInfo.level}',
-                    hidden: '{threatLookupInfo.level.length === 0}'
-                }
-            }, {
-                xtype: 'displayfield',
-                labelWidth: 160,
-                fieldLabel: 'Most Recent Threat History'.t(),
-                fieldIndex: 'threatLookupReputationHistory',
-                renderer: Ung.common.Renderer.threatprevention.reputationHistory,
-                width: '100%',
-                bind: {
-                    value: '{threatLookupInfo.history}',
-                    hidden: '{threatLookupInfo.history.length === 0}'
+                    value: '{threatLookupInfo.resultClientReputation}',
+                    hidden: '{threatLookupInfo.resultClientReputation.length === 0}'
                 }
             }]
         }]

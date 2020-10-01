@@ -28,16 +28,11 @@ Ext.define('Ung.apps.threatprevention.MainModel', {
 Ext.define('Ung.apps.threatprevention.ThreatLookupInfo', {
     extend: 'Ext.data.Model',
     fields: [
-         {name: 'inputVal', type: 'string'},
-         {name: 'target', type: 'string'},
-         {name: 'local', type: 'boolean'},
-         {name: 'address', type: 'string'},
-         {name: 'recentCount', type: 'string'},
-         {name: 'level', type: 'int'},
-         {name: 'popularity', type: 'int'},
-         {name: 'history', type: 'string'},
-         {name: 'country', type: 'string'},
-         {name: 'age', type: 'int'}
+        {name: 'inputVal', type: 'string'},
+        {name: 'local', type: 'boolean'},
+        {name: 'resultAddress', type: 'string'},
+        {name: 'resultServerReputation', type: 'string'},
+        {name: 'resultClientReputation', type: 'string'},
     ],
 
     hasMany: [{
