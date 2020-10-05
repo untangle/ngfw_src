@@ -65,5 +65,5 @@ public interface SystemManager
 
     void activateRadiusCertificate();
 
-    Integer getLogDirectorySize();
+    Long getLogDirectorySize();
 }
