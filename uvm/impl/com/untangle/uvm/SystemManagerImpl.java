@@ -679,11 +679,17 @@ public class SystemManagerImpl implements SystemManager
     /**
      * Get the size of /var/log for display in the UI.
      *
-     * @return Size of all files recursively.
+     * @return Long size of all files recursively.
      */
-    public Integer getLogDirectorySize()
+    public Long getLogDirectorySize()
     {
-        return Integer.parseInt(UvmContextFactory.context().execManager().execOutput("/usr/bin/du -sb /var/log").split("\\t")[0]);
+        Long result = 0L;
+        try{
+            result = Long.parseLong(UvmContextFactory.context().execManager().execOutput("/usr/bin/du -sb /var/log").split("\\t")[0]);
+        }catch(Exception ex){
+            logger.error("Unable to parse size of log directory", ex);
+        }
+        return result;
     }
 
     /**
