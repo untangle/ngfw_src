@@ -814,13 +814,19 @@ Ext.define('Ung.util.Util', {
     /**
      * Determine if passed IP matches network & netmask.
      * @param  string ip      IP address to test.
-     * @param  string network Network in CIDR notation.
+     * @param  string network Network in CIDR notation or prefix
      * @param  string netmask Netmask in CIDR notation.
      * @return boolean         true if IP is on network, otherwise false.
      */
     ipMatchesNetwork: function(ip, network, netmask){
-        var dots = netmask.split('.');
-        var netmaskInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
+        var dots;
+        var netmaskInteger = 0;
+        if(Number.isInteger(netmask)){
+            netmaskInteger = Math.pow(2, 32) - Math.pow(2, 32 - netmask);
+        }else{
+            dots = netmask.split('.');
+            netmaskInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
+        }
         dots = network.split('.');
         var networkInteger = ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
         dots = ip.split('.');
