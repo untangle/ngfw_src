@@ -430,6 +430,7 @@ Ext.define('Ung.util.Util', {
             networkSettings.virtualInterfaces.list.forEach( function(intf){
                 data.push([intf.interfaceId.toString(), intf.name]);
             });
+            data.push(['ipsec', "IPsec VPN".t()]);
             this.interfaceList = data;
         }
         var interfaces = Ext.clone(this.interfaceList);
