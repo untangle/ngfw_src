@@ -387,7 +387,6 @@ public class WireGuardVpnApp extends AppBase
      */
     public boolean isLicenseValid()
     {
-        logger.debug("isLicenseValid()");
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WIREGUARD_VPN)) return true;
         return false;
     }
