@@ -38,6 +38,7 @@ public class License implements Serializable
     public static final String SSL_INSPECTOR = "ssl-inspector";
     public static final String LIVE_SUPPORT = "live-support";
     public static final String THREAT_PREVENTION = "threat-prevention";
+    public static final String WIREGUARD_VPN = "wireguard-vpn";
 
     /** Identifier for the product this license is for */
     private String name;
