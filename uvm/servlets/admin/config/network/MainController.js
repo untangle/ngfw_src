@@ -665,7 +665,8 @@ Ext.define('Ung.config.network.MainController', {
                 return;
             }
             var networkInterfaces = vm.get('settings.interfaces');
-            if(!networkInterfaces){
+            var ospfNetworks = vm.get('ospfNetworks');
+            if(!networkInterfaces || !ospfNetworks){
                 runInterfaceTask.delay( runInterfaceTaskDelay );
                 return;
             }
@@ -687,6 +688,30 @@ Ext.define('Ung.config.network.MainController', {
                     }
                     if(vm.get('settings.dynamicRoutingSettings.ospfNetworks.list').length == 0){
                         warningsMessages.push("No OSPF networks configured.");
+                    }
+
+                    // Determine if at least one OSPF network is reachable through a gateway or "via"
+                    // Otherwise, it's almost certain that nothing will exchange.
+                    // This would be the case where you only "want" to exchange LAN networks, but without
+                    // specifying the WAN network too (where presumably exchanges will occur),
+                    // the ospfd daemon won't run there.
+                    var atLeastOneReachableNetwork = false;
+                    Rpc.directData('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-routedump.sh').split("\n").forEach(function(route){
+                        if(route.indexOf(" via ") > -1 &&
+                           route.indexOf(" zebra ") == -1){
+                            var routeParts =  route.match(/ via ([^\s]+) /);
+                            var gateway = routeParts[1];
+
+                            ospfNetworks.each( function(network){
+                                if( (network.get("enabled") == true) &&
+                                    Util.ipMatchesNetwork(gateway, network.get('network'), network.get('prefix')) == true){
+                                    atLeastOneReachableNetwork = true;
+                                }
+                            });
+                        }
+                    });
+                    if(atLeastOneReachableNetwork == false){
+                        warningsMessages.push("At least one OSPF network must be reachable.");
                     }
                 }
             }
