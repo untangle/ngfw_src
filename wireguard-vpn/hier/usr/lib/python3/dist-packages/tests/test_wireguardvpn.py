@@ -190,7 +190,11 @@ class WireGuardVpnTests(NGFWTestCase):
         newWGSettings = copy.deepcopy( origWGSettings )
 
         # update WG settings with a custom configuration
-        newWGSettings['networks'] = testingCustomWGAddr
+        newWGSettings['networks'] = newWGSettings['networks'] = {"javaClass": "java.util.LinkedList", "list": [{"address": testingCustomWGAddr, "maskedAddress": testingCustomWGAddr, "javaClass": "com.untangle.app.wireguard_vpn.WireGuardVpnNetwork", "id": 1}]}
+        self._app.setSettings(newWGSettings)
+
+        # Verify custom configuration is returned with get settings
+
         self._app.setSettings(newWGSettings)
 
         # Verify custom configuration is returned with get settings
