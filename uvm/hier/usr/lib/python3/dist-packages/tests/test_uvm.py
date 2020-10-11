@@ -364,7 +364,7 @@ class UvmTests(NGFWTestCase):
         assert(emailFound)
 
     def test_100_account_login(self):
-        untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle2")
+        untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
         if untangleEmail == "message":
             raise unittest.SkipTest('Skipping no accound found:' + str(untanglePassword))
 
