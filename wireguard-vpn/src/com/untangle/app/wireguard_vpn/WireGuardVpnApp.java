@@ -497,8 +497,14 @@ public class WireGuardVpnApp extends AppBase
     {
         LinkedList<WireGuardVpnNetwork> networkList = new LinkedList<WireGuardVpnNetwork>();
 
+        if (intfStatuses == null) {
+            return networkList;
+        }
+
         for (InterfaceStatus intfStatus : intfStatuses) {
-            networkList.add(new WireGuardVpnNetwork(intfStatus.getV4MaskedAddress().getIPMaskedAddress()));
+            if (intfStatus.getV4MaskedAddress() != null) {
+                networkList.add(new WireGuardVpnNetwork(intfStatus.getV4MaskedAddress().getIPMaskedAddress()));
+            }
         }
 
         return networkList;
