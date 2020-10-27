@@ -107,11 +107,10 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
 
-            me.getSettings();
-
             if('settings.tunnels.list' in changes){
                 me.addTunnels(changes['settings.tunnels.list']);
             }
+            me.getSettings();
 
             Ext.fireEvent('resetfields', v);
         }, function(ex) {
@@ -139,8 +138,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         }
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        var tunnels = vm.get('tunnels');
-        var tunnelsLoadCount = tunnels.loadCount;
+        var tunnelsLoadCount = vm.get('tunnels').loadCount;
 
         var tunnelLoadTaskDelay = 100;
         var tunnelLoadTaskCountMax = 500;
@@ -180,6 +178,12 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                     }
                 }
             });
+
+            if(sequence.length == 0){
+                // Did not find any matches.  Try again.
+                tunnelLoadTask.delay( tunnelLoadTaskDelay );
+                return;
+            }
 
             // Perform addTunnel operations.
             if(sequence.length){
