@@ -1,0 +1,16 @@
+#!/bin/dash
+
+# Call the wireguard app script to generate the interface status
+# files using the values from the application settings
+echo "Creating interface status files"
+/usr/share/untangle/bin/wireguard-create-statfile
+
+# Check the interface ID file
+if [ ! -f /var/lib/interface-status/interface-249-status.js ] ; then
+    echo "Missing status file: /var/lib/interface-status/interface-249-status.js"
+fi
+
+# Check the interface name file
+if [ ! -f /var/lib/interface-status/interface-wg0-status.js ] ; then
+    echo "Missing status file: /var/lib/interface-status/interface-wg0-status.js"
+fi
