@@ -17,28 +17,13 @@ Ext.define('Ung.config.local-directory.Main', {
     items: [
         { xtype: 'config-local-directory-users' },
         {
-            xtype: 'config-local-directory-radius-server',
-            tabConfig: {
-                bind: {
-                    hidden: '{!expertMode}'
-                }
-            }
+            xtype: 'config-local-directory-radius-server'
         },
         {
-            xtype: 'config-local-directory-radius-proxy',
-            tabConfig: {
-                bind: {
-                    hidden: '{!expertMode}'
-                }
-            }
+            xtype: 'config-local-directory-radius-proxy'
         },
         {
-            xtype: 'config-local-directory-radius-log',
-            tabConfig: {
-                bind: {
-                    hidden: '{!expertMode}'
-                }
-            }
+            xtype: 'config-local-directory-radius-log'
         }
     ]
 });
