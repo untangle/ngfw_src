@@ -21,6 +21,16 @@ Ext.define('Ung.config.local-directory.view.RadiusServer', {
             boxLabel: 'Enable external access point authentication'.t(),
             bind: {
                 value: '{systemSettings.radiusServerEnabled}'
+            },
+            listeners: {
+                change: {
+                    fn: function(box,nval,oval,opts) {
+                        if (nval === false) {
+                            vm = box.ownerCt.ownerCt.getViewModel();
+                            vm.set('systemSettings.radiusProxyEnabled', false);
+                        }
+                    }
+                }
             }
         }, {
             xtype: 'textfield',

@@ -20,7 +20,8 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             padding: '5 0',
             boxLabel: 'Enable Active Directory Proxy'.t(),
             bind: {
-                value: '{systemSettings.radiusProxyEnabled}'
+                value: '{systemSettings.radiusProxyEnabled}',
+                disabled: '{!systemSettings.radiusServerEnabled}'
             }
         }, {
             xtype: 'textfield',
