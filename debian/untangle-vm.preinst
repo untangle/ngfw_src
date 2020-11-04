@@ -17,6 +17,11 @@ systemctl mask freeradius-dhcp # NGFW-12934, NGFW-13249
 systemctl mask freeradius # NGFW-12934, NGFW-13249
 systemctl mask suricata # NGFW-12939, NGFW-13217
 
+# disable samba and winbind services
+for service in winbind nmbd smbd ; do
+  systemctl disable ${service}.service
+done
+
 get_cpuinfo_field () {
   line=$(grep -m1 ^"$1" /proc/cpuinfo)
   echo "${line##*: }"
