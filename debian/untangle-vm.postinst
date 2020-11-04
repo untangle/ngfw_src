@@ -87,4 +87,8 @@ systemctl unmask freeradius-dhcp # NGFW-12934, NGFW-13249
 systemctl unmask freeradius # NGFW-12934, NGFW-13249
 systemctl unmask suricata # NGFW-12939, NGFW-13217
 
+# usermod & chown for freeradius+winbind
+usermod -a -G winbindd_priv freerad
+chown root:winbindd_priv /var/lib/samba/winbindd_privileged
+
 exit 0
