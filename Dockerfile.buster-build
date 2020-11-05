@@ -1,16 +1,18 @@
-FROM untangleinc/ngfw:buster-base
+FROM untangleinc/ngfw:buster-base-multiarch
 LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
 
 # do not gzip apt lists files (for apt-show-versions)
 RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes
 
-# add foreign architecture if needed
-ARG ARCHITECTURE=amd64
-RUN [ "$ARCHITECTURE" = "amd64" ] || dpkg --add-architecture ${ARCHITECTURE}
+RUN apt update -q
+
+# add foreign architectures and their corresponding crossbuild package
+RUN dpkg --add-architecture arm64
+RUN apt install --yes crossbuild-essential-arm64
+# RUN dpkg --add-architecture armhf
+# RUN apt install --yes crossbuild-essential-armhf
 
 # install required packages
-RUN apt update -q
-RUN [ "$ARCHITECTURE" = "amd64" ] || apt install --yes crossbuild-essential-${ARCHITECTURE}
 RUN apt install --yes build-essential
 RUN apt install --yes debhelper
 RUN apt install --yes devscripts
