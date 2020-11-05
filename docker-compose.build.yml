@@ -17,7 +17,7 @@ services:
         git checkout $${PKGTOOLS_COMMIT} || true"
 
     build:
-      image: untangleinc/ngfw:${REPOSITORY:-buster}-build-${ARCHITECTURE:-amd64}
+      image: untangleinc/ngfw:${REPOSITORY:-buster}-build-multiarch
       environment:
         REPOSITORY: ${REPOSITORY:-buster}
         DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
