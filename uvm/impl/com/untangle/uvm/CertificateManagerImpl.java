@@ -959,9 +959,8 @@ public class CertificateManagerImpl implements CertificateManager
         statusInfo.append("<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>");
         statusInfo.append("<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>");
         statusInfo.append("<TR><TD WIDTH=120>IPSEC Certificate</TD><TD>" + ipsecInfo + "</TD></TR>");
-        if (UvmContextFactory.context().isExpertMode()) {
-            statusInfo.append("<TR><TD WIDTH=120>RADIUS Certificate</TD><TD>" + radiusInfo + "</TD></TR>");
-        }
+        statusInfo.append("<TR><TD WIDTH=120>RADIUS Certificate</TD><TD>" + radiusInfo + "</TD></TR>");
+
         statusInfo.append("</TABLE>");
         return (statusInfo.toString());
     }
