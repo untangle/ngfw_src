@@ -749,12 +749,12 @@ public class LocalDirectoryImpl implements LocalDirectory
         try {
             fw = new FileWriter(FREERADIUS_MSCHAP_CONFIG, false);
             fw.write(FILE_DISCLAIMER);
+            fw.write("mschap {\n");
             if (systemSettings.getRadiusProxyEnabled()) {
-                fw.write("mschap {\n");
                 fw.write("\twith_ntdomain_hack = yes\n");
                 fw.write("\tntlm_auth = \"/usr/bin/ntlm_auth --request-nt-key --username=%{%{Stripped-User-Name}:-%{%{User-Name}:-None}} --challenge=%{%{mschap:Challenge}:-00} --nt-response=%{%{mschap:NT-Response}:-00}\"\n");
-                fw.write("}\n");
             }
+            fw.write("}\n");
             fw.flush();
             fw.close();
         } catch (Exception exn) {
