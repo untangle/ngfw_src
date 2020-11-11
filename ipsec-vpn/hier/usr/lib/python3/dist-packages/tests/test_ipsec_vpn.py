@@ -350,8 +350,6 @@ class IPsecTests(NGFWTestCase):
             # Use same user with different password
             new_user_password = "testtest"
             uvmContext.localDirectory().setUsers(createLocalDirectoryUser(userpassword=new_user_password))
-            appData = createL2TPconfig(appData,"LOCAL_DIRECTORY")
-            self._app.setSettings(appData)
             timeout = 480
             found = False
             # Send command for Windows VPN connect.
@@ -366,6 +364,8 @@ class IPsecTests(NGFWTestCase):
                             found = True
             # Send command for Windows VPN disconnect.
             vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=l2tpClientHost)
+            # set original user and password
+            uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
             assert(found)
 
         # Clean up settings
