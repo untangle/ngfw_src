@@ -125,7 +125,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     public String testRadiusProxyLogin(String userName, String userPass, String userDomain)
     {
         String command = ("/usr/bin/ntlm_auth --request-nt-key");
-        if (userName.length() > 0) {
+        if (userDomain.length() > 0) {
             command += (" --domain=\"" + userDomain + "\"");
         }
         command += (" --username=\"" + userName + "\"");
