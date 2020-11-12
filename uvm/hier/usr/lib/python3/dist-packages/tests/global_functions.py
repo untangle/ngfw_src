@@ -71,7 +71,13 @@ uvmContext = Uvm().getUvmContext(timeout=240)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
 prefix = "@PREFIX@"
 
-test_server_ip = socket.gethostbyname(TEST_SERVER_HOST)
+# get the IP address of the test.untangle.com if not use static value.
+try:
+    test_server_ip = socket.gethostbyname(TEST_SERVER_HOST)
+except socket.error:
+    print("Using default IP as DNS failed")
+    test_server_ip = "35.153.140.77"
+    
 ftp_server = test_server_ip
 iperf_server = ""
 
