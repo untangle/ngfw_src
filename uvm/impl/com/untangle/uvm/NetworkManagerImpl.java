@@ -499,7 +499,7 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
         }catch(Exception e){
-            logger.warn("Unable to parse interfaces for dhcoOverrride:",e);
+            logger.warn("Unable to parse interfaces for dhcpDnsOverride:",e);
         }
 
         return address;
