@@ -125,7 +125,9 @@ public class LocalDirectoryImpl implements LocalDirectory
     public String testRadiusProxyLogin(String userName, String userPass, String userDomain)
     {
         String command = ("/usr/bin/ntlm_auth --request-nt-key");
-        command += (" --domain=\"" + userDomain + "\"");
+        if (userName.length() > 0) {
+            command += (" --domain=\"" + userDomain + "\"");
+        }
         command += (" --username=\"" + userName + "\"");
         command += (" --password=\"" + userPass + "\"");
 
@@ -808,10 +810,12 @@ public class LocalDirectoryImpl implements LocalDirectory
         if (systemSettings.getRadiusServerEnabled()) {
             UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
         }
+
         /*
-         * If proxy is enabled restart the winbind service
+         * If proxy is enabled restart the smbd and winbind services
          */
-        if (systemSettings.getRadiusServerEnabled()) {
+        if (systemSettings.getRadiusProxyEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl restart smbd.service");
             UvmContextFactory.context().execManager().exec("systemctl restart winbind.service");
         }
     }
