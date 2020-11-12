@@ -2023,6 +2023,48 @@ public class NetworkManagerImpl implements NetworkManager
         ruleHttpsNonWanConditions.add(ruleHttpsNonWanMatcher3);
         filterRuleHttpsNonWan.setConditions( ruleHttpsNonWanConditions );
 
+        FilterRule filterRuleRadiusWan = new FilterRule();
+        filterRuleRadiusWan.setReadOnly( true );
+        filterRuleRadiusWan.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
+        filterRuleRadiusWan.setIpv6Enabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
+        filterRuleRadiusWan.setDescription( "Allow RADIUS on WANs" );
+        filterRuleRadiusWan.setBlocked( false );
+        List<FilterRuleCondition> ruleRadiusWanConditions = new LinkedList<>();
+        FilterRuleCondition ruleRadiusWanMatcher1 = new FilterRuleCondition();
+        ruleRadiusWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+        ruleRadiusWanMatcher1.setValue("1812");
+        FilterRuleCondition ruleRadiusWanMatcher2 = new FilterRuleCondition();
+        ruleRadiusWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+        ruleRadiusWanMatcher2.setValue("UDP");
+        FilterRuleCondition ruleRadiusWanMatcher3 = new FilterRuleCondition();
+        ruleRadiusWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+        ruleRadiusWanMatcher3.setValue("wan");
+        ruleRadiusWanConditions.add(ruleRadiusWanMatcher1);
+        ruleRadiusWanConditions.add(ruleRadiusWanMatcher2);
+        ruleRadiusWanConditions.add(ruleRadiusWanMatcher3);
+        filterRuleRadiusWan.setConditions( ruleRadiusWanConditions );
+
+        FilterRule filterRuleRadiusNonWan = new FilterRule();
+        filterRuleRadiusNonWan.setReadOnly( true );
+        filterRuleRadiusNonWan.setEnabled( true );
+        filterRuleRadiusNonWan.setIpv6Enabled( true );
+        filterRuleRadiusNonWan.setDescription( "Allow RADIUS on non-WANs" );
+        filterRuleRadiusNonWan.setBlocked( false );
+        List<FilterRuleCondition> ruleRadiusNonWanConditions = new LinkedList<>();
+        FilterRuleCondition ruleRadiusNonWanMatcher1 = new FilterRuleCondition();
+        ruleRadiusNonWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+        ruleRadiusNonWanMatcher1.setValue("1812");
+        FilterRuleCondition ruleRadiusNonWanMatcher2 = new FilterRuleCondition();
+        ruleRadiusNonWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+        ruleRadiusNonWanMatcher2.setValue("UDP");
+        FilterRuleCondition ruleRadiusNonWanMatcher3 = new FilterRuleCondition();
+        ruleRadiusNonWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+        ruleRadiusNonWanMatcher3.setValue("non_wan");
+        ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher1);
+        ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher2);
+        ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher3);
+        filterRuleRadiusNonWan.setConditions( ruleRadiusNonWanConditions );
+
         FilterRule filterRulePing = new FilterRule();
         filterRulePing.setReadOnly( true );
         filterRulePing.setEnabled( true );
@@ -2296,6 +2338,8 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleSsh );
         rules.add( filterRuleHttpsWan );
         rules.add( filterRuleHttpsNonWan );
+        rules.add( filterRuleRadiusWan );
+        rules.add( filterRuleRadiusNonWan );
         rules.add( filterRulePing );
         rules.add( filterRuleDns );
         rules.add( filterRuleDhcp );
