@@ -126,7 +126,9 @@ Ext.define('Ung.config.local-directory.MainController', {
         var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
         var target = v.down('textarea');
 
-        target.setValue('');
+        if (!target) {
+            return;
+        }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.UvmContext.localDirectory.getRadiusLogFile')
@@ -148,7 +150,9 @@ Ext.define('Ung.config.local-directory.MainController', {
         var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
         var target = v.down('textarea');
 
-        target.setValue('');
+        if (!target) {
+            return;
+        }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.UvmContext.localDirectory.getRadiusProxyStatus')

@@ -2025,8 +2025,8 @@ public class NetworkManagerImpl implements NetworkManager
 
         FilterRule filterRuleRadiusWan = new FilterRule();
         filterRuleRadiusWan.setReadOnly( true );
-        filterRuleRadiusWan.setEnabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
-        filterRuleRadiusWan.setIpv6Enabled( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isNetBoot());
+        filterRuleRadiusWan.setEnabled( false );
+        filterRuleRadiusWan.setIpv6Enabled( false );
         filterRuleRadiusWan.setDescription( "Allow RADIUS on WANs" );
         filterRuleRadiusWan.setBlocked( false );
         List<FilterRuleCondition> ruleRadiusWanConditions = new LinkedList<>();
@@ -2771,12 +2771,65 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * convertSettingsV8
-     * Add default access rule for wireguard tunnels
+     * Add default access rules for RADIUS server and wireguard tunnels
      */
     private void convertSettingsV8()
     {
         try {
             List<FilterRule> accessRules = this.networkSettings.getAccessRules();
+
+            for( FilterRule rule : accessRules ) {
+                int pos = 1;
+                if ("Allow HTTPS on non-WANs".equals(rule.getDescription())) {
+                    FilterRule filterRuleRadiusNonWan = new FilterRule();
+                    filterRuleRadiusNonWan.setReadOnly( true );
+                    filterRuleRadiusNonWan.setEnabled( true );
+                    filterRuleRadiusNonWan.setIpv6Enabled( true );
+                    filterRuleRadiusNonWan.setDescription( "Allow RADIUS on non-WANs" );
+                    filterRuleRadiusNonWan.setBlocked( false );
+                    List<FilterRuleCondition> ruleRadiusNonWanConditions = new LinkedList<>();
+                    FilterRuleCondition ruleRadiusNonWanMatcher1 = new FilterRuleCondition();
+                    ruleRadiusNonWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+                    ruleRadiusNonWanMatcher1.setValue("1812");
+                    FilterRuleCondition ruleRadiusNonWanMatcher2 = new FilterRuleCondition();
+                    ruleRadiusNonWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+                    ruleRadiusNonWanMatcher2.setValue("UDP");
+                    FilterRuleCondition ruleRadiusNonWanMatcher3 = new FilterRuleCondition();
+                    ruleRadiusNonWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+                    ruleRadiusNonWanMatcher3.setValue("non_wan");
+                    ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher1);
+                    ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher2);
+                    ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher3);
+                    filterRuleRadiusNonWan.setConditions( ruleRadiusNonWanConditions );
+                    accessRules.add( pos, filterRuleRadiusNonWan );
+
+                    FilterRule filterRuleRadiusWan = new FilterRule();
+                    filterRuleRadiusWan.setReadOnly( true );
+                    filterRuleRadiusWan.setEnabled( false );
+                    filterRuleRadiusWan.setIpv6Enabled( false );
+                    filterRuleRadiusWan.setDescription( "Allow RADIUS on WANs" );
+                    filterRuleRadiusWan.setBlocked( false );
+                    List<FilterRuleCondition> ruleRadiusWanConditions = new LinkedList<>();
+                    FilterRuleCondition ruleRadiusWanMatcher1 = new FilterRuleCondition();
+                    ruleRadiusWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+                    ruleRadiusWanMatcher1.setValue("1812");
+                    FilterRuleCondition ruleRadiusWanMatcher2 = new FilterRuleCondition();
+                    ruleRadiusWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+                    ruleRadiusWanMatcher2.setValue("UDP");
+                    FilterRuleCondition ruleRadiusWanMatcher3 = new FilterRuleCondition();
+                    ruleRadiusWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+                    ruleRadiusWanMatcher3.setValue("wan");
+                    ruleRadiusWanConditions.add(ruleRadiusWanMatcher1);
+                    ruleRadiusWanConditions.add(ruleRadiusWanMatcher2);
+                    ruleRadiusWanConditions.add(ruleRadiusWanMatcher3);
+                    filterRuleRadiusWan.setConditions( ruleRadiusWanConditions );
+                    accessRules.add( pos, filterRuleRadiusWan );
+
+                    break;
+                }
+                pos++;
+            }
+
             for( FilterRule rule : accessRules ) {
                 int pos = 1;
                 if ("Allow OpenVPN".equals(rule.getDescription())) {
@@ -2807,6 +2860,7 @@ public class NetworkManagerImpl implements NetworkManager
                 }
                 pos++;
             }
+
             List<InterfaceSettings> virtualInterfaces = this.networkSettings.getVirtualInterfaces();
 
             InterfaceSettings virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"WireGuard VPN");

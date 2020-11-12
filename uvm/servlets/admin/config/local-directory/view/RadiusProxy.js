@@ -126,7 +126,8 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldIndex: 'testUsername',
             labelWidth: 120,
             width: '100%',
-            allowBlank: false,
+            allowBlank: true,
+            _neverDirty: true,
             bind: {
                 disabled: '{!activeProxy.checked}'
             }
@@ -136,7 +137,8 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldIndex: 'testPassword',
             labelWidth: 120,
             width: '100%',
-            allowBlank: false,
+            allowBlank: true,
+            _neverDirty: true,
             bind: {
                 disabled: '{!activeProxy.checked}'
             }
@@ -146,7 +148,8 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldIndex: 'testDomain',
             labelWidth: 120,
             width: '100%',
-            allowBlank: false,
+            allowBlank: true,
+            _neverDirty: true,
             bind: {
                 disabled: '{!activeProxy.checked}'
             }
