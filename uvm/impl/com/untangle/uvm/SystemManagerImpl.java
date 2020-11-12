@@ -663,11 +663,40 @@ public class SystemManagerImpl implements SystemManager
      */
     protected void radiusProxySync()
     {
-        Integer exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled winbind.service");
+        Integer exitValue;
+
+        /**
+         * we never need the nmbd service so make sure it never runs
+         */
+        UvmContextFactory.context().execManager().exec("systemctl stop nmbd.service");
+        UvmContextFactory.context().execManager().exec("systemctl disable nmbd.service");
+        UvmContextFactory.context().execManager().exec("systemctl mask nmbd.service");
+
+        /**
+         * manage the smbd service which is the samba daemon required for radius proxy
+         */
+        exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled smbd.service");
+
         // if running and should not be, stop it
         if ((0 == exitValue) && !settings.getRadiusProxyEnabled()) {
-            UvmContextFactory.context().execManager().exec("systemctl disable winbind.service");
+            UvmContextFactory.context().execManager().exec("systemctl stop smbd.service");
+            UvmContextFactory.context().execManager().exec("systemctl disable smbd.service");
+        }
+        // if not running and should be, start it
+        if ((0 != exitValue) && settings.getRadiusProxyEnabled()) {
+            UvmContextFactory.context().execManager().exec("systemctl enable smbd.service");
+            UvmContextFactory.context().execManager().exec("systemctl restart smbd.service");
+        }
+
+        /**
+         * manage the winbind service which is another daemon required for radius proxy
+         */
+        exitValue = UvmContextImpl.context().execManager().execResult("systemctl is-enabled winbind.service");
+
+        // if running and should not be, stop it
+        if ((0 == exitValue) && !settings.getRadiusProxyEnabled()) {
             UvmContextFactory.context().execManager().exec("systemctl stop winbind.service");
+            UvmContextFactory.context().execManager().exec("systemctl disable winbind.service");
         }
         // if not running and should be, start it
         if ((0 != exitValue) && settings.getRadiusProxyEnabled()) {

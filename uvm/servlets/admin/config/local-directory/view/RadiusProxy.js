@@ -9,21 +9,25 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
     bodyPadding: 10,
 
     items: [{
+        xtype: 'component',
+        margin: '0 0 10 0',
+        html: 'The RADIUS Proxy can be enabled to allow wireless clients to authenticate using account credentials stored in an Active Directory server.'.t()
+    },{
+        xtype: 'checkbox',
+        reference: 'activeProxy',
+        padding: '5 0',
+        boxLabel: 'Enable Active Directory Proxy'.t(),
+        bind: {
+            value: '{systemSettings.radiusProxyEnabled}',
+            disabled: '{!systemSettings.radiusServerEnabled}'
+        }
+    }, {
         xtype: 'fieldset',
         padding: '10 20',
         itemId: 'radius-proxy',
         width: 600,
-        title: 'Active Directory (RADIUS Proxy)'.t(),
+        title: 'Active Directory Server'.t(),
         items: [{
-            xtype: 'checkbox',
-            reference: 'activeProxy',
-            padding: '5 0',
-            boxLabel: 'Enable Active Directory Proxy'.t(),
-            bind: {
-                value: '{systemSettings.radiusProxyEnabled}',
-                disabled: '{!systemSettings.radiusServerEnabled}'
-            }
-        }, {
             xtype: 'textfield',
             fieldLabel: 'AD Server'.t(),
             labelWidth: 120,
@@ -73,7 +77,14 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
                 value: '{systemSettings.radiusProxyPassword}',
                 disabled: '{!activeProxy.checked}'
             }
-        }, {
+        }],
+    }, {
+        xtype: 'fieldset',
+        padding: '10 20',
+        itemId: 'radius-account',
+        width: 600,
+        title: 'Active Directory Computer Account'.t(),
+        items: [{
             xtype: 'button',
             iconCls: 'fa fa-link',
             text: 'Create AD Computer Account',
@@ -115,7 +126,8 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldIndex: 'testUsername',
             labelWidth: 120,
             width: '100%',
-            allowBlank: false,
+            allowBlank: true,
+            _neverDirty: true,
             bind: {
                 disabled: '{!activeProxy.checked}'
             }
@@ -125,7 +137,8 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldIndex: 'testPassword',
             labelWidth: 120,
             width: '100%',
-            allowBlank: false,
+            allowBlank: true,
+            _neverDirty: true,
             bind: {
                 disabled: '{!activeProxy.checked}'
             }
@@ -135,7 +148,8 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldIndex: 'testDomain',
             labelWidth: 120,
             width: '100%',
-            allowBlank: false,
+            allowBlank: true,
+            _neverDirty: true,
             bind: {
                 disabled: '{!activeProxy.checked}'
             }
