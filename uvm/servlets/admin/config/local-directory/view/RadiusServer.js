@@ -9,11 +9,15 @@ Ext.define('Ung.config.local-directory.view.RadiusServer', {
     bodyPadding: 10,
 
     items: [{
+        xtype: 'component',
+        margin: '0 0 10 0',
+        html: 'The RADIUS Server can be enabled to allow wireless clients of 802.1x network access points to authenticate with their Local Directory username and password.'.t()
+    }, {
         xtype: 'fieldset',
         padding: '10 20',
         itemId: 'radius-server',
         width: 600,
-        title: 'Wi-Fi Authentication (RADIUS Server)'.t(),
+        title: 'Wi-Fi Authentication'.t(),
         items: [{
             xtype: 'checkbox',
             reference: 'externalAccess',
