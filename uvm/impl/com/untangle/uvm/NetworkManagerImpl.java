@@ -480,24 +480,26 @@ public class NetworkManagerImpl implements NetworkManager
             return address;
         }
 
-        for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
-            if ( !intfSettings.igetDisabled() && !intfSettings.getIsWan() ) {
-                if(address == null){
-                    address = getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
-                }
-                if(intfSettings.getDhcpEnabled() &&
-                   intfSettings.getDhcpDnsOverride() != null &&
-                   !intfSettings.getDhcpDnsOverride().equals("")){
-                    InetAddress dhcpOverride = null;
-                    try{
-                        dhcpOverride = InetAddress.getByName(intfSettings.getDhcpDnsOverride());
-                    }catch(Exception e){}
-                    if(dhcpOverride != null){
-                        address = dhcpOverride;
-                        break;
+        try{
+            for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
+                if ( !intfSettings.igetDisabled() && !intfSettings.getIsWan() ) {
+                    if(address == null){
+                        address = getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
+                    }
+                    if(intfSettings.getDhcpEnabled() != null &&
+                        intfSettings.getDhcpEnabled() &&
+                        intfSettings.getDhcpDnsOverride() != null &&
+                        !intfSettings.getDhcpDnsOverride().equals("")){
+                            InetAddress dhcpOverride = InetAddress.getByName(intfSettings.getDhcpDnsOverride());
+                            if(dhcpOverride != null){
+                                address = dhcpOverride;
+                                break;
+                            }
                     }
                 }
             }
+        }catch(Exception e){
+            logger.warn("Unable to parse interfaces for dhcoOverrride:",e);
         }
 
         return address;
