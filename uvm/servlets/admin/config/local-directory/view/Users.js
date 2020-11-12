@@ -1,7 +1,7 @@
 Ext.define('Ung.config.local-directory.view.Users', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-local-directory-users',
-    itemId: 'users',
+    itemId: 'local-users',
     title: 'Local Users'.t(),
     scrollable: true,
 
