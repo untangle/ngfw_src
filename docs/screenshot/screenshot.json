@@ -264,7 +264,16 @@
         "type": "remove_nav"
 
     },{
-        "url": "/admin/index.do#config/local-directory",
+        "url": "/admin/index.do#config/local-directory/local-users",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/local-directory/radius-server",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/local-directory/radius-proxy",
+        "type": "remove_nav"
+    },{
+        "url": "/admin/index.do#config/local-directory/radius-log",
         "type": "remove_nav"
 
     },{
