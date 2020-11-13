@@ -167,6 +167,18 @@ Ext.define('Ung.config.local-directory.MainController', {
 
     createComputerAccount: function (cmp) {
         var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var dirtyFields = false;
+
+        Ext.Array.each(v.query('field'), function (field) {
+            if (!field._neverDirty && field._isChanged && !dirtyFields) {
+                dirtyFields = true;
+            }
+        });
+
+        if (dirtyFields) {
+            Ext.MessageBox.alert('Unsaved Changes'.t(), 'The settings must be saved before the computer account can be created.'.t());
+            return;
+        }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.UvmContext.localDirectory.addRadiusComputerAccount')
@@ -181,6 +193,18 @@ Ext.define('Ung.config.local-directory.MainController', {
         var testuser = v.down("[fieldIndex='testUsername']").getValue();
         var testpass = v.down("[fieldIndex='testPassword']").getValue();
         var testdom = v.down("[fieldIndex='testDomain']").getValue();
+        var dirtyFields = false;
+
+        Ext.Array.each(v.query('field'), function (field) {
+            if (!field._neverDirty && field._isChanged && !dirtyFields) {
+                dirtyFields = true;
+            }
+        });
+
+        if (dirtyFields) {
+            Ext.MessageBox.alert('Unsaved Changes'.t(), 'The settings must be saved before using the authentication test.'.t());
+            return;
+        }
 
         v.setLoading(true);
         Rpc.asyncData('rpc.UvmContext.localDirectory.testRadiusProxyLogin', testuser, testpass, testdom)
