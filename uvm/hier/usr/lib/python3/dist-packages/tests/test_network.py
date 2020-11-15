@@ -1507,8 +1507,8 @@ class NetworkTests(NGFWTestCase):
         found = False
         timeout = 60
         qos_data = []
+        remote_control.is_online() # generate some traffic.
         while not found and timeout > 0:
-            remote_control.is_online() # generate some traffic.
             timeout -= 1
             time.sleep(1)
             qos_output_obj = subprocess.run("/usr/share/untangle/bin/qos-status.py", capture_output=True)
@@ -1523,6 +1523,8 @@ class NetworkTests(NGFWTestCase):
             qos_data = json.loads(qos_output_decode)
             if qos_data:
                 found = True
+            else:
+                global_functions.get_download_speed(download_server=target_server)
         assert(qos_data[0]["priority"] != '')
 
     @classmethod
