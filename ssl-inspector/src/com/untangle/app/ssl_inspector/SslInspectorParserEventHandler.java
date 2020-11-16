@@ -956,6 +956,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         // handle transition from handshaking to finished
         if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) {
             returnResult = doFinished(session);
+            // Always return true from a parse wrap even if it is client side
             if (manager.getClientSide() == true)
                 returnResult = true;
         }
@@ -996,7 +997,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         logger.debug("EXEC_HANDSHAKING " + result.toString());
 
         if (result.getStatus() == SSLEngineResult.Status.CLOSED) {
-            //For TLS1.3, need to shutdown other side and kill session if no more data is needed i.e. would need a wrap/unwrap
+            //For TLS1.3, need to shutdown other side and kill session if no more data is needed i.e. no need for a wrap/unwrap
             if (result.getHandshakeStatus() == HandshakeStatus.NOT_HANDSHAKING)
                 shutdownOtherSide(session, true);
 
