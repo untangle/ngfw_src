@@ -1524,7 +1524,7 @@ class NetworkTests(NGFWTestCase):
             if qos_data:
                 found = True
             else:
-                global_functions.get_download_speed(download_server=target_server)
+                global_functions.get_download_speed()
         assert(qos_data[0]["priority"] != '')
 
     @classmethod
