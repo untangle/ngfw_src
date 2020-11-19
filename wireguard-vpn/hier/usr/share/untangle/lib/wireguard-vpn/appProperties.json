@@ -5,6 +5,11 @@
         "displayName" : "WireGuard VPN",
         "type" : "SERVICE",
         "viewPosition" : 1080,
-        "autoStart" : "true"
+        "autoStart" : "false",
+        "parents" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "license"
+            ]
+        }
 }
-
