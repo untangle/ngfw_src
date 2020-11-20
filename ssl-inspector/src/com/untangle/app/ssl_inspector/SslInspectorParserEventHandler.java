@@ -870,6 +870,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         SslInspectorManager manager = getManager(session);
         ByteBuffer target = ByteBuffer.allocate(32768);
         SSLEngineResult result;
+        boolean returnResult = false;
 
         // unwrap the argumented data into the engine buffer - we expect all 
         // all the data to be consumed internally with no bytes produced
@@ -898,12 +899,15 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // handle transition from handshaking to finished
         if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) {
-            return doFinished(session);
+            returnResult = doFinished(session);
         }
 
         // the unwrap call shouldn't produce data during handshake and if that
         // is the case we return done=false here allowing the loop to continue
         if (result.bytesProduced() == 0) return false;
+
+        // If doFinished returned true, return that
+        if (returnResult == true) return returnResult;
 
         // unwrap calls during handshake should never produce data
         throw new Exception("SSLEngine produced unexpected data during handshake unwrap");
@@ -924,6 +928,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         SslInspectorManager manager = getManager(session);
         ByteBuffer target = ByteBuffer.allocate(32768);
         SSLEngineResult result;
+        boolean returnResult = true;
 
         // wrap the argumented data into the engine buffer
         result = manager.getSSLEngine().wrap(data, target);
@@ -950,15 +955,18 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // handle transition from handshaking to finished
         if (result.getHandshakeStatus() == HandshakeStatus.FINISHED) {
-            return doFinished(session);
+            returnResult = doFinished(session);
+            // Always return true from a parse wrap even if it is client side
+            if (manager.getClientSide() == true)
+                returnResult = true;
         }
 
         if (data.position() < data.limit()) {
             logger.debug("EXEC_WRAP data postion < data limit");
-            return (false);
+            return false;
         }
 
-        return true;
+        return returnResult;
     }
 
     // ------------------------------------------------------------------------
@@ -989,8 +997,9 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         logger.debug("EXEC_HANDSHAKING " + result.toString());
 
         if (result.getStatus() == SSLEngineResult.Status.CLOSED) {
-            //For TLS1.3, need to shutdown other side and kill session otherwise errors occur
-            shutdownOtherSide(session, true);
+            //For TLS1.3, need to shutdown other side and kill session if no more data is needed i.e. no need for a wrap/unwrap
+            if (result.getHandshakeStatus() == HandshakeStatus.NOT_HANDSHAKING)
+                shutdownOtherSide(session, true);
 
             // if the target buffer is empty we are finished so return done=true 
             logger.debug("TARGET " + target.toString());
