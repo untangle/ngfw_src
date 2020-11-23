@@ -68,15 +68,26 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
                 disabled: '{!activeProxy.checked}'
             }
         }, {
-            xtype: 'textfield',
-            fieldLabel: 'AD Admin Password'.t(),
-            labelWidth: 120,
+            xtype: 'fieldcontainer',
+            layout: 'hbox',
             width: '100%',
-            allowBlank: false,
-            bind: {
-                value: '{systemSettings.radiusProxyPassword}',
-                disabled: '{!activeProxy.checked}'
-            }
+            items: [{
+                xtype: 'textfield',
+                fieldLabel: 'AD Admin Password'.t(),
+                labelWidth: 120,
+                width: '96%',
+                allowBlank: false,
+                inputType: 'password',
+                bind: {
+                    value: '{systemSettings.radiusProxyPassword}',
+                    disabled: '{!activeProxy.checked}'
+                }
+            }, {
+                xtype: 'button',
+                iconCls: 'fa fa-eye',
+                tooltip: 'Show Password',
+                handler: 'showOrHideRadiusPassword'
+            }]
         }],
     }, {
         xtype: 'fieldset',
@@ -96,16 +107,27 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
                 disabled: '{!activeProxy.checked}'
             }
         }, {
-            xtype: 'textfield',
-            fieldLabel: 'Test Password'.t(),
-            fieldIndex: 'testPassword',
-            labelWidth: 120,
+            xtype: 'fieldcontainer',
+            layout: 'hbox',
             width: '100%',
-            allowBlank: true,
-            _neverDirty: true,
-            bind: {
-                disabled: '{!activeProxy.checked}'
-            }
+            items: [{
+                xtype: 'textfield',
+                fieldLabel: 'Test Password'.t(),
+                fieldIndex: 'testPassword',
+                labelWidth: 120,
+                width: '96%',
+                allowBlank: true,
+                _neverDirty: true,
+                inputType: 'password',
+                bind: {
+                    disabled: '{!activeProxy.checked}'
+                }
+            }, {
+                xtype: 'button',
+                iconCls: 'fa fa-eye',
+                tooltip: 'Show Password',
+                handler: 'showOrHideRadiusPassword'
+            }]
         }, {
             xtype: 'textfield',
             fieldLabel: 'Test Domain'.t(),

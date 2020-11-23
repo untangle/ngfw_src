@@ -214,6 +214,17 @@ Ext.define('Ung.config.local-directory.MainController', {
         });
     },
 
+    /**
+     * Logic to handle showing/hiding password in the Radius Proxy UI
+     * @param {button} button that user clicks to indicate if they want to hide/show the password
+     */
+    showOrHideRadiusPassword: function (button) {
+        var isShowPassword = button.iconCls === 'fa fa-eye';
+        button.setTooltip(isShowPassword ? 'Hide password' : 'Show password');
+        button.setIconCls(isShowPassword ? 'fa fa-eye-slash' : 'fa fa-eye');
+        button.prev().getEl().query('input', false)[0].set({'type':isShowPassword?'text':'password'});
+    },
+
     statics:{
         expirationRenderer: function( value ){
             var date;
