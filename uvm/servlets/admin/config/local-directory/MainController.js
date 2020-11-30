@@ -110,11 +110,13 @@ Ext.define('Ung.config.local-directory.MainController', {
             Ext.fireEvent('resetfields', v);
             me.loadSettings();
             v.setLoading(false);
+            Util.successToast('Settings saved');
         }, function (ex) {
             if(!Util.isDestroyed(v, vm)){
                 vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
             }
+            Util.handleException(ex);
         });
     },
 

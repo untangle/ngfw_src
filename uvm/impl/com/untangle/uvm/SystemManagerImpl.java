@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -189,6 +190,21 @@ public class SystemManagerImpl implements SystemManager
         String newApacheCert = newSettings.getWebCertificate();
         String oldApacheCert = null;
         if (settings != null) oldApacheCert = settings.getWebCertificate();
+
+        /**
+         * Ensure the Radius proxy AD server resolves on save if Radius Proxy enabled
+         */
+        if (newSettings.getRadiusProxyEnabled()) {
+            InetAddress addr;
+            String radiusProxyServer = newSettings.getRadiusProxyServer();
+            try {
+                addr = InetAddress.getByName(radiusProxyServer);
+            } catch (java.net.UnknownHostException e) {
+                String hostNameResolutionFailure = "Unable to resolve AD server " + radiusProxyServer + " : ";
+                logger.warn(hostNameResolutionFailure, e);
+                throw new RuntimeException(hostNameResolutionFailure, e);
+            }
+        }
 
         /**
          * Save the settings
