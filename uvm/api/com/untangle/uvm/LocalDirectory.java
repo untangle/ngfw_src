@@ -69,10 +69,21 @@ public interface LocalDirectory
     /**
      * Adds computer account to the Active Directory domain controller
      */
-    public String addRadiusComputerAccount();
+    public ExecManagerResult addRadiusComputerAccount();
 
     /**
      * Tests Active Directory authentication with passed credentials
      */
     public String testRadiusProxyLogin(String userName, String userPass, String userDomain);
+
+    /**
+     * Sets if radius computer account has been added successfully
+     */
+    public void setRadiusProxyComputerAccountExists(boolean radiusProxyComputerAccountExists);
+
+    /**
+     * Gets if radius computer account has been added successfully for given credentials
+     */
+    public boolean getRadiusProxyComputerAccountExists();
+    
 }

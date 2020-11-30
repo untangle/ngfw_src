@@ -96,10 +96,18 @@ Ext.define('Ung.config.local-directory.MainController', {
             }
         }
 
+        var dirtyRadiusFields = false;
+        Ext.Array.each(v.query('field'), function (field) {
+            console.log(field);
+            if (!field._neverDirty && field._isChanged && !dirtyRadiusFields) {
+                dirtyRadiusFields = true;
+            }
+        });
+
         // Make sure we set the userlist last because that function will generate
         // the user credentials and shared secret configs for the freeradius server
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
+            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings'), dirtyRadiusFields),
             Rpc.asyncPromise('rpc.UvmContext.localDirectory.setUsers', userlist)
         ], this)
         .then(function (result) {
@@ -164,29 +172,6 @@ Ext.define('Ung.config.local-directory.MainController', {
             }
             target.setValue(result);
             v.setLoading(false);
-        });
-    },
-
-    createComputerAccount: function (cmp) {
-        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
-        var dirtyFields = false;
-
-        Ext.Array.each(v.query('field'), function (field) {
-            if (!field._neverDirty && field._isChanged && !dirtyFields) {
-                dirtyFields = true;
-            }
-        });
-
-        if (dirtyFields) {
-            Ext.MessageBox.alert('Unsaved Changes'.t(), 'The settings must be saved before the computer account can be created.'.t());
-            return;
-        }
-
-        v.setLoading(true);
-        Rpc.asyncData('rpc.UvmContext.localDirectory.addRadiusComputerAccount')
-        .then(function(result){
-            v.setLoading(false);
-            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Account Creation Status'.t(), msg: '<tt>' + result + '</tt>' });
         });
     },
 

@@ -149,15 +149,6 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
         title: 'Active Directory Status'.t(),
         items: [{
             xtype: 'button',
-            iconCls: 'fa fa-link',
-            text: 'Create AD Computer Account',
-            margin: '10, 0',
-            bind: {
-                disabled: '{!systemSettings.radiusProxyEnabled}',
-            },
-            handler: 'createComputerAccount'
-        }, {
-            xtype: 'button',
             iconCls: 'fa fa-refresh',
             text: 'Refresh AD Account Status',
             margin: '10, 0',

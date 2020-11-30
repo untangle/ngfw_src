@@ -13,7 +13,7 @@ public interface SystemManager
 {
     SystemSettings getSettings();
 
-    void setSettings(SystemSettings settings);
+    void setSettings(SystemSettings settings, boolean dirtyRadiusFields);
 
     /**
      * Returns the time zone that the UVM is currently set to

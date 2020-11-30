@@ -93,7 +93,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         systemSettings.setInstallType( installType );
 
         this.context.adminManager().setSettings( adminSettings );
-        this.context.systemManager().setSettings( systemSettings );
+        this.context.systemManager().setSettings( systemSettings, false );
     }
 
     /**

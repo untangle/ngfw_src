@@ -106,14 +106,14 @@ public class SystemManagerImpl implements SystemManager
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-            this.setSettings(defaultSettings());
+            this.setSettings(defaultSettings(), false);
         } else {
             this.settings = readSettings;
 
             if (this.settings.getVersion() < SETTINGS_VERSION) {
                 this.settings.setVersion(SETTINGS_VERSION);
                 this.settings.setLogRetention(7);
-                this.setSettings(this.settings);
+                this.setSettings(this.settings, false);
             }
 
             logger.debug("Loading Settings: " + this.settings.toJSONString());
@@ -184,8 +184,9 @@ public class SystemManagerImpl implements SystemManager
      * 
      * @param newSettings
      *        The new settings
+     * @param dirtyRadiusFields
      */
-    public void setSettings(final SystemSettings newSettings)
+    public void setSettings(final SystemSettings newSettings, boolean dirtyRadiusFields)
     {
         String newApacheCert = newSettings.getWebCertificate();
         String oldApacheCert = null;
@@ -200,7 +201,8 @@ public class SystemManagerImpl implements SystemManager
             try {
                 addr = InetAddress.getByName(radiusProxyServer);
             } catch (java.net.UnknownHostException e) {
-                String hostNameResolutionFailure = "Unable to resolve AD server " + radiusProxyServer + " : ";
+                String hostNameResolutionFailure = "Unable to resolve AD server " + radiusProxyServer + 
+                                                   ". You may need to create a Static DNS entry in config > Network > DNS Server: ";
                 logger.warn(hostNameResolutionFailure, e);
                 throw new RuntimeException(hostNameResolutionFailure, e);
             }
@@ -252,6 +254,20 @@ public class SystemManagerImpl implements SystemManager
         pyconnectorSync();
         radiusServerSync();
         radiusProxySync();
+
+        //Set radiusproxycomputeraccountexists to false if fields are dirty
+        if (dirtyRadiusFields) {
+            UvmContextFactory.context().localDirectory().setRadiusProxyComputerAccountExists(false);
+        }
+        // If radius proxy enabled and a computer account needs to be added and fields were changed, add a computer account
+        if (this.settings.getRadiusProxyEnabled() && !UvmContextFactory.context().localDirectory().getRadiusProxyComputerAccountExists() && dirtyRadiusFields) {
+            ExecManagerResult addComputerAccount = UvmContextFactory.context().localDirectory().addRadiusComputerAccount();
+            if (addComputerAccount.getResult() != 0) {
+                throw new RuntimeException("Unable to create AD Computer Account automatically: " + addComputerAccount.getOutput());
+            } else {
+                UvmContextFactory.context().localDirectory().setRadiusProxyComputerAccountExists(true);
+            }
+        }
     }
 
     /**
