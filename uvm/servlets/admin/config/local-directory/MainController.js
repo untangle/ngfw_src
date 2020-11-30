@@ -192,7 +192,7 @@ Ext.define('Ung.config.local-directory.MainController', {
         var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
         var testuser = v.down("[fieldIndex='testUsername']").getValue();
         var testpass = v.down("[fieldIndex='testPassword']").getValue();
-        var testdom = v.down("[fieldIndex='testDomain']").getValue();
+        var testdom = v.down("[fieldIndex='adDomain']").getValue();
         var dirtyFields = false;
 
         Ext.Array.each(v.query('field'), function (field) {

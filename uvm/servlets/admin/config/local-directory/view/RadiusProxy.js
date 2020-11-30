@@ -33,6 +33,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             labelWidth: 120,
             width: '100%',
             allowBlank: false,
+            vtype: 'isNotSingleIp',
             bind: {
                 value: '{systemSettings.radiusProxyServer}',
                 disabled: '{!activeProxy.checked}'
@@ -51,6 +52,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             xtype: 'textfield',
             fieldLabel: 'AD Domain'.t(),
             labelWidth: 120,
+            fieldIndex: 'adDomain',
             width: '100%',
             allowBlank: false,
             bind: {
@@ -128,17 +130,6 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
                 tooltip: 'Show Password',
                 handler: 'showOrHideRadiusPassword'
             }]
-        }, {
-            xtype: 'textfield',
-            fieldLabel: 'Test Domain'.t(),
-            fieldIndex: 'testDomain',
-            labelWidth: 120,
-            width: '100%',
-            allowBlank: true,
-            _neverDirty: true,
-            bind: {
-                disabled: '{!activeProxy.checked}'
-            }
         }, {
             xtype: 'button',
             iconCls: 'fa fa-cogs',
