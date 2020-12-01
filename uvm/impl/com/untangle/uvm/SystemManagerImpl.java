@@ -185,6 +185,7 @@ public class SystemManagerImpl implements SystemManager
      * @param newSettings
      *        The new settings
      * @param dirtyRadiusFields
+     *        If the Radius Proxy fields are 'dirty' and so a computer account needs to be added
      */
     public void setSettings(final SystemSettings newSettings, boolean dirtyRadiusFields)
     {
@@ -255,7 +256,7 @@ public class SystemManagerImpl implements SystemManager
         radiusServerSync();
         radiusProxySync();
 
-        //Set radiusproxycomputeraccountexists to false if fields are dirty
+        //Set radiusComputerAccountExists to false if fields are dirty
         if (dirtyRadiusFields) {
             UvmContextFactory.context().localDirectory().setRadiusProxyComputerAccountExists(false);
         }

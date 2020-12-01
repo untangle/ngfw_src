@@ -82,7 +82,7 @@ public interface LocalDirectory
     public void setRadiusProxyComputerAccountExists(boolean radiusProxyComputerAccountExists);
 
     /**
-     * Gets if radius computer account has been added successfully for given credentials
+     * Gets if radius computer account has been added successfully
      */
     public boolean getRadiusProxyComputerAccountExists();
     
