@@ -98,7 +98,6 @@ Ext.define('Ung.config.local-directory.MainController', {
 
         var dirtyRadiusFields = false;
         Ext.Array.each(v.query('field'), function (field) {
-            console.log(field);
             if (!field._neverDirty && field._isChanged && !dirtyRadiusFields) {
                 dirtyRadiusFields = true;
             }

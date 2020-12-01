@@ -251,14 +251,15 @@ public class LocalDirectoryImpl implements LocalDirectory
     /**
      * Sets if radius computer account has been added successfully
      * @param radiusProxyComputerAccountExists
+     *          Boolean for if the computer account exists
      */
     public void setRadiusProxyComputerAccountExists(boolean radiusProxyComputerAccountExists) {
         this.radiusProxyComputerAccountExists = radiusProxyComputerAccountExists;
     }
 
     /**
-     * Gets if radius computer account has been added successfully for given credentials
-     * @return the boolean
+     * Gets if radius computer account exists
+     * @return boolean for if the radius computer account exists
      */
     public boolean getRadiusProxyComputerAccountExists() {
         return this.radiusProxyComputerAccountExists;
