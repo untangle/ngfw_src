@@ -91,6 +91,24 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
                 handler: 'showOrHideRadiusPassword'
             }]
         }],
+        defaults: {
+            listeners: {
+                change: function(field, newVal, oldVal) {
+                    // Initial start has original value as empty string and non-dirty field
+                    if (!field.isDirty() && oldVal === '') {
+                        field.originalValue = newVal;
+                    } else {
+                        if (field.isDirty()) {
+                            field.up('panel').query('fieldset')[1].setDisabled(true);
+                            field.up('panel').query('fieldset')[2].setDisabled(true);
+                        } else {
+                            field.up('panel').query('fieldset')[1].setDisabled(false);
+                            field.up('panel').query('fieldset')[2].setDisabled(false);
+                        }
+                    }
+                },
+            }
+        },
     }, {
         xtype: 'fieldset',
         padding: '10 20',
