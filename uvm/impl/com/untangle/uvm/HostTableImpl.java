@@ -540,7 +540,7 @@ public class HostTableImpl implements HostTable
      * 
      * @param address
      *        The address for the entry
-     * @return The new entry
+     * @return The new entry∫
      */
     private synchronized HostTableEntry createNewHostTableEntry(InetAddress address)
     {
@@ -627,6 +627,22 @@ public class HostTableImpl implements HostTable
             deviceEntry.setHostnameLastKnown(entry.getHostnameDns());
         }
     }
+
+    /**
+     *  Return the radius user logged in from hostentry.
+     *  @param hostentry
+     *      hostentry that we want to update.
+     */
+
+     private void updateRadiusUser(HostTableEntry hostentry)
+     {
+        String username = UvmContextFactory.context().localDirectory().getRadiusUser(hostentry.getAddress());
+        if (username != "")  { 
+            hostentry.setusernameRadius(username);
+        } else {
+            hostentry.setusernameRadius(null); 
+        }
+     }
 
     /**
      * Save the host table to a file
@@ -983,7 +999,7 @@ public class HostTableImpl implements HostTable
                     reverseLookupSemaphore.tryAcquire(CLEANER_SLEEP_TIME_MILLI, java.util.concurrent.TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                 }
-                logger.debug("HostTableReverseHostnameLookup: Running... ");
+                logger.info("HostTableReverseHostnameLookup: Running... ");
 
                 try {
                     LinkedList<HostTableEntry> entries = new LinkedList<>(hostTable.values());
@@ -993,7 +1009,7 @@ public class HostTableImpl implements HostTable
                         InetAddress address = entry.getAddress();
 
                         syncWithDeviceEntry(entry, address);
-
+                        updateRadiusUser(entry);
                         if (address == null) {
                             if (logger.isDebugEnabled()) logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
                             continue;

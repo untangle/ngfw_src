@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm;
 
+import java.net.InetAddress;
 import java.util.LinkedList;
 
 /**
@@ -65,6 +66,12 @@ public interface LocalDirectory
      * Gets the Active Directory account status
      */
     public String getRadiusProxyStatus();
+
+    /**
+     * Get Radius user logged in on a given IP/HostTableEntry
+     * @return String user
+     */
+    public String getRadiusUser(InetAddress ip);
 
     /**
      * Adds computer account to the Active Directory domain controller
