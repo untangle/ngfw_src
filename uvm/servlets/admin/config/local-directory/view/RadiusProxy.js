@@ -20,6 +20,9 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
         bind: {
             value: '{systemSettings.radiusProxyEnabled}',
             disabled: '{!systemSettings.radiusServerEnabled}'
+        },
+        listeners: {
+            change: 'radiusProxyDirtyFieldsHandler'
         }
     }, {
         xtype: 'fieldset',
@@ -91,7 +94,10 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
                 xtype: 'button',
                 iconCls: 'fa fa-eye',
                 tooltip: 'Show Password',
-                handler: 'showOrHideRadiusPassword'
+                handler: 'showOrHideRadiusPassword',
+                bind: {
+                    disabled: '{!activeProxy.checked}'
+                }
             }]
         }],
         defaults: {
@@ -105,6 +111,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
         itemId: 'radius-test',
         width: 600,
         title: 'Active Directory Test'.t(),
+        disabled: true,
         items: [{
             xtype: 'textfield',
             fieldLabel: 'Test Username'.t(),
@@ -113,9 +120,6 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             width: '100%',
             allowBlank: true,
             _neverDirty: true,
-            bind: {
-                disabled: '{!activeProxy.checked}'
-            }
         }, {
             xtype: 'fieldcontainer',
             layout: 'hbox',
@@ -129,23 +133,17 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
                 allowBlank: true,
                 _neverDirty: true,
                 inputType: 'password',
-                bind: {
-                    disabled: '{!activeProxy.checked}'
-                }
             }, {
                 xtype: 'button',
                 iconCls: 'fa fa-eye',
                 tooltip: 'Show Password',
-                handler: 'showOrHideRadiusPassword'
+                handler: 'showOrHideRadiusPassword',
             }]
         }, {
             xtype: 'button',
             iconCls: 'fa fa-cogs',
             text: 'Test Authentication',
             margin: '10, 0',
-            bind: {
-                disabled: '{!systemSettings.radiusProxyEnabled}',
-            },
             handler: 'testRadiusProxyLogin'
         }]
     },
@@ -154,15 +152,13 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
         padding: '10 20',
         itemId: 'radius-account',
         width: 600,
+        disabled: true,
         title: 'Active Directory Status'.t(),
         items: [{
             xtype: 'button',
             iconCls: 'fa fa-refresh',
             text: 'Refresh AD Account Status',
             margin: '10, 0',
-            bind: {
-                disabled: '{!systemSettings.radiusProxyEnabled}',
-            },
             target: 'radiusProxyStatus',
             handler: 'refreshRadiusProxyStatus'
         }, {
@@ -171,9 +167,6 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             width: '100%',
             allowBlank: true,
             readOnly: true,
-            bind: {
-                disabled: '{!activeProxy.checked}'
-            }
         }]
     }]
 });
