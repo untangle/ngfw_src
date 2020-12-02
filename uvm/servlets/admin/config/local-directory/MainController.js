@@ -235,11 +235,11 @@ Ext.define('Ung.config.local-directory.MainController', {
     radiusProxyDirtyFieldsHandler: function(field, newVal, oldVal) {
         var me = this;
 
-        //If the field is not dirty and the old value is an empty string, set to the new value,
-        // it is a page reload
-        if (!field.isDirty() && oldVal === '') {
+        //The first change occurs always when the value is binded, so set it to that value 
+        // so original value is correct
+        if (field._onFirstChange) {
             field.originalValue = newVal;
-        }
+        } 
         // Determine if any field is empty
         var emptyOrDirtyFields = me.checkDirtyOrEmpty(field);
 
@@ -253,6 +253,8 @@ Ext.define('Ung.config.local-directory.MainController', {
         } else {
             me.setDisabledForRadiusProxyFieldsets(field, false);
         }
+
+        field._onFirstChange = false;
     },
 
     /**
@@ -264,7 +266,7 @@ Ext.define('Ung.config.local-directory.MainController', {
         textFields = field.up('panel').query('fieldset')[0].query('textfield');
         textFields.forEach(function(textField) {
             //Use original value as the getValue() is unreliable with the password input
-            if (textField.originalValue === '' || textField.isDirty()) {
+            if (textField.value === '' || textField.isDirty()) {
                 emptyOrDirtyFields = true;
             }
         });

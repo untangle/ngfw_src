@@ -17,6 +17,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
         reference: 'activeProxy',
         padding: '5 0',
         boxLabel: 'Enable Active Directory Proxy'.t(),
+        _onFirstChange: true,
         bind: {
             value: '{systemSettings.radiusProxyEnabled}',
             disabled: '{!systemSettings.radiusServerEnabled}'
@@ -37,6 +38,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             width: '100%',
             allowBlank: false,
             vtype: 'isNotSingleIp',
+            _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyServer}',
                 disabled: '{!activeProxy.checked}'
@@ -47,6 +49,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             labelWidth: 120,
             width: '100%',
             allowBlank: false,
+            _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyWorkgroup}',
                 disabled: '{!activeProxy.checked}'
@@ -58,6 +61,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldIndex: 'adDomain',
             width: '100%',
             allowBlank: false,
+            _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyRealm}',
                 disabled: '{!activeProxy.checked}'
@@ -68,6 +72,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             labelWidth: 120,
             width: '100%',
             allowBlank: false,
+            _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyUsername}',
                 disabled: '{!activeProxy.checked}'
@@ -83,6 +88,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
                 width: '96%',
                 allowBlank: false,
                 inputType: 'password',
+                _onFirstChange: true,
                 bind: {
                     value: '{systemSettings.radiusProxyPassword}',
                     disabled: '{!activeProxy.checked}'
