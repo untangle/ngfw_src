@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Comparator;
@@ -629,22 +630,6 @@ public class HostTableImpl implements HostTable
     }
 
     /**
-     *  Return the radius user logged in from hostentry.
-     *  @param hostentry
-     *      hostentry that we want to update.
-     */
-
-     private void updateRadiusUser(HostTableEntry hostentry)
-     {
-        String username = UvmContextFactory.context().localDirectory().getRadiusUser(hostentry.getAddress());
-        if ("".equals(username)) { 
-            hostentry.setusernameRadius(null);
-            return;
-        }
-        hostentry.setusernameRadius(username);
-     }
-
-    /**
      * Save the host table to a file
      */
     @SuppressWarnings("unchecked")
@@ -1001,6 +986,8 @@ public class HostTableImpl implements HostTable
                 }
                 logger.info("HostTableReverseHostnameLookup: Running... ");
 
+                Map<String, String>radusers = UvmContextFactory.context().localDirectory().getRadiusUsers();
+                
                 try {
                     LinkedList<HostTableEntry> entries = new LinkedList<>(hostTable.values());
                     for (HostTableEntry entry : entries) {
@@ -1009,7 +996,8 @@ public class HostTableImpl implements HostTable
                         InetAddress address = entry.getAddress();
 
                         syncWithDeviceEntry(entry, address);
-                        updateRadiusUser(entry);
+                        entry.setusernameRadius(radusers.get(address.getHostAddress()));
+                        
                         if (address == null) {
                             if (logger.isDebugEnabled()) logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
                             continue;

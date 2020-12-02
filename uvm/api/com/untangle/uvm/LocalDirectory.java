@@ -5,7 +5,7 @@ package com.untangle.uvm;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
-
+import java.util.Map;
 /**
  * The Local Directory API provides functions for managing and authenticating
  * "local users." This is useful for some apps with lists of users (like Captive
@@ -68,10 +68,10 @@ public interface LocalDirectory
     public String getRadiusProxyStatus();
 
     /**
-     * Get Radius user logged in on a given IP/HostTableEntry
-     * @return String user
+     * Get Radius users
+     * @return Map of IP to username
      */
-    public String getRadiusUser(InetAddress ip);
+    public Map<String, String> getRadiusUsers();
 
     /**
      * Adds computer account to the Active Directory domain controller
