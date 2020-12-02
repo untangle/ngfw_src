@@ -24,6 +24,7 @@ import java.util.Formatter;
 import java.util.FormatterClosedException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -49,6 +50,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-available/mschap";
     private final static String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-available/ntlm_auth";
     private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-available/eap";
+    private final static String FREERADIUS_RADWHO_CMD = System.getProperty("uvm.home") + "/bin/ut-radwho.sh";
 
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
@@ -91,6 +93,23 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         return UvmContextFactory.context().execManager().execOutput(command);
     }
+
+    /**
+     *  Gets the currently logged in users and IP addresses.
+     * @return username (if any) logged into IP address.
+     * 
+     * @param ip
+     *        IP addresses to search for username
+     */
+
+     public String getRadiusUser(InetAddress ip)
+     {
+        String command = FREERADIUS_RADWHO_CMD;
+        String iP = ip.getHostAddress();
+        command += (" " + ip.getHostAddress());
+
+        return UvmContextFactory.context().execManager().execOutput(command);
+     }
 
     /**
      * Adds a computer account to the configured AD domain controller using the
