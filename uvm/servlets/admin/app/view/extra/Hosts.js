@@ -352,6 +352,12 @@ Ext.define('Ung.view.extra.Hosts', {
             hidden: true,
             filter: Renderer.stringFilter
         },{
+            header: 'Username (Radius)'.t(),
+            dataIndex: 'usernameRadius',
+            width: Renderer.usernameWidth,
+            hidden: true,
+            filter: Renderer.stringFilter
+        },{
             header: 'Quota'.t(),
             columns: [{
                 header: 'Size'.t(),
