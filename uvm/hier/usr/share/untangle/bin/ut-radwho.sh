@@ -1,4 +1,3 @@
 #!/bin/bash
-IP=($1)
 
-radwho |grep ${IP} | awk -F\  '{print $1}' | tail -1 2> /dev/null
+/bin/radwho | awk 'NR >1 {print $NF, $1 }' 2> /dev/null

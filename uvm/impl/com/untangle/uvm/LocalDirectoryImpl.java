@@ -16,12 +16,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
+import java.util.Map;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -96,19 +98,20 @@ public class LocalDirectoryImpl implements LocalDirectory
 
     /**
      *  Gets the currently logged in users and IP addresses.
-     * @return username (if any) logged into IP address.
-     * 
-     * @param ip
-     *        IP addresses to search for username
+     * @return Map of ip to username
      */
-
-     public String getRadiusUser(InetAddress ip)
+     public Map<String, String> getRadiusUsers()
      {
         String command = FREERADIUS_RADWHO_CMD;
-        String iP = ip.getHostAddress();
-        command += (" " + ip.getHostAddress());
-
-        return UvmContextFactory.context().execManager().execOutput(command);
+        Map<String, String> radusers = new HashMap<String, String>();
+        String radwho = UvmContextFactory.context().execManager().execOutput(command);
+        String[] users = radwho.split("\n");
+        for (int i = 0; i < users.length; i++) {
+            String ip = users[i].split(" ")[0];
+            String user = users[i].split(" ")[1]; 
+            radusers.put(ip, user);
+        }
+        return radusers;
      }
 
     /**
