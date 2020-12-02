@@ -113,11 +113,26 @@ Ext.define('Ung.config.local-directory.MainController', {
             if(Util.isDestroyed(v, me)){
                 return;
             }
+            var radiusProxyCheckbox = v.query('field')[2];
             v.setLoading(false);
             Ext.fireEvent('resetfields', v);
             me.loadSettings();
             v.setLoading(false);
             Util.successToast('Settings saved');
+
+            //Disable Radius Proxy fieldsets if needed
+            if (radiusProxyCheckbox.checked) {
+                // After save, have to set original value to current value so isDirty() computes properly
+                var radiusProxyTextFields = radiusProxyCheckbox.up('panel').query('fieldset')[0].query('textfield');
+                radiusProxyTextFields.forEach(function(textField) {
+                    textField.originalValue = textField.value;
+                });
+
+                //Disable fieldsetes if any field of AD server is disabled
+                var emptyFields = me.checkDirtyOrEmpty(radiusProxyCheckbox);
+                if (emptyFields) me.setDisabledForRadiusProxyFieldsets(radiusProxyCheckbox, true);
+                else me.setDisabledForRadiusProxyFieldsets(radiusProxyCheckbox, false);
+            }
         }, function (ex) {
             if(!Util.isDestroyed(v, vm)){
                 vm.set('panel.saveDisabled', true);
@@ -211,20 +226,59 @@ Ext.define('Ung.config.local-directory.MainController', {
         button.prev().getEl().query('input', false)[0].set({'type':isShowPassword?'text':'password'});
     },
 
+    /**
+     * When a field changes, determine if should disable or enable the fieldsets
+     * @param {field} field field being changed
+     * @param {string} newVal new value of field
+     * @param {string} oldVal old value of field
+     */
     radiusProxyDirtyFieldsHandler: function(field, newVal, oldVal) {
-        // Initial start has original value as empty string and non-dirty field
-        if (newVal === '') {
-            field.up('panel').query('fieldset')[1].setDisabled(true);
-            field.up('panel').query('fieldset')[2].setDisabled(true);
-        } else if (!field.isDirty() && oldVal === '') {
+        var me = this;
+
+        //If the field is not dirty and the old value is an empty string, set to the new value,
+        // it is a page reload
+        if (!field.isDirty() && oldVal === '') {
             field.originalValue = newVal;
-        } else if (field.isDirty()) {
-            field.up('panel').query('fieldset')[1].setDisabled(true);
-            field.up('panel').query('fieldset')[2].setDisabled(true);
-        } else {
-            field.up('panel').query('fieldset')[1].setDisabled(false);
-            field.up('panel').query('fieldset')[2].setDisabled(false);
         }
+        // Determine if any field is empty
+        var emptyOrDirtyFields = me.checkDirtyOrEmpty(field);
+
+        //If the checkbox is false, fields are empty, or a non-checkbox is dirty, disable fields
+        if (!newVal                                         || 
+            emptyOrDirtyFields                              ||
+            (field.xtype === 'checkbox' && !newVal)         ||
+            (field.xtype !== 'checkbox' && field.isDirty()) ||
+            (field.xtype !== 'checkbox' && !field.up('panel').query('checkbox')[0].checked)) {
+            me.setDisabledForRadiusProxyFieldsets(field, true);
+        } else {
+            me.setDisabledForRadiusProxyFieldsets(field, false);
+        }
+    },
+
+    /**
+     * Deteremine if any fields in Active Directory Server fieldset of Radius Proxy are empty or dirty
+     * @param {field} field field used to find textfields of AD server to see if empty
+     */
+    checkDirtyOrEmpty: function(field) {
+        var emptyOrDirtyFields = false;
+        textFields = field.up('panel').query('fieldset')[0].query('textfield');
+        textFields.forEach(function(textField) {
+            //Use original value as the getValue() is unreliable with the password input
+            if (textField.originalValue === '' || textField.isDirty()) {
+                emptyOrDirtyFields = true;
+            }
+        });
+        return emptyOrDirtyFields;
+    },
+
+    /**
+     * Enable/Disable the Active Directory Test and Active Directory Status of Radius Proxy
+     * @param {field} field field to find the Active Directory Test and Active Directory Status fieldsets
+     * @param {boolean} disabled boolean on if fieldsets should be disabled or not
+     */
+    setDisabledForRadiusProxyFieldsets: function(field, disabled) {
+        field.up('panel').query('fieldset')[1].setDisabled(disabled);
+        field.up('panel').query('fieldset')[2].setDisabled(disabled);
     },
 
     statics:{
