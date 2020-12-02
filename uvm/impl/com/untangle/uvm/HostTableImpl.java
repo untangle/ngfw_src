@@ -637,11 +637,11 @@ public class HostTableImpl implements HostTable
      private void updateRadiusUser(HostTableEntry hostentry)
      {
         String username = UvmContextFactory.context().localDirectory().getRadiusUser(hostentry.getAddress());
-        if (username != "")  { 
-            hostentry.setusernameRadius(username);
-        } else {
-            hostentry.setusernameRadius(null); 
+        if ("".equals(username)) { 
+            hostentry.setusernameRadius(null);
+            return;
         }
+        hostentry.setusernameRadius(username);
      }
 
     /**
