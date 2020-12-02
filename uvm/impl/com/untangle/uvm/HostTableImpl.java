@@ -540,7 +540,7 @@ public class HostTableImpl implements HostTable
      * 
      * @param address
      *        The address for the entry
-     * @return The new entry∫
+     * @return The new entry
      */
     private synchronized HostTableEntry createNewHostTableEntry(InetAddress address)
     {
