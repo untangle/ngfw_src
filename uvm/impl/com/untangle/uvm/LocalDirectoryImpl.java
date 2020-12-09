@@ -58,6 +58,8 @@ public class LocalDirectoryImpl implements LocalDirectory
     private LinkedList<LocalDirectoryUser> currentList;
     private NetworkSaveHookCallback networkSaveHookCallback = new NetworkSaveHookCallback();
 
+    private boolean radiusProxyComputerAccountExists = false;
+
     /**
      * Constructor
      */
@@ -98,7 +100,7 @@ public class LocalDirectoryImpl implements LocalDirectory
      * 
      * @return The result of the join attempt
      */
-    public String addRadiusComputerAccount()
+    public ExecManagerResult addRadiusComputerAccount()
     {
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
 
@@ -108,7 +110,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         command += (" osName=\"Untangle NG Firewall\"");
         command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
 
-        return UvmContextFactory.context().execManager().execOutput(command);
+        return UvmContextFactory.context().execManager().exec(command);
     }
 
     /**
@@ -244,6 +246,23 @@ public class LocalDirectoryImpl implements LocalDirectory
         users.add(user);
 
         this.saveUsersList(users);
+    }
+
+    /**
+     * Sets if radius computer account has been added successfully
+     * @param radiusProxyComputerAccountExists
+     *          Boolean for if the computer account exists
+     */
+    public void setRadiusProxyComputerAccountExists(boolean radiusProxyComputerAccountExists) {
+        this.radiusProxyComputerAccountExists = radiusProxyComputerAccountExists;
+    }
+
+    /**
+     * Gets if radius computer account exists
+     * @return boolean for if the radius computer account exists
+     */
+    public boolean getRadiusProxyComputerAccountExists() {
+        return this.radiusProxyComputerAccountExists;
     }
 
     /**

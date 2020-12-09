@@ -30,6 +30,7 @@ Ext.define('Ung.config.local-directory.view.RadiusLog', {
             border: true,
             width: '100%',
             height: '95%',
+            _neverDirty: true,
             bind: '{radiusLogFile}',
             fieldStyle: {
                 'fontFamily'   : 'courier new',

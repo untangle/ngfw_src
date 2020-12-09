@@ -17,9 +17,13 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
         reference: 'activeProxy',
         padding: '5 0',
         boxLabel: 'Enable Active Directory Proxy'.t(),
+        _onFirstChange: true,
         bind: {
             value: '{systemSettings.radiusProxyEnabled}',
             disabled: '{!systemSettings.radiusServerEnabled}'
+        },
+        listeners: {
+            change: 'radiusProxyDirtyFieldsHandler'
         }
     }, {
         xtype: 'fieldset',
@@ -33,6 +37,8 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             labelWidth: 120,
             width: '100%',
             allowBlank: false,
+            vtype: 'isNotSingleIp',
+            _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyServer}',
                 disabled: '{!activeProxy.checked}'
@@ -43,6 +49,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             labelWidth: 120,
             width: '100%',
             allowBlank: false,
+            _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyWorkgroup}',
                 disabled: '{!activeProxy.checked}'
@@ -51,8 +58,10 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             xtype: 'textfield',
             fieldLabel: 'AD Domain'.t(),
             labelWidth: 120,
+            fieldIndex: 'adDomain',
             width: '100%',
             allowBlank: false,
+            _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyRealm}',
                 disabled: '{!activeProxy.checked}'
@@ -63,63 +72,52 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             labelWidth: 120,
             width: '100%',
             allowBlank: false,
+            _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyUsername}',
                 disabled: '{!activeProxy.checked}'
             }
         }, {
-            xtype: 'textfield',
-            fieldLabel: 'AD Admin Password'.t(),
-            labelWidth: 120,
+            xtype: 'fieldcontainer',
+            layout: 'hbox',
             width: '100%',
-            allowBlank: false,
-            bind: {
-                value: '{systemSettings.radiusProxyPassword}',
-                disabled: '{!activeProxy.checked}'
-            }
+            items: [{
+                xtype: 'textfield',
+                fieldLabel: 'AD Admin Password'.t(),
+                labelWidth: 120,
+                width: '96%',
+                allowBlank: false,
+                inputType: 'password',
+                _onFirstChange: true,
+                bind: {
+                    value: '{systemSettings.radiusProxyPassword}',
+                    disabled: '{!activeProxy.checked}'
+                },
+                listeners: {
+                    change: 'radiusProxyDirtyFieldsHandler',
+                }
+            }, {
+                xtype: 'button',
+                iconCls: 'fa fa-eye',
+                tooltip: 'Show Password',
+                handler: 'showOrHideRadiusPassword',
+                bind: {
+                    disabled: '{!activeProxy.checked}'
+                }
+            }]
         }],
-    }, {
-        xtype: 'fieldset',
-        padding: '10 20',
-        itemId: 'radius-account',
-        width: 600,
-        title: 'Active Directory Computer Account'.t(),
-        items: [{
-            xtype: 'button',
-            iconCls: 'fa fa-link',
-            text: 'Create AD Computer Account',
-            margin: '10, 0',
-            bind: {
-                disabled: '{!systemSettings.radiusProxyEnabled}',
-            },
-            handler: 'createComputerAccount'
-        }, {
-            xtype: 'button',
-            iconCls: 'fa fa-refresh',
-            text: 'Refresh AD Account Status',
-            margin: '10, 10',
-            bind: {
-                disabled: '{!systemSettings.radiusProxyEnabled}',
-            },
-            target: 'radiusProxyStatus',
-            handler: 'refreshRadiusProxyStatus'
-        }, {
-            xtype: 'textarea',
-            fieldLabel: 'AD Account Status'.t(),
-            labelWidth: 120,
-            width: '100%',
-            allowBlank: true,
-            readOnly: true,
-            bind: {
-                disabled: '{!activeProxy.checked}'
+        defaults: {
+            listeners: {
+                change: 'radiusProxyDirtyFieldsHandler',
             }
-        }]
+        },
     }, {
         xtype: 'fieldset',
         padding: '10 20',
         itemId: 'radius-test',
         width: 600,
         title: 'Active Directory Test'.t(),
+        disabled: true,
         items: [{
             xtype: 'textfield',
             fieldLabel: 'Test Username'.t(),
@@ -128,40 +126,53 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             width: '100%',
             allowBlank: true,
             _neverDirty: true,
-            bind: {
-                disabled: '{!activeProxy.checked}'
-            }
         }, {
-            xtype: 'textfield',
-            fieldLabel: 'Test Password'.t(),
-            fieldIndex: 'testPassword',
-            labelWidth: 120,
+            xtype: 'fieldcontainer',
+            layout: 'hbox',
             width: '100%',
-            allowBlank: true,
-            _neverDirty: true,
-            bind: {
-                disabled: '{!activeProxy.checked}'
-            }
-        }, {
-            xtype: 'textfield',
-            fieldLabel: 'Test Domain'.t(),
-            fieldIndex: 'testDomain',
-            labelWidth: 120,
-            width: '100%',
-            allowBlank: true,
-            _neverDirty: true,
-            bind: {
-                disabled: '{!activeProxy.checked}'
-            }
+            items: [{
+                xtype: 'textfield',
+                fieldLabel: 'Test Password'.t(),
+                fieldIndex: 'testPassword',
+                labelWidth: 120,
+                width: '96%',
+                allowBlank: true,
+                _neverDirty: true,
+                inputType: 'password',
+            }, {
+                xtype: 'button',
+                iconCls: 'fa fa-eye',
+                tooltip: 'Show Password',
+                handler: 'showOrHideRadiusPassword',
+            }]
         }, {
             xtype: 'button',
             iconCls: 'fa fa-cogs',
             text: 'Test Authentication',
-            margin: '10, 10',
-            bind: {
-                disabled: '{!systemSettings.radiusProxyEnabled}',
-            },
+            margin: '10, 0',
             handler: 'testRadiusProxyLogin'
+        }]
+    },
+    {
+        xtype: 'fieldset',
+        padding: '10 20',
+        itemId: 'radius-account',
+        width: 600,
+        disabled: true,
+        title: 'Active Directory Status'.t(),
+        items: [{
+            xtype: 'button',
+            iconCls: 'fa fa-refresh',
+            text: 'Refresh AD Account Status',
+            margin: '10, 0',
+            target: 'radiusProxyStatus',
+            handler: 'refreshRadiusProxyStatus'
+        }, {
+            xtype: 'textarea',
+            labelWidth: 120,
+            width: '100%',
+            allowBlank: true,
+            readOnly: true,
         }]
     }]
 });
