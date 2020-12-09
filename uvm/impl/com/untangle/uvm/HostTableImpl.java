@@ -596,6 +596,11 @@ public class HostTableImpl implements HostTable
         if (deviceEntry == null) return;
 
         /**
+         * We need to keep the username consistent for host and device. Hostentry has priority.
+         */
+        if (entry.getUsername() != null) deviceEntry.setUsername(entry.getUsername());
+
+        /**
          * Restore known information from the device entry where able
          */
         if (deviceEntry.getHostname() != null) entry.setHostnameDevice(deviceEntry.getHostname());
@@ -995,8 +1000,8 @@ public class HostTableImpl implements HostTable
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
 
-                        syncWithDeviceEntry(entry, address);
                         entry.setusernameRadius(radusers.get(address.getHostAddress()));
+                        syncWithDeviceEntry(entry, address);
                         
                         if (address == null) {
                             if (logger.isDebugEnabled()) logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
