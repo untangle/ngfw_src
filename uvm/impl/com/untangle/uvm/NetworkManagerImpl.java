@@ -2055,7 +2055,7 @@ public class NetworkManagerImpl implements NetworkManager
         List<FilterRuleCondition> ruleRadiusNonWanConditions = new LinkedList<>();
         FilterRuleCondition ruleRadiusNonWanMatcher1 = new FilterRuleCondition();
         ruleRadiusNonWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-        ruleRadiusNonWanMatcher1.setValue("1812,1813");
+        ruleRadiusNonWanMatcher1.setValue("1812, 1813");
         FilterRuleCondition ruleRadiusNonWanMatcher2 = new FilterRuleCondition();
         ruleRadiusNonWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
         ruleRadiusNonWanMatcher2.setValue("UDP");
@@ -2792,7 +2792,7 @@ public class NetworkManagerImpl implements NetworkManager
                     List<FilterRuleCondition> ruleRadiusNonWanConditions = new LinkedList<>();
                     FilterRuleCondition ruleRadiusNonWanMatcher1 = new FilterRuleCondition();
                     ruleRadiusNonWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleRadiusNonWanMatcher1.setValue("1812,1813");
+                    ruleRadiusNonWanMatcher1.setValue("1812, 1813");
                     FilterRuleCondition ruleRadiusNonWanMatcher2 = new FilterRuleCondition();
                     ruleRadiusNonWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
                     ruleRadiusNonWanMatcher2.setValue("UDP");
@@ -2814,7 +2814,7 @@ public class NetworkManagerImpl implements NetworkManager
                     List<FilterRuleCondition> ruleRadiusWanConditions = new LinkedList<>();
                     FilterRuleCondition ruleRadiusWanMatcher1 = new FilterRuleCondition();
                     ruleRadiusWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleRadiusWanMatcher1.setValue("1812,1813");
+                    ruleRadiusWanMatcher1.setValue("1812, 1813");
                     FilterRuleCondition ruleRadiusWanMatcher2 = new FilterRuleCondition();
                     ruleRadiusWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
                     ruleRadiusWanMatcher2.setValue("UDP");
