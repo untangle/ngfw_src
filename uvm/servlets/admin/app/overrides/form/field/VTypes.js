@@ -64,6 +64,11 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     isSingleIpValidOrEmptyText: 'Valut must either empty or IP address'.t(),
 
+    isNotSingleIp: function(val) {
+        return !this.isSingleIpValid(val);
+    },
+    isNotSingleIpText: 'Value can not be an IP address, it must be a valid hostname'.t(),
+
     isIpRangeValid: function(val) {
         return this.mask.ipAddrRange.test(val);
     },
