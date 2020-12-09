@@ -105,7 +105,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         String command = FREERADIUS_RADWHO_CMD;
         Map<String, String> radusers = new HashMap<String, String>();
         String radwho = UvmContextFactory.context().execManager().execOutput(command);
-        if (radhwho == null) return radusers;
+        if (radwho == null) return radusers;
         String[] users = radwho.split("\n");
         for (int i = 0; i < users.length; i++) {
             String ip = users[i].split(" ")[0];
