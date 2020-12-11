@@ -16,14 +16,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
+import java.util.Map;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -49,6 +52,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-available/mschap";
     private final static String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-available/ntlm_auth";
     private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-available/eap";
+    private final static String FREERADIUS_RADWHO_CMD = System.getProperty("uvm.home") + "/bin/ut-radwho.sh";
 
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
@@ -93,6 +97,25 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         return UvmContextFactory.context().execManager().execOutput(command);
     }
+
+    /**
+     *  Gets the currently logged in users and IP addresses.
+     * @return Map of ip to username
+     */
+     public Map<String, String> getRadiusUsers()
+     {
+        String command = FREERADIUS_RADWHO_CMD;
+        Map<String, String> radusers = new HashMap<String, String>();
+        String radwho = UvmContextFactory.context().execManager().execOutput(command);
+        if (radwho == null) return radusers;
+        String[] users = radwho.split("\n");
+        for (int i = 0; i < users.length; i++) {
+            String ip = users[i].split(" ")[0];
+            String user = users[i].split(" ")[1]; 
+            radusers.put(ip, user);
+        }
+        return radusers;
+     }
 
     /**
      * Adds a computer account to the configured AD domain controller using the

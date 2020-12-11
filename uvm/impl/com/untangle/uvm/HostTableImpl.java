@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Comparator;
@@ -595,6 +596,11 @@ public class HostTableImpl implements HostTable
         if (deviceEntry == null) return;
 
         /**
+         * We need to keep the username consistent for host and device. Hostentry has priority.
+         */
+        if (entry.getUsername() != null) deviceEntry.setUsername(entry.getUsername());
+
+        /**
          * Restore known information from the device entry where able
          */
         if (deviceEntry.getHostname() != null) entry.setHostnameDevice(deviceEntry.getHostname());
@@ -983,8 +989,10 @@ public class HostTableImpl implements HostTable
                     reverseLookupSemaphore.tryAcquire(CLEANER_SLEEP_TIME_MILLI, java.util.concurrent.TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                 }
-                logger.debug("HostTableReverseHostnameLookup: Running... ");
+                logger.info("HostTableReverseHostnameLookup: Running... ");
 
+                Map<String, String>radusers = UvmContextFactory.context().localDirectory().getRadiusUsers();
+                
                 try {
                     LinkedList<HostTableEntry> entries = new LinkedList<>(hostTable.values());
                     for (HostTableEntry entry : entries) {
@@ -992,8 +1000,9 @@ public class HostTableImpl implements HostTable
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
 
+                        entry.setusernameRadius(radusers.get(address.getHostAddress()));
                         syncWithDeviceEntry(entry, address);
-
+                        
                         if (address == null) {
                             if (logger.isDebugEnabled()) logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
                             continue;
