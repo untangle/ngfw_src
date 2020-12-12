@@ -306,7 +306,8 @@ class IPsecTests(NGFWTestCase):
         for intf in orig_net_set['interfaces']['list']:
             if (intf['isWan']):
                 intf_status = uvmContext.networkManager().getInterfaceStatus(intf['interfaceId'])
-                wan_addresses.append(intf_status['v4Address'])
+                if (intf_status['v4Address'] in l2tpServerHosts):  # Only IPs in L2TP list have preset configs on client Windows.
+                    wan_addresses.append(intf_status['v4Address'])
 
         if (not len(wan_addresses) > 1):
             raise unittest.SkipTest("Not enough WAN Interfaces to test L2TP Aliases")
