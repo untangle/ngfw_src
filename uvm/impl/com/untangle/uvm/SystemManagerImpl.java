@@ -180,6 +180,16 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
+    * Set settings without regards to the dirtyRadiusFields
+    *
+    * @param newSettings
+    *        The new settings
+    */
+    public void setSettings(final SystemSettings newSettings) {
+        setSettings(newSettings, false);
+    }
+
+    /**
      * Set the settings
      * 
      * @param newSettings
