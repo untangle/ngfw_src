@@ -596,11 +596,6 @@ public class HostTableImpl implements HostTable
         if (deviceEntry == null) return;
 
         /**
-         * We need to keep the username consistent for host and device. Hostentry has priority.
-         */
-        if (entry.getUsername() != null) deviceEntry.setUsername(entry.getUsername());
-
-        /**
          * Restore known information from the device entry where able
          */
         if (deviceEntry.getHostname() != null) entry.setHostnameDevice(deviceEntry.getHostname());
