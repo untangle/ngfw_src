@@ -13,6 +13,8 @@ public interface SystemManager
 {
     SystemSettings getSettings();
 
+    void setSettings(SystemSettings settings);
+
     void setSettings(SystemSettings settings, boolean dirtyRadiusFields);
 
     /**
