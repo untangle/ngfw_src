@@ -22,6 +22,7 @@ orig_netsettings = None
 l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.111.0.134",
                     "10.111.56.91","10.111.56.94","10.111.56.57","10.111.56.58","10.111.56.59"]
 l2tpClientHost = "10.111.56.84"  # Windows 10 using builtin OpenSSH
+l2tpAliasIP = "10.111.56.200"
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
 ipsecHost = "10.111.56.96"
@@ -145,6 +146,13 @@ def addDNSRule(newRule):
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)  
 
+def create_alias(ipAddress,ipNetmask,ipPrefix):
+    return {
+            "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
+            "staticAddress": ipAddress,
+            "staticNetmask": ipNetmask,
+            "staticPrefix": ipPrefix
+        }
 
 @pytest.mark.ipsec_vpn
 class IPsecTests(NGFWTestCase):
@@ -293,30 +301,33 @@ class IPsecTests(NGFWTestCase):
 
     def test_042_windowsL2TPAlias(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        device_in_office = global_functions.is_in_office_network(wan_IP)
+        # L2TP Alias only works at the office network.
+        if not device_in_office:
+            raise unittest.SkipTest("Not on office network, skipping")
         if (l2tpClientHostResult != 0):
             raise unittest.SkipTest("l2tpClientHostResult not available")
-        if (not wan_IP in l2tpServerHosts):
-            raise unittest.SkipTest("No paried L2TP client available")
-        orig_net_set = uvmContext.networkManager().getNetworkSettings()
-        orig_app_settings = self._app.getSettings()
+            
+        # Add reserve IP address to WAN only if WAN is static.
+        netsettings = copy.deepcopy(orig_netsettings)
+        ip_alias_set = False
+        for i in range(len(netsettings['interfaces']['list'])):
+            if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED":
+                if netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
+                    if netsettings['interfaces']['list'][i]['v4StaticAddress'] == wan_IP:
+                        netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(l2tpAliasIP,
+                                                                                         netsettings['interfaces']['list'][i]['v4StaticNetmask'],
+                                                                                         netsettings['interfaces']['list'][i]['v4StaticPrefix']))
+                        uvmContext.networkManager().setNetworkSettings(netsettings)
+                        ip_alias_set = True
+                        break;
 
-        wan_addresses = []
-
-        # Check if we have more than one WAN intf for aliases
-        for intf in orig_net_set['interfaces']['list']:
-            if (intf['isWan']):
-                intf_status = uvmContext.networkManager().getInterfaceStatus(intf['interfaceId'])
-                if (intf_status['v4Address'] in l2tpServerHosts):  # Only IPs in L2TP list have preset configs on client Windows.
-                    wan_addresses.append(intf_status['v4Address'])
-
-        if (not len(wan_addresses) > 1):
-            raise unittest.SkipTest("Not enough WAN Interfaces to test L2TP Aliases")
-
-        if (l2tpClientHostResult != 0):
-            raise unittest.SkipTest("l2tpClientHostResult not available")
-
+        if not ip_alias_set:
+            raise unittest.SkipTest("Unable to set alias IP")
+        wan_addresses = [wan_IP,l2tpAliasIP]
         # Set Local Directory users
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+        orig_app_settings = self._app.getSettings()
         newAppSettings = copy.deepcopy(orig_app_settings)
         newAppSettings = createL2TPconfig(newAppSettings,"LOCAL_DIRECTORY")
 
@@ -324,7 +335,6 @@ class IPsecTests(NGFWTestCase):
         wan_alias = []
         for idx, val in enumerate(wan_addresses):
             wan_alias.append({'address': val, 'javaClass': 'com.untangle.app.ipsec_vpn.VirtualListen', 'id': idx})
-
         newAppSettings['virtualListenList']['list'] = wan_alias
 
         # Set the settings
@@ -371,6 +381,8 @@ class IPsecTests(NGFWTestCase):
 
         # Clean up settings
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        netsettings['interfaces']['list'][i]['v4Aliases']['list'][:] = []
+        uvmContext.networkManager().setNetworkSettings(netsettings)
         self._app.setSettings(orig_app_settings)
 
     def test_050_windowsL2TPRadiusDirectory(self):
