@@ -270,6 +270,18 @@ public class SystemManagerImpl implements SystemManager
         if (dirtyRadiusFields) {
             UvmContextFactory.context().localDirectory().setRadiusProxyComputerAccountExists(false);
         }
+
+/*
+
+This logic isn't working. The UI throws a bunch of exceptions and failure
+messages generated from exec'ing the create computer account command when
+called at this point. This happens when testing on a clean and never
+before configured system (ie: all settings wiped). Maybe a timing thing
+between the saving of the files, and restarting the external daemons?
+Not sure but I couldn't figure it out so I restored the UI button for
+creating the computer account and commented this as a quick fix until we
+can look deeper. - mahotz
+
         // If radius proxy enabled and a computer account needs to be added and fields were changed, add a computer account
         if (this.settings.getRadiusProxyEnabled() && !UvmContextFactory.context().localDirectory().getRadiusProxyComputerAccountExists() && dirtyRadiusFields) {
             ExecManagerResult addComputerAccount = UvmContextFactory.context().localDirectory().addRadiusComputerAccount();
@@ -279,6 +291,7 @@ public class SystemManagerImpl implements SystemManager
                 UvmContextFactory.context().localDirectory().setRadiusProxyComputerAccountExists(true);
             }
         }
+*/
     }
 
     /**
