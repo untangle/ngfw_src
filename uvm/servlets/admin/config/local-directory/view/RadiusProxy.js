@@ -168,6 +168,12 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             target: 'radiusProxyStatus',
             handler: 'refreshRadiusProxyStatus'
         }, {
+            xtype: 'button',
+            iconCls: 'fa fa-link',
+            text: 'Create AD Computer Account',
+            margin: '10, 10',
+            handler: 'createComputerAccount'
+        }, {
             xtype: 'textarea',
             labelWidth: 120,
             width: '100%',
