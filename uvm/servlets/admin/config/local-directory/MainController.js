@@ -189,6 +189,29 @@ Ext.define('Ung.config.local-directory.MainController', {
         });
     },
 
+    createComputerAccount: function (cmp) {
+        var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        var dirtyFields = false;
+
+        Ext.Array.each(v.query('field'), function (field) {
+            if (!field._neverDirty && field._isChanged && !dirtyFields) {
+                dirtyFields = true;
+            }
+        });
+
+        if (dirtyFields) {
+            Ext.MessageBox.alert('Unsaved Changes'.t(), 'The settings must be saved before the computer account can be created.'.t());
+            return;
+        }
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.UvmContext.localDirectory.addRadiusComputerAccount')
+        .then(function(result){
+            v.setLoading(false);
+            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Account Creation Status'.t(), msg: '<tt>' + result.output + '</tt>' });
+        });
+    },
+
     testRadiusProxyLogin: function (cmp) {
         var v = cmp.isXType('button') ? cmp.up('panel') : cmp;
         var testuser = v.down("[fieldIndex='testUsername']").getValue();
@@ -235,16 +258,16 @@ Ext.define('Ung.config.local-directory.MainController', {
     radiusProxyDirtyFieldsHandler: function(field, newVal, oldVal) {
         var me = this;
 
-        //The first change occurs always when the value is binded, so set it to that value 
+        //The first change occurs always when the value is binded, so set it to that value
         // so original value is correct
         if (field._onFirstChange) {
             field.originalValue = newVal;
-        } 
+        }
         // Determine if any field is empty
         var emptyOrDirtyFields = me.checkDirtyOrEmpty(field);
 
         //If the checkbox is false, fields are empty, or a non-checkbox is dirty, disable fields
-        if (!newVal                                         || 
+        if (!newVal                                         ||
             emptyOrDirtyFields                              ||
             (field.xtype === 'checkbox' && !newVal)         ||
             (field.xtype !== 'checkbox' && field.isDirty()) ||
