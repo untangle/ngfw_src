@@ -10,10 +10,9 @@ CHECK_ONLY="false"
 WORKING_DIR=""
 TARBALL_FILE=""
 VERSION_FILE=""
-#ACCEPTED_PREVIOUS_VERSION="10.1|10.2"
-#ACCEPTED_PREVIOUS_VERSION="14.2"
-# NGFW-133386 - Rare case of allowing 15.0 and 16.0
-ACCEPTED_PREVIOUS_VERSION="15.1|16.0"
+# To support multiple versions, separate with pipe character like:
+#ACCEPTED_PREVIOUS_VERSION="15.1|16.0"
+ACCEPTED_PREVIOUS_VERSION="16.1"
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
