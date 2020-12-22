@@ -79,7 +79,7 @@ rm -rf /var/lib/postgresql/9.4
 
 # Point to buster/stable-161
 sed -e 's/stretch/buster/g' -i /etc/apt/sources.list.d/untangle.list
-sed -e 's/stable-160\s/stable-161 /g' -i /etc/apt/sources.list.d/untangle.list
+sed -e 's/stable-161\s/stable-162 /g' -i /etc/apt/sources.list.d/untangle.list
 
 # see corresponding comment in preinst: we need to unmask those
 # services that were masked just so the dist-upgrade could succeed
