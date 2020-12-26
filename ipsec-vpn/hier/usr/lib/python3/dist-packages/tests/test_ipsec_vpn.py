@@ -16,6 +16,7 @@ default_policy_id = 1
 appAD = None
 appDataRD = None
 tunnelUp = False
+ipsecTestLAN = ""
 orig_netsettings = None
 
 # hardcoded for ats testing
@@ -154,6 +155,29 @@ def create_alias(ipAddress,ipNetmask,ipPrefix):
             "staticPrefix": ipPrefix
         }
 
+def create_firewall_rule( conditionType, value, blocked=True ):
+    conditionTypeStr = str(conditionType)
+    valueStr = str(value)
+    return {
+        "javaClass": "com.untangle.app.firewall.FirewallRule", 
+        "id": 1, 
+        "enabled": True, 
+        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
+        "log": True, 
+        "block": blocked, 
+        "conditions": {
+            "javaClass": "java.util.LinkedList", 
+            "list": [
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition", 
+                    "conditionType": conditionTypeStr, 
+                    "value": valueStr
+                    }
+                ]
+            }
+        }
+
 @pytest.mark.ipsec_vpn
 class IPsecTests(NGFWTestCase):
 
@@ -201,7 +225,7 @@ class IPsecTests(NGFWTestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_createIpsecTunnel(self):
-        global tunnelUp
+        global tunnelUp, ipsecTestLAN
         if (ipsecHostResult != 0):
             raise unittest.SkipTest("No paried IPSec server available")
         pre_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
@@ -216,6 +240,7 @@ class IPsecTests(NGFWTestCase):
                 appData = self._app.getSettings()
                 appData["tunnels"]["list"].append(addIPSecTunnel(ipsecHost,ipsecHostLAN,hostConfig[0],hostConfig[1],hostConfig[2]))
                 self._app.setSettings(appData)
+                ipsecTestLAN = hostConfig[1]
                 pairMatchNotFound = False
         if (pairMatchNotFound):
             raise unittest.SkipTest("IPsec test only configed for IPs %s" % (listOfPairs))
@@ -243,40 +268,27 @@ class IPsecTests(NGFWTestCase):
 
         # Install firewall rule to generate syslog events
         rules = appFW.getRules()
-        # rules["list"].append(create_firewall_rule("SRC_ADDR",remote_control.client_ip))
-        rules["list"].append({
-            "javaClass": "com.untangle.app.firewall.FirewallRule", 
-            "id": 1, 
-            "enabled": True, 
-            "description": "Single Matcher: " + "SRC_ADDR" + " = " + remote_control.client_ip, 
-            "log": True, 
-            "block": True, 
-            "conditions": {
-                "javaClass": "java.util.LinkedList", 
-                "list": [
-                    {
-                        "invert": False, 
-                        "javaClass": "com.untangle.app.firewall.FirewallRuleCondition", 
-                        "conditionType": "SRC_ADDR", 
-                        "value": remote_control.client_ip
-                        }
-                    ]
-                }
-            }
-        )
+        rules["list"].append(create_firewall_rule("SRC_ADDR",remote_control.client_ip))
+        rules["list"].append(create_firewall_rule("DST_ADDR",remote_control.client_ip))
         appFW.setRules(rules)
+        # To and from the client IP should be blocked by the firewall rule
         ipsecHostLANResultFW = remote_control.run_command("wget -q -O /dev/null -4 -t 1 --timeout=5 http://%s/" % ipsecPcLANIP)
+        ipsecHostLANResultFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % ipsecTestLAN, host=ipsecPcLANIP)
         appData = self._app.getSettings()
         appData["bypassflag"] = True
         self._app.setSettings(appData)
+        # Bypass true on IPsec should bypass firewall rules.
         ipsecHostLANResultFWBypassed = remote_control.run_command("wget -q -O /dev/null -4 -t 1 --timeout=5 http://%s/" % ipsecPcLANIP)
+        ipsecHostLANResultFWBypassedRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % ipsecTestLAN, host=ipsecPcLANIP)
         # clear out firwall rules before checking results so other tests are not affected.
         rules["list"]=[]
         appFW.setRules(rules)
         # if firewall blocked tunnel request
         assert (ipsecHostLANResultFW != 0)
+        assert (ipsecHostLANResultFWRW != 0)  # NGFW-13477
         # if firewall was bypassed.
         assert (ipsecHostLANResultFWBypassed == 0)
+        assert (ipsecHostLANResultFWBypassedRW == 0)
 
     def test_030_restartNetworkVerifyIpsecTunnel(self):
         # save a setting in networking and test ipsec tunnel is set connected.
