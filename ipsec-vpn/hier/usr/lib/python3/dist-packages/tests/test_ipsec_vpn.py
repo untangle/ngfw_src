@@ -168,12 +168,16 @@ class IPsecTests(NGFWTestCase):
         return "directory-connector"
 
     @staticmethod
+    def appNameFW():
+        return "firewall"
+
+    @staticmethod
     def vendorName():
         return "Untangle"
 
     @classmethod
     def initial_extra_setup(cls):
-        global orig_netsettings, ipsecHostResult, l2tpClientHostResult, appAD, appDataRD, radiusResult
+        global orig_netsettings, ipsecHostResult, l2tpClientHostResult, appAD, appDataRD, appFW, radiusResult
 
         tunnelUp = False
 
@@ -183,6 +187,7 @@ class IPsecTests(NGFWTestCase):
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         appAD = uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
         appDataRD = appAD.getSettings().get('radiusSettings')
+        appFW = uvmContext.appManager().instantiate(cls.appNameFW(), default_policy_id)
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -229,7 +234,50 @@ class IPsecTests(NGFWTestCase):
         # Check to see if the faceplate counters have incremented. 
         post_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
         assert(pre_events_enabled < post_events_enabled)
-               
+    
+    def test_025_verifyIPsecBypass(self):           
+        if (not tunnelUp):
+            raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
+        ipsecHostLANResultNoFW = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://%s/" % ipsecPcLANIP)
+        assert (ipsecHostLANResultNoFW == 0)
+
+        # Install firewall rule to generate syslog events
+        rules = appFW.getRules()
+        # rules["list"].append(create_firewall_rule("SRC_ADDR",remote_control.client_ip))
+        rules["list"].append({
+            "javaClass": "com.untangle.app.firewall.FirewallRule", 
+            "id": 1, 
+            "enabled": True, 
+            "description": "Single Matcher: " + "SRC_ADDR" + " = " + remote_control.client_ip, 
+            "log": True, 
+            "block": True, 
+            "conditions": {
+                "javaClass": "java.util.LinkedList", 
+                "list": [
+                    {
+                        "invert": False, 
+                        "javaClass": "com.untangle.app.firewall.FirewallRuleCondition", 
+                        "conditionType": "SRC_ADDR", 
+                        "value": remote_control.client_ip
+                        }
+                    ]
+                }
+            }
+        )
+        appFW.setRules(rules)
+        ipsecHostLANResultFW = remote_control.run_command("wget -q -O /dev/null -4 -t 1 --timeout=5 http://%s/" % ipsecPcLANIP)
+        appData = self._app.getSettings()
+        appData["bypassflag"] = True
+        self._app.setSettings(appData)
+        ipsecHostLANResultFWBypassed = remote_control.run_command("wget -q -O /dev/null -4 -t 1 --timeout=5 http://%s/" % ipsecPcLANIP)
+        # clear out firwall rules before checking results so other tests are not affected.
+        rules["list"]=[]
+        appFW.setRules(rules)
+        # if firewall blocked tunnel request
+        assert (ipsecHostLANResultFW != 0)
+        # if firewall was bypassed.
+        assert (ipsecHostLANResultFWBypassed == 0)
+
     def test_030_restartNetworkVerifyIpsecTunnel(self):
         # save a setting in networking and test ipsec tunnel is set connected.
         global tunnelUp
@@ -452,12 +500,18 @@ class IPsecTests(NGFWTestCase):
     @classmethod
     def final_extra_tear_down(cls):
         global appAD
+        global appFW
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        # Remove Directory Connector
         if appAD != None:
             uvmContext.appManager().destroy( appAD.getAppSettings()["id"] )
             appAD = None
+        # Remove Firewall
+        if appFW != None:
+            uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
+            appFW = None
 
 
 test_registry.register_module("ipsec-vpn", IPsecTests)
