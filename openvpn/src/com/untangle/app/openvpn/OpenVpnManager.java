@@ -458,6 +458,10 @@ public class OpenVpnManager
             sb.append("auth-user-pass" + "\n");
         }
 
+        if (settings.getTotpClientPrompt()) {
+            sb.append("static-challenge \"TOTP Code \" 1" + "\n");
+        }
+
         sb.append("proto" + " " + settings.getProtocol() + "\n");
         sb.append("port" + " " + settings.getPort() + "\n");
         sb.append("cipher" + " " + settings.getCipher() + "\n");
