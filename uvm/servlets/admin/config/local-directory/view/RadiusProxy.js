@@ -48,6 +48,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldLabel: 'AD Workgroup'.t(),
             labelWidth: 120,
             width: '100%',
+            fieldStyle: 'text-transform:uppercase',
             allowBlank: false,
             _onFirstChange: true,
             bind: {
