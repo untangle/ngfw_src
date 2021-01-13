@@ -43,6 +43,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     private boolean serverEnabled = false;
     private boolean natOpenVpnTraffic = true;
     private boolean authUserPass = false;
+    private boolean totpClientPrompt = false;
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
     
     private LinkedList<OpenVpnConfigItem> clientConfiguration;
@@ -161,6 +162,9 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     public boolean getAuthUserPass() { return this.authUserPass; }
     public void setAuthUserPass( boolean newValue ) { this.authUserPass = newValue; }
 
+    public boolean getTotpClientPrompt() { return this.totpClientPrompt; }
+    public void setTotpClientPrompt(boolean newValue ) { this.totpClientPrompt = newValue; }
+    
     public String getProtocol() { return this.protocol; }
     public void setProtocol( String newValue ) { this.protocol = newValue; }
 
