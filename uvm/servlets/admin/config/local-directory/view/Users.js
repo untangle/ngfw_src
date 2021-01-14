@@ -94,7 +94,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
             dataIndex: 'twofactorSecretKey',
             iconCls: 'fa fa-cog',
             align: 'center',
-            tooltip: 'Enable/disable MFA by editting user.',
+            tooltip: 'Enable/disable MFA by editting user.'.t(),
             getClass: function (value, metadata, record) {
                 if (record.get("twofactorSecretKey") !== "") {
                     return 'fa fa-cog';
@@ -218,7 +218,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
                 },
             }, {
                 xtype: 'button',
-                text: 'Generate new key',
+                text: 'Generate new key'.t(),
                 bind: {
                     hidden: '{!record.username || !record.mfaEnabled}'
                 },

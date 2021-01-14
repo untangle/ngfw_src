@@ -93,7 +93,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
             },
         },{
             xtype: 'checkbox',
-            boxLabel: 'Add MFA client configuration',
+            boxLabel: 'Add MFA client configuration'.t(),
             disabled: true,
             autoEl: {
                 tag: 'div',
