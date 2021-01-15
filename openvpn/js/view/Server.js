@@ -92,6 +92,21 @@ Ext.define('Ung.apps.openvpn.view.Server', {
                 disabled: '{settings.serverEnabled == false}'
             },
         },{
+            xtype: 'checkbox',
+            boxLabel: 'Add MFA client configuration'.t(),
+            disabled: true,
+            autoEl: {
+                tag: 'div',
+                'data-qtip': 'If enabled, the keyword <I>static-challenge</I> will<BR>' +
+                'be added to the client configuration. <BR>This requests the OpenVPN client<BR>' +
+                'to ask for a TOTP code.'
+            },
+            bind: {
+                value: '{settings.totpClientPrompt}',
+                disabled: '{settings.authUserPass == false || settings.authenticationType !== "LOCAL_DIRECTORY"}',
+                hidden: '{settings.authUserPass == false}'
+            },
+        },{
             xtype: 'container',
             layout: {
                 type: 'vbox',

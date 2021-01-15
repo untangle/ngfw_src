@@ -22,7 +22,8 @@ systemctl daemon-reload
 # Verify/set the links to the settings files from /etc/openvpn
 mkdir -p /etc/openvpn/data
 for f in server.key server.crt ca.key ca.crt dh.pem ; do
-  ln -fs @PREFIX@${SETTINGS_DIR}/$f /etc/openvpn/data/
+  rm /etc/openvpn/data/$f
+  cp @PREFIX@${SETTINGS_DIR}/$f /etc/openvpn/data/
 done
 
 @PREFIX@/usr/share/untangle/bin/openvpn-create-statfile

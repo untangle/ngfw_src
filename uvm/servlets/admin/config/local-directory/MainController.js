@@ -141,7 +141,6 @@ Ext.define('Ung.config.local-directory.MainController', {
             Util.handleException(ex);
         });
     },
-
     configureCertificate: function (btn) {
         Ung.app.redirectTo("#config/administration/certificates");
     },

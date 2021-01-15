@@ -6,7 +6,6 @@ Ext.define('Ung.config.local-directory.view.Users', {
     scrollable: true,
 
     layout: 'fit',
-
     items: [{
         xtype: 'ungrid',
         border: false,
@@ -27,9 +26,11 @@ Ext.define('Ung.config.local-directory.view.Users', {
             email: '',
             password: '',
             passwordBase64Hash: '',
+            twofactorSecretKey: '',
             localExpires: Util.serverToClientDate(new Date()),
             localForever: true,
             localEmpty: true,
+            mfaEnabled: false,
             expirationTime: 0,
             javaClass: 'com.untangle.uvm.LocalDirectoryUser'
         },
@@ -52,7 +53,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
             width: Renderer.messageWidth,
             dataIndex: 'firstName',
             editor: {
-                xtype:'textfield',
+                xtype: 'textfield',
                 emptyText: '[enter first name]'.t(),
                 allowBlank: false
             }
@@ -68,7 +69,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
             header: 'Email Address'.t(),
             width: Renderer.emailWidth,
             dataIndex: 'email',
-            flex:1,
+            flex: 1,
             editor: {
                 xtype: 'textfield',
                 emptyText: '[email address]'.t(),
@@ -78,13 +79,41 @@ Ext.define('Ung.config.local-directory.view.Users', {
             header: 'Password'.t(),
             width: Renderer.messageWidth,
             dataIndex: 'password',
-            renderer: Ext.bind(function(value, metadata, record) {
-                if (record.get("passwordBase64Hash") == null) return('');
-                if(Ext.isEmpty(value) && record.get("passwordBase64Hash").length > 0) return('*** ' + 'Unchanged'.t() + ' ***');
+            renderer: Ext.bind(function (value, metadata, record) {
+                if (record.get("passwordBase64Hash") == null) return ('');
+                if (Ext.isEmpty(value) && record.get("passwordBase64Hash").length > 0) return ('*** ' + 'Unchanged'.t() + ' ***');
                 var result = "";
-                for(var i = 0 ; value != null && i < value.length ; i++) result = result + '*';
+                for (var i = 0; value != null && i < value.length; i++) result = result + '*';
                 return result;
-            },this)
+            }, this)
+        },
+        {
+            header: 'OpenVPN MFA secret'.t(),
+            xtype: 'actioncolumn',
+            width: Renderer.messageWidth,
+            dataIndex: 'twofactorSecretKey',
+            iconCls: 'fa fa-cog',
+            align: 'center',
+            tooltip: 'Enable/disable MFA by editting user.'.t(),
+            getClass: function (value, metadata, record) {
+                if (record.get("twofactorSecretKey") !== "") {
+                    return 'fa fa-cog';
+                }
+                return 'fa fa-minus';
+            },
+            handler: function (unk1, unk2, unk3, event, unk5, record) {
+                if (record.get('twofactorSecretKey') !== "") {
+                    Rpc.asyncData('rpc.UvmContext.localDirectory.showSecretQR', record.get('username'), 'Untangle', record.get('twofactorSecretKey'))
+                        .then(function (result) {
+                            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Provide user with key or QR image.'.t(), msg: result });
+                        });
+                }
+            },
+            isDisabled: function (view, rowIndex, colIndex, item, record) {
+                if (!record.get("mfaEnabled") || record.get("twofactorSecretKey") === "")
+                    return true;
+                return false;
+            },
         }, {
             header: 'Expiration'.t(),
             dataIndex: 'expirationTime',
@@ -165,6 +194,57 @@ Ext.define('Ung.config.local-directory.view.Users', {
                 }
             }]
         }, {
+            xtype: 'checkbox',
+            fieldLabel: 'Enable MFA for OpenVPN'.t(),
+            bind: {
+                value: '{record.mfaEnabled}',
+                hidden: '{!record.username}'
+            }
+        }, {
+            xtype: 'container',
+            layout: 'column',
+            items: [{
+                xtype: 'textfield',
+                fieldLabel: 'MFA Secret key'.t(),
+                labelAlign: 'right',
+                inputType: 'password',
+                labelWidth: 180,
+                width: 500,
+                allowBlank: true,
+                emptyText: '[Key not currently set]'.t(),
+                bind: {
+                    value: '{record.twofactorSecretKey}',
+                    hidden: '{!record.username || !record.mfaEnabled}'
+                },
+            }, {
+                xtype: 'button',
+                text: 'Generate new key'.t(),
+                bind: {
+                    hidden: '{!record.username || !record.mfaEnabled}'
+                },
+                handler: function (btn) {
+                    Rpc.asyncData('rpc.UvmContext.localDirectory.generateSecret')
+                        .then(function (result) {
+                            btn.lookupViewModel().get('record').set('twofactorSecretKey', result);
+                        });
+                }
+            },
+            {
+                xtype: 'button',
+                iconCls: 'fa fa-cog',
+                align: 'center',
+                bind: {
+                    hidden: '{!record.twofactorSecretKey || !record.mfaEnabled}'
+                },
+                handler: function (btn) {
+                    var record = btn.lookupViewModel().get('record');
+                    Rpc.asyncData('rpc.UvmContext.localDirectory.showSecretQR', record.get('username'), 'Untangle', record.get('twofactorSecretKey'))
+                        .then(function (result) {
+                            Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Provide user with key or QR image.'.t(), msg: result });
+                        });
+                }
+            }]
+        }, {
             xtype: 'numberfield',
             fieldIndex: 'expirationTime',
             hidden: true,
@@ -175,7 +255,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
             fieldIndex: 'localForever',
             bind: '{record.localForever}',
             listeners: {
-                change: function(cmp, nval, oval, opts) {
+                change: function (cmp, nval, oval, opts) {
                     var target = this.ownerCt.down("[fieldIndex='expirationTime']");
                     if (nval == true) {
                         target.setValue(0);
@@ -197,7 +277,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
                 disabled: '{record.localForever}'
             },
             listeners: {
-                change: function(cmp, nval, oval, opts) {
+                change: function (cmp, nval, oval, opts) {
                     var finder = this.ownerCt.down("[fieldIndex='localForever']");
                     var target = this.ownerCt.down("[fieldIndex='expirationTime']");
                     if (finder.getValue() == false) target.setValue(nval.getTime());
