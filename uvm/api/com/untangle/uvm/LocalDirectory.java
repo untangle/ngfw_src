@@ -20,6 +20,13 @@ public interface LocalDirectory
      */
     public boolean authenticate(String username, String password);
 
+   /**
+     * Authenticate a user who is using 2FA
+     *
+     * @returns true if valid uid/password/OTP code, false otherwise
+     */
+    public boolean authenticate(String username, String password, long code);
+
     /**
      * Return a list of users
      *

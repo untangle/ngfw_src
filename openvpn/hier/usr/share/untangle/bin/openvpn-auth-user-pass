@@ -5,6 +5,7 @@
 # passes them to the public userAuthenticate function in the OpenVPN app.
 
 import os
+import base64
 import sys
 from uvm import Uvm
 
@@ -25,7 +26,16 @@ if (username == None):
 password = os.environ.get('password')
 if (password == None):
     raise Exception("Missing password")
-    
-result = openvpnApp.userAuthenticate(username,password)
+
+# Figure out the OTP password.
+# OpenVPN clients will combine password and OTP into the password string.
+# Format is "SCRV1:<passwd_b64>:<otp_b64>"
+otp = 0
+if password.startswith("SCRV1:"):
+    parts = password.split(":")
+    password = base64.b64decode(parts[1])
+    otp = int(base64.b64decode(parts[2]))
+
+result = openvpnApp.userAuthenticate(username, password, otp)
 sys.exit(result)
 

@@ -8,18 +8,27 @@ import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.LocalDirectoryUser;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import java.security.Key;
+import com.google.common.io.BaseEncoding;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base32;
 import org.apache.log4j.Logger;
 
+import java.time.Instant;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
+import java.security.Key;
 import java.util.List;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
@@ -31,6 +40,9 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Local Directory stores a local list of users
@@ -160,6 +172,47 @@ public class LocalDirectoryImpl implements LocalDirectory
     }
 
     /**
+     * Called to generate new random key for two factor auth.
+     *
+     * @return key 160bit in base 32.
+     */
+    public String generateSecret() {
+        byte[] buffer = new byte[20];
+
+        new Random().nextBytes(buffer);
+        byte[] secretKey = Arrays.copyOf(buffer, 10);
+
+        return BaseEncoding.base32().encode(secretKey);
+    }
+
+    /**
+     * Called to obtain secret and QR code for a particular user.
+     *
+     * @param username
+     *        The username used in the new key.
+     * @param issuer
+     *        The issuer or hostname.
+     * @param secret
+     *        The secret in Base32 encoding.
+     * 
+     * @return Message text and SVG image. (String)
+     */
+    public String showSecretQR(String username, String issuer, String secret) {
+        String url = new StringBuilder("otpauth://totp/").append(username.toLowerCase().trim())
+        .append("@")
+        .append("openvpn".trim())
+        .append("?secret=")
+        .append(secret.toUpperCase().trim())
+        .append("&issuer=")
+        .append(issuer.trim())
+        .toString();
+
+        String command = new StringBuilder("/usr/bin/qrencode -s 4 -t SVG -o - ").append(url).toString();
+        String QrSvg =  UvmContextFactory.context().execManager().execOutput(command);
+        return ("Manual entry: " + secret + "<BR>" + QrSvg);
+    }
+
+    /**
      * Checks to see if user is expired
      *
      * @param user
@@ -209,6 +262,44 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         return false;
+    }
+
+    /**
+     * Authenticate a user. Only being used by OpenVPN.
+     * 
+     * @param username
+     *        The username
+     * @param password
+     *        The password
+     * @param code
+     *        The TOTP code provided by the user
+     * @return True for successful authentication, otherwise false
+     */
+    public boolean authenticate(String username, String password, long code)
+    {
+        // First check if username/password is correct. If not we don't need to do more work.
+        if (authenticate(username, password) == false) return false;
+
+        // Look up the users shared secret.
+        String secret = null;
+        for (LocalDirectoryUser user : this.currentList) {
+            if (username.equals(user.getUsername())) {
+                if (!user.getMfaEnabled())
+                    return true; 
+                secret = user.getTwofactorSecretKey();
+                break;
+            }
+        }
+
+        // Get current time slot. 
+        Long offset = Instant.now().getEpochSecond() / 30;
+
+        // We check time slots +/- 1 to account for slight time skew and user slowness.
+        // TODO: Consider making #slots a admin setting.
+        if (verifyTOTPcode(secret, code, offset) == false)
+            if (verifyTOTPcode(secret, code, offset - 1) == false)
+                return verifyTOTPcode(secret, code, offset + 1);
+        return true;
     }
 
     /**
@@ -980,6 +1071,55 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         return (secbuff.toString());
+    }
+
+/**
+ * verify users TOTP code.
+ *
+ * @param secret
+ *        Shared secret
+ * @param code
+ *        User provided code
+ * @param timeslot
+ *        Current time slot. epoch seconds divided by time delta.
+ *
+ * @return true if code is good, otherwise false.
+ */
+    private boolean verifyTOTPcode(String secret, long code, long timeslot)
+    {
+        Base32 codec = new Base32();
+        byte[] data = new byte[8];
+        long value = timeslot;
+        byte[] decodedKey = codec.decode(secret);
+        byte[] hash;
+
+        for (int i = 8; i-- > 0; value >>>= 8) {
+            data[i] = (byte) value;
+        }
+        try {
+            SecretKeySpec signKey = new SecretKeySpec(decodedKey, "HmacSHA1");
+            Mac mac = Mac.getInstance("HmacSHA1");
+            mac.init(signKey);
+            hash = mac.doFinal(data);
+        } catch(Exception e) {
+            logger.warn("Not able to validate TOTP (ignoring) :", e);
+            return false;
+        }
+ 
+        int offset = hash[20 - 1] & 0xF;
+   
+        long truncatedHash = 0;
+        for (int i = 0; i < 4; ++i) {
+            truncatedHash <<= 8;
+            // We are dealing with signed bytes:
+            // we just keep the first byte.
+            truncatedHash |= (hash[offset + i] & 0xFF);
+        }
+
+        truncatedHash &= 0x7FFFFFFF;
+        truncatedHash %= 1000000;
+
+        return (truncatedHash == code);
     }
 
     /**
