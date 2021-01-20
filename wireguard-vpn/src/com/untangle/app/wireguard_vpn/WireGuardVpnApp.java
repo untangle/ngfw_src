@@ -142,18 +142,20 @@ public class WireGuardVpnApp extends AppBase
         int idx = 0;
         for (WireGuardVpnTunnel tunnel : newSettings.getTunnels()) {
             /**
-            * Serialize the hostname to an ip address
+            * Serialize the hostname to an ip address if a static tunnel where hostname shows
             */
-            String endpointHostname = tunnel.getEndpointHostname();
-            InetAddress endpointAddress = null;
-            try {
-                // Try to find name if endpointHostname is not empty
-                if (!("".equals(endpointHostname))) 
-                    endpointAddress = InetAddress.getByName(endpointHostname);
-                tunnel.setEndpointAddress(endpointAddress);
-                tunnel.setEndpointHostname(endpointAddress.getHostAddress()); // Keep hostname same as endpoint address when it is determined
-            } catch (Exception e) {
-                throw new RuntimeException("Not able to set endpoint address from given endpoint hostname: " + endpointHostname);
+            if (!tunnel.getEndpointDynamic()) {
+                String endpointHostname = tunnel.getEndpointHostname();
+                InetAddress endpointAddress = null;
+                try {
+                    // Try to find name if endpointHostname is not empty
+                    if (!("".equals(endpointHostname))) 
+                        endpointAddress = InetAddress.getByName(endpointHostname);
+                    tunnel.setEndpointAddress(endpointAddress);
+                    tunnel.setEndpointHostname(endpointAddress.getHostAddress()); // Keep hostname same as endpoint address when it is determined
+                } catch (Exception e) {
+                    throw new RuntimeException("Not able to set endpoint address from given endpoint hostname: " + endpointHostname);
+                }
             }
 
             tunnel.setId(++idx);
