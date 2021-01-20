@@ -149,7 +149,7 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                                     }
                                 }, {
                                     fieldLabel: 'Local Endpoint Hostname'.t(),
-                                    itemId: 'endpointAddress',
+                                    itemId: 'endpointHostname',
                                     xtype: 'displayfield',
                                     cls: 'x-selectable',
                                     bind: {
