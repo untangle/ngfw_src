@@ -79,8 +79,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         dataIndex: 'endpointDynamic',
         renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
     }, {
-        header: 'IP Address'.t(),
-        width: Renderer.ipWidth,
+        header: 'Hostname'.t(),
+        width: Renderer.messageWidth,
         dataIndex: 'endpointAddress',
         renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
     }, {
@@ -146,11 +146,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             }
         }, {
             xtype: 'textfield',
-            fieldLabel: 'IP Address'.t(),
+            fieldLabel: 'Hostname'.t(),
             hidden: true,
             disabled: true,
             allowBlank: false,
-            vtype: 'isSingleIpValid',
+            vtype: 'isHostnameValid',
             bind: {
                 value: '{record.endpointAddress}',
                 hidden: '{record.endpointDynamic}',
