@@ -231,7 +231,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                     status.wireguard.forEach(function(status){
                         if(tunnel.get('publicKey') == status['peer-key']){
                             status['tunnel-description'] = tunnel.get('description');
-                            status['configured-endpoint'] = tunnel.get('endpointAddress');
+                            status['configured-endpoint'] = tunnel.get('endpointHostname');
                         }
                     });
                 });

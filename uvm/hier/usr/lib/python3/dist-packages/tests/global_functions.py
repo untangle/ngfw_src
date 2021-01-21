@@ -55,7 +55,7 @@ WG_VPN_SERVER_IP = "10.113.150.117"
 WG_VPN_SERVICE_INFO = {
         "hostname":"untangle-ats-wireguard",
         "publicKey":"fupwK1yQLvtBOFpW8nHxjIYjSDAzkpCwYGYL2rS5xUU=",
-        "endpointAddress":"10.113.150.117",
+        "endpointHostname":"10.113.150.117",
         "endpointPort":51820,
         "peerAddress":"172.31.53.1",
         "networks":"192.168.20.0/24"

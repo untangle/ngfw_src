@@ -149,7 +149,7 @@ public class WireGuardVpnManager
             WIREGUARD_APP +
             " set wg0 peer " + publicKey +
             ( addTunnel.getEndpointDynamic() != true
-                ? " endpoint " + addTunnel.getEndpointAddress().getHostAddress() + ":" + addTunnel.getEndpointPort()
+                ? " endpoint " + addTunnel.getEndpointHostname() + ":" + addTunnel.getEndpointPort()
                 : ""
             ) +
             " persistent-keepalive " + app.getSettings().getKeepaliveInterval() +
