@@ -158,6 +158,38 @@ Ext.define('Ung.apps.reports.MainController', {
         Ung.app.redirectTo('#config/administration/google');
     },
 
+    handleDeleteReports: function () {
+        var me = this, v = me.getView(), vm = me.getViewModel();
+
+        Ext.Msg.show({
+            title: 'Delete All Reports Data!'.t(),
+            msg: "You are about to delete all current reports data".t() + "<br/><br/>" + "Do you want to continue?".t(),
+            buttons: Ext.Msg.YESNO,
+            fn: function(btnId) {
+                if (btnId === 'yes') {
+                    Ext.MessageBox.wait( "Deleting reports data...".t(), "Delete Reports Data".t());
+                    Ext.Deferred.sequence([
+                        Rpc.asyncPromise('rpc.reportsManager.reinitializeDatabase'),
+                    ]).then(function(result){
+                        if(Util.isDestroyed(v, vm)){
+                            return;
+                        }
+                        Ext.MessageBox.close();
+                        return;
+                    }, function(ex) {
+                        Ext.MessageBox.close();
+                        Util.handleException(ex);
+                    });
+                }
+                else {
+                    return;
+                }
+            },
+            animEl: 'elId',
+            icon: Ext.MessageBox.QUESTION
+        });
+    },
+
     onUpload: function (btn) {
         var formPanel = btn.up('form');
         formPanel.submit({

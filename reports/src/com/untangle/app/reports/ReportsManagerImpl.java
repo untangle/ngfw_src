@@ -1187,4 +1187,13 @@ public class ReportsManagerImpl implements ReportsManager
 
         return null;
     }
+
+    /**
+     * Delete existing database and initilize new empty database
+     */
+    public void reinitializeDatabase()
+    {
+        String cmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
+    }
 }
