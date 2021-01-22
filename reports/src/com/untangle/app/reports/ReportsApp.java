@@ -203,6 +203,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             return;
         }
 
+	/**
+         * Check if database retention settings have changed
+         */
+	checkDbRetentionChange(newSettings);
+
         /**
          * Change current settings
          */
@@ -859,6 +864,38 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         } else {
             //RM the cron file if not set
             UvmContextFactory.context().execManager().execResult( "rm -f " + HOURLY_CRON_FILE );
+        }
+    }
+
+    /**
+     * If the new database retention settings are different than the old ones,
+     * then run the clean tables script to instantly reap the possible space benefits
+     *
+     * @param newSettings
+     *  new reports settings
+     */
+    private void checkDbRetentionChange( ReportsSettings newSettings )
+    {
+        String execStr;
+        int currHourly, currDaily, newHourly, newDaily;
+
+        if (this.settings == null) {
+            return;
+        }
+
+        currHourly = this.settings.getDbRetentionHourly();
+        currDaily = this.settings.getDbRetention();
+        newHourly = newSettings.getDbRetentionHourly();
+        newDaily = newSettings.getDbRetention();
+
+        if(newDaily != currDaily ||
+           newHourly != currHourly) {
+            if(newHourly > 0) {
+                execStr = REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " -h " + newHourly + " 0 | logger -t uvmreports";
+            } else {
+                execStr = REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + newDaily + " | logger -t uvmreports";
+            }
+            UvmContextFactory.context().execManager().execResult( execStr );
         }
     }
 
