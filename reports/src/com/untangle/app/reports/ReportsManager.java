@@ -314,4 +314,8 @@ public interface ReportsManager
      */
     public JSONArray getReportInfo( String appName, Integer policyId, String key, String...arguments);
 
+    /**
+     * Delete existing database and initilize new empty database
+     */
+    void reinitializeDatabase();
 }
