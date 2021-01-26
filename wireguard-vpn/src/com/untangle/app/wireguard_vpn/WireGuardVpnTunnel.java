@@ -55,6 +55,7 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
     public Boolean getEndpointDynamic() { return endpointDynamic; }
     public void setEndpointDynamic( Boolean newValue ) { this.endpointDynamic = newValue; }
 
+    /* TODO: Take endpointAddress functions out after 16.3 */
     public InetAddress getEndpointAddress() { return endpointAddress; }
     public void setEndpointAddress( InetAddress newValue ) { this.endpointAddress = newValue; }
 
