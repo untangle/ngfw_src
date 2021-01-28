@@ -17,5 +17,7 @@ public interface Reporting
 
     long getWriteDelaySec();
 
+    boolean getDiskFullFlag();
+
     List<String> getAlertEmailAddresses();
 }

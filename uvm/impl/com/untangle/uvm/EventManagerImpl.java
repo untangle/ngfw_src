@@ -430,6 +430,38 @@ public class EventManagerImpl implements EventManager
             this.setSettings( settings );
         }
 
+        boolean criticalFlag = false;
+        boolean reportsFlag = false;
+
+        // search for the CriticalAlertEvent REPORTS rule
+        for (EventRule er : settings.getAlertRules()) {
+            for(EventRuleCondition c : er.getConditions()) {
+                if(c.getField().equals("class") && c.getFieldValue().equals("*CriticalAlertEvent*")){
+                    criticalFlag = true;
+                }
+                if(c.getField().equals("component") && c.getFieldValue().equals("REPORTS")){
+                    reportsFlag = true;
+                }
+            }
+        }
+
+        // if we didn't find the CriticalAlertEvent REPORTS rule create at top
+        if ((!criticalFlag) || (!reportsFlag)) {
+            LinkedList<EventRuleCondition> conditions;
+            EventRuleCondition condition1;
+            EventRuleCondition condition2;
+            AlertRule eventRule;
+
+            conditions = new LinkedList<>();
+            condition1 = new EventRuleCondition( "class", "=", "*CriticalAlertEvent*" );
+            conditions.add( condition1 );
+            condition2 = new EventRuleCondition( "component", "=", "REPORTS" );
+            conditions.add( condition2 );
+            eventRule = new AlertRule( true, conditions, true, true, "Reporting disabled due to low disk space", false, 0 );
+            settings.getAlertRules().addFirst( eventRule );
+
+            this.setSettings( settings );
+        }
     }
 
     /**
@@ -460,6 +492,14 @@ public class EventManagerImpl implements EventManager
         EventRuleCondition condition2;
         EventRuleCondition condition3;
         AlertRule eventRule;
+
+        conditions = new LinkedList<>();
+        condition1 = new EventRuleCondition( "class", "=", "*CriticalAlertEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "component", "=", "REPORTS" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Reporting disabled due to low disk space", false, 0 );
+        rules.add( eventRule );
 
         conditions = new LinkedList<>();
         condition1 = new EventRuleCondition( "class", "=", "*WanFailoverEvent*" );
