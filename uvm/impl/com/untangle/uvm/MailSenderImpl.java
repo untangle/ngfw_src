@@ -544,8 +544,7 @@ public class MailSenderImpl implements MailSender
             String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
             UvmContextFactory.context().execManager().exec(cmd1);
             // insert new "  port = xx"
-            String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + 25 + "|g\" -i " + EXIM_TEMPLATE_FILE;
-            UvmContextFactory.context().execManager().exec(cmd2);
+            UvmContextFactory.context().execManager().exec(System.getProperty("uvm.bin.dir") + "/ut-mailsender-helpers.sh resetSmtpPort 25 " + EXIM_TEMPLATE_FILE);
 
         } else {
             /**
@@ -611,8 +610,7 @@ public class MailSenderImpl implements MailSender
             String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
             UvmContextFactory.context().execManager().exec(cmd1);
             // insert new "  port = xx"
-            String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + targetPort + "|g\" -i " + EXIM_TEMPLATE_FILE;
-            UvmContextFactory.context().execManager().exec(cmd2);
+            UvmContextFactory.context().execManager().exec(System.getProperty("uvm.bin.dir") + "/ut-mailsender-helpers.sh resetSmtpPort " + targetPort + " " + EXIM_TEMPLATE_FILE);
         }
 
         this.writeFile(sb, EXIM_CONF_FILE);

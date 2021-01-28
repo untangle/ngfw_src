@@ -321,7 +321,7 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testDiskFree(List<String> notificationList)
     {
-        String result = this.execManager.execOutput("df -k / | awk '/\\//{printf(\"%d\",$5)}'");
+        String result = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskFree");
 
         try {
             int percentUsed = Integer.parseInt(result);
@@ -343,13 +343,12 @@ public class NotificationManagerImpl implements NotificationManager
     private void testDiskErrors(List<String> notificationList)
     {
         ExecManagerResult result;
-
-        result = this.execManager.exec("tail -n 15000 /var/log/kern.log | grep -m1 -B3 'DRDY ERR'");
+        result = this.execManager.exec(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskError1");
         if (result.getResult() == 0) {
             notificationList.add(i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n", "<br/>\n"));
         }
 
-        result = this.execManager.exec("tail -n 15000 /var/log/kern.log | grep -v 'dev fd0' | grep -m1 -B3 'I/O error'");
+        result = this.execManager.exec(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskError2");
         if (result.getResult() == 0) {
             notificationList.add(i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n", "<br/>\n"));
         }
@@ -364,7 +363,7 @@ public class NotificationManagerImpl implements NotificationManager
     {
         ExecManagerResult result;
 
-        result = this.execManager.exec("/bin/egrep -q '^Status:.*(half-configured|triggers-pending)' /var/lib/dpkg/status");
+        result = this.execManager.exec(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testUpgradeErrors");
         if (result.getResult() == 0) {
             notificationList.add(i18nUtil.tr("An upgrade process has been interrupted."));
         }
@@ -463,7 +462,7 @@ public class NotificationManagerImpl implements NotificationManager
             }
             String bridgeName = master.getSymbolicDev();
 
-            String result = this.execManager.execOutput("brctl showstp " + bridgeName + " | grep '^eth.*' | sed -e 's/(//g' -e 's/)//g'");
+            String result = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testBridgeBackwards1");
             if (result == null || "".equals(result)) {
                 logger.warn("Unable to build bridge map");
                 continue;
@@ -508,7 +507,7 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * Lookup gateway MAC using arp -a
              */
-            String gatewayMac = this.execManager.execOutput("arp -a " + gateway.getHostAddress() + " | awk '{print $4}' ");
+            String gatewayMac = this.execManager.execOutput("arp -a " + gateway.getHostAddress()).split(" ")[3];
             if (gatewayMac == null) {
                 logger.warn("Unable to determine MAC for " + gateway.getHostAddress());
                 return;
@@ -522,7 +521,7 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * Lookup gateway bridge port # using brctl showmacs
              */
-            String portNo = this.execManager.execOutput("brctl showmacs " + bridgeName + " | awk '/" + gatewayMac + "/ {print $1}'");
+            String portNo = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskFree");
             if (portNo == null) {
                 logger.warn("Unable to find port number for MAC: " + gatewayMac);
                 return;
@@ -596,7 +595,7 @@ public class NotificationManagerImpl implements NotificationManager
         for (InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces()) {
             if (intf.getSystemDev() == null) continue;
 
-            String lines = this.execManager.execOutput("ifconfig " + intf.getPhysicalDev() + " | awk '/errors/ {print $3}'");
+            String lines = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testInterfaceErrors");
             String type = "RX"; //first line is RX erros
 
             for (String line : lines.split("\n")) {
@@ -807,7 +806,7 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testQueueFullMessages(List<String> notificationList)
     {
-        int result = this.execManager.execResult("tail -n 20 /var/log/kern.log | grep -q 'nf_queue:.*dropping packets'");
+        int result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testQueueFullMessages");
         if (result == 0) {
             String notificationText = "";
             notificationText += i18nUtil.tr("Packet processing recently overloaded.");
@@ -865,14 +864,14 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * If already in the ARP table, continue
              */
-            result = this.execManager.execResult("arp -n " + route.getNextHop() + " | grep -q ether");
+            result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testRoutesToReachableAddresses1 " + route.getNextHop());
             if (result == 0) continue;
 
             /**
              * If not, force arp resolution with ping Then recheck ARP table
              */
             result = this.execManager.execResult("ping -c1 -W1 " + route.getNextHop());
-            result = this.execManager.execResult("arp -n " + route.getNextHop() + " | grep -q ether");
+            result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testRoutesToReachableAddresses2 " + route.getNextHop());
             if (result == 0) continue;
 
             String notificationText = "";
