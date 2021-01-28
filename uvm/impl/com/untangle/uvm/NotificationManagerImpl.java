@@ -819,7 +819,7 @@ public class NotificationManagerImpl implements NotificationManager
         boolean fullFlag = reports.getDiskFullFlag();
         if (fullFlag) {
             String notificationText = "";
-            notificationText += i18nUtil.tr("Reports event processing disabled due to low disk space.");
+            notificationText += i18nUtil.tr("Reports event processing disabled due to low disk space. <a href='/admin/index.do#service/reports/data'>Manage reports data here</a>");
             notificationList.add(notificationText);
         }
     }

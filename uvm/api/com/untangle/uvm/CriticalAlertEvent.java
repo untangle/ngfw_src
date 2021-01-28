@@ -7,7 +7,7 @@ import com.untangle.uvm.logging.LogEvent;
 
 /**
  * Critical alert event. Originally created to manage the alert we generate
- * when we transition to/from discard mode for logger events when the amout
+ * when we transition to/from discard mode for logger events when the amount
  * of free disk space gets too low.
  */
 @SuppressWarnings("serial")
