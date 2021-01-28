@@ -1,4 +1,4 @@
-FROM untangleinc/ngfw:buster-base
+FROM untangleinc/ngfw:buster-base-multiarch
 LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
 
 # do not use official Debian mirrors
