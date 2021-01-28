@@ -544,7 +544,8 @@ public class SslInspectorApp extends AppBase
      */
     private void removeCertCache()
     {
-        UvmContextFactory.context().execManager().execResult( "rm -rf " + keyStorePath + "/* ; rm -f " + CRON_FILE );
+        UvmContextFactory.context().execManager().execResult( "rm -rf " + keyStorePath + "/*");
+        UvmContextFactory.context().execManager().execResult( "rm -f " + CRON_FILE );
     }
 
     /**
