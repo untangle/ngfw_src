@@ -532,7 +532,7 @@ can look deeper. - mahotz
     {
         LinkedList<String> downloadUrls = new LinkedList<>();
 
-        String result = UvmContextFactory.context().execManager().execOutput("apt-get dist-upgrade --yes --print-uris | awk '/^.http/ {print $1}'");
+        String result = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-system-mgr-helpers.sh downloadUpgrades");
         try {
             String lines[] = result.split("\\r?\\n");
             for (String line : lines) {
@@ -660,7 +660,7 @@ can look deeper. - mahotz
     public boolean upgradesAvailable(boolean forceUpdate)
     {
         if (forceUpdate) UvmContextFactory.context().execManager().execResult("apt-get update --yes --allow-releaseinfo-change");
-        int retCode = UvmContextFactory.context().execManager().execResult("apt-get -s dist-upgrade | grep -q '^Inst'");
+        int retCode = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-system-mgr-helpers.sh upgradesAvailable");
         return (retCode == 0);
     }
 
@@ -1086,8 +1086,7 @@ can look deeper. - mahotz
             int count = 0;
             do {
                 Thread.sleep(100);
-                result = UvmContextFactory.context().execManager().execOutput("pgrep /usr/sbin/snmpd | wc -l");
-                count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
+                count = UvmContextFactory.context().execManager().execOutput("pgrep /usr/sbin/snmpd").split("\r\n|\r|\n").length;
                 tries--;
             } while ((count > 0) && (tries > 0));
             if (count > 0) {
