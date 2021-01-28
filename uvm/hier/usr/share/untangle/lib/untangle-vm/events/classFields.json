@@ -1342,7 +1342,7 @@
     ]
     },
     InterfaceStatEvent: {
-    description: "These events are created by the base system and inserted to the [[Database_Schema#settings_changes|interface_stat_events]] table periodically with interface stats.",
+    description: "These events are created by the base system and inserted to the [[Database_Schema#interface_stat_events|interface_stat_events]] table periodically with interface stats.",
     fields: [
         {
         name: "class",
@@ -1628,6 +1628,36 @@
         name: "username",
         type: "String",
         description: "The username",
+        },
+    ]
+    },
+    CriticalAlertEvent: {
+    description: "These events are created by the base system and inserted to the [[Database_Schema#critical_alerts|critical_alerts]] table to record critical system alerts.",
+    fields: [
+        {
+        name: "class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "component",
+        type: "String",
+        description: "The name of the component that generated the alert",
+        },
+        {
+        name: "message",
+        type: "String",
+        description: "The alert message",
+        },
+        {
+        name: "timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "problem",
+        type: "String",
+        description: "Additional information about the alert",
         },
     ]
     },

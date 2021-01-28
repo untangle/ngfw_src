@@ -148,6 +148,9 @@ human_names = {
 'server_longitude': 'Server Longitude',
 'session_id': 'Session ID',
 'settings_file': 'Settings File',
+'component': 'System Component Name',
+'message': 'Critical Alert Message',
+'problem': 'Critical Alert Problem',
 'sig_id': 'Signature ID',
 'size': 'Size',
 'source_addr': 'Source Address',
@@ -186,6 +189,7 @@ human_names = {
 'threat_prevention_server_categories': 'Threat Prevention ' + 'Server Categories',
 'tunnel_description': 'Tunnel Description',
 'tunnel_name': 'Tunnel Name',
+'peer_address' : 'The IP address of the tunnel peer',
 'tx_bytes': 'Bytes Sent',
 'tx_rate': 'Tx Rate',
 'type': 'Type',
@@ -456,9 +460,14 @@ dict['http_events'].update({
     'web_filter_flagged' : 'If Web Filter flagged this request',
     'threat_prevention_blocked' : 'If Threat Prevention blocked this request',
     'threat_prevention_flagged' : 'If Threat Prevention flagged this request',
+    'threat_prevention_reason'  : 'The reason Threat Prevention blocked this requiest',
     'threat_prevention_rule_id' : 'This numeric rule according to Threat Prevention',
     'threat_prevention_reputation' : 'This numeric threat reputation',
     'threat_prevention_categories' : 'This bitmask of threat categories',
+    'threat_prevention_client_reputation': 'The numeric client reputation',
+    'threat_prevention_client_categories': 'The client categories',
+    'threat_prevention_server_reputation': 'The numeric server reputation',
+    'threat_prevention_server_categories': 'The server categories'
 })
 
 dict['http_query_events'] = copy.deepcopy(generic)
@@ -643,6 +652,14 @@ dict['settings_changes'].update({
     'settings_file' : 'The name of the file changed',
     'username' : 'The username logged in at the time of the change',
     'hostname' : 'The remote hostname',
+})
+
+dict['critical_alerts'] = copy.deepcopy(generic)
+dict['critical_alerts'].update({
+    'table_description' : 'This table stores critical system alert events.',
+    'component' : 'The name of the component that generated the alert',
+    'message'   : 'The alert message',
+    'problem'   : 'Additional information about the alert',
 })
 
 dict['interface_stat_events'] = copy.deepcopy(generic)
