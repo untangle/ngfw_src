@@ -128,7 +128,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         UvmContextFactory.context().daemonManager().enableRequestMonitoring("spamassassin", 300, "127.0.0.1", 783, transmit, search);
 
         // enable CRON job
-        UvmContextFactory.context().execManager().exec("grep -q -F 'CRON=1' /etc/default/spamassassin || sed -i -e 's/^CRON=.*/CRON=1/' /etc/default/spamassassin");
+        UvmContextFactory.context().execManager().exec("sed -i -e 's/^CRON=.*/CRON=1/' /etc/default/spamassassin");
 
         super.preStart(isPermanentTransition);
     }

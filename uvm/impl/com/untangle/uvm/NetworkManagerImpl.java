@@ -1078,8 +1078,7 @@ public class NetworkManagerImpl implements NetworkManager
              * Copy the authorized keys to root's ssh
              */
             if ( UvmContextFactory.context().isNetBoot() ) {
-                UvmContextFactory.context().execManager().exec( "if [ ! -d /root/.ssh ] ; then mkdir /root/.ssh ; chmod 700 /root/.ssh ; fi" );
-                UvmContextFactory.context().execManager().exec( "if [ ! -f /root/.ssh/authorized_keys2 ] ; then cp -f /usr/share/untangle-support-keyring/authorized_keys2 /root/.ssh/ ; chmod 700 /root/.ssh/authorized_keys2 ; fi " );
+                UvmContextFactory.context().execManager().exec(System.getProperty("uvm.bin.dir") + "/ut-networking-helpers.sh copyAuthorizedKeys");
             }
         }
         catch (Exception e) {
@@ -2437,7 +2436,7 @@ public class NetworkManagerImpl implements NetworkManager
         LinkedList<String> deviceNames = new LinkedList<>( );
 
         // add all eth* devices
-        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'eth*' | sed -e 's|/sys/class/net/||' | sort -n -k 1.4" );
+        result = UvmContextFactory.context().execManager().exec( System.getProperty("uvm.bin.dir") + "/ut-get-interfaces.sh eth");
         for ( String name : result.getOutput().split("\\r?\\n") ) {
 
             String devName = name.trim();
@@ -2453,7 +2452,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         // add all wlan* devices
-        result = UvmContextFactory.context().execManager().exec( "find /sys/class/net -type l -name 'wlan*' | sed -e 's|/sys/class/net/||' | sort -n -k 1.5 " );
+        result = UvmContextFactory.context().execManager().exec( System.getProperty("uvm.bin.dir") + "/ut-get-interfaces.sh wlan");
         for ( String name : result.getOutput().split("\\r?\\n") ) {
 
             String devName = name.trim();
