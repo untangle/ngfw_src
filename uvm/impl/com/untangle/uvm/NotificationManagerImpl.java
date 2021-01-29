@@ -157,6 +157,11 @@ public class NotificationManagerImpl implements NotificationManager
             logger.warn("Notification test exception", e);
         }
         try {
+            testReportingDiskSpace(notificationList);
+        } catch (Exception e) {
+            logger.warn("Notification test exception", e);
+        }
+        try {
             testShieldEnabled(notificationList);
         } catch (Exception e) {
             logger.warn("Notification test exception", e);
@@ -796,6 +801,25 @@ public class NotificationManagerImpl implements NotificationManager
             notificationText += String.format("%.1f", (((float) delay) / 60.0)) + " minute delay";
             notificationText += "). ";
 
+            notificationList.add(notificationText);
+        }
+    }
+
+    /**
+     * This test that event writing is not disabled due to low disk space
+     *
+     * @param notificationList - the current list of notifications
+     */
+    private void testReportingDiskSpace(List<String> notificationList)
+    {
+        Reporting reports = (Reporting) UvmContextFactory.context().appManager().app("reports");
+        /* if reports not installed - no events - just return */
+        if (reports == null) return;
+
+        boolean fullFlag = reports.getDiskFullFlag();
+        if (fullFlag) {
+            String notificationText = "";
+            notificationText += i18nUtil.tr("Reports event processing disabled due to low disk space. <a href='/admin/index.do#service/reports/data'>Manage reports data here</a>");
             notificationList.add(notificationText);
         }
     }

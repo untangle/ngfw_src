@@ -15,12 +15,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.io.File;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
-
+import com.untangle.uvm.CriticalAlertEvent;
 
 /**
  * Worker that batches and flushes events to the database.
@@ -49,6 +50,14 @@ public class EventWriterImpl implements Runnable
     private static int LOW_WATER_MARK = 100000;
 
     /**
+     * When the amount of free disk space is less than this value we stop
+     * writing new events to the database to preserve critical functionality.
+     * Note the trailing L is required on the value otherwise Java will
+     * treat as a 32 bit integer which will be truncated to zero.
+     */
+    private static long DISK_FREE_MINIMUM = 5368709120L; // 1024*1024*1024*5
+
+    /**
      * Maximum number of events to write per work cycle
      */
     private static int MAX_EVENTS_PER_CYCLE = 50000;
@@ -56,6 +65,8 @@ public class EventWriterImpl implements Runnable
     private static boolean forceFlush = false;
 
     private volatile Thread thread;
+
+    private volatile File root;
 
     private ReportsApp app;
 
@@ -69,7 +80,13 @@ public class EventWriterImpl implements Runnable
      * In this case we stop logging events entirely until we are no longer overloaded
      */
     private boolean overloadedFlag = false;
-    
+
+    /**
+     * If true then the disk is too full and we stop logging events entirely
+     * until there is manual intervention to make more free space available.
+     */
+    private boolean diskFullFlag = false;
+
     /**
      * This stores the approximate write times of events
      * It is updated each time the events are flushed
@@ -140,6 +157,7 @@ public class EventWriterImpl implements Runnable
     public void run()
     {
         thread = Thread.currentThread();
+        root = new File("/");
 
         LinkedList<LogEvent> logQueue = new LinkedList<>();
         LogEvent event = null;
@@ -192,6 +210,26 @@ public class EventWriterImpl implements Runnable
                     if (this.overloadedFlag && inputQueue.size() < LOW_WATER_MARK) {
                         logger.warn("OVERLOAD: Low Water Mark reached. Continuing normal operation.");
                         this.overloadedFlag = false;
+                    }
+
+                    long usableSpace = root.getUsableSpace();
+
+                    /**
+                     * Check disk space
+                     */
+                    if (!this.diskFullFlag && usableSpace < DISK_FREE_MINIMUM) {
+                        logger.warn("STORAGE: Disk free space minimum exceeded.");
+                        // have to log the event before setting the flag
+                        CriticalAlertEvent alert = new CriticalAlertEvent("REPORTS", "Event processing suspended", "Free disk space = " + usableSpace);
+                        UvmContextFactory.context().logEvent(alert);
+                        this.diskFullFlag = true;
+                    }
+                    if (this.diskFullFlag && usableSpace > DISK_FREE_MINIMUM) {
+                        logger.warn("STORAGE: Disk free space recovered. Continuing normal operation.");
+                        this.diskFullFlag = false;
+                        // have to log the event after clearing the flag
+                        CriticalAlertEvent alert = new CriticalAlertEvent("REPORTS", "Event processing restored", "Free disk space = " + usableSpace);
+                        UvmContextFactory.context().logEvent(alert);
                     }
 
                     /**
@@ -262,9 +300,9 @@ public class EventWriterImpl implements Runnable
         if ( this.thread == null ) {
             return;
         }
-        if ( this.overloadedFlag ) {
+        if ( this.overloadedFlag || this.diskFullFlag ) {
             if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
-                logger.warn("Event Writer overloaded, discarding event");
+                if (this.overloadedFlag) { logger.warn("Event Writer overloaded, discarding event"); }
                 this.lastLoggedWarningTime = System.currentTimeMillis();
             }
             return;
@@ -312,7 +350,18 @@ public class EventWriterImpl implements Runnable
                          
         return this.writeDelaySec;
     }
-    
+
+    /**
+     *  Get the diskFullFlag
+     *
+     *  @return
+     *   Return the diskFullFlag
+     */
+    public boolean getDiskFullFlag()
+    {
+        return this.diskFullFlag;
+    }
+
     /**
      * Write the logQueue to the database
      *
@@ -625,5 +674,4 @@ public class EventWriterImpl implements Runnable
             }
         }
     }
-
 }

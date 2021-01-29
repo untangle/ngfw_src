@@ -11,6 +11,7 @@ def generate_tables():
     __create_user_table_updates_table()
     __create_alerts_events_table()
     __create_settings_changes_table()
+    __create_critical_alerts_table()
     # 13.0 conversion
     if sql_helper.table_exists( "penaltybox" ):
         sql_helper.drop_table("penaltybox") 
@@ -220,6 +221,15 @@ CREATE TABLE reports.settings_changes (
         settings_file text NOT NULL,
         username text NOT NULL,
         hostname text NOT NULL)""")
+
+@sql_helper.print_timing
+def __create_critical_alerts_table(  ):
+    sql_helper.create_table("""\
+CREATE TABLE reports.critical_alerts (
+        time_stamp timestamp NOT NULL,
+        component text NOT NULL,
+        message text NOT NULL,
+        problem text NOT NULL)""")
 
 @sql_helper.print_timing
 def __create_quotas_table(  ):

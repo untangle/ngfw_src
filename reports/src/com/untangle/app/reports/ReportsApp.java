@@ -427,6 +427,17 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return ReportsApp.eventWriter.getWriteDelaySec();
     }
 
+    /**
+     * Return the disk full flag
+     * @return
+     *  Boolean value the indicates if event processing is suspended
+     *  due to low disk space.
+     */
+    public boolean getDiskFullFlag()
+    {
+        return ReportsApp.eventWriter.getDiskFullFlag();
+    }
+
     /** 
      * Return email addresses with alert permission.
      *
