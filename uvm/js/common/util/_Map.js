@@ -423,6 +423,18 @@ Ext.define('Ung.util.Map', {
             col: { text: 'Protocol'.t(), filter: Rndr.filters.numeric, width: 80 },
             fld: { type: 'integer', convert: Converter.protocol }
         },
+        component: {
+            col: { text: 'Component'.t(), width: 100 },
+            fld: { type: 'string' }
+        },
+        message: {
+            col: { text: 'Message'.t(), width: 200 },
+            fld: { type: 'string' }
+        },
+        problem: {
+            col: { text: 'Problem'.t(), width: 200 },
+            fld: { type: 'string' }
+        },
         reason: {
             col: { text: 'Reason'.t(), width: 200 },
             fld: { type: 'string' }
@@ -1211,6 +1223,12 @@ Ext.define('Ung.util.Map', {
             'username',
             'hostname',
             'differences' // custom non sql table field
+        ],
+        critical_alerts: [
+            'time_stamp',
+            'component',
+            'message',
+            'problem'
         ],
         smtp_tarpit_events: [
             'time_stamp',

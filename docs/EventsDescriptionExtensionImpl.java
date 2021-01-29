@@ -51,9 +51,9 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("QuotaEvent","These events are created by the [[Bandwidth Control]] and inserted or update the [[Database_Schema#quotas|quotas]] table when quotas are given or exceeded.");
         classDescriptions.put("PrioritizeEvent","These events are created by the [[Bandwidth Control]] and update the [[Database_Schema#sessions|session]] table when a session is prioritized.");
         classDescriptions.put("SettingsChangesEvent","These events are created by the base system and inserted to the [[Database_Schema#settings_changes|settings_changes]] table when settings are changed.");
+        classDescriptions.put("CriticalAlertEvent","These events are created by the base system and inserted to the [[Database_Schema#critical_alerts|critical_alerts]] table to record critical system alerts.");
         classDescriptions.put("LogEvent","These base class for all events.");
-        classDescriptions.put("InterfaceStatEvent","These events are created by the base system and inserted to the [[Database_Schema#settings_changes|interface_stat_events]] table periodically with interface stats.");
-        classDescriptions.put("StatisticEvent","These events are created by the base system and inserted to the the [[Database_Schema#settings_changes|interface_stat_events]] table periodically with interface stats.");
+        classDescriptions.put("InterfaceStatEvent","These events are created by the base system and inserted to the [[Database_Schema#interface_stat_events|interface_stat_events]] table periodically with interface stats.");
         classDescriptions.put("SystemStatEvent","These events are created by the base system and inserted to the [[Database_Schema#server_events|server_events]] table periodically.");
         classDescriptions.put("TunnelStatusEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_tunnel_stats|ipsec_tunnel_stats]] table periodically.");
         classDescriptions.put("IpsecVpnEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_vpn_events|ipsec_vpn_events]] table when an IPsec connection event occurs.");
