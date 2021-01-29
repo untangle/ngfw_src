@@ -39,6 +39,11 @@ Ext.define('Ung.apps.reports.view.Data', {
             width: 220,
             allowDecimals: false,
             minValue: 0
+        }, {
+            xtype: 'button',
+            text: 'Delete All Reports Data'.t(),
+            margin: '10 0 10 0',
+            handler: 'handleDeleteReports'
         }]
     },{
         title: 'Google Drive Backup'.t(),
