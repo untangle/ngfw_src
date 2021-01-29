@@ -783,8 +783,16 @@ public class AppManagerImpl implements AppManager
                 logger.debug("Hiding " + appProps.getDisplayName() + ". " + System.getProperty("os.arch") + " is not a supported architecture.");
                 continue;
             }
-
-            installableAppsMap.put(appProps.getDisplayName(), appProps.getName());
+            //If the license manager indicates we are running restricted mode, only show apps found with the license
+            if(lm.isRestricted())
+            {
+                // check if appProps name matches one in the license
+                if (licenseMap.containsKey(appProps.getName())) {
+                    installableAppsMap.put(appProps.getDisplayName(), appProps.getName());
+                }
+            } else {
+                installableAppsMap.put(appProps.getDisplayName(), appProps.getName());
+            }
         }
 
         /**
