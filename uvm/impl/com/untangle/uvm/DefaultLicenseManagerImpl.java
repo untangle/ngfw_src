@@ -158,6 +158,15 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     }
 
     /**
+     * get if the license is retricted or not
+     * 
+     * @return boolean indicating whether the license is restricted or not
+     */
+    public boolean isRestricted() {
+        return false;
+    }
+
+    /**
      * Check to see if an application is a GPL application
      * 
      * @param identifier

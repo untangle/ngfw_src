@@ -526,6 +526,15 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         /* These are controlled using the methods in the uvm class */
     }
 
+    /**
+     * checks and returns if this license instance is restricted
+     * 
+     * @return boolean indicating restricted status of the license
+     */
+    public boolean isRestricted() {
+        return this.settings.getIsRestricted();
+    }
+
 
     /**
      * Initialize the settings
