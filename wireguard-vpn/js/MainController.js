@@ -362,6 +362,10 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
             record.set('description', remote['hostname']);
             record.set('endpointDynamic', false);
             Ext.Object.each(remote, function(key, value){
+                /* Backwards compatibility from 16.3 */
+                if (key == 'endpointAddress') {
+                    key = 'endpointHostname';
+                }
                 if(key in record.data){
                     record.set(key, value);
                 }
