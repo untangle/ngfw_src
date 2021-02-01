@@ -327,7 +327,28 @@ public class WireGuardVpnApp extends AppBase
             this.initializeSettings();
         } else {
             logger.info("Loading Settings...");
-            this.settings = readSettings;
+            boolean writeFlag = false;
+
+            /* 16.3 - convert endpointAddress to endpointHostname */
+            for (WireGuardVpnTunnel tunnel : readSettings.getTunnels()) {
+                if (tunnel.getEndpointAddress() != null) {
+                    try {
+                        tunnel.setEndpointHostname(tunnel.getEndpointAddress().getHostAddress());
+                    } catch (Exception e) {
+                        logger.warn("Failed to load settings because of wireguard tunnel: ", e);
+                    }
+                    writeFlag = true;
+                }
+            }
+
+            if (writeFlag == true) {
+                // if any changes were made we need to write the updated settings
+                this.setSettings( readSettings );
+            } else {
+                // no changes made so use the settings but don't write the file
+                this.settings = readSettings;
+            }
+
             updateNetworkReservations(readSettings.getAddressPool(), readSettings.getTunnels());
             logger.debug("Settings: " + this.settings.toJSONString());
         }

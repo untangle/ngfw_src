@@ -19,7 +19,8 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         urlAddrRe: /^(([^:\/?#]+:)?(?:\/\/((?:([^\/?#:]*):([^\/?#:]*)@)?([^\/?#:]*)(?::([^\/?#:]*))?)))?([^?#]*)(\?[^#]*)?(#.*)?$/,
         cidrAddrRe: /^([0-9]{1,3}\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
         cidrBlockRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
-        cidrBlockOnlyRangeRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-1]))$/
+        cidrBlockOnlyRangeRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-1]))$/,
+        hostnameRe: /^[a-zA-Z0-9\-_.]+$/
     },
 
     isSinglePortValid: function(val) {
@@ -366,4 +367,16 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         return (value.length == 44) ? true : false;
     },
     wireguardPublicKeyText: 'Public key must be 44 characters long.'.t(),
+
+    isHostnameValid: function(value) {
+        if (value.charAt(0) === '.') {
+            return false;
+        }
+        if (!this.mask.hostnameRe.test(value)){
+            return false;
+        }
+        return true;
+    },
+    isHostnameValidText: 'A hostname can only contain numbers, letters, dashes and periods'.t() +
+                         ' and cannot begin with a period'.t(),
 });
