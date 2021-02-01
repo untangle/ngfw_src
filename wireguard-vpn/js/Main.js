@@ -148,8 +148,8 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                                         value: '{settings.publicKey}'
                                     }
                                 }, {
-                                    fieldLabel: 'Local Endpoint IP Address'.t(),
-                                    itemId: 'endpointAddress',
+                                    fieldLabel: 'Local Endpoint Hostname'.t(),
+                                    itemId: 'endpointHostname',
                                     xtype: 'displayfield',
                                     cls: 'x-selectable',
                                     bind: {

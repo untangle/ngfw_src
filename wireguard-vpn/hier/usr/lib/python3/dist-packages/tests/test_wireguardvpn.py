@@ -23,7 +23,7 @@ wanIP = None
 
 #remote WireGuard Untangle from global_functions
 remotePublicKey = global_functions.WG_VPN_SERVICE_INFO["publicKey"]
-remoteEndpointAddress = global_functions.WG_VPN_SERVICE_INFO["endpointAddress"]
+remoteEndpointHostname = global_functions.WG_VPN_SERVICE_INFO["endpointHostname"]
 remotePeerAddress = global_functions.WG_VPN_SERVICE_INFO["peerAddress"]
 remoteNetworks = global_functions.WG_VPN_SERVICE_INFO["networks"]
 remoteDescription = global_functions.WG_VPN_SERVICE_INFO["hostname"]
@@ -33,11 +33,11 @@ localPublicKey = "1YbeQWcyHrPnnUJhBKbxKt2ZUbr2I8EiuinG9cYqQmE="
 localPrivateKey = "sICMfPW0s1m74egk3VS4BXe7mah3m5XF+gCN25B0Y2w="
 localAddressPool = "10.133.205.1/24"
 
-def setupWireguardTunnel(tunnel_enabled=True, remotePK=remotePublicKey, remotePeer=remotePeerAddress, description=remoteDescription, endpointAddress=remoteEndpointAddress, networks=remoteNetworks):
+def setupWireguardTunnel(tunnel_enabled=True, remotePK=remotePublicKey, remotePeer=remotePeerAddress, description=remoteDescription, endpointHostname=remoteEndpointHostname, networks=remoteNetworks):
     return {
         "description": description,
         "enabled": tunnel_enabled,
-        "endpointAddress": endpointAddress,
+        "endpointHostname": endpointHostname,
         "endpointDynamic": False,
         "endpointPort": 51820,
         "id": 1,
