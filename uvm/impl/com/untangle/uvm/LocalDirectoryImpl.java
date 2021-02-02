@@ -8,6 +8,7 @@ import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.LocalDirectoryUser;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.Pulse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -54,9 +55,12 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-available/eap";
     private final static String FREERADIUS_RADWHO_CMD = System.getProperty("uvm.home") + "/bin/ut-radwho.sh";
 
+    private final static int RADIUS_USER_SCAN_INTERVAL = 1000 * 30; // 30 seconds
+
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
 
+    private final Pulse radiusPulse = new Pulse("radius-username-scanner", new RadiusUsernameScanner(), RADIUS_USER_SCAN_INTERVAL);
     private final Logger logger = Logger.getLogger(getClass());
 
     private LinkedList<LocalDirectoryUser> currentList;
@@ -70,6 +74,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     public LocalDirectoryImpl()
     {
         loadUsersList();
+        radiusPulse.start();
 
         // install a callback for network settings changes
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, networkSaveHookCallback);
@@ -99,22 +104,45 @@ public class LocalDirectoryImpl implements LocalDirectory
     }
 
     /**
-     *  Gets the currently logged in users and IP addresses.
-     * @return Map of ip to username
+     *  Scans the currently logged in RADIUS users and updates the username
+     *  in the host table for each active user found.
      */
-     public Map<String, String> getRadiusUsers()
+     private void scanRadiusUsers()
      {
-        String command = FREERADIUS_RADWHO_CMD;
-        Map<String, String> radusers = new HashMap<String, String>();
-        String radwho = UvmContextFactory.context().execManager().execOutput(command);
-        if (radwho == null) return radusers;
-        String[] users = radwho.split("\n");
-        for (int i = 0; i < users.length; i++) {
-            String ip = users[i].split(" ")[0];
-            String user = users[i].split(" ")[1]; 
-            radusers.put(ip, user);
-        }
-        return radusers;
+         // if the server is not enabled we don't do anytyhing
+         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
+         if (!systemSettings.getRadiusServerEnabled()) return;
+
+         // if empty result there is nothing we can do
+         String radwho = UvmContextFactory.context().execManager().execOutput(FREERADIUS_RADWHO_CMD);
+         if (radwho == null) return;
+
+         // walk through the list of users and update the host table for each
+         // result will be a simple list in "username 192.168.1.1" format
+         String[] users = radwho.split("\n");
+         for (int i = 0; i < users.length; i++) {
+             String[] record = users[i].split(" ");
+
+             // ignore records where we don't get username and address
+             if (record.length != 2) continue;
+
+             String username = record[0];
+             InetAddress address = null;
+
+             try { address = InetAddress.getByName(record[1]); } catch (Exception exn) { }
+             if (address == null) continue;
+
+             // find the host table entry for the IP address and include the
+             // create flag to add if it does not already exist
+             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address,true);
+             if (entry == null) continue;
+
+             // skip if the radius username is already set
+             if ((entry.getUsernameRadius() != null) && (entry.getUsernameRadius().equals(username))) continue;
+
+             // set the radius username in the host table entry
+             entry.setUsernameRadius(username);
+         }
      }
 
     /**
@@ -1079,6 +1107,20 @@ public class LocalDirectoryImpl implements LocalDirectory
         public void callback(Object... args)
         {
             updateChapSecrets(currentList);
+        }
+    }
+
+    /**
+     * Pulse class for scanning active RADIUS users
+     */
+    private class RadiusUsernameScanner implements Runnable
+    {
+        /**
+         * Thread run function
+         */
+        public void run()
+        {
+            scanRadiusUsers();
         }
     }
 }

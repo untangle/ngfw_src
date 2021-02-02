@@ -68,12 +68,6 @@ public interface LocalDirectory
     public String getRadiusProxyStatus();
 
     /**
-     * Get Radius users
-     * @return Map of IP to username
-     */
-    public Map<String, String> getRadiusUsers();
-
-    /**
      * Adds computer account to the Active Directory domain controller
      */
     public ExecManagerResult addRadiusComputerAccount();
