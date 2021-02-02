@@ -109,6 +109,10 @@ Ext.define('Ung.cmp.CopyToClipboard', {
                     }
                     if(copyComponent.dataType == 'javascript'){
                         elementValue[key] = value;
+                        /* Backwards compatibility for copying to appliances < 16.3 */
+                        if (key == 'endpointHostname') {
+                            elementValue['endpointAddress'] = value;
+                        }
                     }else{
                         elementValue += (el.value.length ? "\n" : "") + (key ? key + "=" : '') + value;
                     }
