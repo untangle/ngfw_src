@@ -157,6 +157,11 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
+         * Check for missing RADIUS rules NGFW-13560
+         */
+        checkForRadiusRules();
+
+        /**
          * If the settings file date is newer than the system files, re-sync them
          */
         if ( ! UvmContextFactory.context().isDevel() ) {
@@ -893,6 +898,100 @@ public class NetworkManagerImpl implements NetworkManager
         deviceSettings.removeIf(predicateTest);
 
         netSettings.setDevices(deviceSettings);
+    }
+
+    /**
+     * Check to make sure the RADIUS rules exist. To be absolutely sure we
+     * only add them when missing, I created this function which does not
+     * use the settings version. It looks for the rules by name+read_only
+     * flag to make sure they are the protected ones we create. If they
+     * do not exist, we create them and save the updated settings.
+     */
+    private void checkForRadiusRules()
+    {
+        int addLocation = 0;
+        int lanLocation = 0;
+        int wanLocation = 0;
+
+        List<FilterRule> accessRules = this.networkSettings.getAccessRules();
+
+        for( FilterRule rule : accessRules ) {
+            int pos = 1;
+            // look for the rule where we want to insert the RADIUS rules
+            if (rule.getReadOnly() && ("Allow HTTPS on non-WANs".equals(rule.getDescription()))) {
+                addLocation = pos;
+            }
+            // see if the LAN rule already exists
+            if (rule.getReadOnly() && ("Allow RADIUS on non-WANs".equals(rule.getDescription()))) {
+                lanLocation = pos;
+            }
+            // see if the WAN rule already exists
+            if (rule.getReadOnly() && ("Allow RADIUS on WANs".equals(rule.getDescription()))) {
+                wanLocation = pos;
+            }
+            pos++;
+        }
+
+        // if we didn't find the expected add location just return
+        if (addLocation == 0) return;
+
+        // if both of the rules we need to create already exist just bail
+        if ((lanLocation != 0) && (wanLocation != 0)) return;
+
+        // if the LAN rule doesn't exist add it
+        if (lanLocation == 0) {
+            // create and insert the LAN rule
+            FilterRule filterRuleRadiusNonWan = new FilterRule();
+            filterRuleRadiusNonWan.setReadOnly( true );
+            filterRuleRadiusNonWan.setEnabled( true );
+            filterRuleRadiusNonWan.setIpv6Enabled( true );
+            filterRuleRadiusNonWan.setDescription( "Allow RADIUS on non-WANs" );
+            filterRuleRadiusNonWan.setBlocked( false );
+            List<FilterRuleCondition> ruleRadiusNonWanConditions = new LinkedList<>();
+            FilterRuleCondition ruleRadiusNonWanMatcher1 = new FilterRuleCondition();
+            ruleRadiusNonWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+            ruleRadiusNonWanMatcher1.setValue("1812, 1813");
+            FilterRuleCondition ruleRadiusNonWanMatcher2 = new FilterRuleCondition();
+            ruleRadiusNonWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+            ruleRadiusNonWanMatcher2.setValue("UDP");
+            FilterRuleCondition ruleRadiusNonWanMatcher3 = new FilterRuleCondition();
+            ruleRadiusNonWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+            ruleRadiusNonWanMatcher3.setValue("non_wan");
+            ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher1);
+            ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher2);
+            ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher3);
+            filterRuleRadiusNonWan.setConditions( ruleRadiusNonWanConditions );
+            accessRules.add( addLocation, filterRuleRadiusNonWan );
+        }
+
+        // if the WAN rule doesn't exist add it
+        if (wanLocation == 0) {
+            // create and insert the WAN rule
+            FilterRule filterRuleRadiusWan = new FilterRule();
+            filterRuleRadiusWan.setReadOnly( true );
+            filterRuleRadiusWan.setEnabled( false );
+            filterRuleRadiusWan.setIpv6Enabled( false );
+            filterRuleRadiusWan.setDescription( "Allow RADIUS on WANs" );
+            filterRuleRadiusWan.setBlocked( false );
+            List<FilterRuleCondition> ruleRadiusWanConditions = new LinkedList<>();
+            FilterRuleCondition ruleRadiusWanMatcher1 = new FilterRuleCondition();
+            ruleRadiusWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+            ruleRadiusWanMatcher1.setValue("1812, 1813");
+            FilterRuleCondition ruleRadiusWanMatcher2 = new FilterRuleCondition();
+            ruleRadiusWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+            ruleRadiusWanMatcher2.setValue("UDP");
+            FilterRuleCondition ruleRadiusWanMatcher3 = new FilterRuleCondition();
+            ruleRadiusWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+            ruleRadiusWanMatcher3.setValue("wan");
+            ruleRadiusWanConditions.add(ruleRadiusWanMatcher1);
+            ruleRadiusWanConditions.add(ruleRadiusWanMatcher2);
+            ruleRadiusWanConditions.add(ruleRadiusWanMatcher3);
+            filterRuleRadiusWan.setConditions( ruleRadiusWanConditions );
+            accessRules.add( addLocation, filterRuleRadiusWan );
+        }
+
+        // save the updated settings
+        this.setNetworkSettings( this.networkSettings, false );
     }
     
     /**
@@ -2779,58 +2878,6 @@ public class NetworkManagerImpl implements NetworkManager
     {
         try {
             List<FilterRule> accessRules = this.networkSettings.getAccessRules();
-
-            for( FilterRule rule : accessRules ) {
-                int pos = 1;
-                if ("Allow HTTPS on non-WANs".equals(rule.getDescription())) {
-                    FilterRule filterRuleRadiusNonWan = new FilterRule();
-                    filterRuleRadiusNonWan.setReadOnly( true );
-                    filterRuleRadiusNonWan.setEnabled( true );
-                    filterRuleRadiusNonWan.setIpv6Enabled( true );
-                    filterRuleRadiusNonWan.setDescription( "Allow RADIUS on non-WANs" );
-                    filterRuleRadiusNonWan.setBlocked( false );
-                    List<FilterRuleCondition> ruleRadiusNonWanConditions = new LinkedList<>();
-                    FilterRuleCondition ruleRadiusNonWanMatcher1 = new FilterRuleCondition();
-                    ruleRadiusNonWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleRadiusNonWanMatcher1.setValue("1812, 1813");
-                    FilterRuleCondition ruleRadiusNonWanMatcher2 = new FilterRuleCondition();
-                    ruleRadiusNonWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleRadiusNonWanMatcher2.setValue("UDP");
-                    FilterRuleCondition ruleRadiusNonWanMatcher3 = new FilterRuleCondition();
-                    ruleRadiusNonWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleRadiusNonWanMatcher3.setValue("non_wan");
-                    ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher1);
-                    ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher2);
-                    ruleRadiusNonWanConditions.add(ruleRadiusNonWanMatcher3);
-                    filterRuleRadiusNonWan.setConditions( ruleRadiusNonWanConditions );
-                    accessRules.add( pos, filterRuleRadiusNonWan );
-
-                    FilterRule filterRuleRadiusWan = new FilterRule();
-                    filterRuleRadiusWan.setReadOnly( true );
-                    filterRuleRadiusWan.setEnabled( false );
-                    filterRuleRadiusWan.setIpv6Enabled( false );
-                    filterRuleRadiusWan.setDescription( "Allow RADIUS on WANs" );
-                    filterRuleRadiusWan.setBlocked( false );
-                    List<FilterRuleCondition> ruleRadiusWanConditions = new LinkedList<>();
-                    FilterRuleCondition ruleRadiusWanMatcher1 = new FilterRuleCondition();
-                    ruleRadiusWanMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleRadiusWanMatcher1.setValue("1812, 1813");
-                    FilterRuleCondition ruleRadiusWanMatcher2 = new FilterRuleCondition();
-                    ruleRadiusWanMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleRadiusWanMatcher2.setValue("UDP");
-                    FilterRuleCondition ruleRadiusWanMatcher3 = new FilterRuleCondition();
-                    ruleRadiusWanMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleRadiusWanMatcher3.setValue("wan");
-                    ruleRadiusWanConditions.add(ruleRadiusWanMatcher1);
-                    ruleRadiusWanConditions.add(ruleRadiusWanMatcher2);
-                    ruleRadiusWanConditions.add(ruleRadiusWanMatcher3);
-                    filterRuleRadiusWan.setConditions( ruleRadiusWanConditions );
-                    accessRules.add( pos, filterRuleRadiusWan );
-
-                    break;
-                }
-                pos++;
-            }
 
             for( FilterRule rule : accessRules ) {
                 int pos = 1;
