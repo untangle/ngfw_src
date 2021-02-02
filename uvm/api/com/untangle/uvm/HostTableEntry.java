@@ -87,7 +87,7 @@ public class HostTableEntry implements Serializable, JSONString
         this.setCaptivePortalAuthenticated( other.getCaptivePortalAuthenticated() );
         this.setUsernameIpsecVpn( other.getUsernameIpsecVpn() );
         this.setUsernameOpenVpn( other.getUsernameOpenVpn() );
-        this.setusernameRadius( other.getUsernameRadius());
+        this.setUsernameRadius( other.getUsernameRadius());
         this.setQuotaSize( other.getQuotaSize() );
         this.setQuotaRemaining( other.getQuotaRemaining() );
         this.setQuotaIssueTime( other.getQuotaIssueTime() );
@@ -299,7 +299,7 @@ public class HostTableEntry implements Serializable, JSONString
     }
 
     public String getUsernameRadius() { return this.usernameRadius; }
-    public void setusernameRadius( String newValue)
+    public void setUsernameRadius( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
 
