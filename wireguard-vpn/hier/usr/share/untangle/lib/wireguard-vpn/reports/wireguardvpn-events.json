@@ -20,6 +20,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "WireGuard VPN Events",
+    "title": "WireGuard VPN Monitor Events",
     "type": "TIME_GRAPH"
 }
