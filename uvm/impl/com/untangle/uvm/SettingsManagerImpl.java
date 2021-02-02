@@ -32,6 +32,8 @@ import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.SettingsManager;
@@ -369,10 +371,20 @@ public class SettingsManagerImpl implements SettingsManager
             logger.debug("Loading Settings: \n" + "-----------------------------\n" + jsonString + "-----------------------------\n");
 
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+
+            //If the clz is passed as a JSONObject, this means the caller wants to handle the JSONObject parsing themselves
+            //So just try to convert the jsonString to a JSONObject and return as an Object type
+            if(clz == JSONObject.class) {                
+                return (T) new JSONObject(jsonString.toString());
+            }
+
             return (T) serializer.fromJSON(jsonString.toString());
         } catch (IOException e) {
             logger.warn("IOException: ",e);
             throw new SettingsException("Unable to the settings: '" + is + "'", e);
+        } catch (JSONException e) {
+            logger.warn("JSONException: ",e);
+            throw new SettingsException("Unable to parse settings: '" + is + "'", e);
         } catch (UnmarshallException e) {
             logger.warn("UnmarshallException: ",e);
             for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
