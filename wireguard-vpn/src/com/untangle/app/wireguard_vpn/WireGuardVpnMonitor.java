@@ -36,40 +36,29 @@ class WireGuardVpnMonitor implements Runnable
      */
     class TunnelWatcher
     {
-        String deviceName;
         String publicKey;
         long lastUpdateTime;
         long lastRxBytes;
         long lastTxBytes;
-        long devRxBytes;
-        long devTxBytes;
         long lastPingTime;
         boolean virtualStateFlag;
 
         /**
          * Constructor
          * 
-         * @param deviceName
-         *        The network interface of the tunnel
          * @param publicKey
          *        The public key of the tunnel
          */
-        public TunnelWatcher(String deviceName, String publicKey)
+        public TunnelWatcher(String publicKey)
         {
-            this.deviceName = deviceName;
             this.publicKey = publicKey;
             lastUpdateTime = 0;
             lastRxBytes = 0;
             lastTxBytes = 0;
-            devRxBytes = 0;
-            devTxBytes = 0;
             lastPingTime = 0;
             virtualStateFlag = false;
         }
     }
-
-    /* Pattern for parsing interface details from /proc/net/dev */
-    private static final Pattern NET_DEV_PATTERN = Pattern.compile("^\\s*([a-z0-9\\.]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
 
     private static final long THREAD_JOIN_TIME_MSEC = 1000; // milliseconds delay to allow thread join when shutting down
     private static final long TUNNEL_ACTIVITY_TIMEOUT = 60; // seconds to wait before considering a tunnel down
@@ -176,39 +165,6 @@ class WireGuardVpnMonitor implements Runnable
         JSONArray statusList;
 
         /*
-         * Start by getting the raw device stats for all wireguard interfaces.
-         * 
-         * NOTE: These values aren't currently used. The logic to retrieve them
-         * was added while looking at ways to trigger connection UP and DOWN
-         * alerts, but was ultimately not used. I'm leaving this in place since
-         * it is very low impact and may prove useful later.
-         */
-        try {
-            reader = new BufferedReader(new FileReader("/proc/net/dev"));
-            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                // use the matcher to extract device(1), rx(2), tx(3)
-                Matcher matcher = NET_DEV_PATTERN.matcher(line);
-                if (!matcher.find()) continue;
-
-                // find the watcher for the device and update the current interface byte counts
-                TunnelWatcher watcher = watchTable.get(matcher.group(1));
-                if (watcher == null) continue;
-                watcher.devRxBytes = Long.parseLong(matcher.group(2));
-                watcher.devTxBytes = Long.parseLong(matcher.group(3));
-            }
-
-        } catch (Exception exn) {
-            logger.warn("Exception parsing /proc/net/dev:", exn);
-        }
-
-        if (reader != null) {
-            try {
-                reader.close();
-            } catch (Exception exn) {
-            }
-        }
-
-        /*
          * Now get the status details for all wireguard tunnels
          */
         String tunnelStatus = app.getTunnelStatus();
@@ -240,7 +196,6 @@ class WireGuardVpnMonitor implements Runnable
         // walk through the list of tunnel status records
         for (int x = 0; x < statusList.length(); x++) {
             JSONObject status;
-            String deviceName;
             String peerkey;
 
             try {
@@ -248,14 +203,6 @@ class WireGuardVpnMonitor implements Runnable
                 status = statusList.getJSONObject(x);
             } catch (Exception exn) {
                 logger.warn("Error creating status array:", exn);
-                continue;
-            }
-
-            try {
-                // get the interface from the status record
-                deviceName = status.getString("interface");
-            } catch (Exception exn) {
-                logger.warn("Error getting interface:", exn);
                 continue;
             }
 
@@ -274,14 +221,14 @@ class WireGuardVpnMonitor implements Runnable
             }
 
             // get the TunnelWatcher entry for the peer key
-            TunnelWatcher watcher = watchTable.get(deviceName);
+            TunnelWatcher watcher = watchTable.get(peerkey);
 
             if (watcher == null) {
-                logger.debug("Creating new watch table entry for " + deviceName);
-                watcher = new TunnelWatcher(deviceName, peerkey);
-                watchTable.put(deviceName, watcher);
+                logger.debug("Creating new watch table entry for " + peerkey);
+                watcher = new TunnelWatcher(peerkey);
+                watchTable.put(peerkey, watcher);
             } else {
-                logger.debug("Found existing watch table entry for " + deviceName);
+                logger.debug("Found existing watch table entry for " + peerkey);
             }
 
             generateTunnelStatistics(tunnel, watcher, status);
