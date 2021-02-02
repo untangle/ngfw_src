@@ -156,15 +156,6 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                                         value: Rpc.directData('rpc.networkManager.getPublicUrl').split(":")[0],
                                     }
                                 },{
-                                  /* Hidden item for 16.3 backwards compatibility */
-                                  itemId: 'endpointAddress',
-                                  xtype: 'displayfield',
-                                  cls: 'x-selectable',
-                                  bind: {
-                                      value: Rpc.directData('rpc.networkManager.getPublicUrl').split(":")[0],
-                                      hidden: true,
-                                  }  
-                                },{
                                     fieldLabel: 'Local Endpoint Port'.t(),
                                     itemId: 'endpointPort',
                                     xtype: 'displayfield',
