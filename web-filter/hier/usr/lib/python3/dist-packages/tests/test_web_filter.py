@@ -142,12 +142,12 @@ class WebFilterTests(WebFilterBaseTests):
         self._app.setSettings(settings)
 
         serverHost = global_functions.LIST_SYSLOG_SERVER
-
+        
         #set up netcat server/client connection and check that it works first
         remote_control.run_command("sudo pkill nc",host=serverHost) # kill previous running nc
         remote_control.run_command("sudo rm -f /tmp/nc_quic_false.txt",host=serverHost)
-        remote_control.run_command("sudo nc -l -s %s -u -w 2 -p 443 >/tmp/nc_quic_false.txt" % serverHost,host=serverHost,stdout=False,nowait=True)
-        remote_control.run_command("echo TEST | nc -u -w 1 %s 443 | sleep 2" % serverHost)
+        remote_control.run_command("sudo nc -l -u -w 2 -p 443 >/tmp/nc_quic_false.txt",host=serverHost,stdout=False,nowait=True)
+        remote_control.run_command("echo TEST | nc -q 1 -u -w 1 %s 443 | sleep 2" % serverHost)
         first_result =remote_control.run_command("grep TEST /tmp/nc_quic_false.txt",host=serverHost)
         assert(first_result == 0)
 
@@ -157,8 +157,8 @@ class WebFilterTests(WebFilterBaseTests):
 
         #retry netcat connection, verify it fails correctly
         remote_control.run_command("sudo rm -f /tmp/nc_quic_true.txt",host=serverHost)
-        remote_control.run_command("sudo nc -l -s %s -u -w 2 -p 443 >/tmp/nc_quic_true.txt" % serverHost,host=serverHost,stdout=False,nowait=True)
-        remote_control.run_command("echo TEST | sudo nc -u -w 1 %s 443 | sleep 2" % serverHost)
+        remote_control.run_command("sudo nc -l -u -w 2 -p 443 >/tmp/nc_quic_true.txt", host=serverHost,stdout=False,nowait=True)
+        remote_control.run_command("echo TEST | sudo nc -q 1 -u -w 1 %s 443 | sleep 2" % serverHost)
         second_result =remote_control.run_command("grep TEST /tmp/nc_quic_true.txt",host=serverHost)
         assert(second_result != 0)
         remote_control.run_command("sudo pkill nc",host=serverHost) # kill running nc
