@@ -720,6 +720,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             if(parse.has("restricted")) {
                 boolean restrict = parse.getBoolean("restricted");
                 settings.setIsRestricted(restrict);
+            } else {
+                settings.setIsRestricted(false);
             }
         } catch (JSONException e) {
             logger.error("Unable to read license file: ", e );
