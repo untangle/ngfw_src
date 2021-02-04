@@ -196,7 +196,7 @@ public class AdminManagerImpl implements AdminManager
         if (blessedFile.exists() && blessedFile.lastModified() > zshHistoryFile.lastModified())
             return "blessed";
 
-        ExecManagerResult result = UvmContextImpl.context().execManager().exec("cat /root/.zsh_history | /usr/bin/wc -l");
+        ExecManagerResult result = UvmContextImpl.context().execManager().exec("cat /root/.zsh_history").split("\r\n|\r|\n").length;
         int exitCode = result.getResult();
         String output = result.getOutput();
 
