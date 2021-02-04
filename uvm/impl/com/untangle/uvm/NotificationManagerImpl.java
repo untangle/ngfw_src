@@ -864,14 +864,14 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * If already in the ARP table, continue
              */
-            result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testRoutesToReachableAddresses1");
+            result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testRoutesToReachableAddresses1 " + route.getNextHop());
             if (result == 0) continue;
 
             /**
              * If not, force arp resolution with ping Then recheck ARP table
              */
             result = this.execManager.execResult("ping -c1 -W1 " + route.getNextHop());
-            result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testRoutesToReachableAddresses2");
+            result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testRoutesToReachableAddresses2 " + route.getNextHop());
             if (result == 0) continue;
 
             String notificationText = "";
