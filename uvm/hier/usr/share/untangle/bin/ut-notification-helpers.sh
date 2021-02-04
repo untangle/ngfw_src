@@ -45,11 +45,11 @@ testQueueFullMessages()
 
 testRoutesToReachableAddresses1()
 {
-   arp -n " + route.getNextHop() + " | grep -q ether 
+   arp -n $2 | grep -q ether 
 }
 testRoutesToReachableAddresses2()
 {
-    arp -n " + route.getNextHop() + " | grep -q ether
+    arp -n $2 | grep -q ether
 }
 
 $1 "$@"
