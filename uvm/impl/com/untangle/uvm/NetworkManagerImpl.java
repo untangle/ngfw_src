@@ -1078,8 +1078,7 @@ public class NetworkManagerImpl implements NetworkManager
              * Copy the authorized keys to root's ssh
              */
             if ( UvmContextFactory.context().isNetBoot() ) {
-                UvmContextFactory.context().execManager().exec( "if [ ! -d /root/.ssh ] ; then mkdir /root/.ssh ; chmod 700 /root/.ssh ; fi" );
-                UvmContextFactory.context().execManager().exec( "if [ ! -f /root/.ssh/authorized_keys2 ] ; then cp -f /usr/share/untangle-support-keyring/authorized_keys2 /root/.ssh/ ; chmod 700 /root/.ssh/authorized_keys2 ; fi " );
+                UvmContextFactory.context().execManager().exec(System.getProperty("uvm.bin.dir") + "/ut-networking-helpers.sh copyAuthorizedKeys");
             }
         }
         catch (Exception e) {
