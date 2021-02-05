@@ -673,6 +673,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<License> licenses = new LinkedList<>();;
+        boolean restricted = false;
         boolean changed = false;
 
         logger.info("REFRESH: Downloading new Licenses...");
@@ -719,9 +720,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             // Get the restricted out, only if it exists in the json
             if(parse.has("restricted")) {
                 boolean restrict = parse.getBoolean("restricted");
-                settings.setIsRestricted(restrict);
-            } else {
-                settings.setIsRestricted(false);
+                restricted = restrict;
             }
         } catch (JSONException e) {
             logger.error("Unable to read license file: ", e );
@@ -738,6 +737,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             if ( ! isObsoleteApp( lic.getName() ) ) {
                 changed |= _insertOrUpdate(lic);
             }
+        }
+
+        //If license restriction changes, we want to save, this allows toggling between restricted/unrestricted based on license server result
+        if (settings.getIsRestricted() != restricted) {
+            settings.setIsRestricted(restricted);
+            changed = true;
         }
 
         if ( changed ) 
