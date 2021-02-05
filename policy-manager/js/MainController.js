@@ -145,6 +145,9 @@ Ext.define('Ung.apps.policymanager.MainController', {
             instance = Ext.Array.findBy(policy.instances.list, function(instance) { return instance.appName === app.name; });
             parentPolicy = null;
 
+            // If there is no instance of the app and it is not in the installable list, return
+            if(!Ext.Array.contains(policy.installable.list, app.name) && instance === null) { return; }
+
             if (instance) {
                 if (instance.policyId && policy.policyId !== instance.policyId) {
                     parentPolicy = me.lookup('tree').getStore().findNode('policyId', instance.policyId).get('name');
@@ -159,11 +162,6 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 });
             }
             appsList.push(app);
-        });
-        Ext.Array.each(policy.installable.list, function (app) {
-            if (app.type === 'FILTER' && !Ext.Array.findBy(appsList, function(instance) { return instance.name === app.name; })) {
-                appsList.push(app);
-            }
         });
 
         this.getViewModel().set('appsData', appsList);
