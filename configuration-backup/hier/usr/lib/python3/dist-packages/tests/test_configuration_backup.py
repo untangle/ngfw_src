@@ -8,6 +8,7 @@ import pytest
 import requests
 import re
 import datetime
+import json
 
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
@@ -55,12 +56,6 @@ class ConfigurationBackupTests(NGFWTestCase):
 
     def test_140_compare_cloud_backup(self):
         """Compare a cloud backup with a local backup"""
-        timeformat = "%d-%m-%Y_%H-%M-%S" # this is timestamp of backups
-        regex = re.compile("^(\d{2}\-\d{2}\-\d{4}_\d{2}\-\d{2}\-\d{2})")  # extract date and time string from cloud filename
-        
-        def gettimestamp(backup_filename):
-            m = regex.search(backup_filename)
-            return datetime.datetime.strptime(m.groups()[0], timeformat)
         
         boxUID = uvmContext.getServerUID()
         #get authentication url and api key
@@ -89,22 +84,22 @@ class ConfigurationBackupTests(NGFWTestCase):
             }
         requests.request("POST", authenticationUrl, data=authPayload, headers=authHeaders)
         
-        #get list of backups for the UID above
+        #get list of backups for the UID above from boxbackup
         bbUrl = boxBackupUrl
         bbQueryString = {"action":"list","uid":boxUID,"token":"123"}
         bbHeaders = {'Cache-Control': 'no-cache'}
         bbResponse = requests.request("GET", bbUrl, headers=bbHeaders, params=bbQueryString)
 
-        #convert response text to literal list
-        backupList = ast.literal_eval(bbResponse.text)
+        #convert response JSON to literal list
+        backupList = json.loads(bbResponse.text)
         # grab the latest cloud backup from the list
-        backupList = sorted(backupList, key=lambda x: gettimestamp(x))
-        latestBackup = backupList[-1]
-        # print("latest backup from cloud: %s" % latestBackup)
+        backupListSorted = sorted(backupList, key=lambda x: x["Timestamp"])
+        latestBackup = backupListSorted[-1]
+        #print("latest backup from cloud: %s" % latestBackup)
 
         #download the latest backup and save it to /tmp
         dlUrl = boxBackupUrl
-        dlQueryString = {"action":"get","uid":boxUID,"token":"123","filename":latestBackup}
+        dlQueryString = {"action":"get","uid":boxUID,"token":"123","filename":latestBackup["Name"]}
         dlHeaders = {'Cache-Control': 'no-cache'}
         dlResponse = requests.request("GET", dlUrl, headers=dlHeaders, params=dlQueryString)
         with open("/tmp/cloudBackup.backup", "wb") as f:
