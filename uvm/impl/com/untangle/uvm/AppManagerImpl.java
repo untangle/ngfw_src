@@ -757,6 +757,8 @@ public class AppManagerImpl implements AppManager
         Map<String, String> installableAppsMap = new HashMap<>();
         /* This stores a list of all licenses */
         Map<String, License> licenseMap = new HashMap<>();
+        /* This stores a list of apps according to the license from license server */
+        Map<String, License> lmLicenses = new HashMap<>();
 
         /**
          * Build the license map
@@ -766,6 +768,13 @@ public class AppManagerImpl implements AppManager
             String n = app.getAppProperties().getName();
             //exactMatch = false so we accept any license that starts with n
             licenseMap.put(n, lm.getLicense(n, false));
+        }
+
+        /**
+         * LicenseMap from licensemanager
+         */
+        for(License lic : lm.getLicenses()) {
+            lmLicenses.put(lic.getCurrentName(), lic);
         }
 
         /**
@@ -787,7 +796,7 @@ public class AppManagerImpl implements AppManager
             if(lm.isRestricted())
             {
                 // check if appProps name matches one in the license
-                if (licenseMap.containsKey(appProps.getName())) {
+                if (lmLicenses.containsKey(appProps.getName())) {
                     installableAppsMap.put(appProps.getDisplayName(), appProps.getName());
                 }
             } else {
