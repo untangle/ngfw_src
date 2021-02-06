@@ -8,7 +8,6 @@ import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.LocalDirectoryUser;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.Pulse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -50,17 +49,12 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String FREERADIUS_SAMBA_DIRECTORY = "/etc/samba";
     private final static String FREERADIUS_SAMBA_CONFIG = "/etc/samba/smb.conf";
     private final static String FREERADIUS_KRB5_CONFIG = "/etc/krb5.conf";
-    private final static String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-available/mschap";
-    private final static String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-available/ntlm_auth";
-    private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-available/eap";
-    private final static String FREERADIUS_RADWHO_CMD = System.getProperty("uvm.home") + "/bin/ut-radwho.sh";
-
-    private final static int RADIUS_USER_SCAN_INTERVAL = 1000 * 30; // 30 seconds
+    private final static String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/mschap";
+    private final static String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-enabled/ntlm_auth";
 
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
 
-    private final Pulse radiusPulse = new Pulse("radius-username-scanner", new RadiusUsernameScanner(), RADIUS_USER_SCAN_INTERVAL);
     private final Logger logger = Logger.getLogger(getClass());
 
     private LinkedList<LocalDirectoryUser> currentList;
@@ -74,7 +68,6 @@ public class LocalDirectoryImpl implements LocalDirectory
     public LocalDirectoryImpl()
     {
         loadUsersList();
-        radiusPulse.start();
 
         // install a callback for network settings changes
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, networkSaveHookCallback);
@@ -102,48 +95,6 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         return UvmContextFactory.context().execManager().execOutput(command);
     }
-
-    /**
-     *  Scans the currently logged in RADIUS users and updates the username
-     *  in the host table for each active user found.
-     */
-     private void scanRadiusUsers()
-     {
-         // if the server is not enabled we don't do anytyhing
-         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
-         if (!systemSettings.getRadiusServerEnabled()) return;
-
-         // if empty result there is nothing we can do
-         String radwho = UvmContextFactory.context().execManager().execOutput(FREERADIUS_RADWHO_CMD);
-         if (radwho == null) return;
-
-         // walk through the list of users and update the host table for each
-         // result will be a simple list in "username 192.168.1.1" format
-         String[] users = radwho.split("\n");
-         for (int i = 0; i < users.length; i++) {
-             String[] record = users[i].split(" ");
-
-             // ignore records where we don't get username and address
-             if (record.length != 2) continue;
-
-             String username = record[0];
-             InetAddress address = null;
-
-             try { address = InetAddress.getByName(record[1]); } catch (Exception exn) { }
-             if (address == null) continue;
-
-             // find the host table entry for the IP address and include the
-             // create flag to add if it does not already exist
-             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address,true);
-             if (entry == null) continue;
-
-             // skip if the radius username is already set
-             if ((entry.getUsernameRadius() != null) && (entry.getUsernameRadius().equals(username))) continue;
-
-             // set the radius username in the host table entry
-             entry.setUsernameRadius(username);
-         }
-     }
 
     /**
      * Adds a computer account to the configured AD domain controller using the
@@ -237,6 +188,75 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         return false;
+    }
+
+    /**
+     * This function is called from the RADIUS server for successful user
+     * authentication. We handle MAC addresses in the following formats:
+     * AA:BB:CC:DD:EE:FF, AA-BB-CC-DD-EE-FF, and AABBCCDDEEFF
+     * because I've seen all three across different access points.
+     *
+     * @param userName - The name of the user
+     * @param macAddress - The mac address of the device
+     */
+    public void notifyRadiusUserLogin(String userName, String macAddress)
+    {
+        String[] checker;
+
+        logger.debug("RADIUS Login Notification - USER:" + userName + " MAC:" + macAddress);
+
+        // first try AA:BB:CC:DD:EE:FF
+        checker = macAddress.split(":");
+        if (checker.length == 6) {
+            handleRadiusUserLogin(userName, macAddress);
+            return;
+        }
+
+        // next try AA-BB-CC-DD-EE-FF
+        checker = macAddress.split("-");
+        if (checker.length == 6) {
+            handleRadiusUserLogin(userName, macAddress.replace('-', ':'));
+            return;
+        }
+
+        // format the first 12 bytes as the MAC address
+        if (macAddress.length() >= 12) {
+            StringBuilder builder = new StringBuilder();
+            byte[] list = macAddress.getBytes();
+            builder.append((char)list[0]);
+            builder.append((char)list[1]);
+            builder.append(':');
+            builder.append((char)list[2]);
+            builder.append((char)list[3]);
+            builder.append(':');
+            builder.append((char)list[4]);
+            builder.append((char)list[5]);
+            builder.append(':');
+            builder.append((char)list[6]);
+            builder.append((char)list[7]);
+            builder.append(':');
+            builder.append((char)list[8]);
+            builder.append((char)list[9]);
+            builder.append(':');
+            builder.append((char)list[10]);
+            builder.append((char)list[11]);
+            handleRadiusUserLogin(userName, builder.toString());
+        }
+
+        logger.warn("RADIUS Invalid MAC Address: " + macAddress);
+    }
+
+    /**
+     * Adds or gets the existing device entry from the system table and
+     * adds the RADIUS username.
+     *
+     * @param userName - The name of the user
+     * @param macAddress - The mac address of the device
+     */
+    private void handleRadiusUserLogin(String userName, String macAddress)
+    {
+        DeviceTableEntry device = UvmContextFactory.context().deviceTable().addDevice(macAddress.toLowerCase());
+        device.setUsername(userName);
     }
 
     /**
@@ -698,8 +718,8 @@ public class LocalDirectoryImpl implements LocalDirectory
                 fw.write("}\n");
                 fw.write("checkrad = ${sbindir}/checkrad\n");
                 fw.write("security {\n");
-                fw.write("\tuser = freerad\n");
-                fw.write("\tgroup = freerad\n");
+                fw.write("\tuser = root\n");
+                fw.write("\tgroup = root\n");
                 fw.write("\tallow_core_dumps = no\n");
                 fw.write("\tmax_attributes = 200\n");
                 fw.write("\treject_delay = 1\n");
@@ -867,13 +887,6 @@ public class LocalDirectoryImpl implements LocalDirectory
             }
         }
 
-        // Update the eap config file
-        try {
-            updateFreeradiusEapConfig(FREERADIUS_EAP_CONFIG, "default_eap_type", "peap");
-        } catch (Exception exn) {
-            logger.error("Exception modifying EAP configuration file", exn);
-        }
-
         /*
          * If server is enabled restart the freeradius service
          */
@@ -1011,70 +1024,6 @@ public class LocalDirectoryImpl implements LocalDirectory
     }
 
     /**
-     * Modify the freeradius eap configuration file in place
-     *
-     * Note that this function will not currently allow modifying config items
-     * on lines that are commented. We simply look for the name and replace
-     * everything after it with the new value. It also won't work if you're
-     * dealing with partial matches or config items with short names that might
-     * occur in other configuration items. It also stops looking once it
-     * replaces the first occurrence so we don't make unwanted changes in the
-     * nested configuration sections within eap { inside the eap config file.
-     *
-     * @param fileName
-     *        The file to modify
-     * @param configItem
-     *        The configuration item to modify
-     * @param configValue
-     *        The new value for the configuration item
-     * @throws Exception
-     */
-    public void updateFreeradiusEapConfig(String fileName, String configItem, String configValue) throws Exception
-    {
-        int counter = 0;
-
-        java.util.Scanner scanner = new Scanner(new File(fileName));
-        List<String> config = new ArrayList<String>();
-        while (scanner.hasNextLine()) {
-            config.add(scanner.nextLine());
-        }
-        scanner.close();
-
-        FileWriter fw = new FileWriter(fileName, false);
-
-        for (String line : config) {
-            // if we already processed a match write without modification
-            if (counter > 0) {
-                fw.write(line + "\n");
-                continue;
-            }
-
-            // lines with comments are written without modification
-            if (line.contains("#")) {
-                fw.write(line + "\n");
-                continue;
-            }
-
-            // look for the configItem in the line
-            int cfgloc = line.indexOf(configItem);
-
-            // lines without the configItem are written without modification
-            if (cfgloc < 0) {
-                fw.write(line + "\n");
-                continue;
-            }
-
-            // write the configItem file entries using our configured crt file
-            fw.write(line.substring(0, cfgloc));
-            fw.write(configItem + " = " + configValue + "\n");
-            counter++;
-        }
-
-        fw.flush();
-        fw.close();
-    }
-
-    /**
      * This hook is called when network settings are changed This is necessary
      * becaus saving network setttings writes /etc/ppp/chap-secrets and we need
      * to append local directory information onto that file
@@ -1107,20 +1056,6 @@ public class LocalDirectoryImpl implements LocalDirectory
         public void callback(Object... args)
         {
             updateChapSecrets(currentList);
-        }
-    }
-
-    /**
-     * Pulse class for scanning active RADIUS users
-     */
-    private class RadiusUsernameScanner implements Runnable
-    {
-        /**
-         * Thread run function
-         */
-        public void run()
-        {
-            scanRadiusUsers();
         }
     }
 }

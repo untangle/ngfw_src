@@ -87,4 +87,8 @@ public interface LocalDirectory
      */
     public boolean getRadiusProxyComputerAccountExists();
     
+    /**
+     * Called from the RADIUS server on successful user authentication
+     */
+    public void notifyRadiusUserLogin(String userName, String macAddress);
 }
