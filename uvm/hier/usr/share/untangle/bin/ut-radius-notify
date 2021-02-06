@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+# This script is called by the untangle module of the freeradius
+# server after successful user authentication. It passes the
+# username and device MAC address to the radius login notify
+# function so they can be added to the device table.
+#
+# ARG1 = username
+# ARG2 = MAC address
+
+import sys
+from uvm import Uvm
+
+# first make sure we have the right number of arguments
+#if (len(sys.argv) < 2):
+#    raise Exception("Invalid number of arguments")
+
+# next we get the uvm context
+uvmContext = Uvm().getUvmContext()
+if (uvmContext == None):
+    raise Exception("Could not locate the Untangle virtual machine")
+
+# call the login notification function
+uvmContext.localDirectory().notifyRadiusUserLogin(sys.argv[1],sys.argv[2])
