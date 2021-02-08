@@ -49,7 +49,6 @@ public class HostTableEntry implements Serializable, JSONString
     private String usernameOpenVpn = null;
     private String usernameDirectoryConnector = null;
     private String usernameDevice = null;
-    private String usernameRadius = null;
     
     private long quotaSize = 0; /* the quota size - 0 means no quota assigned */
     private long quotaRemaining = 0; /* the quota remaining */
@@ -87,7 +86,6 @@ public class HostTableEntry implements Serializable, JSONString
         this.setCaptivePortalAuthenticated( other.getCaptivePortalAuthenticated() );
         this.setUsernameIpsecVpn( other.getUsernameIpsecVpn() );
         this.setUsernameOpenVpn( other.getUsernameOpenVpn() );
-        this.setusernameRadius( other.getUsernameRadius());
         this.setQuotaSize( other.getQuotaSize() );
         this.setQuotaRemaining( other.getQuotaRemaining() );
         this.setQuotaIssueTime( other.getQuotaIssueTime() );
@@ -298,18 +296,6 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
-    public String getUsernameRadius() { return this.usernameRadius; }
-    public void setusernameRadius( String newValue)
-    {
-        newValue = (newValue == null ? null : newValue.toLowerCase());
-
-        if ( Objects.equals( newValue, this.usernameRadius ) )
-            return;
-        updateEvent( "usernameRadius", this.usernameRadius, newValue);
-        this.usernameRadius = newValue;
-        updateAccessTime();
-    }
-    
     public boolean getCaptivePortalAuthenticated() { return this.captivePortalAuthenticated; }
     public void setCaptivePortalAuthenticated( boolean newValue )
     {
@@ -561,8 +547,6 @@ public class HostTableEntry implements Serializable, JSONString
             return getUsernameDirectoryConnector();
         if (getUsernameDevice() != null)
             return getUsernameDevice();
-        if (getUsernameRadius() != null)
-            return (getUsernameRadius());
         return null;
     }
 
@@ -581,8 +565,6 @@ public class HostTableEntry implements Serializable, JSONString
             return "Directory Connector";
         if (getUsernameDevice() != null)
             return "Device";
-        if (getUsernameRadius() != null)
-            return "Radius";
         return null;
     }
 
@@ -642,5 +624,4 @@ public class HostTableEntry implements Serializable, JSONString
         HostTableEvent event = new HostTableEvent( this.address, key, newValue, oldValue );
         UvmContextFactory.context().logEvent(event);
     }
-    
 }

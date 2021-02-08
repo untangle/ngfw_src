@@ -986,8 +986,6 @@ public class HostTableImpl implements HostTable
                 }
                 logger.info("HostTableReverseHostnameLookup: Running... ");
 
-                Map<String, String>radusers = UvmContextFactory.context().localDirectory().getRadiusUsers();
-                
                 try {
                     LinkedList<HostTableEntry> entries = new LinkedList<>(hostTable.values());
                     for (HostTableEntry entry : entries) {
@@ -995,7 +993,6 @@ public class HostTableImpl implements HostTable
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
 
-                        entry.setusernameRadius(radusers.get(address.getHostAddress()));
                         syncWithDeviceEntry(entry, address);
                         
                         if (address == null) {
