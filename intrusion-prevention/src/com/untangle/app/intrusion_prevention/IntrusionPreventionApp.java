@@ -747,6 +747,7 @@ public class IntrusionPreventionApp extends AppBase
             status.put("lastUpdateCheck", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
 
             try {
+                // TDOD: Security
                 result = UvmContextFactory.context().execManager().execOutput(GET_SURICATA_ERRORS);
             } catch ( Exception e ) {
                 logger.warn( "Unable to get last update.", e );
@@ -1068,7 +1069,7 @@ public class IntrusionPreventionApp extends AppBase
                     /*
                      * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
                      */
-                    String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
+                    String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName );
                     UvmContextFactory.context().execManager().execResult(verifyCommand);
 
                     File fp = new File( tempPatchName );

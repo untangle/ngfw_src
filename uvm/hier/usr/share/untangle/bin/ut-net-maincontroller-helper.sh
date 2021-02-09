@@ -5,17 +5,17 @@
 
 getInterfaceStatus1()
 {
-    ip -s -d link show dev ${2}| sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | sed -e "s/brd .*$//g" | sed -e "s/promiscuity .*$/00:00:00:00:00:00/g" | tr "\\n" " " | tr -s " "
+    ip -s -d link show dev $2| sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | sed -e "s/brd .*$//g" | sed -e "s/promiscuity .*$/00:00:00:00:00:00/g" | tr "\\n" " " | tr -s " "
 }
 
 getInterfaceStatus2()
 {
-    ip addr show dev ${2} | grep inet | grep global | tr "\\n" " " | tr -s " "
+    ip addr show dev $2 | grep inet | grep global | tr "\\n" " " | tr -s " "
 }
 
 getInterfaceArp1()
 {
-    ip neigh show dev ${2} | grep lladdr | tr -s " "
+    ip neigh show dev $2 | grep lladdr | tr -s " "
 }
 
 getDynamicRoutingStatus1()
