@@ -13,19 +13,22 @@ import subprocess
 import syslog
 import platform
 
+
+PREFIX = "@PREFIX@"
+
 # read the configuration
-exec(open("@PREFIX@/usr/share/untangle/conf/untangle-vm.conf"));
+exec(open(PREFIX + "/usr/share/untangle/conf/untangle-vm.conf"));
 
 #p = subprocess.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=subprocess.PIPE)
 #os.dup2(p.stdin.fileno(), sys.stdout.fileno())
 #os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
-if "@PREFIX@x" == "x":
-    productionEnv = True;
-    developmentEnv = False;
-else:
+if PREFIX:
     developmentEnv = True;
     productionEnv = False;
+else:
+    productionEnv = True;
+    developmentEnv = False;
 
 global exit_flag;
 global uvm_pid;
@@ -114,7 +117,7 @@ def flushConntrack():
 #
 def cleanupTmpFiles():
     # debug("flushConntrack()")
-    os.system('find @PREFIX@/var/lib/uvm/work -type f -size 0 -exec rm -f {} \; 2>&1');
+    os.system('find ' + PREFIX + '/var/lib/uvm/work -type f -size 0 -exec rm -f {} \; 2>&1');
 
 #
 # If the UVM is running this inserts the necessary iptables to capture traffic
@@ -122,7 +125,7 @@ def cleanupTmpFiles():
 #
 def resetIptables():
     # debug("Resetting iptables rules..."
-    os.system('@PREFIX@/usr/share/untangle/bin/ut-uvm-update-rules.sh'); 
+    os.system(PREFIX + '/usr/share/untangle/bin/ut-uvm-update-rules.sh'); 
 
 #
 # Make special changes for the dev environment
@@ -132,7 +135,7 @@ def devEnvSetup():
     os.system('if [ ! -L /usr/share/untangle/bin ] ; then mv /usr/share/untangle/bin /usr/share/untangle/bin.backup ; fi');
     # remove old symlink if still there, and add new symlink
     os.system('rm -rf /usr/share/untangle/bin');
-    os.system('ln -s @PREFIX@/usr/share/untangle/bin /usr/share/untangle/bin');
+    os.system('ln -s ' + PREFIX + '/usr/share/untangle/bin /usr/share/untangle/bin');
 
 #
 # Undo the dev environment changes made earlier
@@ -228,8 +231,8 @@ def prepareSystem():
     
     # build classpath
     os.environ['CLASSPATH'] = ""
-    os.environ['CLASSPATH'] += "@PREFIX@/usr/share/untangle/conf:@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/:"
-    for jarfile in glob.glob( os.path.join('@PREFIX@/usr/share/java/uvm', '*.jar') ):
+    os.environ['CLASSPATH'] += PREFIX + "/usr/share/untangle/conf:" + PREFIX + "/usr/share/untangle/lib/untangle-libuvm-bootstrap/:"
+    for jarfile in glob.glob(os.path.join(PREFIX + '/usr/share/java/uvm', '*.jar')):
         # debug("Adding jarfile: %s"%jarfile)
         os.environ['CLASSPATH'] += jarfile + ":"
 
@@ -464,8 +467,8 @@ while True:
         os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
         if use_valgrind:
-            valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --gen-suppressions=all --suppressions=@PREFIX@/usr/share/untangle/conf/valgrind.supp "
-            # valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --suppressions=@PREFIX@/usr/share/untangle/conf/valgrind.supp "
+            valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --gen-suppressions=all --suppressions=" + PREFIX + "/usr/share/untangle/conf/valgrind.supp "
+            # valgrind_cmd = "/usr/bin/valgrind --num-callers=50 --trace-children=no --smc-check=all --error-limit=no --suppressions=" + PREFIX + "/usr/share/untangle/conf/valgrind.supp "
             if use_leakdetect:
                 valgrind_cmd = valgrind_cmd + "--leak-check=full "
             args = re.findall("(?:\'.*?\'|\S)+",
