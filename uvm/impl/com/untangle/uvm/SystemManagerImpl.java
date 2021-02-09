@@ -72,6 +72,9 @@ public class SystemManagerImpl implements SystemManager
     private static final Pattern DOWNLOAD_PATTERN = Pattern.compile(".*([0-9]+)K[ .]+([0-9%]+) *([0-9]+\\.[0-9]+[KM]).*");
     private static final String TIMEZONE_FILE = "/etc/timezone";
 
+    // must update file in mods-enabled since it is a symlink to our own version
+    private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/eap";
+
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private SystemSettings settings;
@@ -1334,10 +1337,7 @@ can look deeper. - mahotz
         String certBase = certFull.substring(0, dotLocation);
 
         try {
-            updateRadiusCertificateConfig("/etc/freeradius/3.0/mods-available/eap", certBase);
-            updateRadiusCertificateConfig("/etc/freeradius/3.0/mods-available/inner-eap", certBase);
-            updateRadiusCertificateConfig("/etc/freeradius/3.0/sites-available/abfab-tls", certBase);
-            updateRadiusCertificateConfig("/etc/freeradius/3.0/sites-available/tls", certBase);
+            updateRadiusCertificateConfig(FREERADIUS_EAP_CONFIG, certBase);
         } catch (Exception exn) {
             logger.warn("Exception activating RADIUS certificate", exn);
             return;
@@ -1373,6 +1373,13 @@ can look deeper. - mahotz
      */
     public void updateRadiusCertificateConfig(String fileName, String certBase) throws Exception
     {
+        // make sure the file exists
+        File checker = new File(fileName);
+        if (!checker.exists()) {
+            logger.warn("Missing RADIUS file: " + fileName);
+            return;
+        }
+
         java.util.Scanner scanner = new Scanner(new File(fileName));
         List<String> config = new ArrayList<String>();
         while (scanner.hasNextLine()) {
