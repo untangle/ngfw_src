@@ -321,18 +321,21 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testDiskFree(List<String> notificationList)
     {
-        String result = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskFree");
-
+        int percentUsed;
         try {
-            int percentUsed = Integer.parseInt(result);
-            if (percentUsed > 75)
-            //notificationList.add( i18nUtil.tr("Free Disk space is low.") +  " [ " + (100 - percentUsed) + i18nUtil.tr("% free ]") );
-            //remove percent because of NGFW-11150
-                notificationList.add(i18nUtil.tr("Free Disk space is low."));
+            File rootFile = new File("/");
+            long totalSpace = rootFile.getTotalSpace();
+            long usedSpace = rootFile.getUsableSpace();
+            percentUsed = (int ) ((usedSpace/totalSpace) * 100);
         } catch (Exception e) {
             logger.warn("Unable to determine free disk space", e);
+            return;
         }
 
+        if (percentUsed > 75)
+        //notificationList.add( i18nUtil.tr("Free Disk space is low.") +  " [ " + (100 - percentUsed) + i18nUtil.tr("% free ]") );
+        //remove percent because of NGFW-11150
+            notificationList.add(i18nUtil.tr("Free Disk space is low."));
     }
 
     /**
