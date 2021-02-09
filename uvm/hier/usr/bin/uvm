@@ -295,6 +295,9 @@ def procset(procfile, value, optional):
         return;
 
     try:
+        with open(procfile, 'r') as f:
+            if f.read().rstrip() == value:
+                return
         file = open(procfile,'w');
         file.write(value);
         file.close();
