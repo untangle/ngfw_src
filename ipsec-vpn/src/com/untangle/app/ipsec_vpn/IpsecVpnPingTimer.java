@@ -188,7 +188,7 @@ public class IpsecVpnPingTimer extends TimerTask
             IpsecVpnApp.execManager().exec("ipsec down " + watcher.controlName);
 
             // run the up command in the background as it can block if the other side is unreachable
-            IpsecVpnApp.execManager().exec("nohup ipsec up " + watcher.controlName + " >/dev/null 2>&1 &");
+            IpsecVpnApp.execManager().exec("nohup ipsec up " + watcher.controlName );
         }
 
         Iterator<String> ksi = watchTable.keySet().iterator();
