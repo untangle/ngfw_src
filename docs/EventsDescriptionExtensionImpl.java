@@ -354,7 +354,7 @@ public class ExtensionImpl implements Runnable
      */
     public final void run()
     {
-        String result = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-event-parse.sh " + System.getProperty("uvm.lib.dir"));
+        String result = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-event-parser.sh " + System.getProperty("uvm.lib.dir"));
         try {
             File file = new File(CLASS_EVENTS_JSON_FILE_NAME);
             FileWriter = new FileWriter(file);

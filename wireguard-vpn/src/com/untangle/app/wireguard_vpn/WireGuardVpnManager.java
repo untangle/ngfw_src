@@ -158,7 +158,8 @@ public class WireGuardVpnManager
         for(String allowedIp :allowedIps){
             commands.add("ip -4 route add " + allowedIp + " dev wg0");
         }
-        this.wireguardCommand(String.join(";", commands));
+        for ( String cmd: commands ) 
+            this.wireguardCommand(cmd);
     }
 
     /**
@@ -184,7 +185,8 @@ public class WireGuardVpnManager
             commands.add("ip -4 route delete " + removeTunnel.getPeerAddress().getHostAddress() + "/32" + " dev wg0");
         }
         commands.add(WIREGUARD_APP + " set wg0 peer " + publicKey + " remove");
-        this.wireguardCommand(String.join(";", commands));
+        for ( String cmd: commands ) 
+            this.wireguardCommand(cmd);
     }
 
     /**
@@ -226,7 +228,8 @@ public class WireGuardVpnManager
      */
     public String getPublicKey(String privateKey)
     {
-        return wireguardCommand("echo " + privateKey + " | " + WIREGUARD_APP + " pubkey");
+        String result = wireguardCommand(System.getProperty("uvm.bin.dir") + "/ut-wireguard-helpers.sh showPublicKey " + privateKey + " " + WIREGUARD_APP );
+        return result;
     }
 
     /**
@@ -236,7 +239,7 @@ public class WireGuardVpnManager
      */
     public String createQrCode(String publicKey){
         File file = getRemoteConfigFile(publicKey);
-        return (file != null) ? wireguardCommand("/usr/bin/qrencode -t PNG -o - < " + file.getAbsolutePath() + " | /usr/bin/base64 -w0")  : "";
+        return (file != null) ? wireguardCommand("/usr/bin/qrencode -t SVG -o - -r " + file.getAbsolutePath())  : "";
     }
 
     /**
