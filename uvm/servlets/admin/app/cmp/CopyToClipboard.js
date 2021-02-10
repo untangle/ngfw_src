@@ -12,12 +12,13 @@ Ext.define('Ung.cmp.CopyToClipboard', {
     },
     dataType: 'text',
     below: 'false', //NGFW-13105: If the items to copy are embedded a level below the component with copytoclipboard type
+    left: 'false', //NGFW-13550: should the copy button be to the left of the text area
 
     items: [{
         xtype: 'button',
         itemId: 'copyClipboard',
         baseCls: 'fa fa-copy',
-        margin: '5 0 0 5',
+        margin: '5 5 5 5',
         tooltip: 'Copy to Clipboard'.t(),
         handler: null
     }],
@@ -75,6 +76,10 @@ Ext.define('Ung.cmp.CopyToClipboard', {
                 if (config.key) config.items[0].key = config.key;
                 else config.items[0].key = me.key;
             }
+        }
+
+        if (config.left && config.left == 'true') {
+            config.items.reverse();
         }
 
         me.callParent(arguments);
