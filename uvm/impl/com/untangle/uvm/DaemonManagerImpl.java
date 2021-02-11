@@ -325,7 +325,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         String daemonSearchString = ( (daemonObject.monitorType == MonitorType.DAEMON && daemonObject.searchString != null) ? daemonObject.searchString : daemonName);
         daemonSearchString = "[" + daemonSearchString.substring(0,1) + "]" + daemonSearchString.substring(1);
         
-        int result = UvmContextFactory.context().execManager().execResult("pgrep -x" + daemonSearchString);
+        int result = UvmContextFactory.context().execManager().execResult("pgrep -x " + daemonSearchString);
         return ( result == 1 ) ? true : false;
     }
 
