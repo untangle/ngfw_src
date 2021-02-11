@@ -31,6 +31,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -526,6 +529,15 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         /* These are controlled using the methods in the uvm class */
     }
 
+    /**
+     * checks and returns if this license instance is restricted
+     * 
+     * @return boolean indicating restricted status of the license
+     */
+    public boolean isRestricted() {
+        return this.settings.getIsRestricted();
+    }
+
 
     /**
      * Initialize the settings
@@ -660,7 +672,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private synchronized void _downloadLicenses()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        LinkedList<License> licenses;
+        LinkedList<License> licenses = new LinkedList<>();;
+        boolean restricted = false;
         boolean changed = false;
 
         logger.info("REFRESH: Downloading new Licenses...");
@@ -669,13 +682,54 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
 
-            Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
-            licenses = (LinkedList<License>)o;
+            //
+            // We need to extract the restricted flag from the json object, so pass the class as JSONObject class
+            //
+            Object o = settingsManager.loadUrl(JSONObject.class, urlStr);
+
+            JSONObject parse = (JSONObject)o;
+
+            // The list on the json object contains the licenses
+            boolean hasList = parse.has("list");
+            if(hasList) {
+                JSONArray licList = parse.getJSONArray("list");
+                for (int i = 0; i < licList.length(); i++) {
+                    JSONObject lic = licList.getJSONObject(i);
+
+                    License newLic = new License();
+                    //
+                    // We are using the JSONObject return here because JAbsorb does not have
+                    // any functionality to pull additional properties that do not
+                    // link up with it's desired JSON format, and we also want to 
+                    // minimize changes on both Cloud and NGFW side (See NGFW-13214)
+                    //
+                    if(lic.has("name")) {newLic.setName(lic.getString("name"));}
+                    if(lic.has("displayName")) {newLic.setDisplayName(lic.getString("displayName"));}
+                    if(lic.has("UID")) {newLic.setUID(lic.getString("UID"));}
+                    if(lic.has("type")) {newLic.setType(lic.getString("type"));}
+                    if(lic.has("start")) {newLic.setStart(lic.getLong("start"));}
+                    if(lic.has("end")) {newLic.setEnd(lic.getLong("end"));}
+                    if(lic.has("key")) {newLic.setKey(lic.getString("key"));}
+                    if(lic.has("keyVersion")) {newLic.setKeyVersion(lic.getInt("keyVersion"));}
+                    if(lic.has("seats")) {newLic.setSeats(lic.getInt("seats"));}
+
+                    licenses.add(newLic);
+                }
+            }
+
+            // Get the restricted out, only if it exists in the json
+            if(parse.has("restricted")) {
+                boolean restrict = parse.getBoolean("restricted");
+                restricted = restrict;
+            }
+        } catch (JSONException e) {
+            logger.error("Unable to read license file: ", e );
+            return;
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
             return;
         } catch (ClassCastException e) {
-            logger.error("getRevocations returned unexpected response",e);
+            logger.error("downloadLicenses returned unexpected response",e);
             return;
         }
         
@@ -683,6 +737,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             if ( ! isObsoleteApp( lic.getName() ) ) {
                 changed |= _insertOrUpdate(lic);
             }
+        }
+
+        //If license restriction changes, we want to save, this allows toggling between restricted/unrestricted based on license server result
+        if (settings.getIsRestricted() != restricted) {
+            settings.setIsRestricted(restricted);
+            changed = true;
         }
 
         if ( changed ) 

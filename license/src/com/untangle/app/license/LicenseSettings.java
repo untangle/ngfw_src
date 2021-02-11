@@ -21,6 +21,8 @@ public class LicenseSettings implements Serializable, JSONString
     private Integer settingsVersion = 1;
 
     private List<License> licenses;
+
+    private boolean isRestricted = false;
     
     public LicenseSettings( )
     {
@@ -50,6 +52,16 @@ public class LicenseSettings implements Serializable, JSONString
     public void setLicenses(List<License> licenses)
     {
         this.licenses = licenses;
+    }
+
+    public boolean getIsRestricted()
+    {
+        return this.isRestricted;
+    }
+
+    public void setIsRestricted(boolean restrict)
+    {
+        this.isRestricted = restrict;
     }
     
     /**
