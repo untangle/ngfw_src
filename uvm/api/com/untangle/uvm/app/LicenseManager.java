@@ -40,6 +40,11 @@ public interface LicenseManager
     public boolean hasPremiumLicense();
 
     /**
+     * Return true if this license configuration restricts which apps can be installed
+     */
+    public boolean isRestricted();
+
+    /**
      * Returns the number of valid premium licenses
      */
     public int validLicenseCount();
