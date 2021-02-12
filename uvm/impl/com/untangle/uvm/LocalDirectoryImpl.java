@@ -118,13 +118,38 @@ public class LocalDirectoryImpl implements LocalDirectory
     {
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
 
+        // The hostname and workgroup must NOT be the same or the samba tools
+        // will throw all kinds of obscure errors about memory allocation when
+        // the real problem is the name conflict.
+        String groupName = systemSettings.getRadiusProxyWorkgroup();
+        String machineName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        if (groupName.toUpperCase().equals(machineName.toUpperCase())) {
+            return new ExecManagerResult(1, "Unable to create computer account because the System Hostname and AD Workgroup are the same");
+        }
+
+        // Make sure the proxy server resolves to a valid address
+        try {
+            InetAddress checker = InetAddress.getByName(systemSettings.getRadiusProxyServer());
+        } catch (java.net.UnknownHostException exn) {
+            return new ExecManagerResult(1, "Unable to resolve the IP address of the AD Server " + systemSettings.getRadiusProxyServer());
+        } catch (Exception exn) { }
+
         String command = ("/usr/bin/net ads --no-dns-updates join");
         command += (" -U \"" + systemSettings.getRadiusProxyUsername() + "%" + systemSettings.getRadiusProxyPassword() + "\"");
         command += (" -S " + systemSettings.getRadiusProxyServer());
         command += (" osName=\"Untangle NG Firewall\"");
         command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
 
-        return UvmContextFactory.context().execManager().exec(command);
+        ExecManagerResult result =  UvmContextFactory.context().execManager().exec(command);
+
+        // NGFW-13595 The winbind service must be restarted after we create
+        // the computer account because it requires the SID that gets created
+        // by the "net ads" call we made above.
+        if (result.result == 0) {
+            UvmContextFactory.context().execManager().exec("systemctl restart winbind.service");
+        }
+
+        return result;
     }
 
     /**
@@ -140,6 +165,14 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public String testRadiusProxyLogin(String userName, String userPass, String userDomain)
     {
+        if (userName.isBlank()) {
+            return new String("Missing Username for authentication test");
+        }
+
+        if (userPass.isBlank()) {
+            return new String("Missing Password for authentication test");
+        }
+
         String command = ("/usr/bin/ntlm_auth --request-nt-key");
         if (userDomain.length() > 0) {
             command += (" --domain=\"" + userDomain + "\"");
@@ -873,6 +906,9 @@ public class LocalDirectoryImpl implements LocalDirectory
                     fw.write("\tserver role = standalone server\n");
                     fw.write("\tbind interfaces only = no\n");
                     fw.write("\tload printers = no\n");
+                    fw.write("\tprinting = bsd\n");
+                    fw.write("\tprintcap name = /dev/null\n");
+                    fw.write("\tdisable spoolss = yes\n");
                     fw.write("\tlocal master = no\n");
                 }
                 fw.flush();

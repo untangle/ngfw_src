@@ -207,22 +207,6 @@ public class SystemManagerImpl implements SystemManager
         if (settings != null) oldApacheCert = settings.getWebCertificate();
 
         /**
-         * Ensure the Radius proxy AD server resolves on save if Radius Proxy enabled
-         */
-        if (newSettings.getRadiusProxyEnabled()) {
-            InetAddress addr;
-            String radiusProxyServer = newSettings.getRadiusProxyServer();
-            try {
-                addr = InetAddress.getByName(radiusProxyServer);
-            } catch (java.net.UnknownHostException e) {
-                String hostNameResolutionFailure = "Unable to resolve AD server " + radiusProxyServer + 
-                                                   ". You may need to create a Static DNS entry in config > Network > DNS Server: ";
-                logger.warn(hostNameResolutionFailure, e);
-                throw new RuntimeException(hostNameResolutionFailure, e);
-            }
-        }
-
-        /**
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
