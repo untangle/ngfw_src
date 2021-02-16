@@ -16,7 +16,9 @@ Ext.define('Ung.apps.applicationcontrollite.view.Status', {
             cls: 'app-desc',
             html: '<img src="/icons/apps/application-control-lite.svg" width="80" height="80"/>' +
                 '<h3>Application Control Lite</h3>' +
-                '<p>' + 'Application Control scans sessions and identifies the associated applications allowing each to be flagged and/or blocked.'.t() + '</p>'
+                '<p>' + 'Application Control Lite identifies, logs, and blocks sessions based on the session content using manually added custom signatures.'.t() +
+                '<br><br>' + 'Upgrade to Application Control to perform deep packet (DP) and deep flow (DF) inspection of network traffic, enabling you to block, flag or allow thousands of common applications.'.t() +
+                ' <a href="https://www.untangle.com/shop/Application-Control">LEARN MORE<a/></p>'
         }, {
             xtype: 'appstate',
         }, {
