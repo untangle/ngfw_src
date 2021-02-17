@@ -82,9 +82,10 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         // grab the SSL Inspector status attachment
         Boolean sslInspectorStatus = (Boolean) session.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
 
+	// if the license is not valid or
         // if we find the attachment and it is true then we release the
         // session now since we'll see the unencrypted traffic later
-        if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == true)) {
+        if (app.isLicenseValid() != true || ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == true))) {
             session.sendDataToServer(data);
             session.release();
             return;
