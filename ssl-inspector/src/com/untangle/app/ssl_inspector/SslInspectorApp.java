@@ -42,6 +42,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.servlet.UploadHandler;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -544,7 +545,12 @@ public class SslInspectorApp extends AppBase
      */
     private void removeCertCache()
     {
-        UvmContextFactory.context().execManager().execResult( "rm -rf " + keyStorePath + "/* ; rm -f " + CRON_FILE );
+        try {
+            FileUtils.cleanDirectory(new File(keyStorePath));
+            FileUtils.forceDelete(CRON_FILE);
+        } catch (IOException e) {
+            logger.error("Failed to cleanup cert cache. " +e.getLocalizedMessage());
+        }
     }
 
     /**

@@ -4,10 +4,13 @@
 package com.untangle.uvm;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Set;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.io.FileUtils;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -196,17 +199,14 @@ public class AdminManagerImpl implements AdminManager
         if (blessedFile.exists() && blessedFile.lastModified() > zshHistoryFile.lastModified())
             return "blessed";
 
-        ExecManagerResult result = UvmContextImpl.context().execManager().exec("cat /root/.zsh_history | /usr/bin/wc -l");
-        int exitCode = result.getResult();
-        String output = result.getOutput();
-
-        output = output.replaceAll("(\\r|\\n)", "");
-            
-        if( exitCode == 0 ) {
-            return new String("yes (" + output + ")");
+        List<?> zshContent; // List<String>
+        try {
+            zshContent = (List<?>) FileUtils.readLines(zshHistoryFile, null);
+        } catch (IOException e) {
+            return "UNKNOWN";
         }
 
-        return "UNKNOWN";
+        return new String("yes (" + zshContent.size() + ")");
     }
 
     /**

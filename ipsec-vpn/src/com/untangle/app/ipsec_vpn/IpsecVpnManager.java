@@ -725,10 +725,11 @@ public class IpsecVpnManager
     public void deleteTunnel(String workName)
     {
         UvmContextFactory.context().execManager().exec(
-            IPSEC_APP + " down " + workName + "; " +
-            IPSEC_APP + " stroke down-nb " + workName + ";" +
-            IPSEC_APP + " unroute " + workName
-        );
+            IPSEC_APP + " down " + workName );
+        UvmContextFactory.context().execManager().exec(
+            IPSEC_APP + " stroke down-nb " + workName );
+        UvmContextFactory.context().execManager().exec(
+            IPSEC_APP + " unroute " + workName);
     }
 
     /**
