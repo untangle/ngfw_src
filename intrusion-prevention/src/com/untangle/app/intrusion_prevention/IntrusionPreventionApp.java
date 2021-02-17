@@ -90,14 +90,12 @@ public class IntrusionPreventionApp extends AppBase
     private static final String DEFAULTS_FILE = "/usr/share/untangle-suricata-config/current/templates/defaults.js";
     private static final String CLASSIFICATION_FILE = "/usr/share/untangle-suricata-config/current/rules/classification.config";
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
-    private static final String GET_STATUS_COMMAND = "/usr/bin/tail -20 /var/log/suricata/suricata.log | /usr/bin/tac";
     private static final Pattern CLASSIFICATION_PATTERN = Pattern.compile("^config classification: ([^,]+),([^,]+),(\\d+)");
     private static final String RESERVED_RULE_PREFIX = "reserved_";
     private static final String CLASSIFICATION_ID_PREFIX = RESERVED_RULE_PREFIX + "classification_";
     private static final Pattern SYSTEMCTL_STATUS_MAINPID = Pattern.compile("^MainPID=(\\d+)");
     private static final Pattern SMAP_KERNEL_PAGE_SIZE = Pattern.compile("^KernelPageSize:\\s*(.+)");
     private static final String RELOAD_RULES_COMMAND = "/usr/bin/suricatasc -c 'reload-rules'";
-    private static final String GET_SURICATA_ERRORS="/bin/journalctl -u suricata --no-pager -S \"$(/bin/systemctl show suricata | grep StateChangeTimestamp= | cut -d= -f2)\" | grep '<Error' | grep -v 'libnet_write_raw_ipv6 failed'";
     private static final String GET_UPDATES= System.getProperty("prefix") + "/usr/share/untangle/bin/intrusion-prevention-get-updates";
 
     private long kernelPageSize = 0;
@@ -747,7 +745,7 @@ public class IntrusionPreventionApp extends AppBase
             status.put("lastUpdateCheck", timeSeconds == 0 ? null : new Date( timeSeconds * 1000l ));
 
             try {
-                result = UvmContextFactory.context().execManager().execOutput(GET_SURICATA_ERRORS);
+                result = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-intrusion-app-helper.sh getSuricataErrors");
             } catch ( Exception e ) {
                 logger.warn( "Unable to get last update.", e );
             }
@@ -886,7 +884,7 @@ public class IntrusionPreventionApp extends AppBase
      */
     public String getStatus()
     {
-        return UvmContextFactory.context().execManager().execOutput(GET_STATUS_COMMAND);
+        return(UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-intrusion-app-helper.sh getStatusCommand"));
     }
 
     /**
@@ -1068,7 +1066,7 @@ public class IntrusionPreventionApp extends AppBase
                     /*
                      * If client takes too long to upload, we'll get an incomplete settings file and all will be bad.
                      */
-                    String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName + "> /dev/null 2>&1" );
+                    String verifyCommand = new String( "python -m simplejson.tool " + tempPatchName );
                     UvmContextFactory.context().execManager().execResult(verifyCommand);
 
                     File fp = new File( tempPatchName );

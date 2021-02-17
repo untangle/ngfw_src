@@ -29,7 +29,7 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteconfigController', {
                 vm.set('error', true);
             }else{
                 vm.set('error', false);
-                view.down('[itemId=qrcode]').setSrc('data:image/png;base64,' + result[0]);
+                view.down('[itemId=qrcode]').setHtml(result[0]);
                 view.down('[itemId=file]').setHtml('<pre>' + result[1] + '</pre>');
             }
 
