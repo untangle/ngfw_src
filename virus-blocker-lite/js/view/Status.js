@@ -18,7 +18,9 @@ Ext.define('Ung.apps.virusblockerlite.view.Status', {
             cls: 'app-desc',
             html: '<img src="/icons/apps/virus-blocker-lite.svg" width="80" height="80"/>' +
                 '<h3>Virus Blocker Lite</h3>' +
-                '<p>' + 'Virus Blocker detects and blocks malware before it reaches users\' desktops or mailboxes.'.t() + '</p>'
+                '<p>' + 'Virus Blocker Lite provides basic virus protection and can be resource intensive in some environments.'.t() +
+                '<br><br>' + 'Upgrade to Virus Blocker which efficiently leverages signatures from Bitdefender&reg, the leader in speed and efficiency, whose threat lab experts work 24-hours a day, 365-days a year to identify emerging threats.'.t() +
+                ' <a href="https://www.untangle.com/shop/virus-blocker">LEARN MORE<a/></p>'
         }, {
             xtype: 'appstate',
         }, {

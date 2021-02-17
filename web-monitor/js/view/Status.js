@@ -18,7 +18,9 @@ Ext.define('Ung.apps.webmonitor.view.Status', {
             cls: 'app-desc',
             html: '<img src="/icons/apps/web-monitor.svg" width="80" height="80"/>' +
                 '<h3>Web Monitor</h3>' +
-                '<p>' + 'Web Monitor scans and categorizes web traffic to monitor and enforce network usage policies.'.t() + '</p>'
+                '<p>' + 'Web Monitor scans and categorizes web traffic to monitor network usage.'.t() +
+                '<br><br>' + 'Upgrade to Web Filter to control network usage and enforce policies that allow, block, flag or alert web traffic.'.t() +
+                ' <a href="https://www.untangle.com/shop/web-filter">LEARN MORE<a/></p>'
         }, {
             xtype: 'applicense',
             hidden: true,
