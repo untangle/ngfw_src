@@ -415,8 +415,8 @@ Ext.define('Ung.config.network.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip -s -d link show dev ' + symbolicDev + ' | sed -n -e "/link/{p}" -e "/RX/{n;p}" -e "/TX/{n;p}" | sed -e "s/brd .*$//g" | sed -e "s/promiscuity .*$/00:00:00:00:00:00/g" | tr "\\n" " " | tr -s " "'),
-            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip addr show dev ' + symbolicDev + ' | grep inet | grep global | tr "\\n" " " | tr -s " "')
+            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getInterfaceStatus1 ' + symbolicDev),
+            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getInterfaceStatus2 ' + symbolicDev)
         ]).then(function(result){
             if(Util.isDestroyed(me, v, vm)){
                 return;
@@ -466,7 +466,7 @@ Ext.define('Ung.config.network.MainController', {
         }
 
         v.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', 'ip neigh show dev ' + symbolicDev + ' | grep lladdr | tr -s " "')
+        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getInterfaceArp1 ' + symbolicDev)
         .then(function(result){
             if(Util.isDestroyed(me, v, vm)){
                 return;
@@ -734,9 +734,9 @@ Ext.define('Ung.config.network.MainController', {
 
         view.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.execManager.execOutput', 'ip route show proto zebra | tr -s " " '),
-            Rpc.asyncPromise('rpc.execManager.execOutput', 'vtysh -c "show ip bgp summary" | sed -e "/Neighbor/,\\$!d" | sed -e "/Total/,\\$d" -e "1d" | tr -s " "'),
-            Rpc.asyncPromise('rpc.execManager.execOutput', 'vtysh -c "show ip ospf neighbor" | sed -e "/Neighbor/,\\$!d" | sed -e "1d" | tr -s " "')
+            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getDynamicRoutingStatus1'),
+            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getDynamicRoutingStatus2'),
+            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getDynamicRoutingStatus3')
         ]).then( function(result){
             if(Util.isDestroyed(view)){
                 return;

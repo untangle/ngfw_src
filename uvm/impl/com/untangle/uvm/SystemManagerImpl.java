@@ -207,22 +207,6 @@ public class SystemManagerImpl implements SystemManager
         if (settings != null) oldApacheCert = settings.getWebCertificate();
 
         /**
-         * Ensure the Radius proxy AD server resolves on save if Radius Proxy enabled
-         */
-        if (newSettings.getRadiusProxyEnabled()) {
-            InetAddress addr;
-            String radiusProxyServer = newSettings.getRadiusProxyServer();
-            try {
-                addr = InetAddress.getByName(radiusProxyServer);
-            } catch (java.net.UnknownHostException e) {
-                String hostNameResolutionFailure = "Unable to resolve AD server " + radiusProxyServer + 
-                                                   ". You may need to create a Static DNS entry in config > Network > DNS Server: ";
-                logger.warn(hostNameResolutionFailure, e);
-                throw new RuntimeException(hostNameResolutionFailure, e);
-            }
-        }
-
-        /**
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -535,7 +519,7 @@ can look deeper. - mahotz
     {
         LinkedList<String> downloadUrls = new LinkedList<>();
 
-        String result = UvmContextFactory.context().execManager().execOutput("apt-get dist-upgrade --yes --print-uris | awk '/^.http/ {print $1}'");
+        String result = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-system-mgr-helpers.sh downloadUpgrades");
         try {
             String lines[] = result.split("\\r?\\n");
             for (String line : lines) {
@@ -663,7 +647,7 @@ can look deeper. - mahotz
     public boolean upgradesAvailable(boolean forceUpdate)
     {
         if (forceUpdate) UvmContextFactory.context().execManager().execResult("apt-get update --yes --allow-releaseinfo-change");
-        int retCode = UvmContextFactory.context().execManager().execResult("apt-get -s dist-upgrade | grep -q '^Inst'");
+        int retCode = UvmContextFactory.context().execManager().execResult(System.getProperty("uvm.bin.dir") + "/ut-system-mgr-helpers.sh upgradesAvailable");
         return (retCode == 0);
     }
 
@@ -1089,8 +1073,7 @@ can look deeper. - mahotz
             int count = 0;
             do {
                 Thread.sleep(100);
-                result = UvmContextFactory.context().execManager().execOutput("pgrep /usr/sbin/snmpd | wc -l");
-                count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
+                count = UvmContextFactory.context().execManager().execOutput("pgrep /usr/sbin/snmpd").split("\r\n|\r|\n").length;
                 tries--;
             } while ((count > 0) && (tries > 0));
             if (count > 0) {

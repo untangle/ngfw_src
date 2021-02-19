@@ -53,12 +53,11 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
             ],
             forceSelection: true,
         },{
-            xtype: 'image',
+            xtype: 'panel',
             itemId: 'qrcode',
             alt: 'Quick Reference Code'.t(),
             autoCreate: true,
-            height: 400,
-            width: 400,
+            html: '',
             hidden: true,
             bind: {
                 hidden: '{type != "qrcode" || error ? true : false}',

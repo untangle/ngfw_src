@@ -146,6 +146,11 @@ public class ExecManagerImpl implements ExecManager
         cmd = cmd.replace("\n", "");
         cmd = cmd.replace("\r", "");
 
+        if (cmd.contains(";") || cmd.contains("&&") || cmd.contains("|") || cmd.contains(">")) {
+            logger.log(this.level, "Suspicious command (" + cmd + ") Aborting.");
+            return new ExecManagerResult(-1, "Command not allowed.");
+        }
+
         // !!! also global flag to show all
 
         try {
