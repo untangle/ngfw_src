@@ -30,8 +30,7 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
 
     items: [{
         xtype: 'panel',
-        width: 420,
-        autoScroll: true,
+
         bodyStyle: {
             "background-color": 'white'
         },
