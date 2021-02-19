@@ -2,6 +2,8 @@ Ext.define('Ung.cmp.CopyToClipboard', {
     extend: 'Ext.form.FieldContainer',
     alias: 'widget.copytoclipboard',
 
+    cls: 'copytoclipboard', // css class used to be able to set styles on copy content (e.g. <pre> element)
+
     key: {},
     value: {
         key: 'value'
@@ -12,13 +14,12 @@ Ext.define('Ung.cmp.CopyToClipboard', {
     },
     dataType: 'text',
     below: 'false', //NGFW-13105: If the items to copy are embedded a level below the component with copytoclipboard type
-    left: 'false', //NGFW-13550: should the copy button be to the left of the text area
 
     items: [{
         xtype: 'button',
         itemId: 'copyClipboard',
         baseCls: 'fa fa-copy',
-        margin: '5 5 5 5',
+        margin: '5 0 0 5',
         tooltip: 'Copy to Clipboard'.t(),
         handler: null
     }],
@@ -28,7 +29,7 @@ Ext.define('Ung.cmp.CopyToClipboard', {
 
         // Attach our local handler to the copy button
         me.items.forEach(function(item){
-            if(item.itemId == 'copyClipboard' && 
+            if(item.itemId == 'copyClipboard' &&
                item.handler == null){
                 item.handler = me.copy;
             }
@@ -40,8 +41,8 @@ Ext.define('Ung.cmp.CopyToClipboard', {
             //Determine if items to copy are embedded below
             //NGFW-13105: the main hostDisplayFields items for wireguard-vpn needs to be put in a fieldset embedded below the copytoclipboard
             //itemsToLoop will be the items that we check for the button and the items are will be copied
-            //This could be the main items of copytoclipboard 
-            //If set to below, the itemsToLoop are in the first item of copytoclipboard. 
+            //This could be the main items of copytoclipboard
+            //If set to below, the itemsToLoop are in the first item of copytoclipboard.
             //The below setting allows the add modal for wireguard-vpn to render on Safari and allow other items using copytoclipboard to remain unchanged
             var itemsToLoop = config.items;
             if (config.below && config.below == 'true') itemsToLoop = config.items[0].items;
@@ -57,7 +58,7 @@ Ext.define('Ung.cmp.CopyToClipboard', {
             if(buttonExists == false){
                 me.items.forEach(function(item){
                     itemsToLoop.push(item);
-                });    
+                });
             }
 
             //NGFW-13105: to render on safari, some items using copytoclipboard needs to be embedeed below in a fieldset
@@ -68,18 +69,14 @@ Ext.define('Ung.cmp.CopyToClipboard', {
                 else config.items[0].dataType = me.dataType;
 
                 if (config.layout) config.items[0].layout = config.layout;
-                else config.items[0].layout = me.layout; 
+                else config.items[0].layout = me.layout;
 
                 if (config.value) config.items[0].value = config.value;
                 else config.items[0].value = me.value;
-                
+
                 if (config.key) config.items[0].key = config.key;
                 else config.items[0].key = me.key;
             }
-        }
-
-        if (config.left && config.left == 'true') {
-            config.items.reverse();
         }
 
         me.callParent(arguments);
@@ -87,7 +84,7 @@ Ext.define('Ung.cmp.CopyToClipboard', {
 
     /**
      * Perform copy to clipboard
-     * @param {*} button 
+     * @param {*} button
      */
     copy: function(button){
         var me = this,
