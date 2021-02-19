@@ -324,8 +324,9 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
         String daemonSearchString = ( (daemonObject.monitorType == MonitorType.DAEMON && daemonObject.searchString != null) ? daemonObject.searchString : daemonName);
         daemonSearchString = "[" + daemonSearchString.substring(0,1) + "]" + daemonSearchString.substring(1);
-        String result = UvmContextFactory.context().execManager().execOutput("ps -e -o command h | cut -f1 -d' ' | grep " + daemonSearchString + " | wc -l");
-        return ( Integer.parseInt(result.trim()) == 1 ) ? true : false;
+        
+        int result = UvmContextFactory.context().execManager().execResult("pgrep -x " + daemonSearchString);
+        return ( result == 1 ) ? true : false;
     }
 
     /**
@@ -427,11 +428,8 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     {
         synchronized (object) {
             // run a spiffy command to count the number of process instances
-            String result = UvmContextFactory.context().execManager().execOutput("pgrep " + object.searchString + " | wc -l");
+            int count = UvmContextFactory.context().execManager().execOutput("pgrep " + object.searchString).split("\r\n|\r|\n").length;
 
-            // parseInt is very finicky so we use replaceAll with
-            // a regex to strip out anything that is not a digit 
-            int count = Integer.parseInt(result.replaceAll("[^0-9]", ""));
             logger.debug("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
 
             // if we find the process running just return
