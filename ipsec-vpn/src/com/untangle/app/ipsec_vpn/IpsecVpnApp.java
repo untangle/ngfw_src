@@ -174,8 +174,8 @@ public class IpsecVpnApp extends AppBase
         tmp.setLeft(firstWan.getHostAddress());
         tmp.setRight(exampleAddress.getHostAddress());
 
-        tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
-        tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+        tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0).toString());
+        tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0).toString());
 
         tunnelList.add(tmp);
 
@@ -189,15 +189,15 @@ public class IpsecVpnApp extends AppBase
         tmp.setLeft(firstWan.getHostAddress());
         tmp.setRight(exampleAddress.getHostAddress());
 
-        tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
-        tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+        tmp.setLeftSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0).toString());
+        tmp.setRightSubnet(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0).toString());
 
         tunnelList.add(tmp);
 
         //Setup default GRE/Xauth/L2TP addresses:
-        settings.setVirtualNetworkPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
-        settings.setVirtualAddressPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
-        settings.setVirtualXauthPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24).toString());
+        settings.setVirtualNetworkPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0).toString());
+        settings.setVirtualAddressPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0).toString());
+        settings.setVirtualXauthPool(nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0).toString());
 
         settings.setTunnels(tunnelList);
         setSettings(settings);
