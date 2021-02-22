@@ -748,7 +748,7 @@ public class OpenVpnAppImpl extends AppBase
 
         NetspaceManager nsmgr = UvmContextFactory.context().netspaceManager();
 
-        IPMaskedAddress newAddrPool = nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0, 24);
+        IPMaskedAddress newAddrPool = nsmgr.getAvailableAddressSpace(IPVersion.IPv4, 0);
 
         newSettings.setAddressSpace(newAddrPool);
 
