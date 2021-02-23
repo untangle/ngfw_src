@@ -27,6 +27,25 @@ public class NetspaceManagerImpl implements NetspaceManager
     private final Logger logger = Logger.getLogger(getClass());
     private final LinkedList<NetworkSpace> networkRegistry = new LinkedList<NetworkSpace>();
 
+    // this is the total number of private class C networks in the RFC1918 reserved blocks
+    private final int PRIVATE_ATTEMPT_LIMIT = 4096 + 256 + 65536;
+
+    // this is number of times we'll try to generate a unique IPv6 ULA network
+    private final int RANDOM_ATTEMPT_LIMIT = 4096;
+
+    /**
+     * we use these to keep track of the last private IPv4 network returned from
+     * the getAvailableAddressSpace function. This allows subsequent calls to
+     * generate unique results. This is necessary so that multiple calls to the
+     * function prior to the returned values actually being registered won't
+     * just return the same unused space repeatedly. An example is the ipsec app
+     * which calls the function twice in a row for L2TP and Xauth during
+     * initialization.
+     */
+    private int nextAval = 172;
+    private int nextBval = 16;
+    private int nextCval = 0;
+
     /**
      * Constructor
      */
@@ -207,150 +226,157 @@ public class NetspaceManagerImpl implements NetspaceManager
     }
 
     /**
-     * getAvailableAddressSpace should be used to get an unregistered address space based on a random subnet, IP6 generation will use the Unique Unicast range
-     * 
+     * getAvailableAddressSpace should be used to get an unregistered address
+     * space. IPv4 will find the first unused private network. IPv6 generation
+     * will use the Unique Unicast range
+     *
      * @param version
-     *        The IP Version to generate a space for (IP4 or IP6)
-     * @param hostIdentifier
-     *        The host ID
-     * @param CIDRSpace
-     *        The CIDRSpace
-     * @return
+     *        The IP version to generate a space for (IPv4 or IPv6)
+     * @param hostId
+     *        The host identifier
+     * @return An unused IP address space
      */
-    public IPMaskedAddress getAvailableAddressSpace(IPVersion version, int hostIdentifier, int CIDRSpace) {
-        return getAvailableAddressSpace(version, hostIdentifier, CIDRSpace, 15);
-    }
+    public IPMaskedAddress getAvailableAddressSpace(IPVersion version, int hostId)
+    {
+        IPMaskedAddress tester;
+        NetworkSpace space;
 
-    /**
-     * getAvailableAddressSpace should be used to get an unregistered address space based on a random subnet, IP6 generation will use the Unique Unicast range
-     * 
-     * @param version
-     *        The IP Version to generate a space for (IP4 or IP6)
-     * @param hostIdentifier
-     *        The host ID
-     * @param CIDRSpace
-     *        The CIDRSpace
-     * @param generationAttempts
-     *        The number of generations we should test before giving up with a warning
-     * @return IPMaskedAddress - A CIDR address that is not conflicting with other address spaces on the appliance
-     */
-    public IPMaskedAddress getAvailableAddressSpace(IPVersion version, int hostIdentifier, int CIDRSpace, int generationAttempts) {
-        IPMaskedAddress randAddress = null;
-        boolean uniqueAddress = true;
-        List<IPMaskedAddress> attemptedAddresses = new ArrayList<>();
-
-        // Gen a random address
-        Random rand = new Random();
-
-        //Validate the host ID
-        if(hostIdentifier > 255 || hostIdentifier < 0) {
-            logger.warn("Host ID passed into getAvailableAddressSpace is invalid: " + hostIdentifier + " defaulting to 0.");
-            hostIdentifier = 0;
+        // validate the host identifier
+        if (hostId > 255 || hostId < 0) {
+            logger.warn("Invalid hostId: " + hostId + " - defaulting to 0");
+            hostId = 0;
         }
 
-        //Validate the CIDR Space
-        if(CIDRSpace > 32 || CIDRSpace < 0) {
-            logger.warn("CIDRSpace passed into getAvailableAddressSpace is invalid: " + CIDRSpace + " defaulting to 24.");
-            CIDRSpace = 24;
-        }
+        // for IPv4 we return an unused private network we find in the reserved
+        // blocks defined in RFC1918.
+        if (version == IPVersion.IPv4) {
+            for (int x = 0; x < PRIVATE_ATTEMPT_LIMIT; x++) {
+                // get the next private network from the helper function
+                tester = new IPMaskedAddress(getNextPrivateNetwork(hostId), 24);
 
-        // If the address intersects another address, gen another one until we have one that is not matching
-        do {
+                // see if the network is available
+                space = isNetworkAvailable(null, tester);
 
-            //If we are exceeding the generationAttempts, then return with a warning.
-            if(attemptedAddresses.size() > generationAttempts) {
-                logger.warn("getAvailableAddressSpace has failed after "+ generationAttempts + " and is giving up now.");
-                return new IPMaskedAddress("0.0.0." + hostIdentifier + "/" + CIDRSpace);
-            }
-
-            if(version == IPVersion.IPv6) {
-                randAddress = getRandomLocalIp6Address(rand, CIDRSpace);
-            } else {
-                randAddress = getRandomLocalIp4Address(rand, hostIdentifier, CIDRSpace);
-            }
-
-            // If we've already tested this address then don't even try it against the registry
-            if(attemptedAddresses.contains(randAddress)) {
-                uniqueAddress = false;
-                break;
-            }
-
-            // Verify any intersections in the registry
-            for (NetworkSpace netSpace : networkRegistry) {
-                logger.debug("Comparing " + randAddress + " against: " + netSpace.maskedAddress);
-                if(netSpace.maskedAddress.isIntersecting(randAddress)) {
-                    logger.debug(randAddress + " is not unique, generating another.");
-                    uniqueAddress = false;
-                    attemptedAddresses.add(randAddress);
-                    break;
+                // null return means no conflict so return the private network
+                if (space == null) {
+                    return tester;
                 }
             }
-        } while (!uniqueAddress);
-        
-        logger.debug("Unique address found: " + randAddress);
 
-        return randAddress;
+            // if we did't find a available block there are no good options
+            // left so just return TEST-NET-2 which is valid and usable and
+            // shouldn't conflict with anything we know about
+            return new IPMaskedAddress("198.51.100." + hostId, 24);
+        }
+
+        // for IPv6 we generate random networks in the unique local address
+        // space defined in RFC4193
+        Random rand = new Random();
+
+        for (int count = 0; count < RANDOM_ATTEMPT_LIMIT; count++) {
+            // generate a random network
+            tester = getRandomLocalIp6Address(rand, hostId);
+
+            // see if the network is available
+            space = isNetworkAvailable(null, tester);
+
+            // null return means no conflict so return the random network
+            if (space == null) {
+                return (tester);
+            }
+        }
+
+        // nothing found so return a generic /64 that is valid and usable
+        return new IPMaskedAddress("fdfd:fcfc:fbfb:fafa::" + hostId, 64);
     }
 
     /**
-     * getRandomLocalIp4Address is a helper function that uses the current Random class to generate a random IP6 local address
+     * getRandomLocalIp6Address is a helper function that uses the current
+     * Random class to generate a random IP6 local address
      * 
-     * @param rand - An instance of the random class in use (Increases "randomness" by reusing the instance)
-     * @param CIDRSpace - The CIDR Space
+     * @param rand
+     *        - An instance of the random class in use (Increases "randomness"
+     *        by reusing the instance)
+     * @param hostId
+     *        - The host identifier
      * @return IPMaskedAddress - A random INet 6 address with given parameters
      */
-    private IPMaskedAddress getRandomLocalIp6Address(Random rand, int CIDRSpace) {
+    private IPMaskedAddress getRandomLocalIp6Address(Random rand, int hostId)
+    {
         //Get local prefixes
         String prefix = "fd";
 
         // Generating random 40 bit Global ID
-        byte[]gBytes = new byte[5];
+        byte[] gBytes = new byte[5];
         rand.nextBytes(gBytes);
         String globalId = Hex.encodeHexString(gBytes);
 
         // Generating random 16 bit subnet ID
-        byte[]sBytes = new byte[2];
+        byte[] sBytes = new byte[2];
         rand.nextBytes(sBytes);
         String subnet = Hex.encodeHexString(sBytes);
 
         //Combine and add : delimiter
         String combinedAddr = (prefix + globalId + subnet).replaceAll("(.{4})", "$1:") + ":";
 
-        return new IPMaskedAddress(combinedAddr, CIDRSpace);
+        return new IPMaskedAddress(combinedAddr, 64);
     }
 
     /**
-     * getRandomLocalIp4Address is a helper function that uses the current Random class, host, and CIDR space to generate a random IP4 address
+     * getNextPrivateNetwork is a function that will enumerate every class C
+     * network in RFC1918 private address space, returning the next sequential
+     * network for each subsequent call. The logic below contemplates networks
+     * as a combination of aaa.bbb.ccc.ddd and we smartly increment the first
+     * three components as we work through each of the reserved blocks so we
+     * will effectively enumerate the space over and over.
      * 
-     * @param rand - An instance of the random class in use (Increases "randomness" by reusing the instance)
-     * @param hostIdentifier - host ID
-     * @param CIDRSpace - The CIDR Space
-     * @return IPMaskedAddress - A random INet 4 address with given parameters
+     * @param hostId
+     *        - The host identifier
+     * @return - The next sequential private class C network
      */
-    private IPMaskedAddress getRandomLocalIp4Address(Random rand, int hostIdentifier, int CIDRSpace) {
-        
-        // Pull random net from private spaces
-        int leadingNet = new int[]{10, 172, 192}[rand.nextInt(3)];
-        int nextNet = 0;
+    private String getNextPrivateNetwork(int hostId)
+    {
+        // the result will always aaa.bbb.ccc.hostId so we set it now and will
+        // return it later as we work through the increment and wrap logic
+        String result = (nextAval + "." + nextBval + "." + nextCval + "." + hostId);
 
-        //Limit the network depending on the private space chosen
-        switch(leadingNet) {
-            case 192:
-                //192 must be in 192.168 space
-                nextNet = 168;
-                break;
-            case 172:
-                //Generate a random 0-16, and add 16 to prevent it from falling into 172.0 - 172.15 space, but limiting to the 172.16 - 172.31 spaces
-                nextNet = rand.nextInt(16) + 16;
-                break;
-            case 10:
-                // Everything in 10.X is valid
-                nextNet = rand.nextInt(256);
-                break;
+        // we always increment the ccc value and if it did not wrap our work
+        // is done and we simply return the result
+        nextCval += 1;
+        if (nextCval < 256) {
+            return (result);
         }
 
-        //Combine the above and form IP with random subnet, host address, and CIDR from params
-        return new IPMaskedAddress( leadingNet + "." + nextNet + "." + rand.nextInt(256) + "." + hostIdentifier, CIDRSpace);
+        // if ccc hits 256 we set back to zero, increment bbb, and check more
+        nextCval = 0;
+        nextBval += 1;
+
+        // if aaa is in the 172 space and bbb hits 32 we advance to the
+        // 192.168 space and return our result
+        if ((nextAval == 172) && (nextBval > 31)) {
+            nextAval = 192;
+            nextBval = 168;
+            return (result);
+        }
+
+        // if aaa is in the 192 space we know bbb can only be 168 which means
+        // we advance to the 10.0.0.0 space and return our result
+        if (nextAval == 192) {
+            nextAval = 10;
+            nextBval = 0;
+            return (result);
+        }
+
+        // if aaa is in the 10 space and bbb has hit 256 we've tried everything
+        // in 10/8 so we reset back to the beginning of the 172 space
+        if ((nextAval == 10) && (nextBval > 255)) {
+            nextAval = 172;
+            nextBval = 16;
+            return (result);
+        }
+
+        // the bbb increment didn't cause a wrap so we return our result
+        return result;
     }
 
     /**
