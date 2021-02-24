@@ -653,13 +653,20 @@ public class CertificateManagerImpl implements CertificateManager
         int keyLen = 0;
         int extraLen = 0;
 
-        // make sure all of the strings passed have a trailing newline character
+        // NGFW-13533 Make sure all of the strings passed have a trailing
+        // newline character so we don't end up with pem files that prevent
+        // apache from starting. We have to do the check and append inline
+        // since Java Strings are immutable.
+        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData = certData.concat("\n");
+        if ((keyData.length() > 0) && (!keyData.endsWith("\n"))) keyData = keyData.concat("\n");
+        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData = extraData.concat("\n");
+
+        // validate the certData, keyData, and extraData to ensure good format
         certLen = validateData(certData, CertContent.CERT);
         if (certLen == 0) return new ExecManagerResult(1, "The certificate is not valid");
 
         keyLen = validateData(keyData, CertContent.KEY);
         if (keyLen == 0) return new ExecManagerResult(1, "The key is not valid");
-
 
         extraLen = validateData(extraData, CertContent.EXTRA);
 
@@ -674,7 +681,6 @@ public class CertificateManagerImpl implements CertificateManager
             return new ExecManagerResult(1, "The Server Certificate does not match the Certificate Key.");
         }
         
-
         // store them in permanent locations
         if(certMode.equalsIgnoreCase("SERVER")) {
             // create the key file
@@ -688,8 +694,10 @@ public class CertificateManagerImpl implements CertificateManager
 
             storeData(certData, CERT_STORE_PATH + baseName + ".crt");
 
-            // next create the certificate PEM file from the certificate KEY and CRT files
-            UvmContextFactory.context().execManager().exec("cat " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key > " + CERT_STORE_PATH + baseName + ".pem");
+            // use sed to combine the CRT and KEY to create the PEM
+            // note that there is NO space following the w argument
+            // sed -n wTARGET.PEM SOURCE.CRT SOURCE.KEY
+            UvmContextFactory.context().execManager().exec("sed -n w" + CERT_STORE_PATH + baseName + ".pem " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key");
 
             // last thing we do is convert the certificate PEM file to PFX format
             // for apps that use SSLEngine like web filter and captive portal
@@ -743,6 +751,13 @@ public class CertificateManagerImpl implements CertificateManager
         int certLen = 0;
         int keyLen = 0;
 
+        // NGFW-13533 Make sure all of the strings passed have a trailing
+        // newline character so we don't end up with pem files that prevent
+        // apache from starting. We have to do the check and append inline
+        // since Java Strings are immutable.
+        if ((certData.length() > 0) && (!certData.endsWith("\n"))) certData = certData.concat("\n");
+        if ((extraData.length() > 0) && (!extraData.endsWith("\n"))) extraData = extraData.concat("\n");
+
         // Validate as a SERVER_CERT
         certLen = validateData(certData, CertContent.CERT);
         if (certLen == 0) return new ExecManagerResult(1, "The certificate provided is not valid");
@@ -774,6 +789,11 @@ public class CertificateManagerImpl implements CertificateManager
 
         // next create the certificate PEM file from the certificate KEY and CRT files
         UvmContextFactory.context().execManager().exec("cat " + csrBaseCrt + " " + csrBaseKey + " > " + csrBasePem);
+
+        // use sed to combine the CRT and KEY to create the PEM
+        // note that there is NO space following the w argument
+        // sed -n wTARGET.PEM SOURCE.CRT SOURCE.KEY
+        UvmContextFactory.context().execManager().exec("sed -n w" + csrBasePem + " " + csrBaseCrt + " " + csrBaseKey);
 
         // last thing we do is convert the certificate PEM file to PFX format
         // for apps that use SSLEngine like web filter and captive portal
@@ -997,9 +1017,6 @@ public class CertificateManagerImpl implements CertificateManager
      */
     private int validateData(String data, CertContent type) {
         int dataLen = 0;
-
-        // ensure trailing newline
-        if ((data.length() > 0) && (!data.endsWith("\n"))) data = data.concat("\n");
 
         String headMarker = "";
         String tailMarker = "";
