@@ -26,7 +26,7 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
     // NGFW-13550 give a predefined width/height for the dialog
     layout: 'fit',
     width: 500,
-    height: 540,
+    height: 500,
 
     items: [{
         xtype: 'panel',
@@ -68,12 +68,11 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
             xtype: 'container',
             layout: 'center',
             items: [{
-                xtype: 'image',
+                xtype: 'panel',
+                border: false,
                 itemId: 'qrcode',
                 alt: 'Quick Reference Code'.t(),
                 autoCreate: true,
-                height: 400,
-                width: 400,
             }],
             hidden: true,
             bind: {
