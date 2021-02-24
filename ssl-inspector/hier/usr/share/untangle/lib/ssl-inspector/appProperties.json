@@ -5,6 +5,7 @@
         "displayName" : "SSL Inspector",
         "type" : "FILTER",
         "viewPosition" : 98,
+        "autoInstall" : true,
         "autoStart" : false,
         "parents" : {
             "javaClass": "java.util.LinkedList",

@@ -5,6 +5,7 @@
         "displayName" : "Captive Portal",
         "type" : "FILTER",
         "viewPosition" : 105,
+        "autoInstall" : true,
         "autoStart" : true,
         "parents" : {
             "javaClass": "java.util.LinkedList",

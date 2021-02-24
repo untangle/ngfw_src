@@ -31,6 +31,7 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
     private Type type;
     
     private boolean hasPowerButton = true;
+    private boolean autoInstall = false;
     private boolean autoStart = true;
     private boolean autoLoad = false;
     private boolean invisible = false;
@@ -87,7 +88,7 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
     public void setAppBase( String newValue ) { this.appBase = newValue; }
 
     /**
-     * The dawmon is the optional name of an associated daemon.
+     * The daemon is the optional name of an associated daemon.
      */
     public String getDaemon() { return daemon; }
     public void setDaemon( String newValue ) { this.daemon = newValue; }
@@ -109,6 +110,12 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
      */
     public boolean getHasPowerButton() { return hasPowerButton; }
     public void setHasPowerButton( boolean newValue ) { this.hasPowerButton = newValue; }
+
+    /**
+     * True if this app should be installed automatically on first setup
+     */
+    public boolean getAutoInstall() { return autoInstall; }
+    public void setAutoInstall( boolean newValue ) { this.autoInstall = newValue; }
 
     /**
      * True if this app should be started automatically (once loaded).

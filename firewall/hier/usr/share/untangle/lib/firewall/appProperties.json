@@ -4,6 +4,7 @@
         "name" : "firewall",
         "displayName" : "Firewall",
         "type" : "FILTER",
-        "viewPosition" : 110
+        "viewPosition" : 110,
+        "autoInstall" : true
 }
 

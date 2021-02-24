@@ -5,6 +5,7 @@
         "displayName" : "Application Control",
         "type" : "FILTER",
         "viewPosition" : 99,
+        "autoInstall" : true,
         "autoStart" : true,
         "parents" : {
             "javaClass": "java.util.LinkedList",
