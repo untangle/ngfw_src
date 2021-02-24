@@ -5,6 +5,7 @@
         "appBase" : "virus-blocker-base",
         "displayName" : "Virus Blocker",
         "type" : "FILTER",
+        "autoInstall" : true,
         "viewPosition" : 30,
         "parents" : {
             "javaClass": "java.util.LinkedList",

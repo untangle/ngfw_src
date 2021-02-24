@@ -6,6 +6,7 @@
         "displayName" : "Web Filter",
         "type" : "FILTER",
         "viewPosition" : 10,
+        "autoInstall" : true,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

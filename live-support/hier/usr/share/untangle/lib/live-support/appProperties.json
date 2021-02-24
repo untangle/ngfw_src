@@ -5,6 +5,7 @@
         "displayName" : "Live Support",
         "type" : "SERVICE",
         "viewPosition" : 1140,
+        "autoInstall" : true,
         "hasPowerButton" : false,
         "parents" : {
             "javaClass": "java.util.LinkedList",

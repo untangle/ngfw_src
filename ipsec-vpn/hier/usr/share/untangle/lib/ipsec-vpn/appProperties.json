@@ -5,6 +5,7 @@
         "displayName" : "IPsec VPN",
         "type" : "SERVICE",
         "viewPosition" : 1070,
+        "autoInstall" : true,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

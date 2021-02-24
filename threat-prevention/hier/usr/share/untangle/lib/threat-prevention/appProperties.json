@@ -5,6 +5,7 @@
         "displayName" : "Threat Prevention",
         "type" : "FILTER",
         "viewPosition" : 111,
+        "autoInstall" : true,
         "parents" : {
                 "javaClass": "java.util.LinkedList",
                 "list": [
