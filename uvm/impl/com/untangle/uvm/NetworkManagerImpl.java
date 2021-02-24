@@ -918,15 +918,15 @@ public class NetworkManagerImpl implements NetworkManager
         for( FilterRule rule : accessRules ) {
             int pos = 1;
             // look for the rule where we want to insert the RADIUS rules
-            if (rule.getReadOnly() && ("Allow HTTPS on non-WANs".equals(rule.getDescription()))) {
+            if (rule.getDescription() != null && ("Allow HTTPS on non-WANs".equals(rule.getDescription()))) {
                 addLocation = pos;
             }
             // see if the LAN rule already exists
-            if (rule.getReadOnly() && ("Allow RADIUS on non-WANs".equals(rule.getDescription()))) {
+            if (rule.getDescription() != null && ("Allow RADIUS on non-WANs".equals(rule.getDescription()))) {
                 lanLocation = pos;
             }
             // see if the WAN rule already exists
-            if (rule.getReadOnly() && ("Allow RADIUS on WANs".equals(rule.getDescription()))) {
+            if (rule.getDescription() != null && ("Allow RADIUS on WANs".equals(rule.getDescription()))) {
                 wanLocation = pos;
             }
             pos++;
