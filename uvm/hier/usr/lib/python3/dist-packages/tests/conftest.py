@@ -1,7 +1,13 @@
 import datetime
-import pytest
 
+from tests.global_functions import uvmContext
 import runtests
+
+
+# ignore parent class that are only tested through inheritance
+collect_ignore = ["test_spam_blocker_base.py",
+                  "test_virus_blocker_base.py",
+                  "test_web_filter_base.py"]
 
 # FIXME: these need to be transformed into command-line switches as well
 runtests.remote_control.external_interface = 1
@@ -44,4 +50,8 @@ def pytest_addoption(parser):
                      help="only run quick tests")
 
 
+# FIXME: move those 2 calls into a proper, dedicated autouse fixture
 runtests.test_start_time = datetime.datetime.now()
+
+if not uvmContext.appManager().isInstantiated('reports'):
+    uvmContext.appManager().instantiate('reports', None)
