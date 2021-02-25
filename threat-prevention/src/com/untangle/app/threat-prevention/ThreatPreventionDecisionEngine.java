@@ -246,10 +246,6 @@ public class ThreatPreventionDecisionEngine
     public HttpRedirect checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         /*
-         * this stores whether this visit should be flagged for any reason
-         */
-        Boolean isFlagged = false;
-        /*
          * this stores the corresponding reason for the flag/block
          */
         URI requestUri = null;

@@ -65,15 +65,20 @@ public class ThreatPreventionHttpHandler extends HttpEventHandler
     @Override
     protected HeaderToken doRequestHeader(AppTCPSession session, HeaderToken requestHeader)
     {
-        HttpRedirect redirect = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
-        if (logger.isDebugEnabled()) {
-            logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirect);
-        }
+        if(app.isLicenseValid() == true) {
+            HttpRedirect redirect = app.getDecisionEngine().checkRequest(session, session.getClientAddr(), session.getServerPort(), getRequestLine(session), requestHeader);
+            if (logger.isDebugEnabled()) {
+                logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + redirect);
+            }
 
-        if (redirect == null) {
-            releaseRequest(session);
+            if (redirect == null) {
+                releaseRequest(session);
+            } else {
+                blockRequest(session, redirect.getResponse());
+            }
         } else {
-            blockRequest(session, redirect.getResponse());
+            // if license is invalid just release the request
+            releaseRequest(session);
         }
 
         return requestHeader;
