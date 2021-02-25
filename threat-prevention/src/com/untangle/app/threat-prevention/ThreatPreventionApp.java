@@ -46,6 +46,7 @@ import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.app.IntMatcher;
+import com.untangle.uvm.app.License;
 
 /** Threat Prevention application */
 public class ThreatPreventionApp extends AppBase
@@ -489,6 +490,17 @@ public class ThreatPreventionApp extends AppBase
     }
 
     /**
+     * Checks to see if we have a valid license.
+     *
+     * @return True if we have a valid license, otherwise false
+     */
+    public boolean isLicenseValid()
+    {
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.THREAT_PREVENTION)) return true;
+        return false;
+    }
+
+    /**
      * Get the Pipeline connectors
      * @return the pipeline connectors array
      */
@@ -505,6 +517,10 @@ public class ThreatPreventionApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
+        if(!isLicenseValid()) {
+            throw new RuntimeException("Invalid License.");
+        }
+
         this.reconfigure();
         WebrootDaemon.getInstance().start();
         webrootQuery = WebrootQuery.getInstance();

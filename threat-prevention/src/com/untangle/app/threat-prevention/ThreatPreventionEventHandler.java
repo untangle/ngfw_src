@@ -81,6 +81,11 @@ public class ThreatPreventionEventHandler extends AbstractEventHandler
     private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
 
+        // if the threat-prevention license is not valid, return
+        if( app.isLicenseValid() != true ) {
+            return;
+        }
+
         if( protocol == Protocol.TCP &&
             ( request.getNewServerPort() == 80 ) ||
             ( request.getNewServerPort() == 443) ){
