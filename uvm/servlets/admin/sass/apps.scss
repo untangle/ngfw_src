@@ -459,3 +459,9 @@
         height: 17px;
     }
 }
+
+// NGFW-13550 - make <pre> content wrap so it does not overflow becoming unaccessible
+.copytoclipboard pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
