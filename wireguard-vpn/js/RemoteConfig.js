@@ -18,51 +18,69 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
             maxDate: null
         }
     },
-    
+
     bodyStyle: {
         background: 'white'
     },
-    defaults: {
-        margin: 10
-    },
+
+    // NGFW-13550 give a predefined width/height for the dialog
+    layout: 'fit',
+    width: 500,
+    height: 500,
 
     items: [{
         xtype: 'panel',
+
         bodyStyle: {
             "background-color": 'white'
         },
+        bodyPadding: 10,
         border: false,
         layout: {
-            type: 'vbox'
+            type: 'vbox',
+            align: 'stretch'
         },
+        scrollable: true,
+        // NGFW-13550 - move type selection into a docked toolbar
+        dockedItems: [{
+            xtype: 'toolbar',
+            dock: 'top',
+            padding: 10,
+            items: [{
+                fieldLabel: 'Type'.t(),
+                xtype: 'combobox',
+                editable: false,
+                hidden: false,
+                bind:{
+                    value: '{type}',
+                    hidden: '{error}',
+                },
+                queryMode: 'local',
+                store: [
+                    [ 'qrcode', 'Quick Reference Code'.t()],
+                    [ 'file', 'Configuration File'.t()]
+                ],
+                forceSelection: true,
+            }]
+        }],
         items:[{
-            fieldLabel: 'Type'.t(),
-            xtype: 'combobox',
-            editable: false,
-            hidden: false,
-            bind:{
-                value: '{type}',
-                hidden: '{error}',
-            },
-            queryMode: 'local',
-            store: [
-                [ 'qrcode', 'Quick Reference Code'.t()],
-                [ 'file', 'Configuration File'.t()]
-            ],
-            forceSelection: true,
-        },{
-            xtype: 'panel',
-            itemId: 'qrcode',
-            alt: 'Quick Reference Code'.t(),
-            autoCreate: true,
-            html: '',
+            // NGFW-13550 - put qr-code image in a container so it's not stretched by above layout stretch
+            xtype: 'container',
+            layout: 'center',
+            items: [{
+                xtype: 'panel',
+                border: false,
+                itemId: 'qrcode',
+                alt: 'Quick Reference Code'.t(),
+                autoCreate: true,
+            }],
             hidden: true,
             bind: {
                 hidden: '{type != "qrcode" || error ? true : false}',
             },
-            flex: 1
         },{
             xtype: 'copytoclipboard',
+            left: 'true',
             value:{
                 key: 'html',
                 stripPrefix: '<pre>',
@@ -72,12 +90,12 @@ Ext.define('Ung.apps.wireguard-vpn.RemoteConfig', {
                 xtype: 'component',
                 itemId: 'file',
                 html: '',
+                flex: 1,
             }],
             hidden: true,
             bind: {
                 hidden: '{type != "file" || error? true : false}',
             },
-            flex: 1
         },{
             xtype: 'component',
             style: {

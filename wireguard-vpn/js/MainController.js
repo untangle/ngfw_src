@@ -313,7 +313,8 @@ Ext.define('Ung.apps.reports.cmp.Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelGr
             title: 'Remote Configuration'.t(),
             record: record
         });
-        dialog.setPosition(event.getXY());
+        // NGFW-13550 - show dialog centered on screen
+        // dialog.setPosition(event.getXY());
         dialog.show();
     }
 });
