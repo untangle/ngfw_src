@@ -71,10 +71,6 @@ public class WanFailoverTesterMonitor
      */
     public synchronized void wanStateChange(Integer interfaceId, boolean active)
     {
-        if (!this.app.isLicenseValid()) {
-            logger.warn("Invalid license - ignoring wanStateChange");
-        }
-
         Boolean previousState = wanStatusArray[interfaceId];
         if (previousState != null && previousState == active) {
             logger.info("wanStateChange WAN (" + interfaceId + ") ignored. Already in state: " + active);
