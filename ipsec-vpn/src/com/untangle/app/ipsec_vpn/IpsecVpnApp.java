@@ -30,7 +30,6 @@ import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -406,8 +405,6 @@ public class IpsecVpnApp extends AppBase
             IpsecVpnApp.execManager.exec(APP_STARTUP_SCRIPT);
         }
 
-        if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
-
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.netSetPreHook);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.netSetPostHook);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
@@ -568,18 +565,6 @@ public class IpsecVpnApp extends AppBase
         this.setMetric(IpsecVpnApp.STAT_DISABLED, (long) dtot);
         this.setMetric(IpsecVpnApp.STAT_ENABLED, (long) etot);
         this.setMetric(IpsecVpnApp.STAT_VIRTUAL, virtualUserTable.countVirtualUsers());
-    }
-
-    /**
-     * Checks to see if we have a valid license.
-     * 
-     * @return True if we have a valid license, otherwise false
-     */
-    public boolean isLicenseValid()
-    {
-        logger.debug("isLicenseValid()");
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN)) return true;
-        return false;
     }
 
     /**
