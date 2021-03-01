@@ -303,12 +303,6 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
      */
     public void processNewSession(IPNewSessionRequest ipr)
     {
-        // if the license is not valid we ignore all traffic
-        if (app.isLicenseValid() != true) {
-            ipr.release();
-            return;
-        }
-
         // create string to allocate the session in the daemon
         // string format = CMD|ID|PROTOCOL|C_ADDR|C_PORT|S_ADDR|S_PORT
         // string sample = CREATE|123456789|TCP|192.168.1.1|55555|4.3.2.1|80
