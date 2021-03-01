@@ -28,7 +28,6 @@ import com.untangle.app.web_filter.DecisionEngine;
 import com.untangle.app.web_filter.WebFilterBase;
 import com.untangle.uvm.HookManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.util.UrlMatchingUtil;
@@ -89,120 +88,116 @@ public class WebFilterDecisionEngine extends DecisionEngine
     public HttpRedirect checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         Boolean isFlagged = false;
-        if (!isLicenseValid()) {
-            return null;
-        } else {
 
-            // The WebFilterDecisionEngine runs the Base class DecisionEngine here, this is important as the Base Decision Engine can return null 
-            // while the WebFilterDecision engine can still return a redirect.
+        // The WebFilterDecisionEngine runs the Base class DecisionEngine here, this is important as the Base Decision Engine can return null 
+        // while the WebFilterDecision engine can still return a redirect.
             
-            HttpRedirect redirect = super.checkRequest(sess, clientIp, port, requestLine, header);
-            if(redirect != null){
-                return redirect;
-            }else{
-                String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
+        HttpRedirect redirect = super.checkRequest(sess, clientIp, port, requestLine, header);
+        if(redirect != null){
+            return redirect;
+        }else{
+            String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
 
-                if (term != null) {
+            if (term != null) {
 
-                    // if a term is unblocked, pass regardless of settings
-                    if(super.isItemUnblocked(term, clientIp)) {
+                // if a term is unblocked, pass regardless of settings
+                if(super.isItemUnblocked(term, clientIp)) {
 
-                        WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, getApp().getName());
-                        if (logger.isDebugEnabled()) logger.debug("LOG: term "+ term + " in unblock list: " + requestLine.getRequestLine());
-                        getApp().logEvent(hbqe);
-                        return null;
-                    }
-
-                    GenericRule matchingRule = null;
-                    for (GenericRule rule : ourApp.getSettings().getSearchTerms()) {
-                        if (rule.getEnabled() != null && !rule.getEnabled()) continue;
-
-                        Object matcherO = rule.attachment();
-                        GlobMatcher matcher = null;
-
-                        /**
-                         * If the matcher is not attached to the rule, initialize a new one
-                         * and attach it. Otherwise just use the matcher already initialized
-                         * and attached to the rule
-                         */
-                        if (matcherO == null || !(matcherO instanceof GlobMatcher)) {
-                            try{
-                                matcher = GlobMatcher.getMatcher("*\\b" + rule.getString() + "\\b*");
-                            }catch(Exception e){
-                                logger.warn("Invalid matching string:" + rule.getString());
-                                continue;
-                            }
-                            rule.attach(matcher);
-                        } else {
-                            matcher = (GlobMatcher) matcherO;
-                        }
-
-                        if (matcher.isMatch(term)) {
-                            matchingRule = rule;
-                            break;
-                        }
-                    }
-
-                    WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, (matchingRule != null && matchingRule.getBlocked()) ? Reason.BLOCK_SEARCH_TERM : Reason.DEFAULT, getApp().getName());
+                    WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, getApp().getName());
+                    if (logger.isDebugEnabled()) logger.debug("LOG: term "+ term + " in unblock list: " + requestLine.getRequestLine());
                     getApp().logEvent(hbqe);
+                    return null;
+                }
 
-                    if( matchingRule != null ||
-                        ourApp.getSettings().getForceKidFriendly()){
-                        URI uri = null;
+                GenericRule matchingRule = null;
+                for (GenericRule rule : ourApp.getSettings().getSearchTerms()) {
+                    if (rule.getEnabled() != null && !rule.getEnabled()) continue;
 
-                        try {
-                            uri = new URI(CONSECUTIVE_SLASHES_URI_PATTERN.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll("/"));
-                        } catch (URISyntaxException e) {
-                            logger.error("Could not parse URI '" + uri + "'", e);
+                    Object matcherO = rule.attachment();
+                    GlobMatcher matcher = null;
+
+                    /**
+                     * If the matcher is not attached to the rule, initialize a new one
+                     * and attach it. Otherwise just use the matcher already initialized
+                     * and attached to the rule
+                     */
+                    if (matcherO == null || !(matcherO instanceof GlobMatcher)) {
+                        try{
+                            matcher = GlobMatcher.getMatcher("*\\b" + rule.getString() + "\\b*");
+                        }catch(Exception e){
+                            logger.warn("Invalid matching string:" + rule.getString());
+                            continue;
                         }
+                        rule.attach(matcher);
+                    } else {
+                        matcher = (GlobMatcher) matcherO;
+                    }
 
-                        String host = uri.getHost();
-                        if (null == host) {
-                            host = header.getValue("host");
-                            if (null == host) {
-                                host = clientIp.getHostAddress();
-                            }
-                        }
-
-                        host = UrlMatchingUtil.normalizeHostname(host);
-
-                        if(matchingRule != null){
-
-                            if (matchingRule.getBlocked()) {
-                                ourApp.incrementFlagCount();
-
-                                return ( new HttpRedirect(
-                                    ourApp.generateBlockResponse(
-                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle(), Reason.BLOCK_SEARCH_TERM, term), 
-                                        sess, uri.toString(), header),
-                                    HttpRedirect.RedirectType.BLOCK));
-                            } else {
-                                if (matchingRule.getFlagged()) isFlagged = true;
-
-                                if (isFlagged) ourApp.incrementFlagCount();
-                                return null;
-                            }
-                        }else if(ourApp.getSettings().getForceKidFriendly()){
-                            if(!host.equals(SearchEngine.KidFriendlySearchEngineRedirectUri.getHost())){
-                                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), null, null, Reason.REDIRECT_KIDS, null, null, null, ourApp.getName());
-                                ourApp.logEvent(hbe);
-
-
-                                return ( new HttpRedirect(
-                                    ourApp.generateRedirectResponse(
-                                        new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle(), Reason.REDIRECT_KIDS, term), 
-                                            sess, uri.toString(), header, 
-                                            SearchEngine.KidFriendlySearchEngineRedirectUri, SearchEngine.getKidFriendlyRedirectParameters(term)),
-                                    HttpRedirect.RedirectType.REDIRECT));
-                            }
-                        }
+                    if (matcher.isMatch(term)) {
+                        matchingRule = rule;
+                        break;
                     }
                 }
 
-                if(ourApp.getSettings().getRestrictYoutube()){
-                    addYoutubeRestrictCookie(sess, header);
+                WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, (matchingRule != null && matchingRule.getBlocked()) ? Reason.BLOCK_SEARCH_TERM : Reason.DEFAULT, getApp().getName());
+                getApp().logEvent(hbqe);
+
+                if( matchingRule != null ||
+                    ourApp.getSettings().getForceKidFriendly()){
+                    URI uri = null;
+
+                    try {
+                        uri = new URI(CONSECUTIVE_SLASHES_URI_PATTERN.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll("/"));
+                    } catch (URISyntaxException e) {
+                        logger.error("Could not parse URI '" + uri + "'", e);
+                    }
+
+                    String host = uri.getHost();
+                    if (null == host) {
+                        host = header.getValue("host");
+                        if (null == host) {
+                            host = clientIp.getHostAddress();
+                        }
+                    }
+
+                    host = UrlMatchingUtil.normalizeHostname(host);
+
+                    if(matchingRule != null){
+
+                        if (matchingRule.getBlocked()) {
+                            ourApp.incrementFlagCount();
+
+                            return ( new HttpRedirect(
+                                ourApp.generateBlockResponse(
+                                    new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), matchingRule.getDescription(), clientIp, ourApp.getAppTitle(), Reason.BLOCK_SEARCH_TERM, term), 
+                                    sess, uri.toString(), header),
+                                HttpRedirect.RedirectType.BLOCK));
+                        } else {
+                            if (matchingRule.getFlagged()) isFlagged = true;
+
+                            if (isFlagged) ourApp.incrementFlagCount();
+                            return null;
+                        }
+                    }else if(ourApp.getSettings().getForceKidFriendly()){
+                        if(!host.equals(SearchEngine.KidFriendlySearchEngineRedirectUri.getHost())){
+                            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), null, null, Reason.REDIRECT_KIDS, null, null, null, ourApp.getName());
+                            ourApp.logEvent(hbe);
+
+
+                            return ( new HttpRedirect(
+                                ourApp.generateRedirectResponse(
+                                    new WebFilterRedirectDetails( ourApp.getSettings(), host, uri.toString(), "", clientIp, ourApp.getAppTitle(), Reason.REDIRECT_KIDS, term), 
+                                        sess, uri.toString(), header, 
+                                        SearchEngine.KidFriendlySearchEngineRedirectUri, SearchEngine.getKidFriendlyRedirectParameters(term)),
+                                HttpRedirect.RedirectType.REDIRECT));
+                        }
+                    }
                 }
-           }
+            }
+
+            if(ourApp.getSettings().getRestrictYoutube()){
+                addYoutubeRestrictCookie(sess, header);
+            }
         }
         return null;
     }
@@ -223,17 +218,13 @@ public class WebFilterDecisionEngine extends DecisionEngine
     @Override
     public HttpRedirect checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
-        if (!isLicenseValid()) {
-            return null;
-        } else {
-            HttpRedirect redirect = super.checkResponse(sess, clientIp, requestLine, header);
-            if(redirect == null){
-                if(ourApp.getSettings().getBlockQuic()){
-                    removeQuicCookie(header);
-                }
+        HttpRedirect redirect = super.checkResponse(sess, clientIp, requestLine, header);
+        if(redirect == null){
+            if(ourApp.getSettings().getBlockQuic()){
+                removeQuicCookie(header);
             }
-            return redirect;
-       }
+        }
+        return redirect;
     }
 
 
@@ -392,19 +383,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
         urlFields[2] = uri;
 
         return urlFields;
-    }
-
-    /**
-     * Check the license status
-     * 
-     * @return True if valid, otherwise false
-     */
-    private boolean isLicenseValid()
-    {
-        if (ourApp.getAppName().equals("web-monitor")) return true;
-
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER)) return true;
-        return false;
     }
 
     /**
