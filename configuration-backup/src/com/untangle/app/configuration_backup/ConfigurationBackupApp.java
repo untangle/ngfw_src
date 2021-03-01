@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.GoogleManager;
 import com.untangle.uvm.ExecManagerResultReader;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.DirectoryConnector;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -128,11 +127,6 @@ public class ConfigurationBackupApp extends AppBase
      */
     public void sendBackup()
     {
-        if ( !isLicenseValid()) {
-            this.logEvent(new ConfigurationBackupEvent(false, "No valid license.", "" ));
-            return;
-        }
-
         File backupFile = UvmContextFactory.context().backupManager().createBackup();
 
         if ( backupFile == null ) {
@@ -214,10 +208,6 @@ public class ConfigurationBackupApp extends AppBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
-        if ( ! isLicenseValid() ) {
-            throw new RuntimeException( "invalid license" );
-        }
-
         writeCronFile();
     }
 
