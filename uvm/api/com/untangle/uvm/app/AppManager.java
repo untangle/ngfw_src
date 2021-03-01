@@ -183,5 +183,9 @@ public interface AppManager
      */
     AppsView[] getAppsViews();
 
+    /**
+     * Shutdown any running apps that have an invalid license
+     */
+    void shutdownAppsWithInvalidLicense();
     
 }
