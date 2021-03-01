@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -370,17 +369,6 @@ public class ApplicationControlApp extends AppBase
         }
 
         return result;
-    }
-
-    /**
-     * Check for a valid license
-     * 
-     * @return True if license is valid, otherwise false
-     */
-    public boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.APPLICATION_CONTROL)) return true;
-        return false;
     }
 
     /**
