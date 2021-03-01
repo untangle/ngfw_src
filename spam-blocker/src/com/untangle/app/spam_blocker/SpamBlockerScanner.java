@@ -14,7 +14,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.spam_blocker.ReportItem;
 import com.untangle.app.spam_blocker.SpamReport;
 import com.untangle.app.spam_blocker.SpamScanner;
-import com.untangle.uvm.app.License;
 
 /**
  * Implements the spam blocker scannner
@@ -73,11 +72,6 @@ public class SpamBlockerScanner implements SpamScanner
      */
     public SpamReport scanFile(File msgFile, float threshold)
     {
-        if (!isLicenseValid()) {
-            logger.warn("No valid license found - skipping scan");
-            return new SpamReport(new LinkedList<ReportItem>(), 0, threshold);
-        }
-
         SpamAssassinClient client = new SpamAssassinClient(msgFile, SpamAssassinClient.SPAMD_DEFHOST, SpamAssassinClient.SPAMD_DEFPORT, threshold, SPAM_SCANNER_USERNAME);
 
         try {
@@ -143,15 +137,5 @@ public class SpamBlockerScanner implements SpamScanner
     {
         /* This is currently not displayed in the UI or reports */
         return "";
-    }
-
-    /**
-     * Checks to see if the license is valid
-     * 
-     * @return True if license is valid, otherwise false
-     */
-    protected boolean isLicenseValid()
-    {
-        return UvmContextFactory.context().licenseManager().isLicenseValid(License.SPAM_BLOCKER);
     }
 }
