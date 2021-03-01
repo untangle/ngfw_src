@@ -115,10 +115,6 @@ public class WebFilterApp extends WebFilterBase
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        if (!isLicenseValid()) {
-            throw new RuntimeException("invalid license");
-        }
-
         getDecisionEngine().start();
 
         super.preStart(isPermanentTransition);
