@@ -31,7 +31,6 @@ import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.OAuthDomain;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppMetric;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.app.AppBase;
@@ -303,17 +302,6 @@ public class SslInspectorApp extends AppBase
     public TrustManagerFactory getTrustFactory()
     {
         return (trustFactory);
-    }
-
-    /**
-     * Check for a valid license
-     * 
-     * @return True if license is valid, otherwise false
-     */
-    public boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SSL_INSPECTOR)) return true;
-        return false;
     }
 
     /**

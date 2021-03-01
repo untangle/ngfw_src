@@ -71,9 +71,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     }
 
     /**
-     * We do a license check for all new session requests and release the
-     * session if our license is not valid.
-     * 
      * @param sessionRequest
      *        The new session request
      */
@@ -81,11 +78,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequest sessionRequest)
     {
-        // if the license is not valid we ignore all traffic
-        if (app.isLicenseValid() != true) {
-            sessionRequest.release();
-            return;
-        }
+        // remove?
     }
 
     /**
