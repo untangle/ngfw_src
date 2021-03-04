@@ -6,6 +6,11 @@ def generate_tables():
     __create_wireguard_vpn_stats_table()
 
 @sql_helper.print_timing
+def cleanup_tables(cutoff):
+    sql_helper.clean_table("wireguard_vpn_events", cutoff)
+    sql_helper.clean_table("wireguard_vpn_stats", cutoff)
+
+@sql_helper.print_timing
 def __create_wireguard_vpn_events_table():
     sql_helper.create_table("""\
 CREATE TABLE reports.wireguard_vpn_events (
