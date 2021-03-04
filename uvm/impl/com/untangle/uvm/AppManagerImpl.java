@@ -65,6 +65,8 @@ public class AppManagerImpl implements AppManager
 
     private boolean live = true;
 
+    private boolean firstRun = false;
+
     /**
      * Constructor
      */
@@ -933,7 +935,20 @@ public class AppManagerImpl implements AppManager
             }
         }
 
+        // start apps flagged with autoLoad
         startAutoLoad();
+
+        // NGFW-13588 The firstRun flag will be true when we initialize our
+        // settings the very first time the uvm is started. That's when we want
+        // to install any apps flagged with autoInstall. I'm excluding this
+        // if the development environment flag is set since many installed
+        // apps will slow down the uvm startup and shutdown quite a bit.
+        if (firstRun) {
+            firstRun = false;
+            if (! UvmContextFactory.context().isDevel()) {
+                doAutoInstall();
+            }
+        }
 
         logger.info("Initialized AppManager");
     }
@@ -1003,6 +1018,37 @@ public class AppManagerImpl implements AppManager
             if (list.size() == 0) {
                 try {
                     logger.info("Auto-loading new app: " + appProps.getName());
+                    App app = instantiate(appProps.getName());
+
+                    if (appProps.getAutoStart()) {
+                        app.start();
+                    }
+
+                } catch (Exception exn) {
+                    logger.warn("could not deploy: " + appProps.getName(), exn);
+                    continue;
+                }
+            }
+        }
+    }
+
+    /**
+     * Called to instantiate apps marked for autoInstall
+     */
+    protected void doAutoInstall()
+    {
+        for (AppProperties appProps : getAllAppProperties()) {
+            if (!appProps.getAutoInstall()) continue;
+
+            List<App> list = appInstances(appProps.getName());
+
+            /**
+             * If an app autoInstall flag is set we install the app here and
+             * also start if the autoStart flag is set
+             */
+            if (list.size() == 0) {
+                try {
+                    logger.info("Auto-installing new app: " + appProps.getName());
                     App app = instantiate(appProps.getName());
 
                     if (appProps.getAutoStart()) {
@@ -1323,7 +1369,7 @@ public class AppManagerImpl implements AppManager
         logger.info("Initializing Settings...");
 
         AppManagerSettings newSettings = new AppManagerSettings();
-
+        firstRun = true;
         this._setSettings(newSettings);
     }
 

@@ -4,6 +4,7 @@
         "name" : "reports",
         "displayName" : "Reports",
         "type" : "SERVICE",
-        "viewPosition" : 1010
+        "viewPosition" : 1010,
+        "autoInstall" : true
 }
 
