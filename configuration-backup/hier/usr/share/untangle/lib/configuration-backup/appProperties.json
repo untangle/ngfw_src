@@ -5,6 +5,7 @@
         "displayName" : "Configuration Backup",
         "type" : "SERVICE",
         "viewPosition" : 1120,
+        "autoInstall" : true,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

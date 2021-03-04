@@ -5,6 +5,7 @@
         "displayName" : "Tunnel VPN",
         "type" : "SERVICE",
         "viewPosition" : 1085,
+        "autoInstall" : true,
         "autoStart" : "false"
 }
 
