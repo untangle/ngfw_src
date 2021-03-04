@@ -8,6 +8,7 @@ def generate_tables():
 @sql_helper.print_timing
 def cleanup_tables(cutoff):
     sql_helper.clean_table("openvpn_stats", cutoff)
+    sql_helper.clean_table("openvpn_events", cutoff)
 
 @sql_helper.print_timing
 def __create_openvpn_stats( ):
