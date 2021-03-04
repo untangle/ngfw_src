@@ -9,6 +9,8 @@ def generate_tables():
 @sql_helper.print_timing
 def cleanup_tables(cutoff):
     sql_helper.clean_table("ipsec_user_events", cutoff)
+    sql_helper.clean_table("ipsec_tunnel_stats", cutoff)
+    sql_helper.clean_table("ipsec_vpn_events", cutoff)
 
 @sql_helper.print_timing
 def __create_ipsec_user_events_table():
