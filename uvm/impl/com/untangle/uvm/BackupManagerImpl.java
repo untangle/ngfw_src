@@ -121,7 +121,7 @@ public class BackupManagerImpl implements BackupManager
 
         // run same command with nohup and without -c check-only flag
         logger.info("Restore Backup: launching restore " + restoreFile);
-        UvmContextFactory.context().execManager().exec("nohup " + RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -v -m \"" + maintainRegex + "\" >/var/log/uvm/restore.log 2>&1 &");
+        UvmContextFactory.context().execManager().exec(System.getProperty("uvm.bin.dir") + "/ut-backup-restore-helper.sh restore " + restoreFile.getAbsolutePath() + "  \"" + maintainRegex +"\"");
 
         logger.info("Restore Backup: returning");
         return new ExecManagerResult(0, i18nUtil.tr("The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again."));
