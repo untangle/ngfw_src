@@ -436,128 +436,13 @@ Ext.define('Ung.view.apps.AppsController', {
         });
     },
 
-
-    // used for installing recommended apps after registering
     onPostRegistration: function () {
-        var me = this;
-        Ung.app.redirectTo('#apps');
-
-        var popup = Ext.create('Ext.window.MessageBox', {
-            buttons: [{
-                name: 'Yes',
-                text: 'Yes, install the recommended apps.'.t(),
-                handler: function () {
-                    var apps = [
-                        { displayName: 'Web Filter', name: 'web-filter'},
-                        { displayName: 'Bandwidth Control', name: 'bandwidth-control'},
-                        { displayName: 'SSL Inspector', name: 'ssl-inspector'},
-                        { displayName: 'Application Control', name: 'application-control'},
-                        { displayName: 'Captive Portal', name: 'captive-portal'},
-                        { displayName: 'Firewall', name: 'firewall'},
-                        { displayName: 'Threat Prevention', name: 'threat-prevention'},
-                        { displayName: 'Reports', name: 'reports'},
-                        { displayName: 'Policy Manager', name: 'policy-manager'},
-                        { displayName: 'Directory Connector', name: 'directory-connector'},
-                        { displayName: 'IPsec VPN', name: 'ipsec-vpn'},
-                        { displayName: 'WireGuard VPN', name: 'wireguard-vpn'},
-                        { displayName: 'OpenVPN', name: 'openvpn'},
-                        { displayName: 'Tunnel VPN', name: 'tunnel-vpn'},
-                        { displayName: 'Configuration Backup', name: 'configuration-backup'},
-                        { displayName: 'Branding Manager', name: 'branding-manager'},
-                        { displayName: 'Live Support', name: 'live-support'}
-                    ];
-
-                    // only install WAN failover/balancer apps if more than 2 interfaces
-                    try {
-                        if (Rpc.directData('rpc.networkSettings.interfaces.list').length > 2) {
-                            apps.push({ displayName: 'WAN Failover', name: 'wan-failover'});
-                            apps.push({ displayName: 'WAN Balancer', name: 'wan-balancer'});
-                        }
-                    } catch (e) {
-                        console.log(e);
-                    }
-
-                    // only install these if enough memory
-                    // or if its arm still install virus blocker (in clientless mode)
-                    try {
-                        var memTotal = Util.bytesToMBs(Ext.getStore('stats').first().get('MemTotal'));
-                        if (memTotal && memTotal > 1400) {
-                            //apps.splice(2, 0, { displayName: 'Phish Blocker', name: 'phish-blocker'});
-                            //apps.splice(2, 0, { displayName: 'Spam Blocker', name: 'spam-blocker'});
-                            //apps.splice(2, 0, { displayName: 'Virus Blocker Lite', name: 'virus-blocker-lite'});
-                            apps.splice(2, 0, { displayName: 'Virus Blocker', name: 'virus-blocker'});
-                        } else if (Rpc.directData('rpc.architecture') == 'arm') {
-                            apps.splice(2, 0, { displayName: 'Virus Blocker', name: 'virus-blocker'});
-                        }
-                    } catch (e) {
-                        console.log(e);
-                    }
-
-                    popup.close();
-                    me.installRecommendedApps(apps);
-                }
-            }, {
-                name: 'No',
-                text: 'No, I will install the apps manually.',
-                handler: function () {
-                    popup.close();
-                    me.showInstall();
-                }
-            }]
-        });
-
-        popup.show({
-            title: 'Registration complete.'.t(),
-            width: 470,
-            msg: 'Thank you for using Untangle!'.t() + '<br/><br/>' +
-                'Applications can now be installed and configured.'.t() + '<br/>' +
-                'Would you like to install the recommended applications now?'.t(),
-            icon: Ext.MessageBox.QUESTION
+        Ext.MessageBox.alert('Installation Complete!'.t(),
+        'The recommended applications have automatically been installed.'.t()  + '<br/><br/>' +
+        'Thank you for using Untangle!'.t(),
+        function () {
+            window.location.href = '/admin/index.do';
         });
     },
-
-    installRecommendedApp: function (app, cb) {
-        var me = this, vm = me.getViewModel();
-        var appVm = vm.getView().down('#app_' + app.name).getViewModel();
-        appVm.set('installing', true);
-
-        Rpc.asyncData('rpc.appManager.instantiate', app.name, vm.get('policyId'))
-        .then(function (result) {
-            if(Util.isDestroyed(appVm)){
-                return;
-            }
-            var instance = result.getAppSettings();
-            appVm.set({
-                instance: instance,
-                instanceId: instance.id,
-                runState: result.getRunState(),
-                installing: false,
-                parentPolicy: null,
-                metrics: result.getMetrics().list,
-                route: (appVm.get('app.type') === 'FILTER') ? '#apps/' + instance.policyId + '/' + appVm.get('app.name') : '#service/' + appVm.get('app.name')
-            });
-            appVm.set('state', Ext.create('Ung.model.AppState',{vm: appVm}));
-            cb();
-        });
-    },
-
-    installRecommendedApps: function (apps) {
-        var me = this, appsToInstall = apps.length;
-
-        Ext.Array.each(apps, function (app) {
-            me.installRecommendedApp(app, function () {
-                appsToInstall--;
-                if (appsToInstall === 0) { // all apps installed
-                    Ext.MessageBox.alert('Installation Complete!'.t(),
-                        'The recommended applications have successfully been installed.'.t()  + '<br/><br/>' +
-                        'Thank you for using Untangle!'.t(),
-                        function () {
-                            window.location.href = '/admin/index.do';
-                        });
-                    return;
-                }
-            });
-        });
-    }
 
 });
