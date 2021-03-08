@@ -348,6 +348,11 @@ public interface UvmContext
     boolean isDevel();
 
     /**
+     * Return true if running in an automated test environment.
+     */
+    boolean isAts();
+
+    /**
      * Returns true if this is a netbooted install on Untangle internal network
      */
     boolean isNetBoot();
