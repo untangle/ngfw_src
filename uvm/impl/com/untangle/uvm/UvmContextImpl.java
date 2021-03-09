@@ -50,6 +50,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String APPLIANCE_MODEL_FILE = System.getProperty("uvm.conf.dir") + "/appliance-model";
     private static final String APPLIANCE_VIRTUAL_DETECT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-virtual-detect.py";
     private static final String POST_STARTUP_SCRIPT_DIR = "/etc/untangle/post-uvm-hook.d";
+    private static final String ATS_UTILITIES_DIR = "/usr/share/untangle-ats-utilities";
 
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
@@ -941,6 +942,19 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
+     * Returns true if running with the ATS utilities installed
+     * @return <doc>
+     */
+    public boolean isAts()
+    {
+        File atsPath = new File(ATS_UTILITIES_DIR);
+        if (atsPath.isDirectory()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * isNetBoot
      * Returns true if this is a netbooted install on Untangle internal network
      * If this is netbooted on our internal network (using netboot.preseed)
@@ -1398,12 +1412,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void postInit()
     {
+        boolean firstRunFlag;
+
         writeStatusFile( "starting" );
 
         mailSender.postInit();
 
         logger.debug("restarting apps");
-        appManager.init();
+
+        // save the firstRunFlag returned from the app manager
+        firstRunFlag = appManager.init();
 
         tomcatManager.startTomcat();
         tomcatManager.writeWelcomeFile();
@@ -1440,6 +1458,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         UvmContextFactory.context().hookManager().registerCallback( HookManager.APPLICATION_DESTROY, appDestroyHook );
         // Pull if it already added.
         this.reportsApp = (Reporting) this.appManager().app("reports");
+
+        // NGFW-13588 The firstRunFlag will be true when we initialize our
+        // settings the very first time the uvm is started. We use the flag
+        // to automatically install the recommended apps but not if we
+        // detect the DEV or ATS environments.
+        if ( (firstRunFlag) && (! isDevel()) && (! isAts()) ) {
+            appManager.doAutoInstall();
+        }
     }
 
     /**
