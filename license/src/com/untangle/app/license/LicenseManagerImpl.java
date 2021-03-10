@@ -711,7 +711,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     if(lic.has("end")) {newLic.setEnd(lic.getLong("end"));}
                     if(lic.has("key")) {newLic.setKey(lic.getString("key"));}
                     if(lic.has("keyVersion")) {newLic.setKeyVersion(lic.getInt("keyVersion"));}
-                    if(lic.has("seats")) {newLic.setSeats(lic.getInt("seats"));}
+                    if((lic.has("seats")) && (!lic.isNull("seats"))) {newLic.setSeats(lic.getInt("seats"));}
 
                     licenses.add(newLic);
                 }
