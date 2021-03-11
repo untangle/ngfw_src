@@ -49,13 +49,6 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     {
         logger.debug("WEBCACHE handleTCPNewSession()");
 
-        if (app.isLicenseValid() != true) {
-            this.app.incrementMetric(WebCacheApp.STAT_SYSTEM_BYPASS);
-            app.statistics.IncSystemCount();
-            session.release();
-            return;
-        }
-
         // if high load bypass flag is true release immediately
         if (app.highLoadBypass == true) {
             logger.debug("----- RELEASING SESSION DUE TO HIGH LOAD -----\n");

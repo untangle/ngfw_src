@@ -217,10 +217,6 @@ public class WanFailoverApp extends AppBase
     @Override
     protected synchronized void preStart(boolean isPermanentTransition)
     {
-        if (!isLicenseValid()) {
-            throw new RuntimeException("Invalid License.");
-        }
-
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback);
 
         if (WanFailoverApp.execManager == null) {

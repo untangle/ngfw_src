@@ -13,7 +13,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -101,10 +100,6 @@ public class BandwidthControlApp extends AppBase
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
 
-        if ( ! isLicenseValid() ) {
-            throw new RuntimeException( i18nUtil.tr( "Unable to start an app: invalid license" ));
-        }
-        
         if ( settings == null ) {
             throw new RuntimeException( i18nUtil.tr( "Settings not found - an internal error has occurred." ));
         }
@@ -330,17 +325,6 @@ public class BandwidthControlApp extends AppBase
     public void incrementCount( String stat, long delta )
     {
         this.adjustMetric( stat, delta );
-    }
-
-    /**
-     * Check the license
-     * @return true if license is valid, false otherwise
-     */
-    public boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.BANDWIDTH_CONTROL))
-            return true;
-        return false;
     }
 
     /**

@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 // import com.untangle.app.directory_connector.GroupEntry;
 // import com.untangle.app.directory_connector.UserEntry;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.GroupMatcher;
 import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.util.Pulse;
@@ -481,19 +480,6 @@ public class GroupManager
     }
 
     /**
-     * Check that the directory connector license is valid.
-     *
-     * @return
-     *  true if valid, otherwise false.
-     */
-    private boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR))
-            return true;
-        return false;
-    }
-
-    /**
      * Renew the doman/group cache across all available domains.
      */
     private class RenewCache implements Runnable
@@ -509,10 +495,6 @@ public class GroupManager
          */
         public void run()
         {
-            if ( !isRenewEnabled()) {
-                return;
-            }
-
             logger.info("Renewing AD Group Cache...");
             long startTime = System.currentTimeMillis();
 
@@ -693,22 +675,6 @@ public class GroupManager
             // logger.info("Renewing AD Group Cache: done");
             long endTime = System.currentTimeMillis();
             logger.info("Renewing AD Group Cache: done, elapsed=" + (endTime - startTime) + "ms");
-        }
-
-        /** 
-         * Check to see if domain connector license is still active.
-         *
-         * @return
-         *  true if still active, false otherwise.
-         */
-        private boolean isRenewEnabled()
-        {
-            if ( !isLicenseValid() ) {
-                logger.warn( "Invalid license, not renewing group cache.");
-                return false;
-            }
-
-            return true;
         }
     }
 }

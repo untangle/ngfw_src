@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.PortRange;
 import com.untangle.uvm.app.AppMetric;
@@ -250,16 +249,5 @@ public class WebCacheApp extends AppBase
         } catch (Exception exn) {
             logger.error("Unable to load settings", exn);
         }
-    }
-
-    /**
-     * Check for a valid license
-     * 
-     * @return True if license is valid, otherwise false
-     */
-    public boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_CACHE)) return true;
-        return false;
     }
 }

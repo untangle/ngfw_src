@@ -1003,6 +1003,55 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
+     * Shutdown any running apps that have an invalid license
+     */
+    public synchronized void shutdownAppsWithInvalidLicense()
+    {
+        List<Runnable> tasks = new ArrayList<>();
+
+        for (final App app : loadedAppsMap.values()) {
+            Runnable r = new Runnable()
+            {
+                /**
+                 * The runnable function
+                 */
+                public void run()
+                {
+                    String name = app.getAppProperties().getName();
+                    Long id = app.getAppSettings().getId();
+
+                    if (!UvmContextFactory.context().licenseManager().isLicenseValid(name)) {
+
+                        logger.info("Stopping  : " + name + " [" + id + "] because of invalid license");
+
+                        long startTime = System.currentTimeMillis();
+                        ((AppBase) app).stopIfRunning();
+                        long endTime = System.currentTimeMillis();
+
+                        logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
+
+                    }
+                }
+            };
+            tasks.add(r);
+        }
+
+        List<Thread> threads = new ArrayList<>(tasks.size());
+        try {
+            for (Iterator<Runnable> taskIterator = tasks.iterator(); taskIterator.hasNext();) {
+                Thread t = UvmContextFactory.context().newThread(taskIterator.next(), "STOP_THREAD");
+                threads.add(t);
+                t.start();
+            }
+            // Must wait for them to start before we can go on to next wave.
+            for (Thread t : threads)
+                t.join();
+        } catch (InterruptedException exn) {
+            logger.error("Interrupted while starting apps");
+        }
+    }
+
+    /**
      * Called to start apps marked for autoload
      */
     protected void startAutoLoad()
