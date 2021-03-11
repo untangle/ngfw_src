@@ -370,8 +370,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public boolean activeDirectoryAuthenticate(String username, String pwd)
     {
-        if (!isLicenseValid()) 
-            return false;
         if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
             return false;
         if (this.activeDirectoryManager == null) 
@@ -392,8 +390,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public boolean radiusAuthenticate(String username, String pwd)
     {
-        if (!isLicenseValid())
-            return false;
         if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
             return false;
         if (this.radiusManager == null)
@@ -414,8 +410,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public boolean anyAuthenticate(String username, String pwd)
     {
-        if (!isLicenseValid())
-            return false;
         if (username == null || username.equals("") || pwd == null || pwd.equals(""))
             return false;
         try {
@@ -444,9 +438,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      true if user is in specified domain, false otherwise
      */
     public boolean isMemberOfDomain(String user, String domain){
-        if (!isLicenseValid()) {
-            return false;
-        }
         return this.groupManager.isMemberOfDomain(user, domain);
     }
 
@@ -461,9 +452,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      *      true if user is in specified domain, false otherwise
      */
     public boolean isMemberOfDomain(String user, DomainMatcher domainMatcher){
-        if (!isLicenseValid()) {
-            return false;
-        }
         return this.groupManager.isMemberOfDomain(user, domainMatcher);
     }
 
@@ -477,10 +465,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public List<String> memberOfDomain(String user)
     {
-        if (!isLicenseValid()) {
-            return new LinkedList<>();
-        }
-
         return this.groupManager.memberOfDomain(user);
     }
 
@@ -496,10 +480,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public boolean isMemberOfGroup(String user, String group)
     {
-        if (!isLicenseValid()) {
-            return false;
-        }
-
         return this.groupManager.isMemberOfGroup(user, group);
     }
 
@@ -515,10 +495,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public boolean isMemberOfGroup(String user, GroupMatcher groupMatcher)
     {
-        if (!isLicenseValid()) {
-            return false;
-        }
-
         return this.groupManager.isMemberOfGroup(user, groupMatcher);
     }
 
@@ -532,10 +508,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public List<String> memberOfGroup(String user)
     {
-        if (!isLicenseValid()) {
-            return new LinkedList<>();
-        }
-
         return this.groupManager.memberOfGroup(user);
     }
 
@@ -551,10 +523,6 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public List<String> memberOfGroup(String user, String domain)
     {
-        if (!isLicenseValid()) {
-            return new LinkedList<>();
-        }
-
         return this.groupManager.memberOfGroup(user, domain);
     }
 

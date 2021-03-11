@@ -77,10 +77,6 @@ public class ActiveDirectoryManagerImpl
     public List<UserEntry> getUserEntries(String domain)
         throws ServiceUnavailableException
     {
-        if (!app.isLicenseValid()){
-            return new LinkedList<>();
-        }
-
         List<UserEntry> userList = new LinkedList<>();
 
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
@@ -114,9 +110,6 @@ public class ActiveDirectoryManagerImpl
      */
     public List<String> getDomains(){
         LinkedList<String> domains = new LinkedList<>();
-        if (!app.isLicenseValid()){
-            return domains;
-        }
 
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
@@ -166,10 +159,6 @@ public class ActiveDirectoryManagerImpl
     public List<UserEntry> getGroupUsers( String domain, String groupName )
         throws ServiceUnavailableException
     {
-        if (!app.isLicenseValid()){
-            return new LinkedList<>();
-        }
-
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
                 continue;
@@ -203,10 +192,6 @@ public class ActiveDirectoryManagerImpl
     public List<GroupEntry> getGroupEntries( String domain, boolean fetchMemberOf )
     {
         List<GroupEntry> groupList = new LinkedList<>();
-
-        if (!app.isLicenseValid()){
-            return new LinkedList<>();
-        }
 
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
@@ -392,9 +377,6 @@ public class ActiveDirectoryManagerImpl
         throws ServiceUnavailableException
     {
         JSONArray result = new JSONArray();
-        if (!app.isLicenseValid()){
-            return result;
-        }
 
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){

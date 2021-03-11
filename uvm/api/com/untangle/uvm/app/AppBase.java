@@ -877,6 +877,11 @@ public abstract class AppBase implements App
      */
     private void start(boolean saveNewTargetState)
     {
+        if (!isLicenseValid()) {
+            logger.warn("Start called with invalid license");
+            return;
+        }
+
         if (AppState.INITIALIZED != getRunState()) {
             logger.warn("Start called in state: " + getRunState());
             return;

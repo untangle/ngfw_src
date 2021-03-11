@@ -148,10 +148,6 @@ public class WanBalancerApp extends AppBase
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        if (!isLicenseValid()) {
-            throw new RuntimeException("Invalid License.");
-        }
-
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback);
 
         // if this is permanent write the enabled version of the scripts and run them

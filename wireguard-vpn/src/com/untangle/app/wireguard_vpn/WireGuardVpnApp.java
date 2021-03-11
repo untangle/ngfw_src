@@ -32,7 +32,6 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.app.License;
 
 /**
  * The WireGuard VPN application connects to 3rd party VPN tunnel providers.
@@ -279,8 +278,6 @@ public class WireGuardVpnApp extends AppBase
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        if (isLicenseValid() != true) throw (new RuntimeException("Unable to start wireguard-vpn service: invalid license"));
-
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.PRE_NETWORK_SETTINGS_CHANGE, this.wireguardVpnPreHookCallback);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.wireguardVpnHookCallback);
     }
@@ -399,17 +396,6 @@ public class WireGuardVpnApp extends AppBase
         settings.setTunnels(new LinkedList<WireGuardVpnTunnel>());
 
         return settings;
-    }
-
-    /**
-     * Checks to see if we have a valid license.
-     * 
-     * @return True if we have a valid license, otherwise false
-     */
-    public boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WIREGUARD_VPN)) return true;
-        return false;
     }
 
     /**

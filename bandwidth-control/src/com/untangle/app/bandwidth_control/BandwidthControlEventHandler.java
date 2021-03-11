@@ -247,9 +247,6 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
             sess.attach(sessInfo);
         }
 
-        if (! this.app.isLicenseValid()) 
-            return;
-        
         /**
          * If we are too deep in the session - stop running the rules
          */

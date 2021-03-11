@@ -44,6 +44,7 @@ import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.LicenseManager;
+import com.untangle.uvm.app.AppManager;
 
 /**
  * License manager
@@ -1092,6 +1093,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         public void run()
         {
             _syncLicensesWithServer();    
+            UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
         }
     }
     

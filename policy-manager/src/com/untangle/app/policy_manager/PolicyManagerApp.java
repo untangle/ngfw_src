@@ -150,9 +150,6 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
      */
     public PolicyManagerResult findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
     {
-        if ( !isLicenseValid() )
-            return new PolicyManagerResult(1,0);
-
         for (PolicyRule rule : this.settings.getRules()) {
             if (rule.isMatch(protocol,
                              clientIntf, serverIntf,
