@@ -6,6 +6,7 @@
         "type" : "SERVICE",
         "viewPosition" : 1070,
         "autoInstall" : true,
+        "autoStart" : false,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
