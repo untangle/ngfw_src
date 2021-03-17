@@ -1,11 +1,10 @@
-// test
+// Setup Wizard application
 Ext.define('Ung.Setup', {
     extend: 'Ext.app.Application',
     namespace: 'Ung',
     autoCreateViewport: false,
     name: 'Ung',
     rpc: null,
-    // controllers: ['Global'],
     mainView: 'Ung.Setup.Main',
 
     loading: function (msg) {
@@ -13,14 +12,24 @@ Ext.define('Ung.Setup', {
     },
 
     launch: function () {
-        // var cards = [], steps = [], wizard = this.getMainView().down('#wizard');
-        // Ext.Array.each(rpc.wizardSettings.steps, function (step) {
-        //     cards.push({ xtype: step });
-        //     steps.push({ margin: '0 2' });
-        // });
-        // steps.pop(); // remove one element from steps to skip welcome
+        // Configure steps if they're not defined.
 
-        // add vtypes
+        if (!rpc.wizardSettings.steps || rpc.wizardSettings.steps.length == 0) {
+            // Wizard steps not defined.
+            if(!rpc.remote){
+                // No remote configuration
+                rpc.wizardSettings.steps = ['Welcome', 'License', 'ServerSettings', 'Interfaces', 'Internet', 'InternalNetwork', 'AutoUpgrades', 'Complete'];
+            }else{
+                if(rpc.remoteReachable){
+                    // Can get to remote server, so show stub
+                    rpc.wizardSettings.steps = ['Welcome'];
+                }else{
+                    // Need to configure internet to be reachable to remote.
+                    Util.setRpcJsonrpc("admin");
+                    rpc.wizardSettings.steps = ['Welcome', 'Internet', 'Complete'];
+                }
+            }
+        }
         Ext.apply(Ext.form.field.VTypes, {
             ipAddress: function (val) {
                 return val.match(this.ipAddressRegex);
@@ -34,8 +43,5 @@ Ext.define('Ung.Setup', {
             },
             passwordConfirmCheckText: 'Passwords do not match'.t()
         });
-        // wizard.addTool(steps); // add progress steps
-        // wizard.add(cards); // add cards
-        // wizard.setActiveItem(0); // trigger the activate event on welcome
-    },
+    }
 });
