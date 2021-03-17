@@ -59,6 +59,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://www.untangle.com/api/v1";
+    private static final String PROPERTY_CMD_URL = "uvm.cmd.url";
+    private static final String DEFAULT_CMD_URL = "https://www.untangle.com/cmd";
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
     private static final String DEFAULT_HELP_URL = "http://wiki.untangle.com/get.php";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
@@ -1020,6 +1022,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         String url = System.getProperty(PROPERTY_STORE_URL);
         if (url == null)
             url = DEFAULT_STORE_URL;
+        return url;
+    }
+
+    /**
+     * getCmdUrl - gets the store (untangle cloud) API url
+     * @return String
+     */
+    public String getCmdUrl()
+    {
+        String url = System.getProperty(PROPERTY_CMD_URL);
+        if (url == null)
+            url = DEFAULT_CMD_URL;
         return url;
     }
 
