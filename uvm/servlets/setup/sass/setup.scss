@@ -84,3 +84,52 @@ $custom-font-condensed: 'Roboto Condensed', sans-serif;
 .x-btn-icon-left > .x-btn-inner-default-toolbar-medium {
     max-width: none;
 }
+
+.command-center-login-button, .command-center-create-button {
+    -webkit-text-size-adjust: 100%;
+    word-break: normal;
+    tab-size: 4;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overflow-wrap: break-word;
+    background-repeat: no-repeat;
+    box-sizing: inherit;
+    margin: 0;
+    font: inherit;
+    overflow: visible;
+    border-style: none;
+    cursor: pointer;
+    align-items: center;
+    border-radius: 4px;
+    font-weight: 500;
+    letter-spacing: .0892857143em;
+    justify-content: center;
+    outline: 0;
+    position: relative;
+    text-decoration: none;
+    text-indent: .0892857143em;
+    text-transform: uppercase;
+    transition-duration: .28s;
+    transition-property: box-shadow,transform,opacity;
+    transition-timing-function: cubic-bezier(.4,0,.2,1);
+    user-select: none;
+    vertical-align: middle;
+    white-space: nowrap;
+    display: flex;
+    flex: 1 0 auto;
+    min-width: 100%!important;
+    -webkit-appearance: button;
+    color: #fff !important;
+    font-size: .875rem;
+    will-change: box-shadow;
+    height: 44px;
+    padding: 0 19.5555555556px;
+}
+.command-center-login-button {
+    background-color: #0071dc!important;
+    border-color: #0071dc!important;
+}
+.command-center-create-button {
+    background-color: #4caf50!important;
+    border-color: #4caf50!important;
+}
