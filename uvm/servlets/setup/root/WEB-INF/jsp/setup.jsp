@@ -30,27 +30,22 @@
       Ext.onReady(function () {
         rpc.setup = new JSONRpcClient("/setup/JSON-RPC").SetupContext;
         rpc.setup.getSetupWizardStartupInfo(function (result, exception) {
-            // if (Ung.Util.handleException(exception)) { return; }
             Ext.applyIf(rpc, result);
-
-            if (!rpc.wizardSettings.steps || rpc.wizardSettings.steps.length == 0) {
-                rpc.wizardSettings.steps = ['Welcome', 'License', 'ServerSettings', 'Interfaces', 'Internet', 'InternalNetwork', 'AutoUpgrades', 'Complete'];
-            }
 
             // transform timezones string to array
             var tzArray = [];
             Ext.Array.each(eval(rpc.timezones), function (tz) {
-                tzArray.push([tz[0], '(' + tz[1] + ') ' + tz[0]]);
+                    tzArray.push([tz[0], '(' + tz[1] + ') ' + tz[0]]);
             });
             rpc.timezones = tzArray;
 
+            // Translation method for text.
             String.prototype.t = function() {
                 if (rpc.language !== 'en') {
                     return rpc.translations[this.valueOf()] || (rpc.language === 'xx' ? '<cite>' + this.valueOf() + '</cite>' : this.valueOf());
                 }
                 return this.valueOf();
             };
-
             window.document.title = 'Setup Wizard'.t();
 
             Ext.Loader.loadScript({
@@ -62,8 +57,6 @@
                     });
                 }
             });
-
-
         });
       });
     </script>
