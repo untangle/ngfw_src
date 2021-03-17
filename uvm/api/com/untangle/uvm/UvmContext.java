@@ -467,6 +467,7 @@ public interface UvmContext
      * Get URLs
      */
     String getStoreUrl();
+    String getCmdUrl();
     String getHelpUrl();
     String getLegalUrl();
 
