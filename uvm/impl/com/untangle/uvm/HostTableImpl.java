@@ -984,7 +984,7 @@ public class HostTableImpl implements HostTable
                     reverseLookupSemaphore.tryAcquire(CLEANER_SLEEP_TIME_MILLI, java.util.concurrent.TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                 }
-                logger.info("HostTableReverseHostnameLookup: Running... ");
+                logger.debug("HostTableReverseHostnameLookup: Running... ");
 
                 try {
                     LinkedList<HostTableEntry> entries = new LinkedList<>(hostTable.values());
