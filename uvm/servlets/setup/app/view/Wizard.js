@@ -6,7 +6,7 @@ Ext.define('Ung.Setup.Wizard', {
         data: {
             activeStepDesc: '',
             activeStep: null,
-            intfListLength: null, // used for next button disable/enable
+            intfListLength: 0, // used for next button disable/enable
         }
     },
 
@@ -91,13 +91,11 @@ Ext.define('Ung.Setup.Wizard', {
             iconAlign: 'right',
             handler: 'onNext',
             hidden: true,
-            // disabled: true,
             disabled: false,
             bind: {
                 hidden: '{!nextStep}',
                 text: '{nextStep}',
-                // !!! rework.  This is ok for local, almost certainly not for remote + internet
-                // disabled: '{activeStep === "Interfaces" && intfListLength < 2 && !forcecontinue.checked}'
+                disabled: '{activeStep === "Interfaces" && intfListLength < 2 && !forcecontinue.checked}'
             }
         }]
     }],
