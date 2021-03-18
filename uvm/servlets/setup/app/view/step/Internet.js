@@ -180,10 +180,7 @@ Ext.define('Ung.Setup.Internet', {
             text: 'Test Connectivity'.t(),
             margin: '10 0 0 0',
             iconCls: 'fa fa-globe',
-            handler: 'onSave', // save is called because connectivity test is done inside of it
-            // bind: {
-            //     hidden: '{wan.v4ConfigType !== "AUTO" && wan.v4ConfigType !== "STATIC" }'
-            // }
+            handler: 'onSave'
         }]
     }],
 
@@ -244,6 +241,7 @@ Ext.define('Ung.Setup.Internet', {
         testConnectivity: function (testType, cb) {
             var me = this;
             Ung.app.loading('Testing Connectivity...'.t());
+
             rpc.connectivityTester.getStatus(function (result, ex) {
                 Ung.app.loading(false);
                 if (ex) {
@@ -269,6 +267,15 @@ Ext.define('Ung.Setup.Internet', {
                     message = null;
                 }
 
+                if(rpc.remote){
+                    Util.setRpcJsonrpc("setup");
+                    var swResults = rpc.setup.getSetupWizardStartupInfo();
+                    Util.setRpcJsonrpc("admin");
+                    if(swResults.remoteReachable == false){
+                        message = 'Unable to reach Command Center!'.t();
+                    }
+                }
+
                 if (testType === 'manual') {
                     // on manual test just show the message
                     Ext.MessageBox.show({
@@ -292,7 +299,6 @@ Ext.define('Ung.Setup.Internet', {
 
                 me.getInterfaceStatus();
             });
-
         },
 
         onSave: function (cb) {

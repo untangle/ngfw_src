@@ -17,6 +17,7 @@ import com.untangle.uvm.servlet.ServletUtils;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
+import org.json.JSONObject;
 
 /**
  * Initializes the JSONRPCBridge.
@@ -123,6 +124,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         /**
          * Convenience method to load in one call all the properties needed to initialize the setup wizard
          */
-        public org.json.JSONObject getSetupWizardStartupInfo();
+        public JSONObject getSetupWizardStartupInfo();
     }
 }
