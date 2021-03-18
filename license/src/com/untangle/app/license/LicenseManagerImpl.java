@@ -117,6 +117,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private Pulse pulse = null;
 
     /**
+     * Boolean we set true if we find NGFW_LICENSE_TEST in the environment.
+     * This allows us to enable testing the license stuff on a development
+     * system even when isDevel() is true.
+     */
+    private boolean devLicenseTest = false;
+
+    /**
      * Setup license manager application.
      * 
      * * Launch the synchronization task.
@@ -127,6 +134,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     public LicenseManagerImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
+
+        String check = System.getenv("NGFW_LICENSE_TEST");
+        if (check != null) {
+            logger.info("Found NGFW_LICENSE_TEST environment variable - setting devLicenseTest = true");
+            devLicenseTest = true;
+        }
 
         this._readLicenses();
         this._mapLicenses();
@@ -240,10 +253,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         /**
          * Special for development environment
-         * Assume all licenses are valid
-         * This should be removed if you want to test the licensing in the dev environment
+         * Assume all licenses are valid unless devLicenseTest is set
          */
-        if (UvmContextFactory.context().isDevel()) {
+        if ((UvmContextFactory.context().isDevel()) && (! devLicenseTest)) {
             logger.warn("Creating development license: " + identifier);
             license = new License(identifier, "0000-0000-0000-0000", identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE, "Developer");
             this.licenseMap.put(identifier,license);
@@ -358,7 +370,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public int getSeatLimit( boolean lienency )
     {
-        if ( UvmContextFactory.context().isDevel() )
+        if ((UvmContextFactory.context().isDevel()) && (! devLicenseTest))
             return -1;
 
         int seats = -1;
@@ -1071,7 +1083,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         synchronized (LicenseManagerImpl.this) {
             _readLicenses();
 
-            if (! UvmContextFactory.context().isDevel()) {
+            if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
                 _downloadLicenses();
                 _checkRevocations();
             }

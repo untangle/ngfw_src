@@ -32,6 +32,7 @@ Ext.define('Ung.apps.livesupport.view.Status', {
             padding: 10,
             margin: '20 0',
             cls: 'app-section',
+            hidden: '{!license || !license.trial}',
             items: [{
                 xtype: 'component',
                 bind: {
