@@ -3,12 +3,20 @@
  */
 package com.untangle.uvm.setup.jabsorb;
 
+import java.io.File;
+
+import java.net.Socket;
+import java.net.InetSocketAddress;
+
 import java.util.Map;
 import java.util.TimeZone;
 
 import javax.transaction.TransactionRolledbackException;
 
 import org.apache.log4j.Logger;
+import org.apache.http.client.utils.URIBuilder;
+
+import org.json.JSONObject;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LanguageManager;
@@ -19,9 +27,6 @@ import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.WizardSettings;
 import com.untangle.uvm.AdminUserSettings;
-
-import org.json.JSONObject;
-
 /** SetupContextImpl */
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {
@@ -106,6 +111,56 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     }
 
     /**
+     * Determine whether to enforce remote-only configuration.
+     *
+     * @return boolean of whether to force remote where true=force remote, false=don't force remote
+     * String of following values:
+     */
+    public boolean getRemote()
+    {
+        File remoteDisabledFlagFile = new File( System.getProperty("uvm.conf.dir") + "/setup-remote-disabled-flag" );
+        return !remoteDisabledFlagFile.exists();
+    }
+
+    /**
+     * Determine if remote is reachable
+     * @return Boolean of true of cmd is reachable, otherwise false.
+     */
+    public Boolean getRemoteReachable()
+    {
+        boolean reachable = false;
+        URIBuilder uriBuilder = null;
+        Socket socket = null;
+        try{
+            uriBuilder = new URIBuilder(this.context.getCmdUrl());
+        }catch(Exception e){
+            logger.warn("getRemoteReachable: Unable to create URIBuilder from cmdUrl", e);
+            return reachable;
+        }
+
+        String host = uriBuilder.getHost();
+        int port = uriBuilder.getPort();
+        if(port == -1){
+            port = uriBuilder.getScheme().equals("https") ? 443 : 80;
+        }
+        try {
+            socket = new Socket();
+            reachable = true;
+            socket.connect(new InetSocketAddress(host, port), 7000);
+        } catch (Exception e) {
+            reachable = false;
+            logger.warn("Failed to connect to cmd:" + " [" + host + ":" + Integer.toString(port) + "]");
+        } finally {
+            try {
+                if (socket != null) socket.close();
+            } catch (Exception e) {
+            }
+        }
+
+        return reachable;
+    }
+
+    /**
      * setTimeZone - sets the timezone (called from setup wizard)
      * @param timeZone
      * @throws TransactionRolledbackException
@@ -131,9 +186,9 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
      * seperate calls to initialize the UI reduces startup time
      * @return <doc>
      */
-    public org.json.JSONObject getSetupWizardStartupInfo()
+    public JSONObject getSetupWizardStartupInfo()
     {
-        org.json.JSONObject json = new org.json.JSONObject();
+        JSONObject json = new JSONObject();
 
         try {
             json.put("skinName", this.context.skinManager().getSettings().getSkinName());
@@ -145,6 +200,11 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("language", this.context.languageManager().getLanguageSettings().getLanguage());
             json.put("translations", this.context.languageManager().getTranslations("untangle"));
             json.put("wizardSettings", this.context.getWizardSettings());
+            json.put("remote", getRemote());
+            json.put("remoteReachable", getRemoteReachable());
+            json.put("remoteUrl", this.context.getCmdUrl());
+            json.put("serverUID", this.context.getServerUID());
+
         } catch (Exception e) {
             logger.error("Error generating WebUI startup object", e);
         }

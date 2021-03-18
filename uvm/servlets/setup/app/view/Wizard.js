@@ -6,7 +6,7 @@ Ext.define('Ung.Setup.Wizard', {
         data: {
             activeStepDesc: '',
             activeStep: null,
-            intfListLength: null, // used for next button disable/enable
+            intfListLength: 0, // used for next button disable/enable
         }
     },
 
@@ -27,9 +27,6 @@ Ext.define('Ung.Setup.Wizard', {
         border: false,
         bodyBorder: false,
         bodyPadding: 0,
-        // bodyStyle: {
-        //     background: '#F5F5F5',
-        // },
         padding: 20,
         cls: 'step',
         header: false
@@ -94,7 +91,7 @@ Ext.define('Ung.Setup.Wizard', {
             iconAlign: 'right',
             handler: 'onNext',
             hidden: true,
-            disabled: true,
+            disabled: false,
             bind: {
                 hidden: '{!nextStep}',
                 text: '{nextStep}',
@@ -103,12 +100,7 @@ Ext.define('Ung.Setup.Wizard', {
         }]
     }],
 
-    items: [
-        { xtype: 'License' },
-        { xtype: 'ServerSettings' },
-        { xtype: 'Interfaces' },
-        // the rest of steps are added after network settings are fetched
-    ],
+    items:[],
 
     listeners: {
         afterrender: 'onAfterRender',
@@ -117,11 +109,22 @@ Ext.define('Ung.Setup.Wizard', {
 
     controller: {
         onAfterRender: function (view) {
+
+            // Populate steps from wizard settings.
+            var steps = [];
+            rpc.wizardSettings.steps.forEach( function(stepName){
+                if( Ext.ClassManager.getByAlias('widget.' + stepName) ){
+                    view.add({xtype: stepName});
+                }
+            });
+            view.getLayout().next();
+
             var me = this, vm = me.getViewModel(), cardIndex;
             if (!rpc.wizardSettings.wizardComplete && rpc.wizardSettings.completedStep !== null) {
                 cardIndex = Ext.Array.indexOf(rpc.wizardSettings.steps, rpc.wizardSettings.completedStep);
 
                 // if resuming from a step after Network Cards settings, need to fetch network settings
+                cardIndex--;
                 if (cardIndex >= 2) {
                     Ung.app.loading('Loading interfaces...'.t());
                     rpc.networkManager.getNetworkSettings(function (result, ex) {
@@ -176,19 +179,21 @@ Ext.define('Ung.Setup.Wizard', {
                 prevStep = layout.getPrev(),
                 nextStep = layout.getNext(),
 
-                activeIndex = Ext.Array.indexOf(view.steps, layout.getActiveItem().getXType()),
+                activeItem = layout.getActiveItem(),
+                activeIndex = activeItem ? Ext.Array.indexOf(view.steps, activeItem.getXType()) : -1,
 
                 stepInd = view.down('#stepIndicator'),
                 stepIndHtml = '';
 
-            if(layout.getActiveItem().getViewModel() &&
-                layout.getActiveItem().getViewModel().get('nextStep') !== null){
-                nextStep = layout.getActiveItem().getViewModel().get('nextStep');
+            if(activeItem &&
+                activeItem.getViewModel() &&
+                activeItem.getViewModel().get('nextStep') !== null){
+                nextStep = activeItem.getViewModel().get('nextStep');
             }
 
             vm.set({
-                activeStep: layout.getActiveItem().getXType(),
-                activeStepDesc: layout.getActiveItem().description,
+                activeStep: activeItem && activeItem.getXType(),
+                activeStepDesc: activeItem && activeItem.description,
                 prevStep: prevStep ? prevStep.getTitle() : null,
                 nextStep: nextStep ? nextStep.getTitle() : null
             });
@@ -222,10 +227,15 @@ Ext.define('Ung.Setup.Wizard', {
         },
 
         /**
-         * called after the netwark settings were fetched,
-         * updates the wizard steps
+         * called after the network settings were fetched,
+         * updates the wizard steps depending on available
+         * interfaces.
          */
         onSyncSteps: function (activeItemIdx) {
+            if(rpc.remote){
+                // Only for local.
+                return;
+            }
             var me = this, vm = me.getViewModel(),
                 wizard = me.getView(),
 
