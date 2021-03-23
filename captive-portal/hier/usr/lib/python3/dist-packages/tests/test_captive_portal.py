@@ -260,20 +260,34 @@ class CaptivePortalTests(NGFWTestCase):
         global appData, appDataRD, appDataAD, appAD, appWeb, appSSL, appSSLData, adResult, radiusResult, test_untangle_com_ip, captureIP
 
         appData = cls._app.getSettings()
+
         if (uvmContext.appManager().isInstantiated(cls.appNameAD())):
-            print("ERROR: App %s already installed" % cls.appNameAD())
-            raise unittest.SkipTest('app %s already instantiated' % cls.module_name())
-        appAD = uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.appNameAD())
+            else:
+                appAD = uvmContext.appManager().app(cls.appNameAD())
+        else:
+            appAD = uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
+
         appDataAD = appAD.getSettings().get('activeDirectorySettings')
         appDataRD = appAD.getSettings().get('radiusSettings')
+
         if (uvmContext.appManager().isInstantiated(cls.appNameWeb())):
-            print("ERROR: App %s already installed" % cls.appNameWeb())
-            raise unittest.SkipTest('app %s already instantiated' % cls.appNameWeb())
-        appWeb = uvmContext.appManager().instantiate(cls.appNameWeb(), default_policy_id)
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.appNameWeb())
+            else:
+                appWeb = uvmContext.appManager().app(cls.appNameWeb())
+        else:
+            appWeb = uvmContext.appManager().instantiate(cls.appNameWeb(), default_policy_id)
+
         if (uvmContext.appManager().isInstantiated(cls.appNameSSLInspector())):
-            print("ERROR: App %s already installed" % cls.appNameSSLInspector())
-            raise unittest.SkipTest('app %s already instantiated' % cls.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.appNameSSLInspector())
+            else:
+                appSSL = uvmContext.appManager().app(cls.appNameSSLInspector())
+        else:
+            appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
+
         appSSLData = appSSL.getSettings()
         adResult = subprocess.call(["ping","-c","1",global_functions.AD_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
