@@ -133,7 +133,7 @@ class PolicyManagerTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global appData
         appData = cls._app.getSettings()
-        remote_control.run_command("rm -f ./authpost\?*")
+        remote_control.run_command("rm -f ./authpost*")
 
     # verify client is online
     def test_010_clientIsOnline(self):
