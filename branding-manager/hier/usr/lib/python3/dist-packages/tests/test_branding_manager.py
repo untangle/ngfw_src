@@ -51,10 +51,14 @@ class BrandingManagerTests(NGFWTestCase):
         global appData, appWeb
 
         appData = cls._app.getSettings()
-        if (global_functions.uvmContextLongTimeout.appManager().isInstantiated(cls.appNameWeb())):
-            print("ERROR: App %s already installed" % cls.appNameWeb())
-            raise Exception('app %s already instantiated' % cls.appNameWeb())
-        appWeb = global_functions.uvmContextLongTimeout.appManager().instantiate(cls.appNameWeb(), default_policy_id)
+
+        if global_functions.uvmContext.appManager().isInstantiated(cls.appNameWeb()):
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.appNameWeb())
+            else:
+                appWeb = global_functions.uvmContext.appManager().app(cls.appNameWeb())
+        else:
+            appWeb = global_functions.uvmContext.appManager().instantiate(cls.appNameWeb(), default_policy_id)
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -162,7 +166,7 @@ class BrandingManagerTests(NGFWTestCase):
             # Restore original settings to return to initial settings
             setDefaultBrandingManagerSettings(cls._app)
         if appWeb != None:
-            global_functions.uvmContextLongTimeout.appManager().destroy( appWeb.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( appWeb.getAppSettings()["id"] )
             appWeb = None
 
 test_registry.register_module("branding-manager", BrandingManagerTests)
