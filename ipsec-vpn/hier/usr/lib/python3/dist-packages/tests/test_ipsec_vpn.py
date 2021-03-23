@@ -15,6 +15,7 @@ import tests.global_functions as global_functions
 default_policy_id = 1
 appAD = None
 appDataRD = None
+appFW = None
 tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
@@ -205,11 +206,17 @@ class IPsecTests(NGFWTestCase):
 
         tunnelUp = False
 
-        if (uvmContext.appManager().isInstantiated(cls.appNameAD())):
-            raise unittest.SkipTest('app %s already instantiated' % cls.module_name())
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        appAD = uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
+
+        if (uvmContext.appManager().isInstantiated(cls.appNameAD())):
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.appNameAD())
+            else:
+                appAD = uvmContext.appManager().app(cls.appNameAD())
+        else:
+            appAD = uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
+
         appDataRD = appAD.getSettings().get('radiusSettings')
         appFW = uvmContext.appManager().instantiate(cls.appNameFW(), default_policy_id)
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -515,7 +522,8 @@ class IPsecTests(NGFWTestCase):
         global appFW
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        if orig_netsettings:
+            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # Remove Directory Connector
         if appAD != None:
             uvmContext.appManager().destroy( appAD.getAppSettings()["id"] )
