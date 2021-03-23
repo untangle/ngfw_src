@@ -214,7 +214,13 @@ class BandwidthControlTests(NGFWTestCase):
         cls._app.setSettings(settings)        
         cls._app.start()
 
-        cls._app_web_filter = uvmContext.appManager().instantiate(cls.appNameWF(), 1)
+        if uvmContext.appManager().isInstantiated(cls.appNameWF()):
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.appNameWF())
+            else:
+                cls._app_web_filter = uvmContext.appManager().app(cls.appNameWF())
+        else:
+            cls._app_web_filter = uvmContext.appManager().instantiate(cls.appNameWF(), 1)
 
         if orig_network_settings == None:
             orig_network_settings = uvmContext.networkManager().getNetworkSettings()
@@ -633,7 +639,7 @@ class BandwidthControlTests(NGFWTestCase):
         # Restore original settings to return to initial settings
         if orig_network_settings != None:
             uvmContext.networkManager().setNetworkSettings( orig_network_settings )
-        if cls._app_web_filter != None:
+        if getattr(cls, "_app_web_filter", None) is not None:
             uvmContext.appManager().destroy( cls._app_web_filter.getAppSettings()["id"] )
             cls._app_web_filter = None
 
