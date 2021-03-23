@@ -17,6 +17,7 @@ import tests.global_functions as global_functions
 default_policy_id = 1
 appData = None
 app = None
+appDC = None
 appWeb = None
 vpnClientName = "atsclient"
 vpnFullClientName = "atsfullclient"
@@ -27,6 +28,7 @@ vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip
 vpnSite2SiteHostname = "untangle-ats-vpn-8251"
 vpnSite2SiteUserPassFile = "http://test.untangle.com/test/openvpn-site2siteUserPass-config.zip"
 vpnSite2SiteUserPassHostname = "untangle93-6105"
+tunnelApp = None
 tunnelUp = False
 ovpnlocaluser = "ovpnlocaluser"
 ovpnPasswd = "passwd"
@@ -209,8 +211,13 @@ class OpenVpnTests(NGFWTestCase):
         appDC = None
         tunnelApp = None
         if (uvmContext.appManager().isInstantiated(cls.appWebName())):
-            raise Exception('app %s already instantiated' % cls.appWebName())
-        appWeb = uvmContext.appManager().instantiate(cls.appWebName(), default_policy_id)
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.appWebName())
+            else:
+                appWeb = uvmContext.appManager().app(cls.appWebName())
+        else:
+            appWeb = uvmContext.appManager().instantiate(cls.appWebName(), default_policy_id)
+
         vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_SERVER_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         vpnUserPassHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_SERVER_USER_PASS_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_CLIENT_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
