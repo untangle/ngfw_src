@@ -6,6 +6,7 @@ Ext.define('Ung.apps.livesupport.Main', {
     viewModel: {
         data: {
             companyName: '',
+            companyURL: '',
             serverUID: '',
             fullVersionAndRevision: ''
         }
