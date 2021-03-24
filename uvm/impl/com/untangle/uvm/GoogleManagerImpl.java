@@ -234,7 +234,7 @@ public class GoogleManagerImpl implements GoogleManager
             try { Thread.sleep(1000); } catch (Exception e) {}
 
             logger.info("Checking for refresh token...");
-            refreshToken = UvmContextFactory.context().execManager().execOutput("python -m simplejson.tool " + GOOGLE_DRIVE_PATH + ".gd/credentials.json | grep refresh_token | awk '{print $2}' | sed 's/\"//g'");
+            refreshToken = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh refreshToken " + GOOGLE_DRIVE_PATH);
             if ( refreshToken == null )
                 continue;
             refreshToken = refreshToken.replaceAll("\\s+","");
