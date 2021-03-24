@@ -334,7 +334,6 @@ class ReportsTests(NGFWTestCase):
         The "default" configuration test:
         - Administrator email account gets
         """
-        raise unittest.SkipTest('Waiting for NGFW-13619')
         if (not can_relay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if runtests.quick_tests_only:
@@ -400,7 +399,6 @@ class ReportsTests(NGFWTestCase):
         2. Reportuser overrides admin user address.
         3. Custom report with test not in default.
         """
-        raise unittest.SkipTest('Waiting for NGFW-13619')
         if (not can_relay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if runtests.quick_tests_only:
@@ -446,7 +444,6 @@ class ReportsTests(NGFWTestCase):
         2. Reportuser overrides admin user address.
         3. Custom report with test not in default.
         """
-        raise unittest.SkipTest('Waiting for NGFW-13619')
         if (not can_relay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         if runtests.quick_tests_only:
@@ -515,7 +512,6 @@ class ReportsTests(NGFWTestCase):
         2) Generate a report
         3) Verify that the emailed report contains a section for each app
         """
-        raise unittest.SkipTest('Waiting for NGFW-13619')
         global app,apps_list,apps_name_list
         if (not can_relay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
@@ -581,8 +577,6 @@ class ReportsTests(NGFWTestCase):
     def test_110_verify_report_users(self):
         # Test report only user can login and report servlet displays 
         # add report user with test_email_address
-        raise unittest.SkipTest('Waiting for NGFW-13619')
-
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         settings["reportsUsers"]["list"].append(create_reports_user(profile_email='test', access=True))  # password = passwd
