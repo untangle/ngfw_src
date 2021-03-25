@@ -104,7 +104,7 @@ class BrandingManagerTests(NGFWTestCase):
         assert(newContactName in matchText)
 
         # Verify URL is in the Logo box
-        myRegex = re.compile('<a href=\"(.*?)\"><img .* src\=\"\/images\/BrandingLogo', re.IGNORECASE|re.DOTALL)
+        myRegex = re.compile('<a href=\"(.*?)\"><img .* src=\"\/images\/BrandingLogo', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         print("looking for: \"%s\""%newURL)
         print("in :\"%s\""%matchText)
