@@ -29,10 +29,11 @@ Ext.define('Ung.apps.livesupport.view.Status', {
         }, {
             xtype: 'fieldset',
             title: '<i class="fa fa-life-ring"></i> ' + 'Live Support'.t(),
+            itemId: 'paidFrame',
             padding: 10,
             margin: '20 0',
             cls: 'app-section',
-            hidden: '{!license || !license.trial}',
+            hidden: true,
             items: [{
                 xtype: 'component',
                 bind: {
@@ -44,6 +45,26 @@ Ext.define('Ung.apps.livesupport.view.Status', {
                 xtype: 'button',
                 text: 'Get Support!'.t(),
                 handler: 'supportHandler'
+            }]
+        }, {
+            xtype: 'fieldset',
+            title: '<i class="fa fa-life-ring"></i> ' + 'Live Support'.t(),
+            itemId: 'freeFrame',
+            padding: 10,
+            margin: '20 0',
+            cls: 'app-section',
+            hidden: true,
+            items: [{
+                xtype: 'component',
+                bind: {
+                    html: Ext.String.format('This {0} Server is NOT entitled to Live Support.'.t(), Rpc.directData('rpc.companyName'))
+                },
+                html: Ext.String.format('This {0} Server is NOT entitled to Live Support.'.t(), '{companyName}'),
+                margin: '0 0 10 0'
+            }, {
+                xtype: 'button',
+                text: 'Learn More!'.t(),
+                handler: 'learnMoreHandler'
             }]
         }, {
             xtype: 'fieldset',
