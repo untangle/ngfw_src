@@ -3,16 +3,16 @@ Ext.define('Ung.Setup.Util', {
     singleton: true,
 
     setRpcJsonrpc: function(root){
-        var setupInfo;
-        rpc.jsonrpc = new JSONRpcClient('/' + root + '/JSON-RPC');
+        var setupInfo, success = true;
         try {
+            rpc.jsonrpc = new JSONRpcClient('/' + root + '/JSON-RPC');
             setupInfo = rpc.jsonrpc.UvmContext ? rpc.jsonrpc.UvmContext.getSetupStartupInfo() : rpc.jsonrpc.SetupContext.getSetupWizardStartupInfo();
         } catch (e) {
-            Util.handleException(e);
-            // Ung.Util.handleException(e);
+            success = false;
+            // Util.handleException(e);
         }
         Ext.applyIf(rpc, setupInfo);
-
+        return success;
     },
 
     authenticate: function (password, cb) {
