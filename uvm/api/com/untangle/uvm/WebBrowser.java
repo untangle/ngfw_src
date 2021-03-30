@@ -106,7 +106,7 @@ public class WebBrowser
 
         try{
             UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
-            UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand );
+            UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand + " >/dev/null 2>&1 &");
 
             ChromeDriverService service = new ChromeDriverService.Builder()
                 .usingDriverExecutable(new File(chromeDriver))
