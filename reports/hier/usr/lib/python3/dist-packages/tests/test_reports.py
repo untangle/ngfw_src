@@ -138,7 +138,7 @@ def create_email_template(mobile=False):
     }
 
 
-def fetch_email( filename, email_address, tries=40 ):
+def fetch_email( filename, email_address, tries=80 ):
     remote_control.run_command("rm -f %s" % filename)
     while tries > 0:
         tries -= 1
