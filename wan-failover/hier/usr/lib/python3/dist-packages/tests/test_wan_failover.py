@@ -132,6 +132,7 @@ class WanFailoverTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
         
+    @pytest.mark.slow
     def test_025_ping_test_wan_offline(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -156,6 +157,7 @@ class WanFailoverTests(NGFWTestCase):
         found = global_functions.check_events( events.get('list'), 2, "action", "DISCONNECTED" )
         assert( found )
         
+    @pytest.mark.slow
     def test_030_arp_test_wan_online(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -171,6 +173,7 @@ class WanFailoverTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    @pytest.mark.slow
     def test_035_arp_test_wan_offline(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -199,6 +202,7 @@ class WanFailoverTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    @pytest.mark.slow
     def test_040_dns_test_wan_online(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -213,6 +217,7 @@ class WanFailoverTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)        
 
+    @pytest.mark.slow
     def test_045_dns_test_wan_offline(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -243,6 +248,7 @@ class WanFailoverTests(NGFWTestCase):
 
         assert (offline_count > orig_offline_count)
 
+    @pytest.mark.slow
     def test_050_http_test_wan_online(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -259,6 +265,7 @@ class WanFailoverTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)        
 
+    @pytest.mark.slow
     def test_055_http_test_wan_offline(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -277,6 +284,7 @@ class WanFailoverTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)        
 
+    @pytest.mark.slow
     def test_060_one_wan_offline(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -308,6 +316,7 @@ class WanFailoverTests(NGFWTestCase):
                     print("IP address %s and invalidWanIP %s" % (result,invalidWanIP))
                     assert (result != invalidWanIP)    
 
+    @pytest.mark.slow
     def test_065_all_wan_offline_but_one(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')

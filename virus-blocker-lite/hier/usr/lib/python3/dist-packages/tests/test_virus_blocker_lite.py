@@ -30,6 +30,7 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
         return "Virus Blocker Lite"
 
     # verify daemon is running
+    @pytest.mark.slow
     @pytest.mark.very_slow
     def test_009_clamdIsRunning(self):
         """

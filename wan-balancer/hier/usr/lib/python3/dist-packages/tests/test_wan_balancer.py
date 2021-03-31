@@ -410,6 +410,7 @@ class WanBalancerTests(NGFWTestCase):
         nuke_wan_balancer_rules()
         nuke_wan_failover_rules()
                     
+    @pytest.mark.slow
     def test_100_wanBalancerRouteWanDown(self):
         # create a source route and then down the wan which the route is set to
         # if there are more than one WAN
@@ -457,6 +458,7 @@ class WanBalancerTests(NGFWTestCase):
         nuke_wan_failover_rules()
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
     
+    @pytest.mark.slow
     def test_110_networkRouteWanDown(self):
         # create a network route and then down the wan which the route is set to
         # if there are more than one WAN
@@ -516,6 +518,7 @@ class WanBalancerTests(NGFWTestCase):
         # Remove static routes
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
+    @pytest.mark.slow
     def test_120_natOneToOneWanDown(self):
         # create a 1:1 NAT and then down the wan which the NAT is set to
         # if there are more than one WAN

@@ -96,6 +96,7 @@ class PhishBlockerTests(NGFWTestCase):
                 curQuarantine.deleteInbox(checkAddress['address'])
             
     # verify daemon is running
+    @pytest.mark.slow
     @pytest.mark.very_slow
     def test_009_clamdIsRunning(self):
         """

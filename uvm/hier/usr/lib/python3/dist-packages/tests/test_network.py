@@ -832,6 +832,7 @@ class NetworkTests(NGFWTestCase):
         assert(global_functions.ftp_server == ip_address_foobar)
 
     # Test dynamic hostname
+    @pytest.mark.slow
     def test_100_dynamic_dns(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest("Skipping a time consuming test")
@@ -893,6 +894,7 @@ class NetworkTests(NGFWTestCase):
         assert(dyn_IP_found)
         
     # Test VRRP is active
+    @pytest.mark.slow
     def test_110_vrrp(self):
         "Test that a VRRP alias is pingable"
         if runtests.quick_tests_only:
@@ -1219,6 +1221,7 @@ class NetworkTests(NGFWTestCase):
         assert(foundHost)
 
     # Test logging of blocked sessions via untangle-nflogd
+    @pytest.mark.slow
     def test_150_filter_rules_blocked_event_log(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')

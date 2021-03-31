@@ -390,6 +390,7 @@ class CaptivePortalTests(NGFWTestCase):
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_023b.out")
         assert (search == 0)
 
+    @pytest.mark.slow
     def test_024_login_anonymous_timeout(self):
         global app, appData
         if runtests.quick_tests_only:
@@ -704,6 +705,7 @@ class CaptivePortalTests(NGFWTestCase):
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_040d.out")
         assert (search == 0)
 
+    @pytest.mark.slow
     def test_050_cookie(self):
         """
         Cookie test
@@ -765,6 +767,7 @@ class CaptivePortalTests(NGFWTestCase):
         time.sleep(20)
         self._app.runCleanup() # run the periodic cleanup task to remove expired users
 
+    @pytest.mark.slow
     def test_051_cookie_timeout(self):
         """
         Cookie expiration
@@ -892,6 +895,7 @@ class CaptivePortalTests(NGFWTestCase):
         foundUsername = find_name_in_host_table(local_user_name)
         assert(not foundUsername)
 
+    @pytest.mark.slow
     def test_065_login_local_directory_expired_user(self):
         global app, appData
         if runtests.quick_tests_only:

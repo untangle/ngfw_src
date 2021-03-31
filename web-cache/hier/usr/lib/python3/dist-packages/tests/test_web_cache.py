@@ -35,6 +35,7 @@ class WebCacheTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
+    @pytest.mark.slow
     def test_020_testBasicWebCache(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')

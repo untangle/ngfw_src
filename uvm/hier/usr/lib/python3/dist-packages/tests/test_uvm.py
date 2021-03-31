@@ -202,6 +202,7 @@ class UvmTests(NGFWTestCase):
         match = re.search(r'\d{1,2}', max_num_hosts)
         assert(match)
 
+    @pytest.mark.slow
     def test_030_test_smtp_settings(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')

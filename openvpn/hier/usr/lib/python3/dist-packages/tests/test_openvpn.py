@@ -396,6 +396,7 @@ class OpenVpnTests(NGFWTestCase):
         post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
         
+    @pytest.mark.slow
     def test_050_createClientVPNFullTunnel(self):
         global appData, vpnServerResult, vpnClientResult
         if runtests.quick_tests_only:

@@ -303,6 +303,7 @@ class BandwidthControlTests(NGFWTestCase):
         assert ((wget_speed_pre) and (wget_speed_post))
         assert (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post)
 
+    @pytest.mark.slow
     def test_014_qos_bypass_custom_rules_udp(self):
         global wan_limit_mbit
 
@@ -392,6 +393,7 @@ class BandwidthControlTests(NGFWTestCase):
         assert( found )
 
 
+    @pytest.mark.slow
     def test_021_severely_limited_udp(self):
         global wan_limit_mbit
 
@@ -472,6 +474,7 @@ class BandwidthControlTests(NGFWTestCase):
         post_count = global_functions.get_app_metric_value(app,"prioritize")
         assert(pre_count < post_count)
  
+    @pytest.mark.slow
     def test_060_host_quota(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -527,6 +530,7 @@ class BandwidthControlTests(NGFWTestCase):
                                                "c_client_addr", remote_control.client_ip)
         assert( found )
 
+    @pytest.mark.slow
     def test_061_user_quota(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
