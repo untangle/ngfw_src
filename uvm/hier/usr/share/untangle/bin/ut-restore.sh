@@ -12,7 +12,7 @@ TARBALL_FILE=""
 VERSION_FILE=""
 # To support multiple versions, separate with pipe character like:
 #ACCEPTED_PREVIOUS_VERSION="15.1|16.0"
-ACCEPTED_PREVIOUS_VERSION="16.1"
+ACCEPTED_PREVIOUS_VERSION="16.2"
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
