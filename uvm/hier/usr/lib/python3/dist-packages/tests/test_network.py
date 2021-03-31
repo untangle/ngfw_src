@@ -678,6 +678,7 @@ class NetworkTests(NGFWTestCase):
         assert(found)
 
     # Test FTP (outbound) in active and passive modes
+    @pytest.mark.failure_in_podman
     def test_070_ftp_modes(self):
         nuke_first_level_rule('bypassRules')
 
@@ -692,6 +693,7 @@ class NetworkTests(NGFWTestCase):
         assert (eprt_result == 0)
 
     # Test FTP (outbound) in active and passive modes with a firewall block all rule (firewall should pass related sessions without special rules)
+    @pytest.mark.failure_in_podman
     def test_071_ftp_modes_firewalled(self):
         app_fw = None
         if (uvmContext.appManager().isInstantiated("firewall")):
@@ -719,6 +721,7 @@ class NetworkTests(NGFWTestCase):
         assert (eprt_result == 0)
 
     # Test FTP (outbound) in active and passive modes with bypass
+    @pytest.mark.failure_in_podman
     def test_072_ftp_modes_bypassed(self):
         set_first_level_rule(create_bypass_condition_rule("DST_PORT","21"),'bypassRules')
 
@@ -736,6 +739,7 @@ class NetworkTests(NGFWTestCase):
         assert (eprt_result == 0)
 
     # Test FTP (outbound) in active and passive modes with bypass with a block all rule in forward filter rules. It should pass RELATED session automatically
+    @pytest.mark.failure_in_podman
     def test_073_ftp_modes_bypassed_filtered(self):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['bypassRules']['list'] = [ create_bypass_condition_rule("DST_PORT","21") ]

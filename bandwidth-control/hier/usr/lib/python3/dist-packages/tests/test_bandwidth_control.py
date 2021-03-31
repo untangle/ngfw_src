@@ -270,6 +270,7 @@ class BandwidthControlTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
+    @pytest.mark.failure_in_podman
     def test_012_qos_limit(self):
         global pre_down_speed_kbit, wan_limit_kbit
 
@@ -280,6 +281,7 @@ class BandwidthControlTests(NGFWTestCase):
         # since the limit is 90% of first measure, check that second measure is less than first measure
         assert (pre_down_speed_kbit >  post_down_speed_kbit)
 
+    @pytest.mark.failure_in_podman
     def test_013_qos_bypass_custom_rules_tcp(self):
         nuke_rules(self._app)
         priority_level = 7
@@ -368,6 +370,7 @@ class BandwidthControlTests(NGFWTestCase):
         assert ((wget_speed_pre) and (wget_speed_post))
         assert (not (wget_speed_pre * limited_acceptance_ratio >  wget_speed_post))
 
+    @pytest.mark.failure_in_podman
     def test_020_severely_limited_tcp(self):
         nuke_rules(self._app)
         priority_level = 7
@@ -430,6 +433,7 @@ class BandwidthControlTests(NGFWTestCase):
         assert (post_UDP_speed != 0)
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
+    @pytest.mark.failure_in_podman
     def test_050_severely_limited_web_filter_flagged(self):
         nuke_rules(self._app)
         pre_count = global_functions.get_app_metric_value(self._app,"prioritize")
@@ -475,6 +479,7 @@ class BandwidthControlTests(NGFWTestCase):
         assert(pre_count < post_count)
  
     @pytest.mark.slow
+    @pytest.mark.failure_in_podman
     def test_060_host_quota(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -531,6 +536,7 @@ class BandwidthControlTests(NGFWTestCase):
         assert( found )
 
     @pytest.mark.slow
+    @pytest.mark.failure_in_podman
     def test_061_user_quota(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
