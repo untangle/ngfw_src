@@ -17,17 +17,10 @@ Ext.define('Ung.Setup', {
         if (!rpc.wizardSettings.steps || rpc.wizardSettings.steps.length == 0) {
             // Wizard steps not defined.
             if(!rpc.remote){
-                // No remote configuration
-                rpc.wizardSettings.steps = ['Welcome', 'License', 'ServerSettings', 'Interfaces', 'Internet', 'InternalNetwork', 'AutoUpgrades', 'Complete'];
+                // Local configuration
+                rpc.wizardSettings.steps = ['Welcome', 'License', 'ServerSettings', 'Interfaces', 'Internet', 'InternalNetwork', 'Wireless', 'AutoUpgrades', 'Complete'];
             }else{
-                if(rpc.remoteReachable){
-                    // Can get to remote server, so show stub
-                    rpc.wizardSettings.steps = ['Welcome'];
-                }else{
-                    // Need to configure internet to be reachable to remote.
-                    Util.setRpcJsonrpc("admin");
-                    rpc.wizardSettings.steps = ['Welcome', 'Internet', 'Complete'];
-                }
+                rpc.wizardSettings.steps = ['Welcome', 'Internet', 'Complete'];
             }
         }
         Ext.apply(Ext.form.field.VTypes, {

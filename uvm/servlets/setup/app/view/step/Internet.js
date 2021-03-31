@@ -264,15 +264,15 @@ Ext.define('Ung.Setup.Internet', {
                 } else if (result.dnsWorking === false) {
                     message = 'Warning! Internet tests succeeded, but DNS tests failed.'.t();
                 } else {
-                    message = null;
-                }
-
-                if(rpc.remote){
-                    Util.setRpcJsonrpc("setup");
-                    var swResults = rpc.setup.getSetupWizardStartupInfo();
-                    Util.setRpcJsonrpc("admin");
-                    if(swResults.remoteReachable == false){
-                        message = 'Unable to reach Command Center!'.t();
+                    if(rpc.remote){
+                        Util.setRpcJsonrpc("setup");
+                        var remoteReachable = rpc.setup.getRemoteReachable();
+                        Util.setRpcJsonrpc("admin");
+                        if(remoteReachable == false){
+                            message = 'Unable to reach Command Center!'.t();
+                        }
+                    }else{
+                        message = null;
                     }
                 }
 
