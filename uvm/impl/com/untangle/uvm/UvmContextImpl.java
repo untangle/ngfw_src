@@ -46,6 +46,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String DISKLESS_MODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/diskless-mode-flag";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
+    private static final String IS_REMOTE_SETUP_DISABLED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/setup-remote-disabled-flag";
     private static final String APPLIANCE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/appliance-flag";
     private static final String APPLIANCE_MODEL_FILE = System.getProperty("uvm.conf.dir") + "/appliance-model";
     private static final String APPLIANCE_VIRTUAL_DETECT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-virtual-detect.py";
@@ -865,6 +866,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 logger.error("Failed to create registration file", e);
             }
         }
+    }
+
+    /**
+     * isRemoteSetup returns true if Setup Wizard is to be run remotely, false for local.
+     * @return bool
+     */
+    public boolean isRemoteSetup()
+    {
+        File keyFile = new File(IS_REMOTE_SETUP_DISABLED_FLAG_FILE);
+        return !keyFile.exists() ? true : false;
     }
 
     /**

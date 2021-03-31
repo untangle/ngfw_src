@@ -437,6 +437,11 @@ public interface UvmContext
     void    setRegistered();
 
     /**
+     * Returns true if using remote setup wizard.
+     */
+    boolean isRemoteSetup();
+
+    /**
      * True if the system is running without media
      * that can withstand heavy writes
      * SSD -> true
