@@ -121,6 +121,8 @@ public class UtJsonRpcServlet extends JSONRPCServlet
         public com.untangle.uvm.WizardSettings getWizardSettings( );
 
         public Map<String, String> getTranslations();
+
+        public Boolean getRemoteReachable();
         /**
          * Convenience method to load in one call all the properties needed to initialize the setup wizard
          */

@@ -267,8 +267,10 @@ Ext.define('Ung.Setup.Wizard', {
 
             // remove any nonwanted step if exists
             Ext.Array.each(wizard.items.items, function (card) {
-                if (!Ext.Array.contains(wizard.steps, card.getXType())) {
-                    wizard.remove(card);
+                if(card){
+                    if (!Ext.Array.contains(wizard.steps, card.getXType())) {
+                        wizard.remove(card);
+                    }
                 }
             });
 

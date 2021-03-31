@@ -201,7 +201,6 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("translations", this.context.languageManager().getTranslations("untangle"));
             json.put("wizardSettings", this.context.getWizardSettings());
             json.put("remote", getRemote());
-            json.put("remoteReachable", getRemoteReachable());
             json.put("remoteUrl", this.context.getCmdUrl());
             json.put("serverUID", this.context.getServerUID());
 

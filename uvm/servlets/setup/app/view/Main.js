@@ -3,7 +3,8 @@ Ext.define('Ung.Setup.Main', {
 
     viewModel: {
         data: {
-            resuming: false
+            resuming: false,
+            remoteReachable: null
         }
     },
     layout: 'center',
@@ -72,63 +73,79 @@ Ext.define('Ung.Setup.Main', {
                     }]
                 });
             }else{
-                if(rpc.remoteReachable){
-                    // Can get to remote server
-                    items.push({
-                        xtype: 'component',
-                        margin: '0 0 20 0',
-                        style: { textAlign: 'center' },
-                        html: 'To continue, you must log in using your Command Center account.  If you do not have one, you can create a free account.'.t()
-                    });
-                    items.push({
-                        xtype: 'container',
-                        items: [{
-                            xtype: 'button',
-                            width: 332,
-                            margin: '0 0 10 0',
-                            text: '<div style="color:white;">' + 'Log In'.t() + '</div>',
-                            baseCls: 'command-center-login-button',
-                            handler: function(){
-                                window.location = rpc.remoteUrl + "/login?redirectUrl="+encodeURI("/appliances/add/" + rpc.serverUID);
-                            }
-                        },{
-                            xtype: 'button',
-                            width: 332,
-                            text: '<div style="color:white;">' + 'Create Account'.t() + '</div>',
-                            baseCls: 'command-center-create-button',
-                            handler: function(){
-                                window.location = rpc.remoteUrl + "/login/create-account?redirectUrl="+encodeURI("/appliances/add/" + rpc.serverUID);
-                            }
-                        }]
-                    });
-                }else{
-                    // Need to configure internet to be reachable to remote.
-                    items.push({
-                        xtype: 'component',
-                        margin: '0 0 20 0',
-                        style: { textAlign: 'center' },
-                        html: '<p>' + 'To continue, you must connect to Command Center which is currently unreachable from this device.'.t() + '<br/>' + 
-                                '<p>' + 'You must configure Internet connectivity to Command Center to continue.'.t() + '<br/>'
-                   });
-                   items.push({
-                        xtype: 'container',
-                        layout: {
-                            type: 'hbox',
-                            align: 'center'
-                        },
-                        defaults: {
-                            xtype: 'button',
-                            scale: 'medium',
-                            focusable: false,
-                            margin: 5
-                        },
-                        items: [{
-                            iconCls: 'fa fa-play fa-lg',
-                            text: 'Configure Internet'.t(),
-                            handler: 'resetWizard'
-                        }]
-                   });
-                }
+                items.push({
+                    xtype: 'component',
+                    margin: '0 0 20 0',
+                    html: '<i class="fa fa-spinner fa-spin fa-lg fa-fw"></i>' + 'Checking Internet connectivity'.t(),
+                    hidden: false,
+                    bind: {
+                        hidden: '{remoteReachable != null}'
+                    }
+                },{
+                    xtype: 'component',
+                    margin: '0 0 20 0',
+                    style: { textAlign: 'center' },
+                    html: 'To continue, you must log in using your Command Center account.  If you do not have one, you can create a free account.'.t(),
+                    hidden: true,
+                    bind: {
+                        hidden: '{remoteReachable == false || remoteReachable == null}'
+                    }
+                },{
+                    xtype: 'container',
+                    hidden: true,
+                    bind: {
+                        hidden: '{remoteReachable == false || remoteReachable == null}'
+                    },
+                    items: [{
+                        xtype: 'button',
+                        width: 332,
+                        margin: '0 0 10 0',
+                        text: '<div style="color:white;">' + 'Log In'.t() + '</div>',
+                        baseCls: 'command-center-login-button',
+                        handler: function(){
+                            window.location = rpc.remoteUrl + "/login?redirectUrl="+encodeURI("/appliances/add/" + rpc.serverUID);
+                        }
+                    },{
+                        xtype: 'button',
+                        width: 332,
+                        text: '<div style="color:white;">' + 'Create Account'.t() + '</div>',
+                        baseCls: 'command-center-create-button',
+                        handler: function(){
+                            window.location = rpc.remoteUrl + "/login/create-account?redirectUrl="+encodeURI("/appliances/add/" + rpc.serverUID);
+                        }
+                    }]
+                },{
+                    xtype: 'component',
+                    margin: '0 0 20 0',
+                    style: { textAlign: 'center' },
+                    html: '<p>' + 'To continue, you must connect to Command Center which is currently unreachable from this device.'.t() + '<br/>' + 
+                            '<p>' + 'You must configure Internet connectivity to Command Center to continue.'.t() + '<br/>',
+                    hidden: true,
+                    bind: {
+                        hidden: '{remoteReachable == true || remoteReachable == null}'
+                    }
+                },{
+                    xtype: 'container',
+                    layout: {
+                        type: 'hbox',
+                        align: 'center'
+                    },
+                    defaults: {
+                        xtype: 'button',
+                        scale: 'medium',
+                        focusable: false,
+                        margin: 5
+                    },
+                    hidden: true,
+                    bind: {
+                        hidden: '{remoteReachable == true || remoteReachable == null}'
+                    },
+                    items: [{
+                        iconCls: 'fa fa-play fa-lg',
+                        text: 'Configure Internet'.t(),
+                        handler: 'resetWizard'
+                    }]
+                });
             }
             view.down('[itemId=intro]').add(items);
 
@@ -137,6 +154,11 @@ Ext.define('Ung.Setup.Main', {
                 me.getView().down('container').addCls('fadein');
             }, 100);
 
+            Ext.defer(function () {
+                var remoteReachable = rpc.setup.getRemoteReachable();
+                vm.set("remoteReachable", remoteReachable);
+            }, 500);
+
             // check if resuming
             if (!rpc.wizardSettings.wizardComplete && rpc.wizardSettings.completedStep != null) {
                 vm.set('resuming', true);
@@ -144,6 +166,21 @@ Ext.define('Ung.Setup.Main', {
         },
 
         resetWizard: function() {
+            var me = this;
+            if(rpc.remote && !rpc.remoteReachable){
+                if(Util.setRpcJsonrpc("admin") == true){
+                    me.resetWizardContinue();
+                }else{
+                    Util.authenticate("passwd", function () {
+                        me.resetWizardContinue();
+                    });
+                }
+            }else{
+                me.resetWizardContinue();
+            }
+        },
+
+        resetWizardContinue: function(){
             var me = this, vm = me.getViewModel();
 
             vm.set('resuming', false);
@@ -151,6 +188,7 @@ Ext.define('Ung.Setup.Main', {
             rpc.wizardSettings.completedStep = null;
             rpc.wizardSettings.wizardComplete = false;
             me.openSetup();
+
         },
 
         resumeWizard: function () {
