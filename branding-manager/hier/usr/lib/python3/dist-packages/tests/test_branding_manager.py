@@ -68,6 +68,7 @@ class BrandingManagerTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(global_functions.uvmContextLongTimeout.licenseManager().isLicenseValid(self.module_name()))
 
+    @pytest.mark.failure_in_podman
     def test_020_changeBranding(self):
         global app, appWeb, appData
         appData['companyName'] = newCompanyName;

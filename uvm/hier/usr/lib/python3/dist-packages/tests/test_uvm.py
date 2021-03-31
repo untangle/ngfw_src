@@ -203,6 +203,7 @@ class UvmTests(NGFWTestCase):
         assert(match)
 
     @pytest.mark.slow
+    @pytest.mark.failure_in_podman
     def test_030_test_smtp_settings(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
@@ -317,6 +318,7 @@ class UvmTests(NGFWTestCase):
         assert(events != None)
         assert ( found )
 
+    @pytest.mark.failure_in_podman
     def test_060_customized_email_alert(self):
         """Create custom email template and verify alert email is received correctly"""
         #get settings, backup original settings

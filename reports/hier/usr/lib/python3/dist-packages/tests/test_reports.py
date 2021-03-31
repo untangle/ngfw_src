@@ -330,6 +330,7 @@ class ReportsTests(NGFWTestCase):
         assert(int.from_bytes(result,byteorder='little') > 3)
 
     @pytest.mark.slow
+    @pytest.mark.failure_in_podman
     def test_100_email_report_admin(self):
         """
         The "default" configuration test:
@@ -395,6 +396,7 @@ class ReportsTests(NGFWTestCase):
         assert(len(parser.content_ids) == len(mime_content_ids))
 
     @pytest.mark.slow
+    @pytest.mark.failure_in_podman
     def test_101_email_admin_override_custom_report(self):
         """
         1. Use reportuser
@@ -441,6 +443,7 @@ class ReportsTests(NGFWTestCase):
         assert((email_context_found1) and (email_context_found2))
 
     @pytest.mark.slow
+    @pytest.mark.failure_in_podman
     def test_102_email_admin_override_custom_report_mobile(self):
         """
         1. Use reportuser
@@ -510,6 +513,7 @@ class ReportsTests(NGFWTestCase):
                         assert(image_width <= 350 and image_height <= 350)
 
     @pytest.mark.slow
+    @pytest.mark.failure_in_podman
     def test_103_email_report_verify_apps(self):
         """
         1) Install all apps

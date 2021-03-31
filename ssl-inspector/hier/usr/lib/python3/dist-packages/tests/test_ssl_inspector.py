@@ -136,6 +136,7 @@ class SslInspectorTests(NGFWTestCase):
         result = remote_control.run_command("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://%s 2>&1 | grep -q blockpage" % (pornServerName))
         assert (result == 0)        
 
+    @pytest.mark.failure_in_podman
     def test_020_checkIgnoreCertificate(self):
         if findRule('Ignore Dropbox'):
             result = remote_control.run_command('echo -n | openssl s_client -connect www.dropbox.com:443 -servername www.dropbox.com 2>/dev/null | grep -q \'%s\'' % (dropboxIssuer))

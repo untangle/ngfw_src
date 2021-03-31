@@ -103,6 +103,7 @@ class WireGuardVpnTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
+    @pytest.mark.failure_in_podman
     def test_020_createWireGuardTunnel(self):
         """Set up WireGuard Tunnel and ping between hosts behind each end"""
         if (vpnHostResult != 0):

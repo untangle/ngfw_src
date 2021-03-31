@@ -294,6 +294,7 @@ class FirewallTests(NGFWTestCase):
         assert (result != 0)
 
     # verify dst intf number rule works
+    @pytest.mark.failure_in_podman
     def test_051_intfDst(self):
         rules_clear()
         # check if a multi-wan box.
@@ -308,6 +309,7 @@ class FirewallTests(NGFWTestCase):
         assert (result != 0)
 
     # verify dst intf number rule doesn't match everything
+    @pytest.mark.failure_in_podman
     def test_052_intfWrongIntf(self):
         rules_clear()
         rule_append( create_rule_single_condition( "DST_INTF", int(remote_control.interface_external) + 1 ) )
@@ -315,6 +317,7 @@ class FirewallTests(NGFWTestCase):
         assert (result == 0)
 
     # verify dst intf with commas blocks
+    @pytest.mark.failure_in_podman
     def test_053_intfCommas(self):
         rules_clear()
         # check if a multi-wan box.
@@ -409,6 +412,7 @@ class FirewallTests(NGFWTestCase):
         assert (result != 0)
 
     # verify GeoIP blocking doesn't block stuff that isn't blocked
+    @pytest.mark.failure_in_podman
     def test_073_geoipHostCountryMiss(self):
         rules_clear()
         rule_append( create_rule_single_condition( "REMOTE_HOST_COUNTRY", "CN,GB,AU" ) )
@@ -526,6 +530,7 @@ class FirewallTests(NGFWTestCase):
         assert (result == 0)
 
     # verify bogus user agent match is blocked after setting agent
+    @pytest.mark.failure_in_podman
     def test_121_clientUserAgent2(self):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         entry['httpUserAgent'] = "Mozilla foo bar"
