@@ -47,7 +47,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     private static final String YOUTUBE_HEADER_FIELD_FIND_NAME = "youtube";
     private static final String YOUTUBE_RESTRICT_COOKIE_NAME = "PREF=";
-    private static final String YOUTUBE_RESTIRCT_COOKIE_VALUE = "&f2=8000000";
+    private static final String YOUTUBE_RESTIRCT_COOKIE_VALUE = "f2=8000000&";
     private static final int YOUTUBE_RESTRICT_COOKIE_TIMEOUT = 60 * 1000;
     private static final DateFormat COOKIE_DATE_FORMATTER = new SimpleDateFormat("E, MM-dd-yyyy HH:mm:ss z");
     private static final Pattern SEPARATORS_REGEX = Pattern.compile("\\.");
@@ -417,7 +417,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private void addYoutubeRestrictCookie(AppTCPSession sess, HeaderToken header){
         String host = header.getValue("host");
 
-        if(host != null && SEPARATORS_REGEX.matcher(host.toLowerCase()).replaceAll("").contains(YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
+        if(host != null && UrlMatchingUtil.normalizeHostname(host.toLowerCase()).contains(YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
 
             List<String> cookies = header.getValues("cookie");
             long cookieExpiration = System.currentTimeMillis() + YOUTUBE_RESTRICT_COOKIE_TIMEOUT;
@@ -427,11 +427,15 @@ public class WebFilterDecisionEngine extends DecisionEngine
             }
             boolean found = false;
             for(int i = 0; i < cookies.size(); i++){
+                // We're not really walking a key/pair of cookies, but processing the entire cookie header.
+                // For what we need to do, this is more efficient than converting to a list then working that.
                 String setCookie = cookies.get(i);
-                if(setCookie.toUpperCase().startsWith(YOUTUBE_RESTRICT_COOKIE_NAME)){
+                if(setCookie.toUpperCase().contains(YOUTUBE_RESTRICT_COOKIE_NAME)){
                     found = true;
-                    int firstSemiColon=setCookie.indexOf(';');
-                    cookies.set(i, setCookie.substring(0, firstSemiColon) + YOUTUBE_RESTIRCT_COOKIE_VALUE + setCookie.substring(firstSemiColon));
+                    int keyIndex = setCookie.indexOf(YOUTUBE_RESTRICT_COOKIE_NAME) + YOUTUBE_RESTRICT_COOKIE_NAME.length();
+                    if(keyIndex > -1){
+                        cookies.set(i,setCookie.substring(0,keyIndex) + YOUTUBE_RESTIRCT_COOKIE_VALUE + setCookie.substring(keyIndex + 1));
+                    }
                 }
             }
             if(!found){
