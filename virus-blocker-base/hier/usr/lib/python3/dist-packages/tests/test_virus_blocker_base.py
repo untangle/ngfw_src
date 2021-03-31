@@ -99,10 +99,14 @@ class VirusBlockerBaseTests(NGFWTestCase):
         except Exception as e:
             canRelay = False
 
-        if uvmContext.appManager().isInstantiated(cls.appNameSSLInspector()):
-            raise Exception('app %s already instantiated' % cls.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
-        # appSSL.start() # leave app off. app doesn't auto-start
+        if (uvmContext.appManager().isInstantiated(cls.appNameSSLInspector())):
+            if cls.skip_instantiated():
+                pytest.skip('app %s already instantiated' % cls.appNameSSLInspector())
+            else:
+                appSSL = uvmContext.appManager().app(cls.appNameSSLInspector())
+        else:
+            appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
+
         appSSLData = appSSL.getSettings()
         # Enable cloud connection
         system_settings = uvmContext.systemManager().getSettings()
