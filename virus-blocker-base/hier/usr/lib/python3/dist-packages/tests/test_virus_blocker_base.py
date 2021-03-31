@@ -5,6 +5,7 @@ from datetime import datetime
 import sys
 import socket
 import platform
+import pytest
 import unittest
 import runtests
 
@@ -411,6 +412,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert( found )
 
     # test ftp using large test file
+    @pytest.mark.slow
     def test_120_ftpLargeClean(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')

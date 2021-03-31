@@ -221,6 +221,7 @@ class ApplicationControlTests(NGFWTestCase):
                                             "application_control_flagged", True)
         assert( found )
 
+    @pytest.mark.slow
     def test_500_classdDaemonReconnect(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')

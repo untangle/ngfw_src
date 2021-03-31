@@ -329,6 +329,7 @@ class ReportsTests(NGFWTestCase):
         print("Result of wc on %s : %s" % (csv_tmp,str(result)))
         assert(int.from_bytes(result,byteorder='little') > 3)
 
+    @pytest.mark.slow
     def test_100_email_report_admin(self):
         """
         The "default" configuration test:
@@ -393,6 +394,7 @@ class ReportsTests(NGFWTestCase):
 
         assert(len(parser.content_ids) == len(mime_content_ids))
 
+    @pytest.mark.slow
     def test_101_email_admin_override_custom_report(self):
         """
         1. Use reportuser
@@ -438,6 +440,7 @@ class ReportsTests(NGFWTestCase):
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
 
+    @pytest.mark.slow
     def test_102_email_admin_override_custom_report_mobile(self):
         """
         1. Use reportuser
@@ -506,6 +509,7 @@ class ReportsTests(NGFWTestCase):
                         print("Image %s width: %d height: %d" % (part.values()[index], image_width, image_height))
                         assert(image_width <= 350 and image_height <= 350)
 
+    @pytest.mark.slow
     def test_103_email_report_verify_apps(self):
         """
         1) Install all apps

@@ -88,6 +88,7 @@ class IntrusionPreventionTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
+    @pytest.mark.slow
     def test_030_rule_add(self):
         """
         Custom rule and rule to enable it
@@ -129,6 +130,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         # app.setSettings(appSettings, True, True)
         assert(found)
 
+    @pytest.mark.slow
     def test_031_rule_modify(self):
         """
         Modify existing rule and rule to enable it
@@ -164,6 +166,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         app.setSettings(appSettings, True, True)
         assert(found)
 
+    @pytest.mark.slow
     def test_052_functional_icmp_log(self):
         """
         Check for ICMP (ping)
@@ -203,6 +206,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         app.setSettings(appSettings, True, True)
         assert(found)
 
+    @pytest.mark.slow
     def test_054_functional_udp_block(self):
         global app, appSettings
         if runtests.quick_tests_only:
@@ -238,6 +242,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         app.setSettings(appSettings, True, True)
         assert(found)
 
+    @pytest.mark.slow
     def test_060_app_stats(self):
         """
         Checks that the scan, detect, and block stats are properly incremented
@@ -298,6 +303,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         assert(pre_events_detect < post_events_detect)
         assert(pre_events_block < post_events_block)    
 
+    @pytest.mark.slow
     def test_080_nmap_log(self):
         global app, appSettings
         if runtests.quick_tests_only:
