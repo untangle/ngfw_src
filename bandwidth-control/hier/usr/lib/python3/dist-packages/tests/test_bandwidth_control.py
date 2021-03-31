@@ -235,10 +235,10 @@ class BandwidthControlTests(NGFWTestCase):
         if (localTargetResult != 0):
             # local bandwidth target server not available so use test.untangle.com
             target_server = global_functions.TEST_SERVER_HOST
-        pre_down_speed_kbit = global_functions.get_download_speed(download_server=target_server)
+        pre_down_speed_kbit = 8 * global_functions.get_download_speed(download_server=target_server)
             
         # calculate QoS limits
-        wan_limit_kbit = int((pre_down_speed_kbit*8) * .9)
+        wan_limit_kbit = int(pre_down_speed_kbit * .9)
         # set max to 100Mbit, so that other limiting factors dont interfere
         if wan_limit_kbit > 100000: wan_limit_kbit = 100000 
         wan_limit_mbit = round(wan_limit_kbit/1024,2)
@@ -275,7 +275,7 @@ class BandwidthControlTests(NGFWTestCase):
 
         print("\nSetting WAN limit: %i Kbps" % (wan_limit_kbit))
 
-        post_down_speed_kbit = global_functions.get_download_speed(download_server=target_server)
+        post_down_speed_kbit = 8 * global_functions.get_download_speed(download_server=target_server)
 
         # since the limit is 90% of first measure, check that second measure is less than first measure
         assert (pre_down_speed_kbit >  post_down_speed_kbit)
