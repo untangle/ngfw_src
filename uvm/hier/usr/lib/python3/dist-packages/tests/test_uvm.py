@@ -351,7 +351,7 @@ class UvmTests(NGFWTestCase):
 
         #check email sent is correct
         emailFound = False
-        timeout = 5
+        timeout = 40
         alertEmail = ""
         while not emailFound and timeout > 0:
             timeout -= 1
