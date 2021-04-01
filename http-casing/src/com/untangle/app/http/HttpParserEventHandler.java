@@ -44,7 +44,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     private static final String HOST_HEADER = "host";
     private static final String USER_AGENT_HEADER = "user-agent";
     private static final String CONTENT_DISPOSITION_HEADER = "content-disposition";
-    private static final String SLASH_STRING = "/";
+    public static final String SLASH_STRING = "/";
     private static final String DOT_STRING = ".";
     private static final String HTTP_PREFIX="HTTP/";
     private static final String EXPECT_KEY="expect";
@@ -59,8 +59,8 @@ public class HttpParserEventHandler extends AbstractEventHandler
     private static final byte LF = '\n';
 
     private static final int TIMEOUT = 30000;
-    private static final Pattern DUPLICATE_SLASH_MATCH = Pattern.compile("(?<!:)/+");
-    private static final Pattern WHITESPACE_MATCH = Pattern.compile("(?<!:)/+");
+    public static final Pattern DUPLICATE_SLASH_MATCH = Pattern.compile("(?<!:)/+");
+    public static final Pattern WHITESPACE_MATCH = Pattern.compile("(?<!:)/+");
 
     private static enum BodyEncoding {
         NO_BODY, // no body

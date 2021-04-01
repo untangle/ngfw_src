@@ -19,6 +19,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 
 import com.untangle.app.http.RequestLineToken;
+import com.untangle.app.http.HttpParserEventHandler;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.util.UrlMatchingUtil;
 
@@ -30,13 +31,25 @@ public class SearchEngine
 {
     private static final Logger logger = Logger.getLogger(SearchEngine.class);
 
+    private static final List<String> SearchEngineHosts;
     private static final List<Pattern> SearchEngines;
     public static final URIBuilder KidFriendlySearchEngineRedirectUri;
     public static final HashMap<String,Object> KidFriendlyRedirectParameters;
     static {
+        // Substring of hosts we care about; be sure to align with SearchEngineS!
+        SearchEngineHosts = new ArrayList<String>();
+        SearchEngineHosts.add("google");
+        SearchEngineHosts.add("youtube");
+        SearchEngineHosts.add("ask");
+        SearchEngineHosts.add("bing");
+        SearchEngineHosts.add("yahoo");
+        SearchEngineHosts.add("duckduckgo");
+        SearchEngineHosts.add("kidzsearch");
+
         SearchEngines = new ArrayList<Pattern>();
         SearchEngines.add(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/results\\?search_query=([^&]+).*"));
-        SearchEngines.add(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/(complete/|)search.*(\\?|&)q=([^&]+).*"));
+        SearchEngines.add(Pattern.compile(".*(youtube|google)\\.[a-z]+(\\.[a-z]+)?/(complete/|)search.*(\\?|&)q=([^&]+).*"));
+        SearchEngines.add(Pattern.compile(".*(youtube|google)\\.[a-z]+(\\.[a-z]+)?/gen_204(\\?|&)oq=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)q=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/search.*(\\?|&)p=([^&]+).*"));
@@ -72,7 +85,7 @@ public class SearchEngine
     {
         URI uri = null;
         try {
-            uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/"));
+            uri = new URI(HttpParserEventHandler.DUPLICATE_SLASH_MATCH.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll(HttpParserEventHandler.SLASH_STRING));
         } catch (URISyntaxException e) {
             logger.error("Could not parse URI '" + uri + "'", e);
         }
@@ -84,7 +97,17 @@ public class SearchEngine
                 host = clientIp.getHostAddress();
             }
         }
-        host = UrlMatchingUtil.normalizeHostname(host);
+        // Only bother with hosts matching our search engine types.
+        host = UrlMatchingUtil.normalizeHostname(host.toLowerCase());
+        boolean hostFound = false;
+        for(String hostPiece : SearchEngineHosts){
+            if(host.contains(hostPiece)){
+                hostFound = true;
+            }
+        }
+        if(hostFound == false){
+            return null;
+        }
 
         String url = host + uri.toString();
 
