@@ -181,6 +181,7 @@ def create_firewall_rule( conditionType, value, blocked=True ):
 
 @pytest.mark.ipsec_vpn
 class IPsecTests(NGFWTestCase):
+    force_start = True
 
     @staticmethod
     def module_name():
