@@ -153,7 +153,7 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                                     xtype: 'displayfield',
                                     cls: 'x-selectable',
                                     bind: {
-                                        value: Rpc.directData('rpc.networkManager.getPublicUrl').split(":")[0],
+                                        value: '{localHostname}',
                                     }
                                 },{
                                     fieldLabel: 'Local Endpoint Port'.t(),
