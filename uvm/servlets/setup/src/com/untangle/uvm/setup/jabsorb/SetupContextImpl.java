@@ -118,8 +118,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
      */
     public boolean getRemote()
     {
-        File remoteDisabledFlagFile = new File( System.getProperty("uvm.conf.dir") + "/setup-remote-disabled-flag" );
-        return !remoteDisabledFlagFile.exists();
+        return context.isRemoteSetup();
     }
 
     /**
