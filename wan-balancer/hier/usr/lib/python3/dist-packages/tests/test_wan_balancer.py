@@ -258,7 +258,7 @@ class WanBalancerTests(NGFWTestCase):
 
         # Test balanced
         # send netcat UDP to random IPs
-        result = remote_control.run_command("for i in $(seq 100) ; do echo test | netcat -u -w1 -q1 1.2.3.${i} 7 >/dev/null ; done",stdout=False)
+        result = remote_control.run_command("for i in \`seq 100\` ; do echo \"test\" | netcat -u -w1 -q1 1.2.3.\$i 7 >/dev/null ; done",stdout=False)
 
         events = global_functions.get_events('Network','All Sessions',None,20)
         assert(events != None)
