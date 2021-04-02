@@ -19,7 +19,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 
 import com.untangle.app.http.RequestLineToken;
-import com.untangle.app.http.HttpParserEventHandler;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.util.UrlMatchingUtil;
 
@@ -33,6 +32,7 @@ public class SearchEngine
 
     private static final List<String> SearchEngineHosts;
     private static final List<Pattern> SearchEngines;
+    private static final Pattern YouTubeQuery = Pattern.compile(".*=oq=([^&]+).*");
     public static final URIBuilder KidFriendlySearchEngineRedirectUri;
     public static final HashMap<String,Object> KidFriendlyRedirectParameters;
     static {
@@ -74,31 +74,17 @@ public class SearchEngine
      *
      * @param clientIp
      *        The client address
-     * @param requestLine
-     *        The request line token
+     * @param host
+     *        URL host.
+     * @param uri
+     *        URL URI.
      * @param header
      *        The header token
      *
      * @return The query term
      */
-    public static String getQueryTerm(InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    public static String getQueryTerm(InetAddress clientIp, String host, String uri, HeaderToken header)
     {
-        URI uri = null;
-        try {
-            uri = new URI(HttpParserEventHandler.DUPLICATE_SLASH_MATCH.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll(HttpParserEventHandler.SLASH_STRING));
-        } catch (URISyntaxException e) {
-            logger.error("Could not parse URI '" + uri + "'", e);
-        }
-
-        String host = uri.getHost();
-        if (null == host) {
-            host = header.getValue("host");
-            if (null == host) {
-                host = clientIp.getHostAddress();
-            }
-        }
-        // Only bother with hosts matching our search engine types.
-        host = UrlMatchingUtil.normalizeHostname(host.toLowerCase());
         boolean hostFound = false;
         for(String hostPiece : SearchEngineHosts){
             if(host.contains(hostPiece)){
@@ -111,10 +97,10 @@ public class SearchEngine
 
         String url = host + uri.toString();
 
+        String term = null;
         for (Pattern p : SearchEngines) {
             Matcher m = p.matcher(url);
             if (m.matches()) {
-                String term = "";
                 try {
                     term = m.group(m.groupCount());
                     term = URLDecoder.decode(term, "UTF-8");
@@ -124,7 +110,29 @@ public class SearchEngine
                 return term;
             }
         }
-        return null;
+
+        if(host.contains(WebFilterDecisionEngine.YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
+            List<String> cookies = header.getValues("cookie");
+            if (cookies == null) {
+                return term;
+            }
+            String cookie = null;
+            for(int i = 0; i < cookies.size(); i++){
+                cookie = cookies.get(i);
+                Matcher m = YouTubeQuery.matcher(cookie);
+                if (m.matches()) {
+                    if(term == null){
+                        try {
+                            term = m.group(m.groupCount());
+                            term = URLDecoder.decode(term, "UTF-8");
+                        } catch (Exception e) {
+                        }
+                    }
+                }
+            }
+        }
+
+        return term;
     }
 
     /**
