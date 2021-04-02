@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.app.http.HttpRedirect;
+import com.untangle.app.http.HttpParserEventHandler;
 import com.untangle.app.webroot.WebrootQuery;
 import com.untangle.app.webroot.WebrootDaemon;
 import com.untangle.app.web_filter.DecisionEngine;
@@ -45,7 +46,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static final String QUIC_COOKIE_FIELD_NAME = "alt-svc";
     private static final String QUIC_COOKIE_FIELD_START = "quic=";
 
-    private static final String YOUTUBE_HEADER_FIELD_FIND_NAME = "youtube";
+    public static final String YOUTUBE_HEADER_FIELD_FIND_NAME = "youtube";
     private static final String YOUTUBE_RESTRICT_COOKIE_NAME = "PREF=";
     private static final String YOUTUBE_RESTIRCT_COOKIE_VALUE = "f2=8000000&";
     private static final int YOUTUBE_RESTRICT_COOKIE_TIMEOUT = 60 * 1000;
@@ -96,7 +97,22 @@ public class WebFilterDecisionEngine extends DecisionEngine
         if(redirect != null){
             return redirect;
         }else{
-            String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
+            URI uri = null;
+            try {
+                uri = new URI(HttpParserEventHandler.DUPLICATE_SLASH_MATCH.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll(HttpParserEventHandler.SLASH_STRING));
+            } catch (URISyntaxException e) {
+                logger.error("Could not parse URI '" + uri + "'", e);
+            }
+
+            String host = uri.getHost();
+            if (null == host) {
+                host = header.getValue("host");
+                if (null == host) {
+                    host = clientIp.getHostAddress();
+                }
+            }
+
+            String term = SearchEngine.getQueryTerm(clientIp, host, uri.toString(), header);
 
             if (term != null) {
 
@@ -142,28 +158,13 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 WebFilterQueryEvent hbqe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, matchingRule != null ? matchingRule.getBlocked() : Boolean.FALSE, matchingRule != null ? matchingRule.getFlagged() : Boolean.FALSE, (matchingRule != null && matchingRule.getBlocked()) ? Reason.BLOCK_SEARCH_TERM : Reason.DEFAULT, getApp().getName());
                 getApp().logEvent(hbqe);
 
-                if( matchingRule != null ||
+                if(matchingRule == null &&
+                    host.contains(WebFilterDecisionEngine.YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
+                    return null;
+                }else if( matchingRule != null ||
                     ourApp.getSettings().getForceKidFriendly()){
-                    URI uri = null;
-
-                    try {
-                        uri = new URI(CONSECUTIVE_SLASHES_URI_PATTERN.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll("/"));
-                    } catch (URISyntaxException e) {
-                        logger.error("Could not parse URI '" + uri + "'", e);
-                    }
-
-                    String host = uri.getHost();
-                    if (null == host) {
-                        host = header.getValue("host");
-                        if (null == host) {
-                            host = clientIp.getHostAddress();
-                        }
-                    }
-
-                    host = UrlMatchingUtil.normalizeHostname(host);
 
                     if(matchingRule != null){
-
                         if (matchingRule.getBlocked()) {
                             ourApp.incrementFlagCount();
 
