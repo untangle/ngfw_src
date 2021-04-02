@@ -24,6 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
+import com.untangle.app.http.HttpParserEventHandler;
 import com.untangle.app.http.HttpRedirect;
 
 import java.util.Iterator;
@@ -534,7 +535,21 @@ public abstract class DecisionEngine
      */
     boolean checkUnblockedTerms(InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
-        String term = SearchEngine.getQueryTerm(clientIp, requestLine, header);
+        URI uri = null;
+        try {
+            uri = new URI(HttpParserEventHandler.DUPLICATE_SLASH_MATCH.matcher(requestLine.getRequestUri().normalize().toString()).replaceAll(HttpParserEventHandler.SLASH_STRING));
+        } catch (URISyntaxException e) {
+            logger.error("Could not parse URI '" + uri + "'", e);
+        }
+
+        String host = uri.getHost();
+        if (null == host) {
+            host = header.getValue("host");
+            if (null == host) {
+                host = clientIp.getHostAddress();
+            }
+        }
+        String term = SearchEngine.getQueryTerm(clientIp, host, uri.toString(), header);
 
         if(isItemUnblocked(term, clientIp)) {
             if (logger.isDebugEnabled()) logger.debug("LOG: " + term + " in unblock list for " + clientIp);
