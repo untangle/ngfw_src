@@ -440,6 +440,11 @@ public interface UvmContext
      * Returns true if using remote setup wizard.
      */
     boolean isRemoteSetup();
+    /**
+     * Set remote setup wizard enabled or disabled.
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    void    setRemoteSetup(boolean enabled);
 
     /**
      * True if the system is running without media
