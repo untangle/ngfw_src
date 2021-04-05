@@ -879,6 +879,35 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
+     * setRemoteSetup - set the registration completed flag to true
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    public void setRemoteSetup(boolean enabled)
+    {
+        File keyFile = new File(IS_REMOTE_SETUP_DISABLED_FLAG_FILE);
+        boolean exists = keyFile.exists();
+        if(enabled){
+            if(exists){
+                // Enable by removing file
+                try {
+                    keyFile.delete();
+                } catch (Exception e) {
+                    logger.error("Failed to remove file", e);
+                }
+            }
+        }else{
+            // Disable by creating file.
+            if(!exists){
+                try {
+                    keyFile.createNewFile();
+                } catch (Exception e) {
+                    logger.error("Failed to create file", e);
+                }
+            }
+        }
+    }
+
+    /**
      * isAppliance returns true if this is an official untangle appliance, false otherwise
      * @return bool
      */
