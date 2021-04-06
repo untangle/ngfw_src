@@ -32,6 +32,8 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
     
     private boolean hasPowerButton = true;
     private boolean autoInstall = false;
+    private int autoInstallMinMemory = 0;
+    private int autoInstallMinInterfaces = 0;
     private boolean autoStart = true;
     private boolean autoLoad = false;
     private boolean invisible = false;
@@ -116,6 +118,18 @@ public class AppProperties implements Serializable, JSONString, Comparable<AppPr
      */
     public boolean getAutoInstall() { return autoInstall; }
     public void setAutoInstall( boolean newValue ) { this.autoInstall = newValue; }
+
+    /**
+     * Minimum system memory in MB required for auto install.
+     */
+    public int getAutoInstallMinMemory() { return autoInstallMinMemory; }
+    public void setAutoInstallMinMemory( int newValue ) { this.autoInstallMinMemory = newValue; }
+
+    /**
+     * Minimum number of interfaces for auto install.
+     */
+    public int getAutoInstallMinRequireInterfaces() { return autoInstallMinInterfaces; }
+    public void setAutoInstallMinInterfaces( int newValue ) { this.autoInstallMinInterfaces = newValue; }
 
     /**
      * True if this app should be started automatically (once loaded).
