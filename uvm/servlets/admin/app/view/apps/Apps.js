@@ -12,7 +12,8 @@ Ext.define('Ung.view.apps.Apps', {
             onInstalledApps: true,
             policyName: '',
             appsCount: 0,
-            servicesCount: 0
+            servicesCount: 0,
+            autoInstallApps: false
         },
         stores: {
             installableApps: {
@@ -63,6 +64,13 @@ Ext.define('Ung.view.apps.Apps', {
             hidden: true,
             bind: {
                 hidden: '{!onInstalledApps}'
+            }
+        }, {
+            xtype: 'component',
+            html: '<i class="fa fa-spinner fa-spin fa-lg fa-fw"></i>&nbsp;' + 'Installing recommended apps'.t(),
+            hidden: true,
+            bind: {
+                hidden: '{autoInstallApps == false}'
             }
         }, {
             xtype: 'component',
