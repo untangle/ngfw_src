@@ -9,6 +9,10 @@ Ext.define ('Ung.model.AppState', {
         type: 'boolean',
         defaultValue: false
     }, {
+        name: 'expired',
+        type: 'boolean',
+        defaultValue: true
+    },{
         name: 'power',
         type: 'boolean',
         defaultValue: false
@@ -16,7 +20,7 @@ Ext.define ('Ung.model.AppState', {
         name: 'colorCls',
         type: 'string',
         calculate: function(data){
-            if(data.inconsistent){
+            if(data.inconsistent || data.expired){
                 return 'fa-red';
             }else if(data.power){
                 return 'fa-orange';
@@ -43,6 +47,8 @@ Ext.define ('Ung.model.AppState', {
                     return 'Powering off'.t();
                 }else if(data.inconsistent){
                     return 'Disabled but active'.t();
+                }else if(data.expired){
+                    return 'Disabled, license is invalid or expired'.t();
                 }else{
                     return 'Disabled'.t();
                 }
@@ -52,6 +58,7 @@ Ext.define ('Ung.model.AppState', {
     detect: function(){
         var on = false;
         var inconsistent = false;
+        var licenseExpired = true;
         if( ( this.vm && !Util.isDestroyed(this.vm) ) || 
             ( this.instance && !Util.isDestroyed(this.instance)) ){
             var targetState = this.vm ? this.vm.get('instance.targetState') : this.instance.targetState;
@@ -62,11 +69,20 @@ Ext.define ('Ung.model.AppState', {
             var daemonRunning = (on && this.vm && this.vm.get('props.daemon') != null) ? Rpc.directData('rpc.UvmContext.daemonManager.isRunning', this.vm.get('props.daemon') ) : true;
 
             inconsistent = (targetState != runState) || (runState == 'RUNNING' && !daemonRunning);
+
+            if ( this.vm.get('app.name') ) {
+                licenseExpired = !Rpc.directData('rpc.UvmContext.licenseManager.isLicenseValid', this.vm.get('app.name'));
+                // If expired license override on state, even though the daemon is likely running...
+                if ( !licenseExpired ) {
+                    on = false;
+                }
+            }
         }
 
         this.set('on', on);
         this.set('inconsistent', inconsistent);
         this.set('power', false);
+        this.set('expired', licenseExpired);
     },
     vm: null,
     instance: null,
