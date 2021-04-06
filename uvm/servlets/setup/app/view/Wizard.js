@@ -12,9 +12,12 @@ Ext.define('Ung.Setup.Wizard', {
         },
         formulas: {
             nextButtonDisabled: function(get){
+                // Not easy to manage next button disabled mode with conditions in a bind.
                 if(get('nextDisabled')){
+                    // Always disable.
                     return true;
                 }
+                // Disable if on Interfaces card and less than 2 interfaces.
                 return get('activeStep') === "Interfaces" && get('intfListLength') < 2 && !get('interfacesForceContinue');
             }
         }
