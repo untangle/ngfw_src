@@ -5,6 +5,8 @@
         "displayName" : "WAN Failover",
         "type" : "SERVICE",
         "viewPosition" : 1040,
+        "autoInstall" : true,
+        "autoInstallMinInterfaces": 3,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
