@@ -22,6 +22,11 @@ public interface AppManager
     AppManagerSettings getSettings();
 
     /**
+     * Install default applications
+     */
+    public void doAutoInstall();
+
+    /**
      * Get <code>App</code>s of all instantiated apps.
      *
      * @return list of all app ids.
@@ -187,5 +192,17 @@ public interface AppManager
      * Shutdown any running apps that have an invalid license
      */
     void shutdownAppsWithInvalidLicense();
-    
+
+    /**
+     * Returns true if apps are to be auto installed
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isAutoInstallAppsFlag();
+
+    /**
+     * Set/unset auto install flag.
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    void setAutoInstallAppsFlag(boolean enabled);
 }
