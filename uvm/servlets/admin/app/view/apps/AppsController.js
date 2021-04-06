@@ -105,7 +105,7 @@ Ext.define('Ung.view.apps.AppsController', {
         });
 
         // If installing recommended apps on initial install, note this on the console.
-        var autoInstallAppsFlag = Rpc.directData('rpc.UvmContext').isAutoInstallAppsFlag();
+        var autoInstallAppsFlag = Rpc.directData('rpc.appManager').isAutoInstallAppsFlag();
         if(autoInstallAppsFlag){
             vm.set('autoInstallApps', true);
             var appInstallMonitorDelay = 250;
@@ -114,7 +114,7 @@ Ext.define('Ung.view.apps.AppsController', {
                     return;
                 }
                 me.getApps();
-                var autoInstallAppsFlag = Rpc.directData('rpc.UvmContext').isAutoInstallAppsFlag();
+                var autoInstallAppsFlag = Rpc.directData('rpc.appManager').isAutoInstallAppsFlag();
                 vm.set('autoInstallApps', autoInstallAppsFlag);
                 if(autoInstallAppsFlag == true){
                     appInstallMonitor.delay( appInstallMonitorDelay );
