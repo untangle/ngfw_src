@@ -55,6 +55,10 @@ Ext.define('Ung.cmp.AppState', {
                 appManager = me.getView().up('#appCard').appManager,
                 appView = me.getView().up('#appCard');
 
+            if ( appView.getViewModel().get('state').get('expired') ) {
+                // Expired license, do nothing
+                return;
+            }
             btn.setDisabled(true);
 
             appView.getViewModel().get('state').set('power', true);
