@@ -6,6 +6,7 @@
         "displayName" : "Virus Blocker",
         "type" : "FILTER",
         "autoInstall" : true,
+        "autoInstallMinMemory": 1400,
         "viewPosition" : 30,
         "parents" : {
             "javaClass": "java.util.LinkedList",
