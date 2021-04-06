@@ -1438,16 +1438,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void postInit()
     {
-        boolean firstRunFlag;
-
         writeStatusFile( "starting" );
 
         mailSender.postInit();
 
         logger.debug("restarting apps");
 
-        // save the firstRunFlag returned from the app manager
-        firstRunFlag = appManager.init();
+        appManager.init();
 
         tomcatManager.startTomcat();
         tomcatManager.writeWelcomeFile();
