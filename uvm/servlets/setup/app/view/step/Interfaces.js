@@ -161,9 +161,12 @@ Ext.define('Ung.Setup.Interfaces', {
                 html: '<p style="float: left; margin: 0;">' + 'Untangle must be installed "in-line" as a gateway. <br/>This usually requires at least 2 network cards (NICs) and fewer than 2 NICs were detected.'.t() + '</p>'
             }, {
                 xtype: 'checkbox',
-                reference: 'forcecontinue',
                 margin: '5 0',
-                boxLabel: '<strong>' + 'Continue anyway'.t() + '</strong>'
+                boxLabel: '<strong>' + 'Continue anyway'.t() + '</strong>',
+                value: 1,
+                bind:{
+                    value: '{interfacesForceContinue}'
+                }
             }]
         }]
     }],

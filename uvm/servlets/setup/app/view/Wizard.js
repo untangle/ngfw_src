@@ -7,6 +7,19 @@ Ext.define('Ung.Setup.Wizard', {
             activeStepDesc: '',
             activeStep: null,
             intfListLength: 0, // used for next button disable/enable
+            nextDisabled: false,
+            interfacesForceContinue: false
+        },
+        formulas: {
+            nextButtonDisabled: function(get){
+                // Not easy to manage next button disabled mode with conditions in a bind.
+                if(get('nextDisabled')){
+                    // Always disable.
+                    return true;
+                }
+                // Disable if on Interfaces card and less than 2 interfaces.
+                return get('activeStep') === "Interfaces" && get('intfListLength') < 2 && !get('interfacesForceContinue');
+            }
         }
     },
 
@@ -95,7 +108,7 @@ Ext.define('Ung.Setup.Wizard', {
             bind: {
                 hidden: '{!nextStep}',
                 text: '{nextStep}',
-                disabled: '{activeStep === "Interfaces" && intfListLength < 2 && !forcecontinue.checked}'
+                disabled: '{nextButtonDisabled}'
             }
         }]
     }],
