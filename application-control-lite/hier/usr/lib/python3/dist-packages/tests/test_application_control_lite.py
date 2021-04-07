@@ -100,6 +100,7 @@ class ApplicationControlLiteTests(NGFWTestCase):
                                             'application_control_lite_blocked', True )
         assert( found )
 
+    @pytest.mark.failure_outside_corporate_network
     def test_040_testFtpPatternBlock(self):
         nukepatterns(self._app)
         
