@@ -19,7 +19,8 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getSettings'),
-            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings')
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getPublicUrl')
         ], this).then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
@@ -27,6 +28,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             vm.set('originalSettings', JSON.parse(JSON.stringify(result[0])));
             vm.set('settings', result[0]);
             vm.set('panel.saveDisabled', false);
+            vm.set('localHostname', result[2].split(":")[0]);
 
             var networkSettings = result[1];
             var warning = '';
