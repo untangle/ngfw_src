@@ -16,7 +16,8 @@ Ext.define('Ung.Setup.Complete', {
         items: []
     }],
     listeners: {
-        afterrender: 'onAfterRender'
+        afterrender: 'onAfterRender',
+        activate: 'onActivate'
     },
     controller: {
 
@@ -85,6 +86,13 @@ Ext.define('Ung.Setup.Complete', {
                 });
             }
             view.down('[itemId=complete]').add(items);
+        },
+
+        onActivate: function(){
+            if(!rpc.remote){
+                // In local mode, mark wizard completed so apps can start being populated.
+                rpc.jsonrpc.UvmContext.wizardComplete();
+            }
         }
     }
 });

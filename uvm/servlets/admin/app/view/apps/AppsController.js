@@ -103,6 +103,26 @@ Ext.define('Ung.view.apps.AppsController', {
                 }
             }
         });
+
+        // If installing recommended apps on initial install, note this on the console.
+        var autoInstallAppsFlag = Rpc.directData('rpc.appManager').isAutoInstallAppsFlag();
+        if(autoInstallAppsFlag){
+            vm.set('autoInstallApps', true);
+            var appInstallMonitorDelay = 250;
+            var appInstallMonitor = new Ext.util.DelayedTask( Ext.bind(function(){
+                if(Util.isDestroyed(vm)){
+                    return;
+                }
+                me.getApps();
+                var autoInstallAppsFlag = Rpc.directData('rpc.appManager').isAutoInstallAppsFlag();
+                vm.set('autoInstallApps', autoInstallAppsFlag);
+                if(autoInstallAppsFlag == true){
+                    appInstallMonitor.delay( appInstallMonitorDelay );
+                }
+
+            }, me) );
+            appInstallMonitor.delay( appInstallMonitorDelay );
+        }
     },
 
     // when policy changes the apps components are updated based on this policy app instances/props
