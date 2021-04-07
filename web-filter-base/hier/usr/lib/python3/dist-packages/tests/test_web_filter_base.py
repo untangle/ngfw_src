@@ -184,6 +184,7 @@ class WebFilterBaseTests(NGFWTestCase):
         found = self.check_events("www.playboy.com", "/", True)
         assert( found )
 
+    @pytest.mark.failure_for_seb
     def test_015_porn_subdomain_and_url_is_blocked_by_default(self):
         result = self.get_web_request_results(url="http://www.playboy.com/about", expected="blockpage")
         assert (result == 0)
