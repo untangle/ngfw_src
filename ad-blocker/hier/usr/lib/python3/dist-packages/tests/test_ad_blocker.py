@@ -105,6 +105,7 @@ class AdBlockerTests(NGFWTestCase):
                                             'uri', ("/"),
                                             'ad_blocker_action', 'P' )
  
+    @pytest.mark.failure_behind_pihole
     def test_023_eventlog_blockedAd(self):
         fname = sys._getframe().f_code.co_name
         # specify an argument so it isn't confused with other events
@@ -126,6 +127,7 @@ class AdBlockerTests(NGFWTestCase):
         nukeRules("userRules")
         assert (result != 0)
         
+    @pytest.mark.failure_behind_pihole
     def test_025_userDefinedAdNotBlocked(self):
         addRule("showad.js", True, "description", False)
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
@@ -138,6 +140,7 @@ class AdBlockerTests(NGFWTestCase):
         nukeRules("passedUrls")
         assert (result != 0)
          
+    @pytest.mark.failure_behind_pihole
     def test_027_passSiteEnabled(self):
         addPassRule("ads.pubmatic.com", True, "passedUrls")
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
@@ -150,6 +153,7 @@ class AdBlockerTests(NGFWTestCase):
         nukeRules("passedClients")
         assert (result != 0)
          
+    @pytest.mark.failure_behind_pihole
     def test_029_passClientEnabled(self):
         addPassRule(remote_control.client_ip, True, "passedClients")
         result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")

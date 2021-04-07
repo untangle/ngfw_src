@@ -101,6 +101,7 @@ class ThreatpreventionTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
+    @pytest.mark.failure_behind_pihole
     def test_020_basic_block(self):
         result = remote_control.run_command("wget -q -4 -t 2 -O - http://account.paypal-inc.tribesiren.com 2>&1 | grep -q blocked")
         assert (result == 0)
