@@ -987,6 +987,7 @@ class CaptivePortalTests(NGFWTestCase):
         foundUsername = find_name_in_host_table(local_user_name)
         assert(not foundUsername)
 
+    @pytest.mark.failure_for_seb
     def test_071_check_secure_redirect_enabled(self):
         global app, appData
 
