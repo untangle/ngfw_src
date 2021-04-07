@@ -313,6 +313,38 @@ Ext.define('Ung.config.system.MainController', {
         }
     },
 
+    restartWizard: function(){
+        var me = this, v= me.getView(), vm = me.getViewModel();
+
+        v.setLoading(true);
+        Rpc.asyncData(rpc.UvmContext, 'getWizardSettings')
+        .then(function(settings){
+            if(Util.isDestroyed(v, vm)){
+                return;
+            }
+            v.setLoading(false);
+            settings.wizardComplete = false;
+            Rpc.asyncData(rpc.UvmContext, 'setWizardSettings', settings)
+            .then(function(result){
+                if(Util.isDestroyed(v, vm)){
+                    return;
+                }
+                v.setLoading(false);
+                location.assign('/setup');
+            }, function(ex) {
+                if(!Util.isDestroyed(v, vm)){
+                    v.setLoading(false);
+                }
+                Util.handleException(ex);
+            });
+        }, function(ex) {
+            if(!Util.isDestroyed(v, vm)){
+                v.setLoading(false);
+            }
+            Util.handleException(ex);
+        });
+    },
+
     statics: {
         shieldActionRenderer: function(value){
             var action;
