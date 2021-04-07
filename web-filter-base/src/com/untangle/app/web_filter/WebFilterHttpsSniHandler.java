@@ -257,6 +257,13 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
              * Test that https://domain/ is a valid URL
              */
             URI uri = new URI("https://" + domain + "/");
+
+            // Attach the domain as the HTTP:URL here
+            if(sess.globalAttachment(AppSession.KEY_HTTP_URL) == null)
+            {
+                sess.globalAttach(AppSession.KEY_HTTP_URL, domain + "/");
+            }
+
         } catch (Exception e) {
             if (e.getMessage().contains("Illegal character")) {
                 logger.error("Could not parse (illegal character): " + domain);
