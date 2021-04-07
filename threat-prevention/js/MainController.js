@@ -182,11 +182,11 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             }else{
                 vm.set( 'threatLookupInfo.resultAddress', urlAddress);
             }
-            if(ipResult.hasOwnProperty('reputation')){
-                vm.set( 'threatLookupInfo.resultServerReputation', me.getReputationStatus(ipResult.reputation, ipOccurances));
-            }
             if(urlResult.hasOwnProperty('reputation')){
-                vm.set( 'threatLookupInfo.resultClientReputation', me.getReputationStatus(urlResult.reputation, urlOccurances));
+                vm.set( 'threatLookupInfo.resultServerReputation', me.getReputationStatus(urlResult.reputation, urlOccurances));
+            }
+            if(ipResult.hasOwnProperty('reputation')){
+                vm.set( 'threatLookupInfo.resultClientReputation', me.getReputationStatus(ipResult.reputation, ipOccurances));
             }
 
         }, function(ex) {
