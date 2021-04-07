@@ -39,6 +39,10 @@ import com.untangle.uvm.app.AppBase;
 public class AppManagerImpl implements AppManager
 {
     private final static String APP_MANAGER_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/apps.js";
+    private static final String APPS_AUTO_INSTALL_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/apps-auto-install-flag";
+
+    private static HookCallback settingsChangedHook;
+    private boolean lastWizardComplete = false;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -65,13 +69,50 @@ public class AppManagerImpl implements AppManager
 
     private boolean live = true;
 
-    private boolean firstRunFlag = false;
-
     /**
      * Constructor
      */
     public AppManagerImpl()
     {
+    }
+
+    /**
+     * isAutoInstallAppsFlag is true if flag is set (apps are still being installed), false otherwise
+     * @return bool
+     */
+    public boolean isAutoInstallAppsFlag()
+    {
+        File keyFile = new File(APPS_AUTO_INSTALL_FLAG_FILE);
+        return keyFile.exists();
+    }
+
+    /**
+     * setAutoInstallAppsFlag - Enable or disable the auto install apps flag.
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    public void setAutoInstallAppsFlag(boolean enabled)
+    {
+        File keyFile = new File(APPS_AUTO_INSTALL_FLAG_FILE);
+        boolean exists = keyFile.exists();
+        if(enabled){
+            // Enable by creating file.
+            if(!exists){
+                try {
+                    keyFile.createNewFile();
+                } catch (Exception e) {
+                    logger.error("Failed to create file", e);
+                }
+            }
+        }else{
+            if(exists){
+                // Disable by removing file
+                try {
+                    keyFile.delete();
+                } catch (Exception e) {
+                    logger.error("Failed to remove file", e);
+                }
+            }
+        }
     }
 
     /**
@@ -921,10 +962,8 @@ public class AppManagerImpl implements AppManager
 
     /**
      * Called during initialization
-     *
-     * @return The value of the firstRunFlag
      */
-    protected boolean init()
+    protected void init()
     {
         loadSettings();
 
@@ -942,15 +981,15 @@ public class AppManagerImpl implements AppManager
 
         logger.info("Initialized AppManager");
 
-        // NGFW-13588 The firstRunFlag will be true when we initialize our
-        // settings the very first time the uvm is started. We return this to
-        // the caller so the auto install apps can be handled after startup.
-        if (firstRunFlag) {
-            firstRunFlag = false;
-            return true;
-        }
+        settingsChangedHook = new SettingsChangedHook();
 
-        return false;
+        lastWizardComplete = UvmContextFactory.context().isWizardComplete();
+
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
+        if(isAutoInstallAppsFlag()){
+            // We rebooted during auto install of apps, so continue installing.
+            doAutoInstall();
+        }
     }
 
     /**
@@ -958,6 +997,8 @@ public class AppManagerImpl implements AppManager
      */
     protected synchronized void destroy()
     {
+        UvmContextFactory.context().hookManager().unregisterCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
+
         List<Runnable> tasks = new ArrayList<>();
 
         for (final App app : loadedAppsMap.values()) {
@@ -1084,10 +1125,21 @@ public class AppManagerImpl implements AppManager
     /**
      * Called to instantiate apps marked for autoInstall
      */
-    protected void doAutoInstall()
+    public void doAutoInstall()
     {
+        if(!isAutoInstallAppsFlag()){
+            // On uvm boot, if this flag is seen, will attempt to continue install.
+            setAutoInstallAppsFlag(true);
+        }
+
+        Long totalMemory = UvmContextFactory.context().metricManager().getMemTotal();
+        float totalMemoryMb = ((float) ((double) totalMemory / 1024)) / (1024.0f);
+        int totalTnterfaceCount = UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces().size();
+
         for (AppProperties appProps : getAllAppProperties()) {
             if (!appProps.getAutoInstall()) continue;
+            if(appProps.getAutoInstallMinMemory() > totalMemoryMb) continue;
+            if(appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) continue;
             try {
                 logger.info("Auto-installing new app: " + appProps.getName());
                 App app = instantiate(appProps.getName());
@@ -1101,6 +1153,8 @@ public class AppManagerImpl implements AppManager
                 continue;
             }
         }
+
+        setAutoInstallAppsFlag(false);
     }
 
     /**
@@ -1410,7 +1464,6 @@ public class AppManagerImpl implements AppManager
 
         AppManagerSettings newSettings = new AppManagerSettings();
         this._setSettings(newSettings);
-        firstRunFlag = true;
     }
 
     /**
@@ -1713,4 +1766,35 @@ public class AppManagerImpl implements AppManager
         if (name.contains("untangle-base")) name = name.replaceAll("untangle-base-", "") + "-base";
         return name;
     }
+
+    /**
+     * Hook into application instantiations.
+     */
+    private class SettingsChangedHook implements HookCallback
+    {
+        /**
+        * @return Name of callback hook
+        */
+        public String getName()
+        {
+            return "appmanager-settings-changed-hook";
+        }
+
+        /**
+         * Callback documentation
+         *
+         * @param args  Args to pass
+         */
+        public void callback( Object... args )
+        {
+            boolean currentWizardComplete = UvmContextFactory.context().isWizardComplete();
+            if(lastWizardComplete != currentWizardComplete && currentWizardComplete== true){
+                lastWizardComplete = currentWizardComplete;
+                if ( (! UvmContextFactory.context().isDevel()) && (! UvmContextFactory.context().isAts()) ) {
+                    doAutoInstall();
+                }
+            }
+        }
+    }
+
 }

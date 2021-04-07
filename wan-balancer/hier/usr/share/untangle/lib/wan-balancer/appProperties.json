@@ -5,6 +5,8 @@
         "displayName" : "WAN Balancer",
         "type" : "SERVICE",
         "viewPosition" : 1050,
+        "autoInstall" : true,
+        "autoInstallMinInterfaces": 3,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

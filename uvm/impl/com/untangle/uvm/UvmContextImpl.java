@@ -1438,16 +1438,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void postInit()
     {
-        boolean firstRunFlag;
-
         writeStatusFile( "starting" );
 
         mailSender.postInit();
 
         logger.debug("restarting apps");
 
-        // save the firstRunFlag returned from the app manager
-        firstRunFlag = appManager.init();
+        appManager.init();
 
         tomcatManager.startTomcat();
         tomcatManager.writeWelcomeFile();
@@ -1484,14 +1481,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         UvmContextFactory.context().hookManager().registerCallback( HookManager.APPLICATION_DESTROY, appDestroyHook );
         // Pull if it already added.
         this.reportsApp = (Reporting) this.appManager().app("reports");
-
-        // NGFW-13588 The firstRunFlag will be true when we initialize our
-        // settings the very first time the uvm is started. We use the flag
-        // to automatically install the recommended apps but not if we
-        // detect the DEV or ATS environments.
-        if ( (firstRunFlag) && (! isDevel()) && (! isAts()) ) {
-            appManager.doAutoInstall();
-        }
     }
 
     /**
@@ -1790,4 +1779,5 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             }
         }
     }
+
 }
