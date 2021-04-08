@@ -14,3 +14,9 @@ fi
 if [ ! -f /var/lib/interface-status/interface-wg0-status.js ] ; then
     echo "Missing status file: /var/lib/interface-status/interface-wg0-status.js"
 fi
+
+# if wireguard is a running app, restart interfaces
+if [ -f /etc/wireguard/wg0.conf ]; then 
+    wg-quick down /etc/wireguard/wg0.conf
+    wg-quick up /etc/wireguard/wg0.conf
+fi
