@@ -308,10 +308,7 @@ Ext.define('Ung.Setup.Internet', {
                         var remoteReachable = rpc.setup.getRemoteReachable();
                         Util.setRpcJsonrpc("admin");
                         if(remoteReachable == false){
-                            message = 'Unable to reach Command Center!'.t() +
-                                '<br/><br/><br/>' +
-                                'You may continue configuring your Internet connection or run the Setup Wizard locally.'.t();
-                            vm.set('remoteTestPassed', false);
+                            message = 'Unable to reach Command Center!'.t();
                         }else{
                             nextDisabled = false;
                         }
@@ -321,6 +318,11 @@ Ext.define('Ung.Setup.Internet', {
                     }
                 }
                 vm.set('nextDisabled', nextDisabled);
+                if(remote && message != null){
+                    vm.set('remoteTestPassed', false);
+                    message += '<br/><br/><br/>' +
+                    'You may continue configuring your Internet connection or run the Setup Wizard locally.'.t();
+                }
 
                 if (testType === 'manual') {
                     // on manual test just show the message
