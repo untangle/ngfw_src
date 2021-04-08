@@ -56,6 +56,7 @@ public class WireGuardVpnManager
     protected void start()
     {
         logger.info("Starting WireGuard interface and tunnels");
+        configure();
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_QUICK_APP + " up " + WIREGUARD_QUICK_CONFIG);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -85,6 +86,7 @@ public class WireGuardVpnManager
         }
         if (result.getResult() != 0) logger.error("Failed calling WireGuard start script (return code: " + result.getResult() + ")");
 
+        removeConf();
         configureIptables();
     }
 
@@ -111,6 +113,17 @@ public class WireGuardVpnManager
             Map.entry("wireguardUrl", UvmContextFactory.context().networkManager().getPublicUrl()),
             Map.entry("wireguardHostname", UvmContextFactory.context().networkManager().getNetworkSettings().getHostName())
         );
+    }
+
+    /**
+     * Remove the configuration file so network restart works
+     */
+    protected void removeConf() {
+        logger.info("Removing wireguard config files");
+        File confFile = new File(WIREGUARD_QUICK_CONFIG);
+        if (confFile.isFile()) {
+            confFile.delete();
+        }
     }
 
     /**
