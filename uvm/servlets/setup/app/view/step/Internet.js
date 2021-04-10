@@ -317,8 +317,8 @@ Ext.define('Ung.Setup.Internet', {
                         nextDisabled = false;
                     }
                 }
-                vm.set('nextDisabled', nextDisabled);
                 if(remote && message != null){
+                    vm.set('nextDisabled', nextDisabled);
                     vm.set('remoteTestPassed', false);
                     message += '<br/><br/><br/>' +
                     'You may continue configuring your Internet connection or run the Setup Wizard locally.'.t();
