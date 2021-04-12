@@ -72,7 +72,7 @@ Ext.define('Ung.Setup.Complete', {
                         text: '<div style="color:white;">' + 'Log In'.t() + '</div>',
                         baseCls: 'command-center-login-button',
                         handler: function(){
-                            window.location = rpc.remoteUrl + "/login?redirectUrl="+encodeURI("/appliances/add/" + rpc.serverUID);
+                            window.location = rpc.remoteUrl + "/appliances/add/" + rpc.serverUID;
                         }
                     },{
                         xtype: 'button',
@@ -80,7 +80,7 @@ Ext.define('Ung.Setup.Complete', {
                         text: '<div style="color:white;">' + 'Create Account'.t() + '</div>',
                         baseCls: 'command-center-create-button',
                         handler: function(){
-                            window.location = rpc.remoteUrl + "/login/create-account?redirectUrl="+encodeURI("/appliances/add/" + rpc.serverUID);
+                            window.location = rpc.remoteUrl + "/login/create-account/add-appliance/" + rpc.serverUID;
                         }
                     }]
                 });
