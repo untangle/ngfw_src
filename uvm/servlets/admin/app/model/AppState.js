@@ -9,9 +9,12 @@ Ext.define ('Ung.model.AppState', {
         type: 'boolean',
         defaultValue: false
     }, {
+        name: 'name',
+        type: 'string'
+    }, {
         name: 'expired',
         type: 'boolean',
-        defaultValue: true
+        defaultValue: false
     },{
         name: 'power',
         type: 'boolean',
@@ -45,10 +48,10 @@ Ext.define ('Ung.model.AppState', {
             }else{
                 if(data.power){
                     return 'Powering off'.t();
-                }else if(data.inconsistent){
-                    return 'Disabled but active'.t();
                 }else if(data.expired){
                     return 'Disabled, license is invalid or expired'.t();
+                }else if(data.inconsistent){
+                    return 'Disabled but active'.t();
                 }else{
                     return 'Disabled'.t();
                 }
@@ -58,7 +61,7 @@ Ext.define ('Ung.model.AppState', {
     detect: function(){
         var on = false;
         var inconsistent = false;
-        var licenseExpired = true;
+        var licenseExpired;
         if( ( this.vm && !Util.isDestroyed(this.vm) ) || 
             ( this.instance && !Util.isDestroyed(this.instance)) ){
             var targetState = this.vm ? this.vm.get('instance.targetState') : this.instance.targetState;
@@ -70,19 +73,15 @@ Ext.define ('Ung.model.AppState', {
 
             inconsistent = (targetState != runState) || (runState == 'RUNNING' && !daemonRunning);
 
-            if ( this.vm.get('app.name') ) {
-                licenseExpired = !Rpc.directData('rpc.UvmContext.licenseManager.isLicenseValid', this.vm.get('app.name'));
-                // If expired license override on state, even though the daemon is likely running...
-                if ( !licenseExpired ) {
-                    on = false;
-                }
-            }
+            var appName = this.vm.get('app.name') ? this.vm.get('app.name'): this.vm.get('urlName');
+            licenseExpired = !Rpc.directData('rpc.UvmContext.licenseManager.isLicenseValid', appName); 
         }
-
-        this.set('on', on);
-        this.set('inconsistent', inconsistent);
-        this.set('power', false);
-        this.set('expired', licenseExpired);
+        this.set({
+            'expired': licenseExpired,
+            'on': on,
+            'inconsistent': inconsistent,
+            'power': false
+        });
     },
     vm: null,
     instance: null,
@@ -98,5 +97,6 @@ Ext.define ('Ung.model.AppState', {
         }
         this.callParent([{}], session);
         this.detect();
+        console.log("constructor END ");
     },
 });
