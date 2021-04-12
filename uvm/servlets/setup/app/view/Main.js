@@ -103,7 +103,7 @@ Ext.define('Ung.Setup.Main', {
                         text: '<div style="color:white;">' + 'Log In'.t() + '</div>',
                         baseCls: 'command-center-login-button',
                         handler: function(){
-                            window.location = rpc.remoteUrl + "/login?redirectUrl="+encodeURI("/appliances/add/" + rpc.serverUID);
+                            window.location = rpc.remoteUrl + "/appliances/add/" + rpc.serverUID;
                         }
                     },{
                         xtype: 'button',
