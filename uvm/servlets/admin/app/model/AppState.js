@@ -9,9 +9,6 @@ Ext.define ('Ung.model.AppState', {
         type: 'boolean',
         defaultValue: false
     }, {
-        name: 'name',
-        type: 'string'
-    }, {
         name: 'expired',
         type: 'boolean',
         defaultValue: false
@@ -97,6 +94,5 @@ Ext.define ('Ung.model.AppState', {
         }
         this.callParent([{}], session);
         this.detect();
-        console.log("constructor END ");
     },
 });
