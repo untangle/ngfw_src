@@ -138,6 +138,13 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             return;
         }
 
+        // check if have reports
+        if (!Rpc.exists('rpc.reportsManager')) {
+            vm.set('threatLookupInfo.needreports', true);
+            return;
+        }
+        vm.set('threatLookupInfo.needreports', false);
+
         var urlParts = lookupInput.match(Ext.form.field.VTypes.mask.urlAddrRe);
 
         // Don't perform lookup if local
