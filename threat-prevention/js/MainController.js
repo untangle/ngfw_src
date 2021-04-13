@@ -17,17 +17,23 @@ Ext.define('Ung.apps.threatprevention.MainController', {
         });
 
         v.setLoading(true);
-        Ext.Deferred.sequence([
-            Rpc.asyncPromise(v.appManager, 'getSettings'),
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'localNetworks'),
-        ], this)
+        var hasReportsManager = false;
+        asyncSequences = [
+            Rpc.asyncPromise(v.appManager, 'getSettings')
+        ];
+
+        if (Rpc.exists('rpc.reportsManager')) {
+            asyncSequences[1] = Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'localNetworks');
+            hasReportsManager = true;
+        } 
+        Ext.Deferred.sequence(asyncSequences, this)
         .then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
 
             vm.set('settings', result[0]);
-            vm.set('localNetworks', result[1]);
+            if (hasReportsManager) vm.set('localNetworks', result[1]);
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
