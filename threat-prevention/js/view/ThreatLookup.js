@@ -52,6 +52,12 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
                 hidden: '{threatLookupInfo.local === false}'
             }
         }, {
+            xtype: 'displayfield',
+            value: 'Reports is needed to perform lookups',
+            bind: {
+                hidden: '{threatLookupInfo.needreports === false}'
+            }
+        }, {
             xtype: 'fieldset',
             title: 'Threat Results'.t(),
             hidden: true,
