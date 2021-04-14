@@ -18,7 +18,7 @@ Ext.define('Ung.apps.threatprevention.MainModel', {
         threatLookupInfo: {
             model: 'Ung.apps.threatprevention.ThreatLookupInfo',
             target: 'server', 
-            local: false,
+            local: false
         }
     }
 });
