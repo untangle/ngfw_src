@@ -19,7 +19,6 @@ Ext.define('Ung.apps.threatprevention.MainModel', {
             model: 'Ung.apps.threatprevention.ThreatLookupInfo',
             target: 'server', 
             local: false,
-            needreports: false,
         }
     }
 });
@@ -34,7 +33,6 @@ Ext.define('Ung.apps.threatprevention.ThreatLookupInfo', {
         {name: 'resultAddress', type: 'string'},
         {name: 'resultServerReputation', type: 'string'},
         {name: 'resultClientReputation', type: 'string'},
-        {name: 'needreports', type: 'boolean'},
     ],
 
     hasMany: [{
