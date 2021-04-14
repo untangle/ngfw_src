@@ -16,24 +16,17 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             vm.set('settings.customBlockPageEnabled', url.length > 0);
         });
 
-        v.setLoading(true);
-        var hasReportsManager = false;
-        asyncSequences = [
-            Rpc.asyncPromise(v.appManager, 'getSettings')
-        ];
-
-        if (Rpc.exists('rpc.reportsManager')) {
-            asyncSequences[1] = Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'localNetworks');
-            hasReportsManager = true;
-        } 
-        Ext.Deferred.sequence(asyncSequences, this)
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager, 'getSettings'),
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'localNetworks', null)
+        ], this)
         .then( function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
             }
 
             vm.set('settings', result[0]);
-            if (hasReportsManager) vm.set('localNetworks', result[1]);
+            vm.set('localNetworks', result[1]);
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -138,13 +131,6 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             return;
         }
 
-        // check if have reports
-        if (!Rpc.exists('rpc.reportsManager')) {
-            vm.set('threatLookupInfo.needreports', true);
-            return;
-        }
-        vm.set('threatLookupInfo.needreports', false);
-
         var urlParts = lookupInput.match(Ext.form.field.VTypes.mask.urlAddrRe);
 
         // Don't perform lookup if local
@@ -162,10 +148,10 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpInfo', [lookupInput]),
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlInfo', [lookupInput]),
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpHistory', [lookupInput]),
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput])
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'getIpInfo', [lookupInput]),
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'getUrlInfo', [lookupInput]),
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'getIpHistory', [lookupInput]),
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'getUrlHistory', [lookupInput])
         ], this)
         .then(function(results){
             if(Util.isDestroyed(me, v, vm)){
