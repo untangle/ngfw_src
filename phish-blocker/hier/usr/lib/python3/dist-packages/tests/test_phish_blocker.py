@@ -70,6 +70,10 @@ class PhishBlockerTests(NGFWTestCase):
 
         global appData, appSP, appDataSP, appSSL, canRelay
 
+        # force loading of app variable in global namespace so each
+        # test relying on it can be run individually
+        cls.module_name()
+
         appData = cls._app.getSettings()
         appSP = uvmContext.appManager().app(cls.appNameSpamCase())
         appDataSP = appSP.getSmtpSettings()
