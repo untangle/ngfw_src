@@ -134,8 +134,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert (result == 0)
 
     # test that client can block virus http download zip
-    @pytest.mark.failure_in_podman
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_015_httpEicarBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
@@ -178,8 +177,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert (result == 0)
 
     # test that client can download virus http zip from pass site
-    @pytest.mark.failure_in_podman
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_019_httpEicarPassSite(self):
         addPassSite(self._app, testsite)
         result = remote_control.run_command("wget -q -O - http://" + testsite + "/virus/eicar.zip 2>&1 | grep -q blocked")
@@ -203,7 +201,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert (result == 0)
 
     # test that client can block virus ftp download zip
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_025_ftpVirusBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
@@ -227,7 +225,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert( found )
 
     # test that client can ftp download zip from pass site
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_027_ftpVirusPassSite(self):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
@@ -241,7 +239,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
         assert (md5StdNum == md5TestNum)
 
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_100_eventlog_httpVirus(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
@@ -270,7 +268,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
                                             self.shortName() + '_clean', True )
         assert( found )
 
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_102_eventlog_ftpVirus(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
@@ -453,7 +451,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
 
         assert(found)
 
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_300_disableAllScans(self):
         virusSettings = self._app.getSettings()
 

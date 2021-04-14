@@ -412,7 +412,7 @@ class FirewallTests(NGFWTestCase):
         assert (result != 0)
 
     # verify GeoIP blocking doesn't block stuff that isn't blocked
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_073_geoipHostCountryMiss(self):
         rules_clear()
         rule_append( create_rule_single_condition( "REMOTE_HOST_COUNTRY", "CN,GB,AU" ) )
@@ -530,7 +530,7 @@ class FirewallTests(NGFWTestCase):
         assert (result == 0)
 
     # verify bogus user agent match is blocked after setting agent
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_121_clientUserAgent2(self):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         entry['httpUserAgent'] = "Mozilla foo bar"

@@ -330,7 +330,7 @@ class ReportsTests(NGFWTestCase):
         assert(int.from_bytes(result,byteorder='little') > 3)
 
     @pytest.mark.slow
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_100_email_report_admin(self):
         """
         The "default" configuration test:
@@ -513,7 +513,7 @@ class ReportsTests(NGFWTestCase):
                         assert(image_width <= 350 and image_height <= 350)
 
     @pytest.mark.slow
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_103_email_report_verify_apps(self):
         """
         1) Install all apps

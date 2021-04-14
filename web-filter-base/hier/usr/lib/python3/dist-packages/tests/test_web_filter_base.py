@@ -579,7 +579,7 @@ class WebFilterBaseTests(NGFWTestCase):
         found = self.check_events("test.untangle.com", "/", False)
         assert( found )
 
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_564_pass_url_works_with_https_sni(self):
         """verify that an entry in the pass list overrides a blocked category"""
         self.pass_url_list_add("pornhub.com")

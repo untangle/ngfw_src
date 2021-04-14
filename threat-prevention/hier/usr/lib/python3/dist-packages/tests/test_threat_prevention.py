@@ -183,7 +183,7 @@ class ThreatpreventionTests(NGFWTestCase):
                                             self.eventAppName() + '_flagged', False )
         assert( found )
 
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_pihole
     def test_035_check_rule_over_category(self):
         self.rules_clear()
         self.rule_add("SRC_ADDR",remote_control.client_ip,action="pass",flagged=False)
