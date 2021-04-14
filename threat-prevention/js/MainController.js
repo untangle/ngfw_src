@@ -16,6 +16,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             vm.set('settings.customBlockPageEnabled', url.length > 0);
         });
 
+        v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getSettings'),
             Rpc.asyncPromise(v.appManager, 'getReportInfo', 'localNetworks', null)
