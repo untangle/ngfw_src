@@ -203,7 +203,7 @@ class UvmTests(NGFWTestCase):
         assert(match)
 
     @pytest.mark.slow
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_outside_corporate_network
     def test_030_test_smtp_settings(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')

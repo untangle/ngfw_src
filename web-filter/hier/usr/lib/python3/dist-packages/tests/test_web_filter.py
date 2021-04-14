@@ -127,7 +127,7 @@ class WebFilterTests(WebFilterBaseTests):
         result = self.get_web_request_results(url=global_functions.test_server_ip, expected="blockpage")
         assert(result == 0)
 
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_outside_corporate_network
     def test_301_block_QUIC(self):
         """Enable 'block QUIC (UDP port 443)' setting then check that UDP traffic over 443 is blocked (using netcat server/client)"""
         #check for passwordless sudo access for the host first, if not, skip test

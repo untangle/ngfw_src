@@ -270,7 +270,7 @@ class BandwidthControlTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
-    @pytest.mark.failure_in_podman
+    @pytest.mark.failure_behind_ngfw
     def test_012_qos_limit(self):
         global pre_down_speed_kbit, wan_limit_kbit
 
