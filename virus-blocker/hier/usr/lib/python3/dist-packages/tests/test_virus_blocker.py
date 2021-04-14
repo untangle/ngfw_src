@@ -40,6 +40,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         return "Virus Blocker"
 
     # on every platform except ARM verify the bit defender daemon is running
+    @pytest.mark.slow
     def test_009_bdamserverIsRunning(self):
         if platform.machine().startswith('arm'):
             return
