@@ -82,15 +82,16 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global md5StdNum, appSSL, appSSLData, canRelay
 
-        # download eicar and trojan files before installing virus blocker
+        # download eicar and trojan files before installing virus
+        # blocker, using HTTPS to avoid any scanner potentially
+        # sitting on our path
         cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
         remote_control.run_command("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-        remote_control.run_command("rm /tmp/temp_022_ftpVirusPassSite_file",host=global_functions.LIST_SYSLOG_SERVER)
-        result = remote_control.run_command("wget -q -O /tmp/eicar https://test.untangle.com/virus/eicar.com")  # use HTTPS to avoid the scannner
+        result = remote_control.run_command("wget -q -O /tmp/eicar https://test.untangle.com/virus/eicar.com")
         assert (result == 0)
-        result = remote_control.run_command("wget --user=" + cls.ftp_user_name + " --password='" + cls.ftp_password + "' -q -O /tmp/std_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip",host=global_functions.LIST_SYSLOG_SERVER)
+        result = remote_control.run_command("wget -q -O /tmp/std_022_ftpVirusBlocked_file https://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
-        md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", host=global_functions.LIST_SYSLOG_SERVER, stdout=True)
+        md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         cls.md5StdNum = md5StdNum
         # print("md5StdNum <%s>" % md5StdNum)
         assert (result == 0)
