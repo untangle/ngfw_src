@@ -4,12 +4,21 @@ Get signature updates
 """
 import sys
 import getopt
+import inspect
 import os
-import subprocess
+import pathlib
 import re
+import requests
+import subprocess
 import shutil
 import tarfile
-import requests
+import time
+
+# For Logger
+import logging
+import logging.handlers
+from types import TracebackType
+import traceback
 
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
@@ -20,258 +29,593 @@ from uvm import Uvm
 import intrusion_prevention
 #pylint: disable=wrong-import-position
 
-DEBUG = False
-CHUNK_SIZE = 1024 * 1024
-FORCE_SYNC = False
-UVM_CONTEXT = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
-SURICATA_VERSION_RE = re.compile(r'Suricata version (\d+)\.')
-SIGNATURE_URL_TEMPLATE = "https://ids.untangle.com/suricatasignatures.tar.gz"
+Debug = False
+Uvm_context = None
+Suricata_version_regex = re.compile(r'Suricata version (\d+)\.')
+Signature_url_template = "https://ids.untangle.com/suricatasignatures.tar.gz"
+Update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
+
+try:
+    Uvm_context = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
+except:
+    Logger.message("Unable to get uvm context", sys.exc_info(), target="log")
+    sys.exit(1)
+class Logger:
+    """
+    Manage log messages to stdout and/or logging.
+    """
+    logger = None
+    handler = None
+    target = None
+
+    @classmethod
+    def static_init(cls):
+        """
+        Initialze logger using our script name.
+        """
+        stack = inspect.stack()
+        Logger.logger = logging.getLogger(os.path.basename(stack[len(stack)-1].filename))
+        Logger.logger.setLevel(logging.INFO)
+
+        Logger.handler = logging.handlers.SysLogHandler(address = '/dev/log')
+        Logger.handler.setFormatter(
+            logging.Formatter("%(name)s %(message)s")
+        )
+        Logger.logger.addHandler(Logger.handler)
+
+    def message(*args, **kwargs):
+        """
+        Output messages.
+        *args contains message to display.  
+                This can also contain sys.exc_info() for an exception stack trace, like:
+                Logger.message("Cannot do someting", sys.exc_info(), target="log")
+        *kwargs can contain:
+            target          'log' or nothing to only do stdout
+            message_joiner  string to use to join messages.
+            stdout          If True (default) always output message to stdout.  If  False, don't output
+            capture_path    If True (default) attempt to detect and prefix calling class and function.
+        """
+        messages = list(args)
+
+        capture_path = True
+        if "capture_path" in kwargs:
+            capture_path = kwargs["capture_path"]
+
+        if capture_path:
+            # Get the caller method and class name.
+            messages.insert(0,inspect.stack()[1].function)
+            if inspect.stack()[1][0] and \
+                "self" in inspect.stack()[1][0].f_locals and  \
+                inspect.stack()[1][0].f_locals["self"].__class__:
+                    if type(inspect.stack()[1][0].f_locals["self"]) is type:
+                        messages.insert(0,"Class {name}".format(name=inspect.stack()[1][0].f_locals["self"].__name__))
+                    else:
+                        messages.insert(0,inspect.stack()[1][0].f_locals["self"].__class__.__name__)
+
+        message_joiner = ": "
+        if "message_joiner" in kwargs:
+            message_joiner = kwargs["message_joiner"]
+
+        ## Look for and process "sub messages" like exceptions.
+        sub_messages = None
+        remove_message_indexes = []
+        for index, message in enumerate(messages):
+            is_exception = False
+
+            if type(message) is tuple:
+                for item in message:
+                    if isinstance(item,TracebackType):
+                        is_exception = True
+
+            if is_exception:
+                ## Found an exception to process.
+                remove_message_indexes.append(index)
+                is_exception = False
+                sub_messages = []
+                new_sub_message = []
+                for line in traceback.format_exception(message[0],message[1],message[2]):
+                    for msg in line.split("\n"):
+                        new_sub_message = []
+                        if capture_path:
+                            new_sub_message.append(messages[0])
+                            new_sub_message.append(messages[1])
+                        new_sub_message.append(msg)
+                        sub_messages.append(new_sub_message)
+        if len(remove_message_indexes):
+            # Remove messages we processed as sub messages
+            for index in reversed(remove_message_indexes):
+                del messages[index]
+            
+        full_message = message_joiner.join(str(message) for message in messages)
+
+        target=Logger.target
+        if "target" in kwargs:
+            target=kwargs["target"]
+
+        if target == "log":
+            Logger.logger.info(full_message)
+
+        stdout = True
+        if "stdout" in kwargs:
+            stdout=kwargs["stdout"]
+        if stdout:
+            print(full_message)
+
+        if sub_messages:
+            # Output sub messages
+            sub_kwargs = kwargs
+            sub_kwargs["capture_path"] = False
+            for sub_message in sub_messages:
+                Logger.message(*sub_message, **sub_kwargs)
+
+
+if Logger.logger is None:
+    Logger.static_init()
+    Logger.target = "log"
 
 class Update:
     """
     Update
     """
-    DEBUG = False
-    errors = []
+    Debug = False
     settings_file_name_regex = re.compile(r'^settings_(\d+).js$')
     downloaded_status_code = 0
+    chunk_size = 1024 * 1024
 
-    def __init__(self, base_directory, url):
-        self.debug = DEBUG
-        self.base_directory = base_directory
-        self.working_directory = self.base_directory + "/update"
-        self.signatures_working_directory = self.working_directory + "/new"
+    app = None
+    @classmethod
+    def static_init(cls):
+        """
+        Static work used by all instances
+        """
+        ##
+        ## Easier to parse the api for instances than reproducing what it does with object.
+        ##
+        try:
+            app_manager = Uvm_context.appManager()
+            for instance in AppManager(Uvm_context).get_instances():
+                if instance[1] == "intrusion-prevention" and (instance[3] == "RUNNING" or force_sync):
+                    Update.app = app_manager.app(instance[0])
+        except:
+            Logger.message("Unable to get intrusion-prevention instance", sys.exc_info())
+            return False
+
+        if Update.app is None:
+            Logger.message("intrusion-prevention is not active")
+            return False
+
+    @classmethod
+    def get_app(cls):
+        """
+        Return app instance
+        """
+        return Update.app
+
+    @classmethod
+    def synchronize(self):
+        """
+        Synchronize configuration with app.
+        """
+        if Debug is True:
+            Logger.message("Synchronize with app...")
+
+        time_begin = time.time()
+        app = Update.get_app()
+        if app is not None:
+            app.setSettings(app.getSettings())
+
+        if self.Debug is True:
+            Logger.message("elapsed={elapsed:.2f}s".format(elapsed=time.time() - time_begin))
+
+        return True
+
+    ##
+    ## If True, we stopped complete processing prematurely, such as
+    ## detectng that the remote and local URL sizes haven't changed (they're the same).
+    ## We will fail out of the routine, but it's not a "real" faluure.
+    ##
+    short_circuit_success = False
+
+    def is_short_circuit_success(self):
+        """
+        Determine if we had a short circuit success.
+        """
+        return self.short_circuit_success
+
+    def __init__(self, base_path, url):
+        self.debug = Debug
+
+        self.base_path = base_path
+
+        self.current_relative_path = "current"
+        self.working_relative_path = "working".format(current_relative_path=self.current_relative_path)
+        # self.download_relative_path = "download"
+        self.extract_relative_path = "extract"
+
+        self.current_path = "{base_path}/{current_relative_path}".format(base_path=self.base_path,current_relative_path=self.current_relative_path)
+        self.working_path = "{base_path}/{working_relative_path}".format(base_path=self.base_path,working_relative_path=self.working_relative_path)
+
+        # self.working_download_path = "{working_path}/{download_relative_path}".format(working_path=self.working_path,download_relative_path=self.download_relative_path)
+        self.working_extract_path = "{working_path}/{extract_relative_path}".format(working_path=self.working_path,extract_relative_path=self.extract_relative_path)
+        self.working_current_path = "{working_path}/{current_relative_path}".format(working_path=self.working_path,current_relative_path=self.current_relative_path)
+
         self.url = url
-        self.signatures_file_name = self.url.split("/")[-1].split("?")[0]
-        self.url_file_name = self.working_directory + "/" + self.signatures_file_name
-        self.live_signatures_file_name = self.base_directory + "/" + self.signatures_file_name
-        self.app_ids = []
+        if "patch" in self.url:
+            self.patch = True
+        else:
+            self.patch = False
+
+        self.url_file_name = os.path.basename(url)
+        self.current_url_file_name = "{base_path}/{url_file_name}".format(base_path=self.base_path,url_file_name=self.url_file_name)
+        self.working_url_file_name = "{working_path}/{url_file_name}".format(working_path=self.working_path,url_file_name=self.url_file_name)
+
+        self.app = None
+        # self.app_id = None
         self.app_manager = None
+
+        # for k in self.__dict__.keys():
+        #     print("{k} = {v}".format(k=k,v=self.__dict__[k]))
 
     def setup(self):
         """
-        Setup working directory
+        Prepare update working directory
         """
         if self.debug is True:
-            print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "cleanup and create work directories"]))
+            Logger.message("cleanup and create work directories")
 
-        if os.path.isdir(self.working_directory) is True:
+        if os.path.isdir(self.working_path) is True:
             try:
-                shutil.rmtree(self.working_directory)
+                shutil.rmtree(self.working_path)
             except:
-                self.errors.append({
-                    'msg': "Cannot remove existing working directory=" + self.working_directory,
-                    'error': "\n".join(str(v) for v in sys.exc_info())
-                })
+                Logger.message("Cannot remove existing working directory={work_directory}".format(work_directory=self.working_path), sys.exc_info())
                 return False
 
         try:
-            os.makedirs(self.working_directory)
+            os.makedirs(self.working_path)
         except:
-            self.errors.append({
-                'msg': "Cannot create working directory=" + self.working_directory,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
+            Logger.message("Cannot create working directory={work_directory}".format(work_directory=self.working_path), sys.exc_info())
             return False
 
-        self.app_manager = UVM_CONTEXT.appManager()
-
-        ##
-        ## Easier to parse the api for instances than reproducing what
-        ## it does with object.
-        ##
-        for instance in AppManager(UVM_CONTEXT).get_instances():
-            if instance[1] == "intrusion-prevention" and (instance[3] == "RUNNING" or FORCE_SYNC):
-                self.app_ids.append(instance[0])
-
         return True
+
+    def is_ips_enabled(self):
+        """
+        If IPS app is enabled, return True, otherwise False
+        """
+        return len(self.app_ids) > 0
 
     def download(self):
         """
         Download
         """
         if self.debug is True:
-            print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "get signature set"]))
+            Logger.message("get signature set")
 
         ## Get file size to determine if we need to download
-        if os.path.isfile(self.live_signatures_file_name) is True:
-            live_signatures_file_size = os.path.getsize(self.live_signatures_file_name)
+        if os.path.isfile(self.current_url_file_name) is True:
+            live_signatures_file_size = os.path.getsize(self.current_url_file_name)
         else:
             live_signatures_file_size = 0
 
         request = None
         try:
-            request = requests.get(self.url)
+            request = requests.head(self.url)
         except:
-            self.errors.append({
-                'msg': "Cannot open url=" + self.url,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
+            Logger.message("cannot open url={url}".format(url=self.url), sys.exc_info())
             return False
 
         self.downloaded_status_code = request.status_code
         if self.downloaded_status_code == 404:
+            Logger.message("404 download status for url={url}".format(url=self.url))
             return False
 
         url_file_size = int(request.headers['content-length'])
         if url_file_size == 0:
-            self.errors.append({
-                'msg': "Content length",
-                'error': "Content length is 0"
-            })
+            Logger.message("content length is 0")
             return False
 
         if live_signatures_file_size == url_file_size:
             if self.debug:
-                print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "live and url sizes are the same=" + str(live_signatures_file_size)]))
+                Logger.message("current and url sizes are the same={size}".format(size=live_signatures_file_size))
+            self.short_circuit_success = True
             return False
 
         try:
             url = requests.get(self.url)
         except:
-            self.errors.append({
-                'msg': "Cannot open url=" + self.url,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
+            Logger.message("Cannot get url={url}".format(url=self.url), sys.exc_info())
             return False
 
         try:
-            write_file = open(self.url_file_name, 'wb')
+            write_file = open(self.working_url_file_name, 'wb')
         except:
-            self.errors.append({
-                'msg': "Cannot create url_file_name=" + self.url_file_name,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
+            Logger.message("Cannot create working_url_file_name={working_url_file_name}".format(working_url_file_name=self.working_url_file_name), sys.exc_info())
             return False
 
         try:
-            for chunk in url.iter_content(chunk_size=CHUNK_SIZE):
+            for chunk in url.iter_content(chunk_size=Update.chunk_size):
                 if chunk:
                     write_file.write(chunk)
         except:
-            self.errors.append({
-                'msg': "Cannot write to url_file_name=" + self.url_file_name,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
+            Logger.message("Cannot write to working_url_file_name={working_url_file_name}".format(working_url_file_name=self.working_url_file_name), sys.exc_info())
             return False
 
         write_file.close()
+        if self.debug is True:
+            Logger.message("save {url} as {working_url_file_name}".format(url=self.url, working_url_file_name=self.working_url_file_name))
+        return True
+
+    def extract(self):
+        """
+        Extract to working directory
+        """
+        if self.debug is True:
+            Logger.message("extract download to {working_extract_directory}".format(working_extract_directory=self.working_extract_path))
+
+        if os.path.isfile(self.working_url_file_name) is False:
+            Logger.message("missing download file={working_url_file_name}".format(working_url_file_name=self.working_url_file_name))
+            return False
+
+        try:
+            os.makedirs(self.working_extract_path)
+        except:
+            Logger.message("cannot create working directory={working_directory}".format(working_directory=self.working_path), sys.exc_info())
+            return False
+
+        # Extract to working directory
+        try:
+            tar = tarfile.open(self.working_url_file_name)
+            tar.extractall(path=self.working_extract_path)
+            tar.close()
+        except:
+            Logger.message("cannot extract downloaded files from {working_url_file_name} to {working_directory}".format(working_url_file_name=self.working_url_file_name, working_directory=self.working_path), sys.exc_info())
+            return False
+
         return True
 
     def validate(self):
         """
-        Validate
+        Validate extracted files
+        """
+        if self.patch is True:
+            return self.validate_patch()
+        else:
+            return self.validate_full()
+
+    def validate_patch(self):
+        """
+        Find and verify patch and companion files.
         """
         if self.debug is True:
-            print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "extract signatures"]))
+            Logger.message("validate patch files")
 
-        try:
-            tar = tarfile.open(self.url_file_name)
-            tar.extractall(path=self.signatures_working_directory)
-            tar.close()
-        except:
-            self.errors.append({
-                'msg': "Unable to extract downloaded file=" + self.url_file_name + " to signatures working directory=" + self.signatures_working_directory,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
+        self.patches = []
+        for file_name in os.listdir( self.working_extract_path ):
+            stem = pathlib.Path(file_name).stem
+            suffix = pathlib.Path(file_name).suffix 
+            if suffix == ".patch":
+                if os.path.exists( "{path}/{stem}.md5".format(path=self.working_extract_path,stem=stem)) is False:
+                    # Missing .md5 means incomplete patch
+                    Logger.message("missing md5 file for patch={patch}".format(patch=stem))
+                    return False
+                else:
+                    self.patches.append(stem)
+
+        if len(self.patches) > 0:
+            if self.debug is True:
+                Logger.message("found patches={patches}".format(patches=",".join(self.patches)))
+            return True
+        else:
             return False
 
+    def validate_full(self):
+        if self.debug is True:
+            Logger.message("validate full files")
+
+        ## full should have:
+        # rules directory
+        # templates directory
         return True
 
     def install(self):
+        if self.patch is True:
+            return self.install_patches()
+        else:
+            return self.install_full()
+        
+        ## copy current url tarballs from working to current
+
+    def install_patches(self):
         """
-        Install to live
+        Patch to copy of current
         """
         if self.debug is True:
-            print(":".join([self.__class__.__name__, sys._getframe().f_code.co_name, "move to live"]))
+            Logger.message("apply patch to copy of current")
 
-        live_new_directory = self.base_directory + "/new"
-        live_previous_directory = self.base_directory + "/previous"
-        live_current_directory = self.base_directory + "/current"
+        ##
+        ## Copy current to update directory
+        ##
+        if self.debug is True:
+            Logger.message("copy {current_path} to {working_current_path}".format(current_path=self.current_path,working_current_path=self.working_current_path))
 
-        ## Copy to live directory as "new"
-        if os.path.isdir(live_new_directory) is True:
+        if os.path.isdir(self.working_current_path) is True:
             try:
-                shutil.rmtree(live_new_directory)
+                shutil.rmtree(self.working_current_path)
             except:
-                self.errors.append({
-                    'msg': "Cannot remove existing live new directory=" + live_new_directory,
-                    'error': "\n".join(str(v) for v in sys.exc_info())
-                })
+                Logger.message("cannot remove existing working_current_path = {working_current_path}".format(working_current_path=self.working_current_path), sys.exc_info())
                 return False
 
         try:
-            shutil.copytree(self.signatures_working_directory, live_new_directory)
+            shutil.copytree(self.current_path, self.working_current_path)
         except:
-            self.errors.append({
-                'msg': "Unable to copy tree from working directory " + self.signatures_working_directory + " to live directory " + live_new_directory,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
+            Logger.message("cannot remove existing current_path = {current_path} to working_current_path = {working_current_path}".format(current_path=self.current_path,working_current_path=self.working_current_path), sys.exc_info())
             return False
 
-        ## remove previous
-        if os.path.isdir(live_previous_directory) is True:
+        for patch in self.patches:
+            ##
+            ## We support set of diffs although in practice we're only expecting one
+            ## for the entire set.
+            ##
+            Logger.message("processing patch={patch}".format(patch=patch))
+
+            ## Apply patch
+            if self.debug is True:
+                Logger.message("patch operation: {operation}".format(operation=' '.join(["patch","-p2","-ruN", "-i", "../{extract_relative_path}/{patch}.patch".format(extract_relative_path=self.extract_relative_path,patch=patch)])))
+
+            patch_command_output = None
+            patch_command = None
             try:
-                shutil.rmtree(live_previous_directory)
+                patch_command = subprocess.Popen(["patch","-p2","-ruN", "-i", "../{extract_relative_path}/{patch}.patch".format(extract_relative_path=self.extract_relative_path,patch=patch)], stderr=subprocess.STDOUT,stdout=subprocess.PIPE, cwd=self.working_current_path)
+                patch_command_output = patch_command.communicate()[0]
             except:
-                self.errors.append({
-                    'msg': "Cannot remove existing live previous directory=" + live_previous_directory,
-                    'error': "\n".join(str(v) for v in sys.exc_info())
-                })
+                Logger.message("unable to apply patch={patch} to patch directory={working_current_path}".format(patch=patch, working_current_path=self.working_current_path), sys.exc_info(), target="log")
+                if patch_command is not None:
+                    Logger.message("patch returncode = {returncode}".format(returncode=patch_command.returncode))
+                    if patch_command_output != None:
+                        for output in patch_command_output.decode("ascii").split("\n"):
+                            if len(output) > 0:
+                                Logger.message("patch result={output}".format(output=output))
                 return False
 
-        ## rename current to previous
-        if os.path.isdir(live_current_directory) is True:
-            try:
-                shutil.move(live_current_directory, live_previous_directory)
-            except:
-                self.errors.append({
-                    'msg': "Cannot rename existing current directory " + live_current_directory + " to previous " + live_previous_directory,
-                    'error': "\n".join(str(v) for v in sys.exc_info())
-                })
+            if self.debug is True or patch_command.returncode != 0:
+                Logger.message("patch returncode={returncode}".format(returncode=patch_command.returncode))
+                for output in patch_command_output.decode("ascii").split("\n"):
+                    if len(output) > 0:
+                        Logger.message("patch result={output}".format(output=output))
+
+            if patch_command.returncode != 0:
                 return False
 
-        ## rename current.new to current
+            ## validate md5
+            if self.debug is True:
+                Logger.message("validate md5")
+
+            ## Read patch's md5
+            patch_md5 = None
+            patch_md5_file_name = "{path}/{patch}.md5".format(path=self.working_extract_path, patch=patch)
+            try:
+                with open(patch_md5_file_name,"r") as file:
+                    patch_md5 = [line.rstrip('\n') for line in file]
+                patch_md5.sort()
+            except:
+                Logger.message("unable to read patch md5={patch_md5_file_name}".format(patch_md5_file_name=patch_md5_file_name), sys.exc_info())
+
+            if self.debug:
+                for output in patch_md5:
+                    Logger.message("patch md5: {output}".format(output=output))
+
+            # Get md5 from applied patch
+            md5 = None
+            md5_output = None
+            try:
+                md5 = subprocess.Popen(["find", ".", "!", "-name", "suricatasignatures*.md5", "-type", "f", "-exec", "md5sum", "{}", "+"], stdout=subprocess.PIPE, cwd=self.working_current_path)
+                md5_output = md5.communicate()[0]
+            except:
+                Logger.message("unable to validate md5sum", sys.exc_info())
+
+            applied_md5 = []
+            if md5_output is not None:
+                for output in md5_output.decode("ascii").split("\n"):
+                    if len(output) > 0:
+                        applied_md5.append(output)
+                # applied_md5.append("blah")
+                applied_md5.sort()
+
+            if self.debug:
+                for output in applied_md5:
+                    Logger.message("applied md5: {output}".format(output=output))
+
+            diffs = set(patch_md5) ^ set(applied_md5) 
+            if len(diffs):
+                for diff in list(diffs):
+                    Logger.message("md5 mismatch: {diff}".format(diff=diff))
+                return False
+            else:
+                if self.debug:
+                    Logger.message("md5sums match")
+
+        # All patches applied successfully.  Install to live.
+        if self.debug:
+            Logger.message("copy {working_current_path} to {current_path}".format(working_current_path=self.working_current_path,current_path=self.current_path))
+
+        ## Remove current directory
+        if os.path.isdir(self.current_path) is True:
+            try:
+                shutil.rmtree(self.current_path)
+            except:
+                Logger.message("unable to remove {current_path}".format(current_path=self.current_path), sys.exc_info())
+                return False
+
+        ## Move working build to current
         try:
-            shutil.move(live_new_directory, live_current_directory)
+            os.rename(self.working_current_path, self.current_path)
         except:
-            self.errors.append({
-                'msg': "Cannot rename existing new directory " + live_new_directory + " to currret " + live_current_directory,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
-            return False
-
-        # move tarball to live
-        if os.path.isfile(self.live_signatures_file_name) is True:
-            try:
-                os.remove(self.live_signatures_file_name)
-            except:
-                self.errors.append({
-                    'msg': "Cannot remove existing live signatures file=" + self.live_signatures_file_name,
-                    'error': "\n".join(str(v) for v in sys.exc_info())
-                })
-                return False
-
-        try:
-            shutil.copyfile(self.url_file_name, self.live_signatures_file_name)
-        except:
-            self.errors.append({
-                'msg': "Cannot copy new signatures file " + self.url_file_name + " to live " + self.live_signatures_file_name,
-                'error': "\n".join(str(v) for v in sys.exc_info())
-            })
+            Logger.message("unable to rename {working_current_path} to {current_path}".format(working_current_path=self.working_current_path,current_path=self.current_path))
             return False
 
         return True
 
-    def synchronize(self):
+    def install_full(self):
         """
-        Synchronize configuration
+        Install full to live
         """
-        for app_id in self.app_ids:
-            app = self.app_manager.app(app_id)
-            app.setSettings(app.getSettings())
+        if self.debug:
+            Logger.message("copy {working_extract_path} to {current_path}".format(working_extract_path=self.working_extract_path,current_path=self.current_path))
+
+        ## Remove current directory
+        if os.path.isdir(self.current_path) is True:
+            try:
+                shutil.rmtree(self.current_path)
+            except:
+                Logger.message("unable to remove {current_path}".format(current_path=self.current_path), sys.exc_info())
+                return False
+
+        ## Move extract to current
+        try:
+            os.rename(self.working_extract_path, self.current_path)
+        except:
+            Logger.message("unable to rename {working_extract_path} to {current_path}".format(working_extract_path=self.working_extract_path,current_path=self.current_path))
+            return False
 
         return True
+
+    def finish(self):
+        """
+        Finish up
+        """
+        if self.debug is True:
+            Logger.message("move {working_url_file_name} to {current_url_file_name}".format(working_url_file_name=self.working_url_file_name,current_url_file_name=self.current_url_file_name))
+
+        if os.path.isfile(self.current_url_file_name) is True:
+            try:
+                os.remove(self.current_url_file_name)
+            except:
+                Logger.message("unable to remove {current_url_file_name}".format(current_url_file_name=self.current_url_file_name), sys.exc_info())
+                return False
+
+        try:
+            shutil.copyfile(self.working_url_file_name, self.current_url_file_name)
+        except:
+            Logger.message("unable to move {working_url_file_name} to {current_url_file_name}".format(working_url_file_name=self.working_url_file_name,current_url_file_name=self.current_url_file_name), sys.exc_info())
+            return False
+
+        self.remove_working_path()
+
+    def remove_working_path(self):
+        """
+        Remove working directory
+        """
+        if os.path.isdir(self.working_path) is True:
+            try:
+                shutil.rmtree(self.working_path)
+            except:
+                Logger.message("Cannot remove existing working directory={work_directory}".format(work_directory=self.working_path), sys.exc_info())
+                return False
+
+##
+## Perform class initialization for Update.
+##
+Update.static_init()
 
 def usage():
     """
@@ -285,15 +629,15 @@ def main(argv):
     """
     Main
     """
-    global DEBUG
-    global FORCE_SYNC
+    global Debug
+    global Uvm_context
+
+    force_sync = False
     signatures_template_directory = "/usr/share/untangle-suricata-config"
     urls = []
-    update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
-    force_download = False
 
     try:
-        opts, args = getopt.getopt(argv, "hru:d", ["help", "signatures_template_directory=", "url=", "force_sync", "debug", "force_download"] )
+        opts, args = getopt.getopt(argv, "hru:d", ["help", "signatures_template_directory=", "url=", "force_sync", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -303,66 +647,96 @@ def main(argv):
             usage()
             sys.exit()
         elif opt in ("-d", "--debug"):
-            DEBUG = True
+            Debug = True
         elif opt in ("-s", "--force_sync"):
-            FORCE_SYNC = True
-        elif opt in ("-s", "--force_download"):
-            force_download = True
+            force_sync = True
         elif opt in ("-r", "--signatures_template_directory"):
             signatures_template_directory = arg
         elif opt in ("-u", "--url"):
-            # url = arg
             urls.append(arg)
 
+    if Update.get_app() is None:
+        Logger.message("intrusion-prevention not running")
+        sys.exit(1)
+
+    time_begin = time.time()
+
+    ##
+    ## Get version of Suricata
+    ##
+    suricata_version = subprocess.check_output(["/usr/bin/suricata","-V"])
+    match = re.search(Suricata_version_regex, suricata_version.decode('ascii'))
+    if match:
+        suricata_version = match.group(1)
+    else:
+        suricata_version = ""
+
     if len(urls) == 0:
-        """
-        Determine default urls to download
-        """
-        # Determine current signature set based on Suricata version.
-        uri_manager_template = UVM_CONTEXT.uriManager().getUri(SIGNATURE_URL_TEMPLATE)
-        # Set version parameter
-        uri_manager_template = uri_manager_template.replace(".tar.gz", "{version}.tar.gz")
-        suricata_version = subprocess.check_output(["/usr/bin/suricata","-V"])
-        match = re.search(SURICATA_VERSION_RE, suricata_version.decode('ascii'))
-        if match:
-            urls.append(uri_manager_template.format(version=match.group(1)))
-        # Default fallback signture set.
-        urls.append(uri_manager_template.format(version=""))
+        ##
+        ## Create uris based on name from uriManager and create uri sets based on:
+        ## 1) version of Suricata
+        ## 2) non-versioned
+        ##
+        ## For each set, a patch is attempted for each set.
+        ##
+        ## Using a single Url allows those who use uriManager only need to specify a single 
+        ## Signature_url_template value that can follow across when snort versions change.
+        ##
+        signature_template_uri = Uvm_context.uriManager().getUri(Signature_url_template)
+        ## Suricata version set
+        signature_template_uri_suricata_version = signature_template_uri.replace(".tar.gz", "{suricata_version}.tar.gz")
+        url = signature_template_uri_suricata_version.format(suricata_version=suricata_version)
+        urls.append(url.replace(".tar.gz", ".patch.tar.gz"))
+        urls.append(url)
+        # Non-versioned set.
+        urls.append(signature_template_uri.replace(".tar.gz", ".patch.tar.gz"))
+        urls.append(signature_template_uri)
 
-
-    if DEBUG is True:
-        print("signatures_template_directory = " + signatures_template_directory)
+    if Debug is True:
+        Logger.message("signatures_template_directory = " + signatures_template_directory)
         print("urls = " + ", ".join(urls))
 
     for url in urls:
+        if Debug is True:
+            print("url=" + url)
+
         update = Update(signatures_template_directory, url)
-        update.setup()
-        if FORCE_SYNC is True:
-            update.synchronize()
-        else:
-            if (force_download or update.app_ids) and update.download() is True and update.validate() and update.install():
-                update.synchronize()
 
-        """
-        Always update last updated time even if nothing was downloaded 
-        (suricata signatures aren't updated every day)
-        Otherwise customers will call to complain.
-        """
-        if os.path.exists(update_ran_file_name):
-            os.utime(update_ran_file_name, None)
-        else:
-            update_ran_file = open(update_ran_file_name, "a")
-            update_ran_file.close()
+        if update.setup() == False \
+            or update.download() is False \
+            or update.extract() is False \
+            or update.validate() is False \
+            or update.install() is False \
+            or update.finish() is False:
+            if update.is_short_circuit_success() == False:
+                Logger.message("Failure on url = {url}".format(url=url))
+                continue
+            else:
+                update.remove_working_path()
 
-        if update.downloaded_status_code == 404:
-            # If errored on download, try failover.
-            continue
+        ## Success.
+        if update.is_short_circuit_success() == False:
+            Update.synchronize()
+            # Just synced - don't bother doing it again outside loop even if asked.
+            force_sync = False
+        break
 
-        if update.errors:
-            print(update.errors)
-        else:
-            break
-    sys.exit()
+    if force_sync is True:
+        # Force rebuilding of downloaded rules through our app for engine.
+        Update.synchronize()
 
+    """
+    Always update last updated time even if nothing was downloaded 
+    (suricata signatures aren't updated every day)
+    Otherwise customers will call to complain.
+    """
+    if os.path.exists(Update_ran_file_name):
+        os.utime(Update_ran_file_name, None)
+    else:
+        update_ran_file = open(Update_ran_file_name, "a")
+        update_ran_file.close()
+
+    print("time to update={elapsed:.2f}s".format(elapsed=time.time() - time_begin))
+ 
 if __name__ == "__main__":
     main(sys.argv[1:])
