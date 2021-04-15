@@ -118,6 +118,11 @@ class PhishBlockerTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
+    # this one works when run individually (with -k
+    # test_020_smtpQuarantinedPhishBlockerTest), and also when only
+    # phish-blocker is tested (with -m phish_blocker), but it never
+    # succeeds when the entire ATS suite is run
+    @pytest.mark.failure_in_podman
     def test_020_smtpQuarantinedPhishBlockerTest(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
@@ -167,6 +172,11 @@ class PhishBlockerTests(NGFWTestCase):
         post_events_quarantine = global_functions.get_app_metric_value(app,"quarantine")
         assert(pre_events_quarantine < post_events_quarantine)
         
+    # this one works when run individually (with -k
+    # test_030_smtpMarkPhishBlockerTest), and also when only
+    # phish-blocker is tested (with -m phish_blocker), but it never
+    # succeeds when the entire ATS suite is run
+    @pytest.mark.failure_in_podman
     def test_030_smtpMarkPhishBlockerTest(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
@@ -201,6 +211,11 @@ class PhishBlockerTests(NGFWTestCase):
 
         assert( found )
 
+    # this one does not work when run individually (with -k
+    # test_040_smtpDropPhishBlockerTest), works when only
+    # phish-blocker is tested (with -m phish_blocker), but it never
+    # succeeds when the entire ATS suite is run
+    @pytest.mark.failure_in_podman
     def test_040_smtpDropPhishBlockerTest(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through' + smtpServerHost)
