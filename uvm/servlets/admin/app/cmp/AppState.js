@@ -21,7 +21,8 @@ Ext.define('Ung.cmp.AppState', {
                 var cls = get('state.colorCls');
                 if(!get('state.inconsistent') &&
                     !get('state.power') &&
-                    !get('state.on')){
+                    !get('state.on') ||
+                    get('state.expired')){
                     cls = 'fa-flip-horizontal ' + cls;
                 }
                 return cls;
