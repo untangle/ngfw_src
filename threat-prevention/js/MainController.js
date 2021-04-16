@@ -19,7 +19,7 @@ Ext.define('Ung.apps.threatprevention.MainController', {
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getSettings'),
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'localNetworks'),
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'localNetworks', null)
         ], this)
         .then( function(result){
             if(Util.isDestroyed(v, vm)){
@@ -149,10 +149,10 @@ Ext.define('Ung.apps.threatprevention.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpInfo', [lookupInput]),
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlInfo', [lookupInput]),
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getIpHistory', [lookupInput]),
-            Rpc.asyncPromise('rpc.reportsManager.getReportInfo', "threat-prevention", -1, 'getUrlHistory', [lookupInput])
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'getIpInfo', [lookupInput]),
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'getUrlInfo', [lookupInput]),
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'getIpHistory', [lookupInput]),
+            Rpc.asyncPromise(v.appManager, 'getReportInfo', 'getUrlHistory', [lookupInput])
         ], this)
         .then(function(results){
             if(Util.isDestroyed(me, v, vm)){
