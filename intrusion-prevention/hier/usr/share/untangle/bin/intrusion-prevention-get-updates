@@ -634,7 +634,7 @@ def main(argv):
 
     force_sync = False
     signatures_template_directory = "/usr/share/untangle-suricata-config"
-    urls = []
+    url_template = Signature_url_template
 
     try:
         opts, args = getopt.getopt(argv, "hru:d", ["help", "signatures_template_directory=", "url=", "force_sync", "debug"] )
@@ -653,7 +653,7 @@ def main(argv):
         elif opt in ("-r", "--signatures_template_directory"):
             signatures_template_directory = arg
         elif opt in ("-u", "--url"):
-            urls.append(arg)
+            url_template = arg
 
     if Update.get_app() is None:
         Logger.message("intrusion-prevention not running")
@@ -671,26 +671,26 @@ def main(argv):
     else:
         suricata_version = ""
 
-    if len(urls) == 0:
-        ##
-        ## Create uris based on name from uriManager and create uri sets based on:
-        ## 1) version of Suricata
-        ## 2) non-versioned
-        ##
-        ## For each set, a patch is attempted for each set.
-        ##
-        ## Using a single Url allows those who use uriManager only need to specify a single 
-        ## Signature_url_template value that can follow across when snort versions change.
-        ##
-        signature_template_uri = Uvm_context.uriManager().getUri(Signature_url_template)
-        ## Suricata version set
-        signature_template_uri_suricata_version = signature_template_uri.replace(".tar.gz", "{suricata_version}.tar.gz")
-        url = signature_template_uri_suricata_version.format(suricata_version=suricata_version)
-        urls.append(url.replace(".tar.gz", ".patch.tar.gz"))
-        urls.append(url)
-        # Non-versioned set.
-        urls.append(signature_template_uri.replace(".tar.gz", ".patch.tar.gz"))
-        urls.append(signature_template_uri)
+    ##
+    ## Create uris based on name from uriManager and create uri sets based on:
+    ## 1) version of Suricata
+    ## 2) non-versioned
+    ##
+    ## For each set, a patch is attempted for each set.
+    ##
+    ## Using a single Url allows those who use uriManager only need to specify a single 
+    ## Signature_url_template value that can follow across when snort versions change.
+    ##
+    urls = []
+    signature_template_uri = Uvm_context.uriManager().getUri(url_template)
+    ## Suricata version set
+    signature_template_uri_suricata_version = signature_template_uri.replace(".tar.gz", "{suricata_version}.tar.gz")
+    url = signature_template_uri_suricata_version.format(suricata_version=suricata_version)
+    urls.append(url.replace(".tar.gz", ".patch.tar.gz"))
+    urls.append(url)
+    # Non-versioned set.
+    urls.append(signature_template_uri.replace(".tar.gz", ".patch.tar.gz"))
+    urls.append(signature_template_uri)
 
     if Debug is True:
         Logger.message("signatures_template_directory = " + signatures_template_directory)
