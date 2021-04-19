@@ -174,7 +174,7 @@ class Update:
         try:
             app_manager = Uvm_context.appManager()
             for instance in AppManager(Uvm_context).get_instances():
-                if instance[1] == "intrusion-prevention" and (instance[3] == "RUNNING" or force_sync):
+                if instance[1] == "intrusion-prevention" and (instance[3] == "RUNNING"):
                     Update.app = app_manager.app(instance[0])
         except:
             Logger.message("Unable to get intrusion-prevention instance", sys.exc_info())
