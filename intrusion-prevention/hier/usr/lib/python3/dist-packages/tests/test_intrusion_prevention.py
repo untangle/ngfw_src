@@ -337,13 +337,6 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                'msg', "NMAP",
                                                'blocked', False,
                                                min_date=startTime)
-
-    # tests: super out of date
-
-    # last patch
-
-    # completely fresh
-
     @pytest.mark.slow
     def test_100_update_patch(self):
         """
