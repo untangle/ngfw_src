@@ -78,6 +78,13 @@ public interface UvmContext
     CertificateManager certificateManager();
 
     /**
+     * Get the ConfigManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    ConfigManager configManager();
+
+    /**
      * Get the GoogleManager singleton for this instance
      *
      * @return the singleton

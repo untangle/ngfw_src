@@ -14,6 +14,7 @@ rm -f /usr/share/untangle/conf/wizard.js
 rm -rf /usr/share/untangle/settings/*
 rm -rf /usr/share/untangle/quarantine
 rm -rf /etc/openvpn/*
+rm -f /var/cache/untangle-ssl/*.p12
 
 # drop database
 if [ -f /usr/bin/psql ] ; then
