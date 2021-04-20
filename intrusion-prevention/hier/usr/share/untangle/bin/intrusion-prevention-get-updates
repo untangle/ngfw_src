@@ -412,9 +412,6 @@ class Update:
         if self.debug is True:
             Logger.message("validate full files")
 
-        ## full should have:
-        # rules directory
-        # templates directory
         return True
 
     def install(self):
@@ -423,8 +420,6 @@ class Update:
         else:
             return self.install_full()
         
-        ## copy current url tarballs from working to current
-
     def install_patches(self):
         """
         Patch to copy of current
