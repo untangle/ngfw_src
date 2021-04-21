@@ -6,6 +6,7 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.UvmContext;
 
@@ -19,6 +20,11 @@ import java.util.List;
 import java.util.Date;
 import java.util.Map;
 import java.net.InetAddress;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -449,14 +455,122 @@ public class ConfigManagerImpl implements ConfigManager
     }
 
     /**
-     * Called to get the network port statistics
+     * Called to get the network port statistics. We grab and parse the raw
+     * interface stats from /proc/dnet/dev and add additional details from our
+     * network device configuration and interface status objects.
      *
-     * @return
+     * @return A list of InterfaceMetrics objects with details about each
+     *         network interface in the system.
      */
-    public Object getNetworkPortStats()
+    public List<InterfaceMetrics> getNetworkPortStats()
     {
-        // TODO - gather and return statistics for all network interfaces
-        return createResponse(999, "Not yet implemented");
+        NetworkSettings netSettings = context.networkManager().getNetworkSettings();
+        LinkedList<InterfaceMetrics> metricList = new LinkedList<InterfaceMetrics>();
+        BufferedReader reader;
+        String readLine;
+
+        // we read and parse /proc/net/dev for the raw interface stats
+        try {
+            reader = new BufferedReader(new FileReader(new File("/proc/net/dev")));
+        } catch (Exception exn) {
+            logger.warn("Exception reading network interface details", exn);
+            return metricList;
+        }
+
+        for (int linetot = 0;;) {
+            try {
+                readLine = reader.readLine();
+            } catch (Exception exn) {
+                logger.warn("Exception reading device file:", exn);
+                readLine = null;
+            }
+
+            if (readLine == null) break;
+            String workstr = readLine.trim();
+
+            // increment the line counter and ignore first two header lines
+            linetot++;
+            if (linetot == 1) continue;
+            if (linetot == 2) continue;
+
+            // split the line into columns separated by spaces
+            String[] column = workstr.split("\\s+");
+
+            // if we don't find exactly the number of columns we expect ignore the line
+            if (column.length != 17) {
+                logger.warn("Invalid device line: " + readLine);
+                continue;
+            }
+
+            // get the device name without the trailing colon or space
+            String deviceName = column[0].replace(':', ' ').trim();
+
+            InterfaceSettings faceSettings = null;
+            DeviceStatus devStatus = null;
+
+            // look for a configured interface with matching device name
+            for (InterfaceSettings item : netSettings.getInterfaces()) {
+                if (deviceName.contentEquals(item.getSystemDev())) {
+                    faceSettings = item;
+                    break;
+                }
+            }
+
+            // if no matching configured interface ignore the line
+            if (faceSettings == null) continue;
+
+            // look for device status with matching device name
+            for (DeviceStatus item : context.networkManager().getDeviceStatus()) {
+                if (deviceName.contentEquals(item.getDeviceName())) {
+                    devStatus = item;
+                    break;
+                }
+            }
+
+            // if no matching device status ignore the line
+            if (devStatus == null) continue;
+
+            // create a new interface metrics object
+            InterfaceMetrics metric = new InterfaceMetrics();
+
+            // grab some data from the interface and status objects we found
+            metric.setPortId(faceSettings.getInterfaceId());
+            metric.setPortName(deviceName);
+            metric.setPortMac(devStatus.getMacAddress());
+            metric.setPortStatus(devStatus.getConnected().name());
+            metric.setPortDuplex(devStatus.getDuplex().name());
+            metric.setPortSpeed(devStatus.getMbit());
+
+            // parse all of the column values from the raw device status line
+            metric.setRxBytes(Long.parseLong(column[1]));
+            metric.setRxPackets(Long.parseLong(column[2]));
+            metric.setRxErrors(Long.parseLong(column[3]));
+            metric.setRxDrop(Long.parseLong(column[4]));
+            metric.setRxFifo(Long.parseLong(column[5]));
+            metric.setRxFrame(Long.parseLong(column[6]));
+            metric.setRxCompressed(Long.parseLong(column[7]));
+            metric.setRxMulticast(Long.parseLong(column[8]));
+
+            metric.setTxBytes(Long.parseLong(column[9]));
+            metric.setTxPackets(Long.parseLong(column[10]));
+            metric.setTxErrors(Long.parseLong(column[11]));
+            metric.setTxDrop(Long.parseLong(column[12]));
+            metric.setTxFifo(Long.parseLong(column[13]));
+            metric.setTxCollisions(Long.parseLong(column[14]));
+            metric.setTxCarrier(Long.parseLong(column[15]));
+            metric.setTxCompressed(Long.parseLong(column[16]));
+
+            // append the metric to the list we return
+            metricList.add(metric);
+        }
+
+        try {
+            reader.close();
+        } catch (Exception exn) {
+            logger.warn("Exception closing device file: ", exn);
+        }
+
+        return metricList;
     }
 
     /**

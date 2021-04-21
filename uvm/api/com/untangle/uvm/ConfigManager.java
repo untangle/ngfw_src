@@ -38,7 +38,7 @@ public interface ConfigManager
     Object getSyslogServer();
     Object setSyslogServer(boolean argEnabled, String argHost, int argPort, String argProtocol);
 
-    Object getNetworkPortStats();
+    List<InterfaceMetrics> getNetworkPortStats();
 
     Object getTrafficMetrics();
 
