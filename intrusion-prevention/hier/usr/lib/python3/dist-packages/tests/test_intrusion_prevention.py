@@ -6,13 +6,16 @@ import unittest
 import pytest
 import runtests
 
+import glob
+import os
+import shutil
+
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 from uvm import Uvm
-
 
 appSettings = None
 app = None
@@ -57,12 +60,19 @@ def create_rule(desc="ATS rule", action="blocklog", rule_type="CLASSTYPE", type_
         "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionRule"
     };
 
+def run_ips_updates(url=None):
+    url_argument = ""
+    if url is not None:
+        url_argument = "--url {url}".format(url=url) 
+    result = subprocess.call("/usr/share/untangle/bin/intrusion-prevention-get-updates --debug {url_argument} >/dev/null 2>&1".format(url_argument=url_argument), shell=True)
 
 @pytest.mark.intrusion_prevention
 class IntrusionPreventionTests(NGFWTestCase):
 
     force_start = True
     wait_for_daemon_ready = True
+
+    updates_path = "/usr/share/untangle-suricata-config"
 
     @staticmethod
     def module_name():
@@ -327,5 +337,179 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                'msg', "NMAP",
                                                'blocked', False,
                                                min_date=startTime)
+    @pytest.mark.slow
+    def test_100_update_patch(self):
+        """
+        Get last full update then try to apply differential patch.
+        """
+        global app, appSettings
+
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+
+        # Remove existing tarballs
+        existing_update_file_names = glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path))
+        for file_name in existing_update_file_names:
+            try:
+                os.remove(file_name)
+            except:
+                print("cannot remove existing file_name = {file_name}".format(file_name=file_name))
+                return False
+
+        # Remove existing path
+        current_path = "{updates_path}/current".format(updates_path=IntrusionPreventionTests.updates_path)
+        if os.path.isdir(current_path) is True:
+            try:
+                shutil.rmtree(current_path)
+            except:
+                print("cannot remove existing current_path = {current_path}".format(current_path=current_path))
+                return False
+
+        run_ips_updates(url="https://ids.untangle.com/last_suricatasignatures.tar.gz")
+
+        # Remove previously saved update tarballs.
+        for file_name in glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path)):
+            try:
+                os.remove(file_name)
+            except:
+                print("cannot remove existing update file_name = {file_name}".format(file_name=file_name))
+                return False
+
+        run_ips_updates()
+
+        # make sure file_size != previous_file_size
+        update_file_names = glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path))
+        is_patch_in_updates = False
+        for file_name in update_file_names:
+            if ".patch." in file_name:
+                is_patch_in_updates = True
+
+        assert(len(update_file_names) == 1)
+        assert(is_patch_in_updates == True)
+
+    @pytest.mark.slow
+    def test_101_update_md5_mismatch_fallback(self):
+        """
+        Get last full update then add an expected file casuing the patch update to fail and
+        fall back to full set install.
+        """
+        global app, appSettings
+
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+
+        # Remove existing tarballs
+        existing_update_file_names = glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path))
+        for file_name in existing_update_file_names:
+            try:
+                os.remove(file_name)
+            except:
+                print("cannot remove existing file_name = {file_name}".format(file_name=file_name))
+                return False
+
+        # Remove existing path
+        current_path = "{updates_path}/current".format(updates_path=IntrusionPreventionTests.updates_path)
+        if os.path.isdir(current_path) is True:
+            try:
+                shutil.rmtree(current_path)
+            except:
+                print("cannot remove existing current_path = {current_path}".format(current_path=current_path))
+                return False
+
+        run_ips_updates(url="https://ids.untangle.com/last_suricatasignatures.tar.gz")
+
+        # Remove previously saved update tarballs.
+        for file_name in glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path)):
+            try:
+                os.remove(file_name)
+            except:
+                print("cannot remove existing update file_name = {file_name}".format(file_name=file_name))
+                return False
+
+        # Make applying patch fail by adding a file to current that will fail md5 compare
+        unexpected_file_name = "{current_path}/what_am_i_doing_here".format(current_path=current_path)
+        try:
+            unexpected_file = open( unexpected_file_name, "w" )
+        except:
+            print("unable to open unexpeceted file = {unexpected_file_name}".format(unexpected_file_name=unexpected_file_name))
+            return False
+        unexpected_file.write("not supposed to be here\n")
+        try:
+            unexpected_file.close()
+        except:
+            print("unable to close unexpected file = {unexpected_file_name}".format(unexpected_file_name=unexpected_file_name))
+            return False
+
+        run_ips_updates()
+
+        update_file_names = glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path))
+        is_patch_in_updates = False
+        for file_name in update_file_names:
+            if ".patch." in file_name:
+                is_patch_in_updates = True
+
+        assert(len(update_file_names) == 1)
+        assert(is_patch_in_updates == False)
+
+    @pytest.mark.slow
+    def test_102_update_patch_fail_fallback(self):
+        """
+        Get last full update then add an expected file casuing the patch update to fail and
+        fall back to full set install.
+        """
+        global app, appSettings
+
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+
+        # Remove existing tarballs
+        existing_update_file_names = glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path))
+        for file_name in existing_update_file_names:
+            try:
+                os.remove(file_name)
+            except:
+                print("cannot remove existing file_name = {file_name}".format(file_name=file_name))
+                return False
+
+        # Remove existing path
+        current_path = "{updates_path}/current".format(updates_path=IntrusionPreventionTests.updates_path)
+        if os.path.isdir(current_path) is True:
+            try:
+                shutil.rmtree(current_path)
+            except:
+                print("cannot remove existing current_path = {current_path}".format(current_path=current_path))
+                return False
+
+        run_ips_updates(url="https://ids.untangle.com/last_suricatasignatures.tar.gz")
+
+        # Remove previously saved update tarballs.
+        for file_name in glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path)):
+            try:
+                os.remove(file_name)
+            except:
+                print("cannot remove existing update file_name = {file_name}".format(file_name=file_name))
+                return False
+
+        # Make applying patch fail by deleting a file that will cause patch to fail.
+        for file_name in glob.glob( "{current_path}/rules/*".format(current_path=current_path)):
+            try:
+                os.remove(file_name)
+            except:
+                print("cannot remove existing update file_name = {file_name}".format(file_name=file_name))
+                return False
+            break
+
+        run_ips_updates()
+
+        # make sure file_size != previous_file_size
+        update_file_names = glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path))
+        is_patch_in_updates = False
+        for file_name in update_file_names:
+            if ".patch." in file_name:
+                is_patch_in_updates = True
+
+        assert(len(update_file_names) == 1)
+        assert(is_patch_in_updates == False)
+
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)
