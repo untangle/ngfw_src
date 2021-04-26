@@ -35,7 +35,6 @@ import org.json.JSONObject;
 public class ConfigManagerImpl implements ConfigManager
 {
     private static final String FACTORY_RESET_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-factory-defaults";
-    private static final String SYSTEM_REBOOT_COMMAND = "/sbin/shutdown";
 
     private final Logger logger = Logger.getLogger(getClass());
     private final UvmContext context = UvmContextFactory.context();
@@ -259,21 +258,21 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject doFactoryReset()
     {
-        context.execManager().exec(FACTORY_RESET_SCRIPT);
-
         new java.util.Timer().schedule(new java.util.TimerTask()
         {
             /**
-             * Execute the reboot command after a short delay
+             * Execute the factory reset after a short delay. The force-reboot
+             * flag tells the script to reboot the system rather than restart
+             * the uvm when the factory reset operation is finished.
              */
             @Override
             public void run()
             {
-                context.execManager().exec(SYSTEM_REBOOT_COMMAND + " -r now");
+                context.execManager().exec(FACTORY_RESET_SCRIPT + " force-reboot");
             }
         }, 5000);
 
-        return createResponse(0, "Factory reset complete. System is restarting.");
+        return createResponse(0, "Factory reset initiated. System is restarting.");
     }
 
     /**
