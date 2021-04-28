@@ -50,6 +50,11 @@ if [ $? != 101 ] ; then # action is allowed, we're not in a chroot
 fi
 echo "Restoring File System State...done"
 
-systemctl start untangle-vm
+if [ "$1" == "force-reboot" ]
+then
+    shutdown -r now
+else
+    systemctl start untangle-vm
+fi
 
 exit 0

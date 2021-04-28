@@ -58,7 +58,7 @@ Ext.define ('Ung.model.AppState', {
     detect: function(){
         var on = false;
         var inconsistent = false;
-        var licenseExpired;
+        var licenseExpired = false;
         if( ( this.vm && !Util.isDestroyed(this.vm) ) || 
             ( this.instance && !Util.isDestroyed(this.instance)) ){
             var targetState = this.vm ? this.vm.get('instance.targetState') : this.instance.targetState;
@@ -70,8 +70,11 @@ Ext.define ('Ung.model.AppState', {
 
             inconsistent = (targetState != runState) || (runState == 'RUNNING' && !daemonRunning);
 
-            var appName = this.vm.get('app.name') ? this.vm.get('app.name'): this.vm.get('urlName');
-            licenseExpired = !Rpc.directData('rpc.UvmContext.licenseManager.isLicenseValid', appName); 
+            var appName = "";
+            if (this.vm != null ) {
+                appName = this.vm.get('app.name') ? this.vm.get('app.name'): this.vm.get('urlName');
+                licenseExpired = !Rpc.directData('rpc.UvmContext.licenseManager.isLicenseValid', appName); 
+            }
         }
         this.set({
             'expired': licenseExpired,
