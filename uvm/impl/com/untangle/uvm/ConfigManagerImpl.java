@@ -268,7 +268,7 @@ public class ConfigManagerImpl implements ConfigManager
             @Override
             public void run()
             {
-                context.execManager().exec(FACTORY_RESET_SCRIPT + " force-reboot");
+                context.execManager().exec("nohup " + FACTORY_RESET_SCRIPT + " force-reboot");
             }
         }, 5000);
 
