@@ -240,7 +240,9 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
      * @return if OpenVPN MFA enabled.
      */
     public Boolean getMfaEnabled() {
-        return this.mfaEnabled;
+        if (this.mfaEnabled != null)
+            return this.mfaEnabled;
+        return false;
     }
 
     /**
