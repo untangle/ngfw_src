@@ -293,7 +293,9 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject checkFirmwareUpdate()
     {
-        // TODO - need to return the update status here
+        if (!context.systemManager().upgradesAvailable(false)) {
+            return createResponse(0, "System up to date");
+        }
         return createResponse(999, "Not yet implemented");
     }
 
