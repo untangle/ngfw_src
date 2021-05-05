@@ -297,7 +297,7 @@ public class ConfigManagerImpl implements ConfigManager
             {
                 context.systemManager().upgrade();
             }
-        }, 5000);
+        }, 2000);
 
         return createResponse(0, "Upgrade Started");
     }
