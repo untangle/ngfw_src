@@ -53,6 +53,8 @@ public interface SystemManager
 
     void setTimeSource();
 
+    boolean getIsUpgrading();
+
     boolean downloadUpgrades();
 
     org.json.JSONObject getDownloadStatus();
