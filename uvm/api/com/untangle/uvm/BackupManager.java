@@ -8,4 +8,5 @@ import java.io.File;
 public interface BackupManager
 {
     public File createBackup();
+    public String restoreBackup(File restoreFile, String maintainRegex);
 }

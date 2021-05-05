@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
@@ -80,7 +82,40 @@ public class BackupManagerImpl implements BackupManager
     }
 
     /**
-     * Restore a backup file
+     * Restore a backup from a File object
+     *
+     * @param restoreFile
+     *        The File containing the backup to restore
+     * @param maintainRegex
+     *        Regular expression
+     * @return Null for success or an error String
+     */
+    public String restoreBackup(File restoreFile, String maintainRegex)
+    {
+        FileInputStream fileInputStream = null;
+        ExecManagerResult execResult;
+        byte[] fileData = new byte[(int)restoreFile.length()];
+
+        // read the raw backup data into a byte array
+        try {
+            fileInputStream = new FileInputStream(restoreFile);
+            fileInputStream.read(fileData);
+            fileInputStream.close();
+        } catch (Exception exn) {
+            return exn.getMessage();
+        }
+
+        try {
+            execResult = restoreBackup(fileData, maintainRegex);
+        } catch (Exception exn) {
+            return exn.getMessage();
+        }
+
+        return null;
+    }
+
+    /**
+     * Restore a backup file from raw backup data
      * 
      * @param backupFileBytes
      *        The raw backup data
