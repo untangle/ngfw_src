@@ -642,10 +642,10 @@ can look deeper. - mahotz
     public void upgrade()
     {
         // Call pre-upgrade hook
+        this.setIsUpgrading(true);
         UvmContextFactory.context().hookManager().callCallbacks(HookManager.UVM_PRE_UPGRADE, 1);
 
         try {
-            this.setIsUpgrading(true);
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(UPGRADE_SCRIPT + " -q");
             reader.waitFor();
         } catch (Exception e) {
