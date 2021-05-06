@@ -278,12 +278,28 @@ public class ConfigManagerImpl implements ConfigManager
     /**
      * Called to perform a firmware update
      *
-     * @return
+     * @return A JSON object with result code and message
      */
     public JSONObject doFirmwareUpdate()
     {
-        // TODO - need to start the firmware update here
-        return createResponse(999, "Not yet implemented");
+        // check if upgrades available
+        if (!context.systemManager().upgradesAvailable(false)) {
+            return createResponse(0, "Upgrade Not Needed");
+        }
+        // do the upgrade after a short delay
+        new java.util.Timer().schedule(new java.util.TimerTask()    
+        {
+            /**
+             * Slight delay before starting the upgrade
+             */
+            @Override
+            public void run()
+            {
+                context.systemManager().upgrade();
+            }
+        }, 2000);
+
+        return createResponse(0, "Upgrade Started");
     }
 
     /**
@@ -293,8 +309,15 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject checkFirmwareUpdate()
     {
-        // TODO - need to return the update status here
-        return createResponse(999, "Not yet implemented");
+        // check if currently upgrading first
+        if (context.systemManager().getIsUpgrading()) {
+            return createResponse(0, "In Progress");
+        }
+        // check if upgrades available
+        if (!context.systemManager().upgradesAvailable(false)) {
+            return createResponse(0, "System Up To Date");
+        }
+        return createResponse(0, "Update Available");
     }
 
     /**
