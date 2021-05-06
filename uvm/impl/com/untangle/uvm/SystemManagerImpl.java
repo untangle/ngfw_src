@@ -88,6 +88,8 @@ public class SystemManagerImpl implements SystemManager
 
     private String SettingsFileName = "";
 
+    private boolean isUpgrading = false;
+
     /**
      * Constructor
      */
@@ -341,6 +343,24 @@ can look deeper. - mahotz
         }
 
         this.currentCalendar = Calendar.getInstance();
+    }
+
+    /**
+     * Get if upgrading
+     * 
+     * @return If currently upgrading
+     */
+    public boolean getIsUpgrading() {
+        return this.isUpgrading;
+    }
+
+    /**
+     * Set the isUpgrading flag
+     * 
+     * @param isUpgrading the value to set to
+     */
+    private void setIsUpgrading(boolean isUpgrading) {
+        this.isUpgrading = isUpgrading;
     }
 
     /**
@@ -622,6 +642,7 @@ can look deeper. - mahotz
     public void upgrade()
     {
         // Call pre-upgrade hook
+        this.setIsUpgrading(true);
         UvmContextFactory.context().hookManager().callCallbacks(HookManager.UVM_PRE_UPGRADE, 1);
 
         try {
@@ -630,6 +651,7 @@ can look deeper. - mahotz
         } catch (Exception e) {
             logger.warn("Upgrade exception:", e);
         }
+        this.setIsUpgrading(false);
         /*
          * probably will never return as the upgrade usually kills the
          * untangle-vm if it is upgraded
