@@ -47,7 +47,7 @@ public interface ConfigManager
 
     Object createSystemBackup();
 
-    Object restoreSystembackup(Object argBackup);
+    Object restoreSystemBackup(String argFileName, String maintainRegex);
 
     Object getNotifications();
 
