@@ -283,7 +283,7 @@ public class ConfigManagerImpl implements ConfigManager
     public JSONObject doFirmwareUpdate()
     {
         // check if upgrades available
-        if (!context.systemManager().upgradesAvailable(false)) {
+        if (!context.systemManager().upgradesAvailable()) {
             return createResponse(0, "Upgrade Not Needed");
         }
         // do the upgrade after a short delay
@@ -314,7 +314,7 @@ public class ConfigManagerImpl implements ConfigManager
             return createResponse(0, "In Progress");
         }
         // check if upgrades available
-        if (!context.systemManager().upgradesAvailable(false)) {
+        if (!context.systemManager().upgradesAvailable()) {
             return createResponse(0, "System Up To Date");
         }
         return createResponse(0, "Update Available");
