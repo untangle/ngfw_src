@@ -63,6 +63,8 @@ public class AppManagerImpl implements AppManager
      */
     private ConcurrentHashMap<Long, AppProperties> appsBeingLoaded = new ConcurrentHashMap<>();
 
+    private List<AppProperties> restrictedAllowedApps = new LinkedList<AppProperties>();
+
     private AppManagerSettings settings = null;
 
     private Semaphore startSemaphore = new Semaphore(0);
@@ -1140,6 +1142,14 @@ public class AppManagerImpl implements AppManager
         float totalMemoryMb = ((float) ((double) totalMemory / 1024)) / (1024.0f);
         int totalTnterfaceCount = UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces().size();
 
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+
+        List<AppProperties> appPropsToInstall = getAllAppProperties();
+
+        if (lm.isRestricted()) {
+            appPropsToInstall = this.restrictedAllowedApps;
+        }
+
         for (AppProperties appProps : getAllAppProperties()) {
             if (!appProps.getAutoInstall()) continue;
             if(appProps.getAutoInstallMinMemory() > totalMemoryMb) continue;
@@ -1476,13 +1486,13 @@ public class AppManagerImpl implements AppManager
             lmLicenses.put(lic.getCurrentName(), lic);
         }
 
-        logger.info("APPS");
-
         for (AppProperties appProps : nm.getAllAppProperties()) {
             if (!lmLicenses.containsKey(appProps.getName())) {
-                appProps.setInvisible(true);
+                this.restrictedAllowedApps.add(appProps);
             }
         }
+
+        this.setAutoInstallAppsFlag(true);
         return;
     }
 
