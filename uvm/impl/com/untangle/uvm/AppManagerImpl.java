@@ -986,6 +986,10 @@ public class AppManagerImpl implements AppManager
         lastWizardComplete = UvmContextFactory.context().isWizardComplete();
 
         UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
+        
+        // sync with licenses if restricted
+        syncWithLicenses();
+
         if(isAutoInstallAppsFlag()){
             // We rebooted during auto install of apps, so continue installing.
             doAutoInstall();
@@ -1453,6 +1457,33 @@ public class AppManagerImpl implements AppManager
         }
 
         return this.settings;
+    }
+
+    /**
+     * Sync licenses with apps if restricted
+     */
+    private void syncWithLicenses() {
+        AppManagerImpl nm = (AppManagerImpl) UvmContextFactory.context().appManager();
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+        Map<String, License> lmLicenses = new HashMap<>();
+
+        if (!lm.isRestricted()) {
+            logger.info("Not restricted");
+            return;
+        } 
+        logger.info("Restricted");
+        for(License lic : lm.getLicenses()) {
+            lmLicenses.put(lic.getCurrentName(), lic);
+        }
+
+        logger.info("APPS");
+
+        for (AppProperties appProps : nm.getAllAppProperties()) {
+            if (!lmLicenses.containsKey(appProps.getName())) {
+                appProps.setInvisible(true);
+            }
+        }
+        return;
     }
 
     /**
