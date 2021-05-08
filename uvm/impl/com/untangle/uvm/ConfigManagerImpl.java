@@ -283,7 +283,7 @@ public class ConfigManagerImpl implements ConfigManager
     public JSONObject doFirmwareUpdate()
     {
         // check if upgrades available
-        if (!context.systemManager().upgradesAvailable(false)) {
+        if (!context.systemManager().upgradesAvailable()) {
             return createResponse(0, "Upgrade Not Needed");
         }
         // do the upgrade after a short delay
@@ -314,7 +314,7 @@ public class ConfigManagerImpl implements ConfigManager
             return createResponse(0, "In Progress");
         }
         // check if upgrades available
-        if (!context.systemManager().upgradesAvailable(false)) {
+        if (!context.systemManager().upgradesAvailable()) {
             return createResponse(0, "System Up To Date");
         }
         return createResponse(0, "Update Available");
@@ -639,21 +639,53 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object createSystemBackup()
     {
-        // TODO - how do we do this
-        return createResponse(999, "Not yet implemented");
+        File backupFile = context.backupManager().createBackup();
+        String fileName;
+
+        try {
+            fileName = backupFile.getCanonicalPath();
+        } catch (Exception exn) {
+            return createResponse(1, exn.getMessage());
+        }
+
+        TreeMap<String, Object> info = new TreeMap<>();
+        info.put("BackupFile", fileName);
+        return createResponse(info);
     }
 
     /**
      * Called to restore a system backup
      *
-     * @param argBackup
-     *        The backup to restore
-     * @return
+     * @param argFileName
+     *        The backup file to restore
+     * @param maintainRegex
+     *        An optional regex expression of existing files or directories that
+     *        should not be replaced by content in the backup.
+     * @return A JSON object with the result code and message
      */
-    public Object restoreSystembackup(Object argBackup)
+    public Object restoreSystemBackup(String argFileName, String maintainRegex)
     {
-        // TODO - how do we do this
-        return createResponse(999, "Not yet implemented");
+        // The UI currently passes the following maintainRegex values to restoreBackup:
+        // Restore all settings = ''
+        // Restore all except keep current network settings = '.*/network.*',
+
+        File file = new File(argFileName);
+        String resultMessage = null;
+
+        // pass the file and regex to the restoreBackup function
+        try {
+            resultMessage = context.backupManager().restoreBackup(file, maintainRegex);
+        } catch (Exception exn) {
+            return createResponse(1, exn.getMessage());
+        }
+
+        // null return messages indicates an error
+        if (resultMessage != null) {
+            return createResponse(2, resultMessage);
+        }
+
+        // return the success message
+        return createResponse(0, "System restore initiated.");
     }
 
     /**
