@@ -4,6 +4,7 @@
 package com.untangle.uvm.app;
 
 import java.util.List;
+import java.sql.Connection;
 
 import com.untangle.uvm.logging.LogEvent;
 
@@ -20,4 +21,6 @@ public interface Reporting
     boolean getDiskFullFlag();
 
     List<String> getAlertEmailAddresses();
+
+    Connection getDbConnection();
 }

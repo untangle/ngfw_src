@@ -52,4 +52,6 @@ public interface ConfigManager
     Object getNotifications();
 
     Object getDiagnosticInfo();
+
+    Object doDatabaseQuery(String argQuery);
 }
