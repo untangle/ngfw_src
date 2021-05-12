@@ -9,10 +9,12 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.app.Reporting;
 
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.TimeZone;
 import java.util.Calendar;
 import java.util.TreeMap;
@@ -20,6 +22,10 @@ import java.util.List;
 import java.util.Date;
 import java.util.Map;
 import java.net.InetAddress;
+import java.sql.ResultSetMetaData;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
@@ -38,6 +44,9 @@ public class ConfigManagerImpl implements ConfigManager
 
     private final Logger logger = Logger.getLogger(getClass());
     private final UvmContext context = UvmContextFactory.context();
+
+    // this is managed by our getDatabaseConnection member
+    private volatile Connection sharedConnection = null;
 
     /**
      * Constructor
@@ -287,7 +296,7 @@ public class ConfigManagerImpl implements ConfigManager
             return createResponse(0, "Upgrade Not Needed");
         }
         // do the upgrade after a short delay
-        new java.util.Timer().schedule(new java.util.TimerTask()    
+        new java.util.Timer().schedule(new java.util.TimerTask()
         {
             /**
              * Slight delay before starting the upgrade
@@ -709,5 +718,186 @@ public class ConfigManagerImpl implements ConfigManager
         // TODO - need to figure out what to return here
         // everything in /var/log/uvm? in what format?
         return createResponse(999, "Not yet implemented");
+    }
+
+    /**
+     * Called to perform a database query
+     *
+     * @param argQuery
+     *        The database query to perform
+     * @return A JSON object with the result code and message plus the row
+     *         count, row data, and the query that was executed.
+     */
+    public Object doDatabaseQuery(String argQuery)
+    {
+        String problem = null;
+
+        // we need the reporting app to do anything with the database
+        Reporting reportsApp = (Reporting) UvmContextFactory.context().appManager().app("reports");
+        if (reportsApp == null) {
+            return createResponse(1, "The reports application is not installed");
+        }
+
+        // get the database connection
+        Connection dbConnection = getDatabaseConnection(reportsApp);
+        if (dbConnection == null) {
+            return createResponse(2, "The reports application returned null connection");
+        }
+
+        // create a response map and add the argumented command 
+        TreeMap<String, Object> info = new TreeMap<>();
+        info.put("Query", argQuery);
+
+        List<JSONObject> resultData = new LinkedList<JSONObject>();
+        List<String> columnList = new ArrayList<String>();
+        PreparedStatement statement = null;
+        ResultSetMetaData metaData = null;
+        ResultSet resultSet = null;
+
+        try {
+            statement = dbConnection.prepareStatement(argQuery);
+            statement.execute();
+            resultSet = statement.getResultSet();
+            metaData = resultSet.getMetaData();
+
+            // get all of the column names
+            for (int x = 0; x < metaData.getColumnCount(); x++) {
+                columnList.add(metaData.getColumnName(x + 1));
+            }
+
+            int rowCount = 0;
+
+            // walk the result set and add each row as a JSONObject using the
+            // simple format: column_name = result_value
+            while (resultSet.next()) {
+                JSONObject json = new JSONObject();
+                for (int x = 0; x < metaData.getColumnCount(); x++) {
+                    Object item = resultSet.getObject(x + 1);
+                    appendJsonItem(json, columnList.get(x), item);
+                }
+                resultData.add(json);
+                rowCount++;
+            }
+
+            // put the row count and row data in the response
+            info.put("RowCount", rowCount);
+            info.put("RowData", resultData);
+        } catch (Exception exn) {
+            logger.warn("DATABASE ERROR", exn);
+            problem = exn.toString();
+        }
+
+        // always close the result set if not null
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (Exception exn) {
+                logger.warn("Exception closing ResultSet:", exn);
+            }
+        }
+
+        // always close the statement if not null
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (Exception exn) {
+                logger.warn("Exception closing PreparedStatement:", exn);
+            }
+        }
+
+        if (problem != null) {
+            return createResponse(2, problem);
+        }
+
+        return createResponse(info);
+    }
+
+    /**
+     * Called internally to format datbase results in a JSON friendly way. We
+     * add common objects (Integer, Long, Float, etc.) as the native data type
+     * and everything else with the toString method.
+     *
+     * @param json
+     *        The JSONObject to which the item should be added
+     * @param name
+     *        The name for the item to be appended
+     * @param item
+     *        The item to be appended
+     */
+    private void appendJsonItem(JSONObject json, String name, Object item)
+    {
+        if (item == null) return;
+
+        try {
+            if (item instanceof Integer) {
+                json.put(name, item);
+                return;
+            }
+            if (item instanceof Long) {
+                json.put(name, item);
+                return;
+            }
+            if (item instanceof Float) {
+                json.put(name, item);
+                return;
+            }
+            if (item instanceof Double) {
+                json.put(name, item);
+                return;
+            }
+            if (item instanceof Boolean) {
+                json.put(name, item);
+                return;
+            }
+            if (item instanceof String) {
+                json.put(name, item);
+                return;
+            }
+            if (item instanceof java.sql.Timestamp) {
+                java.sql.Timestamp local = (java.sql.Timestamp) item;
+                json.put(name, local.getTime());
+                return;
+            }
+            json.put(name, item.toString());
+        } catch (Exception exn) {
+        }
+    }
+
+    /**
+     * Private function to get the persistent shared connection
+     *
+     * @param reportsApp
+     *        The Reporting application
+     * @return A valid database connection or null for error
+     */
+    private Connection getDatabaseConnection(Reporting reportsApp)
+    {
+        try {
+            // if we have a valid connection check isValid first which allows
+            // us to close, clear and flow into the get logic
+            if (sharedConnection != null) {
+                if (!sharedConnection.isValid(0)) {
+                    sharedConnection.close();
+                    sharedConnection = null;
+                }
+            }
+
+            // get a datbase connection if we do not already have one
+            if (sharedConnection == null) {
+                logger.info("Requesting database connection from reporting app");
+                sharedConnection = reportsApp.getDbConnection();
+                if (sharedConnection == null) {
+                    return null;
+                }
+
+                // we only support read operations so set the flag for safety and efficiency 
+                sharedConnection.setReadOnly(true);
+            }
+        } catch (Exception exn) {
+            logger.warn("Exception getting database connection", exn);
+            sharedConnection = null;
+        }
+
+        return sharedConnection;
     }
 }
