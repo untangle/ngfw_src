@@ -40,8 +40,6 @@ public interface ConfigManager
 
     List<InterfaceMetrics> getNetworkPortStats();
 
-    Object getTrafficMetrics();
-
     SnmpSettings getSnmpSettings();
     Object setSnmpSettings(SnmpSettings argSettings);
 
@@ -49,9 +47,7 @@ public interface ConfigManager
 
     Object restoreSystemBackup(String argFileName, String maintainRegex);
 
-    Object getNotifications();
-
-    Object getDiagnosticInfo();
-
     Object doDatabaseQuery(String argQuery);
+
+    Object createDiagnosticDump();
 }

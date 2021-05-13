@@ -41,6 +41,7 @@ import org.json.JSONObject;
 public class ConfigManagerImpl implements ConfigManager
 {
     private static final String FACTORY_RESET_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-factory-defaults";
+    private static final String DIAGNOSTIC_DUMP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-diagnostic-dump";
 
     private final Logger logger = Logger.getLogger(getClass());
     private final UvmContext context = UvmContextFactory.context();
@@ -314,7 +315,9 @@ public class ConfigManagerImpl implements ConfigManager
     /**
      * Called to check the firmware update status
      *
-     * @return
+     * @return A JSON object with a result code and message indicating the
+     *         status of the system firmware.
+     *
      */
     public JSONObject checkFirmwareUpdate()
     {
@@ -605,17 +608,6 @@ public class ConfigManagerImpl implements ConfigManager
     }
 
     /**
-     * Called to get the traffic metrics
-     *
-     * @return
-     */
-    public Object getTrafficMetrics()
-    {
-        // TODO - gather and return traffic metrics
-        return createResponse(999, "Not yet implemented");
-    }
-
-    /**
      * Called to get the SNMP settings
      *
      * @return A SnmpSettings object with the device SNMP configuration
@@ -644,7 +636,11 @@ public class ConfigManagerImpl implements ConfigManager
     /**
      * Called to create a system backup
      *
-     * @return
+     * @apiNote The backup file will be created in the /tmp directory. The
+     *          caller should remove the file when it is no longer needed.
+     *
+     * @return A JSON Object with the result code and message plus the name of
+     *         the backup file that was created.
      */
     public Object createSystemBackup()
     {
@@ -698,30 +694,13 @@ public class ConfigManagerImpl implements ConfigManager
     }
 
     /**
-     * Called to get system notifications
-     *
-     * @return
-     */
-    public Object getNotifications()
-    {
-        // TODO - how do we do this
-        return createResponse(999, "Not yet implemented");
-    }
-
-    /**
-     * Called to get diagnostic information
-     *
-     * @return
-     */
-    public Object getDiagnosticInfo()
-    {
-        // TODO - need to figure out what to return here
-        // everything in /var/log/uvm? in what format?
-        return createResponse(999, "Not yet implemented");
-    }
-
-    /**
      * Called to perform a database query
+     *
+     * @apiNote The database connection used in this function has the read-only
+     *          flag set to maximize performance and to prevent accidental
+     *          modifications. It is good practice to include a LIMIT clause in
+     *          any query that could potentially return a very large amount of
+     *          data to avoid accidental overload of system resorces.
      *
      * @param argQuery
      *        The database query to perform
@@ -744,7 +723,7 @@ public class ConfigManagerImpl implements ConfigManager
             return createResponse(2, "The reports application returned null connection");
         }
 
-        // create a response map and add the argumented command 
+        // create a response map and add the argumented command
         TreeMap<String, Object> info = new TreeMap<>();
         info.put("Query", argQuery);
 
@@ -890,7 +869,7 @@ public class ConfigManagerImpl implements ConfigManager
                     return null;
                 }
 
-                // we only support read operations so set the flag for safety and efficiency 
+                // we only support read operations so set the flag for safety and efficiency
                 sharedConnection.setReadOnly(true);
             }
         } catch (Exception exn) {
@@ -899,5 +878,38 @@ public class ConfigManagerImpl implements ConfigManager
         }
 
         return sharedConnection;
+    }
+
+    /**
+     * Called to get diagnostic information
+     *
+     * @apiNote The dump file will be created with the format
+     *          /tmp/diagdump_timestamp_serial.tar.gz. The caller should remove
+     *          the file when no longer needed.
+     *
+     * @return A JSON Object with the result code and message plus the name of
+     *         the diagnostic file that was created and the status message
+     *         returned by the file creation script.
+     */
+    public Object createDiagnosticDump()
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        StringBuilder fileName = new StringBuilder();
+
+        TimeZone timezone = context.systemManager().getTimeZone();
+        Date date = new Date(System.currentTimeMillis());
+        fileName.append("/tmp/diagdump");
+        fileName.append("_");
+        fileName.append(formatter.format(date));
+        fileName.append("_");
+        fileName.append(context.getServerUID());
+        fileName.append(".tar.gz");
+
+        String output = context.execManager().execOutput(DIAGNOSTIC_DUMP_SCRIPT + " " + fileName.toString());
+
+        TreeMap<String, Object> info = new TreeMap<>();
+        info.put("FileName", fileName.toString());
+        info.put("DumpMessage", output);
+        return createResponse(info);
     }
 }

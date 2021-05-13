@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# This script is called from ConfigManagerImpl.createDiagnosticDump()
+# It will create a tarball with the argumented file name that contains
+# critical settings, configuration, and log data that will be useful
+# for advance diagnostic and debugging purposes.
+
+# Check for filename argument
+if [ -z "$1" ]; then
+  printf "The destination file was not specified"
+  exit 1
+fi
+
+# Make sure the file does not already exist
+if [ -f "$1" ]; then
+  printf "The destination file already exists"
+  exit 1
+fi
+
+# Use the transform option so during extraction all of the directories we
+# add will be created under a single directory in the extraction target
+tar cfz $1 /var/log /etc /usr/share/untangle/settings /usr/share/untangle/conf --transform 's,^,diagdump/,' > /dev/null 2>&1
+printf "Diagnostic dump successfully created"
+exit 0
