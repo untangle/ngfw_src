@@ -690,7 +690,7 @@ public class ConfigManagerImpl implements ConfigManager
         }
 
         // return the success message
-        return createResponse(0, "System restore initiated.");
+        return createResponse(0, "System restore initiated");
     }
 
     /**
@@ -887,9 +887,9 @@ public class ConfigManagerImpl implements ConfigManager
      *          /tmp/diagdump_timestamp_serial.tar.gz. The caller should remove
      *          the file when no longer needed.
      *
-     * @return A JSON Object with the result code and message plus the name of
-     *         the diagnostic file that was created and the status message
-     *         returned by the file creation script.
+     * @return A JSON Object with the result code and message plus the name and
+     *         size of the diagnostic file that was created and the status
+     *         message returned by the file creation script.
      */
     public Object createDiagnosticDump()
     {
@@ -906,9 +906,18 @@ public class ConfigManagerImpl implements ConfigManager
         fileName.append(".tar.gz");
 
         String output = context.execManager().execOutput(DIAGNOSTIC_DUMP_SCRIPT + " " + fileName.toString());
+        if (output.startsWith("ERROR:")) {
+            return createResponse(1, output);
+        }
+
+        File target = new File(fileName.toString());
+        if (!target.exists()) {
+            return createResponse(2, "The diagnostic dump file could not be created");
+        }
 
         TreeMap<String, Object> info = new TreeMap<>();
         info.put("FileName", fileName.toString());
+        info.put("FileSize", target.length());
         info.put("DumpMessage", output);
         return createResponse(info);
     }

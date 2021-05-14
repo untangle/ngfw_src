@@ -7,13 +7,13 @@
 
 # Check for filename argument
 if [ -z "$1" ]; then
-  printf "The destination file was not specified"
+  printf "ERROR: The destination file was not specified"
   exit 1
 fi
 
 # Make sure the file does not already exist
 if [ -f "$1" ]; then
-  printf "The destination file already exists"
+  printf "ERROR: The destination file already exists"
   exit 1
 fi
 
