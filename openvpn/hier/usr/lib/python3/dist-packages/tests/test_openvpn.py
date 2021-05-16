@@ -311,16 +311,20 @@ class OpenVpnTests(NGFWTestCase):
         assert(timeout > 0)
 
         remoteHostResultUserPass = waitForPing(global_functions.VPN_SERVER_USER_PASS_LAN_IP,0)
-        assert(remoteHostResultUserPass)
+        result = remote_control.run_command("wget -T 3 -t 2 -q -O - http://" + global_functions.VPN_SERVER_USER_PASS_LAN_IP + " 2>&1 | grep -q Debian")
         listOfServers = self._app.getRemoteServersStatus()
-        #print(listOfServers)
-        assert(listOfServers["list"][0]['name'] == vpnSite2SiteUserPassHostname)
 
         #remove server from remoteServers so it doesn't interfere with later tests
         appData = self._app.getSettings()
         appData['authUserPass']=False
         appData["remoteServers"]["list"][:] = []
         self._app.setSettings(appData)
+
+        assert(remoteHostResultUserPass)
+        assert (result == 0) # if web site found
+        #print(listOfServers)
+        assert(listOfServers["list"][0]['name'] == vpnSite2SiteUserPassHostname)
+
 
     def test_040_createClientVPNTunnel(self):
         global appData, vpnServerResult, vpnClientResult
