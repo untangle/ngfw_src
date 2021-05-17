@@ -1074,7 +1074,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     }
 
     /**
-     * syncs the license server state with local state
+     * Syncs the license server state with local state
      */
     private void _syncLicensesWithServer()
     {
@@ -1105,7 +1105,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         public void run()
         {
             _syncLicensesWithServer();    
+            UvmContextFactory.context().appManager().syncWithLicenses();
             UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
+            // autoinstall
+            if(UvmContextFactory.context().appManager().isAutoInstallAppsFlag()){
+                UvmContextFactory.context().appManager().doAutoInstall();
+            }
         }
     }
     

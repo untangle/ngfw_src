@@ -205,4 +205,9 @@ public interface AppManager
      * @param enabled   If true, remove the flag.  If false, create it.
      */
     void setAutoInstallAppsFlag(boolean enabled);
+
+    /**
+     * Syncs the license server state with local state
+     */
+    void syncWithLicenses(); 
 }

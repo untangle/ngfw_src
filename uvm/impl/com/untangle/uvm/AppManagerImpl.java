@@ -1077,6 +1077,16 @@ public class AppManagerImpl implements AppManager
 
                         logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
 
+                        // uninstall restricted licenses
+                        if (UvmContextFactory.context().licenseManager().isRestricted()) {
+                            try {
+                                destroy(id);
+                            } catch (Exception e) {
+                                logger.error("Error uninstalling: " + name + " [" + id + "]: ", e);
+                            }
+
+                            logger.info("Uninstalled   : " + name + " [" + id + "]");
+                        }
                     }
                 }
             };
@@ -1150,7 +1160,7 @@ public class AppManagerImpl implements AppManager
             appPropsToInstall = this.restrictedAllowedApps;
         }
 
-        for (AppProperties appProps : getAllAppProperties()) {
+        for (AppProperties appProps : appPropsToInstall) {
             if (!appProps.getAutoInstall()) continue;
             if(appProps.getAutoInstallMinMemory() > totalMemoryMb) continue;
             if(appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) continue;
@@ -1472,7 +1482,7 @@ public class AppManagerImpl implements AppManager
     /**
      * Sync licenses with apps if restricted
      */
-    private void syncWithLicenses() {
+    public void syncWithLicenses() {
         AppManagerImpl nm = (AppManagerImpl) UvmContextFactory.context().appManager();
         LicenseManager lm = UvmContextFactory.context().licenseManager();
         Map<String, License> lmLicenses = new HashMap<>();
