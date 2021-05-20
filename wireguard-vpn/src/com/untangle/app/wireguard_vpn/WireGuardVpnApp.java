@@ -342,7 +342,11 @@ public class WireGuardVpnApp extends AppBase
             }
 
             // 16.3.1 - add in destination nat rule by default
-
+            if (readSettings.getVersion() == 2) {
+                createDstNatRule();
+                writeFlag = true;
+                readSettings.setVersion(3);
+            }
 
             if (writeFlag == true) {
                 // if any changes were made we need to write the updated settings
@@ -364,6 +368,18 @@ public class WireGuardVpnApp extends AppBase
     {
         logger.info("Initializing Settings...");
 
+        createDstNatRule();
+
+        WireGuardVpnSettings settings = getDefaultSettings();
+
+        setSettings(settings);
+    }
+
+    /**
+     * called to add a destination NAT rule 
+     */
+    private void createDstNatRule() {
+        logger.info("Adding a destination nat rule from wireguard");
         // add nat rules to network settings
         List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
         List<NatRuleCondition> natRuleConditions = new LinkedList<NatRuleCondition>();
@@ -376,17 +392,13 @@ public class WireGuardVpnApp extends AppBase
         NatRule natRule = new NatRule();
         natRule.setConditions(natRuleConditions);
         natRule.setEnabled(true);
-        natRule.setDescription("Wireguard Destination NAT rule");
+        natRule.setDescription("AUTO: Wireguard Destination NAT rule");
         natRule.setAuto(true);
         natRules.add(natRule);
 
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         networkSettings.setNatRules(natRules);
         UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
-
-        WireGuardVpnSettings settings = getDefaultSettings();
-
-        setSettings(settings);
     }
 
     /**
