@@ -50,7 +50,6 @@ public class WireGuardVpnApp extends AppBase
     private static final String STAT_PASS = "pass";
 
     private static final String WIREGUARD_AUTO_NAT_RULE_DESCRIPTION = "AUTO: Wireguard Destination NAT rule";
-    private Boolean doCreateDstNatRule = false;
 
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
@@ -273,9 +272,6 @@ public class WireGuardVpnApp extends AppBase
         }
 
         this.WireGuardVpnMonitor.start();
-        if (doCreateDstNatRule) {
-            createDstNatRule();
-        }
     }
 
     /**
@@ -349,7 +345,7 @@ public class WireGuardVpnApp extends AppBase
 
             // 16.3.1 - add in destination nat rule by default
             if (readSettings.getVersion() == 2) {
-                doCreateDstNatRule = true;
+                createDstNatRule();
                 writeFlag = true;
                 readSettings.setVersion(3);
             }
@@ -370,12 +366,12 @@ public class WireGuardVpnApp extends AppBase
     /**
      * Uninstall wireguard, remove the added destination rule if it still exists
      */
-    /*@Override
+    @Override
     protected void uninstall() {
         List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
         NatRule toRemove = null;
         for (NatRule rule : natRules) {
-            if (rule.getNgfwAdded() && rule.getDescription() == this.AUTO_NAT_RULE_DESCRIPTION) {
+            if (rule.getNgfwAdded() && rule.getDescription().equals(WIREGUARD_AUTO_NAT_RULE_DESCRIPTION)) {
                 toRemove = rule;
             }
         }
@@ -386,7 +382,7 @@ public class WireGuardVpnApp extends AppBase
             networkSettings.setNatRules(natRules);
             UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
         }
-    }*/
+    }
 
     /**
      * Called to initialize application settings
@@ -395,7 +391,7 @@ public class WireGuardVpnApp extends AppBase
     {
         logger.info("Initializing Settings...");
 
-        doCreateDstNatRule = true;
+        createDstNatRule();
 
         WireGuardVpnSettings settings = getDefaultSettings();
 
@@ -406,9 +402,6 @@ public class WireGuardVpnApp extends AppBase
      * called to add a destination NAT rule 
      */
     private void createDstNatRule() {
-        if (!doCreateDstNatRule) {
-            logger.warn("Not adding a destination nat rule from wireguard, should not be here");
-        }
         logger.info("Adding a destination nat rule from wireguard");
         // add nat rules to network settings
         List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
@@ -424,13 +417,12 @@ public class WireGuardVpnApp extends AppBase
         natRule.setEnabled(true);
         natRule.setDescription(WIREGUARD_AUTO_NAT_RULE_DESCRIPTION);
         natRule.setAuto(true);
-        //natRule.setNgfwAdded(true);
+        natRule.setNgfwAdded(true);
         natRules.add(natRule);
 
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         networkSettings.setNatRules(natRules);
         UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
-        doCreateDstNatRule = false;
     }
 
     /**
