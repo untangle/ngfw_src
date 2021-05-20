@@ -32,6 +32,9 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.network.NatRule;
+import com.untangle.uvm.network.NatRuleCondition;
+import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * The WireGuard VPN application connects to 3rd party VPN tunnel providers.
@@ -338,6 +341,9 @@ public class WireGuardVpnApp extends AppBase
                 }
             }
 
+            // 16.3.1 - add in destination nat rule by default
+
+
             if (writeFlag == true) {
                 // if any changes were made we need to write the updated settings
                 this.setSettings( readSettings );
@@ -357,6 +363,26 @@ public class WireGuardVpnApp extends AppBase
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
+
+        // add nat rules to network settings
+        List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
+        List<NatRuleCondition> natRuleConditions = new LinkedList<NatRuleCondition>();
+
+        NatRuleCondition natRuleCondition = new NatRuleCondition();
+        natRuleCondition.setConditionType(NatRuleCondition.ConditionType.DST_INTF);
+        natRuleCondition.setValue(String.valueOf(InterfaceSettings.WIREGUARD_INTERFACE_ID));
+        natRuleConditions.add(natRuleCondition);
+
+        NatRule natRule = new NatRule();
+        natRule.setConditions(natRuleConditions);
+        natRule.setEnabled(true);
+        natRule.setDescription("Wireguard Destination NAT rule");
+        natRule.setAuto(true);
+        natRules.add(natRule);
+
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        networkSettings.setNatRules(natRules);
+        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
 
         WireGuardVpnSettings settings = getDefaultSettings();
 
