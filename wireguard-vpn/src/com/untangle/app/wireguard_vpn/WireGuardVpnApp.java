@@ -371,7 +371,7 @@ public class WireGuardVpnApp extends AppBase
         List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
         NatRule toRemove = null;
         for (NatRule rule : natRules) {
-            if (rule.getNgfwAdded() && rule.getDescription().equals(WIREGUARD_AUTO_NAT_RULE_DESCRIPTION)) {
+            if (rule.getNgfwAdded() && rule.getAddedBy().equals(getAppProperties().getClassName())) {
                 toRemove = rule;
             }
         }
@@ -418,6 +418,7 @@ public class WireGuardVpnApp extends AppBase
         natRule.setDescription(WIREGUARD_AUTO_NAT_RULE_DESCRIPTION);
         natRule.setAuto(true);
         natRule.setNgfwAdded(true);
+        natRule.setAddedBy(getAppProperties().getClassName());
         natRules.add(natRule);
 
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();

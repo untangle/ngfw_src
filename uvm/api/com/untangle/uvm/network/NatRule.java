@@ -30,6 +30,7 @@ public class NatRule implements JSONString, Serializable
     private InetAddress newSource;
     private String description;
     private Boolean ngfwAdded = false;
+    private String addedBy;
     
     public NatRule() { }
 
@@ -40,6 +41,7 @@ public class NatRule implements JSONString, Serializable
         this.setNewSource(newSource);
         this.setDescription(description);
         this.setNgfwAdded(false);
+        this.setAddedBy("user-created");
     }
     
     public List<NatRuleCondition> getConditions() { return this.matchers; }
@@ -62,6 +64,9 @@ public class NatRule implements JSONString, Serializable
 
     public boolean getNgfwAdded() { return this.ngfwAdded; }
     public void setNgfwAdded( Boolean ngfwAdded ) { this.ngfwAdded = ngfwAdded; }
+
+    public String getAddedBy() { return this.addedBy; }
+    public void setAddedBy( String addedBy ) { this.addedBy = addedBy; } 
 
     public String toJSONString()
     {
