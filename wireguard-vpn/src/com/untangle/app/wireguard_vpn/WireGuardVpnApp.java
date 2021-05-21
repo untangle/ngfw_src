@@ -369,15 +369,18 @@ public class WireGuardVpnApp extends AppBase
     @Override
     protected void uninstall() {
         List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
-        NatRule toRemove = null;
+        List<NatRule> toRemove = null;
         for (NatRule rule : natRules) {
             if (rule.getNgfwAdded() && rule.getAddedBy().equals(getAppProperties().getClassName())) {
-                toRemove = rule;
+                if(toRemove == null) {
+                    toRemove = new LinkedList<NatRule>();
+                }
+                toRemove.add(rule);
             }
         }
 
         if (toRemove != null) {
-            natRules.remove(toRemove);
+            natRules.removeAll(toRemove);
             NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
             networkSettings.setNatRules(natRules);
             UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
