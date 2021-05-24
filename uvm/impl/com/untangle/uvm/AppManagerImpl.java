@@ -1080,7 +1080,7 @@ public class AppManagerImpl implements AppManager
                         // uninstall restricted licenses
                         if (UvmContextFactory.context().licenseManager().isRestricted()) {
                             try {
-                                destroy(id);
+                                ((AppBase) app).getAppProperties().setInvisible(true);
                             } catch (Exception e) {
                                 logger.error("Error uninstalling: " + name + " [" + id + "]: ", e);
                             }
@@ -1498,6 +1498,7 @@ public class AppManagerImpl implements AppManager
 
         for (AppProperties appProps : nm.getAllAppProperties()) {
             if (!lmLicenses.containsKey(appProps.getName())) {
+                appProps.setInvisible(false);
                 this.restrictedAllowedApps.add(appProps);
             }
         }
