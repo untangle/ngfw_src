@@ -32,6 +32,9 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.network.NatRule;
+import com.untangle.uvm.network.NatRuleCondition;
+import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * The WireGuard VPN application connects to 3rd party VPN tunnel providers.
@@ -45,6 +48,8 @@ public class WireGuardVpnApp extends AppBase
     private final String SettingsDirectory = "/wireguard-vpn/";
 
     private static final String STAT_PASS = "pass";
+
+    private static final String WIREGUARD_AUTO_NAT_RULE_DESCRIPTION = "AUTO: NAT WAN-bound wireguard vpn traffic";
 
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
@@ -338,6 +343,13 @@ public class WireGuardVpnApp extends AppBase
                 }
             }
 
+            // 16.3.1 - add in destination nat rule by default
+            if (readSettings.getVersion() <= 2) {
+                createDstNatRule();
+                writeFlag = true;
+                readSettings.setVersion(3);
+            }
+
             if (writeFlag == true) {
                 // if any changes were made we need to write the updated settings
                 this.setSettings( readSettings );
@@ -352,15 +364,69 @@ public class WireGuardVpnApp extends AppBase
     }
 
     /**
+     * Uninstall wireguard, remove the added destination rule if it still exists
+     */
+    @Override
+    protected void uninstall() {
+        List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
+        List<NatRule> toRemove = null;
+        for (NatRule rule : natRules) {
+            if (rule.getNgfwAdded() && rule.getAddedBy().equals(getAppProperties().getClassName())) {
+                if(toRemove == null) {
+                    toRemove = new LinkedList<NatRule>();
+                }
+                toRemove.add(rule);
+            }
+        }
+
+        if (toRemove != null) {
+            natRules.removeAll(toRemove);
+            NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+            networkSettings.setNatRules(natRules);
+            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+        }
+    }
+
+    /**
      * Called to initialize application settings
      */
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
 
+        createDstNatRule();
+
         WireGuardVpnSettings settings = getDefaultSettings();
 
         setSettings(settings);
+    }
+
+    /**
+     * called to add a destination NAT rule 
+     */
+    private void createDstNatRule() {
+        logger.info("Adding a destination nat rule from wireguard");
+        // add nat rules to network settings
+        List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
+        List<NatRuleCondition> natRuleConditions = new LinkedList<NatRuleCondition>();
+
+        NatRuleCondition natRuleCondition = new NatRuleCondition();
+        natRuleCondition.setConditionType(NatRuleCondition.ConditionType.DST_INTF);
+        natRuleCondition.setValue(String.valueOf(InterfaceSettings.WIREGUARD_INTERFACE_ID));
+        natRuleConditions.add(natRuleCondition);
+
+        NatRule natRule = new NatRule();
+        natRule.setConditions(natRuleConditions);
+        natRule.setEnabled(true);
+        natRule.setDescription(WIREGUARD_AUTO_NAT_RULE_DESCRIPTION);
+        natRule.setAuto(true);
+        natRule.setNgfwAdded(true);
+        natRule.setAddedBy(getAppProperties().getClassName());
+        natRules.add(natRule);
+
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        networkSettings.setNatRules(natRules);
+        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
     }
 
     /**

@@ -19,7 +19,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class WireGuardVpnSettings implements Serializable, JSONString
 {
-    private Integer version = 2;
+    private Integer version = 3;
 
     private Integer keepaliveInterval = 25;
     private Integer listenPort = 51820;
