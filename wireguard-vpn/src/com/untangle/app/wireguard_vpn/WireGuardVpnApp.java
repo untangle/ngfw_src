@@ -344,7 +344,7 @@ public class WireGuardVpnApp extends AppBase
             }
 
             // 16.3.1 - add in destination nat rule by default
-            if (readSettings.getVersion() == 2) {
+            if (readSettings.getVersion() <= 2) {
                 createDstNatRule();
                 writeFlag = true;
                 readSettings.setVersion(3);
