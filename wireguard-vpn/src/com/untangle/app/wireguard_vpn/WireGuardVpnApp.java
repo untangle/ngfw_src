@@ -49,7 +49,7 @@ public class WireGuardVpnApp extends AppBase
 
     private static final String STAT_PASS = "pass";
 
-    private static final String WIREGUARD_AUTO_NAT_RULE_DESCRIPTION = "AUTO: Wireguard Destination NAT rule";
+    private static final String WIREGUARD_AUTO_NAT_RULE_DESCRIPTION = "AUTO: NAT WAN-bound wireguard vpn traffic";
 
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
