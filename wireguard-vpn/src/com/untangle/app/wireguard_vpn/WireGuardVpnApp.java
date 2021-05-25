@@ -415,13 +415,9 @@ public class WireGuardVpnApp extends AppBase
         for (NatRule rule : natRules) {
             List<NatRuleCondition> conditions = rule.getConditions();
             int properConditions = 0;
-            boolean haveDestination = false;
             for (NatRuleCondition condition : conditions) {
                 if (condition.getConditionType() == NatRuleCondition.ConditionType.DST_INTF || condition.getConditionType() == NatRuleCondition.ConditionType.SRC_INTF) {
                     if (condition.getValue().equals(String.valueOf(InterfaceSettings.WIREGUARD_INTERFACE_ID))) {
-                        if (condition.getConditionType() == NatRuleCondition.ConditionType.DST_INTF) {
-                            haveDestination = true;
-                        }
                         properConditions++;
                     } else {
                         break;
@@ -431,7 +427,7 @@ public class WireGuardVpnApp extends AppBase
                 }
                 
             }
-            if (properConditions < conditions.size() || !haveDestination) {
+            if (properConditions < conditions.size()) {
                 continue;
             }
             logger.warn("Removing NAT rule: " + rule.getRuleId());
