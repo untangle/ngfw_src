@@ -343,11 +343,6 @@ public class WireGuardVpnApp extends AppBase
                 }
             }
 
-            // 16.3.0 - check that support-added nat rule is removed
-            if (readSettings.getVersion() == 2) {
-                removeSupportNatRule();
-            }
-
             // 16.3.1 - add in destination nat rule by default
             if (readSettings.getVersion() <= 2) {
                 createDstNatRule();
@@ -405,47 +400,6 @@ public class WireGuardVpnApp extends AppBase
 
         setSettings(settings);
     }
-
-    /**
-     * Called to remove a nat rule in 16.3.0 that may have been added by support 
-     */
-    private void removeSupportNatRule() {
-        List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
-        List<NatRule> toRemove = null;
-        for (NatRule rule : natRules) {
-            List<NatRuleCondition> conditions = rule.getConditions();
-            int properConditions = 0;
-            for (NatRuleCondition condition : conditions) {
-                if (condition.getConditionType() == NatRuleCondition.ConditionType.DST_INTF || condition.getConditionType() == NatRuleCondition.ConditionType.SRC_INTF) {
-                    if (condition.getValue().equals(String.valueOf(InterfaceSettings.WIREGUARD_INTERFACE_ID))) {
-                        properConditions++;
-                    } else {
-                        break;
-                    }
-                } else {
-                    break;
-                }
-                
-            }
-            if (properConditions < conditions.size()) {
-                continue;
-            }
-            logger.warn("Removing NAT rule: " + rule.getRuleId());
-            
-            if(toRemove == null) {
-                toRemove = new LinkedList<NatRule>();
-            }
-            toRemove.add(rule);
-        }
-
-        if (toRemove != null) {
-            natRules.removeAll(toRemove);
-            NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-            networkSettings.setNatRules(natRules);
-            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
-        }
-    }
-
 
     /**
      * called to add a destination NAT rule 
