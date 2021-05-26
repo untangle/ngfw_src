@@ -988,9 +988,6 @@ public class AppManagerImpl implements AppManager
         lastWizardComplete = UvmContextFactory.context().isWizardComplete();
 
         UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
-        
-        // sync with licenses if restricted
-        syncWithLicenses();
 
         if(isAutoInstallAppsFlag()){
             // We rebooted during auto install of apps, so continue installing.
@@ -1161,9 +1158,22 @@ public class AppManagerImpl implements AppManager
         }
 
         for (AppProperties appProps : appPropsToInstall) {
-            if (!appProps.getAutoInstall()) continue;
-            if(appProps.getAutoInstallMinMemory() > totalMemoryMb) continue;
-            if(appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) continue;
+            if (!appProps.getAutoInstall()) {
+                logger.info("App not able to be autoinstalled: " + appProps.getName());
+                continue;
+            }
+            if(appProps.getAutoInstallMinMemory() > totalMemoryMb) {
+                logger.info("Not enough memory to install app " + appProps.getName());
+                continue;
+            }
+            if(appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) {
+                logger.info("Not enough interfaces to install app: " + appProps.getName());
+                continue;
+            }
+            if (appInstances(appProps.getName()).size() >= 1) {
+                logger.info("App already installed: " + appProps.getName());
+                continue;
+            }
             try {
                 logger.info("Auto-installing new app: " + appProps.getName());
                 App app = instantiate(appProps.getName());
@@ -1493,17 +1503,16 @@ public class AppManagerImpl implements AppManager
         } 
         logger.info("Restricted");
         for(License lic : lm.getLicenses()) {
-            lmLicenses.put(lic.getCurrentName(), lic);
+            String licenseName = fixupName(lic.getCurrentName());
+            lmLicenses.put(licenseName, lic);
         }
 
         for (AppProperties appProps : nm.getAllAppProperties()) {
-            if (!lmLicenses.containsKey(appProps.getName())) {
-                appProps.setInvisible(false);
+            if (lmLicenses.containsKey(appProps.getName())) {
                 this.restrictedAllowedApps.add(appProps);
             }
         }
 
-        this.setAutoInstallAppsFlag(true);
         return;
     }
 
