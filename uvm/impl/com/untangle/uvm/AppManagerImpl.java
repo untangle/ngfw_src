@@ -65,6 +65,8 @@ public class AppManagerImpl implements AppManager
 
     private List<AppProperties> restrictedAllowedApps = new LinkedList<AppProperties>();
 
+    private List<AppProperties> madeInvisibleRestrictedApps = new LinkedList<AppProperties>();
+
     private AppManagerSettings settings = null;
 
     private Semaphore startSemaphore = new Semaphore(0);
@@ -1078,6 +1080,7 @@ public class AppManagerImpl implements AppManager
                         if (UvmContextFactory.context().licenseManager().isRestricted()) {
                             try {
                                 ((AppBase) app).getAppProperties().setInvisible(true);
+                                madeInvisibleRestrictedApps.add(app.getAppProperties());
                             } catch (Exception e) {
                                 logger.error("Error uninstalling: " + name + " [" + id + "]: ", e);
                             }
@@ -1499,18 +1502,29 @@ public class AppManagerImpl implements AppManager
 
         if (!lm.isRestricted()) {
             logger.info("Not restricted");
+
+            // unhide any apps that are hidden
+            for (AppProperties appProps : this.madeInvisibleRestrictedApps) {
+                appProps.setInvisible(false);
+            }
+            this.madeInvisibleRestrictedApps.clear();
             return;
         } 
+
         logger.info("Restricted");
         for(License lic : lm.getLicenses()) {
             String licenseName = fixupName(lic.getCurrentName());
+            logger.warn("TIFFANY ALL LIC: " + lic.getCurrentName());
             lmLicenses.put(licenseName, lic);
         }
 
-        for (AppProperties appProps : nm.getAllAppProperties()) {
+        for (AppSettings appSettings : nm.getAllAppSettings()) {
+            logger.warn("TIFFANY: " + appSettings.getName());
+            /*logger.warn("TIFFANY ALL: " + appProps.getAppSettings().getId());
             if (lmLicenses.containsKey(appProps.getName())) {
+                logger.warn("TIFFANY: " + appProps.getName());
                 this.restrictedAllowedApps.add(appProps);
-            }
+            }*/
         }
 
         return;
