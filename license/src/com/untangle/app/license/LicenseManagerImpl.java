@@ -744,6 +744,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             if(parse.has("restricted")) {
                 boolean restrict = parse.getBoolean("restricted");
                 restricted = restrict;
+
+                // clear licenses if restricted, we'll only use licenses used in response
+                if (restricted) {
+                    this.settings.getLicenses().clear();
+                }
             }
         } catch (JSONException e) {
             logger.error("Unable to read license file: ", e );
@@ -1306,9 +1311,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          *        Callback arguments
          */
         public void callback(Object... args) {
+            UvmContextFactory.context().appManager().syncWithLicenses(); 
             UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
             if (isRestricted()) {
-                UvmContextFactory.context().appManager().syncWithLicenses(); 
                 UvmContextFactory.context().appManager().doAutoInstall();
             }
         }
