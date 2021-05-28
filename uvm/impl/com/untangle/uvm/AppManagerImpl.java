@@ -65,8 +65,6 @@ public class AppManagerImpl implements AppManager
 
     private List<AppProperties> restrictedAllowedApps = new LinkedList<AppProperties>();
 
-    private List<AppProperties> madeInvisibleRestrictedApps = new LinkedList<AppProperties>();
-
     private AppManagerSettings settings = null;
 
     private Semaphore startSemaphore = new Semaphore(0);
@@ -1080,7 +1078,6 @@ public class AppManagerImpl implements AppManager
                         if (UvmContextFactory.context().licenseManager().isRestricted()) {
                             try {
                                 ((AppBase) app).getAppProperties().setInvisible(true);
-                                madeInvisibleRestrictedApps.add(app.getAppProperties());
                             } catch (Exception e) {
                                 logger.error("Error uninstalling: " + name + " [" + id + "]: ", e);
                             }
@@ -1504,25 +1501,32 @@ public class AppManagerImpl implements AppManager
             logger.info("Not restricted");
 
             // unhide any apps that are hidden
-            for (AppProperties appProps : this.madeInvisibleRestrictedApps) {
-                appProps.setInvisible(false);
+            /*for (App app : this.madeInvisibleRestrictedApps.values()) {
+                app.getAppProperties().setInvisible(false);
             }
-            this.madeInvisibleRestrictedApps.clear();
+            this.madeInvisibleRestrictedApps.clear();*/
             return;
         } 
 
         logger.info("Restricted");
         for(License lic : lm.getLicenses()) {
             String licenseName = fixupName(lic.getCurrentName());
-            logger.warn("TIFFANY ALL LIC: " + lic.getCurrentName());
             lmLicenses.put(licenseName, lic);
         }
 
+        this.restrictedAllowedApps.clear();
         for (AppProperties appProps : nm.getAllAppProperties()) {
-            logger.warn("TIFFANY ALL: " + appProps.getName());
             if (lmLicenses.containsKey(appProps.getName())) {
-                logger.warn("TIFFANY: " + appProps.getName());
-                this.restrictedAllowedApps.add(appProps);
+                //check if already installed, set it as visible if need be
+                if (appInstances(appProps.getName()).size() >= 1) {
+                    logger.warn("App already installed: " + appProps.getName());
+                    List<App> appInstances = appInstances(appProps.getName());
+                    for (App app : appInstances) {
+                        app.getAppProperties().setInvisible(false);
+                    }
+                } else {
+                    this.restrictedAllowedApps.add(appProps);
+                }
             }
         }
 

@@ -416,6 +416,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.warn("Already have a valid license for: " + appName);
             return;
         }
+
+        // if on restricted license, disallow starting trials
+        if (UvmContextFactory.context().licenseManager().isRestricted()) {
+            logger.warn("Restricted license, not creating trial for: " + appName);
+            return;
+        }
         
         String licenseUrl = System.getProperty( "uvm.license.url" );
         if ( licenseUrl == null )
@@ -1137,20 +1143,20 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private boolean isGPLApp(String identifier)
     {
         switch ( identifier ) {
-        case "untangle-node-ad-blocker": return true;
-        case "ad-blocker": return true;
+        case "untangle-node-ad-blocker": return !isRestricted();
+        case "ad-blocker": return !isRestricted();
         case "untangle-node-virus-blocker-lite": return true;
         case "virus-blocker-lite": return true;
         case "untangle-node-captive-portal": return true;
         case "captive-portal": return true;
         case "untangle-node-firewall": return true;
         case "firewall": return true;
-        case "untangle-node-intrusion-prevention": return true;
-        case "intrusion-prevention": return true;
+        case "untangle-node-intrusion-prevention": return !isRestricted();
+        case "intrusion-prevention": return !isRestricted();
         case "untangle-node-openvpn": return true;
         case "openvpn": return true;
-        case "untangle-node-phish-blocker": return true;
-        case "phish-blocker": return true;
+        case "untangle-node-phish-blocker": return !isRestricted();
+        case "phish-blocker": return !isRestricted();
         case "untangle-node-application-control-lite": return true;
         case "application-control-lite": return true;
         case "untangle-node-router": return true;
@@ -1312,10 +1318,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          */
         public void callback(Object... args) {
             UvmContextFactory.context().appManager().syncWithLicenses(); 
-            UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
             if (isRestricted()) {
                 UvmContextFactory.context().appManager().doAutoInstall();
             }
+            UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
         }
     }
 }
