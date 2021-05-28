@@ -1078,6 +1078,7 @@ public class AppManagerImpl implements AppManager
                         if (UvmContextFactory.context().licenseManager().isRestricted()) {
                             try {
                                 ((AppBase) app).getAppProperties().setInvisible(true);
+                                // save target state as hidden
                             } catch (Exception e) {
                                 logger.error("Error uninstalling: " + name + " [" + id + "]: ", e);
                             }
@@ -1320,6 +1321,8 @@ public class AppManagerImpl implements AppManager
                             long endTime = System.currentTimeMillis();
                             logger.info("Restarted : " + name + " [" + appSettings.getId() + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
 
+                            // check if hidden, then set to invisible
+
                             // add to loaded apps
                             loadedAppsMap.put(appSettings.getId(), app);
 
@@ -1501,10 +1504,12 @@ public class AppManagerImpl implements AppManager
             logger.info("Not restricted");
 
             // unhide any apps that are hidden
-            /*for (App app : this.madeInvisibleRestrictedApps.values()) {
-                app.getAppProperties().setInvisible(false);
+            for (App app : this.loadedAppsMap.values()) {
+                if (!_isHiddenApp(app.getAppProperties().getName())) {
+                    app.getAppProperties().setInvisible(false);
+                    // save target state also! 
+                }
             }
-            this.madeInvisibleRestrictedApps.clear();*/
             return;
         } 
 
@@ -1531,6 +1536,25 @@ public class AppManagerImpl implements AppManager
         }
 
         return;
+    }
+
+
+    /**
+     * Determine if app should remain hidden always
+     *
+     * @param identifier Application name
+     * @return true if should remain hidden, false otherwise
+     */
+    private boolean _isHiddenApp(String identifier) {
+        switch(identifier) {
+        case "shield": return true;
+        case "license": return true;
+        case "router": return true;
+        case "ftp": return true;
+        case "http": return true;
+        case "smtp": return true; 
+        default: return false;
+        }
     }
 
     /**
