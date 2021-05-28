@@ -1161,7 +1161,7 @@ public class AppManagerImpl implements AppManager
         }
 
         for (AppProperties appProps : appPropsToInstall) {
-            if (!appProps.getAutoInstall()) {
+            if (!lm.isRestricted() && !appProps.getAutoInstall()) {
                 logger.info("App not able to be autoinstalled: " + appProps.getName());
                 continue;
             }
@@ -1518,13 +1518,12 @@ public class AppManagerImpl implements AppManager
             lmLicenses.put(licenseName, lic);
         }
 
-        for (AppSettings appSettings : nm.getAllAppSettings()) {
-            logger.warn("TIFFANY: " + appSettings.getName());
-            /*logger.warn("TIFFANY ALL: " + appProps.getAppSettings().getId());
+        for (AppProperties appProps : nm.getAllAppProperties()) {
+            logger.warn("TIFFANY ALL: " + appProps.getName());
             if (lmLicenses.containsKey(appProps.getName())) {
                 logger.warn("TIFFANY: " + appProps.getName());
                 this.restrictedAllowedApps.add(appProps);
-            }*/
+            }
         }
 
         return;
