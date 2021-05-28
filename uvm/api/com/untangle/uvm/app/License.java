@@ -217,6 +217,8 @@ public class License implements Serializable
             return "ipsec-vpn";
         case "untangle-node-ipsec-vpn":
             return "ipsec-vpn";
+        case "untangle-node-phish":
+            return "phish-blocker";
         case "policy":
             return "policy-manager";
         case "untangle-node-policy":
@@ -265,6 +267,12 @@ public class License implements Serializable
             return "live-support";
         case "untangle-node-threat-prevention":
             return "threat-prevention";
+        case "untangle-node-reporting":
+            return "reports";
+        case "untangle-node-ips":
+            return "intrusion-prevention";
+        case "untangle-node-adblocker":
+            return "ad-blocker";
         default:
             break;
         }
