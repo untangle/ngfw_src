@@ -1109,7 +1109,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 /**
                 * Licenses are only saved when changed - call license changed hook
                 */
-                _saveSettings(settings);
+                _saveSettings(this.settings);
             }
         }
 
