@@ -644,9 +644,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             changed |= _revokeLicense(revoke);
         }
 
-        if ( changed )
-            _saveSettings(settings);
-
         logger.info("REFRESH: Checking Revocations... done (modified: " + changed + ")");
 
         return changed;
@@ -778,9 +775,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             settings.setIsRestricted(restricted);
             changed = true;
         }
-
-        if ( changed ) 
-            _saveSettings(settings);
 
         logger.info("REFRESH: Downloading new Licenses... done (changed: " + changed + ")");
 
@@ -1062,6 +1056,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          */
         this.settings = newSettings;
 
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, 1 );
+
     }
     
     /**
@@ -1113,7 +1109,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 /**
                 * Licenses are only saved when changed - call license changed hook
                 */
-                UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, 1 );
+                _saveSettings(settings);
             }
         }
 

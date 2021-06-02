@@ -438,11 +438,7 @@ public class AppManagerImpl implements AppManager
         // remove visible apps that aren't in license for restricted licenses
         if (isRestricted) {
             logger.info("Restricted - removing visible apps that aren't in licenses");
-            Map<String, License> lmLicenses = new HashMap<>();
-            for(License lic : lm.getLicenses()) {
-                String licenseName = fixupName(lic.getCurrentName());
-                lmLicenses.put(licenseName, lic);
-            }
+            Map<String, License> lmLicenses = getLicenseManagerLicenses();
 
             for (Iterator<App> iter = list.listIterator(); iter.hasNext(); ) {
                 App app = iter.next();
@@ -823,8 +819,7 @@ public class AppManagerImpl implements AppManager
         Map<String, String> installableAppsMap = new HashMap<>();
         /* This stores a list of all licenses */
         Map<String, License> licenseMap = new HashMap<>();
-        /* This stores a list of apps according to the license from license server */
-        Map<String, License> lmLicenses = new HashMap<>();
+        Map<String, License> lmLicenses = getLicenseManagerLicenses();
 
         /**
          * Build the license map
@@ -834,13 +829,6 @@ public class AppManagerImpl implements AppManager
             String n = app.getAppProperties().getName();
             //exactMatch = false so we accept any license that starts with n
             licenseMap.put(n, lm.getLicense(n, false));
-        }
-
-        /**
-         * LicenseMap from licensemanager
-         */
-        for(License lic : lm.getLicenses()) {
-            lmLicenses.put(fixupName(lic.getCurrentName()), lic);
         }
 
         /**
@@ -1245,6 +1233,25 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
+     * Get map of licenses from license manager
+     * @return list of licenses
+     */
+    private Map<String, License> getLicenseManagerLicenses() {
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+        /* This stores a list of apps according to the license from license server */
+        Map<String, License> lmLicenses = new HashMap<>();
+
+        /**
+         * LicenseMap from licensemanager
+         */
+        for(License lic : lm.getLicenses()) {
+            lmLicenses.put(lic.getCurrentName(), lic);
+        }
+
+        return lmLicenses;
+    }
+
+    /**
      * Restart unloaded applications
      */
     private void restartUnloaded()
@@ -1515,19 +1522,14 @@ public class AppManagerImpl implements AppManager
      */
     public void syncWithLicenses() {
         AppManagerImpl nm = (AppManagerImpl) UvmContextFactory.context().appManager();
-        LicenseManager lm = UvmContextFactory.context().licenseManager();
-        Map<String, License> lmLicenses = new HashMap<>();
+        Map<String, License> lmLicenses = getLicenseManagerLicenses();
 
-        if (!lm.isRestricted()) {
+        if (!UvmContextFactory.context().licenseManager().isRestricted()) {
             logger.info("Not restricted");
             return;
         } 
 
         logger.info("Restricted");
-        for(License lic : lm.getLicenses()) {
-            String licenseName = fixupName(lic.getCurrentName());
-            lmLicenses.put(licenseName, lic);
-        }
 
         this.restrictedAllowedApps.clear();
         for (AppProperties appProps : nm.getAllAppProperties()) {
