@@ -71,8 +71,4 @@ public interface LicenseManager
      */
     public void requestTrialLicense( String appName ) throws Exception;
 
-    /**
-     * Get if devLicenseTest is set
-     */
-    public boolean isDevLicenseTest();
 }

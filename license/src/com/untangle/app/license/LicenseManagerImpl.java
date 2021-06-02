@@ -690,15 +690,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         return false;
     }
-
-    /**
-     * Return if NGFW_LICENSE_TEST was found
-     * @return true if NGFW_LICENSE_TEST was found
-     */
-    public boolean isDevLicenseTest() {
-        return this.devLicenseTest;
-    }
-
+    
     /**
      * This downloads a list of current licenese from the license server
      * Any new licenses are added. Duplicate licenses are updated if the new one grants better privleges
