@@ -167,14 +167,6 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     }
 
     /**
-     * Return if NGFW_LICENSE_TEST was found
-     * @return true if NGFW_LICENSE_TEST was found
-     */
-    public boolean isDevLicenseTest() {
-        return false;
-    }
-
-    /**
      * Check to see if an application is a GPL application
      * 
      * @param identifier

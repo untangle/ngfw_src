@@ -1872,7 +1872,6 @@ public class AppManagerImpl implements AppManager
         public void callback( Object... args )
         {
             boolean currentWizardComplete = UvmContextFactory.context().isWizardComplete();
-            //LicenseManager lm = UvmContextFactory.context().licenseManager();
             if(lastWizardComplete != currentWizardComplete && currentWizardComplete== true){
                 lastWizardComplete = currentWizardComplete;
                 if ( (! UvmContextFactory.context().isDevel()) && (! UvmContextFactory.context().isAts()) ) {
