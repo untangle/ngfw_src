@@ -690,7 +690,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         return false;
     }
-    
+
     /**
      * This downloads a list of current licenese from the license server
      * Any new licenses are added. Duplicate licenses are updated if the new one grants better privleges
@@ -1318,7 +1318,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          */
         public void callback(Object... args) {
             UvmContextFactory.context().appManager().syncWithLicenses(); 
-            if (isRestricted()) {
+            if (UvmContextFactory.context().licenseManager().isRestricted() && !UvmContextFactory.context().appManager().isAutoInstallAppsFlag()) {
                 UvmContextFactory.context().appManager().doAutoInstall();
             }
             UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
