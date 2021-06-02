@@ -419,6 +419,9 @@ public class AppManagerImpl implements AppManager
     {
         List<App> loadedApps = appInstances();
         List<App> list = new ArrayList<>(loadedApps.size());
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+
+        boolean isRestricted = lm.isRestricted();
 
         for (App app : getAppsForPolicy(policyId)) {
             if (!app.getAppProperties().getInvisible()) {
@@ -431,6 +434,24 @@ public class AppManagerImpl implements AppManager
                 list.add(app);
             }
         }
+
+        // remove visible apps that aren't in license for restricted licenses
+        if (isRestricted) {
+            logger.info("Restricted - removing visible apps that aren't in licenses");
+            Map<String, License> lmLicenses = new HashMap<>();
+            for(License lic : lm.getLicenses()) {
+                String licenseName = fixupName(lic.getCurrentName());
+                lmLicenses.put(licenseName, lic);
+            }
+
+            for (Iterator<App> iter = list.listIterator(); iter.hasNext(); ) {
+                App app = iter.next();
+                if(!lmLicenses.containsKey(app.getAppProperties().getName())) {
+                    iter.remove();
+                }
+            }
+        }
+
 
         return list;
     }
@@ -819,7 +840,7 @@ public class AppManagerImpl implements AppManager
          * LicenseMap from licensemanager
          */
         for(License lic : lm.getLicenses()) {
-            lmLicenses.put(lic.getCurrentName(), lic);
+            lmLicenses.put(fixupName(lic.getCurrentName()), lic);
         }
 
         /**
@@ -1073,18 +1094,6 @@ public class AppManagerImpl implements AppManager
                         long endTime = System.currentTimeMillis();
 
                         logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
-
-                        // uninstall restricted licenses
-                        if (UvmContextFactory.context().licenseManager().isRestricted()) {
-                            try {
-                                ((AppBase) app).getAppProperties().setInvisible(true);
-                                // save target state as hidden
-                            } catch (Exception e) {
-                                logger.error("Error uninstalling: " + name + " [" + id + "]: ", e);
-                            }
-
-                            logger.info("Uninstalled   : " + name + " [" + id + "]");
-                        }
                     }
                 }
             };
@@ -1502,14 +1511,6 @@ public class AppManagerImpl implements AppManager
 
         if (!lm.isRestricted()) {
             logger.info("Not restricted");
-
-            // unhide any apps that are hidden
-            for (App app : this.loadedAppsMap.values()) {
-                if (!_isHiddenApp(app.getAppProperties().getName())) {
-                    app.getAppProperties().setInvisible(false);
-                    // save target state also! 
-                }
-            }
             return;
         } 
 
@@ -1522,16 +1523,7 @@ public class AppManagerImpl implements AppManager
         this.restrictedAllowedApps.clear();
         for (AppProperties appProps : nm.getAllAppProperties()) {
             if (lmLicenses.containsKey(appProps.getName())) {
-                //check if already installed, set it as visible if need be
-                if (appInstances(appProps.getName()).size() >= 1) {
-                    logger.warn("App already installed: " + appProps.getName());
-                    List<App> appInstances = appInstances(appProps.getName());
-                    for (App app : appInstances) {
-                        app.getAppProperties().setInvisible(false);
-                    }
-                } else {
-                    this.restrictedAllowedApps.add(appProps);
-                }
+                this.restrictedAllowedApps.add(appProps);
             }
         }
 
