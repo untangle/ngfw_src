@@ -154,8 +154,13 @@ public class License implements Serializable
      */
     public String getCurrentName()
     {
-        //update all old names to the new names
-        switch (this.name)
+        // replace old names
+        String name = this.name;
+        if (name == null) return null;
+        name = name.replaceAll("untangle-node-", "").replaceAll("untangle-casing-", "");
+        if (name.contains("untangle-base")) name = name.replaceAll("untangle-base-", "") + "-base";
+
+        switch (name)
         {
         case "adconnector":
             return "directory-connector";
@@ -219,6 +224,8 @@ public class License implements Serializable
             return "ipsec-vpn";
         case "untangle-node-phish":
             return "phish-blocker";
+        case "phish":
+            return "phish-blocker";
         case "policy":
             return "policy-manager";
         case "untangle-node-policy":
@@ -269,9 +276,15 @@ public class License implements Serializable
             return "threat-prevention";
         case "untangle-node-reporting":
             return "reports";
+        case "reporting":
+            return "reports";
         case "untangle-node-ips":
             return "intrusion-prevention";
+        case "ips":
+            return "intrusion-prevention";
         case "untangle-node-adblocker":
+            return "ad-blocker";
+        case "adblocker":
             return "ad-blocker";
         case "untangle-node-firewall":
             return "firewall";
@@ -281,7 +294,7 @@ public class License implements Serializable
             break;
         }
 
-        return this.name;
+        return name;
     }
 
     /**
