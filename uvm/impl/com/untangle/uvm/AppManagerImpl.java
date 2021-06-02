@@ -1330,8 +1330,6 @@ public class AppManagerImpl implements AppManager
                             long endTime = System.currentTimeMillis();
                             logger.info("Restarted : " + name + " [" + appSettings.getId() + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
 
-                            // check if hidden, then set to invisible
-
                             // add to loaded apps
                             loadedAppsMap.put(appSettings.getId(), app);
 
@@ -1528,25 +1526,6 @@ public class AppManagerImpl implements AppManager
         }
 
         return;
-    }
-
-
-    /**
-     * Determine if app should remain hidden always
-     *
-     * @param identifier Application name
-     * @return true if should remain hidden, false otherwise
-     */
-    private boolean _isHiddenApp(String identifier) {
-        switch(identifier) {
-        case "shield": return true;
-        case "license": return true;
-        case "router": return true;
-        case "ftp": return true;
-        case "http": return true;
-        case "smtp": return true; 
-        default: return false;
-        }
     }
 
     /**
@@ -1882,6 +1861,7 @@ public class AppManagerImpl implements AppManager
         public void callback( Object... args )
         {
             boolean currentWizardComplete = UvmContextFactory.context().isWizardComplete();
+            //LicenseManager lm = UvmContextFactory.context().licenseManager();
             if(lastWizardComplete != currentWizardComplete && currentWizardComplete== true){
                 lastWizardComplete = currentWizardComplete;
                 if ( (! UvmContextFactory.context().isDevel()) && (! UvmContextFactory.context().isAts()) ) {
