@@ -225,7 +225,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final License getLicense(String identifier, boolean exactMatch)
     {
-        if (isGPLApp(identifier))
+        if (!isRestricted() && isGPLApp(identifier))
             return null;
 
         /**
@@ -301,7 +301,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final boolean isLicenseValid(String identifier)
     {
-        if (isGPLApp(identifier))
+        if (!isRestricted() && isGPLApp(identifier))
             return true;
 
         License lic = getLicense(identifier);
@@ -689,6 +689,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
 
         return false;
+    }
+
+    /**
+     * Return if NGFW_LICENSE_TEST was found
+     * @return true if NGFW_LICENSE_TEST was found
+     */
+    public boolean isDevLicenseTest() {
+        return this.devLicenseTest;
     }
 
     /**
@@ -1143,20 +1151,20 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private boolean isGPLApp(String identifier)
     {
         switch ( identifier ) {
-        case "untangle-node-ad-blocker": return !isRestricted();
-        case "ad-blocker": return !isRestricted();
+        case "untangle-node-ad-blocker": return true;
+        case "ad-blocker": return true;
         case "untangle-node-virus-blocker-lite": return true;
         case "virus-blocker-lite": return true;
         case "untangle-node-captive-portal": return true;
         case "captive-portal": return true;
         case "untangle-node-firewall": return true;
         case "firewall": return true;
-        case "untangle-node-intrusion-prevention": return !isRestricted();
-        case "intrusion-prevention": return !isRestricted();
+        case "untangle-node-intrusion-prevention": return true;
+        case "intrusion-prevention": return true;
         case "untangle-node-openvpn": return true;
         case "openvpn": return true;
-        case "untangle-node-phish-blocker": return !isRestricted();
-        case "phish-blocker": return !isRestricted();
+        case "untangle-node-phish-blocker": return true;
+        case "phish-blocker": return true;
         case "untangle-node-application-control-lite": return true;
         case "application-control-lite": return true;
         case "untangle-node-router": return true;

@@ -273,6 +273,10 @@ public class License implements Serializable
             return "intrusion-prevention";
         case "untangle-node-adblocker":
             return "ad-blocker";
+        case "untangle-node-firewall":
+            return "firewall";
+        case "untangle-node-openvpn":
+            return "openvpn";
         default:
             break;
         }

@@ -23,8 +23,7 @@ public class AppSettings implements Serializable, JSONString, Comparable<AppSett
         LOADED,
         INITIALIZED,
         RUNNING, 
-        DESTROYED,
-        HIDDEN
+        DESTROYED
     }
     
     public AppSettings() {}
