@@ -1182,6 +1182,17 @@ public class AppManagerImpl implements AppManager
             }
             if (appInstances(appProps.getName()).size() >= 1) {
                 logger.info("App already installed: " + appProps.getName());
+                // start app 
+                for (App app: appInstances(appProps.getName())) {
+                    if (app.getAppProperties().getAutoStart()) {
+                        try {
+                            app.start();
+                        } catch(Exception exn) {
+                            logger.warn("Could not deploy: " + appProps.getName(), exn);
+                            continue;
+                        }
+                    }
+                }
                 continue;
             }
             try {
