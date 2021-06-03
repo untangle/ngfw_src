@@ -49,7 +49,8 @@ public class WireGuardVpnApp extends AppBase
 
     private static final String STAT_PASS = "pass";
 
-    private static final String WIREGUARD_AUTO_NAT_RULE_DESCRIPTION = "AUTO: NAT WAN-bound wireguard vpn traffic";
+    private static final String WIREGUARD_AUTO_NAT_RULE_DESCRIPTION_DST = "AUTO: NAT WAN-bound wireguard vpn traffic";
+    private static final String WIREGUARD_AUTO_NAT_RULE_DESCRIPTION_SRC = "AUTO: nat wireguard vpn traffic to the server";
 
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
@@ -343,11 +344,11 @@ public class WireGuardVpnApp extends AppBase
                 }
             }
 
-            // 16.3.1 - add in destination nat rule by default
-            if (readSettings.getVersion() <= 2) {
-                createDstNatRule();
+            // 16.3.2 - add in nat rules by default
+            if (readSettings.getVersion() <= 3) {
+                createNatRules();
                 writeFlag = true;
-                readSettings.setVersion(3);
+                readSettings.setVersion(4);
             }
 
             if (writeFlag == true) {
@@ -368,7 +369,77 @@ public class WireGuardVpnApp extends AppBase
      */
     @Override
     protected void uninstall() {
+        removeAddedNatRules();
+    }
+
+    /**
+     * Called to initialize application settings
+     */
+    public void initializeSettings()
+    {
+        logger.info("Initializing Settings...");
+
+        createNatRules();
+
+        WireGuardVpnSettings settings = getDefaultSettings();
+
+        setSettings(settings);
+    }
+
+    /**
+     * called to add a destination NAT rule 
+     */
+    private void createNatRules() {
+        logger.info("Adding nat rules from wireguard");
+
+        // remove rules first
+        removeAddedNatRules();
+
+        // add nat rules to network settings
         List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
+
+        /* Destination nat rule */
+        List<NatRuleCondition> natRuleConditionsDst = new LinkedList<NatRuleCondition>();
+        NatRuleCondition natRuleConditionDst = new NatRuleCondition();
+        natRuleConditionDst.setConditionType(NatRuleCondition.ConditionType.DST_INTF);
+        natRuleConditionDst.setValue(String.valueOf(InterfaceSettings.WIREGUARD_INTERFACE_ID));
+        natRuleConditionsDst.add(natRuleConditionDst);
+
+        NatRule natRuleDst = new NatRule();
+        natRuleDst.setConditions(natRuleConditionsDst);
+        natRuleDst.setEnabled(true);
+        natRuleDst.setDescription(WIREGUARD_AUTO_NAT_RULE_DESCRIPTION_DST);
+        natRuleDst.setAuto(true);
+        natRuleDst.setNgfwAdded(true);
+        natRuleDst.setAddedBy(getAppProperties().getClassName());
+        natRules.add(natRuleDst);
+
+        /* Src Nat Rule */
+        List<NatRuleCondition> natRuleConditionsSrc = new LinkedList<NatRuleCondition>();
+        NatRuleCondition natRuleConditionSrc = new NatRuleCondition();
+        natRuleConditionSrc.setConditionType(NatRuleCondition.ConditionType.SRC_INTF);
+        natRuleConditionSrc.setValue(String.valueOf(InterfaceSettings.WIREGUARD_INTERFACE_ID));
+        natRuleConditionsSrc.add(natRuleConditionSrc);
+
+        NatRule natRuleSrc = new NatRule();
+        natRuleSrc.setConditions(natRuleConditionsSrc);
+        natRuleSrc.setEnabled(true);
+        natRuleSrc.setDescription(WIREGUARD_AUTO_NAT_RULE_DESCRIPTION_SRC);
+        natRuleSrc.setAuto(true);
+        natRuleSrc.setNgfwAdded(true);
+        natRuleSrc.setAddedBy(getAppProperties().getClassName());
+        natRules.add(natRuleSrc);
+
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        networkSettings.setNatRules(natRules);
+        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+    }
+
+    /**
+     * Remove wireguard added rules from network settings
+     */
+    private void removeAddedNatRules() {
+        List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();   
         List<NatRule> toRemove = null;
         for (NatRule rule : natRules) {
             if (rule.getNgfwAdded() && rule.getAddedBy().equals(getAppProperties().getClassName())) {
@@ -385,48 +456,6 @@ public class WireGuardVpnApp extends AppBase
             networkSettings.setNatRules(natRules);
             UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
         }
-    }
-
-    /**
-     * Called to initialize application settings
-     */
-    public void initializeSettings()
-    {
-        logger.info("Initializing Settings...");
-
-        createDstNatRule();
-
-        WireGuardVpnSettings settings = getDefaultSettings();
-
-        setSettings(settings);
-    }
-
-    /**
-     * called to add a destination NAT rule 
-     */
-    private void createDstNatRule() {
-        logger.info("Adding a destination nat rule from wireguard");
-        // add nat rules to network settings
-        List<NatRule> natRules = UvmContextFactory.context().networkManager().getNetworkSettings().getNatRules();
-        List<NatRuleCondition> natRuleConditions = new LinkedList<NatRuleCondition>();
-
-        NatRuleCondition natRuleCondition = new NatRuleCondition();
-        natRuleCondition.setConditionType(NatRuleCondition.ConditionType.DST_INTF);
-        natRuleCondition.setValue(String.valueOf(InterfaceSettings.WIREGUARD_INTERFACE_ID));
-        natRuleConditions.add(natRuleCondition);
-
-        NatRule natRule = new NatRule();
-        natRule.setConditions(natRuleConditions);
-        natRule.setEnabled(true);
-        natRule.setDescription(WIREGUARD_AUTO_NAT_RULE_DESCRIPTION);
-        natRule.setAuto(true);
-        natRule.setNgfwAdded(true);
-        natRule.setAddedBy(getAppProperties().getClassName());
-        natRules.add(natRule);
-
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        networkSettings.setNatRules(natRules);
-        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
     }
 
     /**
