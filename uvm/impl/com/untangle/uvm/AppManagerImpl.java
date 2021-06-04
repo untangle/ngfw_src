@@ -64,6 +64,7 @@ public class AppManagerImpl implements AppManager
     private ConcurrentHashMap<Long, AppProperties> appsBeingLoaded = new ConcurrentHashMap<>();
 
     private List<AppProperties> restrictedAllowedApps = new LinkedList<AppProperties>();
+    private boolean restrictedHasPolicyManager = true;
 
     private AppManagerSettings settings = null;
 
@@ -500,6 +501,10 @@ public class AppManagerImpl implements AppManager
     public App app(String name)
     {
         name = fixupName(name); // handle old names
+
+        if (name.equals("policy-manager") && !this.restrictedHasPolicyManager) {
+            return null;
+        }
 
         List<App> apps = appInstances(name);
         if (apps.size() > 0) {
@@ -1521,9 +1526,13 @@ public class AppManagerImpl implements AppManager
         logger.info("Restricted");
 
         this.restrictedAllowedApps.clear();
+        this.restrictedHasPolicyManager = false;
         for (AppProperties appProps : nm.getAllAppProperties()) {
             if (lmLicenses.containsKey(appProps.getName())) {
                 this.restrictedAllowedApps.add(appProps);
+                if (appProps.getName().equals("policy-manager")) {
+                    this.restrictedHasPolicyManager = true;
+                }
             }
         }
 
