@@ -1094,23 +1094,24 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
-            boolean downloadChanged = false;
-            boolean revocationsChanged = false;
             _readLicenses();
 
             if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
+                boolean downloadChanged = false;
+                boolean revocationsChanged = false;
                 downloadChanged = _downloadLicenses();
                 revocationsChanged = _checkRevocations();
+
+                if (downloadChanged || revocationsChanged) {
+                    /**
+                    * Licenses are only saved when changed - call license changed hook
+                    */
+                    _saveSettings(this.settings);
+                }
             }
                 
             _mapLicenses();
 
-            if (downloadChanged || revocationsChanged) {
-                /**
-                * Licenses are only saved when changed - call license changed hook
-                */
-                _saveSettings(this.settings);
-            }
         }
 
         logger.info("Reloading licenses... done" );
