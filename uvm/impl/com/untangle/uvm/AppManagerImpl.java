@@ -1520,6 +1520,7 @@ public class AppManagerImpl implements AppManager
 
         if (!UvmContextFactory.context().licenseManager().isRestricted()) {
             logger.info("Not restricted");
+            this.restrictedHasPolicyManager = true;
             return;
         } 
 
