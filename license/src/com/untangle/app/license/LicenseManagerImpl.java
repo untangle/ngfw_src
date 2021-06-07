@@ -750,7 +750,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
                 // clear licenses if restricted, we'll only use licenses used in response
                 if (restricted) {
-                    this.settings.getLicenses().clear();
+                    if (this.settings.getLicenses() != null) {
+                        this.settings.getLicenses().clear();
+                    }
                 }
             }
         } catch (JSONException e) {
