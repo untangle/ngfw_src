@@ -70,4 +70,5 @@ public interface LicenseManager
      * The server can deny the request in which case this will return with no exception
      */
     public void requestTrialLicense( String appName ) throws Exception;
+
 }

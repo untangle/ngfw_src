@@ -63,6 +63,9 @@ public class AppManagerImpl implements AppManager
      */
     private ConcurrentHashMap<Long, AppProperties> appsBeingLoaded = new ConcurrentHashMap<>();
 
+    private List<AppProperties> restrictedAllowedApps = new LinkedList<AppProperties>();
+    private boolean restrictedHasPolicyManager = true;
+
     private AppManagerSettings settings = null;
 
     private Semaphore startSemaphore = new Semaphore(0);
@@ -417,6 +420,9 @@ public class AppManagerImpl implements AppManager
     {
         List<App> loadedApps = appInstances();
         List<App> list = new ArrayList<>(loadedApps.size());
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+
+        boolean isRestricted = lm.isRestricted();
 
         for (App app : getAppsForPolicy(policyId)) {
             if (!app.getAppProperties().getInvisible()) {
@@ -429,6 +435,20 @@ public class AppManagerImpl implements AppManager
                 list.add(app);
             }
         }
+
+        // remove visible apps that aren't in license for restricted licenses
+        if (isRestricted) {
+            logger.info("Restricted - removing visible apps that aren't in licenses");
+            Map<String, License> lmLicenses = getLicenseManagerLicenses();
+
+            for (Iterator<App> iter = list.listIterator(); iter.hasNext(); ) {
+                App app = iter.next();
+                if(!lmLicenses.containsKey(app.getAppProperties().getName())) {
+                    iter.remove();
+                }
+            }
+        }
+
 
         return list;
     }
@@ -481,6 +501,10 @@ public class AppManagerImpl implements AppManager
     public App app(String name)
     {
         name = fixupName(name); // handle old names
+
+        if (name.equals("policy-manager") && !this.restrictedHasPolicyManager) {
+            return null;
+        }
 
         List<App> apps = appInstances(name);
         if (apps.size() > 0) {
@@ -800,8 +824,7 @@ public class AppManagerImpl implements AppManager
         Map<String, String> installableAppsMap = new HashMap<>();
         /* This stores a list of all licenses */
         Map<String, License> licenseMap = new HashMap<>();
-        /* This stores a list of apps according to the license from license server */
-        Map<String, License> lmLicenses = new HashMap<>();
+        Map<String, License> lmLicenses = getLicenseManagerLicenses();
 
         /**
          * Build the license map
@@ -811,13 +834,6 @@ public class AppManagerImpl implements AppManager
             String n = app.getAppProperties().getName();
             //exactMatch = false so we accept any license that starts with n
             licenseMap.put(n, lm.getLicense(n, false));
-        }
-
-        /**
-         * LicenseMap from licensemanager
-         */
-        for(License lic : lm.getLicenses()) {
-            lmLicenses.put(lic.getCurrentName(), lic);
         }
 
         /**
@@ -986,6 +1002,7 @@ public class AppManagerImpl implements AppManager
         lastWizardComplete = UvmContextFactory.context().isWizardComplete();
 
         UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
+
         if(isAutoInstallAppsFlag()){
             // We rebooted during auto install of apps, so continue installing.
             doAutoInstall();
@@ -1070,7 +1087,6 @@ public class AppManagerImpl implements AppManager
                         long endTime = System.currentTimeMillis();
 
                         logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
-
                     }
                 }
             };
@@ -1136,10 +1152,31 @@ public class AppManagerImpl implements AppManager
         float totalMemoryMb = ((float) ((double) totalMemory / 1024)) / (1024.0f);
         int totalTnterfaceCount = UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces().size();
 
-        for (AppProperties appProps : getAllAppProperties()) {
-            if (!appProps.getAutoInstall()) continue;
-            if(appProps.getAutoInstallMinMemory() > totalMemoryMb) continue;
-            if(appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) continue;
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+
+        List<AppProperties> appPropsToInstall = getAllAppProperties();
+
+        if (lm.isRestricted()) {
+            appPropsToInstall = this.restrictedAllowedApps;
+        }
+
+        for (AppProperties appProps : appPropsToInstall) {
+            if (!lm.isRestricted() && !appProps.getAutoInstall()) {
+                logger.info("App not able to be autoinstalled: " + appProps.getName());
+                continue;
+            }
+            if(appProps.getAutoInstallMinMemory() > totalMemoryMb) {
+                logger.info("Not enough memory to install app " + appProps.getName());
+                continue;
+            }
+            if(appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) {
+                logger.info("Not enough interfaces to install app: " + appProps.getName());
+                continue;
+            }
+            if (appInstances(appProps.getName()).size() >= 1) {
+                logger.info("App already installed: " + appProps.getName());
+                continue;
+            }
             try {
                 logger.info("Auto-installing new app: " + appProps.getName());
                 App app = instantiate(appProps.getName());
@@ -1187,6 +1224,25 @@ public class AppManagerImpl implements AppManager
             }
 
         }
+    }
+
+    /**
+     * Get map of licenses from license manager
+     * @return list of licenses
+     */
+    private Map<String, License> getLicenseManagerLicenses() {
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
+        /* This stores a list of apps according to the license from license server */
+        Map<String, License> lmLicenses = new HashMap<>();
+
+        /**
+         * LicenseMap from licensemanager
+         */
+        for(License lic : lm.getLicenses()) {
+            lmLicenses.put(lic.getCurrentName(), lic);
+        }
+
+        return lmLicenses;
     }
 
     /**
@@ -1453,6 +1509,35 @@ public class AppManagerImpl implements AppManager
         }
 
         return this.settings;
+    }
+
+    /**
+     * Sync licenses with apps if restricted
+     */
+    public void syncWithLicenses() {
+        AppManagerImpl nm = (AppManagerImpl) UvmContextFactory.context().appManager();
+        Map<String, License> lmLicenses = getLicenseManagerLicenses();
+
+        if (!UvmContextFactory.context().licenseManager().isRestricted()) {
+            logger.info("Not restricted");
+            this.restrictedHasPolicyManager = true;
+            return;
+        } 
+
+        logger.info("Restricted");
+
+        this.restrictedAllowedApps.clear();
+        this.restrictedHasPolicyManager = false;
+        for (AppProperties appProps : nm.getAllAppProperties()) {
+            if (lmLicenses.containsKey(appProps.getName())) {
+                this.restrictedAllowedApps.add(appProps);
+                if (appProps.getName().equals("policy-manager")) {
+                    this.restrictedHasPolicyManager = true;
+                }
+            }
+        }
+
+        return;
     }
 
     /**
