@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookManager;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.Pulse;
@@ -123,6 +124,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private boolean devLicenseTest = false;
 
+    // license change callback
+    private LicenseChangeHookCallback licenseChangeHookCallback = new LicenseChangeHookCallback();
+
     /**
      * Setup license manager application.
      * 
@@ -140,6 +144,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.info("Found NGFW_LICENSE_TEST environment variable - setting devLicenseTest = true");
             devLicenseTest = true;
         }
+
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.LICENSE_CHANGE, licenseChangeHookCallback);
 
         this._readLicenses();
         this._mapLicenses();
@@ -219,7 +225,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final License getLicense(String identifier, boolean exactMatch)
     {
-        if (isGPLApp(identifier))
+        if (!isRestricted() && isGPLApp(identifier))
             return null;
 
         /**
@@ -295,7 +301,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final boolean isLicenseValid(String identifier)
     {
-        if (isGPLApp(identifier))
+        if (!isRestricted() && isGPLApp(identifier))
             return true;
 
         License lic = getLicense(identifier);
@@ -408,6 +414,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         // if already have a valid license, just return
         if ( UvmContextFactory.context().licenseManager().isLicenseValid( appName ) ) {
             logger.warn("Already have a valid license for: " + appName);
+            return;
+        }
+
+        // if on restricted license, disallow starting trials
+        if (UvmContextFactory.context().licenseManager().isRestricted()) {
+            logger.warn("Restricted license, not creating trial for: " + appName);
             return;
         }
         
@@ -602,9 +614,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * This gets all the current revocations from the license server for this UID
      * and removes any licenses that have been revoked
+     *
+     * @return if this function changed settings
      */
     @SuppressWarnings("unchecked") //LinkedList<LicenseRevocation> <-> LinkedList
-    private synchronized void _checkRevocations()
+    private synchronized boolean _checkRevocations()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<LicenseRevocation> revocations;
@@ -620,22 +634,19 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             revocations = (LinkedList<LicenseRevocation>)o;
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
-            return;
+            return changed;
         } catch (ClassCastException e) {
             logger.error("getRevocations returned unexpected response",e);
-            return;
+            return changed;
         }
             
         for (LicenseRevocation revoke : revocations) {
             changed |= _revokeLicense(revoke);
         }
 
-        if ( changed )
-            _saveSettings(settings);
-
         logger.info("REFRESH: Checking Revocations... done (modified: " + changed + ")");
 
-        return;
+        return changed;
     }
 
     /** 
@@ -680,9 +691,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * This downloads a list of current licenese from the license server
      * Any new licenses are added. Duplicate licenses are updated if the new one grants better privleges
+     *
+     * @return if changed
      */
     @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
-    private synchronized void _downloadLicenses()
+    private synchronized boolean _downloadLicenses()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<License> licenses = new LinkedList<>();;
@@ -734,16 +747,23 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             if(parse.has("restricted")) {
                 boolean restrict = parse.getBoolean("restricted");
                 restricted = restrict;
+
+                // clear licenses if restricted, we'll only use licenses used in response
+                if (restricted) {
+                    if (this.settings.getLicenses() != null) {
+                        this.settings.getLicenses().clear();
+                    }
+                }
             }
         } catch (JSONException e) {
             logger.error("Unable to read license file: ", e );
-            return;
+            return changed;
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
-            return;
+            return changed;
         } catch (ClassCastException e) {
             logger.error("downloadLicenses returned unexpected response",e);
-            return;
+            return changed;
         }
         
         for (License lic : licenses) {
@@ -758,12 +778,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             changed = true;
         }
 
-        if ( changed ) 
-            _saveSettings(settings);
-
         logger.info("REFRESH: Downloading new Licenses... done (changed: " + changed + ")");
 
-        return;
+        return changed;
     }
 
     /**
@@ -1041,10 +1058,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          */
         this.settings = newSettings;
 
-        /**
-         * Licenses are only saved when changed - call license changed hook
-         */
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, 1 );
+
     }
     
     /**
@@ -1074,7 +1089,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     }
 
     /**
-     * syncs the license server state with local state
+     * Syncs the license server state with local state
      */
     private void _syncLicensesWithServer()
     {
@@ -1084,11 +1099,21 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             _readLicenses();
 
             if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
-                _downloadLicenses();
-                _checkRevocations();
+                boolean downloadChanged = false;
+                boolean revocationsChanged = false;
+                downloadChanged = _downloadLicenses();
+                revocationsChanged = _checkRevocations();
+
+                if (downloadChanged || revocationsChanged) {
+                    /**
+                    * Licenses are only saved when changed - call license changed hook
+                    */
+                    _saveSettings(this.settings);
+                }
             }
                 
             _mapLicenses();
+
         }
 
         logger.info("Reloading licenses... done" );
@@ -1105,7 +1130,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         public void run()
         {
             _syncLicensesWithServer();    
-            UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
         }
     }
     
@@ -1264,5 +1288,39 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             (model != null ? "&appliance-model=" + model : "") + 
             "&numDevices=" + numDevices +
             "&version=" + uvmVersion;
+    }
+
+    /**
+     * This hook is called when license settings change
+     */
+    private class LicenseChangeHookCallback implements HookCallback {
+
+        /**
+         * Constructor
+         */
+        LicenseChangeHookCallback(){}
+
+        /**
+         * Get the name of callback hook
+         *
+         * @return The name
+         */
+        public String getName() {
+            return "license-mananger-license-change-hook";
+        }
+
+        /**
+         * Callback function
+         *
+         * @param args
+         *        Callback arguments
+         */
+        public void callback(Object... args) {
+            UvmContextFactory.context().appManager().syncWithLicenses(); 
+            if (UvmContextFactory.context().licenseManager().isRestricted() && !UvmContextFactory.context().appManager().isAutoInstallAppsFlag()) {
+                UvmContextFactory.context().appManager().doAutoInstall();
+            }
+            UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
+        }
     }
 }
