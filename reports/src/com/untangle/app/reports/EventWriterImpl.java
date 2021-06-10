@@ -58,6 +58,13 @@ public class EventWriterImpl implements Runnable
     private static long DISK_FREE_MINIMUM = 5368709120L; // 1024*1024*1024*5
 
     /**
+     * When the Uvm useTempFileSystem() flag is active we use a calculated
+     * percentage free as the minimum before we stop writing events.
+     *
+     */
+    private static double TEMP_FREE_FRACTION = 0.10; // ten percent
+
+    /**
      * Maximum number of events to write per work cycle
      */
     private static int MAX_EVENTS_PER_CYCLE = 50000;
@@ -66,7 +73,9 @@ public class EventWriterImpl implements Runnable
 
     private volatile Thread thread;
 
-    private volatile File root;
+    private volatile File tempFS;
+
+    private volatile File rootFS;
 
     private ReportsApp app;
 
@@ -157,7 +166,8 @@ public class EventWriterImpl implements Runnable
     public void run()
     {
         thread = Thread.currentThread();
-        root = new File("/");
+        tempFS = new File("/dev/shm");
+        rootFS = new File("/");
 
         LinkedList<LogEvent> logQueue = new LinkedList<>();
         LogEvent event = null;
@@ -212,19 +222,30 @@ public class EventWriterImpl implements Runnable
                         this.overloadedFlag = false;
                     }
 
-                    long usableSpace = root.getUsableSpace();
+                    long calculatedMinimum;
+                    long usableSpace;
+
+                    // if tempfs is active we use a calculated free space minimum otherwise
+                    // we use a static free space minimum for a normal file system
+                    if (UvmContextFactory.context().useTempFileSystem()) {
+                        usableSpace = tempFS.getUsableSpace();
+                        calculatedMinimum = (long)((double)tempFS.getTotalSpace() * TEMP_FREE_FRACTION);
+                    } else {
+                        usableSpace = rootFS.getUsableSpace();
+                        calculatedMinimum = DISK_FREE_MINIMUM;
+                    }
 
                     /**
                      * Check disk space
                      */
-                    if (!this.diskFullFlag && usableSpace < DISK_FREE_MINIMUM) {
+                    if (!this.diskFullFlag && usableSpace < calculatedMinimum) {
                         logger.warn("STORAGE: Disk free space minimum exceeded.");
                         // have to log the event before setting the flag
                         CriticalAlertEvent alert = new CriticalAlertEvent("REPORTS", "Event processing suspended", "Free disk space = " + usableSpace);
                         UvmContextFactory.context().logEvent(alert);
                         this.diskFullFlag = true;
                     }
-                    if (this.diskFullFlag && usableSpace > DISK_FREE_MINIMUM) {
+                    if (this.diskFullFlag && usableSpace > calculatedMinimum) {
                         logger.warn("STORAGE: Disk free space recovered. Continuing normal operation.");
                         this.diskFullFlag = false;
                         // have to log the event after clearing the flag
