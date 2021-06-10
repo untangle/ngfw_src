@@ -464,6 +464,12 @@ public interface UvmContext
     boolean isDiskless();
 
     /**
+    * Returns true if we should move frequently written files to tempfs
+    * to reduce wear on storage media with limited write cycles.
+    */
+    boolean useTempFileSystem();
+
+    /**
      * Returns true if this server is installed on an official Untangle appliance
      *
      * @return a <code>boolean</code> value

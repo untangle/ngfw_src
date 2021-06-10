@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# This script is called from Uvm postInit when useTempFileSystem returns true.
+# It will move the reporting database and any other write-intensive files to a
+# tempfs partition to reduce wear on storage media with limited write cycles.
+
+
+TEMPFS_SETUP_FLAG="/dev/shm/tempfs_setup.flag"
+TEMPFS_LOG_FILE="/dev/shm/tempfs_setup.log"
+
+# Calling exec with no arguments changes the I/O redirections in
+# the current shell so we can capture output to a log file
+exec >> $TEMPFS_LOG_FILE
+exec 2>&1
+
+DB_DRIVER_FILE="@PREFIX@/usr/share/untangle/conf/database-driver"
+DB_DRIVER_NAME="postgresql"
+
+PG_VERSION="11"
+PG_LOCALE="en_US.UTF-8"
+PG_VAR_DIR="/var/lib/postgresql/${PG_VERSION}"
+PG_BIN_DIR="/usr/lib/postgresql/${PG_VERSION}/bin"
+PG_MAIN_DIR="/var/lib/postgresql/${PG_VERSION}/main"
+PG_SYS_DIR="/var/lib/postgresql"
+PG_TFS_DIR="/dev/shm/postgresql"
+
+SL_SYS_DIR="/var/lib/sqlite"
+SL_TFS_DIR="/dev/shm/sqlite"
+
+# if our flag file already exists we are finished
+if [ -f $TEMPFS_SETUP_FLAG ]; then
+  printf "tempfs already configured\n"
+  exit 0
+fi
+
+# get contents of database-driver file if configured
+if [ -f $DB_DRIVER_FILE ]; then
+  DB_DRIVER_NAME=`cat $DB_DRIVER_FILE`
+fi
+
+# make sure the database driver is valid
+if [ "$DB_DRIVER_NAME" != "postgresql" ] && [ "$DB_DRIVER_NAME" != "sqlite" ]; then
+  printf "ERROR: invalid database driver (%s) configured\n" $DB_DRIVER_NAME
+  exit 1
+fi
+
+# move the postgresql database to tempfs if configured
+# we have to create the database cluster so postgres can start 
+# this logic is based on untangle-postgresql-config.postinst 
+if [ "$DB_DRIVER_NAME" == "postgresql" ]; then
+  rm -r -f $PG_SYS_DIR
+  mkdir $PG_TFS_DIR
+  chown -R postgres:postgres $PG_TFS_DIR
+  ln -s $PG_TFS_DIR $PG_SYS_DIR
+  su -c "${PG_BIN_DIR}/initdb --encoding=utf8 --locale=${PG_LOCALE} -D ${PG_MAIN_DIR}" postgres
+fi
+
+# move the sqlite database to tempfs if configured
+# this is easier because sqlite will create the db when missing 
+if [ "$DB_DRIVER_NAME" == "sqlite" ]; then
+  rm -r -f $SL_SYS_DIR
+  mkdir $SL_TFS_DIR
+  ln -s $SL_TFS_DIR $SL_SYS_DIR
+fi
+
+# create our setup flag 
+/bin/date > $TEMPFS_SETUP_FLAG
+printf "tempfs setup completed\n"
+exit 0
