@@ -45,6 +45,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String SERIAL_NUMBER_REGEX = "[0-1][0-9][0-9][0-9][0-9A-Z][0W][0-9A-Z][0-9]{7}";
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String DISKLESS_MODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/diskless-mode-flag";
+    private static final String TEMPFS_MODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/tempfs-mode-flag";
+    private static final String TEMPFS_SETUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-tempfs-setup";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
     private static final String IS_REMOTE_SETUP_DISABLED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/setup-remote-disabled-flag";
     private static final String APPLIANCE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/appliance-flag";
@@ -979,7 +981,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         File keyFile = new File(DISKLESS_MODE_FLAG_FILE);
         return keyFile.exists();
     }
-    
+
+    /**
+     * useTempFileSystem - returns true if this is a system where we need special
+     * handling of frequently written files to reduce wear on limited write media
+     * @return bool
+     */
+    public boolean useTempFileSystem()
+    {
+        File keyFile = new File(TEMPFS_MODE_FLAG_FILE);
+        return keyFile.exists();
+    }
+
     /**
      * Returns true if this is a developer build in the development
      * environment
@@ -1480,6 +1493,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     protected void postInit()
     {
         writeStatusFile( "starting" );
+
+        // if the tempfs mode flag is set call the tempfs setup script
+        if (this.useTempFileSystem()) {
+            Integer exitValue = this.execManager().execResult(TEMPFS_SETUP_SCRIPT);
+            logger.info("TempFS setup result: " + exitValue);
+        }
 
         mailSender.postInit();
 
