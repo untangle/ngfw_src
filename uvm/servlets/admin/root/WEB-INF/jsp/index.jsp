@@ -44,7 +44,6 @@
         <link href="/ext6.2/fonts/roboto-condensed/css/fonts.css" rel="stylesheet" type="text/css" />
 
         <link href="styles/ung-all.css" rel="stylesheet" type="text/css" />
-        <link href="styles/custom.css" rel="stylesheet" type="text/css" />
 
         <%-- app loader style --%>
         <style type="text/css">
