@@ -6,6 +6,7 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.UvmContext;
@@ -177,9 +178,9 @@ public class ConfigManagerImpl implements ConfigManager
         String deviceName = context.networkManager().getNetworkSettings().getHostName() + "." + context.networkManager().getNetworkSettings().getDomainName();
 
         // TODO - need to figure out the source for the following:
-        // ModelName, Description, MacAddress, Temperature
+        // Description, MacAddress, Temperature
         TreeMap<String, Object> info = new TreeMap<>();
-        info.put("ModelName", "model name goes here");
+        info.put("ModelName", context.getApplianceModel());
         info.put("Description", "description goes here");
         info.put("DeviceName", deviceName);
         info.put("SerialNumber", context.getServerUID());
@@ -540,6 +541,7 @@ public class ConfigManagerImpl implements ConfigManager
             String deviceName = column[0].replace(':', ' ').trim();
 
             InterfaceSettings faceSettings = null;
+            InterfaceStatus faceStatus = null;
             DeviceStatus devStatus = null;
 
             // look for a configured interface with matching device name
@@ -563,6 +565,9 @@ public class ConfigManagerImpl implements ConfigManager
 
             // if no matching device status ignore the line
             if (devStatus == null) continue;
+
+            // get the interface status for the interface
+            faceStatus = context.networkManager().getInterfaceStatus(faceSettings.getInterfaceId());
 
             // create a new interface metrics object
             InterfaceMetrics metric = new InterfaceMetrics();
@@ -593,6 +598,18 @@ public class ConfigManagerImpl implements ConfigManager
             metric.setTxCollisions(Long.parseLong(column[14]));
             metric.setTxCarrier(Long.parseLong(column[15]));
             metric.setTxCompressed(Long.parseLong(column[16]));
+
+            if (faceStatus != null) {
+                metric.setV4Address(faceStatus.getV4Address());
+                metric.setV4Netmask(faceStatus.getV4Netmask());
+                metric.setV4Gateway(faceStatus.getV4Gateway());
+                metric.setV4Dns1(faceStatus.getV4Dns1());
+                metric.setV4Dns2(faceStatus.getV4Dns2());
+                metric.setV4PrefixLength(faceStatus.getV4PrefixLength());
+                metric.setV6Address(faceStatus.getV6Address());
+                metric.setV6PrefixLength(faceStatus.getV6PrefixLength());
+                metric.setV6Gateway(faceStatus.getV6Gateway());
+            }
 
             // append the metric to the list we return
             metricList.add(metric);
