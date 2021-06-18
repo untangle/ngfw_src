@@ -36,7 +36,7 @@ public class OemManagerImpl implements OemManager
         }
 
         if (readSettings != null) this.settings = readSettings;
-        else this.settings = new OemSettings("Untangle", "http://untangle.com");
+        else this.settings = new OemSettings("Untangle", "http://untangle.com", "https://www.untangle.com/legal", false);
 
         logger.info("OEM: " + this.settings.getOemName());
     }
@@ -61,5 +61,27 @@ public class OemManagerImpl implements OemManager
     public String getOemUrl()
     {
         return this.settings.getOemUrl();
+    }
+
+    /**
+     * Get the OEM license agreement url
+     *
+     * @return the license agreement url
+     */
+    @Override 
+    public String getOemLicenseAgreementUrl() 
+    {
+        return this.settings.getOemLicenseAgreementUrl();
+    }
+
+    /**
+     * Get if this is an OEM
+     * 
+     * @return if is oem
+     */
+    @Override
+    public Boolean getIsOem() 
+    {
+        return this.settings.getIsOem();
     }
 }
