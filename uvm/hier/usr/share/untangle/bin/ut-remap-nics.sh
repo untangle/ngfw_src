@@ -1,23 +1,42 @@
 #!/bin/bash
 #
-# Build new udev file for mapping.
+# Create new mapping files for interfaces
 #
-UDEV_PERSISTENT_NET_RULES_FILE='/etc/udev/rules.d/70-persistent-net.rules'
-UDEV_PERSISTENT_NET_RULES_RULE='SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="__MAC_ADDRESS__", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="eth*", NAME="__DEVICE_ID__"'
+SYSTEMD_NETWORK_PATH=/etc/systemd/network
+SYSTEMD_NETWORK_FILE_NAME_TEMPLATE="__DESTINATION_PATH__/10-__TO_DEVICE__.link"
+read -r -d '' SYSTEMD_NETWORK_TEMPLATE <<'EOT'
+[Match]
+MACAddress=__FROM_MAC_ADDRESS__
+
+[Link]
+NamePolicy=
+Name=__TO_DEVICE__
+
+EOT
 
 FROM_DEVICES=($1)
 TO_DEVICES=($2)
-DESTINATION_FILE=$3
+DESTINATION_PATH=$3
 
-if [[ -z $DESTINATION_FILE ]]; then
-    DESTINATION_FILE=$UDEV_PERSISTENT_NET_RULES_FILE
+if [[ -z $DESTINATION_PATH ]]; then
+    #
+    # Use default path
+    #
+    DESTINATION_PATH=$SYSTEMD_NETWORK_PATH
 fi
 
 if [ ${#FROM_DEVICES[@]} -ne ${#TO_DEVICES[@]} ]; then
+    #
+    # From/to counts don't match.
+    #
     echo "From and To device count do not match."
     exit 1
 fi
 
+#
+# Compare devices in each list looking for
+# any not in the other.
+#
 DIFF_DEVICES=()
 for from_device in "${FROM_DEVICES[@]}"; do
     skip=
@@ -33,41 +52,67 @@ for from_device in "${FROM_DEVICES[@]}"; do
 done
 
 if [[ ${#DIFF_DEVICES[@]} -ne 0 ]]; then
+    #
+    # There is at least one device from either list not in the other.
+    #
     echo "From and To devices do not contain matching devices"
     echo $DIFF_DEVICES
-    exit
+    exit 1
 fi
 
-OLDIDS=$IFS
-IFS=$'\n'
-
-declare -A FROM_MAC_MAP
-DEVICE=
-for line in $(ip addr); do
-    # echo "[$line]"
-    # if [[ "$line" =~ ^"[0-9]+: ([^:]):"  ]]; then
-    if [[ "$DEVICE" == "" && "$line" =~ ^[0-9]+:" "([^:]+): ]]; then
-        DEVICE=${BASH_REMATCH[1]}
-        # echo "DEVICE=$DEVICE"
-        if [[ $DEVICE == *.*  ]]; then
-            DEVICE=
-            continue
-        fi
-    elif [[ "$DEVICE" != "" && "$line" =~ ([0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}) ]]; then
-        # echo "MAC=${BASH_REMATCH[1]}"
-        FROM_MAC_MAP[$DEVICE]="${BASH_REMATCH[1]}"
-        DEVICE=
-    fi
-done
-IFS=$OLDIFS
-
-rm -f $DESTINATION_FILE
-touch $DESTINATION_FILE
+#
+# Walk list
+#
 for i in "${!TO_DEVICES[@]}"; do
-    to_device=${TO_DEVICES[i]}
     from_device=${FROM_DEVICES[i]}
-    new_rule=$UDEV_PERSISTENT_NET_RULES_RULE
-    new_rule="${new_rule/__MAC_ADDRESS__/${FROM_MAC_MAP[$from_device]}}"
-    new_rule="${new_rule/__DEVICE_ID__/$to_device}"
-    echo $new_rule >> $DESTINATION_FILE
+    to_device=${TO_DEVICES[i]}
+    to_system_network_file_name=$SYSTEMD_NETWORK_FILE_NAME_TEMPLATE
+
+    # Get from MAC address
+    from_mac_address=$(cat /sys/class/net/$from_device/address)
+
+    # Create file name
+    if [[ "$to_system_network_file_name" =~ "__DESTINATION_PATH__" ]]; then
+        to_system_network_file_name=${to_system_network_file_name//$BASH_REMATCH/$DESTINATION_PATH}
+    fi
+    if [[ "$to_system_network_file_name" =~ "__TO_DEVICE__" ]]; then
+        to_system_network_file_name=${to_system_network_file_name//$BASH_REMATCH/$to_device}
+    fi
+
+    #
+    # Build up map file from template
+    #
+    to_system_network=$SYSTEMD_NETWORK_TEMPLATE
+    if [[ "$to_system_network" =~ "__FROM_MAC_ADDRESS__" ]]; then
+        #
+        # Add From MAC address.
+        #
+        to_system_network=${to_system_network//$BASH_REMATCH/$from_mac_address}
+    fi
+    if [[ "$to_system_network" =~ "__TO_DEVICE__" ]]; then
+        #
+        # Specify To device name
+        #
+        to_system_network=${to_system_network//$BASH_REMATCH/$to_device}
+    fi
+
+    #
+    # Status
+    #
+    echo "map $from_mac_address to $to_device"
+
+    #
+    # Create file
+    #
+    echo -e "${to_system_network}" > ${to_system_network_file_name}
+
 done
+
+if [ "$DESTINATION_PATH" == "$SYSTEMD_NETWORK_PATH" ] ; then
+    #
+    # Installing under systemd, reload daemon
+    #
+    systemctl daemon-reload
+fi
+
+exit 0
