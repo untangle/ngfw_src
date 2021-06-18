@@ -20,7 +20,8 @@ Ext.define('Ung.Setup.License', {
     viewModel: {
         data: {
             eulaLoaded: false,
-            nextStep: null
+            nextStep: null,
+            remoteEulaSrc: rpc.oemLicenseUrl,
         }
     },
 
@@ -55,7 +56,7 @@ Ext.define('Ung.Setup.License', {
                 "word-wrap": 'break-word',
                 "text-align": "center"
             },
-            html: '<p>' + Ext.String.format('After installation, this license is available at {0}'.t(), '<a style="color: blue;" href="https://www.untangle.com/legal" target="_blank">https://www.untangle.com/legal</a>') + '</p>'
+            html: '<p>' + Ext.String.format('After installation, this license is available at {0}'.t(), '<a style="color: blue;" href="'+this.remoteEulaSrc+'" target="_blank">'+this.remoteEulaSrc+'</a>') + '</p>'
         },{
             xtype: 'container',
             margin: '8 0',
@@ -94,7 +95,6 @@ Ext.define('Ung.Setup.License', {
         },
 
         timer: null,
-        remoteEulaSrc: 'https://www.untangle.com/legal',
         localEulaSrc: '/setup/legal.html',
         remoteImage: 'https://www.untangle.com/favicon.ico',
         clearTimer: function(){

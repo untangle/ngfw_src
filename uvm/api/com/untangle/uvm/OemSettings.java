@@ -16,13 +16,17 @@ public class OemSettings implements Serializable, JSONString
 {
     private String oemName;
     private String oemUrl;
+    private String oemLicenseAgreementUrl;
+    private Boolean isOem;
 
     public OemSettings() { }
 
-    public OemSettings( String oemName, String oemUrl)
+    public OemSettings( String oemName, String oemUrl, String oemLicenseAgreementUrl, Boolean isOem)
     {
         this.oemName = oemName;
         this.oemUrl = oemUrl;
+        this.oemLicenseAgreementUrl = oemLicenseAgreementUrl;
+        this.isOem = isOem;
     }
 
     /**
@@ -36,6 +40,18 @@ public class OemSettings implements Serializable, JSONString
      */
     public String getOemUrl() { return oemUrl; }
     public void setOemUrl( String newValue ) { this.oemUrl = newValue; }
+
+    /**
+     * The OEM license agreement ie https://www.untangle.com/legal/ 
+     */
+    public String getOemLicenseAgreementUrl() { return oemLicenseAgreementUrl; }
+    public void setOemLicenseAgreementUrl( String newValue ) { this.oemLicenseAgreementUrl = newValue; }
+
+    /**
+     * If we're building an oem
+     */
+    public Boolean getIsOem() { return isOem; }
+    public void setIsOem( Boolean newValue ) { this.isOem = newValue; }
 
     public String toJSONString()
     {
