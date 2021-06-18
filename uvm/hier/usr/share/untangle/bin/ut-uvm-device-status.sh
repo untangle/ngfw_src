@@ -37,7 +37,7 @@ function getInterfaceStatus()
     else
         t_status=`ethtool ${t_intf} | grep -v Supported | egrep '(Speed|Duplex|Link detected)' | sed -e '{:start;N;s/\n/ /g;t start}'`
         if [ -n "${t_status}" ]; then
-        ## Check for link
+            ## Check for link
             if [ "${t_status/Link detected: yes}" != "${t_status}" ]; then
                 t_isConnected="${FLAG_CONNECTED}"
                 
@@ -55,7 +55,7 @@ function getInterfaceStatus()
                 t_isConnected="${FLAG_DISCONNECTED}"
             fi
         else
-        ##  Use mii-tool instead
+            ##  Use mii-tool instead
             local t_status=`mii-tool ${t_intf} 2> /dev/null`
             if [ "${t_status%link ok}" != "${t_status}" ]; then
                 t_isConnected="${FLAG_CONNECTED}"
@@ -63,7 +63,7 @@ function getInterfaceStatus()
                 t_isConnected="${FLAG_DISCONNECTED}"
             fi
             
-        ## This is kind of unreliable and depends on the order
+            ## This is kind of unreliable and depends on the order
             if [ "${t_status/1000}" != "${t_status}" ]; then
                 t_speed="${FLAG_SPEED_1000}"
             elif [ "${t_status/100}" != "${t_status}" ]; then
@@ -76,6 +76,17 @@ function getInterfaceStatus()
                 t_duplex="${FLAG_DUPLEX_FULL}"
             elif [ "${t_status/-HD}" != "${t_status}" ] || [ "${t_status/half duplex}" != "${t_status}" ]; then
                 t_duplex="${FLAG_DUPLEX_HALF}"
+            fi
+        fi
+
+        if [ "${t_isConnected}" = "${FLAG_DISCONNECTED}" ] ; then
+            # Try to access carrier directly
+            if [ -f /sys/class/net/${t_intf}/carrier ] ; then
+                if [ $(cat /sys/class/net/${t_intf}/carrier) = "1" ] ; then
+                    t_isConnected="${FLAG_CONNECTED}"
+                else
+                    t_isConnected="${FLAG_DISCONNECTED}"
+                fi
             fi
         fi
     fi
