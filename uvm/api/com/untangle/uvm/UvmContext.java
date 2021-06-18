@@ -482,6 +482,12 @@ public interface UvmContext
     String getApplianceModel();
 
     /**
+     * Indicator used to hide if CC options should be hidden from the UI
+     */
+    boolean isCCHidden();
+
+
+    /**
      * blocks until startup is complete
      */
     void waitForStartup();
