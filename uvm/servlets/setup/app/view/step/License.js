@@ -21,7 +21,7 @@ Ext.define('Ung.Setup.License', {
         data: {
             eulaLoaded: false,
             nextStep: null,
-            remoteEulaSrc: rpc.oemLicenseUrl,
+            remoteEulaSrc: '',
         }
     },
 
@@ -51,12 +51,13 @@ Ext.define('Ung.Setup.License', {
             },
         },{
             xtype: 'component',
+            itemId: 'licenseUrl',
             style: { 
                 "margin-top": '5px',
                 "word-wrap": 'break-word',
                 "text-align": "center"
             },
-            html: '<p>' + Ext.String.format('After installation, this license is available at {0}'.t(), '<a style="color: blue;" href="'+this.remoteEulaSrc+'" target="_blank">'+this.remoteEulaSrc+'</a>') + '</p>'
+            html: '<p>' + Ext.String.format('After installation, this license is available at {0}'.t(), '<a style="color: blue;" id="licenseUrl" href="https://www.untangle.com/legal" target="_blank">https://www.untangle.com/legal</a>') + '</p>'
         },{
             xtype: 'container',
             margin: '8 0',
@@ -104,7 +105,9 @@ Ext.define('Ung.Setup.License', {
             }
             var iframe = document.getElementById('eula-src');
             iframe.src = this.localEulaSrc;
-            iframe.src = this.remoteEulaSrc;
+            if (!rpc.oemUseLocalEula) {
+                iframe.src = this.remoteEulaSrc;
+            }
         },
 
         handleFail: function(){
@@ -113,14 +116,18 @@ Ext.define('Ung.Setup.License', {
             var iframe = document.getElementById('eula-src');
             iframe.src = this.ownerCmp.localEulaSrc;
         },
-
         afterRender: function( view ){
+            this.remoteEulaSrc = rpc.oemLicenseUrl;
             var me = this,
                 vm = this.getViewModel(),
                 iframe = document.getElementById('eula-src'),
+                hyperlink = document.getElementById('licenseUrl'),
                 iframeCmp = view.down('[itemId=eula]'),
                 timer = null,
                 img = new Image(0,0);
+
+            hyperlink.href = this.remoteEulaSrc;
+            hyperlink.innerText = this.remoteEulaSrc;
 
             iframeCmp.mask();
             img.ownerCmp = me;
