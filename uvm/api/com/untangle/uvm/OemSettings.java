@@ -18,15 +18,17 @@ public class OemSettings implements Serializable, JSONString
     private String oemUrl;
     private String oemLicenseAgreementUrl;
     private Boolean isOem;
+    private Boolean useLocalEula;
 
     public OemSettings() { }
 
-    public OemSettings( String oemName, String oemUrl, String oemLicenseAgreementUrl, Boolean isOem)
+    public OemSettings( String oemName, String oemUrl, String oemLicenseAgreementUrl, Boolean isOem, Boolean useLocalEula)
     {
         this.oemName = oemName;
         this.oemUrl = oemUrl;
         this.oemLicenseAgreementUrl = oemLicenseAgreementUrl;
         this.isOem = isOem;
+        this.useLocalEula = useLocalEula;
     }
 
     /**
@@ -52,6 +54,12 @@ public class OemSettings implements Serializable, JSONString
      */
     public Boolean getIsOem() { return isOem; }
     public void setIsOem( Boolean newValue ) { this.isOem = newValue; }
+
+    /**
+     If should use saved legal.html
+     */
+    public Boolean getUseLocalEula() { return useLocalEula; }
+    public void setUseLocalEula( Boolean newValue ) { this.useLocalEula = newValue; }
 
     public String toJSONString()
     {
