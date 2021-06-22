@@ -41,8 +41,10 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     openRegister: function () {
-        var regView = Ext.create('Ung.view.main.Registration', {});
-        regView.show();
+        if (!rpc.UvmContext.oemManager().getIsOem()) {
+            var regView = Ext.create('Ung.view.main.Registration', {});
+            regView.show();
+        }
     },
 
     openOffline: function () {
