@@ -3,7 +3,7 @@ Ext.define('Ung.Setup.AutoUpgrades', {
     alias: 'widget.AutoUpgrades',
 
     title: 'Auto Upgrades'.t(),
-    description: 'Automatic Upgrades and Command Center Access'.t(),
+    description: rpc.isOem ? "Automatic Upgrades".t() : 'Automatic Upgrades and Command Center Access'.t(),
 
     layout: {
         type: 'vbox',
@@ -34,7 +34,11 @@ Ext.define('Ung.Setup.AutoUpgrades', {
             margin: '0 0 0 20',
             html: Ext.String.format('Remain securely connected to the Command Center for cloud management, hot fixes, and support access.'.t(), rpc.oemName) + '<br/>' +
                 'This is the recommended choice for most sites.'.t()
-        }]
+        }],
+        hidden: false,
+        bind: {
+            hidden: '{isOem}'
+        }
     }],
 
     listeners: {
@@ -58,6 +62,12 @@ Ext.define('Ung.Setup.AutoUpgrades', {
                     autoUpgrade: result.autoUpgrade,
                     cloudEnabled: result.cloudEnabled
                 };
+
+                if (rpc.isOem) {
+                    vm.set('isOem', true);
+                    me.initialValues.cloudEnabled = false;
+                    me.getView().description = "Automatic Upgrades";
+                }
             });
         },
 
