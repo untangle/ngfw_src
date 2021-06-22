@@ -310,7 +310,7 @@ Ext.define('Ung.view.apps.AppsController', {
      */
     onInstallApp: function (view, record) {
         var me = this, vm = me.getViewModel();
-        if (!Rpc.directData('rpc.isRegistered')){
+        if (!Rpc.directData('rpc.isRegistered') && !Rpc.directData('rpc.isCCHidden')){
             Ext.fireEvent('openregister');
             return;
         }

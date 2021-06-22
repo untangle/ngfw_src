@@ -3,7 +3,7 @@ Ext.define('Ung.Setup.AutoUpgrades', {
     alias: 'widget.AutoUpgrades',
 
     title: 'Auto Upgrades'.t(),
-    description: rpc.isOem ? "Automatic Upgrades".t() : 'Automatic Upgrades and Command Center Access'.t(),
+    description: rpc.isCCHidden ? "Automatic Upgrades".t() : 'Automatic Upgrades and Command Center Access'.t(),
 
     layout: {
         type: 'vbox',
@@ -37,7 +37,7 @@ Ext.define('Ung.Setup.AutoUpgrades', {
         }],
         hidden: false,
         bind: {
-            hidden: '{isOem}'
+            hidden: '{isCCHidden}'
         }
     }],
 
@@ -63,8 +63,8 @@ Ext.define('Ung.Setup.AutoUpgrades', {
                     cloudEnabled: result.cloudEnabled
                 };
 
-                if (rpc.isOem) {
-                    vm.set('isOem', true);
+                if (rpc.isCCHidden) {
+                    vm.set('isCCHidden', true);
                     me.initialValues.cloudEnabled = false;
                     me.getView().description = "Automatic Upgrades";
                 }

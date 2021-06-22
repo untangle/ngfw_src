@@ -75,17 +75,6 @@ public class OemManagerImpl implements OemManager
     }
 
     /**
-     * Get if this is an OEM
-     * 
-     * @return if is oem
-     */
-    @Override
-    public Boolean getIsOem() 
-    {
-        return this.settings.getIsOem();
-    }
-
-    /**
      * Get if local eula should be used
      * 
      * @return if local eula should be used
