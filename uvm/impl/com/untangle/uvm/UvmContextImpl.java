@@ -68,7 +68,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
     private static final String DEFAULT_HELP_URL = "http://wiki.untangle.com/get.php";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
-    private static final String DEFAULT_LEGAL_URL = "http://www.untangle.com/legal";
 
     private static final Object startupWaitLock = new Object();
 
@@ -1166,8 +1165,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public String getLegalUrl()
     {
         String url = System.getProperty(PROPERTY_LEGAL_URL);
-        if (url == null)
-            url = DEFAULT_LEGAL_URL;
+        if (url == null) {
+            url = UvmContextFactory.context().oemManager().getLicenseAgreementUrl();
+        }
         return url;
     }
 

@@ -51,7 +51,6 @@ Ext.define('Ung.Setup.License', {
             },
         },{
             xtype: 'component',
-            itemId: 'licenseUrl',
             style: { 
                 "margin-top": '5px',
                 "word-wrap": 'break-word',
@@ -105,7 +104,7 @@ Ext.define('Ung.Setup.License', {
             }
             var iframe = document.getElementById('eula-src');
             iframe.src = this.localEulaSrc;
-            if (!rpc.oemUseLocalEula) {
+            if (!rpc.useLocalEula) {
                 iframe.src = this.remoteEulaSrc;
             }
         },
@@ -117,7 +116,7 @@ Ext.define('Ung.Setup.License', {
             iframe.src = this.ownerCmp.localEulaSrc;
         },
         afterRender: function( view ){
-            this.remoteEulaSrc = rpc.oemLicenseUrl;
+            this.remoteEulaSrc = rpc.licenseAgreementUrl;
             var me = this,
                 vm = this.getViewModel(),
                 iframe = document.getElementById('eula-src'),

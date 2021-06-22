@@ -16,9 +16,9 @@ public interface OemManager
     public String getOemUrl();
 
     /**
-     * Return the OEM license agreement
+     * Return the license agreement
      */
-    public String getOemLicenseAgreementUrl();
+    public String getLicenseAgreementUrl();
 
     /**
      * Return if should use local license agreement
