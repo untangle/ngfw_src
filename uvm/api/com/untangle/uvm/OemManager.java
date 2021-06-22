@@ -21,11 +21,6 @@ public interface OemManager
     public String getOemLicenseAgreementUrl();
 
     /**
-     * Return if is oem
-     */
-    public Boolean getIsOem();
-
-    /**
      * Return if should use local license agreement
      */
     public Boolean getUseLocalEula();

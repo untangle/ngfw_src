@@ -50,12 +50,6 @@ public class OemSettings implements Serializable, JSONString
     public void setOemLicenseAgreementUrl( String newValue ) { this.oemLicenseAgreementUrl = newValue; }
 
     /**
-     * If we're building an oem
-     */
-    public Boolean getIsOem() { return isOem; }
-    public void setIsOem( Boolean newValue ) { this.isOem = newValue; }
-
-    /**
      If should use saved legal.html
      */
     public Boolean getUseLocalEula() { return useLocalEula; }
