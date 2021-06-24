@@ -816,7 +816,9 @@ can look deeper. - mahotz
         newSettings.setAutoUpgradeMinute((new java.util.Random()).nextInt(60));
         newSettings.setAutoUpgradeDays(DayOfWeekMatcher.getAnyMatcher());
 
-        return newSettings;
+        // pass the settings to the OEM override function and return the override settings
+        SystemSettings overrideSettings = (SystemSettings)UvmContextFactory.context().oemManager().applyOemOverrides(newSettings);
+        return overrideSettings;
     }
 
     /**

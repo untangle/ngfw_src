@@ -16,6 +16,11 @@ public interface OemManager
     public String getOemUrl();
 
     /**
+     * Called to apply OEM overrides to default settings
+     */
+    public Object applyOemOverrides(Object argSettings);
+
+    /**
      * Return the license agreement
      */
     public String getLicenseAgreementUrl();
@@ -24,5 +29,4 @@ public interface OemManager
      * Return if should use local license agreement
      */
     public Boolean getUseLocalEula();
-    
 }
