@@ -476,7 +476,9 @@ public class EventManagerImpl implements EventManager
         settings.setSyslogRules( defaultSyslogRules() );
         settings.setTriggerRules( defaultTriggerRules() );
 
-        return settings;
+        // pass the settings to the OEM override function and return the override settings
+        EventSettings overrideSettings = (EventSettings)UvmContextFactory.context().oemManager().applyOemOverrides(settings);
+        return overrideSettings;
     }
 
     /**

@@ -1183,8 +1183,10 @@ public class NetworkManagerImpl implements NetworkManager
         catch (Exception e) {
             logger.error("Error creating Network Settings",e);
         }
-        
-        return newSettings;
+
+        // pass the settings to the OEM override function and return the override settings
+        NetworkSettings overrideSettings = (NetworkSettings)UvmContextFactory.context().oemManager().applyOemOverrides(newSettings);
+        return overrideSettings;
     }
 
     /**

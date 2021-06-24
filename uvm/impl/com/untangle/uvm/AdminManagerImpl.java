@@ -61,7 +61,10 @@ public class AdminManagerImpl implements AdminManager
             AdminSettings newSettings = new AdminSettings();
             newSettings.setVersion(3L); /* version 3 as of v16.0 */
             newSettings.addUser(new AdminUserSettings(INITIAL_USER_LOGIN, INITIAL_USER_PASSWORD, INITIAL_USER_DESCRIPTION, ""));
-            this.setSettings(newSettings);
+
+            // pass the settings to the OEM override function and use the override settings
+            AdminSettings overrideSettings = (AdminSettings)UvmContextFactory.context().oemManager().applyOemOverrides(newSettings);
+            this.setSettings(overrideSettings);
         }
         else {
             logger.debug("Loading Settings...");
