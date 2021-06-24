@@ -49,6 +49,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String TEMPFS_SETUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-tempfs-setup";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
     private static final String IS_REMOTE_SETUP_DISABLED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/setup-remote-disabled-flag";
+    private static final String HIDE_CC_FLAG = System.getProperty("uvm.conf.dir") + "/hide-cc-flag";
     private static final String APPLIANCE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/appliance-flag";
     private static final String APPLIANCE_MODEL_FILE = System.getProperty("uvm.conf.dir") + "/appliance-model";
     private static final String APPLIANCE_VIRTUAL_DETECT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-virtual-detect.py";
@@ -67,7 +68,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
     private static final String DEFAULT_HELP_URL = "http://wiki.untangle.com/get.php";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
-    private static final String DEFAULT_LEGAL_URL = "http://www.untangle.com/legal";
 
     private static final Object startupWaitLock = new Object();
 
@@ -972,6 +972,17 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return UvmContextImpl.applianceModel;
     }
 
+
+    /**
+     * isCCHidden - returns true if the CC hidden flag file exists
+     * @return boolean - True if we should hide CC elements, false otherwise
+     */
+    public boolean isCCHidden()
+    {
+        File flag = new File(HIDE_CC_FLAG);
+        return flag.exists();
+    }
+
     /**
      * isDiskless - returns true if this is a diskless system
      * @return bool
@@ -1154,8 +1165,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public String getLegalUrl()
     {
         String url = System.getProperty(PROPERTY_LEGAL_URL);
-        if (url == null)
-            url = DEFAULT_LEGAL_URL;
+        if (url == null) {
+            url = UvmContextFactory.context().oemManager().getLicenseAgreementUrl();
+        }
         return url;
     }
 
