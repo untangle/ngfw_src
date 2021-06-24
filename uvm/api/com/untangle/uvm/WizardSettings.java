@@ -24,6 +24,7 @@ public class WizardSettings implements Serializable, JSONString
     private boolean passwordRequired = false;
     private String completedStep;
     private String[] steps = null;
+    private String remoteEulaSrc = "https://www.untangle.com/legal";
 
     public WizardSettings() { }
 
@@ -44,5 +45,8 @@ public class WizardSettings implements Serializable, JSONString
     
     public String getCompletedStep() { return this.completedStep; }
     public void setCompletedStep( String newValue ) { this.completedStep = newValue; }
+
+    public String getRemoteEulaSrc() { return this.remoteEulaSrc; }
+    public void setRemoteEulaSrc( String newValue ) { this.remoteEulaSrc = newValue; }
 
 }

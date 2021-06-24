@@ -42,7 +42,7 @@ public class OemManagerImpl implements OemManager
         }
 
         if (readSettings != null) this.settings = readSettings;
-        else this.settings = new OemSettings("Untangle", "http://untangle.com");
+        else this.settings = new OemSettings("Untangle", "http://untangle.com", "https://www.untangle.com/legal", false);
 
         logger.info("OEM: " + this.settings.getOemName());
     }
@@ -117,5 +117,27 @@ public class OemManagerImpl implements OemManager
 
         // return the updated settings to the caller
         return (overrideSettings);
+    }
+
+    /**
+     * Get the license agreement url
+     *
+     * @return the license agreement url
+     */
+    @Override 
+    public String getLicenseAgreementUrl() 
+    {
+        return this.settings.getLicenseAgreementUrl();
+    }
+
+    /**
+     * Get if local eula should be used
+     * 
+     * @return if local eula should be used
+     */
+    @Override
+    public Boolean getUseLocalEula() 
+    {
+        return this.settings.getUseLocalEula();    
     }
 }

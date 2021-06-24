@@ -16,13 +16,17 @@ public class OemSettings implements Serializable, JSONString
 {
     private String oemName;
     private String oemUrl;
+    private String licenseAgreementUrl = "http://www.untangle.com/legal";
+    private Boolean useLocalEula = false;
 
     public OemSettings() { }
 
-    public OemSettings( String oemName, String oemUrl)
+    public OemSettings( String oemName, String oemUrl, String licenseAgreementUrl, Boolean useLocalEula)
     {
         this.oemName = oemName;
         this.oemUrl = oemUrl;
+        this.licenseAgreementUrl = licenseAgreementUrl;
+        this.useLocalEula = useLocalEula;
     }
 
     /**
@@ -36,6 +40,18 @@ public class OemSettings implements Serializable, JSONString
      */
     public String getOemUrl() { return oemUrl; }
     public void setOemUrl( String newValue ) { this.oemUrl = newValue; }
+
+    /**
+     * The license agreement ie https://www.untangle.com/legal/ 
+     */
+    public String getLicenseAgreementUrl() { return licenseAgreementUrl; }
+    public void setLicenseAgreementUrl( String newValue ) { this.licenseAgreementUrl = newValue; }
+
+    /**
+     If should use saved legal.html
+     */
+    public Boolean getUseLocalEula() { return useLocalEula; }
+    public void setUseLocalEula( Boolean newValue ) { this.useLocalEula = newValue; }
 
     public String toJSONString()
     {
