@@ -20,7 +20,10 @@ Ext.define('Ung.config.system.view.Support', {
         items: [{
             xtype: 'checkbox',
             boxLabel: 'Connect to Command Center'.t(),
-            bind: '{systemSettings.cloudEnabled}'
+            bind: {
+                 value: '{systemSettings.cloudEnabled}',
+                 hidden: '{isCCHidden}'
+            }
         }, {
             xtype: 'checkbox',
             disabled: true,
