@@ -32,7 +32,7 @@ public interface ConfigManager
 
     Object setAdminCredentials(String argUsername, String argPassword);
 
-    List<InterfaceSettings> getNetworkInterfaces();
+    Object getNetworkInterfaces();
     Object setNetworkInterfaces(List<InterfaceSettings> faceList);
 
     Object getSyslogServer();
