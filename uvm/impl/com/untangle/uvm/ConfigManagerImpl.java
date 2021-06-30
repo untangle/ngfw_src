@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
 
 /**
@@ -50,11 +51,18 @@ public class ConfigManagerImpl implements ConfigManager
     // this is managed by our getDatabaseConnection member
     private volatile Connection sharedConnection = null;
 
+    // the is the JSON serializer we use when returning settings objects
+    private JSONSerializer serializer;
+
     /**
      * Constructor
+     *
+     * @param serializer
+     *        - The serializer we should use when returning settings objects
      */
-    public ConfigManagerImpl()
+    public ConfigManagerImpl(JSONSerializer serializer)
     {
+        this.serializer = serializer;
     }
 
     /**
@@ -176,9 +184,10 @@ public class ConfigManagerImpl implements ConfigManager
         }
 
         String deviceName = context.networkManager().getNetworkSettings().getHostName() + "." + context.networkManager().getNetworkSettings().getDomainName();
+        String macAddress = getSystemMacAddress();
 
         // TODO - need to figure out the source for the following:
-        // Description, MacAddress, Temperature
+        // Description and Temperature
         TreeMap<String, Object> info = new TreeMap<>();
         info.put("ModelName", context.getApplianceModel());
         info.put("Description", "description goes here");
@@ -186,7 +195,7 @@ public class ConfigManagerImpl implements ConfigManager
         info.put("SerialNumber", context.getServerUID());
         info.put("FirmwareVersion", context.version());
         info.put("SystemUpTime", upTime);
-        info.put("MacAddress", "which mac address?");
+        info.put("MacAddress", macAddress);
         info.put("MemoryTotal", memTotal);
         info.put("MemoryFree", memFree);
         info.put("DiskTotal", diskTotal);
@@ -368,7 +377,8 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             setTime = formatter.parse(argTime);
         } catch (Exception exn) {
-            return createResponse(1, exn.getMessage());
+            logger.warn("Exception parsing argTime: " + argTime, exn);
+            return createResponse(1, exn.toString());
         }
 
         // find the TimeZone from the passed zone ID
@@ -410,15 +420,35 @@ public class ConfigManagerImpl implements ConfigManager
     }
 
     /**
-     * Called to the the list of network interfaces
+     * Called to get the the list of network interfaces. We use the serializer
+     * passed to our constructor which is the same one used by the settings
+     * manager. Otherwise the JSON-RPC handler can generate fixups which makes
+     * it more difficult to parse and process the list of interfaces.
      *
-     * @return A Java List of InterfaceSettings objects representing all network
-     *         interfaces on the device.
+     * @return A JSON object containing the list of InterfaceSettings objects
+     *         representing all network interfaces on the device.
      */
-    public List<InterfaceSettings> getNetworkInterfaces()
+    public Object getNetworkInterfaces()
     {
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
-        return netSettings.getInterfaces();
+        JSONObject response = null;
+        String output = null;
+
+        try {
+            output = serializer.toJSON(netSettings.getInterfaces());
+        } catch (Exception exn) {
+            logger.error("Exception serializing interfaces", exn);
+            return createResponse(1, exn.toString());
+        }
+
+        try {
+            response = new JSONObject(output);
+        } catch (Exception exn) {
+            logger.error("Exception creating JSON", exn);
+            return createResponse(2, exn.toString());
+        }
+
+        return response;
     }
 
     /**
@@ -508,7 +538,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             reader = new BufferedReader(new FileReader(new File("/proc/net/dev")));
         } catch (Exception exn) {
-            logger.warn("Exception reading network interface details", exn);
+            logger.warn("Exception opening /proc/net/dev", exn);
             return metricList;
         }
 
@@ -516,7 +546,7 @@ public class ConfigManagerImpl implements ConfigManager
             try {
                 readLine = reader.readLine();
             } catch (Exception exn) {
-                logger.warn("Exception reading device file:", exn);
+                logger.warn("Exception reading /proc/net/dev", exn);
                 readLine = null;
             }
 
@@ -618,7 +648,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             reader.close();
         } catch (Exception exn) {
-            logger.warn("Exception closing device file: ", exn);
+            logger.warn("Exception closing /proc/net/dev", exn);
         }
 
         return metricList;
@@ -667,7 +697,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             fileName = backupFile.getCanonicalPath();
         } catch (Exception exn) {
-            return createResponse(1, exn.getMessage());
+            return createResponse(1, exn.toString());
         }
 
         TreeMap<String, Object> info = new TreeMap<>();
@@ -698,7 +728,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             resultMessage = context.backupManager().restoreBackup(file, maintainRegex);
         } catch (Exception exn) {
-            return createResponse(1, exn.getMessage());
+            return createResponse(1, exn.toString());
         }
 
         // null return messages indicates an error
@@ -895,6 +925,47 @@ public class ConfigManagerImpl implements ConfigManager
         }
 
         return sharedConnection;
+    }
+
+    /**
+     * Gets the MAC address of the first WAN interface
+     *
+     * @return The MAC address
+     */
+    private String getSystemMacAddress()
+    {
+        NetworkSettings netSettings = context.networkManager().getNetworkSettings();
+        String macAddress = "00:00:00:00:00:00";
+        InterfaceSettings faceSettings = null;
+        DeviceStatus devStatus = null;
+        String deviceName = null;
+
+        // look for the first WAN interface
+        for (InterfaceSettings item : netSettings.getInterfaces()) {
+            if (item.getIsWan()) {
+                faceSettings = item;
+                deviceName = item.getSystemDev();
+                break;
+            }
+        }
+
+        // if no WAN interface found just return the default
+        if (faceSettings == null) return macAddress;
+
+        // look for device status with matching device name
+        for (DeviceStatus item : context.networkManager().getDeviceStatus()) {
+            if (deviceName.contentEquals(item.getDeviceName())) {
+                devStatus = item;
+                break;
+            }
+        }
+
+        // if we found the matching device status record grab the MAC address
+        if (devStatus != null) {
+            macAddress = devStatus.getMacAddress();
+        }
+
+        return macAddress;
     }
 
     /**
