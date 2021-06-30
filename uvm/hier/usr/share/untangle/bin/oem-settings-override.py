@@ -64,6 +64,9 @@ import os
 # This sets the logging level
 logging_level = logging.DEBUG
 
+# Can be set by passing debug as the fifth argument to the script
+debug_flag = False
+
 # These globals hold the JSON for the config settings to be changed and the
 # list of modifications to be applied.
 config_json = None
@@ -266,11 +269,17 @@ def update_worker(key, value):
 # set the logging configuration
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S', level=logging_level, filename='/tmp/oem-settings-override.log')
 
-# check the number of arguments
-if len(sys.argv) < 4:
+# check for the minimum number of arguments which is five since
+# the script name is zero and we need the next four
+if len(sys.argv) < 5:
 	print("  ERROR: This script requires four arguments")
 	print("  USAGE: %s input_settings_file.js override_file.js SettingsClass output_settings_file.js" % sys.argv[0])
 	exit(1)
+
+# look for the debug argument and set the flag if found
+if len(sys.argv) > 5:
+	if sys.argv[5].lower() == "debug":
+		debug_flag = True
 
 # get a timestamp we can use for the start/end log messages
 jobtime = time.time()
@@ -303,11 +312,21 @@ except:
 	print("Unable to read input file: %s" % sys.argv[1])
 	exit(4)
 
+# If the debug_flag is set create /tmp/oem_pristine.js before applying
+# the overrides. This is useful for comparing the original and modified
+# settings to see the changes actually made, since Python and Java don't
+# write the JSON in the same order which makes using diff challenging.
+if debug_flag:
+	target_file = open("/tmp/oem_pristine.js", "w")
+	json.dump(config_json,target_file,indent=4)
+	target_file.close()
+
 logging.info("========== SETTINGS OVERRIDE %d STARTING ==========", jobtime)
 logging.info("= INPUT: %s", sys.argv[1])
 logging.info("= OUTPUT: %s", sys.argv[4])
 logging.info("= OVERRIDE: %s", sys.argv[2])
 logging.info("= CLASS: %s", sys.argv[3])
+logging.info("= DEBUG: %s", debug_flag)
 
 # process the settings
 config_scanner(config_json)

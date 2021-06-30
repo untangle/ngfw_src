@@ -22,7 +22,6 @@ public class OemManagerImpl implements OemManager
 
     private static final String SETTINGS_OVERRIDE_SCRIPT = System.getProperty("uvm.bin.dir") + "/oem-settings-override.py";
     private static final String SETTINGS_OVERRIDE_FILE = System.getProperty("uvm.conf.dir") + "/oem-settings-override.js";
-    private static final String OVERRIDE_TEMPORARY_FILE = "/tmp/oem-temporary-settings.js";
 
     private OemSettings settings;
 
@@ -82,6 +81,8 @@ public class OemManagerImpl implements OemManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         ExecManager execManager = UvmContextFactory.context().execManager();
+        String originalFile = "/tmp/oem-original-" + argSettings.getClass().getSimpleName() + ".js";
+        String modifiedFile = "/tmp/oem-modified-" + argSettings.getClass().getSimpleName() + ".js";
 
         // if the override file does not exist just return the settings unchanged
         File checker = new File(SETTINGS_OVERRIDE_FILE);
@@ -91,25 +92,26 @@ public class OemManagerImpl implements OemManager
 
         logger.info("Applying OEM overrides for " + argSettings.getClass().getSimpleName());
 
-        // save the passed settings to a temporary file
+        // save the passed settings to the original temporary file
         try {
-            settingsManager.save(OVERRIDE_TEMPORARY_FILE, argSettings, false);
+            settingsManager.save(originalFile, argSettings, false);
         } catch (Exception exn) {
             logger.warn("Exception saving settings", exn);
             return argSettings;
         }
 
-        // call the override script to process the overrides
-        int result = execManager.execResult(SETTINGS_OVERRIDE_SCRIPT + " " + OVERRIDE_TEMPORARY_FILE + " " + SETTINGS_OVERRIDE_FILE + " " + argSettings.getClass().getSimpleName() + " " + OVERRIDE_TEMPORARY_FILE);
+        // call the override script to apply the overrides to the original
+        // file and write the new settings to the modified file
+        int result = execManager.execResult(SETTINGS_OVERRIDE_SCRIPT + " " + originalFile + " " + SETTINGS_OVERRIDE_FILE + " " + argSettings.getClass().getSimpleName() + " " + modifiedFile);
         if (result != 0) {
             return argSettings;
         }
 
         Object overrideSettings = null;
 
-        // load the modified settings from the temporary file
+        // load the settings from the modified file
         try {
-            overrideSettings = settingsManager.load(argSettings.getClass(), OVERRIDE_TEMPORARY_FILE);
+            overrideSettings = settingsManager.load(argSettings.getClass(), modifiedFile);
         } catch (Exception exn) {
             logger.warn("Exception loading settings", exn);
             return argSettings;
