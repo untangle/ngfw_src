@@ -54,6 +54,9 @@ public class ConfigManagerImpl implements ConfigManager
     // the is the JSON serializer we use when returning settings objects
     private JSONSerializer serializer;
 
+    // this is the file where we read the system temperature
+    private String temperatureSourceFile = null;
+
     /**
      * Constructor
      *
@@ -63,6 +66,7 @@ public class ConfigManagerImpl implements ConfigManager
     public ConfigManagerImpl(JSONSerializer serializer)
     {
         this.serializer = serializer;
+        temperatureSourceFile = findTemperatureSourceFile();
     }
 
     /**
@@ -185,14 +189,19 @@ public class ConfigManagerImpl implements ConfigManager
 
         String deviceName = context.networkManager().getNetworkSettings().getHostName() + "." + context.networkManager().getNetworkSettings().getDomainName();
         String macAddress = getSystemMacAddress();
+        String systemTemperature = getSystemTemperature();
 
-        // TODO - need to figure out the source for the following:
-        // Description and Temperature
+        String serialNumber = context.getServerSerialNumber();
+        if (serialNumber == null) serialNumber = "0";
+
+        // TODO - vendor2 expects the Description but it doesn't map to anything
+        // we configure or track on our platform so we just return empty for now
         TreeMap<String, Object> info = new TreeMap<>();
         info.put("ModelName", context.getApplianceModel());
-        info.put("Description", "description goes here");
+        info.put("Description", "");
         info.put("DeviceName", deviceName);
-        info.put("SerialNumber", context.getServerUID());
+        info.put("SerialNumber", serialNumber);
+        info.put("ServerUID", context.getServerUID());
         info.put("FirmwareVersion", context.version());
         info.put("SystemUpTime", upTime);
         info.put("MacAddress", macAddress);
@@ -201,7 +210,7 @@ public class ConfigManagerImpl implements ConfigManager
         info.put("DiskTotal", diskTotal);
         info.put("DiskFree", diskFree);
         info.put("CPULoad", cpuLoad);
-        info.put("Temperature", 98.6);
+        info.put("Temperature", systemTemperature);
         return createResponse(info);
     }
 
@@ -966,6 +975,99 @@ public class ConfigManagerImpl implements ConfigManager
         }
 
         return macAddress;
+    }
+
+    /**
+     * Gets the system temperature
+     *
+     * @return The system temperature
+     */
+    private String getSystemTemperature()
+    {
+        String systemTemperature = "0";
+
+        // return default if we didn't locate a source for the value
+        if (temperatureSourceFile == null) {
+            return systemTemperature;
+        }
+
+        BufferedReader reader = null;
+        String string = null;
+
+        try {
+            File temperatureFile = new File(temperatureSourceFile);
+            String capture = null;
+            if (temperatureFile.exists()) {
+                reader = new BufferedReader(new FileReader(temperatureFile));
+                string = reader.readLine();
+            }
+            if (string != null) {
+                systemTemperature = string;
+            }
+        } catch (Exception exn) {
+            logger.error("Unable to read temperature file", exn);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException exn) {
+                logger.error("Unable to close temperature file", exn);
+            }
+        }
+
+        return systemTemperature;
+    }
+
+    /**
+     * Searches for the thermal zone that monitors the system temperature. This
+     * is accomplished by looking for a type file that contains x86_pkg_temp in
+     * one of the thermal_zone directories.
+     *
+     * @return The file where the system temperature can be read or an empty
+     *         string if the x86_pkg_temp could not be located.
+     */
+    private String findTemperatureSourceFile()
+    {
+        File thermalZonePath = new File("/sys/devices/virtual/thermal");
+        String discoveryFile = null;
+
+        for (File zone : thermalZonePath.listFiles()) {
+            if (discoveryFile != null) {
+                return discoveryFile;
+            }
+            if (!zone.isDirectory()) continue;
+            if (!zone.getName().startsWith("thermal_zone")) continue;
+
+            BufferedReader reader = null;
+            String string = null;
+
+            try {
+                File sensorFile = new File("/sys/devices/virtual/thermal/" + zone.getName() + "/type");
+                String capture = null;
+                if (sensorFile.exists()) {
+                    reader = new BufferedReader(new FileReader(sensorFile));
+                    string = reader.readLine();
+                    if ((string != null) && (string.equals("x86_pkg_temp"))) {
+                        discoveryFile = zone.getAbsolutePath() + "/temp";
+                        logger.info("Discovered system temperature source: " + discoveryFile);
+                    }
+                }
+            } catch (Exception exn) {
+                logger.error("Unable to read sensor file", exn);
+            } finally {
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException exn) {
+                    logger.error("Unable to close sensor file", exn);
+                }
+            }
+
+        }
+
+        return discoveryFile;
     }
 
     /**
