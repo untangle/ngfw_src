@@ -1472,7 +1472,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.certificateManager = new CertificateManagerImpl();
 
-        this.configManager = new ConfigManagerImpl();
+        this.configManager = new ConfigManagerImpl(serializer);
 
         this.googleManager = new GoogleManagerImpl();
 
