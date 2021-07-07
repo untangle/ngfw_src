@@ -7,6 +7,7 @@ SYSTEMD_NETWORK_FILE_NAME_TEMPLATE="__DESTINATION_PATH__/10-__TO_DEVICE__.link"
 read -r -d '' SYSTEMD_NETWORK_TEMPLATE <<'EOT'
 [Match]
 MACAddress=__FROM_MAC_ADDRESS__
+Driver=!bridge
 
 [Link]
 NamePolicy=
