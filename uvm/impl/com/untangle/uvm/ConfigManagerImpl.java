@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
 
 /**
@@ -50,11 +51,22 @@ public class ConfigManagerImpl implements ConfigManager
     // this is managed by our getDatabaseConnection member
     private volatile Connection sharedConnection = null;
 
+    // the is the JSON serializer we use when returning settings objects
+    private JSONSerializer serializer;
+
+    // this is the file where we read the system temperature
+    private String temperatureSourceFile = null;
+
     /**
      * Constructor
+     *
+     * @param serializer
+     *        - The serializer we should use when returning settings objects
      */
-    public ConfigManagerImpl()
+    public ConfigManagerImpl(JSONSerializer serializer)
     {
+        this.serializer = serializer;
+        temperatureSourceFile = findTemperatureSourceFile();
     }
 
     /**
@@ -176,23 +188,29 @@ public class ConfigManagerImpl implements ConfigManager
         }
 
         String deviceName = context.networkManager().getNetworkSettings().getHostName() + "." + context.networkManager().getNetworkSettings().getDomainName();
+        String macAddress = getSystemMacAddress();
+        String systemTemperature = getSystemTemperature();
 
-        // TODO - need to figure out the source for the following:
-        // Description, MacAddress, Temperature
+        String serialNumber = context.getServerSerialNumber();
+        if (serialNumber == null) serialNumber = "0";
+
+        // TODO - vendor2 expects the Description but it doesn't map to anything
+        // we configure or track on our platform so we just return empty for now
         TreeMap<String, Object> info = new TreeMap<>();
         info.put("ModelName", context.getApplianceModel());
-        info.put("Description", "description goes here");
+        info.put("Description", "");
         info.put("DeviceName", deviceName);
-        info.put("SerialNumber", context.getServerUID());
+        info.put("SerialNumber", serialNumber);
+        info.put("ServerUID", context.getServerUID());
         info.put("FirmwareVersion", context.version());
         info.put("SystemUpTime", upTime);
-        info.put("MacAddress", "which mac address?");
+        info.put("MacAddress", macAddress);
         info.put("MemoryTotal", memTotal);
         info.put("MemoryFree", memFree);
         info.put("DiskTotal", diskTotal);
         info.put("DiskFree", diskFree);
         info.put("CPULoad", cpuLoad);
-        info.put("Temperature", 98.6);
+        info.put("Temperature", systemTemperature);
         return createResponse(info);
     }
 
@@ -368,7 +386,8 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             setTime = formatter.parse(argTime);
         } catch (Exception exn) {
-            return createResponse(1, exn.getMessage());
+            logger.warn("Exception parsing argTime: " + argTime, exn);
+            return createResponse(1, exn.toString());
         }
 
         // find the TimeZone from the passed zone ID
@@ -410,15 +429,35 @@ public class ConfigManagerImpl implements ConfigManager
     }
 
     /**
-     * Called to the the list of network interfaces
+     * Called to get the the list of network interfaces. We use the serializer
+     * passed to our constructor which is the same one used by the settings
+     * manager. Otherwise the JSON-RPC handler can generate fixups which makes
+     * it more difficult to parse and process the list of interfaces.
      *
-     * @return A Java List of InterfaceSettings objects representing all network
-     *         interfaces on the device.
+     * @return A JSON object containing the list of InterfaceSettings objects
+     *         representing all network interfaces on the device.
      */
-    public List<InterfaceSettings> getNetworkInterfaces()
+    public Object getNetworkInterfaces()
     {
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
-        return netSettings.getInterfaces();
+        JSONObject response = null;
+        String output = null;
+
+        try {
+            output = serializer.toJSON(netSettings.getInterfaces());
+        } catch (Exception exn) {
+            logger.error("Exception serializing interfaces", exn);
+            return createResponse(1, exn.toString());
+        }
+
+        try {
+            response = new JSONObject(output);
+        } catch (Exception exn) {
+            logger.error("Exception creating JSON", exn);
+            return createResponse(2, exn.toString());
+        }
+
+        return response;
     }
 
     /**
@@ -508,7 +547,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             reader = new BufferedReader(new FileReader(new File("/proc/net/dev")));
         } catch (Exception exn) {
-            logger.warn("Exception reading network interface details", exn);
+            logger.warn("Exception opening /proc/net/dev", exn);
             return metricList;
         }
 
@@ -516,7 +555,7 @@ public class ConfigManagerImpl implements ConfigManager
             try {
                 readLine = reader.readLine();
             } catch (Exception exn) {
-                logger.warn("Exception reading device file:", exn);
+                logger.warn("Exception reading /proc/net/dev", exn);
                 readLine = null;
             }
 
@@ -618,7 +657,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             reader.close();
         } catch (Exception exn) {
-            logger.warn("Exception closing device file: ", exn);
+            logger.warn("Exception closing /proc/net/dev", exn);
         }
 
         return metricList;
@@ -667,7 +706,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             fileName = backupFile.getCanonicalPath();
         } catch (Exception exn) {
-            return createResponse(1, exn.getMessage());
+            return createResponse(1, exn.toString());
         }
 
         TreeMap<String, Object> info = new TreeMap<>();
@@ -698,7 +737,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             resultMessage = context.backupManager().restoreBackup(file, maintainRegex);
         } catch (Exception exn) {
-            return createResponse(1, exn.getMessage());
+            return createResponse(1, exn.toString());
         }
 
         // null return messages indicates an error
@@ -895,6 +934,140 @@ public class ConfigManagerImpl implements ConfigManager
         }
 
         return sharedConnection;
+    }
+
+    /**
+     * Gets the MAC address of the first WAN interface
+     *
+     * @return The MAC address
+     */
+    private String getSystemMacAddress()
+    {
+        NetworkSettings netSettings = context.networkManager().getNetworkSettings();
+        String macAddress = "00:00:00:00:00:00";
+        InterfaceSettings faceSettings = null;
+        DeviceStatus devStatus = null;
+        String deviceName = null;
+
+        // look for the first WAN interface
+        for (InterfaceSettings item : netSettings.getInterfaces()) {
+            if (item.getIsWan()) {
+                faceSettings = item;
+                deviceName = item.getSystemDev();
+                break;
+            }
+        }
+
+        // if no WAN interface found just return the default
+        if (faceSettings == null) return macAddress;
+
+        // look for device status with matching device name
+        for (DeviceStatus item : context.networkManager().getDeviceStatus()) {
+            if (deviceName.contentEquals(item.getDeviceName())) {
+                devStatus = item;
+                break;
+            }
+        }
+
+        // if we found the matching device status record grab the MAC address
+        if (devStatus != null) {
+            macAddress = devStatus.getMacAddress();
+        }
+
+        return macAddress;
+    }
+
+    /**
+     * Gets the system temperature
+     *
+     * @return The system temperature
+     */
+    private String getSystemTemperature()
+    {
+        String systemTemperature = "0";
+
+        // return default if we didn't locate a source for the value
+        if (temperatureSourceFile == null) {
+            return systemTemperature;
+        }
+
+        BufferedReader reader = null;
+        String string = null;
+
+        try {
+            File temperatureFile = new File(temperatureSourceFile);
+            String capture = null;
+            if (temperatureFile.exists()) {
+                reader = new BufferedReader(new FileReader(temperatureFile));
+                string = reader.readLine();
+            }
+            if (string != null) {
+                systemTemperature = string;
+            }
+        } catch (Exception exn) {
+            logger.error("Unable to read temperature file", exn);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException exn) {
+                logger.error("Unable to close temperature file", exn);
+            }
+        }
+
+        return systemTemperature;
+    }
+
+    /**
+     * Searches for the thermal zone that monitors the system temperature. This
+     * is accomplished by looking for a type file that contains x86_pkg_temp in
+     * one of the thermal_zone directories.
+     *
+     * @return The file where the system temperature can be read or an empty
+     *         string if the x86_pkg_temp could not be located.
+     */
+    private String findTemperatureSourceFile()
+    {
+        File thermalZonePath = new File("/sys/devices/virtual/thermal");
+        String discoveryFile = null;
+
+        for (File zone : thermalZonePath.listFiles()) {
+            if (discoveryFile != null) {
+                return discoveryFile;
+            }
+            if (!zone.isDirectory()) continue;
+            if (!zone.getName().startsWith("thermal_zone")) continue;
+
+            BufferedReader reader = null;
+            String string = null;
+
+            try {
+                File sensorFile = new File("/sys/devices/virtual/thermal/" + zone.getName() + "/type");
+                String capture = null;
+                if (sensorFile.exists()) {
+                    reader = new BufferedReader(new FileReader(sensorFile));
+                    string = reader.readLine();
+                    if ((string != null) && (string.equals("x86_pkg_temp"))) {
+                        discoveryFile = zone.getAbsolutePath() + "/temp";
+                        logger.info("Discovered system temperature source: " + discoveryFile);
+                    }
+                }
+            } catch (Exception exn) {
+                logger.error("Unable to read sensor file", exn);
+            } finally {
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException exn) {
+                    logger.error("Unable to close sensor file", exn);
+                }
+            }
+
+        }
+
+        return discoveryFile;
     }
 
     /**
