@@ -1169,7 +1169,7 @@ public class AppManagerImpl implements AppManager
                 logger.info("Not enough memory to install app " + appProps.getName());
                 continue;
             }
-            if(appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) {
+            if(!lm.isRestricted() && appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) {
                 logger.info("Not enough interfaces to install app: " + appProps.getName());
                 continue;
             }

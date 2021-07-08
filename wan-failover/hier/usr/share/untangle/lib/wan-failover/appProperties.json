@@ -7,6 +7,7 @@
         "viewPosition" : 1040,
         "autoInstall" : true,
         "autoInstallMinInterfaces": 3,
+        "autoStart": false,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
