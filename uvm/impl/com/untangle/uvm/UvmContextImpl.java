@@ -42,7 +42,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     private static final String SERIAL_NUMBER_FILE = "/sys/devices/virtual/dmi/id/product_serial";
-    private static final String SERIAL_NUMBER_REGEX = "[0-1][0-9][0-9][0-9][0-9A-Z][0W][0-9A-Z][0-9]{7}";
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String DISKLESS_MODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/diskless-mode-flag";
     private static final String TEMPFS_MODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/tempfs-mode-flag";
@@ -1257,7 +1256,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     reader = new BufferedReader(new FileReader(serialNumberFile));
                     serialNumber = reader.readLine().replaceAll("[\\-]","");
                 }
-                if( (serialNumber != null ) && serialNumber.length() == 14 && serialNumber.matches(SERIAL_NUMBER_REGEX)){
+                if((serialNumber != null ) && (serialNumber.length() == 14 || serialNumber.length() == 13) && !serialNumber.contains(" ")){
                     UvmContextImpl.serialNumber = serialNumber;
                 }
             } catch (IOException x) {
