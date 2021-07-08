@@ -18,7 +18,7 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode'),
             Rpc.directPromise('rpc.UvmContext.isCCHidden'),
-            Rpc.directPromise('rpc.licenseManager.isRestricted')
+            Rpc.directPromise('rpc.UvmContext.licenseManager.isRestricted')
         ];
 
         var dataNames = [
