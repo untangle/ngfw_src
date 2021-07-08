@@ -17,7 +17,8 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.asyncPromise('rpc.systemManager.getTimeZones'),
             Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode'),
-            Rpc.directPromise('rpc.UvmContext.isCCHidden')
+            Rpc.directPromise('rpc.UvmContext.isCCHidden'),
+            Rpc.directPromise('rpc.licenseManager.isRestricted')
         ];
 
         var dataNames = [
@@ -28,7 +29,8 @@ Ext.define('Ung.config.system.MainController', {
             'timeZonesList',
             'logDirectorySize',
             'isExpertMode',
-            'isCCHidden'
+            'isCCHidden',
+            'isRestricted'
         ];
         if(Rpc.directData('rpc.appManager.app', 'http')){
             rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("http").getHttpSettings'));
