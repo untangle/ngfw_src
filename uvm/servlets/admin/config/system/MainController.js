@@ -18,7 +18,6 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode'),
             Rpc.directPromise('rpc.UvmContext.isCCHidden'),
-            Rpc.directPromise('rpc.UvmContext.licenseManager.isRestricted')
         ];
 
         var dataNames = [
@@ -30,7 +29,6 @@ Ext.define('Ung.config.system.MainController', {
             'logDirectorySize',
             'isExpertMode',
             'isCCHidden',
-            'isRestricted'
         ];
         if(Rpc.directData('rpc.appManager.app', 'http')){
             rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("http").getHttpSettings'));
