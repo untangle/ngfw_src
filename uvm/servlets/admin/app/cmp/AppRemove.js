@@ -11,6 +11,7 @@ Ext.define('Ung.cmp.AppRemove', {
     //     borderColor: 'red'
     // },
     viewModel: true,
+    hidden: Rpc.directData('rpc.UvmContext.licenseManager.isRestricted'),
 
     bind: {
         text: 'Remove'.t() + ' {props.displayName}',
