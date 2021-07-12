@@ -1116,6 +1116,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         }
 
+        UvmContextFactory.context().appManager().syncWithLicenses(); 
+        if (!UvmContextFactory.context().appManager().isAutoInstallAppsFlag()) {
+            UvmContextFactory.context().appManager().doAutoInstall();
+        }
+        UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
         logger.info("Reloading licenses... done" );
     }
     
@@ -1316,11 +1321,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          *        Callback arguments
          */
         public void callback(Object... args) {
-            UvmContextFactory.context().appManager().syncWithLicenses(); 
-            if (UvmContextFactory.context().licenseManager().isRestricted() && !UvmContextFactory.context().appManager().isAutoInstallAppsFlag()) {
-                UvmContextFactory.context().appManager().doAutoInstall();
-            }
-            UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
         }
     }
 }
