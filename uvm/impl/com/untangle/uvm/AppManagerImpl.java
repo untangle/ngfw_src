@@ -1003,10 +1003,10 @@ public class AppManagerImpl implements AppManager
 
         UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
 
-        if(isAutoInstallAppsFlag() && (! UvmContextFactory.context().licenseManager().isRestricted())){
+        /*if(isAutoInstallAppsFlag() && (! UvmContextFactory.context().licenseManager().isRestricted())){
             // We rebooted during auto install of apps, so continue installing.
             doAutoInstall();
-        }
+        }*/
     }
 
     /**
@@ -1875,9 +1875,6 @@ public class AppManagerImpl implements AppManager
             boolean currentWizardComplete = UvmContextFactory.context().isWizardComplete();
             if(lastWizardComplete != currentWizardComplete && currentWizardComplete== true){
                 lastWizardComplete = currentWizardComplete;
-                if ( (! UvmContextFactory.context().isDevel()) && (! UvmContextFactory.context().isAts()) && (! UvmContextFactory.context().licenseManager().isRestricted())) {
-                    doAutoInstall();
-                }
             }
         }
     }
