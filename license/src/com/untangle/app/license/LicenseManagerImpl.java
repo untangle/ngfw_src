@@ -117,13 +117,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private Pulse pulse = null;
 
-    /**
-     * Boolean we set true if we find NGFW_LICENSE_TEST in the environment.
-     * This allows us to enable testing the license stuff on a development
-     * system even when isDevel() is true.
-     */
-    private boolean devLicenseTest = false;
-
     // license change callback
     private LicenseChangeHookCallback licenseChangeHookCallback = new LicenseChangeHookCallback();
 
@@ -139,16 +132,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         super( appSettings, appProperties );
 
-        String check = System.getenv("NGFW_LICENSE_TEST");
-        if (check != null) {
-            logger.info("Found NGFW_LICENSE_TEST environment variable - setting devLicenseTest = true");
-            devLicenseTest = true;
-        }
-
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.LICENSE_CHANGE, licenseChangeHookCallback);
-
-        this._readLicenses();
-        this._mapLicenses();
 
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
         this.pulse.start();
@@ -225,7 +209,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final License getLicense(String identifier, boolean exactMatch)
     {
-        if (!isRestricted() && isGPLApp(identifier))
+        if (!isRestricted())
             return null;
 
         /**
@@ -256,17 +240,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         license = this.licenseMap.get(identifier);
         if (license != null)
             return license;
-
-        /**
-         * Special for development environment
-         * Assume all licenses are valid unless devLicenseTest is set
-         */
-        if ((UvmContextFactory.context().isDevel()) && (! devLicenseTest)) {
-            logger.warn("Creating development license: " + identifier);
-            license = new License(identifier, "0000-0000-0000-0000", identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE, "Developer");
-            this.licenseMap.put(identifier,license);
-            return license;
-        }
 
         logger.warn("No license found for: " + identifier);
 
@@ -301,7 +274,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final boolean isLicenseValid(String identifier)
     {
-        if (!isRestricted() && isGPLApp(identifier))
+        if (!isRestricted())
             return true;
 
         License lic = getLicense(identifier);
@@ -376,9 +349,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public int getSeatLimit( boolean lienency )
     {
-        if ((UvmContextFactory.context().isDevel()) && (! devLicenseTest))
-            return -1;
-
         int seats = -1;
         for (License lic : this.settings.getLicenses()) {
             if ( ! lic.getValid() || lic.getTrial() ) // only count valid non-trials
@@ -578,77 +548,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         this._saveSettings(this.settings);
     }
 
-    /**
-     * Read the licenses and load them into the current settings object
-     */
-    private synchronized void _readLicenses()
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        
-        try {
-            this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js" );
-        } catch (SettingsManager.SettingsException e) {
-            logger.error("Unable to read license file: ", e );
-        }
-
-        if (this.settings == null)
-            _initializeSettings();
-
-        if (this.settings.getLicenses() != null) {
-            Iterator<License> iterator = this.settings.getLicenses().iterator();
-            while ( iterator.hasNext() ) {
-                License license = iterator.next();
-
-                // remove obsolete names
-                if ( isObsoleteApp( license.getName() ) )
-                    iterator.remove();
-
-                // recompute metadata - we don't want to use value in file (could have been changed)
-                _setValidAndStatus(license);
-            }
-        }
-
-        return;
-    }
-
-    /**
-     * This gets all the current revocations from the license server for this UID
-     * and removes any licenses that have been revoked
-     *
-     * @return if this function changed settings
-     */
-    @SuppressWarnings("unchecked") //LinkedList<LicenseRevocation> <-> LinkedList
-    private synchronized boolean _checkRevocations()
-    {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        LinkedList<LicenseRevocation> revocations;
-        boolean changed = false;
-
-        logger.info("REFRESH: Checking Revocations...");
-        
-        try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + getServerParams();
-            logger.info("Downloading: \"" + urlStr + "\"");
-
-            Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
-            revocations = (LinkedList<LicenseRevocation>)o;
-        } catch (SettingsManager.SettingsException e) {
-            logger.error("Unable to read license file: ", e );
-            return changed;
-        } catch (ClassCastException e) {
-            logger.error("getRevocations returned unexpected response",e);
-            return changed;
-        }
-            
-        for (LicenseRevocation revoke : revocations) {
-            changed |= _revokeLicense(revoke);
-        }
-
-        logger.info("REFRESH: Checking Revocations... done (modified: " + changed + ")");
-
-        return changed;
-    }
-
     /** 
      * This remove a license from the list of current licenses
      *
@@ -690,9 +589,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * This downloads a list of current licenese from the license server
-     * Any new licenses are added. Duplicate licenses are updated if the new one grants better privleges
      *
-     * @return if changed
+     * @return if successful
      */
     @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
     private synchronized boolean _downloadLicenses()
@@ -700,7 +598,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<License> licenses = new LinkedList<>();;
         boolean restricted = false;
-        boolean changed = false;
+        boolean successful = false;
 
         logger.info("REFRESH: Downloading new Licenses...");
         
@@ -718,6 +616,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             // The list on the json object contains the licenses
             boolean hasList = parse.has("list");
             if(hasList) {
+                // Clear out our existing list.
+                if (this.settings.getLicenses() != null) {
+                    this.settings.getLicenses().clear();
+                }
                 JSONArray licList = parse.getJSONArray("list");
                 for (int i = 0; i < licList.length(); i++) {
                     JSONObject lic = licList.getJSONObject(i);
@@ -757,130 +659,24 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             }
         } catch (JSONException e) {
             logger.error("Unable to read license file: ", e );
-            return changed;
+            return successful;
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
-            return changed;
+            return successful;
         } catch (ClassCastException e) {
             logger.error("downloadLicenses returned unexpected response",e);
-            return changed;
-        }
-        
-        for (License lic : licenses) {
-            if ( ! isObsoleteApp( lic.getName() ) ) {
-                changed |= _insertOrUpdate(lic);
-            }
+            return successful;
         }
 
+        successful = true;
         //If license restriction changes, we want to save, this allows toggling between restricted/unrestricted based on license server result
         if (settings.getIsRestricted() != restricted) {
             settings.setIsRestricted(restricted);
-            changed = true;
         }
 
-        logger.info("REFRESH: Downloading new Licenses... done (changed: " + changed + ")");
+        logger.info("REFRESH: Downloading new Licenses... done (successful: " + successful + ")");
 
-        return changed;
-    }
-
-    /**
-     * This takes the passed argument and inserts it into the current licenses
-     * If there is currently an existing license for that product it will be removed
-     *
-     * @param license License object to add.
-     * @return true if a license was added or modified, false otherwise
-     */
-    private synchronized boolean _insertOrUpdate(License license)
-    {
-        boolean insertNewLicense = true;
-        
-        if (this.settings == null || this.settings.getLicenses() == null) {
-            logger.error("Invalid settings:" + this.settings);
-            return false;
-        }
-        if (license == null) {
-            logger.error("Invalid argument:" + license);
-            return false;
-        }
-
-        /**
-         * See if you find a match in the current licenses
-         * If so, the new one replaces it so remove the existing one
-         */
-        Iterator<License> itr = this.settings.getLicenses().iterator();
-        while ( itr.hasNext() ) {
-            try {
-                License existingLicense = itr.next();
-                if (existingLicense.getName().equals(license.getName())) {
-
-                    /**
-                     * As a measure of safety we only replace an existing license under certain circumstances
-                     * This is so we are careful to only increase entitlements during this phase
-                     */
-                    boolean replaceLicense = false;
-                    insertNewLicense = false;
-
-                    /**
-                     * Check the validity of the current license
-                     * If it isn't valid, we might as well try the new one
-                     * Note: we have to use getLicenses to do this because the settings don't store validity
-                     */
-                    if ( (getLicense(existingLicense.getName()) != null) && !(getLicense(existingLicense.getName()).getValid()) ) {
-                        logger.info("REFRESH: Replacing license " + license + " - old one is invalid");
-                        replaceLicense = true;
-                    }
-
-                    /**
-                     * If the current one is a trial, and the new one is not, use the new one
-                     */
-                    if ( !(License.LICENSE_TYPE_TRIAL.equals(license.getType())) && License.LICENSE_TYPE_TRIAL.equals(existingLicense.getType())) {
-                        logger.info("REFRESH: Replacing license " + license + " - old one is trial");
-                        replaceLicense = true;
-                    }
-
-                    /**
-                     * If the new one has a later end date, use the new one
-                     */
-                    if ( license.getEnd() > existingLicense.getEnd() ) {
-                        logger.info("REFRESH: Replacing license " + license + " - new one has later end date");
-                        replaceLicense = true;
-                    }
-
-                    /**
-                     * If the new one has a different seat amount
-                     */
-                    if ( license.getSeats() != null && existingLicense.getSeats() == null ) {
-                        logger.info("REFRESH: Replacing license " + license + " - number of seats now specified");
-                        replaceLicense = true;
-                    }
-                    if ( license.getSeats() != null && existingLicense.getSeats() != null && license.getSeats() > existingLicense.getSeats() ) {
-                        logger.info("REFRESH: Replacing license " + license + " - new one has more seats");
-                        replaceLicense = true;
-                    }
-                
-                    if (replaceLicense) {
-                        itr.remove();
-                        insertNewLicense = true;
-                    } else {
-                        logger.info("REFRESH: Keeping current license: " + license);
-                    }
-                }
-            } catch (Exception e) {
-                logger.warn("Exception processing existing license.",e);
-            }
-        }
-
-        /**
-         * if a match hasnt been found it needs to be added
-         */
-        if (insertNewLicense) {
-            logger.info("REFRESH: Inserting new license   : " + license);
-            List<License> licenses = this.settings.getLicenses();
-            licenses.add(license);
-            return true;
-        }
-
-        return false;
+        return successful;
     }
     
     /**
@@ -941,29 +737,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private boolean _isLicenseValid(License license)
     {
-        long now = (System.currentTimeMillis()/1000);
-
-        /* check if the license hasn't started yet (start date in future) */
-        if (license.getStart() > now) {
-            logger.warn( "The license: " + license + " isn't valid yet (" + license.getStart() + " > " + now + ")");
-            license.setStatus("Invalid (Start Date in Future)"); /* XXX i18n */
-            return false;
-        }
-
-        /* check if it is already expired */
-        if ((license.getEnd() < now)) {
-            logger.warn( "The license: " + license + " has expired (" + license.getEnd() + " < " + now + ")");
-            license.setStatus("Invalid (Expired)"); /* XXX i18n */
-            return false;
-        }
-
-        /* check the UID */
-        if (license.getUID() == null || !license.getUID().equals(UvmContextFactory.context().getServerUID())) {
-            logger.warn( "The license: " + license + " does not match this server's UID (" + license.getUID() + " != " + UvmContextFactory.context().getServerUID() + ")");
-            license.setStatus("Invalid (UID Mismatch)"); /* XXX i18n */
-            return false;
-        }
-
         String input = null;
         if ( license.getKeyVersion() == 1 ) {
             input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + "the meaning of life is 42";
@@ -1096,22 +869,17 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
-            _readLicenses();
 
-            if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
-                boolean downloadChanged = false;
-                boolean revocationsChanged = false;
-                downloadChanged = _downloadLicenses();
-                revocationsChanged = _checkRevocations();
+            boolean downloadSuccess = false;
+            downloadSuccess = _downloadLicenses();
 
-                if (downloadChanged || revocationsChanged) {
-                    /**
-                    * Licenses are only saved when changed - call license changed hook
-                    */
-                    _saveSettings(this.settings);
-                }
+            if (downloadSuccess) {
+                /**
+                * Licenses are only saved when download was successful 
+                */
+                _saveSettings(this.settings);
             }
-                
+        
             _mapLicenses();
 
         }
@@ -1130,54 +898,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         public void run()
         {
             _syncLicensesWithServer();    
-        }
-    }
-    
-    /**
-     * Determine if application is GPL-based.
-     * 
-     * @param  identifier Application name.
-     * @return            true if GPL, false otherwise.
-     */
-    private boolean isGPLApp(String identifier)
-    {
-        switch ( identifier ) {
-        case "untangle-node-ad-blocker": return true;
-        case "ad-blocker": return true;
-        case "untangle-node-virus-blocker-lite": return true;
-        case "virus-blocker-lite": return true;
-        case "untangle-node-captive-portal": return true;
-        case "captive-portal": return true;
-        case "untangle-node-firewall": return true;
-        case "firewall": return true;
-        case "untangle-node-intrusion-prevention": return true;
-        case "intrusion-prevention": return true;
-        case "untangle-node-openvpn": return true;
-        case "openvpn": return true;
-        case "untangle-node-phish-blocker": return true;
-        case "phish-blocker": return true;
-        case "untangle-node-application-control-lite": return true;
-        case "application-control-lite": return true;
-        case "untangle-node-router": return true;
-        case "router": return true;
-        case "untangle-node-reports": return true;
-        case "reports": return true;
-        case "untangle-node-shield": return true;
-        case "shield": return true;
-        case "untangle-node-spam-blocker-lite": return true;
-        case "spam-blocker-lite": return true;
-        case "untangle-node-web-monitor": return true;
-        case "web-monitor": return true;
-        case "untangle-node-license": return true;
-        case "license": return true;
-        case "untangle-casing-http": return true;
-        case "http": return true;
-        case "untangle-casing-ftp": return true;
-        case "ftp": return true;
-        case "untangle-casing-smtp": return true;
-        case "smtp": return true;
-        case "tunnel-vpn": return true;
-        default: return false;
         }
     }
 
