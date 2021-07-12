@@ -50,11 +50,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
      */
     public boolean isLicenseValid(String identifier)
     {
-        if (isGPLApp(identifier)) return true;
-        else return false; /*
-                            * always return false as the real license manager is
-                            * needed for valid licenses
-                            */
+        return false;
     }
 
     /**
@@ -66,8 +62,6 @@ public class DefaultLicenseManagerImpl implements LicenseManager
      */
     public License getLicense(String identifier)
     {
-        if (isGPLApp(identifier)) return null;
-
         /**
          * This returns an invalid license for all requests Note: this includes
          * the free apps, however they don't actually check the license so it
@@ -163,38 +157,6 @@ public class DefaultLicenseManagerImpl implements LicenseManager
      * @return boolean indicating whether the license is restricted or not
      */
     public boolean isRestricted() {
-        return false;
-    }
-
-    /**
-     * Check to see if an application is a GPL application
-     * 
-     * @param identifier
-     *        The application identifier
-     * @return True for a GPL app, otherwise false
-     */
-    private boolean isGPLApp(String identifier)
-    {
-        if ("ad-blocker".equals(identifier)) return true;
-        else if ("virus-blocker-lite".equals(identifier)) return true;
-        else if ("captive-portal".equals(identifier)) return true;
-        else if ("firewall".equals(identifier)) return true;
-        else if ("intrusion-prevention".equals(identifier)) return true;
-        else if ("openvpn".equals(identifier)) return true;
-        else if ("phish-blocker".equals(identifier)) return true;
-        else if ("application-control-lite".equals(identifier)) return true;
-        else if ("reports".equals(identifier)) return true;
-        else if ("router".equals(identifier)) return true;
-        else if ("shield".equals(identifier)) return true;
-        else if ("spam-blocker-lite".equals(identifier)) return true;
-        else if ("web-monitor".equals(identifier)) return true;
-        else if ("tunnel-vpn".equals(identifier)) return true;
-
-        if ("license".equals(identifier)) return true;
-        else if ("http".equals(identifier)) return true;
-        else if ("ftp".equals(identifier)) return true;
-        else if ("smtp".equals(identifier)) return true;
-
         return false;
     }
 }
