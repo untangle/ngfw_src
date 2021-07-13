@@ -149,7 +149,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         this._readLicenses();
         this._mapLicenses();
-        this.runAppManagerSync(true);
+        this._runAppManagerSync();
 
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
         this.pulse.start();
@@ -1118,29 +1118,28 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         }
 
-        runAppManagerSync(downloadChanged || revocationsChanged);
+        _runAppManagerSync();
 
         logger.info("Reloading licenses... done" );
     }
 
     /**
      * Run app manager specifics to auto install and shutdown invalid items 
-     *
-     * @param force
      */
-    public void runAppManagerSync(boolean force) {
+    private void _runAppManagerSync() {
         AppManager appManager = UvmContextFactory.context().appManager();
         appManager.syncWithLicenses(); 
 
-        // always auto install if restricted, otherwise only auto install on force or if settings change
-        if (force || isRestricted())
-        if (appManager.isRestartingUnloaded()) {
-            // don't instantiate apps while other apps are being loaded
-            appManager.setAutoInstallAppsFlag(true);
-        } else {
-            // otherwise run auto install if not running
-            if (!appManager.isAutoInstallAppsFlag()) {
-                appManager.doAutoInstall();
+        // always auto install if restricted or wizard is incomplete, otherwise only auto install on force or if settings change
+        if (isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
+            if (appManager.isRestartingUnloaded()) {
+                // don't instantiate apps while other apps are being loaded
+                appManager.setAutoInstallAppsFlag(true);
+            } else {
+                // otherwise run auto install if not running
+                if (!appManager.isAutoInstallAppsFlag()) {
+                    appManager.doAutoInstall();
+                }
             }
         }
         appManager.shutdownAppsWithInvalidLicense();

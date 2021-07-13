@@ -71,9 +71,4 @@ public interface LicenseManager
      */
     public void requestTrialLicense( String appName ) throws Exception;
 
-    /**
-     * Run app manager specifics to auto install and shutdown invalid items 
-     */
-    public void runAppManagerSync(boolean force);
-
 }
