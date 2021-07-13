@@ -1121,15 +1121,18 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      * Run app manager specifics to auto install and shutdown invalid items 
      */
     private void _runAppManagerSync() {
+        logger.debug("Syncing to App Manager");
         AppManager appManager = UvmContextFactory.context().appManager();
-        appManager.syncWithLicenses(); 
 
         // always auto install if restricted or wizard is incomplete
         if (isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
+            logger.debug("Running auto install");
             if (appManager.isRestartingUnloaded() || appManager.isAutoInstallAppsFlag()) {
+                logger.debug("Setting auto install");
                 // don't instantiate apps while other apps are being loaded or already auto installing
                 appManager.setAutoInstallAppsFlag(true);
             } else {
+                logger.debug("Running auto install directly");
                 appManager.doAutoInstall();
             }
         }
