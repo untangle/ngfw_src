@@ -23,6 +23,7 @@ import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppManager;
@@ -69,6 +70,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
 
     private static final Object startupWaitLock = new Object();
+
+    private static final String TEMPFS_BACKUP_COMMAND = "pg_dump -U postgres -d uvm";
+    private static final String TEMPFS_BACKUP_FILE = System.getProperty("uvm.home") + "/tempfs-database.backup";
+    private final static long TEMPFS_BACKUP_FREQUENCY = (60 * 60 * 1000L);
+    private Pulse tempfsBackupPulse = null;
 
     private static final Logger logger = Logger.getLogger(UvmContextImpl.class);
 
@@ -1509,6 +1515,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (this.useTempFileSystem()) {
             Integer exitValue = this.execManager().execResult(TEMPFS_SETUP_SCRIPT);
             logger.info("TempFS setup result: " + exitValue);
+
+            tempfsBackupPulse = new Pulse("tempfsDatabaseBackupWorker", new tempfsDatabaseBackupWorker(this), TEMPFS_BACKUP_FREQUENCY);
+            tempfsBackupPulse.start();
         }
 
         mailSender.postInit();
@@ -1851,4 +1860,36 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * The runnable class that handles period database backup when
+     * running with the tempfs-mode-flag active.
+     *
+     * @author mahotz
+     *
+     */
+    private class tempfsDatabaseBackupWorker implements Runnable
+    {
+        UvmContextImpl owner;
+
+        /**
+         * Constructor
+         *
+         * @param owner
+         *        The owner
+         */
+        public tempfsDatabaseBackupWorker(UvmContextImpl owner)
+        {
+            this.owner = owner;
+        }
+
+        /**
+         * Main run function
+         */
+        public void run()
+        {
+            Logger logger = Logger.getLogger(UvmContextImpl.class);
+            logger.info("Creating tempfs database backup: " + TEMPFS_BACKUP_FILE);
+            owner.execManager.exec(TEMPFS_BACKUP_COMMAND + " | gzip > " + TEMPFS_BACKUP_FILE);
+        }
+    }
 }

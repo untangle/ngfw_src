@@ -4,7 +4,6 @@
 # It will move the reporting database and any other write-intensive files to a
 # tempfs partition to reduce wear on storage media with limited write cycles.
 
-
 TEMPFS_SETUP_FLAG="/dev/shm/tempfs_setup.flag"
 TEMPFS_LOG_FILE="/dev/shm/tempfs_setup.log"
 
@@ -15,6 +14,8 @@ exec 2>&1
 
 DB_DRIVER_FILE="@PREFIX@/usr/share/untangle/conf/database-driver"
 DB_DRIVER_NAME="postgresql"
+PG_RESTORE_SCRIPT="@PREFIX@/usr/share/untangle/bin/reports-restore-backup.sh"
+PG_BACKUP_FILE="@PREFIX@/usr/share/untangle/tempfs-database.backup"
 
 PG_VERSION="11"
 PG_LOCALE="en_US.UTF-8"
@@ -45,25 +46,35 @@ if [ "$DB_DRIVER_NAME" != "postgresql" ] && [ "$DB_DRIVER_NAME" != "sqlite" ]; t
 fi
 
 # move the postgresql database to tempfs if configured
-# we have to create the database cluster so postgres can start 
-# this logic is based on untangle-postgresql-config.postinst 
+# we have to create the database cluster so postgres can start
+# this logic is based on untangle-postgresql-config.postinst
 if [ "$DB_DRIVER_NAME" == "postgresql" ]; then
   rm -r -f $PG_SYS_DIR
   mkdir $PG_TFS_DIR
   chown -R postgres:postgres $PG_TFS_DIR
   ln -s $PG_TFS_DIR $PG_SYS_DIR
   su -c "${PG_BIN_DIR}/initdb --encoding=utf8 --locale=${PG_LOCALE} -D ${PG_MAIN_DIR}" postgres
+
+  # if the backup file exists we start the postgresql daemon
+  # create the database, and restore the backup file
+  if [ -f $PG_BACKUP_FILE ]; then
+    printf "restoring database backup:%s\n" $PG_BACKUP_FILE
+    systemctl start postgresql
+    $PG_BIN_DIR/psql -U postgres -c "CREATE DATABASE uvm"
+    $PG_RESTORE_SCRIPT -f $PG_BACKUP_FILE
+  fi
+
 fi
 
 # move the sqlite database to tempfs if configured
-# this is easier because sqlite will create the db when missing 
+# this is easier because sqlite will create the db when missing
 if [ "$DB_DRIVER_NAME" == "sqlite" ]; then
   rm -r -f $SL_SYS_DIR
   mkdir $SL_TFS_DIR
   ln -s $SL_TFS_DIR $SL_SYS_DIR
 fi
 
-# create our setup flag 
+# create our setup flag
 /bin/date > $TEMPFS_SETUP_FLAG
 printf "tempfs setup completed\n"
 exit 0
