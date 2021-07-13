@@ -1188,6 +1188,7 @@ public class AppManagerImpl implements AppManager
         List<AppProperties> appPropsToInstall = getAllAppProperties();
 
         if (lm.isRestricted()) {
+            this.syncWithLicenses();
             appPropsToInstall = this.restrictedAllowedApps;
         }
 
@@ -1563,6 +1564,7 @@ public class AppManagerImpl implements AppManager
         this.restrictedHasPolicyManager = false;
         for (AppProperties appProps : nm.getAllAppProperties()) {
             if (lmLicenses.containsKey(appProps.getName())) {
+                logger.debug("Found restricted app to install: " + appProps.getName());
                 this.restrictedAllowedApps.add(appProps);
                 if (appProps.getName().equals("policy-manager")) {
                     this.restrictedHasPolicyManager = true;
