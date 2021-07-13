@@ -1167,8 +1167,9 @@ public class AppManagerImpl implements AppManager
     public void doAutoInstall()
     {
         // cases to not to do autoinstall
-        if ( (! UvmContextFactory.context().isDevel()) && (! UvmContextFactory.context().isAts()) ) {
+        if ( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isAts() ) {
             logger.info("Don't run auto install");
+            setAutoInstallAppsFlag(false);
             return;
         }
 
