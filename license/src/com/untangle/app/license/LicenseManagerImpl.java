@@ -149,6 +149,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         this._readLicenses();
         this._mapLicenses();
+        this._runAppManagerSync();
 
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
         this.pulse.start();
@@ -1116,12 +1117,19 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         }
 
+        _runAppManagerSync();
+        logger.info("Reloading licenses... done" );
+    }
+
+    /**
+     * Run app manager specifics to auto install and shutdown invalid items 
+     */
+    private void _runAppManagerSync() {
         UvmContextFactory.context().appManager().syncWithLicenses(); 
         if (!UvmContextFactory.context().appManager().isAutoInstallAppsFlag()) {
             UvmContextFactory.context().appManager().doAutoInstall();
         }
         UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
-        logger.info("Reloading licenses... done" );
     }
     
     /**
