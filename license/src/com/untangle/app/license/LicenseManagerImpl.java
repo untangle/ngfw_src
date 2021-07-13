@@ -689,34 +689,27 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         LinkedList<License> newList = new LinkedList<>();
         License license = null;
         
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+
+        try {
+            this.settings = settingsManager.load(LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js");
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:", e);
+            return;
+        }
+
         if (this.settings != null) {
             for (License lic : this.settings.getLicenses()) {
                 try {
                     /**
-                     * Create a duplicate - we're about to fill in metadata
-                     * But we don't want to mess with the original
-                     */
-                    license = new License(lic);
-
-                    /**
                      * Complete Meta-data
                      */
+                    license = new License(lic);
                     _setValidAndStatus(license);
-            
-                    String identifier = license.getCurrentName();
-                    if ( identifier == null ) {
-                        logger.warn("Ignoring license with no name: " + license );
-                        continue;
-                    }
-                        
-                    License current = newMap.get(identifier);
-
-                    /* current license is newer and better */
-                    if ((current != null) && (current.getEnd() > license.getEnd()))
-                        continue;
-
+                    
                     logger.info("Adding License: " + license.getCurrentName() + " to Map. (valid: " + license.getValid() + ")");
             
+                    String identifier = license.getCurrentName();
                     newMap.put(identifier, license);
                     newList.add(license);
                 } catch (Exception e) {
