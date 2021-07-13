@@ -149,7 +149,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         this._readLicenses();
         this._mapLicenses();
-        this._runAppManagerSync();
+        this.runAppManagerSync(true);
 
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
         this.pulse.start();
@@ -1096,12 +1096,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         logger.info("Reloading licenses..." );
 
+        boolean downloadChanged = false;
+        boolean revocationsChanged = false;
+
         synchronized (LicenseManagerImpl.this) {
             _readLicenses();
 
             if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
-                boolean downloadChanged = false;
-                boolean revocationsChanged = false;
                 downloadChanged = _downloadLicenses();
                 revocationsChanged = _checkRevocations();
 
@@ -1117,19 +1118,32 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         }
 
-        _runAppManagerSync();
+        runAppManagerSync(downloadChanged || revocationsChanged);
+
         logger.info("Reloading licenses... done" );
     }
 
     /**
      * Run app manager specifics to auto install and shutdown invalid items 
+     *
+     * @param force
      */
-    private void _runAppManagerSync() {
-        UvmContextFactory.context().appManager().syncWithLicenses(); 
-        if (!UvmContextFactory.context().appManager().isAutoInstallAppsFlag()) {
-            UvmContextFactory.context().appManager().doAutoInstall();
+    public void runAppManagerSync(boolean force) {
+        AppManager appManager = UvmContextFactory.context().appManager();
+        appManager.syncWithLicenses(); 
+
+        // always auto install if restricted, otherwise only auto install on force or if settings change
+        if (force || isRestricted())
+        if (appManager.isRestartingUnloaded()) {
+            // don't instantiate apps while other apps are being loaded
+            appManager.setAutoInstallAppsFlag(true);
+        } else {
+            // otherwise run auto install if not running
+            if (!appManager.isAutoInstallAppsFlag()) {
+                appManager.doAutoInstall();
+            }
         }
-        UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
+        appManager.shutdownAppsWithInvalidLicense();
     }
     
     /**
@@ -1329,6 +1343,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          *        Callback arguments
          */
         public void callback(Object... args) {
+            //UvmContextFactory.context().licenseManager().runAppManagerSync();
         }
     }
 }
