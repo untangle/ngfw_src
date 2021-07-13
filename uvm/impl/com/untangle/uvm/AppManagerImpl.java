@@ -72,6 +72,8 @@ public class AppManagerImpl implements AppManager
 
     private boolean live = true;
 
+    private boolean isRestartingUnloaded;
+
     /**
      * Constructor
      */
@@ -977,12 +979,32 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
+     * Returns true is apps are being loaded
+     * 
+     * @return a boolean value
+     */
+    public boolean isRestartingUnloaded() {
+        return isRestartingUnloaded;
+    }
+
+    /**
+     * Set/unset restarting unloaded flag
+     * 
+     * @param enabled If true, restart unloaded is happening. if false, restart unloaded is not happening
+     */
+    public void setIsRestartingUnloaded(boolean enabled) {
+        isRestartingUnloaded = enabled;
+    }
+
+    /**
      * Called during initialization
      */
     protected void init()
     {
-        loadSettings();
+        setIsRestartingUnloaded(true);
 
+        loadSettings();
+        
         restartUnloaded();
 
         if (logger.isDebugEnabled()) {
@@ -994,6 +1016,7 @@ public class AppManagerImpl implements AppManager
 
         // start apps flagged with autoLoad
         startAutoLoad();
+        setIsRestartingUnloaded(false);
 
         logger.info("Initialized AppManager");
 
@@ -1003,10 +1026,10 @@ public class AppManagerImpl implements AppManager
 
         UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
 
-        /*if(isAutoInstallAppsFlag() && (! UvmContextFactory.context().licenseManager().isRestricted())){
-            // We rebooted during auto install of apps, so continue installing.
+        if(isAutoInstallAppsFlag()){
+            // We rebooted during auto install of apps or licenseManager triggered, so continue installing.
             doAutoInstall();
-        }*/
+        }
     }
 
     /**
@@ -1143,6 +1166,11 @@ public class AppManagerImpl implements AppManager
      */
     public void doAutoInstall()
     {
+        // cases to not to do autoinstall
+        if ( (! UvmContextFactory.context().isDevel()) && (! UvmContextFactory.context().isAts()) ) {
+            return;
+        }
+
         if(!isAutoInstallAppsFlag()){
             // On uvm boot, if this flag is seen, will attempt to continue install.
             setAutoInstallAppsFlag(true);

@@ -197,4 +197,14 @@ public class DefaultLicenseManagerImpl implements LicenseManager
 
         return false;
     }
+
+    /**
+     * Run app manager specifics to auto install and shutdown invalid items 
+     * 
+     * @param force
+     */
+    public void runAppManagerSync(boolean force) {
+        // no-op
+        return;
+    }
 }
