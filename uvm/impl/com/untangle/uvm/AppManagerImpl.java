@@ -1172,6 +1172,8 @@ public class AppManagerImpl implements AppManager
             return;
         }
 
+        logger.info("Running autoinstall");
+
         if(!isAutoInstallAppsFlag()){
             // On uvm boot, if this flag is seen, will attempt to continue install.
             setAutoInstallAppsFlag(true);
@@ -1221,6 +1223,8 @@ public class AppManagerImpl implements AppManager
         }
 
         setAutoInstallAppsFlag(false);
+
+        logger.info("Finished auto install");
     }
 
     /**
