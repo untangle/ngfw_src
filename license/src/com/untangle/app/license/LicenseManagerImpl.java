@@ -117,9 +117,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private Pulse pulse = null;
 
-    // license change callback
-    private LicenseChangeHookCallback licenseChangeHookCallback = new LicenseChangeHookCallback();
-
     /**
      * Setup license manager application.
      * 
@@ -133,7 +130,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         super( appSettings, appProperties );
 
         reloadLicenses( true);
-        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.LICENSE_CHANGE, licenseChangeHookCallback);
 
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
         this.pulse.start();
