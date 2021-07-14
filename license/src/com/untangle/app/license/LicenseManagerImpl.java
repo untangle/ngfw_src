@@ -210,9 +210,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final License getLicense(String identifier, boolean exactMatch)
     {
-        if (!isRestricted())
-            return null;
-
         /**
          * Check the correct name first,
          * If the license exists and is valid use that one
@@ -275,9 +272,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final boolean isLicenseValid(String identifier)
     {
-        if (!isRestricted())
-            return true;
-
         License lic = getLicense(identifier);
         if (lic == null)
             return false;
