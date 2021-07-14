@@ -129,13 +129,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         super( appSettings, appProperties );
 
-        if (this.settings == null)
-        _initializeSettings();
-
-        // mapLicenses() reads the licenses.js and uses that as a starting point. We then
-        // call reloadLicenses() which will contact the licenses server and overwrite licenses.js if successful in
-        // obtaining a new licenses object.
-        _mapLicenses();
         reloadLicenses( true);
 
         // Start periodic license updates.
@@ -599,7 +592,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         boolean success = false;
 
         logger.info("REFRESH: Downloading new Licenses...");
-        
+
         try {
             String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
@@ -689,8 +682,15 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         LinkedList<License> newList = new LinkedList<>();
         License license = null;
         
+        // Call _mapLicenses() to read in the current content from the licenses.js. If the GET call fails we will
+        // use what we had in licenses.js
+        _mapLicenses();
+
+        // Initialize if we for some reason failed to get licenses.js
+        if (this.settings == null)
+            _initializeSettings();
+
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        
         try {
             this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js" );
         } catch (SettingsManager.SettingsException e) {
