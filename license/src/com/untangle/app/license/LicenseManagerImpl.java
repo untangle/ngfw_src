@@ -593,6 +593,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         logger.info("REFRESH: Downloading new Licenses...");
 
+        // Call _mapLicenses() to read in the current content from the licenses.js. If the GET call fails we will
+        // use what we had in licenses.js
+        _mapLicenses();
+
+        // Initialize if we for some reason failed to get licenses.js
+        if (this.settings == null)
+            _initializeSettings();
+
         try {
             String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
@@ -681,14 +689,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         ConcurrentHashMap<String, License> newMap = new ConcurrentHashMap<>();
         LinkedList<License> newList = new LinkedList<>();
         License license = null;
-        
-        // Call _mapLicenses() to read in the current content from the licenses.js. If the GET call fails we will
-        // use what we had in licenses.js
-        _mapLicenses();
-
-        // Initialize if we for some reason failed to get licenses.js
-        if (this.settings == null)
-            _initializeSettings();
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
