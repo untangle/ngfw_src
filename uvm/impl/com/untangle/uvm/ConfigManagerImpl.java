@@ -137,6 +137,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject getSystemInfo()
     {
+        logger.info("CMAN_HIST getSystemInfo()");
+
         long diskTotal, diskFree;
         long memTotal, memFree;
         double cpuLoad;
@@ -221,6 +223,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject getHostName()
     {
+        logger.info("CMAN_HIST getHostName()");
+
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         TreeMap<String, Object> info = new TreeMap<>();
         info.put("HostName", netSettings.getHostName());
@@ -236,6 +240,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject setHostName(String argName)
     {
+        logger.info("CMAN_HIST setHostName() = " + argName);
+
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         String oldName = netSettings.getHostName();
         netSettings.setHostName(argName);
@@ -254,6 +260,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject getDomainName()
     {
+        logger.info("CMAN_HIST getDomainName()");
+
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         TreeMap<String, Object> info = new TreeMap<>();
         info.put("DomainName", netSettings.getDomainName());
@@ -269,6 +277,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject setDomainName(String argName)
     {
+        logger.info("CMAN_HIST setDomainName() = " + argName);
+
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         String oldName = netSettings.getDomainName();
         netSettings.setDomainName(argName);
@@ -287,6 +297,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject doFactoryReset()
     {
+        logger.info("CMAN_HIST doFactoryReset()");
+
         new java.util.Timer().schedule(new java.util.TimerTask()
         {
             /**
@@ -311,6 +323,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject doFirmwareUpdate()
     {
+        logger.info("CMAN_HIST doFirmwareUpdate()");
+
         // check if upgrades available
         if (!context.systemManager().upgradesAvailable()) {
             return createResponse(0, "Upgrade Not Needed");
@@ -340,6 +354,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject checkFirmwareUpdate()
     {
+        logger.info("CMAN_HIST checkFirmwareUpdate()");
+
         // check if currently upgrading first
         if (context.systemManager().getIsUpgrading()) {
             return createResponse(0, "In Progress");
@@ -358,6 +374,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject getDeviceTime()
     {
+        logger.info("CMAN_HIST getDeviceTime()");
+
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         TimeZone timezone = context.systemManager().getTimeZone();
         Date date = new Date(System.currentTimeMillis());
@@ -379,6 +397,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject setDeviceTime(String argTime, String argZone)
     {
+        logger.info("CMAN_HIST setDeviceTime() = " + argTime + "|" + argZone);
+
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date setTime;
 
@@ -412,6 +432,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject setAdminCredentials(String argUsername, String argPassword)
     {
+        logger.info("CMAN_HIST setAdminCredentials() = " + argUsername);
+
         // get the list of admin users
         AdminSettings adminSettings = context.adminManager().getSettings();
 
@@ -439,6 +461,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object getNetworkInterfaces()
     {
+        logger.info("CMAN_HIST getNetworkInterfaces()");
+
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         JSONObject response = null;
         String output = null;
@@ -470,6 +494,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object setNetworkInterfaces(List<InterfaceSettings> argList)
     {
+        logger.info("CMAN_HIST setNetworkInterfaces()");
+
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         netSettings.setInterfaces(argList);
         context.networkManager().setNetworkSettings(netSettings);
@@ -483,6 +509,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object getSyslogServer()
     {
+        logger.info("CMAN_HIST getSyslogServer()");
+
         EventSettings eventSettings = context.eventManager().getSettings();
 
         TreeMap<String, Object> info = new TreeMap<>();
@@ -508,6 +536,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object setSyslogServer(boolean argEnabled, String argHost, int argPort, String argProtocol)
     {
+        logger.info("CMAN_HIST setSyslogServer() = " + argEnabled + "|" + argHost + "|" + argPort + "|" + argProtocol);
+
         String protoName = null;
 
         if (argProtocol.equalsIgnoreCase("TCP")) {
@@ -538,7 +568,10 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public List<InterfaceMetrics> getNetworkPortStats()
     {
+        logger.info("CMAN_HIST getNetworkPortStats()");
+
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
+        List<DeviceStatus> devStatusList = context.networkManager().getDeviceStatus();
         LinkedList<InterfaceMetrics> metricList = new LinkedList<InterfaceMetrics>();
         BufferedReader reader;
         String readLine;
@@ -595,7 +628,7 @@ public class ConfigManagerImpl implements ConfigManager
             if (faceSettings == null) continue;
 
             // look for device status with matching device name
-            for (DeviceStatus item : context.networkManager().getDeviceStatus()) {
+            for (DeviceStatus item : devStatusList) {
                 if (deviceName.contentEquals(item.getDeviceName())) {
                     devStatus = item;
                     break;
@@ -670,6 +703,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public SnmpSettings getSnmpSettings()
     {
+        logger.info("CMAN_HIST getSnmpSettings()");
+
         SystemSettings sysSettings = context.systemManager().getSettings();
         return sysSettings.getSnmpSettings();
     }
@@ -683,6 +718,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object setSnmpSettings(SnmpSettings argSettings)
     {
+        logger.info("CMAN_HIST setSnmpSettings()");
+
         SystemSettings sysSettings = context.systemManager().getSettings();
         sysSettings.setSnmpSettings(argSettings);
         context.systemManager().setSettings(sysSettings);
@@ -700,6 +737,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object createSystemBackup()
     {
+        logger.info("CMAN_HIST createSystemBackup()");
+
         File backupFile = context.backupManager().createBackup();
         String fileName;
 
@@ -726,6 +765,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object restoreSystemBackup(String argFileName, String maintainRegex)
     {
+        logger.info("CMAN_HIST restoreSystemBackup() = " + argFileName + "|" + maintainRegex);
+
         // The UI currently passes the following maintainRegex values to restoreBackup:
         // Restore all settings = ''
         // Restore all except keep current network settings = '.*/network.*',
@@ -765,6 +806,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object doDatabaseQuery(String argQuery)
     {
+        logger.info("CMAN_HIST doDatabaseQuery() = " + argQuery);
+
         String problem = null;
 
         // we need the reporting app to do anything with the database
@@ -1083,6 +1126,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object createDiagnosticDump()
     {
+        logger.info("CMAN_HIST createDiagnosticDump()");
+
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd-HHmmss");
         StringBuilder fileName = new StringBuilder();
 
@@ -1110,5 +1155,38 @@ public class ConfigManagerImpl implements ConfigManager
         info.put("FileSize", target.length());
         info.put("DumpMessage", output);
         return createResponse(info);
+    }
+
+    /**
+     * Called to ge the list of active hosts
+     *
+     * @return The list of active hosts
+     */
+    public Object getConnectedClients()
+    {
+        logger.info("CMAN_HIST getConnectedClients()");
+        return context.hostTable().getHosts();
+    }
+
+    /**
+     * Called to get the list of licenses
+     *
+     * @return The list of licenses
+     */
+    public Object getEnabledFeatures()
+    {
+        logger.info("CMAN_HIST getEnabledFeatures()");
+        return context.licenseManager().getLicenses();
+    }
+
+    /**
+     * Called to get the list of system time zones
+     *
+     * @return The list of system time zones
+     */
+    public Object getTimeZones()
+    {
+        logger.info("CMAN_HIST getTimeZones()");
+        return context.systemManager().getTimeZones();
     }
 }

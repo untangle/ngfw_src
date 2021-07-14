@@ -50,4 +50,10 @@ public interface ConfigManager
     Object doDatabaseQuery(String argQuery);
 
     Object createDiagnosticDump();
+
+    Object getConnectedClients();
+
+    Object getEnabledFeatures();
+
+    Object getTimeZones();
 }

@@ -875,7 +875,31 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         }
 
+        _runAppManagerSync();
+
         logger.info("Reloading licenses... done" );
+    }
+
+    /**
+     * Run app manager specifics to auto install and shutdown invalid items 
+     */
+    private void _runAppManagerSync() {
+        logger.debug("Syncing to App Manager");
+        AppManager appManager = UvmContextFactory.context().appManager();
+
+        // always auto install if restricted or wizard is incomplete
+        if (isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
+            logger.debug("Running auto install");
+            if (appManager.isRestartingUnloaded() || appManager.isAutoInstallAppsFlag()) {
+                logger.debug("Setting auto install");
+                // don't instantiate apps while other apps are being loaded or already auto installing
+                appManager.setAutoInstallAppsFlag(true);
+            } else {
+                logger.debug("Running auto install directly");
+                appManager.doAutoInstall();
+            }
+        }
+        appManager.shutdownAppsWithInvalidLicense();
     }
     
     /**
@@ -999,39 +1023,5 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             (model != null ? "&appliance-model=" + model : "") + 
             "&numDevices=" + numDevices +
             "&version=" + uvmVersion;
-    }
-
-    /**
-     * This hook is called when license settings change
-     */
-    private class LicenseChangeHookCallback implements HookCallback {
-
-        /**
-         * Constructor
-         */
-        LicenseChangeHookCallback(){}
-
-        /**
-         * Get the name of callback hook
-         *
-         * @return The name
-         */
-        public String getName() {
-            return "license-mananger-license-change-hook";
-        }
-
-        /**
-         * Callback function
-         *
-         * @param args
-         *        Callback arguments
-         */
-        public void callback(Object... args) {
-            UvmContextFactory.context().appManager().syncWithLicenses(); 
-            if (UvmContextFactory.context().licenseManager().isRestricted() && !UvmContextFactory.context().appManager().isAutoInstallAppsFlag()) {
-                UvmContextFactory.context().appManager().doAutoInstall();
-            }
-            UvmContextFactory.context().appManager().shutdownAppsWithInvalidLicense();
-        }
     }
 }

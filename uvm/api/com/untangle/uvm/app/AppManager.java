@@ -201,6 +201,20 @@ public interface AppManager
     boolean isAutoInstallAppsFlag();
 
     /**
+     * Returns true is apps are being loaded
+     * 
+     * @return a boolean value
+     */
+    boolean isRestartingUnloaded();
+
+    /**
+     * Set/unset restarting unloaded flag
+     * 
+     * @param enabled If true, restart unloaded is happening. if false, restart unloaded is not happening
+     */
+    void setIsRestartingUnloaded(boolean enabled);
+
+    /**
      * Set/unset auto install flag.
      * @param enabled   If true, remove the flag.  If false, create it.
      */
