@@ -197,5 +197,4 @@ public class DefaultLicenseManagerImpl implements LicenseManager
 
         return false;
     }
-
 }

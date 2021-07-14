@@ -124,9 +124,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private boolean devLicenseTest = false;
 
-    // license change callback
-    private LicenseChangeHookCallback licenseChangeHookCallback = new LicenseChangeHookCallback();
-
     /**
      * Setup license manager application.
      * 
@@ -144,8 +141,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.info("Found NGFW_LICENSE_TEST environment variable - setting devLicenseTest = true");
             devLicenseTest = true;
         }
-
-        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.LICENSE_CHANGE, licenseChangeHookCallback);
 
         this._readLicenses();
         this._mapLicenses();
@@ -1096,13 +1091,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         logger.info("Reloading licenses..." );
 
-        boolean downloadChanged = false;
-        boolean revocationsChanged = false;
-
         synchronized (LicenseManagerImpl.this) {
             _readLicenses();
 
             if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
+                boolean downloadChanged = false;
+                boolean revocationsChanged = false;
                 downloadChanged = _downloadLicenses();
                 revocationsChanged = _checkRevocations();
 
@@ -1130,16 +1124,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         AppManager appManager = UvmContextFactory.context().appManager();
         appManager.syncWithLicenses(); 
 
-        // always auto install if restricted or wizard is incomplete, otherwise only auto install on force or if settings change
+        // always auto install if restricted or wizard is incomplete
         if (isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
-            if (appManager.isRestartingUnloaded()) {
-                // don't instantiate apps while other apps are being loaded
+            if (appManager.isRestartingUnloaded() || appManager.isAutoInstallAppsFlag()) {
+                // don't instantiate apps while other apps are being loaded or already auto installing
                 appManager.setAutoInstallAppsFlag(true);
             } else {
-                // otherwise run auto install if not running
-                if (!appManager.isAutoInstallAppsFlag()) {
-                    appManager.doAutoInstall();
-                }
+                appManager.doAutoInstall();
             }
         }
         appManager.shutdownAppsWithInvalidLicense();
@@ -1314,35 +1305,5 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             (model != null ? "&appliance-model=" + model : "") + 
             "&numDevices=" + numDevices +
             "&version=" + uvmVersion;
-    }
-
-    /**
-     * This hook is called when license settings change
-     */
-    private class LicenseChangeHookCallback implements HookCallback {
-
-        /**
-         * Constructor
-         */
-        LicenseChangeHookCallback(){}
-
-        /**
-         * Get the name of callback hook
-         *
-         * @return The name
-         */
-        public String getName() {
-            return "license-mananger-license-change-hook";
-        }
-
-        /**
-         * Callback function
-         *
-         * @param args
-         *        Callback arguments
-         */
-        public void callback(Object... args) {
-            //UvmContextFactory.context().licenseManager().runAppManagerSync();
-        }
     }
 }
