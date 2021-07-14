@@ -132,6 +132,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         super( appSettings, appProperties );
 
+        reloadLicenses( true);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.LICENSE_CHANGE, licenseChangeHookCallback);
 
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
@@ -530,6 +531,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      * @return boolean indicating restricted status of the license
      */
     public boolean isRestricted() {
+        if (this.settings == null)
+            _initializeSettings();
         return this.settings.getIsRestricted();
     }
 
@@ -590,15 +593,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * This downloads a list of current licenese from the license server
      *
-     * @return if successful
+     * @return if success
      */
     @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
     private synchronized boolean _downloadLicenses()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        LinkedList<License> licenses = new LinkedList<>();;
         boolean restricted = false;
-        boolean successful = false;
+        boolean success = false;
 
         logger.info("REFRESH: Downloading new Licenses...");
         
@@ -621,6 +623,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     this.settings.getLicenses().clear();
                 }
                 JSONArray licList = parse.getJSONArray("list");
+                List<License> licenses = this.settings.getLicenses();
                 for (int i = 0; i < licList.length(); i++) {
                     JSONObject lic = licList.getJSONObject(i);
 
@@ -645,6 +648,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 }
             }
 
+
             // Get the restricted out, only if it exists in the json
             if(parse.has("restricted")) {
                 boolean restrict = parse.getBoolean("restricted");
@@ -659,24 +663,24 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             }
         } catch (JSONException e) {
             logger.error("Unable to read license file: ", e );
-            return successful;
+            return success;
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
-            return successful;
+            return success;
         } catch (ClassCastException e) {
             logger.error("downloadLicenses returned unexpected response",e);
-            return successful;
+            return success;
         }
 
-        successful = true;
+        success = true;
         //If license restriction changes, we want to save, this allows toggling between restricted/unrestricted based on license server result
         if (settings.getIsRestricted() != restricted) {
             settings.setIsRestricted(restricted);
         }
 
-        logger.info("REFRESH: Downloading new Licenses... done (successful: " + successful + ")");
+        logger.info("REFRESH: Downloading new Licenses... done (successful: " + success + ")");
 
-        return successful;
+        return success;
     }
     
     /**
@@ -690,21 +694,21 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         License license = null;
         
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-
+        
         try {
-            this.settings = settingsManager.load(LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js");
+            this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js" );
         } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to load settings:", e);
-            return;
+            logger.error("Unable to read license file: ", e );
         }
 
-        if (this.settings != null) {
-            for (License lic : this.settings.getLicenses()) {
+        if (this.settings.getLicenses() != null) {
+            Iterator<License> iterator = this.settings.getLicenses().iterator();
+            while ( iterator.hasNext() ) {
                 try {
                     /**
                      * Complete Meta-data
                      */
-                    license = new License(lic);
+                    license = new License(iterator.next());
                     _setValidAndStatus(license);
                     
                     logger.info("Adding License: " + license.getCurrentName() + " to Map. (valid: " + license.getValid() + ")");
@@ -868,7 +872,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
             if (downloadSuccess) {
                 /**
-                * Licenses are only saved when download was successful 
+                * Licenses are only saved when download is successful 
                 */
                 _saveSettings(this.settings);
             }
