@@ -72,7 +72,7 @@ public class AppManagerImpl implements AppManager
 
     private boolean live = true;
 
-    private boolean isRestartingUnloaded;
+    private boolean isRestartingUnloaded = false;
 
     /**
      * Constructor
