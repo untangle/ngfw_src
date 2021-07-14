@@ -129,8 +129,16 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         super( appSettings, appProperties );
 
+        if (this.settings == null)
+        _initializeSettings();
+
+        // mapLicenses() reads the licenses.js and uses that as a starting point. We then
+        // call reloadLicenses() which will contact the licenses server and overwrite licenses.js if successful in
+        // obtaining a new licenses object.
+        _mapLicenses();
         reloadLicenses( true);
 
+        // Start periodic license updates.
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
         this.pulse.start();
     }
@@ -521,8 +529,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      * @return boolean indicating restricted status of the license
      */
     public boolean isRestricted() {
-        if (this.settings == null)
-            _initializeSettings();
         return this.settings.getIsRestricted();
     }
 
