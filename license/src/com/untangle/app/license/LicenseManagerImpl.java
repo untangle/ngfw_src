@@ -142,6 +142,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             devLicenseTest = true;
         }
 
+	logger.info("Starting load");
+
         this._readLicenses();
         this._mapLicenses();
         this._runAppManagerSync();
