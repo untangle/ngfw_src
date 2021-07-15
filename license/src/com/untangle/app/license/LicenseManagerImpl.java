@@ -540,43 +540,24 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         this._saveSettings(this.settings);
     }
 
-    /** 
-     * This remove a license from the list of current licenses
-     *
-     * @param revoke LicenseRevocation object to revoke in licenses.
-     * @return true if a license was removed, false otherwise
+
+    /**
+     * Initialize license settings from file or new settings
      */
-    private synchronized boolean _revokeLicense(LicenseRevocation revoke)
+    private void _readLicenseSettings()
     {
-        if (this.settings == null || this.settings.getLicenses() == null) {
-            logger.error("Invalid settings:" + this.settings);
-            return false;
-        }
-        if (revoke == null) {
-            logger.error("Invalid argument:" + revoke);
-            return false;
-        }
-        if ( revoke.getName() == null ) {
-            logger.error("Invalid name:" + revoke.getName());
-            return false;
-        }
-
-        /**
-         * See if you find a match in the current licenses
-         * If so, remove it
-         */
-        Iterator<License> itr = this.settings.getLicenses().iterator();
-        while ( itr.hasNext() ) {
-            License existingLicense = itr.next();
-            
-            if (revoke.getName().equals(existingLicense.getName())) {
-                logger.warn("Revoking License: " + revoke.getName());
-                itr.remove();
-                return true;
+	if (this.settings == null) {
+            SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+       	    try {
+                this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js" );
+            } catch (SettingsManager.SettingsException e) {
+                logger.error("Unable to read license file: ", e );
             }
-        }
 
-        return false;
+	    // Initialize if we for some reason failed to get licenses.js
+            if (this.settings == null)
+                _initializeSettings();
+	}
     }
 
     /**
@@ -593,14 +574,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         logger.info("REFRESH: Downloading new Licenses...");
 
-        // Call _mapLicenses() to read in the current content from the licenses.js. If the GET call fails we will
-        // use what we had in licenses.js
-        _mapLicenses();
-
-        // Initialize if we for some reason failed to get licenses.js
-        if (this.settings == null)
-            _initializeSettings();
-
+        
         try {
             String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
@@ -689,13 +663,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         ConcurrentHashMap<String, License> newMap = new ConcurrentHashMap<>();
         LinkedList<License> newList = new LinkedList<>();
         License license = null;
-
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        try {
-            this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js" );
-        } catch (SettingsManager.SettingsException e) {
-            logger.error("Unable to read license file: ", e );
-        }
 
         if (this.settings.getLicenses() != null) {
             Iterator<License> iterator = this.settings.getLicenses().iterator();
@@ -862,6 +829,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
+	    _readLicenseSettings();
 
             boolean downloadSuccess = false;
             downloadSuccess = _downloadLicenses();
