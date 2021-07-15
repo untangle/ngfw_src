@@ -72,6 +72,8 @@ public class AppManagerImpl implements AppManager
 
     private boolean live = true;
 
+    private boolean isRestartingUnloaded = false;
+
     /**
      * Constructor
      */
@@ -977,12 +979,32 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
+     * Returns true is apps are being loaded
+     * 
+     * @return a boolean value
+     */
+    public boolean isRestartingUnloaded() {
+        return isRestartingUnloaded;
+    }
+
+    /**
+     * Set/unset restarting unloaded flag
+     * 
+     * @param enabled If true, restart unloaded is happening. if false, restart unloaded is not happening
+     */
+    public void setIsRestartingUnloaded(boolean enabled) {
+        isRestartingUnloaded = enabled;
+    }
+
+    /**
      * Called during initialization
      */
     protected void init()
     {
-        loadSettings();
+        setIsRestartingUnloaded(true);
 
+        loadSettings();
+        
         restartUnloaded();
 
         if (logger.isDebugEnabled()) {
@@ -994,6 +1016,7 @@ public class AppManagerImpl implements AppManager
 
         // start apps flagged with autoLoad
         startAutoLoad();
+        setIsRestartingUnloaded(false);
 
         logger.info("Initialized AppManager");
 
@@ -1004,7 +1027,7 @@ public class AppManagerImpl implements AppManager
         UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
 
         if(isAutoInstallAppsFlag()){
-            // We rebooted during auto install of apps, so continue installing.
+            // We rebooted during auto install of apps or licenseManager triggered, so continue installing.
             doAutoInstall();
         }
     }
@@ -1143,6 +1166,15 @@ public class AppManagerImpl implements AppManager
      */
     public void doAutoInstall()
     {
+        // cases to not to do autoinstall
+        if ( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isAts() ) {
+            logger.info("Don't run auto install");
+            setAutoInstallAppsFlag(false);
+            return;
+        }
+
+        logger.info("Running autoinstall");
+
         if(!isAutoInstallAppsFlag()){
             // On uvm boot, if this flag is seen, will attempt to continue install.
             setAutoInstallAppsFlag(true);
@@ -1157,6 +1189,7 @@ public class AppManagerImpl implements AppManager
         List<AppProperties> appPropsToInstall = getAllAppProperties();
 
         if (lm.isRestricted()) {
+            this.syncWithLicenses();
             appPropsToInstall = this.restrictedAllowedApps;
         }
 
@@ -1192,6 +1225,8 @@ public class AppManagerImpl implements AppManager
         }
 
         setAutoInstallAppsFlag(false);
+
+        logger.info("Finished auto install");
     }
 
     /**
@@ -1530,6 +1565,7 @@ public class AppManagerImpl implements AppManager
         this.restrictedHasPolicyManager = false;
         for (AppProperties appProps : nm.getAllAppProperties()) {
             if (lmLicenses.containsKey(appProps.getName())) {
+                logger.debug("Found restricted app to install: " + appProps.getName());
                 this.restrictedAllowedApps.add(appProps);
                 if (appProps.getName().equals("policy-manager")) {
                     this.restrictedHasPolicyManager = true;
@@ -1875,9 +1911,6 @@ public class AppManagerImpl implements AppManager
             boolean currentWizardComplete = UvmContextFactory.context().isWizardComplete();
             if(lastWizardComplete != currentWizardComplete && currentWizardComplete== true){
                 lastWizardComplete = currentWizardComplete;
-                if ( (! UvmContextFactory.context().isDevel()) && (! UvmContextFactory.context().isAts()) ) {
-                    doAutoInstall();
-                }
             }
         }
     }
