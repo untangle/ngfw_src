@@ -311,7 +311,12 @@ class OpenVpnTests(NGFWTestCase):
         assert(timeout > 0)
 
         remoteHostResultUserPass = waitForPing(global_functions.VPN_SERVER_USER_PASS_LAN_IP,0)
-        result = remote_control.run_command("wget -T 3 -t 2 -q -O - http://" + global_functions.VPN_SERVER_USER_PASS_LAN_IP + " 2>&1 | grep -q Debian")
+        wanIP = uvmContext.networkManager().getFirstWanAddress()
+        if global_functions.is_bridged(wanIP):
+            # skip http test on bridged configurations since 10.111.0.0 network
+            result = 0
+        else:
+            result = remote_control.run_command("wget -T 3 -t 2 -q -O - http://" + global_functions.VPN_SERVER_USER_PASS_LAN_IP + " 2>&1 | grep -q Debian")
         listOfServers = self._app.getRemoteServersStatus()
 
         #remove server from remoteServers so it doesn't interfere with later tests
