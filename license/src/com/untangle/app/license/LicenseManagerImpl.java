@@ -588,11 +588,18 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
             // The list on the json object contains the licenses
             boolean hasList = parse.has("list");
+            logger.debug(parse.toString());
             if(hasList) {
                 // Clear out our existing list.
                 if (this.settings.getLicenses() != null) {
                     this.settings.getLicenses().clear();
                 }
+                // Get the restricted out, only if it exists in the json
+                if(parse.has("restricted")) {
+                    boolean restrict = parse.getBoolean("restricted");
+                    restricted = restrict;
+                }
+                
                 JSONArray licList = parse.getJSONArray("list");
                 List<License> licenses = this.settings.getLicenses();
                 for (int i = 0; i < licList.length(); i++) {
@@ -616,20 +623,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     if((lic.has("seats")) && (!lic.isNull("seats"))) {newLic.setSeats(lic.getInt("seats"));}
 
                     licenses.add(newLic);
-                }
-            }
-
-
-            // Get the restricted out, only if it exists in the json
-            if(parse.has("restricted")) {
-                boolean restrict = parse.getBoolean("restricted");
-                restricted = restrict;
-
-                // clear licenses if restricted, we'll only use licenses used in response
-                if (restricted) {
-                    if (this.settings.getLicenses() != null) {
-                        this.settings.getLicenses().clear();
-                    }
                 }
             }
         } catch (JSONException e) {
