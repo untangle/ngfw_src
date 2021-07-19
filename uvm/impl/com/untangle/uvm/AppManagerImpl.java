@@ -557,7 +557,7 @@ public class AppManagerImpl implements AppManager
     {
         // check system is online so won't install apps after appManager is initialized
         if (!isRestartingUnloaded() && !UvmContextFactory.context().isStoreAvailable()) {
-            logger.error("Store unavailable, not installing");
+            logger.error("Store unavailable, not installing: " + appName);
             throw new Exception("Store unavailable, not installing");
         }
 
