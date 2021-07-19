@@ -72,8 +72,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private static final Object startupWaitLock = new Object();
 
-    private static final String TEMPFS_BACKUP_COMMAND = "pg_dump -U postgres -d uvm";
-    private static final String TEMPFS_BACKUP_FILE = System.getProperty("uvm.home") + "/tempfs-database.backup";
+    private static final String TEMPFS_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-tempfs-backup";
     private final static long TEMPFS_BACKUP_FREQUENCY = (60 * 60 * 1000L);
     private Pulse tempfsBackupPulse = null;
 
@@ -1889,8 +1888,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         public void run()
         {
             Logger logger = Logger.getLogger(UvmContextImpl.class);
-            logger.info("Creating tempfs database backup: " + TEMPFS_BACKUP_FILE);
-            owner.execManager.exec(TEMPFS_BACKUP_COMMAND + " | gzip > " + TEMPFS_BACKUP_FILE);
+            logger.info("Calling tempfs backup script");
+            owner.execManager.exec(TEMPFS_BACKUP_SCRIPT);
         }
     }
 }
