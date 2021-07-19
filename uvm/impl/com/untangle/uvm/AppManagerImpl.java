@@ -555,6 +555,12 @@ public class AppManagerImpl implements AppManager
      */
     public App instantiate(String appName, Integer policyId) throws Exception
     {
+        // check system is online so won't install apps
+        if (!UvmContextFactory.context().isStoreAvailable()) {
+            logger.error("Store unavailable, not installing");
+            throw new Exception("Store unavailable, not installing");
+        }
+
         appName = fixupName(appName); // handle old names
 
         logger.info("instantiate( name:" + appName + " , policy:" + policyId + " )");
