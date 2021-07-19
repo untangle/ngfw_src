@@ -555,6 +555,12 @@ public class AppManagerImpl implements AppManager
      */
     public App instantiate(String appName, Integer policyId) throws Exception
     {
+        // check system is online so won't install apps after appManager is initialized
+        if (!isRestartingUnloaded() && !UvmContextFactory.context().isStoreAvailable()) {
+            logger.error("Store unavailable, not installing");
+            throw new Exception("Store unavailable, not installing");
+        }
+
         appName = fixupName(appName); // handle old names
 
         logger.info("instantiate( name:" + appName + " , policy:" + policyId + " )");
@@ -578,12 +584,6 @@ public class AppManagerImpl implements AppManager
             if (appProperties == null) {
                 logger.error("Missing app properties for " + appName);
                 throw new Exception("Missing app properties for " + appName);
-            }
-
-            // check system is online so won't install apps
-            if (!appProperties.getAutoLoad() && !UvmContextFactory.context().isStoreAvailable()) {
-                logger.error("Store unavailable, not installing");
-                throw new Exception("Store unavailable, not installing");
             }
 
             if (!checkArchitecture(appProperties.getSupportedArchitectures())) {

@@ -1335,6 +1335,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("supportEnabled", this.systemManager().getSettings().getSupportEnabled());
             json.put("timeZoneOffset", this.systemManager().getTimeZoneOffset());
             json.put("installType", (this.systemManager().getSettings()==null?"":this.systemManager().getSettings().getInstallType()));
+            json.put("isCCHidden", this.isCCHidden());
 
             boolean reportsEnabled = false;
             App reportsApp = UvmContextFactory.context().appManager().app("reports");
