@@ -155,13 +155,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         boolean connected = this._testLicenseConnectivity();
 
-        this._readLicenses();
-        this._mapLicenses();
-        this._runAppManagerSync();
-
         if (!connected) {
             this._startNoInternetPulse();
         } else {
+            this._readLicenses();
+            this._mapLicenses();
+            this._runAppManagerSync();
             this._startLicensePulse();
         }
     }
