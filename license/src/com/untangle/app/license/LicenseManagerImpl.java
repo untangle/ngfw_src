@@ -34,6 +34,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.InetSocketAddress;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -46,6 +49,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.UriTranslation;
 
 /**
  * License manager
@@ -83,6 +87,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private static final long TIMER_DELAY = 1000 * 60 * 60 * 4;
 
+    private static final long TIMER_DELAY_NO_INTERNET = 1000 * 20;
+
     private static final Logger logger = Logger.getLogger(LicenseManagerImpl.class);
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
@@ -112,10 +118,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private final LicenseSyncTask task = new LicenseSyncTask();
 
+    private final LicenseNoInternetTask taskNoInternet = new LicenseNoInternetTask();
+
     /**
      * Pulse that syncs the license, this is a daemon task.
      */
     private Pulse pulse = null;
+    private Pulse pulseNoInternet = null;
 
     /**
      * Boolean we set true if we find NGFW_LICENSE_TEST in the environment.
@@ -142,14 +151,37 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             devLicenseTest = true;
         }
 
-	logger.info("Starting load");
+	    logger.info("Starting load");
+
+        boolean connected = this._testLicenseConnectivity();
 
         this._readLicenses();
         this._mapLicenses();
         this._runAppManagerSync();
 
+        if (!connected) {
+            this._startNoInternetPulse();
+        } else {
+            this._startLicensePulse();
+        }
+    }
+
+    /**
+     comment
+     */
+    private void _startLicensePulse() {
+        logger.warn("Starting license pulse");
+        if (this.pulseNoInternet != null) this.pulseNoInternet.stop();
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
         this.pulse.start();
+    }
+
+    /**
+     comment
+     */
+    private void _startNoInternetPulse() {
+        this.pulseNoInternet = new Pulse("uvm-license-no-internet", taskNoInternet, TIMER_DELAY_NO_INTERNET);
+        this.pulseNoInternet.start();
     }
 
     /**
@@ -880,6 +912,37 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         return false;
     }
+
+    /**
+     Test license connectivity
+     @return stuff
+     */
+    private boolean _testLicenseConnectivity()
+    {
+        Socket socket = null;
+        UriTranslation licenseUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("license.untangle.com");
+
+        String host = null;
+        int port = 0;
+        boolean connected = true;
+
+        try {
+            socket = new Socket();
+            host = licenseUri.getHost() != null ? licenseUri.getHost(): "license.untangle.com";
+            port = licenseUri.getPort() != -1 ? licenseUri.getPort() : 443;
+            socket.connect(new InetSocketAddress(host, port), 7000);
+        } catch (Exception e) {
+            logger.error("Can't get to untangle license server");
+            connected = false;
+        } finally {
+            try {
+                if (socket != null) socket.close();
+            } catch (Exception e) {
+            }
+        }
+
+        return connected;
+    }
     
     /**
      * update the app to License Map
@@ -1091,7 +1154,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private void _syncLicensesWithServer()
     {
-        logger.info("Reloading licenses..." );
+        logger.warn("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
             _readLicenses();
@@ -1116,7 +1179,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         _runAppManagerSync();
 
-        logger.info("Reloading licenses... done" );
+        logger.warn("Reloading licenses... done" );
     }
 
     /**
@@ -1152,6 +1215,27 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         public void run()
         {
             _syncLicensesWithServer();    
+        }
+    }
+
+    /**
+     * Task to run the synchronoization routine. 
+     */
+    private class LicenseNoInternetTask implements Runnable
+    {
+        /**
+         * Launch the license synchronize routine.
+         */
+        public void run()
+        {
+            boolean connected = _testLicenseConnectivity();
+            if (!connected) {
+                logger.error("Still not connected to license server");
+            } else {
+                _syncLicensesWithServer();
+                _startLicensePulse();
+                //
+            }
         }
     }
     
