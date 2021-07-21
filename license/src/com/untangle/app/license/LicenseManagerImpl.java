@@ -1182,6 +1182,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                         _saveSettings(this.settings);
                     }
                 }
+            } else {
+                licenseServerConnectivity = true;
             }
                 
             _mapLicenses();
