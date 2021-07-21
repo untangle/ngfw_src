@@ -470,6 +470,12 @@ public interface UvmContext
     boolean useTempFileSystem();
 
     /**
+     * Returns the interval at which we should backup the tempfs database
+     * to physical storage or zero if the feature is not enabled.
+     */
+    long getTempBackupTimer();
+
+    /**
      * Returns true if this server is installed on an official Untangle appliance
      *
      * @return a <code>boolean</code> value
