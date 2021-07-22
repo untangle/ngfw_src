@@ -85,7 +85,6 @@ class_name = ""
 def config_scanner(argjson):
 	# process everything in the argumented json
 	for key, value in argjson.items():
-
 		# for dictionaries we put the key on the config stack and process
 		# recursively and then pass the dictionary to the insert_worker
 		if isinstance(value, dict):
@@ -101,9 +100,10 @@ def config_scanner(argjson):
 			if len(value) == 0:
 				continue
 
-			# recursively process each item in the list
+			# recursively process each item in the list that is a dict or list
 			for item in value:
-				config_scanner(item)
+				if isinstance(item, dict) or isinstance(item, list):
+					config_scanner(item)
 
 			# pass the modify_json and the current list to the modify_scanner
 			modify_scanner(modify_json,value)
@@ -292,8 +292,8 @@ try:
 	modify_file = open(sys.argv[2], "r")
 	modify_data = json.load(modify_file)
 	modify_file.close()
-except:
-	print("Unable to read override file: %s" % sys.argv[2])
+except Exception as exn:
+	print("Unable to read override file: %s { %s }" % (sys.argv[2], exn))
 	exit(3)
 
 # look for the modify section that matches the settings class name
@@ -308,8 +308,8 @@ try:
 	config_file = open(sys.argv[1], "r")
 	config_json = json.load(config_file)
 	config_file.close()
-except:
-	print("Unable to read input file: %s" % sys.argv[1])
+except Exception as exn:
+	print("Unable to read input file: %s { %s }" % (sys.argv[1], exn))
 	exit(4)
 
 # If the debug_flag is set create /tmp/oem_pristine.js before applying
@@ -318,7 +318,7 @@ except:
 # write the JSON in the same order which makes using diff challenging.
 if debug_flag:
 	target_file = open("/tmp/oem_pristine.js", "w")
-	json.dump(config_json,target_file,indent=4)
+	json.dump(config_json,target_file,indent=4,sort_keys=True)
 	target_file.close()
 
 logging.info("========== SETTINGS OVERRIDE %d STARTING ==========", jobtime)
@@ -334,10 +334,10 @@ config_scanner(config_json)
 # save the modified settings to the output file
 try:
 	target_file = open(sys.argv[4], "w")
-	json.dump(config_json,target_file,indent=4)
+	json.dump(config_json,target_file,indent=4,sort_keys=True)
 	target_file.close()
-except:
-	logging.error("Unable to write output file: %s", sys.argv[4])
+except Exception as exn:
+	logging.error("Unable to write output file: %s { %s }", (sys.argv[4], exn))
 	logging.warning("========== SETTINGS OVERRIDE %d FAILED ==========\n", jobtime)
 	exit(5)
 
