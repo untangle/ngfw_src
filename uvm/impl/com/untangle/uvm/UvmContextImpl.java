@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppManager;
@@ -45,6 +47,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String DISKLESS_MODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/diskless-mode-flag";
     private static final String TEMPFS_MODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/tempfs-mode-flag";
+    private static final String TEMPFS_BACKUP_TIMER_FILE = System.getProperty("uvm.conf.dir") + "/tempfs-backup-timer";
     private static final String TEMPFS_SETUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-tempfs-setup";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
     private static final String IS_REMOTE_SETUP_DISABLED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/setup-remote-disabled-flag";
@@ -69,6 +72,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
 
     private static final Object startupWaitLock = new Object();
+
+    private static final String TEMPFS_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-tempfs-backup";
+    private Pulse tempfsBackupPulse = null;
 
     private static final Logger logger = Logger.getLogger(UvmContextImpl.class);
 
@@ -1004,6 +1010,36 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
+     * getTempBackupTimer - returns the number of seconds to be used for the
+     * periodic backup interval of the tempfs database or zero if the
+     * configuration file does not exist.
+     *
+     * @return long
+     */
+    public long getTempBackupTimer()
+    {
+        File keyFile = new File(TEMPFS_BACKUP_TIMER_FILE);
+
+        if (!keyFile.exists()) {
+            return 0;
+        }
+
+        long backupInterval = 0;
+
+        try {
+            Scanner fileScanner = new Scanner(keyFile);
+            if (fileScanner.hasNextLong()) {
+                backupInterval = fileScanner.nextLong();
+            }
+            fileScanner.close();
+        } catch (Exception exn) {
+            logger.warn("Error reading file: " + TEMPFS_BACKUP_TIMER_FILE, exn);
+        }
+
+        return backupInterval;
+    }
+
+    /**
      * Returns true if this is a developer build in the development
      * environment
      * @return <doc>
@@ -1509,6 +1545,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (this.useTempFileSystem()) {
             Integer exitValue = this.execManager().execResult(TEMPFS_SETUP_SCRIPT);
             logger.info("TempFS setup result: " + exitValue);
+
+            // check the backup timer and create Pulse if non-zero
+            long backupTimer = getTempBackupTimer();
+            if (backupTimer > 0) {
+                logger.info("TempFS backup interval: " + backupTimer);
+                tempfsBackupPulse = new Pulse("tempfsDatabaseBackupWorker", new tempfsDatabaseBackupWorker(this), backupTimer * 1000L);
+                tempfsBackupPulse.start();
+            }
         }
 
         mailSender.postInit();
@@ -1851,4 +1895,36 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    /**
+     * The runnable class that handles period database backup when
+     * running with the tempfs-mode-flag active.
+     *
+     * @author mahotz
+     *
+     */
+    private class tempfsDatabaseBackupWorker implements Runnable
+    {
+        UvmContextImpl owner;
+
+        /**
+         * Constructor
+         *
+         * @param owner
+         *        The owner
+         */
+        public tempfsDatabaseBackupWorker(UvmContextImpl owner)
+        {
+            this.owner = owner;
+        }
+
+        /**
+         * Main run function
+         */
+        public void run()
+        {
+            Logger logger = Logger.getLogger(UvmContextImpl.class);
+            logger.info("Calling tempfs backup script");
+            owner.execManager.exec(TEMPFS_BACKUP_SCRIPT);
+        }
+    }
 }
