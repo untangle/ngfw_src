@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# This script is called from Uvm a Pulse periodically when useTempFileSystem
+# is true. It will backup data stored in tempfs to the physical disk so
+# it can be restored during system reboot.
+
+SCRIPT_LOG_FILE="/dev/shm/tempfs_backup.log"
+
+PG_VERSION="11"
+PG_BIN_DIR="/usr/lib/postgresql/${PG_VERSION}/bin"
+PG_BACKUP_WORK="@PREFIX@/usr/share/untangle/tempfs-database.worker"
+PG_BACKUP_FILE="@PREFIX@/usr/share/untangle/tempfs-database.backup"
+
+# Calling exec with no arguments changes the I/O redirections in
+# the current shell so we can capture output to a log file
+exec >> $SCRIPT_LOG_FILE
+exec 2>&1
+
+# remove any existing backup worker file
+rm -f $PG_BACKUP_WORK
+
+# create a backup of the PostgreSQL database in a worker file using nice
+# on both the pg_dump and the gzip processes to minimize system impact
+nice $PG_BIN_DIR/pg_dump -U postgres -d uvm | nice gzip > $PG_BACKUP_WORK
+
+# remove any existing backup and replace with the file we just created
+rm -f $PG_BACKUP_FILE
+mv $PG_BACKUP_WORK $PG_BACKUP_FILE
+
+printf "tempfs backup completed\n"
+
+exit 0
