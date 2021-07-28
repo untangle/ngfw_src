@@ -18,9 +18,9 @@ if [ -d $OLD_SNORT_PYTHON_LIBRARY ] ; then
     rm -rf $OLD_SNORT_PYTHON_LIBRARY
 fi
 
-EVENT_MAP=/etc/suricata/intrusion-prevention.event.map.conf
-if [ -f $EVENT_MAP ] ; then
-    rm -f $EVENT_MAP
+OLD_UPDATE_FILE_NAME=/etc/cron.daily/intrusion-prevention-get-updates
+if [ -f $OLD_UPDATE_FILE_NAME ] ; then
+    rm -f $OLD_UPDATE_FILE_NAME
 fi
 
 exit 0
