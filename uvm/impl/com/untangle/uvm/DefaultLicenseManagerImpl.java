@@ -170,6 +170,15 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     }
 
     /**
+     * Get is connection to license server is good
+     *
+     * @return if connection is good, always good in default case
+     */
+    public boolean getConnectionGood() {
+        return true;
+    }
+
+    /**
      * Return ipm messages 
      *
      * @return linked list of messages
