@@ -5,6 +5,8 @@ package com.untangle.uvm.app;
 
 import java.util.List;
 
+import com.untangle.uvm.app.IpmMessage;
+
 public interface LicenseManager
 {
     /**
@@ -70,5 +72,10 @@ public interface LicenseManager
      * The server can deny the request in which case this will return with no exception
      */
     public void requestTrialLicense( String appName ) throws Exception;
+
+    /**
+     * Return ipm messages from license manager
+     */
+    public List<IpmMessage> getIpmMessages();
 
 }

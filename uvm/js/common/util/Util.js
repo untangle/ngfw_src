@@ -751,6 +751,12 @@ Ext.define('Ung.util.Util', {
         return message;
     },
 
+    reloadLicenses: function() {
+        Rpc.directData('rpc.UvmContext.licenseManager.reloadLicenses', true);
+
+        Ext.fireEvent('loadIpm');
+    },
+
     activeClone: function(source) {
         // clone the source record which will usually be emptyRow
         var target = Ext.clone(source);

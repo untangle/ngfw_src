@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.app.IpmMessage;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.util.I18nUtil;
@@ -21,6 +22,8 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     private final Logger logger = Logger.getLogger(getClass());
 
     private final List<License> licenses = new LinkedList<>();
+
+    private final List<IpmMessage> ipmMessages = new LinkedList<>();
 
     /**
      * Constructor
@@ -164,6 +167,15 @@ public class DefaultLicenseManagerImpl implements LicenseManager
      */
     public boolean isRestricted() {
         return false;
+    }
+
+    /**
+     * Return ipm messages 
+     *
+     * @return linked list of messages
+     */
+    public List<IpmMessage> getIpmMessages() {
+        return this.ipmMessages;
     }
 
     /**
