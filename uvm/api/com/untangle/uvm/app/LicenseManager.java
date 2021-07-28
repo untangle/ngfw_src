@@ -47,6 +47,11 @@ public interface LicenseManager
     public boolean isRestricted();
 
     /**
+     * Get is connection to license server is good
+     */
+    public boolean getConnectionGood();
+
+    /**
      * Returns the number of valid premium licenses
      */
     public int validLicenseCount();

@@ -63,7 +63,7 @@ Ext.define('Ung.view.apps.Apps', {
             handler: 'showInstall',
             hidden: true,
             bind: {
-                hidden: '{!onInstalledApps || isRestricted}'
+                hidden: '{!onInstalledApps || isRestricted || !connectionGood}'
             }
         }, {
             xtype: 'component',

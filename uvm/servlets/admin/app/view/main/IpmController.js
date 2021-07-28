@@ -17,7 +17,6 @@ Ext.define('Ung.view.main.IpmController', {
                 return;
             }
             var ipmMessages = result.list;
-            console.log(ipmMessages);
 
             messagesCmps = [];
 
