@@ -1355,7 +1355,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("networkSettings", this.networkManager().getNetworkSettings());
             json.put("companyName", this.brandingManager().getCompanyName());
             json.put("companyURL", this.brandingManager().getCompanyUrl());
-            //json.put("ipmMessages", this.licenseManager().getIpmMessages());
             
             String serialNumber = this.getServerSerialNumber();
             if(serialNumber == null){

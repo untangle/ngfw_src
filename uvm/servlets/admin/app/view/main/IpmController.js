@@ -2,23 +2,25 @@ Ext.define('Ung.view.main.IpmController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.ipm',
 
-    control: {
-        '#': { afterrender: 'onAfterRender'},
+    listen: {
+        global: {
+            loadIpm: 'loadIpm'
+        }
     },
 
-    onAfterRender: function () {
-        var me = this;
+    loadIpm: function () {
+        var me = this, vm = me.getViewModel();
+        var ipmMessages = [];
 
-        //Rpc.directData('rpc.ipmMessages');
-        var ipmMessages = [{
-            msgType: 'alert',
-            closure: false,
-            message: '<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href="">try again</a>'
-        }, {
-            msgType: 'info',
-            closure: false,
-            message: '<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href="">try again</a>'
-        }];
+        Rpc.asyncData('rpc.UvmContext.licenseManager.getIpmMessages')
+        .then(function(result){
+            if(Util.isDestroyed(vm)) {
+                return;
+            }
+            ipmMessages = result.list;
+        });        
+
+        console.log(ipmMessages);
         
         var messages = [], messagesCmps = [];
 

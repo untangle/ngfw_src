@@ -22,7 +22,12 @@ Ext.define('Ung.view.apps.AppsController', {
 
     // build the apps components and add them to the view
     onAfterRender: function () {
-        var me = this;
+        var me = this, v=this.getView();
+
+        v.setLoading(true);
+        Ung.util.Util.reloadLicenses();
+        v.setLoading(false);
+
         // maybe there is a better way to get all the available apps regardless of policy
         var initPolicy = Rpc.directData('rpc.appsViews')[0]; // take the first policy (default)
         // build add all the apps containers (rack items) and only update them when based on selected policy
