@@ -1146,7 +1146,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
                 boolean connected = _testLicenseConnectivity();
                 if (!connected) {
-                    IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"\">try again</a>",
+                    IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
                                                                     false,
                                                                     IpmMessage.IpmMessageType.ALERT);
                     this.ipmMessages.add(noLicenseConnection);
