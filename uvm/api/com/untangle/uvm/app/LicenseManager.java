@@ -49,7 +49,7 @@ public interface LicenseManager
     /**
      * Get is connection to license server is good
      */
-    public boolean getConnectionGood();
+    public boolean getLicenseServerConnectivity();
 
     /**
      * Returns the number of valid premium licenses
