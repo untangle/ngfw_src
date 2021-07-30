@@ -137,7 +137,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     /**
      * Boolean for if connection is good or not
      */
-    private boolean connectionGood = false;
+    private boolean licenseServerConnectivity = false;
 
     /**
      * Setup license manager application.
@@ -159,7 +159,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
 	    logger.info("Starting load");
 
-        this.connectionGood = false;
+        this.licenseServerConnectivity = false;
 
         this.reloadLicenses(true);
 
@@ -587,8 +587,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      *
      * @return if connection is good
      */
-    public boolean getConnectionGood() {
-        return this.connectionGood;
+    public boolean getLicenseServerConnectivity() {
+        return this.licenseServerConnectivity;
     }
 
 
@@ -1162,14 +1162,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
                 boolean connected = _testLicenseConnectivity();
                 if (!connected) {
-                    connectionGood = false;
+                    licenseServerConnectivity = false;
                     IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
                                                                     false,
                                                                     IpmMessage.IpmMessageType.ALERT);
                     this.ipmMessages.add(noLicenseConnection);
                     logger.error("No license server connectivity, not downloading licenses");
                 } else {
-                    connectionGood = true;
+                    licenseServerConnectivity = true;
                     boolean downloadChanged = false;
                     boolean revocationsChanged = false;
                     downloadChanged = _downloadLicenses();

@@ -113,7 +113,7 @@ Ext.define('Ung.view.apps.AppsController', {
         vm.set('isRestricted', Rpc.directData('rpc.UvmContext.licenseManager.isRestricted'));
 
         // don't show install button if connection to license server is not up
-        vm.set('connectionGood', Rpc.directData('rpc.UvmContext.licenseManager.getConnectionGood'));
+        vm.set('licenseServerConnectivity', Rpc.directData('rpc.UvmContext.licenseManager.getLicenseServerConnectivity'));
 
         // If installing recommended apps on initial install, note this on the console.
         var autoInstallAppsFlag = Rpc.directData('rpc.appManager').isAutoInstallAppsFlag();

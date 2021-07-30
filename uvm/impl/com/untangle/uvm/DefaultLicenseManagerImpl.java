@@ -174,7 +174,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
      *
      * @return if connection is good, always good in default case
      */
-    public boolean getConnectionGood() {
+    public boolean getLicenseServerConnectivity() {
         return true;
     }
 
