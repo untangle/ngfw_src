@@ -26,7 +26,9 @@ Ext.define('Ung.view.main.Main', {
     publishes: 'activeItem',
 
     dockedItems: [{
-        xtype: 'mainheading'
+        xtype: 'mainheading',
+    }, {
+        xtype: 'ipm',
     }],
 
     items: [{
