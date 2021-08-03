@@ -1183,6 +1183,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     }
                 }
             } else {
+		//always connected if on dev machine
                 licenseServerConnectivity = true;
             }
                 
