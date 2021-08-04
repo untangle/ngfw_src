@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
@@ -132,7 +131,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
         if (readSettings == null) {
             logger.warn( "No settings found - Initializing new settings." );
-            this.setDefaultNetworkSettings( defaultSettings() );
+            this.setNetworkSettings( defaultSettings() );
         }
         else {
             checkForNewDevices( readSettings );
@@ -193,35 +192,15 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
-        setNetworkSettings( newSettings, true, false );
-    }
-
-    /**
-     * Set the network settings
-     * @param newSettings
-     * @param runSanityChecks
-     */
-    public void setNetworkSettings( NetworkSettings newSettings, boolean runSanityChecks )
-    {
-        setNetworkSettings( newSettings, runSanityChecks, false );
-    }
-
-    /**
-     * Set default network settings
-     * @param newSettings
-     */
-    public void setDefaultNetworkSettings( NetworkSettings newSettings ) 
-    {
-        setNetworkSettings( newSettings, true, true );
+        setNetworkSettings( newSettings, true );
     }
 
     /**
      * Set the network settings
      * @param newSettings
      * @param runSanityChecks - if true sanityCheckNetworkSettings is called
-     * @param isDefaultSettingsRun - if true then checking additional information for bridged interfaces in sanity check
      */
-    public void setNetworkSettings( NetworkSettings newSettings, boolean runSanityChecks, boolean isDefaultSettingsRun )
+    public void setNetworkSettings( NetworkSettings newSettings, boolean runSanityChecks )
     {
         String downCommand, upCommand;
 
@@ -232,7 +211,7 @@ public class NetworkManagerImpl implements NetworkManager
          * validate settings
          */
         if ( runSanityChecks )
-            sanityCheckNetworkSettings( newSettings, isDefaultSettingsRun );
+            sanityCheckNetworkSettings( newSettings );
         
         /**
          * TODO:
@@ -1211,23 +1190,13 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * sanity check network settings, this is not the default settings run
-     * @param networkSettings
-     */
-    private void sanityCheckNetworkSettings( NetworkSettings networkSettings ) 
-    {
-        sanityCheckNetworkSettings( networkSettings, false );
-    }
-
-    /**
      * sanityCheckNetworkSettings
      * Sanity checks the network settings.
      * If something doesn't make sense RuntimeException is thrown with the description
      * of the issue
      * @param networkSettings
-     * @param isDefaultSettingsRun
      */
-    private void sanityCheckNetworkSettings( NetworkSettings networkSettings, boolean isDefaultSettingsRun )
+    private void sanityCheckNetworkSettings( NetworkSettings networkSettings )
     {
         if ( networkSettings == null ) {
                 throw new RuntimeException("null settings");
@@ -1469,14 +1438,10 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * Sanity check the interface Settings
          */
-
-        // if this is a default settings run with bridged interfaces, create interface settings array
-        if ( isDefaultSettingsRun ) configureInterfaceSettingsArray();
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             sanityCheckInterfaceSettings( intf );
         }
-        // clear the interfaceSettingsById array
-        if ( isDefaultSettingsRun ) Arrays.fill(this.interfaceSettingsById, null);
+
     }
 
     /**
