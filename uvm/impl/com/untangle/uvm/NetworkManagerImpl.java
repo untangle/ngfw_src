@@ -798,19 +798,28 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void configureInterfaceSettingsArray()
     {
+        configureInterfaceSettingsArray(this.networkSettings);
+    }
+
+    /**
+     * sets values in the interafceSettingsById map for quick lookups
+     * @param networkSettings
+     */
+    private void configureInterfaceSettingsArray( NetworkSettings networkSettings)
+    {
         /**
          * Set interfaceSettingsById array for fast lookups
          */
         for ( int i = 0 ; i < interfaceSettingsById.length ; i++ ) {
             interfaceSettingsById[i] = null;
         }
-        if ( this.networkSettings.getInterfaces() != null ) {
-            for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+        if ( networkSettings.getInterfaces() != null ) {
+            for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
                 interfaceSettingsById[intf.getInterfaceId()] = intf;
             }
         }
-        if ( this.networkSettings.getVirtualInterfaces() != null ) {
-            for ( InterfaceSettings intf : this.networkSettings.getVirtualInterfaces() ) {
+        if ( networkSettings.getVirtualInterfaces() != null ) {
+            for ( InterfaceSettings intf : networkSettings.getVirtualInterfaces() ) {
                 interfaceSettingsById[intf.getInterfaceId()] = intf;
             }
         }
@@ -1471,7 +1480,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
 
         // if this is a default settings run with bridged interfaces, create interface settings array
-        if ( isDefaultSettingsRun ) configureInterfaceSettingsArray();
+        if ( isDefaultSettingsRun ) configureInterfaceSettingsArray(networkSettings);
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             sanityCheckInterfaceSettings( intf );
         }
