@@ -16,6 +16,11 @@ public interface OemManager
     public String getOemUrl();
 
     /**
+     * If oem override file exists
+     */
+    public boolean hasOemOverrideFile();
+
+    /**
      * Called to apply OEM overrides to default settings
      */
     public Object applyOemOverrides(Object argSettings);
