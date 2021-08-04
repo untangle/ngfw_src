@@ -1193,7 +1193,7 @@ public class NetworkManagerImpl implements NetworkManager
     /**
      * Apply oem overrides to settings
      */
-    private void applyOemOverrides() 
+    private void applyOemSettings() 
     {
         // pass the settings to the OEM override function and return the override settings
         NetworkSettings overrideSettings = (NetworkSettings)UvmContextFactory.context().oemManager().applyOemOverrides(this.networkSettings);
