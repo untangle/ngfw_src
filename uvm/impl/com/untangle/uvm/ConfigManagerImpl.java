@@ -1229,6 +1229,8 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object getActiveDhcpLeases()
     {
+        logger.info("CMAN_HIST getActiveDhcpLeases()");
+
         LinkedList<DhcpStaticEntry> activeList = new LinkedList<DhcpStaticEntry>();
 
         BufferedReader reader;
