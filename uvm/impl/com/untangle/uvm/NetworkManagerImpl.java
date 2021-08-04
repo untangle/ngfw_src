@@ -134,7 +134,9 @@ public class NetworkManagerImpl implements NetworkManager
             this.setNetworkSettings( defaultSettings() );
 
             // apply oem settings, need defaultSettings created for bridged interfaces to work
-            this.applyOemSettings();
+            if (UvmContextFactory.context().oemManager().hasOemOverrideFile()) {
+                this.applyOemSettings();
+            }
         }
         else {
             checkForNewDevices( readSettings );
@@ -1195,6 +1197,8 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void applyOemSettings() 
     {
+        logger.info("Apply oem settings");
+        
         // pass the settings to the OEM override function and return the override settings
         NetworkSettings overrideSettings = (NetworkSettings)UvmContextFactory.context().oemManager().applyOemOverrides(this.networkSettings);
     
