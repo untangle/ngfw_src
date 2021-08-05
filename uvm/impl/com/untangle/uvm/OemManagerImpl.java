@@ -69,6 +69,22 @@ public class OemManagerImpl implements OemManager
     }
 
     /**
+     * Check if oem override file exists to avoid having settings saved twice
+     * @return if oem file exists
+     */
+    @Override
+    public boolean hasOemOverrideFile()
+    {
+        // if the override file does not exist return false
+        File checker = new File(SETTINGS_OVERRIDE_FILE);
+        if (checker.exists()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Called to apply OEM overrides to default settings
      *
      * @param argSettings
