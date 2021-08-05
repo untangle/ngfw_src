@@ -743,7 +743,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             settings.setDbRetention( 7 );
         }
 
-        return settings;
+        // pass the settings to the OEM override function and return the override settings
+        ReportsSettings overrideSettings = (ReportsSettings)UvmContextFactory.context().oemManager().applyOemOverrides(settings);
+        return overrideSettings;
     }
     
     /** 

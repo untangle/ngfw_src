@@ -8,6 +8,7 @@ read -r -d '' SYSTEMD_NETWORK_TEMPLATE <<'EOT'
 [Match]
 MACAddress=__FROM_MAC_ADDRESS__
 Driver=!bridge
+Type=!vlan
 
 [Link]
 NamePolicy=
