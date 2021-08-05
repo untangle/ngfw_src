@@ -154,6 +154,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.IpmMessage">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.uvm.util">
     <priority value="INFO"/>
   </category>

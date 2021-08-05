@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Iterator;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.InetSocketAddress;
 
 import org.apache.log4j.Logger;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -46,6 +49,8 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.IpmMessage;
+import com.untangle.uvm.UriTranslation;
 
 /**
  * License manager
@@ -101,6 +106,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private List<License> licenseList = new LinkedList<>();
 
     /**
+     * list of ipm messages
+     */
+    private List<IpmMessage> ipmMessages = new LinkedList<>();
+
+    /**
      * The current settings
      * Contains a list of all known licenses store locally
      * Note: the licenses in the settings don't have metadata
@@ -118,9 +128,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private Pulse pulse = null;
 
     /**
+     * Boolean for if connection is good or not
+     */
+    private boolean licenseServerConnectivity = false;
+
+    /**
      * Setup license manager application.
      * 
-     * * Launch the synchronization task.
      *
      * @param appSettings       License manager application settings.
      * @param appProperties     Licese manager application properties
@@ -129,7 +143,17 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         super( appSettings, appProperties );
 
-        reloadLicenses( true);
+        String check = System.getenv("NGFW_LICENSE_TEST");
+        if (check != null) {
+            logger.info("Found NGFW_LICENSE_TEST environment variable - setting devLicenseTest = true");
+            devLicenseTest = true;
+        }
+
+	    logger.info("Starting load");
+
+        this.licenseServerConnectivity = false;
+
+        this.reloadLicenses(true);
 
         // Start periodic license updates.
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
@@ -147,9 +171,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     protected void postStart( boolean isPermanentTransition )
     {
         logger.debug("postStart()");
-
-        /* Reload the licenses */
-        UvmContextFactory.context().licenseManager().reloadLicenses( false );
     }
 
     /**
@@ -525,6 +546,24 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return this.settings.getIsRestricted();
     }
 
+    /**
+     * Get ipm messages
+     * 
+     * @return list of messages
+     */
+    public List<IpmMessage> getIpmMessages() {
+        return this.ipmMessages;
+    }
+
+    /**
+     * Get is connection to license server is good
+     *
+     * @return if connection is good
+     */
+    public boolean getLicenseServerConnectivity() {
+        return this.licenseServerConnectivity;
+    }
+
 
     /**
      * Initialize the settings
@@ -683,6 +722,38 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     }
 
     /**
+     * Test license connectivity
+     * 
+     * @return if can connect to license server
+     */
+    private boolean _testLicenseConnectivity()
+    {
+        Socket socket = null;
+        UriTranslation licenseUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("license.untangle.com");
+
+        String host = null;
+        int port = 0;
+        boolean connected = true;
+
+        try {
+            socket = new Socket();
+            host = licenseUri.getHost() != null ? licenseUri.getHost(): "license.untangle.com";
+            port = licenseUri.getPort() != -1 ? licenseUri.getPort() : 443;
+            socket.connect(new InetSocketAddress(host, port), 5000);
+        } catch (Exception e) {
+            logger.error("Can't get to untangle license server");
+            connected = false;
+        } finally {
+            try {
+                if (socket != null) socket.close();
+            } catch (Exception e) {
+            }
+        }
+
+        return connected;
+    }
+
+    /**
      * Verify the validity of a license
      *
      * @param license License object for a subscription.
@@ -822,16 +893,33 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
-	    _readLicenseSettings();
+            this.ipmMessages.clear();
+            _readLicenses();
 
-            boolean downloadSuccess = false;
-            downloadSuccess = _downloadLicenses();
+            if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
+                boolean connected = _testLicenseConnectivity();
+                if (!connected) {
+                    licenseServerConnectivity = false;
+                    IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
+                                                                    false,
+                                                                    IpmMessage.IpmMessageType.ALERT);
+                    this.ipmMessages.add(noLicenseConnection);
+                    logger.error("No license server connectivity, not downloading licenses");
+                } else {
+                    licenseServerConnectivity = true;
+                    boolean downloadChanged = false;
+                    downloadChanged = _downloadLicenses();
 
-            if (downloadSuccess) {
-                /**
-                * Licenses are only saved when download is successful 
-                */
-                _saveSettings(this.settings);
+                    if (downloadChanged) {
+                        /**
+                        * Licenses are only saved when changed - call license changed hook
+                        */
+                        _saveSettings(this.settings);
+                    }
+                }
+            } else {
+		//always connected if on dev machine
+                licenseServerConnectivity = true;
             }
         
             _mapLicenses();

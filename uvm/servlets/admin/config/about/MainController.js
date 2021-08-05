@@ -72,17 +72,18 @@ Ext.define('Ung.config.about.MainController', {
     },
 
     reloadLicenses: function () {
-        var vm = this.getViewModel();
+        var vm = this.getViewModel(), v = this.getView();
 
-        Rpc.asyncData('rpc.UvmContext.licenseManager.reloadLicenses', true)
-        .then(function(result) {
-            Rpc.asyncData('rpc.UvmContext.licenseManager.getLicenses').
-            then(function(result) {
-                if(Util.isDestroyed(vm)){
-                    return;
-                }
-                vm.set('licenses', result.list);
-            });
+        v.setLoading(true);
+        Ung.util.Util.reloadLicenses();
+        v.setLoading(false);
+
+        Rpc.asyncData('rpc.UvmContext.licenseManager.getLicenses').
+        then(function(result) {
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            vm.set('licenses', result.list);
         });
     }
 
