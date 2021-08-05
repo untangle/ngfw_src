@@ -143,12 +143,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         super( appSettings, appProperties );
 
-        String check = System.getenv("NGFW_LICENSE_TEST");
-        if (check != null) {
-            logger.info("Found NGFW_LICENSE_TEST environment variable - setting devLicenseTest = true");
-            devLicenseTest = true;
-        }
-
 	    logger.info("Starting load");
 
         this.licenseServerConnectivity = false;
@@ -894,9 +888,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         synchronized (LicenseManagerImpl.this) {
             this.ipmMessages.clear();
-            _readLicenses();
 
-            if ((! UvmContextFactory.context().isDevel()) || (devLicenseTest)) {
+            if ((! UvmContextFactory.context().isDevel())) {
                 boolean connected = _testLicenseConnectivity();
                 if (!connected) {
                     licenseServerConnectivity = false;
