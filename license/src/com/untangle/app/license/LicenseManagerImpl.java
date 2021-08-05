@@ -570,6 +570,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         List<License> licenses = new LinkedList<>();
         this.settings = new LicenseSettings(licenses);
 
+        _mapLicenses();
+
         this._saveSettings(this.settings);
     }
 
@@ -579,18 +581,16 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private void _readLicenseSettings()
     {
-	if (this.settings == null) {
-            SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-       	    try {
-                this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js" );
-            } catch (SettingsManager.SettingsException e) {
-                logger.error("Unable to read license file: ", e );
-            }
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses.js" );
+        } catch (SettingsManager.SettingsException e) {
+            logger.error("Unable to read license file: ", e );
+        }
 
-	    // Initialize if we for some reason failed to get licenses.js
-            if (this.settings == null)
-                _initializeSettings();
-	}
+        // Initialize if we for some reason failed to get licenses.js
+        if (this.settings == null)
+            _initializeSettings();
     }
 
     /**
@@ -820,20 +820,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private void _saveSettings(LicenseSettings newSettings)
     {
         /**
-         * Compute metadata before saving
-         */
-        Iterator<License> itr = this.settings.getLicenses().iterator();
-        while ( itr.hasNext() ) {
-            License license = itr.next();
-            _setValidAndStatus(license);
-            if ( license.getValid() != null && !license.getValid() ) {
-                logger.warn("Removing invalid license from list: " + license);
-                itr.remove();
-            }
-        }
-
-
-        /**
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -889,33 +875,32 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         synchronized (LicenseManagerImpl.this) {
             this.ipmMessages.clear();
 
-            if ((! UvmContextFactory.context().isDevel())) {
-                boolean connected = _testLicenseConnectivity();
-                if (!connected) {
-                    licenseServerConnectivity = false;
-                    IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
-                                                                    false,
-                                                                    IpmMessage.IpmMessageType.ALERT);
-                    this.ipmMessages.add(noLicenseConnection);
-                    logger.error("No license server connectivity, not downloading licenses");
-                } else {
-                    licenseServerConnectivity = true;
-                    boolean downloadChanged = false;
-                    downloadChanged = _downloadLicenses();
-
-                    if (downloadChanged) {
-                        /**
-                        * Licenses are only saved when changed - call license changed hook
-                        */
-                        _saveSettings(this.settings);
-                    }
-                }
+            boolean connected = _testLicenseConnectivity();
+            boolean downloadSucceeded = false;
+            if (!connected) {
+                licenseServerConnectivity = false;
+                IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
+                                                                false,
+                                                                IpmMessage.IpmMessageType.ALERT);
+                this.ipmMessages.add(noLicenseConnection);
+                logger.error("No license server connectivity, not downloading licenses");
             } else {
-		//always connected if on dev machine
                 licenseServerConnectivity = true;
+                downloadSucceeded = _downloadLicenses();
+
+            }
+
+            // read licenses on failure
+            if (!connected || !downloadSucceeded) {
+                _readLicenseSettings();
             }
         
             _mapLicenses();
+
+            // set settings if download was successful
+            if (downloadSucceeded) {
+                _saveSettings(this.settings);
+            }
 
         }
 
