@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.DhcpStaticEntry;
 
 import java.util.List;
 import org.json.JSONObject;
@@ -56,4 +57,8 @@ public interface ConfigManager
     Object getEnabledFeatures();
 
     Object getTimeZones();
+
+    Object getStaticDhcpReservations();
+    Object setStaticDhcpReservations(List<DhcpStaticEntry> argList);
+    Object getActiveDhcpLeases();
 }

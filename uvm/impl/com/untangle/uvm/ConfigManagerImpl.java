@@ -7,6 +7,7 @@ package com.untangle.uvm;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.UvmContext;
@@ -1188,5 +1189,106 @@ public class ConfigManagerImpl implements ConfigManager
     {
         logger.info("CMAN_HIST getTimeZones()");
         return context.systemManager().getTimeZones();
+    }
+
+    /**
+     * Called to get the list of static DHCP reservations
+     *
+     * @return The list of static DHCP reservations
+     */
+    public Object getStaticDhcpReservations()
+    {
+        logger.info("CMAN_HIST setStaticDhcpReservations()");
+
+        NetworkSettings netSettings = context.networkManager().getNetworkSettings();
+        return netSettings.getStaticDhcpEntries();
+    }
+
+    /**
+     * Called to set the list of static DHCP reservations
+     *
+     * @param argList
+     *        The list of reservations
+     *
+     * @return A JSON Object with the result code and message plus the name and
+     */
+    public Object setStaticDhcpReservations(List<DhcpStaticEntry> argList)
+    {
+        logger.info("CMAN_HIST setStaticDhcpReservations()");
+
+        NetworkSettings netSettings = context.networkManager().getNetworkSettings();
+        netSettings.setStaticDhcpEntries(argList);
+        context.networkManager().setNetworkSettings(netSettings);
+        return createResponse(0, "Static DHCP reservations updated");
+    }
+
+    /**
+     * Called to get the list of active DHCP leases
+     *
+     * @return The list of active DHCP leases
+     */
+    public Object getActiveDhcpLeases()
+    {
+        logger.info("CMAN_HIST getActiveDhcpLeases()");
+
+        LinkedList<DhcpStaticEntry> activeList = new LinkedList<DhcpStaticEntry>();
+
+        BufferedReader reader;
+        String readLine;
+
+        // we read and parse /var/lib/misc/dnsmasq.leases to get the active reservations
+        try {
+            reader = new BufferedReader(new FileReader(new File("/var/lib/misc/dnsmasq.leases")));
+        } catch (Exception exn) {
+            logger.warn("Exception opening /var/lib/misc/dnsmasq.leases", exn);
+            return activeList;
+        }
+
+        for (;;) {
+
+            try {
+                readLine = reader.readLine();
+            } catch (Exception exn) {
+                logger.warn("Exception reading /var/lib/misc/dnsmasq.leases", exn);
+                readLine = null;
+            }
+
+            if (readLine == null) break;
+            String workstr = readLine.trim();
+
+            // split the line into columns separated by spaces
+            String[] column = workstr.split("\\s+");
+
+            // if we don't find exactly the number of columns we expect ignore the line
+            if (column.length != 5) {
+                logger.warn("Invalid reservation line: " + readLine);
+                continue;
+            }
+
+            // create a static entry with the reservation details and append to the list
+            DhcpStaticEntry entry = new DhcpStaticEntry();
+            InetAddress hostAddr = null;
+
+            try {
+                hostAddr = InetAddress.getByName(column[2]);
+            } catch (Exception exn) {
+
+            }
+
+            if (hostAddr == null) continue;
+
+            entry.setMacAddress(column[1]);
+            entry.setAddress(hostAddr);
+            entry.setDescription(column[3]);
+            activeList.add(entry);
+        }
+
+        try {
+            reader.close();
+        } catch (Exception exn) {
+            logger.warn("Exception closing /proc/net/dev", exn);
+        }
+
+        return activeList;
     }
 }
