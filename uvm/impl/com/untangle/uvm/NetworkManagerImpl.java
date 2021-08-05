@@ -133,7 +133,12 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn( "No settings found - Initializing new settings." );
             this.setNetworkSettings( defaultSettings() );
 
-            // apply oem settings, need defaultSettings created for bridged interfaces to work
+            // apply oem settings
+	    // some oems require bridged interfaces, and we're not able to sanityCheck bridged
+	    // interfaces without the interfaceSettingsById array set, which happens
+	    // after defaultSettings are set to this.networkSettings, after a sanityCheck should be performed. 
+	    // So we run set network settings twice, once for defaultSettings so the 
+	    // interfaceSettingsById array is set, and a second time with oem settings set
             if (UvmContextFactory.context().oemManager().hasOemOverrideFile()) {
                 this.applyOemSettings();
             }
