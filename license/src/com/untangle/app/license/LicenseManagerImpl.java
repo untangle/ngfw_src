@@ -147,6 +147,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         this.licenseServerConnectivity = false;
 
+        // initialize settings
+        if (this.settings == null)
+            _initializeSettings();
+
         this.reloadLicenses(true);
 
         // Start periodic license updates.
@@ -887,7 +891,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             } else {
                 licenseServerConnectivity = true;
                 downloadSucceeded = _downloadLicenses();
-
             }
 
             // read licenses on failure
