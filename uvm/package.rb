@@ -67,12 +67,6 @@ BuildEnv::SRC.installTarget.install_jars(Jars::JRadius, "#{thirdparty.distDirect
 BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/lib")
 
 if BuildEnv::SRC.isDevel
-  uidFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/uid"
-  ## Create all-zeros UID file to signal non-production install.
-  ## Done here to not include the file inside of packages.
-  file uidFile do
-    File.open( uidFile, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
-  end
 
   wizardSettingsFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/wizard.js"
   file wizardSettingsFile do
@@ -89,7 +83,6 @@ if BuildEnv::SRC.isDevel
     File.open( isRegisteredFile, "w" ) { |f| f.puts( "true" ) }
   end
 
-  BuildEnv::SRC.installTarget.register_dependency(uidFile)
   BuildEnv::SRC.installTarget.register_dependency(wizardSettingsFile)
   BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
