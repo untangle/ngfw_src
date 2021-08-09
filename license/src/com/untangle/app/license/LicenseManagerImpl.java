@@ -625,7 +625,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
             // The list on the json object contains the licenses
             boolean hasList = parse.has("list");
-            logger.debug(parse.toString());
             if(hasList) {
                 // Clear out our existing list.
                 if (this.settings.getLicenses() != null) {

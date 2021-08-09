@@ -35,7 +35,7 @@ public class Version
     public static String getVersion()
     {
         if (UvmContextFactory.context().isDevel())
-            return "DEVEL-PUB-VERSION";
+            return "1000";
         return getResource("PUBVERSION");
     }
 
