@@ -175,6 +175,10 @@ public class License implements Serializable
             return "branding-manager";
         case "branding-manager":
             return "branding-manager";
+        case "cpd":
+            return "captive-portal";
+        case "captive-portal":
+            return "captive-portal";
         case "boxbackup":
             return "configuration-backup";
         case "configuration-backup":

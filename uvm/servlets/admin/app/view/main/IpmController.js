@@ -49,6 +49,8 @@ Ext.define('Ung.view.main.IpmController', {
                 messagesCmps.push(msgItem);
             });
 
+            // remove all current ipm messages before adding new ones
+            me.getView().down('#_ipmMessages').removeAll();
             me.getView().down('#_ipmMessages').add(messagesCmps);
         }, function(ex){
             handleException(ex);
