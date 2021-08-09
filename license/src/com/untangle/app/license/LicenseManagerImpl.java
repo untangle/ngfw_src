@@ -946,25 +946,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             _syncLicensesWithServer();    
         }
     }
-
-    /**
-     * Determine if application is obsolete.
-     * 
-     * @param  identifier Application name.
-     * @return            true if applicatio is obsolete, false otherwise.
-     */
-    private boolean isObsoleteApp(String identifier)
-    {
-        if ("untangle-node-kav".equals(identifier)) return true;
-        if ("kav".equals(identifier)) return true;
-        if ("untangle-node-commtouch".equals(identifier)) return true;
-        if ("commtouch".equals(identifier)) return true;
-        if ("untangle-node-commtouchav".equals(identifier)) return true;
-        if ("commtouchav".equals(identifier)) return true;
-        if ("untangle-node-commtouchas".equals(identifier)) return true;
-        if ("commtouchas".equals(identifier)) return true;
-        return false;
-    }
     
     /**
      * Set a license to valid.
