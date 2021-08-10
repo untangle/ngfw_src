@@ -55,6 +55,7 @@ public interface ConfigManager
     Object getConnectedClients();
 
     Object getEnabledFeatures();
+    Object refreshEnabledFeatures();
 
     Object getTimeZones();
 
