@@ -1181,6 +1181,18 @@ public class ConfigManagerImpl implements ConfigManager
     }
 
     /**
+     * Called to refresh the licenses
+     *
+     * @return A JSON object with result code and message
+     */
+    public Object refreshEnabledFeatures()
+    {
+        logger.info("CMAN_HIST refreshEnabledFeatures()");
+        context.licenseManager().reloadLicenses(true);
+        return createResponse(0, "Enabled features refresh completed");
+    }
+
+    /**
      * Called to get the list of system time zones
      *
      * @return The list of system time zones
