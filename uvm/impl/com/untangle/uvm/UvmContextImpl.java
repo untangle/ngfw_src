@@ -1440,9 +1440,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.netcapManager = NetcapManagerImpl.getInstance();
 
-        this.uriManager = new UriManagerImpl();
-
         createUID();
+
+        this.uriManager = new UriManagerImpl();
 
         this.authenticationManager = new AuthenticationManagerImpl();
 
@@ -1744,17 +1744,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (isDevel())
             return;
 
-        // if its an untangle netboot, point to internal package server
-        String extraOptions = "";
-        if (isNetBoot()) {
-            extraOptions += " -u \"package-server.untangle.int\" ";
-            extraOptions += " -d \"nightly\" ";
-        } else {
-            extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getVersion().replaceAll("\\.","") + "\" ";
-            extraOptions += " -u \"" + uriManager.getUri("http://updates.untangle.com/") + "\" ";
-        }
-
-        extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
+        String extraOptions = " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
 
         Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT + extraOptions);
         if ( exitValue != 0 ) {
