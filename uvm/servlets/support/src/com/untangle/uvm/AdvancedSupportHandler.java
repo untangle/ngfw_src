@@ -26,7 +26,7 @@ public class AdvancedSupportHandler extends HttpServlet
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
-    private static final String OEM_SUPPORT_HANDLER_SCRIPT = System.getProperty("uvm.conf.dir") + "/oem-support-handler";
+    private static final String ADVANCED_SUPPORT_HANDLER_SCRIPT = System.getProperty("uvm.conf.dir") + "/advanced-support-handler";
 
     /**
      * Perform HTTP GET operation
@@ -75,9 +75,9 @@ public class AdvancedSupportHandler extends HttpServlet
      */
     private void requestHandler(String method, HttpServletRequest request, HttpServletResponse response) throws IOException
     {
-        File script = new File(OEM_SUPPORT_HANDLER_SCRIPT);
+        File script = new File(ADVANCED_SUPPORT_HANDLER_SCRIPT);
 
-        // first make sure the OEM handler script exists
+        // first make sure the advanced support handler script exists
         if (!script.exists() || !script.canExecute()) {
             response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
@@ -98,7 +98,7 @@ public class AdvancedSupportHandler extends HttpServlet
 
         // call the handler script with the method and parameters
         UvmContext uvmContext = UvmContextFactory.context();
-        String output = uvmContext.execManager().execOutput(OEM_SUPPORT_HANDLER_SCRIPT + " " + method + " " + parmstr);
+        String output = uvmContext.execManager().execOutput(ADVANCED_SUPPORT_HANDLER_SCRIPT + " " + method + " " + parmstr);
 
         // write the script output as the response
         response.setContentType("text/html");
