@@ -336,6 +336,11 @@ public class OpenVpnManager
         /* Allow management from localhost */
         sb.append("management 127.0.0.1 " + Integer.toString(OpenVpnSettings.MANAGEMENT_PORT) + "\n");
 
+        // set mfa client timeout on server
+        if (settings.getTotpClientPrompt()) {
+            sb.append("reneg-sec" + " " + settings.getMfaClientTimeout() + "\n");
+        }
+
         writeExports(sb, settings);
 
         writeFile(OPENVPN_SERVER_FILE, sb);
@@ -460,6 +465,7 @@ public class OpenVpnManager
 
         if (settings.getTotpClientPrompt()) {
             sb.append("static-challenge \"TOTP Code \" 1" + "\n");
+            sb.append("reneg-sec" + " " + settings.getMfaClientTimeout() + "\n");
         }
 
         sb.append("proto" + " " + settings.getProtocol() + "\n");
