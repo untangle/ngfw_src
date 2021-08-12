@@ -73,14 +73,6 @@ rm -rf /var/lib/postgresql/9.1
 rm -rf /etc/postgresql/9.4
 rm -rf /var/lib/postgresql/9.4
 
-#
-# 15.1 upgrade
-#
-
-# Point to buster/stable-161
-sed -e 's/stretch/buster/g' -i /etc/apt/sources.list.d/untangle.list
-sed -e 's/stable-162\s/stable-163 /g' -i /etc/apt/sources.list.d/untangle.list
-
 # see corresponding comment in preinst: we need to unmask those
 # services that were masked just so the dist-upgrade could succeed
 systemctl unmask freeradius-dhcp # NGFW-12934, NGFW-13249

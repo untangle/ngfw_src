@@ -59,6 +59,7 @@ public class UriManagerImpl implements UriManager
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
         buildMap();
+        this.syncUriSettings();
     }
 
     /**
@@ -103,8 +104,7 @@ public class UriManagerImpl implements UriManager
         /**
          * Now actually sync the settings to the system
          */
-        UvmContextFactory.context().syncSettings().run(SettingsFileName);
-        UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.URIS_SETTINGS_CHANGE, this.settings);
+        this.syncUriSettings();
     }
 
     /**
@@ -314,4 +314,13 @@ public class UriManagerImpl implements UriManager
         settings.setVersion(SettingsCurrentVersion);
         this.setSettings( settings );
     }
+
+    /**
+     * Call sync settings on uri settings.
+     */
+    private void syncUriSettings(){
+        UvmContextFactory.context().syncSettings().run(SettingsFileName);
+        UvmContextFactory.context().hookManager().callCallbacksSynchronous( HookManager.URIS_SETTINGS_CHANGE, this.settings);
+    }
+
 }
