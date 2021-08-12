@@ -1030,6 +1030,8 @@ public class AppManagerImpl implements AppManager
             // We rebooted during auto install of apps or licenseManager triggered, so continue installing.
             doAutoInstall();
         }
+
+        shutdownAppsWithInvalidLicense();
     }
 
     /**

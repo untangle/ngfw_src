@@ -148,10 +148,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         this.licenseServerConnectivity = false;
 
         // initialize settings
-        if (this.settings == null)
-            _initializeSettings();
-
-        this.reloadLicenses(true);
+        this._readLicenseSettings();
 
         // Start periodic license updates.
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
@@ -169,6 +166,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     protected void postStart( boolean isPermanentTransition )
     {
         logger.debug("postStart()");
+
+        this.reloadLicenses(true);
     }
 
     /**
@@ -240,8 +239,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         if (!exactMatch) {
             for (String name : this.licenseMap.keySet()) {
                 if (name.startsWith(identifier)) {
-                    logger.debug("getLicense(" + identifier + ") = " + license );
                     license = this.licenseMap.get(name);
+                    logger.debug("getLicense(" + identifier + ") = " + license );
                     if (license != null && license.getValid())
                         return license;
                 }
@@ -252,6 +251,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * Look for an existing perfect match
          */
         license = this.licenseMap.get(identifier);
+        logger.debug("getLicense(" + identifier + ") = " + license );
         if (license != null)
             return license;
 
@@ -574,8 +574,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         List<License> licenses = new LinkedList<>();
         this.settings = new LicenseSettings(licenses);
 
-        _mapLicenses();
-
         this._saveSettings(this.settings);
     }
 
@@ -593,8 +591,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
 
         // Initialize if we for some reason failed to get licenses.js
-        if (this.settings == null)
+        if (this.settings == null) 
             _initializeSettings();
+        
+        _mapLicenses();
     }
 
     /**
@@ -930,7 +930,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 appManager.doAutoInstall();
             }
         }
-        appManager.shutdownAppsWithInvalidLicense();
+        if(!appManager.isRestartingUnloaded()) {
+            appManager.shutdownAppsWithInvalidLicense();
+        }
     }
     
     /**
