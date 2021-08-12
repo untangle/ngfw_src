@@ -904,9 +904,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 _saveSettings(this.settings);
             }
 
-        }
+            _runAppManagerSync();
 
-        _runAppManagerSync();
+        }
 
         logger.info("Reloading licenses... done" );
     }
