@@ -150,6 +150,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         // initialize settings
         this._readLicenseSettings();
 
+        this.reloadLicenses(true);
+
         // Start periodic license updates.
         this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
         this.pulse.start();
@@ -166,8 +168,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     protected void postStart( boolean isPermanentTransition )
     {
         logger.debug("postStart()");
-
-        this.reloadLicenses(true);
     }
 
     /**
