@@ -32,6 +32,7 @@ import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.servlet.ServletUtils;
+import com.untangle.uvm.util.IOUtil;
 
 /** UvmContextImpl */
 /** This is the root object "context" providing the Untangle VM functionality for applications and the user interface */
@@ -43,6 +44,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String UPGRADE_PID_FILE = "/var/run/upgrade.pid";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
+    private static final String CORE_UID_FILE = "/usr/share/untangle/conf/uid";
     private static final String SERIAL_NUMBER_FILE = "/sys/devices/virtual/dmi/id/product_serial";
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String DISKLESS_MODE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/diskless-mode-flag";
@@ -1740,9 +1742,23 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (uidFile.exists() && uidFile.length() > 0)
             return;
 
-        // if its devel env just return
-        if (isDevel())
-            return;
+        // if its devel env use existing uid if possible, otherwise create one
+        if (isDevel()) {
+            File coreUidFile = new File(CORE_UID_FILE);
+            boolean copySuccess = true;
+            if (coreUidFile.exists()) {
+                try{
+                    IOUtil.copyFile(coreUidFile, uidFile);
+                }catch(Exception e){
+                    logger.error("Unable to copy " + e);
+                    copySuccess = false;
+                }
+                if (copySuccess) {
+                    return;
+                }
+            }   
+        }
+
 
         String extraOptions = " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
 

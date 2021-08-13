@@ -54,10 +54,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     public boolean isLicenseValid(String identifier)
     {
         if (isGPLApp(identifier)) return true;
-        else return false; /*
-                            * always return false as the real license manager is
-                            * needed for valid licenses
-                            */
+        return false;
     }
 
     /**
@@ -69,8 +66,6 @@ public class DefaultLicenseManagerImpl implements LicenseManager
      */
     public License getLicense(String identifier)
     {
-        if (isGPLApp(identifier)) return null;
-
         /**
          * This returns an invalid license for all requests Note: this includes
          * the free apps, however they don't actually check the license so it
@@ -218,4 +213,5 @@ public class DefaultLicenseManagerImpl implements LicenseManager
 
         return false;
     }
+
 }

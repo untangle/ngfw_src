@@ -23,7 +23,7 @@ public class Version
     public static String getMajorVersion()
     {
         if (UvmContextFactory.context().isDevel())
-            return "DEVEL-MAJOR-VERSION";
+            return "1000";
         return getResource("MAJORVERSION");
     }
 
@@ -35,7 +35,7 @@ public class Version
     public static String getVersion()
     {
         if (UvmContextFactory.context().isDevel())
-            return "DEVEL-PUB-VERSION";
+            return "1000";
         return getResource("PUBVERSION");
     }
 
@@ -47,7 +47,7 @@ public class Version
     public static String getFullVersion()
     {
         if (UvmContextFactory.context().isDevel())
-            return "DEVEL-VERSION";
+            return "1000";
         return getResource("VERSION");
     }
 
