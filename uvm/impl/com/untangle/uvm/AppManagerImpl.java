@@ -1030,6 +1030,8 @@ public class AppManagerImpl implements AppManager
             // We rebooted during auto install of apps or licenseManager triggered, so continue installing.
             doAutoInstall();
         }
+
+        shutdownAppsWithInvalidLicense();
     }
 
     /**
@@ -1206,16 +1208,22 @@ public class AppManagerImpl implements AppManager
                 logger.info("Not enough interfaces to install app: " + appProps.getName());
                 continue;
             }
-            if (appInstances(appProps.getName()).size() >= 1) {
-                logger.info("App already installed: " + appProps.getName());
-                continue;
-            }
             try {
                 logger.info("Auto-installing new app: " + appProps.getName());
-                App app = instantiate(appProps.getName());
+
+                App app = null;
+                if (appInstances(appProps.getName()).size() >= 1) {
+                    logger.info("App already installed: " + appProps.getName());
+                    app = app(appProps.getName());
+                }
+                
+                if (app == null) {
+                    app = instantiate(appProps.getName());
+                }
 
                  if (appProps.getAutoStart()) {
-                    app.start();
+                    if (app != null) app.start();
+                    else logger.error("Couldn't instantiate/get app for auto install");
                 }
 
             } catch (Exception exn) {
