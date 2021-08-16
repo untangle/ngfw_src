@@ -31,7 +31,7 @@ public class License implements Serializable
     public static final String CONFIGURATION_BACKUP = "configuration-backup";
     public static final String DIRECTORY_CONNECTOR = "directory-connector";
     public static final String FIREWALL = "firewall";
-    public static final String FTP = "FTP";
+    public static final String FTP = "ftp";
     public static final String HTTP = "http";
     public static final String INTRUSION_PREVENTION = "intrusion-prevention";
     public static final String IPSEC_VPN = "ipsec-vpn";
@@ -180,7 +180,9 @@ public class License implements Serializable
         if (name.contains("untangle-base")) name = name.replaceAll("untangle-base-", "") + "-base";
 
         //NOTE: switch statement organized alphabetically by the return statement and comments i.e. what the name should be
-        // below is names that are different from the defined string name above in constants
+        // below are names that are different from the defined string name above in constants
+        // if there is an empty comment below a given app name i.e. firewall, there are no other names known except for 
+        // the known constant string, so no switch case is needed as it will return the proper name. 
         switch (name)
         {
         //AD_BLOCKER
