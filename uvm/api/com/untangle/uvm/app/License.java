@@ -234,7 +234,7 @@ public class License implements Serializable
             return POLICY_MANAGER;
         //REPORTS
         case "reporting":
-            return "reports";
+            return REPORTS;
         //ROUTER
         //
         //SHIELD
