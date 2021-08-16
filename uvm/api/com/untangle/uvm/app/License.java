@@ -22,22 +22,41 @@ public class License implements Serializable
     /**
      * Various Names
      */
-    public static final String DIRECTORY_CONNECTOR = "directory-connector";
-    public static final String BANDWIDTH_CONTROL = "bandwidth-control";
-    public static final String CONFIGURATION_BACKUP = "configuration-backup";
-    public static final String BRANDING_MANAGER = "branding-manager";
-    public static final String VIRUS_BLOCKER = "virus-blocker";
-    public static final String SPAM_BLOCKER = "spam-blocker";
-    public static final String WAN_FAILOVER = "wan-failover";
-    public static final String IPSEC_VPN = "ipsec-vpn";
-    public static final String POLICY_MANAGER = "policy-manager";
-    public static final String WEB_FILTER = "web-filter";
-    public static final String WAN_BALANCER = "wan-balancer";
-    public static final String WEB_CACHE = "web-cache";
+    public static final String AD_BLOCKER = "ad-blocker";
     public static final String APPLICATION_CONTROL = "application-control";
-    public static final String SSL_INSPECTOR = "ssl-inspector";
+    public static final String APPLICATION_CONTROL_LITE = "application-control-lite";
+    public static final String BANDWIDTH_CONTROL = "bandwidth-control";
+    public static final String BRANDING_MANAGER = "branding-manager";
+    public static final String CAPTIVE_PORTAL = "captive-portal";
+    public static final String CONFIGURATION_BACKUP = "configuration-backup";
+    public static final String DIRECTORY_CONNECTOR = "directory-connector";
+    public static final String FIREWALL = "firewall";
+    public static final String FTP = "ftp";
+    public static final String HTTP = "http";
+    public static final String INTRUSION_PREVENTION = "intrusion-prevention";
+    public static final String IPSEC_VPN = "ipsec-vpn";
+    public static final String LICENSE = "license";
     public static final String LIVE_SUPPORT = "live-support";
+    public static final String OPENVPN = "openvpn";
+    public static final String PHISH_BLOCKER = "phish-blocker";
+    public static final String POLICY_MANAGER = "policy-manager";
+    public static final String REPORTS = "reports";
+    public static final String ROUTER = "router";
+    public static final String SHIELD = "shield";
+    public static final String SMTP = "smtp";
+    public static final String SPAM_BLOCKER = "spam-blocker";
+    public static final String SPAM_BLOCKER_LITE = "spam-blocker-lite";
+    public static final String SPYWARE = "spyware";
+    public static final String SSL_INSPECTOR = "ssl-inspector";
     public static final String THREAT_PREVENTION = "threat-prevention";
+    public static final String TUNNEL_VPN = "tunnel-vpn";
+    public static final String VIRUS_BLOCKER = "virus-blocker";
+    public static final String VIRUS_BLOCKER_LITE = "virus-blocker-lite";
+    public static final String WAN_BALANCER = "wan-balancer";
+    public static final String WAN_FAILOVER = "wan-failover";
+    public static final String WEB_CACHE = "web-cache";
+    public static final String WEB_FILTER = "web-filter";
+    public static final String WEB_MONITOR = "web-monitor";
     public static final String WIREGUARD_VPN = "wireguard-vpn";
 
     /** Identifier for the product this license is for */
@@ -157,88 +176,122 @@ public class License implements Serializable
         // replace old names
         String name = this.name;
         if (name == null) return null;
-        name = name.replaceAll("untangle-node-", "").replaceAll("untangle-casing-", "");
+        name = name.replaceAll("untangle-node-", "").replaceAll("untangle-casing-", "").replaceAll("untangle-libitem-", "");
         if (name.contains("untangle-base")) name = name.replaceAll("untangle-base-", "") + "-base";
 
-        //NOTE: switch statement organized alphabetically by the return statement i.e. what the name should be
+        //NOTE: switch statement organized alphabetically by the return statement and comments i.e. what the name should be
+        // below are names that are different from the defined string name above in constants
+        // if there is an empty comment below a given app name i.e. firewall, there are no other names known except for 
+        // the known constant string, so no switch case is needed as it will return the proper name. 
         switch (name)
         {
+        //AD_BLOCKER
         case "adblocker":
-            return "ad-blocker";
+            return AD_BLOCKER;
+        //APPLICATION_CONTROL
         case "classd":
-            return "application-control";
-        case "application-control":
-            return "application-control";
+            return APPLICATION_CONTROL;
+        //APPLICATION_CONTROL_LITE
+        case "protofilter":
+            return APPLICATION_CONTROL_LITE;
+        //BANDWIDTH_CONTROL
         case "bandwidth":
-            return "bandwidth-control";
+            return BANDWIDTH_CONTROL;
+        //BRANDING_MANAGER
         case "branding":
-            return "branding-manager";
-        case "branding-manager":
-            return "branding-manager";
+            return BRANDING_MANAGER;
+        //CAPTIVE_PORTAL
         case "cpd":
-            return "captive-portal";
-        case "captive-portal":
-            return "captive-portal";
+            return CAPTIVE_PORTAL;
+        //CONFIGURATION_BACKUP
         case "boxbackup":
-            return "configuration-backup";
-        case "configuration-backup":
-            return "configuration-backup";
+            return CONFIGURATION_BACKUP;
+        //DIRECTORY_CONNECTOR
         case "adconnector":
-            return "directory-connector";
+            return DIRECTORY_CONNECTOR;
+        //FIREWALL
+        //
+        //FTP
+        //
+        //HTTP
+        //
+        //INTRUSION_PREVENTION
         case "ips":
-            return "intrusion-prevention";
+            return INTRUSION_PREVENTION;
+        //IPSEC_VPN
         case "ipsec":
-            return "ipsec-vpn";
-        case "ipsec-vpn":
-            return "ipsec-vpn";
+            return IPSEC_VPN;
+        //LICENSE
+        //
+        //LIVE_SUPPORT
         case "support":
-            return "live-support";
-        case "live-support":
-            return "live-support";
+            return LIVE_SUPPORT;
+        //OPENVPN
+        //
+        //PHISH_BLOCKER
         case "phish":
-            return "phish-blocker";
+            return PHISH_BLOCKER;
+        //POLICY_MANAGER
         case "policy":
-            return "policy-manager";
-        case "policy-manager":
-            return "policy-manager";
+            return POLICY_MANAGER;
+        //REPORTS
         case "reporting":
-            return "reports";
+            return REPORTS;
+        //ROUTER
+        //
+        //SHIELD
+        //
+        //SMTP
+        //
+        //SPAM_BLOCKER
         case "spamblocker":
-            return "spam-blocker";
+            return SPAM_BLOCKER;
+        case "commtouch":
+            return SPAM_BLOCKER;
         case "commtouchas":
-            return "spam-blocker";
-        case "spam-blocker":
-            return "spam-blocker";
+            return SPAM_BLOCKER;
+        //SPAM_BLOCKER_LITE
+        case "spamassassin":
+            return SPAM_BLOCKER_LITE;
+        //SPYWARE
+        case "idps":
+            return SPYWARE;
+        //SSL_INSPECTOR
         case "https":
-            return "ssl-inspector";
-        case "ssl-inspector":
-            return "ssl-inspector";
-        case "threat-prevention":
-            return "threat-prevention";
+            return SSL_INSPECTOR;
+        //THREAT_PREVENTION
+        //
+        //TUNNEL_VPN
+        //
+        //VIRUS_BLOCKER
         case "virusblocker":
-            return "virus-blocker";
+            return VIRUS_BLOCKER;
         case "commtouchav":
-            return "virus-blocker";
+            return VIRUS_BLOCKER;
         case "kav":
-            return "virus-blocker";
-        case "virus-blocker":
-            return "virus-blocker";
+            return VIRUS_BLOCKER;
+        //VIRUS_BLOCKER_LITE
+        case "clam":
+            return VIRUS_BLOCKER_LITE;
+        //WAN_BALANCER
         case "splitd":
-            return "wan-balancer";
-        case "wan-balancer":
-            return "wan-balancer";
+            return WAN_BALANCER;
+        //WAN_FAILOVER
         case "faild":
-            return "wan-failover";
-        case "wan-failover":
-            return "wan-failover";
+            return WAN_FAILOVER;
+        //WEB_CACHE
+        case "cache":
+            return WEB_CACHE;
         case "webcache":
-            return "web-cache";
-        case "web-cache":
-            return "web-cache";
+            return WEB_CACHE;
+        //WEB_FILTER
         case "sitefilter":
-            return "web-filter";
-        case "web-filter":
-            return "web-filter";
+            return WEB_FILTER;
+        //WEB_MONITOR
+        case "webmonitor":
+            return WEB_MONITOR;
+        //WIREGUARD_VPN
+        //
         default:
             break;
         }
