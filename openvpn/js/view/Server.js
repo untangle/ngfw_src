@@ -111,7 +111,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
             xtype: 'container',
             items: [{
                 xtype: 'displayfield',
-                value: 'MFA Client Timeout (seconds):'.t()
+                value: 'MFA Client Timeout (hours):'.t()
             }, {
                 xtype: 'textfield',
                 hideLabel: true,
