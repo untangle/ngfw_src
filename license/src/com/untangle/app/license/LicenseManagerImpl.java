@@ -700,14 +700,20 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     /**
                      * Complete Meta-data
                      */
-                    license = new License(iterator.next());
+                    license = iterator.next();
                     _setValidAndStatus(license);
+                    if (license.getValid() != null && !license.getValid()) {
+                        logger.warn("Removing invalid license from list: " + license);
+                        iterator.remove();
+                        continue;
+                    }
+                    License mappedLicense = new License(license);
                     
-                    logger.info("Adding License: " + license.getCurrentName() + " to Map. (valid: " + license.getValid() + ")");
+                    logger.info("Adding License: " + mappedLicense.getCurrentName() + " to Map. (valid: " + mappedLicense.getValid() + ")");
             
-                    String identifier = license.getCurrentName();
-                    newMap.put(identifier, license);
-                    newList.add(license);
+                    String identifier = mappedLicense.getCurrentName();
+                    newMap.put(identifier, mappedLicense);
+                    newList.add(mappedLicense);
                 } catch (Exception e) {
                     logger.warn("Failed to load license: " + license, e);
                 }
@@ -822,6 +828,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private void _saveSettings(LicenseSettings newSettings)
     {
+        Iterator<License> itr = newSettings.getLicenses().iterator();
+        while ( itr.hasNext() ) {
+            License license = itr.next();
+            logger.debug("license: " + license + " : " + license.getValid());
+        }
         /**
          * Save the settings
          */
@@ -895,9 +906,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             // read licenses on failure
             if (!connected || !downloadSucceeded) {
                 _readLicenseSettings();
+            } else {
+                _mapLicenses();
             }
-        
-            _mapLicenses();
 
             // set settings if download was successful
             if (downloadSucceeded) {
