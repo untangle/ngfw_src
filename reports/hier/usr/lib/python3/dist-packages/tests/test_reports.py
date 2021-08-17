@@ -587,14 +587,15 @@ class ReportsTests(NGFWTestCase):
         # add report user with test_email_address
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
-        settings["reportsUsers"]["list"].append(create_reports_user(profile_email='test', access=True))  # password = passwd
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
         self._app.setSettings(settings)
         adminURL = global_functions.get_http_url()
         print("URL %s" % adminURL)
         resultLoginPage = subprocess.call("wget -q -O - " + adminURL + "reports 2>&1 | grep -q Login", shell=True)
         assert (resultLoginPage == 0)
         
-        resultLoginPage = subprocess.call("wget -q -O - " + adminURL + '"auth/login?url=/reports&realm=Reports&username=test&password=passwd" 2>&1 | grep -q Report', shell=True)
+        resultLoginPage = subprocess.call("wget -q -O - " + adminURL + '"auth/login?url=/reports&realm=Reports&username=' + test_email_address + '&password=passwd" 2>&1 | grep -q Report', shell=True)
         assert (resultLoginPage == 0)
         
     @classmethod
