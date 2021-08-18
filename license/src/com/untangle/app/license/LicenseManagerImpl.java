@@ -232,6 +232,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         License license = null;
 
         /**
+         * Look for an existing perfect match
+         */
+        license = this.licenseMap.get(identifier);
+        logger.debug("getLicense(" + identifier + ") = " + license );
+        if (license != null)
+            return license;
+
+        /**
          * If there is no perfect match,
          * Look for one that the prefix matches
          * example: identifer "virus-blocker" should accept "virus-blocker-cloud"
@@ -246,14 +254,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 }
             }
         }
-
-        /**
-         * Look for an existing perfect match
-         */
-        license = this.licenseMap.get(identifier);
-        logger.debug("getLicense(" + identifier + ") = " + license );
-        if (license != null)
-            return license;
 
         logger.warn("No license found for: " + identifier);
 
