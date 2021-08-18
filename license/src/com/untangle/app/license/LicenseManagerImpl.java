@@ -828,11 +828,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private void _saveSettings(LicenseSettings newSettings)
     {
-        Iterator<License> itr = newSettings.getLicenses().iterator();
-        while ( itr.hasNext() ) {
-            License license = itr.next();
-            logger.debug("license: " + license + " : " + license.getValid());
+        if (logger.isDebugEnabled()) {
+            Iterator<License> itr = newSettings.getLicenses().iterator();
+            while ( itr.hasNext() ) {
+                License license = itr.next();
+                logger.debug("License being saved: " + license + " : " + license.getValid());
+            }
         }
+
         /**
          * Save the settings
          */
