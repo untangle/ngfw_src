@@ -320,6 +320,11 @@ public class OpenVpnManager
             }
         }
 
+        // set mfa client timeout on server, multiply by 3600 to get it in seconds (user inputs hours)
+        if (settings.getTotpClientPrompt()) {
+            sb.append("reneg-sec" + " " + settings.getMfaClientTimeout()*3600 + "\n");
+        }
+
         if (settings.getAuthUserPass()) {
             sb.append("script-security 3" + "\n");
             sb.append("auth-user-pass-verify " + "\"/usr/bin/sudo -E " + AUTH_USER_PASS_SCRIPT + "\" via-env" + "\n");
@@ -335,11 +340,6 @@ public class OpenVpnManager
 
         /* Allow management from localhost */
         sb.append("management 127.0.0.1 " + Integer.toString(OpenVpnSettings.MANAGEMENT_PORT) + "\n");
-
-        // set mfa client timeout on server, multiply by 3600 to get it in seconds (user inputs hours)
-        if (settings.getTotpClientPrompt()) {
-            sb.append("reneg-sec" + " " + settings.getMfaClientTimeout()*3600 + "\n");
-        }
 
         writeExports(sb, settings);
 
