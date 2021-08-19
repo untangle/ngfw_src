@@ -31,11 +31,14 @@ if (password == None):
 # OpenVPN clients will combine password and OTP into the password string.
 # Format is "SCRV1:<passwd_b64>:<otp_b64>"
 otp = 0
+result = 1
 if password.startswith("SCRV1:"):
     parts = password.split(":")
     password = base64.b64decode(parts[1])
     otp = int(base64.b64decode(parts[2]))
+    result = openvpnApp.userAuthenticate(username, password, otp)
+else:
+    result = openvpnApp.userAuthenticate(username, password)
 
-result = openvpnApp.userAuthenticate(username, password, otp)
 sys.exit(result)
 
