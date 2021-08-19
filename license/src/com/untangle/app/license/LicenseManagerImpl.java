@@ -232,6 +232,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         License license = null;
 
         /**
+         * Look for an existing perfect match
+         */
+        license = this.licenseMap.get(identifier);
+        logger.debug("getLicense(" + identifier + ") = " + license );
+        if (license != null)
+            return license;
+
+        /**
          * If there is no perfect match,
          * Look for one that the prefix matches
          * example: identifer "virus-blocker" should accept "virus-blocker-cloud"
@@ -246,14 +254,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 }
             }
         }
-
-        /**
-         * Look for an existing perfect match
-         */
-        license = this.licenseMap.get(identifier);
-        logger.debug("getLicense(" + identifier + ") = " + license );
-        if (license != null)
-            return license;
 
         logger.warn("No license found for: " + identifier);
 
@@ -700,14 +700,20 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     /**
                      * Complete Meta-data
                      */
-                    license = new License(iterator.next());
+                    license = iterator.next();
                     _setValidAndStatus(license);
+                    if (license.getValid() != null && !license.getValid()) {
+                        logger.warn("Removing invalid license from list: " + license);
+                        iterator.remove();
+                        continue;
+                    }
+                    License mappedLicense = new License(license);
                     
-                    logger.info("Adding License: " + license.getCurrentName() + " to Map. (valid: " + license.getValid() + ")");
+                    logger.info("Adding License: " + mappedLicense.getCurrentName() + " to Map. (valid: " + mappedLicense.getValid() + ")");
             
-                    String identifier = license.getCurrentName();
-                    newMap.put(identifier, license);
-                    newList.add(license);
+                    String identifier = mappedLicense.getCurrentName();
+                    newMap.put(identifier, mappedLicense);
+                    newList.add(mappedLicense);
                 } catch (Exception e) {
                     logger.warn("Failed to load license: " + license, e);
                 }
@@ -822,6 +828,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private void _saveSettings(LicenseSettings newSettings)
     {
+        if (logger.isDebugEnabled()) {
+            Iterator<License> itr = newSettings.getLicenses().iterator();
+            while ( itr.hasNext() ) {
+                License license = itr.next();
+                logger.debug("License being saved: " + license + " : " + license.getValid());
+            }
+        }
+
         /**
          * Save the settings
          */
@@ -895,9 +909,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             // read licenses on failure
             if (!connected || !downloadSucceeded) {
                 _readLicenseSettings();
+            } else {
+                _mapLicenses();
             }
-        
-            _mapLicenses();
 
             // set settings if download was successful
             if (downloadSucceeded) {
