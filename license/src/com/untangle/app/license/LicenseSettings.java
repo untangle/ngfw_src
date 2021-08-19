@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.app.IpmMessage;
+import com.untangle.uvm.app.UserLicenseMessage;
 import com.untangle.uvm.app.License;
 
 /**
@@ -23,7 +23,7 @@ public class LicenseSettings implements Serializable, JSONString
 
     private List<License> licenses;
 
-    private List<IpmMessage> userMessages = new LinkedList<>();
+    private List<UserLicenseMessage> userLicenseMessages = new LinkedList<>();
 
     private boolean isRestricted = false;
     
@@ -67,14 +67,14 @@ public class LicenseSettings implements Serializable, JSONString
         this.isRestricted = restrict;
     }
     
-    public List<IpmMessage> getUserMessages() 
+    public List<UserLicenseMessage> getUserLicenseMessages() 
     {
-        return this.userMessages;
+        return this.userLicenseMessages;
     }
 
-    public void setUserMessages(List<IpmMessage> newUserMessages)
+    public void setUserLicenseMessages(List<UserLicenseMessage> newUserLicenseMessages)
     {
-        this.userMessages = newUserMessages;
+        this.userLicenseMessages = newUserLicenseMessages;
     }
     
     /**

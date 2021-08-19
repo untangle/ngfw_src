@@ -7,14 +7,14 @@ package com.untangle.uvm.app;
 import org.apache.log4j.Logger;
 
 /**
- The Ipm message class
+ The UserLicense message class
  */
-public class IpmMessage 
+public class UserLicenseMessage 
 {
-    private final Logger logger = Logger.getLogger(IpmMessage.class);
+    private final Logger logger = Logger.getLogger(UserLicenseMessage.class);
 
-    /* enum for ipm message type */
-    public enum IpmMessageType {
+    /* enum for UserLicense message type */
+    public enum UserLicenseMessageType {
         ALERT,
         WARNING,
         INFO,
@@ -27,18 +27,18 @@ public class IpmMessage
     private boolean closure;
 
     /* type of message */
-    private IpmMessageType type;
+    private UserLicenseMessageType type;
 
     /**
      * Constructor
      *
-     * @param message message of IpmMessage
+     * @param message message of UserLicenseMessage
      *
      * @param closure if message can be closable in UI
      *
-     * @param type type of IpmMessage from enum
+     * @param type type of UserLicenseMessage from enum
      */
-    public IpmMessage(String message, boolean closure, IpmMessageType type) 
+    public UserLicenseMessage(String message, boolean closure, UserLicenseMessageType type) 
     {
         this.message = message;
         this.closure = closure;
@@ -87,21 +87,21 @@ public class IpmMessage
     }
 
     /**
-     * Returns what type of IpmMessage it is, alert, info, warning, etc.
+     * Returns what type of LicenseUserMessage it is, alert, info, warning, etc.
      *
      * @return the type
      */
-    public IpmMessageType getType() 
+    public UserLicenseMessageType getType() 
     {
         return this.type;
     }
 
     /**
-     * Set the type of message for the IpmMessage
+     * Set the type of message for the LicenseUserMessage
      *
      * @param newValue the new type
      */
-    public void setType(IpmMessageType newValue)
+    public void setType(UserLicenseMessageType newValue)
     {
         this.type = newValue;
     }

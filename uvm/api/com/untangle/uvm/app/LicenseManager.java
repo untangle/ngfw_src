@@ -5,7 +5,7 @@ package com.untangle.uvm.app;
 
 import java.util.List;
 
-import com.untangle.uvm.app.IpmMessage;
+import com.untangle.uvm.app.UserLicenseMessage;
 
 public interface LicenseManager
 {
@@ -79,8 +79,8 @@ public interface LicenseManager
     public void requestTrialLicense( String appName ) throws Exception;
 
     /**
-     * Return ipm messages from license manager
+     * Return UserLicense messages from license manager
      */
-    public List<IpmMessage> getIpmMessages();
+    public List<UserLicenseMessage> getUserLicenseMessages();
 
 }
