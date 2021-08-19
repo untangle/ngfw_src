@@ -1,26 +1,26 @@
-Ext.define('Ung.view.main.IpmController', {
+Ext.define('Ung.view.main.UserLicenseMessagesController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.ipm',
+    alias: 'controller.userLicenseMessages',
 
     listen: {
         global: {
-            loadIpm: 'loadIpm'
+            loadUserLicenseMessages: 'loadUserLicenseMessages'
         }
     },
 
-    loadIpm: function () {
+    loadUserLicenseMessages: function () {
         var me = this, vm = me.getViewModel();
 
-        Rpc.asyncData('rpc.UvmContext.licenseManager.getIpmMessages')
+        Rpc.asyncData('rpc.UvmContext.licenseManager.getUserLicenseMessages')
         .then(function(result){
             if(Util.isDestroyed(vm)) {
                 return;
             }
-            var ipmMessages = result.list;
+            var userLicenseMessages = result.list;
 
             messagesCmps = [];
 
-            Ext.Array.each(ipmMessages, function(msg) {
+            Ext.Array.each(userLicenseMessages, function(msg) {
                 var html = msg.message;
                 var color = 'black';
                 switch(msg.type) {
@@ -49,9 +49,9 @@ Ext.define('Ung.view.main.IpmController', {
                 messagesCmps.push(msgItem);
             });
 
-            // remove all current ipm messages before adding new ones
-            me.getView().down('#_ipmMessages').removeAll();
-            me.getView().down('#_ipmMessages').add(messagesCmps);
+            // remove all current UserLicenseMessages messages before adding new ones
+            me.getView().down('#_userLicenseMessages').removeAll();
+            me.getView().down('#_userLicenseMessages').add(messagesCmps);
         }, function(ex){
             handleException(ex);
         }); 

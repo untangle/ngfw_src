@@ -154,7 +154,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.IpmMessage">
+  <category name="com.untangle.uvm.UserLicenseMessage">
     <priority value="INFO"/>
   </category>
 
