@@ -29,6 +29,17 @@ public class UserLicenseMessage
     /* type of message */
     private UserLicenseMessageType type;
 
+
+    /**
+     * Blank constructor
+     */
+    public UserLicenseMessage()
+    {
+        this.message = "";
+        this.closure = true;
+        this.type = UserLicenseMessageType.INFO;
+    }
+
     /**
      * Constructor
      *
