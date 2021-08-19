@@ -106,11 +106,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private List<License> licenseList = new LinkedList<>();
 
     /**
-     * list of ipm messages
-     */
-    private List<IpmMessage> ipmMessages = new LinkedList<>();
-
-    /**
      * The current settings
      * Contains a list of all known licenses store locally
      * Note: the licenses in the settings don't have metadata
@@ -550,7 +545,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      * @return list of messages
      */
     public List<IpmMessage> getIpmMessages() {
-        return this.ipmMessages;
+        return this.settings.getUserMessages();
     }
 
     /**
@@ -660,6 +655,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
                     licenses.add(newLic);
                 }
+            }
+            // get ipm messages
+            boolean hasMessages = parse.has("userMessages");
+            if (hasMessages) {
+                
             }
         } catch (JSONException e) {
             logger.error("Unable to read license file: ", e );
@@ -890,33 +890,33 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
-            this.ipmMessages.clear();
+            this.settings.getUserMessages().clear();
 
             boolean connected = _testLicenseConnectivity();
             boolean downloadSucceeded = false;
-            if (!connected) {
-                licenseServerConnectivity = false;
-                IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
-                                                                false,
-                                                                IpmMessage.IpmMessageType.ALERT);
-                this.ipmMessages.add(noLicenseConnection);
-                logger.error("No license server connectivity, not downloading licenses");
-            } else {
+            if (connected) {
                 licenseServerConnectivity = true;
                 downloadSucceeded = _downloadLicenses();
-            }
+            } 
 
             // read licenses on failure
             if (!connected || !downloadSucceeded) {
                 _readLicenseSettings();
+                // initialize proper ipm message for connectivity
+                if (!connected) {
+                    licenseServerConnectivity = false;
+                    IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
+                                                                    false,
+                                                                    IpmMessage.IpmMessageType.ALERT);
+                    this.settings.getUserMessages().add(noLicenseConnection);
+                    logger.error("No license server connectivity, not downloading licenses");
+                }
             } else {
                 _mapLicenses();
             }
 
-            // set settings if download was successful
-            if (downloadSucceeded) {
-                _saveSettings(this.settings);
-            }
+            // set settings if download was successful and to get ipm messages about disconnection
+            _saveSettings(this.settings);
 
             _runAppManagerSync();
 
