@@ -28,22 +28,39 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                         html = '<i class="fa fa-exclamation-triangle"></i> ' + html;
                         color = '#F44336';
                         break;
+                    case 'WARNING':
+                        html = '<i class="fa fa-exclamation"></i> ' + html;
+                        color = "#FF6600";
+                        break;
                     default: //info
                         html = '<i class="fa fa-info-circle"></i> ' + html;
                         break;
                 }
                 var msgItem = {
                     xtype: 'container',
-                    items: [{
-                        xtype: 'component',
-                        style: { 
-                            fontSize: '12px', 
-                            color: color, 
-                            padding: '15px',
-                            textAlign: 'center'
+                    layout: 'hbox',
+                    border: false,
+                    items: [
+                        {
+                            xtype: 'component',
+                            style: { 
+                                fontSize: '12px', 
+                                color: color, 
+                                padding: '15px',
+                                textAlign: 'center'
+                            },
+                            html: html,
+                            flex: 1
                         },
-                        html: html
-                    }]
+                        {
+                            xtype: 'button',
+                            iconCls: 'fa fa-window-close',
+                            hidden: true,
+                            bind: {
+                                disabled: '{msg.closure}'
+                            }
+                        }
+                    ]
                 };
 
                 messagesCmps.push(msgItem);
