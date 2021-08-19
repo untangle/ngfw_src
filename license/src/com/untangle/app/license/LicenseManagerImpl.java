@@ -659,7 +659,23 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             // get UserLicense messages
             boolean hasMessages = parse.has("userMessages");
             if (hasMessages) {
-                
+                JSONArray userMessageList = parse.getJSONArray("userMessages");
+                List<UserLicenseMessage> userMessages = this.settings.getUserLicenseMessages();
+                for (int i = 0; i < userMessageList.length(); i++) {
+                    JSONObject userMessage = userMessageList.getJSONObject(i);
+
+                    UserLicenseMessage newUlm = new UserLicenseMessage();
+
+                    if(userMessage.has("message")) {newUlm.setMessage(userMessage.getString("message"));}
+                    if(userMessage.has("closure")) {newUlm.setClosure(userMessage.getBoolean("closure"));}
+                    if(userMessage.has("type")) {
+                        UserLicenseMessage.UserLicenseMessageType type = 
+                            UserLicenseMessage.UserLicenseMessageType.valueOf(userMessage.getString("type").toUpperCase());
+                        newUlm.setType(type);
+                    } 
+
+                    userMessages.add(newUlm);
+                }
             }
         } catch (JSONException e) {
             logger.error("Unable to read license file: ", e );
