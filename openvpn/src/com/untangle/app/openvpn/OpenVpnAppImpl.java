@@ -438,7 +438,22 @@ public class OpenVpnAppImpl extends AppBase
      */
     public int userAuthenticate(String username, String password) 
     {
-        return userAuthenticate(username, password, 0);
+        return userAuthenticate(username, password, false, 0);
+    }
+
+    /**
+     * 
+     * @param username
+     *        The username for authentication
+     * @param password
+     *        The password for authentication
+     * @param otpcode
+     *        The otp code to use
+     * @return True for authentication success, otherwise false
+     */
+    public int userAuthenticate(String username, String password, long otpcode) 
+    {
+        return userAuthenticate(username, password, true, otpcode);
     }
 
     /**
@@ -448,11 +463,13 @@ public class OpenVpnAppImpl extends AppBase
      *        The username for authentication
      * @param password
      *        The password for authentication
+     * @param isMFA
+     *        if isMfa should be authenticated       
      * @param otpcode
      *        The OTP code for 2 factor authentication.
      * @return True for authentication success, otherwise false
      */
-    public int userAuthenticate(String username, String password, long otpcode)
+    public int userAuthenticate(String username, String password, boolean isMFA, long otpcode)
     {
         boolean isAuthenticated = false;
     
@@ -485,7 +502,11 @@ public class OpenVpnAppImpl extends AppBase
 
         case LOCAL_DIRECTORY:
             try {
-                isAuthenticated = UvmContextFactory.context().localDirectory().authenticate(username, password, otpcode);
+		if (isMFA) {
+			isAuthenticated = UvmContextFactory.context().localDirectory().authenticate(username, password, otpcode);
+		} else {
+			isAuthenticated = UvmContextFactory.context().localDirectory().authenticate(username, password);
+		}
             } catch (Exception e) {
                 logger.warn("Local Directory authentication failure", e);
                 isAuthenticated = false;
