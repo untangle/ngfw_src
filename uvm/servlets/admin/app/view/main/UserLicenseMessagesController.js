@@ -40,7 +40,6 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                 var msgItem = {
                     xtype: 'container',
                     layout: 'hbox',
-                    border: false,
                     items: [
                         {
                             xtype: 'component',
@@ -56,9 +55,8 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                         {
                             xtype: 'button',
                             iconCls: 'fa fa-window-close',
-                            bind: {
-                                hidden: !hasClosure
-                            }
+                            hidden: !hasClosure,
+                            handler: 'removeUserLicenseMessage'
                         }
                     ]
                 };
@@ -73,5 +71,9 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
             handleException(ex);
         }); 
     },
+
+    removeUserLicenseMessage: function(cmp) {
+        cmp.up().destroy();  
+    }
 
 });
