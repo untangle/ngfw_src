@@ -906,6 +906,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
+            this.settings.getUserLicenseMessages().clear(); // todo figure out how to avoid duplicate messages
             boolean connected = _testLicenseConnectivity();
             boolean downloadSucceeded = false;
             if (connected) {
@@ -917,7 +918,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             if (!connected || !downloadSucceeded) {
                 _readLicenseSettings();
                 // initialize proper UserLicense message for connectivity
-                this.settings.getUserLicenseMessages().clear(); // todo figure out how to avoid duplicate messages
                 if (!connected) {
                     licenseServerConnectivity = false;
                     UserLicenseMessage noLicenseConnection = new UserLicenseMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
