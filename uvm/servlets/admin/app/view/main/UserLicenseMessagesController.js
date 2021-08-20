@@ -36,6 +36,7 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                         html = '<i class="fa fa-info-circle"></i> ' + html;
                         break;
                 }
+                var hasClosure = msg.hasClosure;
                 var msgItem = {
                     xtype: 'container',
                     layout: 'hbox',
@@ -55,9 +56,8 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                         {
                             xtype: 'button',
                             iconCls: 'fa fa-window-close',
-                            hidden: true,
                             bind: {
-                                disabled: '{msg.closure}'
+                                hidden: !hasClosure
                             }
                         }
                     ]

@@ -667,7 +667,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     UserLicenseMessage newUlm = new UserLicenseMessage();
 
                     if(userMessage.has("message")) {newUlm.setMessage(userMessage.getString("message"));}
-                    if(userMessage.has("closure")) {newUlm.setClosure(userMessage.getBoolean("closure"));}
+                    if(userMessage.has("closure")) {newUlm.setHasClosure(userMessage.getBoolean("closure"));}
                     if(userMessage.has("type")) {
                         UserLicenseMessage.UserLicenseMessageType type = 
                             UserLicenseMessage.UserLicenseMessageType.valueOf(userMessage.getString("type").toUpperCase());
@@ -922,7 +922,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     licenseServerConnectivity = false;
                     UserLicenseMessage noLicenseConnection = new UserLicenseMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
                                                                     false,
-                                                                    UserLicenseMessage.UserLicenseMessageType.WARNING);
+                                                                    UserLicenseMessage.UserLicenseMessageType.ALERT);
                     this.settings.getUserLicenseMessages().add(noLicenseConnection);
                     logger.error("No license server connectivity, not downloading licenses");
                 }
