@@ -922,6 +922,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 _readLicenseSettings();
                 // initialize proper UserLicense message for connectivity
                 if (!connected) {
+                    logger.error("No license server connectivity, not downloading licenses");
                     licenseServerConnectivity = false;
                     // check don't have duplicate no license connectivity message
                     boolean noMessage = true;
@@ -939,7 +940,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                                                                         false,
                                                                         UserLicenseMessage.UserLicenseMessageType.ALERT);
                         this.settings.getUserLicenseMessages().add(noLicenseConnection);
-                        logger.error("No license server connectivity, not downloading licenses");
                     }
                 }
             } else {
