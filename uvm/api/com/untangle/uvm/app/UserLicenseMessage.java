@@ -23,8 +23,8 @@ public class UserLicenseMessage
     /* message to display */
     private String message; 
 
-    /* whether message can be closed */
-    private boolean closure;
+    /* whether message can be closed. true is can be closed, false if not */
+    private boolean hasClosure;
 
     /* type of message */
     private UserLicenseMessageType type;
@@ -36,7 +36,7 @@ public class UserLicenseMessage
     public UserLicenseMessage()
     {
         this.message = "";
-        this.closure = true;
+        this.hasClosure = true;
         this.type = UserLicenseMessageType.INFO;
     }
 
@@ -45,14 +45,14 @@ public class UserLicenseMessage
      *
      * @param message message of UserLicenseMessage
      *
-     * @param closure if message can be closable in UI
+     * @param hasClosure if message can be closable in UI
      *
      * @param type type of UserLicenseMessage from enum
      */
-    public UserLicenseMessage(String message, boolean closure, UserLicenseMessageType type) 
+    public UserLicenseMessage(String message, boolean hasClosure, UserLicenseMessageType type) 
     {
         this.message = message;
-        this.closure = closure;
+        this.hasClosure = hasClosure;
         this.type = type;
     }
 
@@ -82,9 +82,9 @@ public class UserLicenseMessage
      *
      * @return the closure true/false
      */
-    public boolean getClosure() 
+    public boolean getHasClosure() 
     {
-        return this.closure; 
+        return this.hasClosure; 
     }
 
     /**
@@ -92,9 +92,9 @@ public class UserLicenseMessage
      *
      * @param newValue if message can closed or not 
      */
-    public void setClosure(boolean newValue) 
+    public void setHasClosure(boolean newValue) 
     {
-        this.closure = newValue;
+        this.hasClosure = newValue;
     }
 
     /**
