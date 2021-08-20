@@ -40,6 +40,11 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                 var msgItem = {
                     xtype: 'container',
                     layout: 'hbox',
+                    border: 1,
+                    style: {
+                        borderColor: 'black',
+                        borderStyle: 'solid'
+                    },
                     items: [
                         {
                             xtype: 'component',
@@ -47,7 +52,7 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                                 fontSize: '12px', 
                                 color: color, 
                                 padding: '15px',
-                                textAlign: 'center'
+                                textAlign: 'center',
                             },
                             html: html,
                             flex: 1

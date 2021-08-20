@@ -81,6 +81,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     public static final String SSL_INSPECTOR_OLDNAME = "https";
     public static final String LIVE_SUPPORT_OLDNAME = "support";
 
+    public static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
+        "<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>";
+
     private static final String EXPIRED = "expired";
 
     /**
@@ -906,7 +909,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
-            this.settings.getUserLicenseMessages().clear(); // todo figure out how to avoid duplicate messages
+            this.settings.getUserLicenseMessages().clear(); // clear messages out
             boolean connected = _testLicenseConnectivity();
             boolean downloadSucceeded = false;
             if (connected) {
@@ -920,11 +923,24 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 // initialize proper UserLicense message for connectivity
                 if (!connected) {
                     licenseServerConnectivity = false;
-                    UserLicenseMessage noLicenseConnection = new UserLicenseMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
-                                                                    false,
-                                                                    UserLicenseMessage.UserLicenseMessageType.ALERT);
-                    this.settings.getUserLicenseMessages().add(noLicenseConnection);
-                    logger.error("No license server connectivity, not downloading licenses");
+                    // check don't have duplicate no license connectivity message
+                    boolean noMessage = true;
+                    Iterator<UserLicenseMessage> iterator = this.settings.getUserLicenseMessages().iterator();
+                    while ( iterator.hasNext() ) {
+                        UserLicenseMessage msg = iterator.next();
+                        if (msg.getMessage().equals(NO_LICENSE_SERVER_CONNECTION_MESSAGE) && msg.getHasClosure() == false && msg.getType() == UserLicenseMessage.UserLicenseMessageType.ALERT) {
+                            noMessage = false;
+                        }
+                    }
+
+                    // if no message about connection exists, then add it
+                    if (noMessage) {
+                        UserLicenseMessage noLicenseConnection = new UserLicenseMessage(NO_LICENSE_SERVER_CONNECTION_MESSAGE,
+                                                                        false,
+                                                                        UserLicenseMessage.UserLicenseMessageType.ALERT);
+                        this.settings.getUserLicenseMessages().add(noLicenseConnection);
+                        logger.error("No license server connectivity, not downloading licenses");
+                    }
                 }
             } else {
                 _mapLicenses();
