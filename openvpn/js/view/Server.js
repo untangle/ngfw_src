@@ -106,6 +106,26 @@ Ext.define('Ung.apps.openvpn.view.Server', {
                 disabled: '{settings.authUserPass == false || settings.authenticationType !== "LOCAL_DIRECTORY"}',
                 hidden: '{settings.authUserPass == false}'
             },
+        },
+        {
+            xtype: 'container',
+            items: [{
+                xtype: 'displayfield',
+                value: 'MFA Client Timeout (hours):'.t()
+            }, {
+                xtype: 'textfield',
+                hideLabel: true,
+                bind: {
+                    value: '{settings.mfaClientTimeout}'
+                }
+            }, {
+                xtype: 'displayfield',
+                value: '(0 = no timeout)'.t(),
+            }],
+            bind: {
+                hidden: '{settings.totpClientPrompt == false}',
+                disabled: '{settings.authUserPass == false || settings.authenticationType !== "LOCAL_DIRECTORY"}',
+            }
         },{
             xtype: 'container',
             layout: {
