@@ -1,17 +1,14 @@
 #!/bin/bash
 
 CONFFILE=/etc/bdamserver/bdamserver.conf
+MATCH='++'
 
 if [ -f $CONFFILE ]; then
     url=`egrep "^UpdateURLAntivirus" /etc/bdamserver/bdamserver.conf | awk -F \= '{print $2}'`
-    
-    
-    if [ -z $url ]; then
+    if [[ -z $url ]]; then
         exit 0
     fi
-    
-    # If already set, bail out.
-    if [ "$url" != *"++"* ]; then
+    if [[ "$url" == *"$MATCH"* ]]; then
         exit 0
     fi
 

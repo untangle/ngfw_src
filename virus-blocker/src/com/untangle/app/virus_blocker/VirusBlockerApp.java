@@ -151,6 +151,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     {
         // skip the daemon stuff if package is not installed
         if (isBdamInstalled()) {
+            UvmContextFactory.context().execManager().exec(System.getProperty("uvm.bin.dir") + "/ut-bdam-uuid-update.sh");
             UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bdamserver");
 
             // we only need to enable the monitoring since it will be disabled
