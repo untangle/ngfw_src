@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.net.InetAddress;
+import java.util.Iterator;
 import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.io.File;
@@ -24,6 +25,7 @@ import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.StaticRoute;
+import com.untangle.uvm.app.UserLicenseMessage;
 
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
@@ -184,6 +186,11 @@ public class NotificationManagerImpl implements NotificationManager
         try {
             testUserPasswords(notificationList);
         } catch (Exception e) {
+            logger.warn("Notification test exception", e);
+        }
+        try {
+            testUserLicenseMessages(notificationList);
+        } catch(Exception e) {
             logger.warn("Notification test exception", e);
         }
 
@@ -951,6 +958,21 @@ public class NotificationManagerImpl implements NotificationManager
     {
         if (UvmContextFactory.context().adminManager().getWeakPasswordHashes()) {
             String notificationText = i18nUtil.tr("Some admin user accounts are using weak password hashes.  <a href='/admin/index.do#config/administration/admin'> Update them here </a>");
+            notificationList.add(notificationText);
+        }
+    }
+
+    /**
+     * Test if users has any userLicenseMessages, display any found
+     *
+     * @param notificationList - current list of notications
+     */
+    private void testUserLicenseMessages(List<String> notificationList)
+    {
+        Iterator<UserLicenseMessage> iterator = UvmContextFactory.context().licenseManager().getUserLicenseMessages().iterator();
+        while ( iterator.hasNext() ) {
+            UserLicenseMessage msg = iterator.next();
+            String notificationText = i18nUtil.tr(msg.getMessage());
             notificationList.add(notificationText);
         }
     }
