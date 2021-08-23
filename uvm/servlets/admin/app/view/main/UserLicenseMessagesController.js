@@ -21,22 +21,20 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
             messagesCmps = [];
 
             Ext.Array.each(userLicenseMessages, function(msg) {
-                var html = msg.message;
+                var icon = '<i class="fa fa-info-circle"></i> ';
                 var color = 'black';
                 switch(msg.type) {
                     case 'ALERT':
-                        html = '<i class="fa fa-exclamation-triangle"></i> ' + html;
+                        icon = '<i class="fa fa-exclamation-triangle"></i> ' + icon;
                         color = '#F44336';
                         break;
                     case 'WARNING':
-                        html = '<i class="fa fa-exclamation"></i> ' + html;
+                        icon = '<i class="fa fa-exclamation"></i> ' + icon;
                         color = "#FF6600";
-                        break;
-                    default: //info
-                        html = '<i class="fa fa-info-circle"></i> ' + html;
                         break;
                 }
                 var hasClosure = msg.hasClosure;
+                var message = msg.message;
                 var msgItem = {
                     xtype: 'container',
                     layout: 'hbox',
@@ -54,7 +52,7 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                                 padding: '15px',
                                 textAlign: 'center',
                             },
-                            html: html,
+                            html: icon + message.t(),
                             flex: 1
                         },
                         {
