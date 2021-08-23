@@ -25,11 +25,11 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                 var color = 'black';
                 switch(msg.type) {
                     case 'ALERT':
-                        icon = '<i class="fa fa-exclamation-triangle"></i> ' + icon;
+                        icon = '<i class="fa fa-exclamation-triangle"></i> ';
                         color = '#F44336';
                         break;
                     case 'WARNING':
-                        icon = '<i class="fa fa-exclamation"></i> ' + icon;
+                        icon = '<i class="fa fa-exclamation"></i> ';
                         color = "#FF6600";
                         break;
                 }
