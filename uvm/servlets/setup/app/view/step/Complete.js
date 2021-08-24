@@ -33,7 +33,7 @@ Ext.define('Ung.Setup.Complete', {
                 items.push({
                     xtype: 'component',
                     style: { textAlign: 'center' },
-                    html: '<h1 style="margin: 0;">' + Ext.String.format('The {0} Server is now configured.', rpc.oemName) + '</h1><br/><br/>You are now ready to configure the applications.'.t()
+                    html: '<h1 style="margin: 0;">' + Ext.String.format('The {0} Server is now configured.', rpc.oemProductName) + '</h1><br/><br/>You are now ready to configure the applications.'.t()
                 });
                 items.push({
                     xtype: 'button',

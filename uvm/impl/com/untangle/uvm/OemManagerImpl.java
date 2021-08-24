@@ -58,6 +58,28 @@ public class OemManagerImpl implements OemManager
     }
 
     /**
+     * Get the OEM short name
+     * 
+     * @return The OEM short name
+     */
+    @Override
+    public String getOemShortName()
+    {
+        return this.settings.getOemShortName();
+    }
+
+    /**
+     * Get the OEM product name
+     * 
+     * @return The OEM product name
+     */
+    @Override
+    public String getOemProductName()
+    {
+        return this.settings.getOemProductName();
+    }
+
+    /**
      * Get the OEM URL
      * 
      * @return The OEM URL
