@@ -194,6 +194,8 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("timezoneID", this.context.systemManager().getTimeZone().getID());
             json.put("timezones", this.context.systemManager().getTimeZones());
             json.put("oemName", this.context.oemManager().getOemName());
+            json.put("oemShortName", this.context.oemManager().getOemShortName());
+            json.put("oemProductName", this.context.oemManager().getOemProductName());
             json.put("licenseAgreementUrl", this.context.oemManager().getLicenseAgreementUrl());
             json.put("useLocalEula", this.context.oemManager().getUseLocalEula());
             json.put("isCCHidden", this.context.isCCHidden());
