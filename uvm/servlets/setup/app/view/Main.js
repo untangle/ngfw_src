@@ -42,7 +42,7 @@ Ext.define('Ung.Setup.Main', {
                     xtype: 'component',
                     margin: '0 0 20 0',
                     style: { textAlign: 'center' },
-                    html: Ext.String.format('A wizard will guide you through the initial setup and configuration of the {0} Server.'.t(), rpc.oemProductName)
+                    html: Ext.String.format('A wizard will guide you through the initial setup and configuration of the {0}.'.t(), rpc.oemProductName)
                 });
                 items.push({
                     xtype: 'container',
