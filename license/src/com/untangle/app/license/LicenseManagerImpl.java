@@ -49,7 +49,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.License;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.IpmMessage;
+import com.untangle.uvm.app.UserLicenseMessage;
 import com.untangle.uvm.UriTranslation;
 
 /**
@@ -81,6 +81,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     public static final String SSL_INSPECTOR_OLDNAME = "https";
     public static final String LIVE_SUPPORT_OLDNAME = "support";
 
+    public static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
+        "<strong>" + I18nUtil.marktr("Unable to establish connection to the License Service!") + "</strong> " + 
+        I18nUtil.marktr("Installation of apps is disabled. Please ensure connectivity and ") + "<a href=\"/admin\">" + I18nUtil.marktr("try again") + "</a>";
+
     private static final String EXPIRED = "expired";
 
     /**
@@ -104,11 +108,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      * These are fully evaluated (validated) license
      */
     private List<License> licenseList = new LinkedList<>();
-
-    /**
-     * list of ipm messages
-     */
-    private List<IpmMessage> ipmMessages = new LinkedList<>();
 
     /**
      * The current settings
@@ -545,12 +544,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     }
 
     /**
-     * Get ipm messages
+     * Get UserLicense messages
      * 
      * @return list of messages
      */
-    public List<IpmMessage> getIpmMessages() {
-        return this.ipmMessages;
+    public List<UserLicenseMessage> getUserLicenseMessages() {
+        return this.settings.getUserLicenseMessages();
     }
 
     /**
@@ -659,6 +658,27 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     if((lic.has("seats")) && (!lic.isNull("seats"))) {newLic.setSeats(lic.getInt("seats"));}
 
                     licenses.add(newLic);
+                }
+            }
+            // get UserLicense messages
+            boolean hasMessages = parse.has("userMessages");
+            if (hasMessages) {
+                JSONArray userMessageList = parse.getJSONArray("userMessages");
+                List<UserLicenseMessage> userMessages = this.settings.getUserLicenseMessages();
+                for (int i = 0; i < userMessageList.length(); i++) {
+                    JSONObject userMessage = userMessageList.getJSONObject(i);
+
+                    UserLicenseMessage newUlm = new UserLicenseMessage();
+
+                    if(userMessage.has("message")) {newUlm.setMessage(userMessage.getString("message"));}
+                    if(userMessage.has("closure")) {newUlm.setHasClosure(userMessage.getBoolean("closure"));}
+                    if(userMessage.has("type")) {
+                        UserLicenseMessage.UserLicenseMessageType type = 
+                            UserLicenseMessage.UserLicenseMessageType.valueOf(userMessage.getString("type").toUpperCase());
+                        newUlm.setType(type);
+                    } 
+
+                    userMessages.add(newUlm);
                 }
             }
         } catch (JSONException e) {
@@ -890,33 +910,45 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
-            this.ipmMessages.clear();
-
+            this.settings.getUserLicenseMessages().clear(); // clear messages out
             boolean connected = _testLicenseConnectivity();
             boolean downloadSucceeded = false;
-            if (!connected) {
-                licenseServerConnectivity = false;
-                IpmMessage noLicenseConnection = new IpmMessage("<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>",
-                                                                false,
-                                                                IpmMessage.IpmMessageType.ALERT);
-                this.ipmMessages.add(noLicenseConnection);
-                logger.error("No license server connectivity, not downloading licenses");
-            } else {
+            if (connected) {
                 licenseServerConnectivity = true;
                 downloadSucceeded = _downloadLicenses();
-            }
+            } 
 
             // read licenses on failure
             if (!connected || !downloadSucceeded) {
                 _readLicenseSettings();
+                // initialize proper UserLicense message for connectivity
+                if (!connected) {
+                    logger.error("No license server connectivity, not downloading licenses");
+                    licenseServerConnectivity = false;
+                    // check don't have duplicate no license connectivity message
+                    boolean noMessage = true;
+                    Iterator<UserLicenseMessage> iterator = this.settings.getUserLicenseMessages().iterator();
+                    while ( iterator.hasNext() ) {
+                        UserLicenseMessage msg = iterator.next();
+                        if (msg.getMessage().equals(NO_LICENSE_SERVER_CONNECTION_MESSAGE) && msg.getHasClosure() == false && msg.getType() == UserLicenseMessage.UserLicenseMessageType.ALERT) {
+                            noMessage = false;
+                        }
+                    }
+
+                    // if no message about connection exists, then add it
+                    if (noMessage) {
+                        UserLicenseMessage noLicenseConnection = new UserLicenseMessage(NO_LICENSE_SERVER_CONNECTION_MESSAGE,
+                                                                        false,
+                                                                        UserLicenseMessage.UserLicenseMessageType.ALERT);
+                        this.settings.getUserLicenseMessages().add(noLicenseConnection);
+                    }
+                }
             } else {
                 _mapLicenses();
             }
 
-            // set settings if download was successful
-            if (downloadSucceeded) {
-                _saveSettings(this.settings);
-            }
+            // set settings if download was successful and to get UserLicense messages about disconnection
+            _saveSettings(this.settings);
 
             _runAppManagerSync();
 
