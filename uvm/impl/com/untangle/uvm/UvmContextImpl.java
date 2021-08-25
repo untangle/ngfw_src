@@ -44,6 +44,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String UPGRADE_PID_FILE = "/var/run/upgrade.pid";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
+    private static final String REGION_NAME_FILE = System.getProperty("uvm.conf.dir") + "/region-name";
     private static final String CORE_UID_FILE = "/usr/share/untangle/conf/uid";
     private static final String SERIAL_NUMBER_FILE = "/sys/devices/virtual/dmi/id/product_serial";
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
@@ -73,6 +74,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String DEFAULT_HELP_URL = "http://wiki.untangle.com/get.php";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
 
+    private static final String DEFAULT_REGION_NAME = "world";
+
     private static final Object startupWaitLock = new Object();
 
     private static final String TEMPFS_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-tempfs-backup";
@@ -81,6 +84,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final Logger logger = Logger.getLogger(UvmContextImpl.class);
 
     private static String uid = null;
+    private static String regionName = null;
     private static String serialNumber = null;
     private static String applianceModel = null;
     private static int threadNumber = 1;
@@ -1280,6 +1284,39 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
+     * getRegion - returns the name of the region
+     * @return the region
+     */
+    public String getRegionName()
+    {
+        if (UvmContextImpl.regionName == null) {
+            BufferedReader reader = null;
+            try {
+                File regionNameFile = new File(REGION_NAME_FILE);
+                if (regionNameFile.exists()) {
+                    reader = new BufferedReader(new FileReader(regionNameFile));
+                    UvmContextImpl.regionName = reader.readLine();
+                }
+            } catch (IOException x) {
+                logger.error("Unable to get region name: ", x);
+            }finally{
+                try {
+                    if(reader != null){
+                        reader.close();
+                    }
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
+            if(UvmContextImpl.regionName == null){
+                UvmContextImpl.regionName = DEFAULT_REGION_NAME;
+            }
+        }
+        return UvmContextImpl.regionName;
+    }
+
+
+    /**
      * getServerSerialNumber - returns the server serial number (aaaa-xxxx-bbbb-xxxx)
      * @return the serial number
      */
@@ -1366,6 +1403,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("serverSerialnumber", serialNumber );
             json.put("fullVersion", this.getFullVersion());
             json.put("fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
+            json.put("regionName", this.getRegionName());
             json.put("storeUrl", this.getStoreUrl());
             json.put("helpUrl", this.getHelpUrl());
             json.put("isRegistered", this.isRegistered());
