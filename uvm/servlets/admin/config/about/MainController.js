@@ -27,46 +27,60 @@ Ext.define('Ung.config.about.MainController', {
             Rpc.asyncPromise('rpc.hostTable.getMaxActiveSize'),
             Rpc.directPromise('rpc.fullVersionAndRevision'),
             Rpc.directPromise('rpc.serverUID'),
-            Rpc.directPromise('rpc.serverSerialnumber')
+            Rpc.directPromise('rpc.serverSerialnumber'),
+            Rpc.directPromise('rpc.regionName')
         ], this)
         .then(function (result) {
             if(Util.isDestroyed(v, vm)){
                 return;
             }
-            vm.set({
-                kernelVersion: result[0],
-                modificationState: result[1],
-                rebootCount: result[2],
-                activeSize: result[3],
-                maxActiveSize: result[4],
-                fullVersionAndRevision: result[5],
-                serverUID: result[6],
-                serialNumber: (result[7] != "") ? '<br/>' + 'Serial Number'.t() + ': ' + result[7] : ""
+            var protectedAbout = new Ext.data.ArrayStore({
+                fields: ['name', 'value'],
+                data: []
             });
-
-            var accountComponent = v.down('[itemId=account]');
-            if( accountComponent &&
-                accountComponent.isHidden() ){
-                var serverUID = vm.get('serverUID');
-                if( serverUID &&
-                    serverUID.length == 19 ) {
-                    Ext.data.JsonP.request({
-                        url: Util.getStoreUrl() + '?action=find_account&uid=' + serverUID,
-                        type: 'GET',
-                        success: function(response, opts) {
-                            if( !Util.isDestroyed(accountComponent) &&
-                                response!=null &&
-                                response.account) {
-                                accountComponent.setHtml('Account'.t() + ": " + response.account);
-                                accountComponent.setVisible(true);
-                            }
-                        },
-                        failure: function(response, opts) {
-                            console.log("Failed to get account info fro UID:", serverUID);
-                        }
-                    });
-                }
+            var serverUID = result[6];
+            protectedAbout.add({name: 'UID'.t(), value: serverUID});
+            if (result[7] !='') {
+                protectedAbout.add({name: 'Serial Number'.t(), value: result[7]});
             }
+            protectedAbout.commitChanges();
+
+            var publicAbout = new Ext.data.ArrayStore({
+                fields: ['name', 'value'],
+                data: []
+            });
+            publicAbout.add({name: 'Build'.t(), value: result[5]});
+            publicAbout.add({name: 'Kernel'.t(), value: result[0]});
+            publicAbout.add({name: 'Region'.t(), value: result[8]});
+            publicAbout.add({name: 'History'.t(), value: result[1]});
+            publicAbout.add({name: 'Reboots'.t(), value: result[2]});
+            publicAbout.add({name: 'Current active device count'.t(), value: result[3]});
+            publicAbout.add({name: 'Highest active device count since reboot'.t(), value: result[4]});
+
+            publicAbout.commitChanges();
+
+            if( serverUID &&
+                serverUID.length == 19 ) {
+                Ext.data.JsonP.request({
+                    url: Util.getStoreUrl() + '?action=find_account&uid=' + serverUID,
+                    type: 'GET',
+                    success: function(response, opts) {
+                        if( response!=null &&
+                            response.account) {
+                            protectedAbout.add({name: 'Account'.t(), value: response.account});
+                            protectedAbout.commitChanges();
+                        }
+                    },
+                    failure: function(response, opts) {
+                        console.log("Failed to get account info from UID:", serverUID);
+                    }
+                });
+            }
+
+            vm.set({
+                protectedAbout: protectedAbout,
+                publicAbout: publicAbout
+            });
             v.setLoading(false);
         });
     },
