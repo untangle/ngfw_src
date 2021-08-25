@@ -48,4 +48,31 @@ public class UriTranslation implements Serializable, JSONString
         return jO.toString();
     }
 
+    /**
+     * Perform value comparision between this object and another
+     * UriTranslation object.
+     *
+     * @param ot Other UriTranslation object to compare.
+     * @return true if all values match, otherwise false.
+     */
+    public boolean equals(UriTranslation ot)
+    {
+        if( ( getUri() == null && ot.getUri() != null ) ||
+            ( getUri() != null && !getUri().equals(ot.getUri())) ||
+            ( getScheme() == null && ot.getScheme() != null ) ||
+            ( getScheme() != null && !getScheme().equals(ot.getScheme())) ||
+            ( getHost() == null && ot.getHost() != null ) ||
+            ( getHost() != null && !getHost().equals(ot.getHost())) ||
+            ( getPath() == null && ot.getPath() != null ) ||
+            ( getPath() != null && !getPath().equals(ot.getPath())) ||
+            ( getQuery() == null && ot.getQuery() != null ) ||
+            ( getQuery() != null && !getQuery().equals(ot.getQuery())) ||
+            ( getPort() == null && ot.getPort() != null ) ||
+            ( getPort() != null && !getPort().equals(ot.getPort()))
+        ){
+            return false;
+        }
+        return true;
+    }
+
 }
