@@ -4,6 +4,8 @@
 
 package com.untangle.uvm;
 
+import java.io.File;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +24,8 @@ import com.untangle.uvm.SettingsManager;
 public class UriManagerImpl implements UriManager
 {
     private static final Integer SettingsCurrentVersion = 2;
+
+    private static final String URIS_OVERRIDE_FILE_NAME = System.getProperty("uvm.conf.dir") + "/uris_override.js";
 
     private String SettingsFileName = "";
     private UriManagerSettings settings = null;
@@ -269,9 +273,71 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://sshrelay.untangle.com/");
         uriTranslations.add(uriTranslation);
 
-        settings.setUriTranslations(uriTranslations);
+        mergeOverrideSettings(settings);
 
         return settings;
+    }
+
+    /**
+     * Determine if override file exists.
+     *
+     * @return If override file exists, return true.  False otherwise.
+     */
+    private boolean overrideExists()
+    {
+        File overrideUrisFile = new File(URIS_OVERRIDE_FILE_NAME);
+        return overrideUrisFile.exists();
+    }
+
+    /**
+     * Merge override settings (if they exist) into current settings.
+     *
+     * @param settings UriManagerSettings to merge
+     * @return boolean where if settings changed due to merge, true.  Otherwise if no changes, false.
+     */
+    private boolean mergeOverrideSettings(UriManagerSettings settings)
+    {
+        boolean updated = false;
+
+        File overrideUrisFile = new File(URIS_OVERRIDE_FILE_NAME);
+        if ( overrideExists() ){
+            SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+            UriManagerSettings overrideSettings;
+            try {
+                overrideSettings = settingsManager.load(UriManagerSettings.class, URIS_OVERRIDE_FILE_NAME);
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load override settings:", e);
+                return updated;
+            }
+
+            // Only update if different
+            if(!overrideSettings.getDnsTestHost().equals(settings.getDnsTestHost())){
+                settings.setDnsTestHost(overrideSettings.getDnsTestHost());
+                updated = true;
+            }
+            if(!overrideSettings.getTcpTestHost().equals(settings.getTcpTestHost())){
+                settings.setTcpTestHost(overrideSettings.getTcpTestHost());
+                updated = true;
+            }
+            for(UriTranslation overrideUt : overrideSettings.getUriTranslations()){
+                for(UriTranslation ut : settings.getUriTranslations()){
+                    if (ut.getUri().equals(overrideUt.getUri())) {
+                        if(!ut.equals(overrideUt)){
+                            // Different URI translation
+                            ut.setScheme(overrideUt.getScheme());
+                            ut.setHost(overrideUt.getHost());
+                            ut.setPath(overrideUt.getPath());
+                            ut.setQuery(overrideUt.getQuery());
+                            ut.setPort(overrideUt.getPort());
+                            updated = true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return updated;
     }
 
     /**
@@ -280,39 +346,53 @@ public class UriManagerImpl implements UriManager
      */
     private void updateSettings(UriManagerSettings settings)
     {
-        if(settings.getVersion() >= SettingsCurrentVersion){
+        boolean overrideExists = overrideExists();
+        boolean sameVersion = settings.getVersion().equals(SettingsCurrentVersion);
+        if(overrideExists == false && sameVersion == true){
+            // No overrides or version change
             return;
         }
         List<UriTranslation> uriTranslations = settings.getUriTranslations();
 
-        UriTranslation uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://boxbackup.untangle.com/api/index.php");
-        uriTranslations.add(uriTranslation);
+        if ( sameVersion == false ) {
+            UriTranslation uriTranslation = new UriTranslation();
+            uriTranslation.setUri("https://boxbackup.untangle.com/api/index.php");
+            uriTranslations.add(uriTranslation);
 
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("http://translations.untangle.com/");
-        uriTranslations.add(uriTranslation);
+            uriTranslation = new UriTranslation();
+            uriTranslation.setUri("http://translations.untangle.com/");
+            uriTranslations.add(uriTranslation);
 
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://queue.untangle.com/");
-        uriTranslations.add(uriTranslation);
+            uriTranslation = new UriTranslation();
+            uriTranslation.setUri("https://queue.untangle.com/");
+            uriTranslations.add(uriTranslation);
 
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
-        uriTranslations.add(uriTranslation);
+            uriTranslation = new UriTranslation();
+            uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
+            uriTranslations.add(uriTranslation);
 
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://supssh.untangle.com/");
-        uriTranslations.add(uriTranslation);
+            uriTranslation = new UriTranslation();
+            uriTranslation.setUri("https://supssh.untangle.com/");
+            uriTranslations.add(uriTranslation);
 
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://sshrelay.untangle.com/");
-        uriTranslations.add(uriTranslation);
+            uriTranslation = new UriTranslation();
+            uriTranslation.setUri("https://sshrelay.untangle.com/");
+            uriTranslations.add(uriTranslation);
 
-        settings.setUriTranslations(uriTranslations);
+            settings.setUriTranslations(uriTranslations);
 
-        settings.setVersion(SettingsCurrentVersion);
-        this.setSettings( settings );
+            settings.setVersion(SettingsCurrentVersion);
+        }
+
+        boolean merged = false;
+        if (overrideExists) {
+            merged = mergeOverrideSettings(settings);
+        }
+
+        if ( merged == true || sameVersion == false ) {
+            // Merged or version change
+            this.setSettings( settings );
+        }
     }
 
     /**
