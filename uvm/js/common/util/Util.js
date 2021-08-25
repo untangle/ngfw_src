@@ -754,7 +754,7 @@ Ext.define('Ung.util.Util', {
     reloadLicenses: function() {
         Rpc.directData('rpc.UvmContext.licenseManager.reloadLicenses', true);
 
-        Ext.fireEvent('loadIpm');
+        Ext.fireEvent('loadUserLicenseMessages');
     },
 
     activeClone: function(source) {

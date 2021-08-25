@@ -28,7 +28,7 @@ Ext.define('Ung.view.main.Main', {
     dockedItems: [{
         xtype: 'mainheading',
     }, {
-        xtype: 'ipm',
+        xtype: 'userLicenseMessages',
     }],
 
     items: [{
