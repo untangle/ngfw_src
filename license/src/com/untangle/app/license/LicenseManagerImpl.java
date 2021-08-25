@@ -82,7 +82,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     public static final String LIVE_SUPPORT_OLDNAME = "support";
 
     public static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
-        "<strong>Unable to establish connection to the License Service!</strong> Installation of apps is disabled. Please ensure connectivity and <a href=\"/admin\">try again</a>";
+        "<strong>" + I18nUtil.marktr("Unable to establish connection to the License Service!") + "</strong> " + 
+        I18nUtil.marktr("Installation of apps is disabled. Please ensure connectivity and ") + "<a href=\"/admin\">" + I18nUtil.marktr("try again") + "</a>";
 
     private static final String EXPIRED = "expired";
 
