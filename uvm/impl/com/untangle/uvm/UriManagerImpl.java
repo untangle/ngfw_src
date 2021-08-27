@@ -273,6 +273,8 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://sshrelay.untangle.com/");
         uriTranslations.add(uriTranslation);
 
+        settings.setUriTranslations(uriTranslations);
+
         mergeOverrideSettings(settings);
 
         return settings;
