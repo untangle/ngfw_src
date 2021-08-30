@@ -129,6 +129,47 @@ public class UriManagerImpl implements UriManager
     }
 
     /**
+     * Break URI to get host, get URI that matchs host, rebuild URI with path
+     * @param uri String of url to lookup.
+     * @return String of translated url.
+     */
+    public String getUriWithPath(String uri)
+    {
+        String translatedUri = uri;
+        URIBuilder uriBuilder = null;
+        String host = null;
+        try{
+            uriBuilder = new URIBuilder(uri);
+            host = uriBuilder.getHost();
+            logger.warn("got host=" + host);
+        }catch(Exception e){
+            logger.warn("*** Unable to create URIBuilder", e);
+        }
+        if( uriBuilder != null && host != null){
+            logger.warn("looking for ut=");
+            UriTranslation ut = null;
+            synchronized(this.UriMap){
+                ut = this.HostUriTranslations.get(host);
+            }
+            if( ut != null){
+                logger.warn("found ");
+                if(ut.getScheme() != null){
+                    uriBuilder.setScheme(ut.getScheme());
+                }
+                if(ut.getHost() != null){
+                    uriBuilder.setHost(ut.getHost());
+                }
+                if(ut.getPort() != null){
+                    uriBuilder.setPort(ut.getPort());
+                }
+                translatedUri = uriBuilder.toString();
+            }
+        }
+
+        return translatedUri;
+    }
+
+    /**
      * Retrieve URI settings by hostname.
      * @param host of host of uri  to lookup.
      * @return UriTranslation of matching host or null if no match.
