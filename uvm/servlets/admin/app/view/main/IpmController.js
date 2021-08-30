@@ -53,7 +53,7 @@ Ext.define('Ung.view.main.IpmController', {
             me.getView().down('#_ipmMessages').removeAll();
             me.getView().down('#_ipmMessages').add(messagesCmps);
         }, function(ex){
-            handleException(ex);
+            Util.handleException(ex);
         }); 
     },
 
