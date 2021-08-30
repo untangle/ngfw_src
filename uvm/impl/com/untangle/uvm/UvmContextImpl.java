@@ -1137,7 +1137,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         String url = System.getProperty(PROPERTY_STORE_URL);
         if (url == null)
             url = DEFAULT_STORE_URL;
-        return url;
+        return uriManager.getUri(url);
     }
 
     /**
@@ -1149,8 +1149,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         String url = System.getProperty(PROPERTY_CMD_URL);
         if (url == null)
             url = DEFAULT_CMD_URL;
-        return url;
-    }
+            return uriManager.getUri(url);
+        }
 
     /**
      * isStoreAvailable - checks to see if the Untangle cloud API is reachable
