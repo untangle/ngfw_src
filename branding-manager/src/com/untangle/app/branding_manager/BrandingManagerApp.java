@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.apache.commons.fileupload.FileItem;
 
+import com.untangle.uvm.UriManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -248,7 +249,8 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     @Override
     public String getCompanyUrl()
     {
-        return settings.getCompanyUrl();
+        UriManager uriManager = UvmContextFactory.context().uriManager();
+        return uriManager.getUri(settings.getCompanyUrl());
     }
 
     /**
