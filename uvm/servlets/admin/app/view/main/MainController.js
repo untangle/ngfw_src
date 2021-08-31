@@ -17,7 +17,9 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     afterLaunch: function () {
-        this.checkRegister();
+        if (!rpc.UvmContext.isCCHidden()) {
+            this.checkRegister();
+        }
         this.checkNotifications();
     },
 
@@ -48,8 +50,10 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     openOffline: function () {
-        var offView = Ext.create('Ung.view.main.Offline', {});
-        offView.show();
+        if (!Rpc.directData('rpc.UvmContext.licenseManager.isRestricted')) {
+            var offView = Ext.create('Ung.view.main.Offline', {});
+            offView.show();
+        }
     },
 
     checkNotifications: function () {
