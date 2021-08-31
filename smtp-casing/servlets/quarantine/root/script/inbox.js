@@ -89,9 +89,8 @@ Ext.define('Ung.view.Main', {
             background: '#1b1e26'
         },
         items: [{
-            xtype: 'component',
-            width: 80,
-            html: '<img src="' + '/images/BrandingLogo.png" style="display: block; height: 40px; margin: 0 auto;"/>',
+            cls: 'logo',
+            html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
         }, {
             xtype: 'component',
             bind: { html: '{title}' },
