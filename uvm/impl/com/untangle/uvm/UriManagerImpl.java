@@ -23,7 +23,7 @@ import com.untangle.uvm.SettingsManager;
  */
 public class UriManagerImpl implements UriManager
 {
-    private static final Integer SettingsCurrentVersion = 2;
+    private static final Integer SettingsCurrentVersion = 3;
 
     private static final String URIS_OVERRIDE_FILE_NAME = System.getProperty("uvm.conf.dir") + "/uris_override.js";
 
@@ -314,6 +314,14 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://sshrelay.untangle.com/");
         uriTranslations.add(uriTranslation);
 
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.untangle.com/api/v1");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.untangle.com/cmd");
+        uriTranslations.add(uriTranslation);
+
         settings.setUriTranslations(uriTranslations);
 
         mergeOverrideSettings(settings);
@@ -389,53 +397,25 @@ public class UriManagerImpl implements UriManager
      */
     private void updateSettings(UriManagerSettings settings)
     {
-        boolean overrideExists = overrideExists();
-        boolean sameVersion = settings.getVersion().equals(SettingsCurrentVersion);
-        if(overrideExists == false && sameVersion == true){
-            // No overrides or version change
+        if(settings.getVersion() >= SettingsCurrentVersion){
             return;
         }
+
         List<UriTranslation> uriTranslations = settings.getUriTranslations();
 
-        if ( sameVersion == false ) {
-            UriTranslation uriTranslation = new UriTranslation();
-            uriTranslation.setUri("https://boxbackup.untangle.com/api/index.php");
-            uriTranslations.add(uriTranslation);
+        UriTranslation uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.untangle.com/api/v1");
+        uriTranslations.add(uriTranslation);
 
-            uriTranslation = new UriTranslation();
-            uriTranslation.setUri("http://translations.untangle.com/");
-            uriTranslations.add(uriTranslation);
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.untangle.com/cmd");
+        uriTranslations.add(uriTranslation);
 
-            uriTranslation = new UriTranslation();
-            uriTranslation.setUri("https://queue.untangle.com/");
-            uriTranslations.add(uriTranslation);
+        settings.setUriTranslations(uriTranslations);
 
-            uriTranslation = new UriTranslation();
-            uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
-            uriTranslations.add(uriTranslation);
+        settings.setVersion(SettingsCurrentVersion);
 
-            uriTranslation = new UriTranslation();
-            uriTranslation.setUri("https://supssh.untangle.com/");
-            uriTranslations.add(uriTranslation);
-
-            uriTranslation = new UriTranslation();
-            uriTranslation.setUri("https://sshrelay.untangle.com/");
-            uriTranslations.add(uriTranslation);
-
-            settings.setUriTranslations(uriTranslations);
-
-            settings.setVersion(SettingsCurrentVersion);
-        }
-
-        boolean merged = false;
-        if (overrideExists) {
-            merged = mergeOverrideSettings(settings);
-        }
-
-        if ( merged == true || sameVersion == false ) {
-            // Merged or version change
-            this.setSettings( settings );
-        }
+        this.setSettings( settings );
     }
 
     /**
