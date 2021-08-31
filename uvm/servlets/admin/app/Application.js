@@ -23,15 +23,21 @@ Ext.define('Ung.Application', {
         Ext.getStore('policies').loadData(Rpc.directData('rpc.appsViews'));
         Ext.getStore('policiestree').build();
 
+        var isRestricted = Rpc.directData('rpc.UvmContext.licenseManager.isRestricted');
+
         Ext.Deferred.parallel([
             Rpc.directPromise('rpc.companyName'),
-            Rpc.directPromise('rpc.hostname')
+            Rpc.directPromise('rpc.hostname'),
         ], this)
         .then(function(result){
             if(Util.isDestroyed(window)){
                 return;
             }
-            window.document.title = result[0] + (result[1] ? ' - ' + result[1] : '');
+            var hostnameText = '';
+            if (!isRestricted) {
+                hostnameText = result[1] ? ' - ' + result[1] : ''; 
+            }
+            window.document.title = result[0] + hostnameText;
         }, function(ex) {
         });
 

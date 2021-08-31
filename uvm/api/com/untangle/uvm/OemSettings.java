@@ -15,6 +15,8 @@ import org.json.JSONString;
 public class OemSettings implements Serializable, JSONString
 {
     private String oemName;
+    private String oemShortName;
+    private String oemProductName;
     private String oemUrl;
     private String licenseAgreementUrl = "http://www.untangle.com/legal";
     private Boolean useLocalEula = false;
@@ -24,6 +26,18 @@ public class OemSettings implements Serializable, JSONString
     public OemSettings( String oemName, String oemUrl, String licenseAgreementUrl, Boolean useLocalEula)
     {
         this.oemName = oemName;
+        this.oemShortName = oemName;
+        this.oemProductName = oemName;
+        this.oemUrl = oemUrl;
+        this.licenseAgreementUrl = licenseAgreementUrl;
+        this.useLocalEula = useLocalEula;
+    }
+
+    public OemSettings( String oemName, String oemShortName, String oemProductName, String oemUrl, String licenseAgreementUrl, Boolean useLocalEula)
+    {
+        this.oemName = oemName;
+        this.oemShortName = oemShortName;
+        this.oemProductName = oemProductName;
         this.oemUrl = oemUrl;
         this.licenseAgreementUrl = licenseAgreementUrl;
         this.useLocalEula = useLocalEula;
@@ -34,6 +48,18 @@ public class OemSettings implements Serializable, JSONString
      */
     public String getOemName() { return oemName; }
     public void setOemName( String newValue ) { this.oemName = newValue; }
+
+    /**
+     * The OEM short name, ie "Vendor2" vs "Vendor2 Router"
+     */
+    public String getOemShortName() { return oemShortName; }
+    public void setOemShortName( String newValue ) { this.oemShortName = newValue; }
+
+        /**
+     * The OEM product name, ie "Untangle NGFW" vs "Untangle"
+     */
+    public String getOemProductName() { return oemProductName; }
+    public void setOemProductName( String newValue ) { this.oemProductName = newValue; }
 
     /**
      * The OEM URL, ie "http://untangle.com"

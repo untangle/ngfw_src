@@ -41,7 +41,7 @@ public class OemManagerImpl implements OemManager
         }
 
         if (readSettings != null) this.settings = readSettings;
-        else this.settings = new OemSettings("Untangle", "http://untangle.com", "https://www.untangle.com/legal", false);
+        else this.settings = new OemSettings("Untangle", "Untangle", "Untangle Server", "http://untangle.com", "https://www.untangle.com/legal", false);
 
         logger.info("OEM: " + this.settings.getOemName());
     }
@@ -55,6 +55,28 @@ public class OemManagerImpl implements OemManager
     public String getOemName()
     {
         return this.settings.getOemName();
+    }
+
+    /**
+     * Get the OEM short name
+     * 
+     * @return The OEM short name
+     */
+    @Override
+    public String getOemShortName()
+    {
+        return this.settings.getOemShortName();
+    }
+
+    /**
+     * Get the OEM product name
+     * 
+     * @return The OEM product name
+     */
+    @Override
+    public String getOemProductName()
+    {
+        return this.settings.getOemProductName();
     }
 
     /**

@@ -11,6 +11,16 @@ public interface OemManager
     public String getOemName();
 
     /**
+     * Return the OEM short Name
+     */
+    public String getOemShortName();
+
+    /**
+     * Return the OEM product Name
+     */
+    public String getOemProductName();
+
+    /**
      * Return the OEM Url
      */
     public String getOemUrl();
