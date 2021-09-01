@@ -39,7 +39,7 @@ services:
       privileged: ${PRIVILEGED:-false}
       extra_hosts:
         # from the outside, pass package-server's outside IP instead
-        - "package-server:${PACKAGE_SERVER_IP:-10.112.11.105}"
+        - "package-server:${PACKAGE_SERVER_IP:-10.112.12.87}"
       volumes:
         - .:/opt/untangle/build
         - pkgtools:/opt/untangle/ngfw_pkgtools:ro
