@@ -57,7 +57,8 @@ public class UriTranslation implements Serializable, JSONString
      */
     public boolean equals(UriTranslation ot)
     {
-        if( ( getUri() == null && ot.getUri() != null ) ||
+        if( ot == null ||
+            ( getUri() == null && ot.getUri() != null ) ||
             ( getUri() != null && !getUri().equals(ot.getUri())) ||
             ( getScheme() == null && ot.getScheme() != null ) ||
             ( getScheme() != null && !getScheme().equals(ot.getScheme())) ||
