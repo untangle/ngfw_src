@@ -12,8 +12,9 @@ Ext.define('Ung.Lang.Main', {
         },
         items: [{
             xtype: 'component',
+            margin: '0 0 20 0',
             style: { textAlign: 'center' },
-            html: '<img src="images/BrandingLogo.png" height=96/>'
+            html: '<img src="images/BrandingLogo.png" class="branding-logo-setup" />'
         }, {
             xtype: 'container',
             layout: {
