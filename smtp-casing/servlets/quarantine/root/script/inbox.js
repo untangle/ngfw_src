@@ -90,7 +90,7 @@ Ext.define('Ung.view.Main', {
         },
         items: [{
             cls: 'logo',
-            html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
+            html: '<img src="' + '/images/BrandingLogo.png" class="branding-logo" />',
         }, {
             xtype: 'component',
             bind: { html: '{title}' },
