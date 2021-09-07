@@ -14,5 +14,7 @@ public interface UriManager
 
     String getUri(String url);
 
+    String getUriWithPath(String url);
+
     UriTranslation getUriTranslationByHost(String url);
 }
