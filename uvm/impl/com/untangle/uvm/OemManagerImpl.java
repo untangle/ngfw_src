@@ -87,7 +87,8 @@ public class OemManagerImpl implements OemManager
     @Override
     public String getOemUrl()
     {
-        return this.settings.getOemUrl();
+        UriManager uriManager = UvmContextFactory.context().uriManager();
+        return uriManager.getUri(this.settings.getOemUrl());
     }
 
     /**
@@ -167,7 +168,8 @@ public class OemManagerImpl implements OemManager
     @Override 
     public String getLicenseAgreementUrl() 
     {
-        return this.settings.getLicenseAgreementUrl();
+        UriManager uriManager = UvmContextFactory.context().uriManager();
+        return uriManager.getUri(this.settings.getLicenseAgreementUrl());
     }
 
     /**

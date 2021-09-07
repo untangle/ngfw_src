@@ -4,6 +4,8 @@
 
 package com.untangle.uvm;
 
+import java.io.File;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +23,9 @@ import com.untangle.uvm.SettingsManager;
  */
 public class UriManagerImpl implements UriManager
 {
-    private static final Integer SettingsCurrentVersion = 2;
+    private static final Integer SettingsCurrentVersion = 3;
+
+    private static final String URIS_OVERRIDE_FILE_NAME = System.getProperty("uvm.conf.dir") + "/uris_override.js";
 
     private String SettingsFileName = "";
     private UriManagerSettings settings = null;
@@ -121,6 +125,47 @@ public class UriManagerImpl implements UriManager
         if(translatedUri == null){
             translatedUri = uri;
         }
+        return translatedUri;
+    }
+
+    /**
+     * Break URI to get host, get URI that matchs host, rebuild URI with path
+     * @param uri String of url to lookup.
+     * @return String of translated url.
+     */
+    public String getUriWithPath(String uri)
+    {
+        String translatedUri = uri;
+        URIBuilder uriBuilder = null;
+        String host = null;
+        try{
+            uriBuilder = new URIBuilder(uri);
+            host = uriBuilder.getHost();
+            logger.warn("got host=" + host);
+        }catch(Exception e){
+            logger.warn("*** Unable to create URIBuilder", e);
+        }
+        if( uriBuilder != null && host != null){
+            logger.warn("looking for ut=");
+            UriTranslation ut = null;
+            synchronized(this.UriMap){
+                ut = this.HostUriTranslations.get(host);
+            }
+            if( ut != null){
+                logger.warn("found ");
+                if(ut.getScheme() != null){
+                    uriBuilder.setScheme(ut.getScheme());
+                }
+                if(ut.getHost() != null){
+                    uriBuilder.setHost(ut.getHost());
+                }
+                if(ut.getPort() != null){
+                    uriBuilder.setPort(ut.getPort());
+                }
+                translatedUri = uriBuilder.toString();
+            }
+        }
+
         return translatedUri;
     }
 
@@ -269,9 +314,81 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://sshrelay.untangle.com/");
         uriTranslations.add(uriTranslation);
 
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.untangle.com/api/v1");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.untangle.com/cmd");
+        uriTranslations.add(uriTranslation);
+
         settings.setUriTranslations(uriTranslations);
 
+        mergeOverrideSettings(settings);
+
         return settings;
+    }
+
+    /**
+     * Determine if override file exists.
+     *
+     * @return If override file exists, return true.  False otherwise.
+     */
+    private boolean overrideExists()
+    {
+        File overrideUrisFile = new File(URIS_OVERRIDE_FILE_NAME);
+        return overrideUrisFile.exists();
+    }
+
+    /**
+     * Merge override settings (if they exist) into current settings.
+     *
+     * @param settings UriManagerSettings to merge
+     * @return boolean where if settings changed due to merge, true.  Otherwise if no changes, false.
+     */
+    private boolean mergeOverrideSettings(UriManagerSettings settings)
+    {
+        boolean updated = false;
+
+        File overrideUrisFile = new File(URIS_OVERRIDE_FILE_NAME);
+        if ( overrideExists() ){
+            SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+            UriManagerSettings overrideSettings;
+            try {
+                overrideSettings = settingsManager.load(UriManagerSettings.class, URIS_OVERRIDE_FILE_NAME);
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load override settings:", e);
+                return updated;
+            }
+
+            // Only update if different
+            if(!overrideSettings.getDnsTestHost().equals(settings.getDnsTestHost())){
+                settings.setDnsTestHost(overrideSettings.getDnsTestHost());
+                updated = true;
+            }
+            if(!overrideSettings.getTcpTestHost().equals(settings.getTcpTestHost())){
+                settings.setTcpTestHost(overrideSettings.getTcpTestHost());
+                updated = true;
+            }
+            for(UriTranslation overrideUt : overrideSettings.getUriTranslations()){
+                for(UriTranslation ut : settings.getUriTranslations()){
+                    if (ut.getUri().equals(overrideUt.getUri())) {
+                        if(!ut.equals(overrideUt)){
+                            // Different URI translation
+                            ut.setScheme(overrideUt.getScheme());
+                            ut.setHost(overrideUt.getHost());
+                            ut.setPath(overrideUt.getPath());
+                            ut.setQuery(overrideUt.getQuery());
+                            ut.setPort(overrideUt.getPort());
+                            updated = true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return updated;
     }
 
     /**
@@ -283,35 +400,21 @@ public class UriManagerImpl implements UriManager
         if(settings.getVersion() >= SettingsCurrentVersion){
             return;
         }
+
         List<UriTranslation> uriTranslations = settings.getUriTranslations();
 
         UriTranslation uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://boxbackup.untangle.com/api/index.php");
+        uriTranslation.setUri("https://www.untangle.com/api/v1");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("http://translations.untangle.com/");
-        uriTranslations.add(uriTranslation);
-
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://queue.untangle.com/");
-        uriTranslations.add(uriTranslation);
-
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
-        uriTranslations.add(uriTranslation);
-
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://supssh.untangle.com/");
-        uriTranslations.add(uriTranslation);
-
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://sshrelay.untangle.com/");
+        uriTranslation.setUri("https://www.untangle.com/cmd");
         uriTranslations.add(uriTranslation);
 
         settings.setUriTranslations(uriTranslations);
 
         settings.setVersion(SettingsCurrentVersion);
+
         this.setSettings( settings );
     }
 

@@ -61,7 +61,7 @@ Ext.define('Ung.apps.livesupport.MainController', {
         if ((target) && (target !== '') && (! target.includes('untangle.com'))) {
             window.open(target);
         } else {
-            window.open("https://www.untangle.com/shop/Live-Support");
+            window.open(rpc.uriManager.getUriWithPath("https://www.untangle.com/shop/Live-Support"));
         }
     }
 });
