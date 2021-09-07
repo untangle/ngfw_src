@@ -29,6 +29,8 @@
     <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
     <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
 
+    <link href="styles/quarantine.css" rel="stylesheet" type="text/css" />
+    
     <style type="text/css">
         .toast {
             background: #333;
