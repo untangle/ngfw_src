@@ -14,7 +14,7 @@ Ext.define('Ung.view.main.MainHeading', {
         responsiveConfig: { 'width >= 1000': { hidden: false, }, 'width < 1000': { hidden: true } }
     },
     items: [{
-        html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
+        html: '<img src="' + '/images/BrandingLogo.png" class="branding-logo"/>',
         cls: 'logo',
         href: '#',
         responsiveConfig: null
