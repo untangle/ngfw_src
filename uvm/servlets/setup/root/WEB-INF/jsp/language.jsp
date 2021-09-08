@@ -32,8 +32,13 @@
         .x-btn-icon-right > .x-btn-inner-default-toolbar-medium,
         .x-btn-icon-left > .x-btn-inner-default-toolbar-medium {
             max-width: none;
+        }
+        .branding-logo-setup {
+          height: 96px;
+          width: 150px;
         }        
     </style>
+    <link href="styles/custom-setup.css" rel="stylesheet" type="text/css" />
 
     <script type="text/javascript" src="/ext6.2/ext-all-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js?s=${buildStamp}"></script>

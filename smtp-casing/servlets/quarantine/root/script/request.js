@@ -15,9 +15,11 @@ Ext.define('Ung.view.Main', {
             background: '#1b1e26'
         },
         items: [{
-            xtype: 'component',
+            xtype: 'button',
             width: 80,
-            html: '<img src="' + '/images/BrandingLogo.png" style="display: block; height: 40px; margin: 0 auto;"/>',
+            html: '<img src="' + '/images/BrandingLogo.png" class="branding-logo"/>',
+            cls: 'logo',
+            responsiveConfig: null
         }, {
             xtype: 'component',
             html: 'Request Quarantine Digest Emails'.t(),
