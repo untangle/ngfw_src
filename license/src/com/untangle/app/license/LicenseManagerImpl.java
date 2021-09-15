@@ -92,6 +92,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private static final long TIMER_DELAY = 1000 * 60 * 60 * 4;
 
+    /**
+     * check more frequently if no internet at startup
+     */
+    private static final long TIMER_DELAY_NO_INTERNET = 1000 * 60 * 10;
+
     private static final Logger logger = Logger.getLogger(LicenseManagerImpl.class);
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
@@ -132,6 +137,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private boolean licenseServerConnectivity = false;
 
     /**
+     * Boolean set after the initial license check has completed
+     */
+    private boolean initialLicenseCheck = false;
+
+    /**
      * Setup license manager application.
      * 
      *
@@ -142,18 +152,32 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         super( appSettings, appProperties );
 
-	    logger.info("Starting load");
+        logger.info("Starting load");
 
         this.licenseServerConnectivity = false;
 
         // initialize settings
         this._readLicenseSettings();
 
+        // try the initial license load
         this.reloadLicenses(true);
 
-        // Start periodic license updates.
-        this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
-        this.pulse.start();
+        /**
+         * If the connectivity flag is set after the initial load set the initial check
+         * flag and start the pulse at the normal refresh interval. Otherwise start the
+         * pulse with the shorter delay so we check more frequently until successful.
+         */
+        if (getLicenseServerConnectivity()) {
+            logger.info("License connectivity established - Starting normal refresh pulse");
+            initialLicenseCheck = true;
+            pulse = new Pulse("uvm-license", task, TIMER_DELAY);
+            pulse.start();
+        } else {
+            logger.info("License connectivity failed - Starting urgent refresh pulse");
+            initialLicenseCheck = false;
+            pulse = new Pulse("uvm-license", task, TIMER_DELAY_NO_INTERNET);
+            pulse.start();
+        }
     }
 
     /**
@@ -991,7 +1015,20 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          */
         public void run()
         {
-            _syncLicensesWithServer();    
+            _syncLicensesWithServer();
+
+            /**
+             * If the initial check is false and the sync we just called set the connectivity
+             * flag, we stop the active pulse which was created using the short retry interval
+             * and re-create using the normal update interval.
+             */
+            if ((initialLicenseCheck == false) && (getLicenseServerConnectivity() == true)) {
+                logger.info("License connectivity restored - Switching to normal refresh pulse");
+                initialLicenseCheck = true;
+                pulse.stop();
+                pulse = new Pulse("uvm-license", task, TIMER_DELAY);
+                pulse.start();
+            }
         }
     }
     
