@@ -497,14 +497,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 if ( response != null ) { response.close(); response = null; }
             }
         } catch ( java.net.UnknownHostException e ) {
-            logger.warn("Exception requesting trial license:" + e.toString());
-            throw ( new Exception( "Unable to fetch trial license: DNS lookup failed.", e ) );
+            logger.warn("DNS failure requesting trial license:" + e.toString());
         } catch ( java.net.ConnectException e ) {
-            logger.warn("Exception requesting trial license:" + e.toString());
-            throw ( new Exception( "Unable to fetch trial license: Connection timeout.", e ) );
+            logger.warn("Connection timeout requesting trial license:" + e.toString());
         } catch ( Exception e ) {
-            logger.warn("Exception requesting trial license:" + e.toString());
-            throw ( new Exception( "Unable to fetch trial license: " + e.toString(), e ) );
+            logger.warn("Exception requesting trial license:", e);
         } finally {
             try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
@@ -977,7 +974,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             }
         }
         if(!appManager.isRestartingUnloaded()) {
-            appManager.shutdownAppsWithInvalidLicense();
+            appManager.harmonizeAppManagerWithLicenseManager();
         }
     }
     

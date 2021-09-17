@@ -1031,7 +1031,7 @@ public class AppManagerImpl implements AppManager
             doAutoInstall();
         }
 
-        shutdownAppsWithInvalidLicense();
+        harmonizeAppManagerWithLicenseManager();
     }
 
     /**
@@ -1054,13 +1054,13 @@ public class AppManagerImpl implements AppManager
                     String name = app.getAppProperties().getName();
                     Long id = app.getAppSettings().getId();
 
-                    logger.info("Stopping  : " + name + " [" + id + "]");
+                    logger.info("Stopping : " + name + " [" + id + "]");
 
                     long startTime = System.currentTimeMillis();
                     ((AppBase) app).stopIfRunning();
                     long endTime = System.currentTimeMillis();
 
-                    logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
+                    logger.info("Stopped : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
 
                     loadedAppsMap.remove(app.getAppSettings().getId());
                 }
@@ -1086,9 +1086,11 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
-     * Shutdown any running apps that have an invalid license
+     * NGFW-13874 - Shutdown any running apps that have an invalid license and
+     * transition from INITIALIZED to RUNNING to handle apps that were installed
+     * when there was no connectivity to the license server.
      */
-    public synchronized void shutdownAppsWithInvalidLicense()
+    public synchronized void harmonizeAppManagerWithLicenseManager()
     {
         List<Runnable> tasks = new ArrayList<>();
 
@@ -1105,13 +1107,18 @@ public class AppManagerImpl implements AppManager
 
                     if (!UvmContextFactory.context().licenseManager().isLicenseValid(name)) {
 
-                        logger.info("Stopping  : " + name + " [" + id + "] because of invalid license");
+                        logger.info("Stopping : " + name + " [" + id + "] because of invalid license");
 
                         long startTime = System.currentTimeMillis();
                         ((AppBase) app).stopIfRunning();
                         long endTime = System.currentTimeMillis();
 
-                        logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
+                        logger.info("Stopped : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
+                    } else {
+                        if (app.getRunState() == AppSettings.AppState.INITIALIZED) {
+                            logger.info("Resuming : " + name + " [" + id + "]");
+                            ((AppBase) app).resumeState(AppSettings.AppState.RUNNING);
+                        }
                     }
                 }
             };

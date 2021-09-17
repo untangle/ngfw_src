@@ -189,9 +189,9 @@ public interface AppManager
     AppsView[] getAppsViews();
 
     /**
-     * Shutdown any running apps that have an invalid license
+     * Starts and stops apps based on license status
      */
-    void shutdownAppsWithInvalidLicense();
+    void harmonizeAppManagerWithLicenseManager();
 
     /**
      * Returns true if apps are to be auto installed
