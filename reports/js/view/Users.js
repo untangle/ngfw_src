@@ -37,6 +37,11 @@ Ext.define('Ung.apps.reports.view.Users', {
         passwordHashBase64: null,
         javaClass: 'com.untangle.app.reports.ReportsUser',
     },
+    changePasswordOptions: {
+        setRecordFields: {
+            passwordHashBase64: null
+        }
+    },
 
     bind: '{users}',
 
