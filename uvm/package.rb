@@ -80,13 +80,13 @@ if BuildEnv::SRC.isDevel
 ') }
   end
 
-  isRegisteredFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/is-registered-flag"
-  file isRegisteredFile do
-    File.open( isRegisteredFile, "w" ) { |f| f.puts( "true" ) }
-  end
+  #isRegisteredFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/is-registered-flag"
+  #file isRegisteredFile do
+  #  File.open( isRegisteredFile, "w" ) { |f| f.puts( "true" ) }
+  #end
 
   BuildEnv::SRC.installTarget.register_dependency(wizardSettingsFile)
-  BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
+  #BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 
 ## JS
