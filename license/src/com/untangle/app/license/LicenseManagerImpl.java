@@ -81,11 +81,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     public static final String SSL_INSPECTOR_OLDNAME = "https";
     public static final String LIVE_SUPPORT_OLDNAME = "support";
 
-    //make private?
-    public static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
+    private static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
         "<strong>" + I18nUtil.marktr("Unable to establish connection to the License Service!") + "</strong> " + 
         I18nUtil.marktr("Installation of apps is disabled. Please ensure connectivity and ") + "<a href=\"/admin\">" + I18nUtil.marktr("try again") + "</a>";
-    public static final String NO_COMMAND_CENTER_ACCOUNT = 
+    private static final String NO_COMMAND_CENTER_ACCOUNT = 
         I18nUtil.marktr("This appliance is not connected to a Command Center account. Please")
         + " <a href=\"https://www.untangle.com/cmd\" target=\"_blank\">" + I18nUtil.marktr("connect the appliance to Command Center") + "</a> " 
         + I18nUtil.marktr("to install applications.");
@@ -957,7 +956,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 _mapLicenses();
             }
 
-            // get connectivity first?
+            // get connectivity first before determining if CC message should be shown
             if (connected && !UvmContextFactory.context().isRegistered() && !this.isRestricted()) {
                 logger.error("No connection to command center, not downloading licenses");
 
