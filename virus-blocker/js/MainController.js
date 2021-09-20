@@ -20,7 +20,7 @@ Ext.define('Ung.apps.virusblocker.MainController', {
             vm.set('settings.customBlockPageEnabled', url.length > 0);
         });
 
-        var mostRecentTrademarkEndYear = 2020;
+        var mostRecentTrademarkEndYear = 2021;
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getSettings'),
