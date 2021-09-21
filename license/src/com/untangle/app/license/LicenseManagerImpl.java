@@ -959,23 +959,21 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                         }
                     }
 
-                    // if no message about connection exists, then add it
+                    // if no message about connection exists, then add it and save settings
                     if (noMessage) {
                         UserLicenseMessage noLicenseConnection = new UserLicenseMessage(NO_LICENSE_SERVER_CONNECTION_MESSAGE,
                                                                         false,
                                                                         UserLicenseMessage.UserLicenseMessageType.ALERT);
                         this.settings.getUserLicenseMessages().add(noLicenseConnection);
+                        _saveSettings(this.settings);
                     }
                 }
             } else {
+                // download succeeded so save settings and map licenses
+                _saveSettings(this.settings);
                 _mapLicenses();
             }
-
-            // set settings if download was successful and to get UserLicense messages about disconnection
-            _saveSettings(this.settings);
-
             _runAppManagerSync();
-
         }
 
         logger.info("Reloading licenses... done" );
@@ -1000,6 +998,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 appManager.doAutoInstall();
             }
         }
+
         if(!appManager.isRestartingUnloaded()) {
             appManager.shutdownAppsWithInvalidLicense();
         }
@@ -1028,6 +1027,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 pulse.stop();
                 pulse = new Pulse("uvm-license", task, TIMER_DELAY);
                 pulse.start();
+
+                AppManager appManager = UvmContextFactory.context().appManager();
+                if (appManager.isAutoInstallAppsFlag()) {
+                    logger.info("Finishing deferred auto install");
+                    appManager.finishDeferredAutoInstall();
+                }
             }
         }
     }
