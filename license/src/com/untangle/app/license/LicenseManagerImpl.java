@@ -92,6 +92,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     private static final String EXPIRED = "expired";
 
+    private static final String LICENSE_SERVER_IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/license-is-registered";
+
     /**
      * update every 4 hours, leaves an hour window
      */
@@ -959,7 +961,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
             // get connectivity first before determining if CC message should be shown
             if (connected && !UvmContextFactory.context().isRegistered() && !this.isRestricted()) {
-                logger.error("No connection to command center, not downloading licenses");
+                logger.error("No connection to command center, not installing apps");
 
                 // check for multiple of same message?
                 UserLicenseMessage noCCAccount = new UserLicenseMessage(NO_COMMAND_CENTER_ACCOUNT, false, UserLicenseMessage.UserLicenseMessageType.INFO);
@@ -969,7 +971,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             // set settings if download was successful and to get UserLicense messages about disconnection
             _saveSettings(this.settings);
 
-            _runAppManagerSync();
+            // determine if auto install should be run 
+            boolean runAutoInstall = this.isRestricted() || (!UvmContextFactory.context().isWizardComplete()) || this._checkLastRegistrationStatus();
+
+            _runAppManagerSync(runAutoInstall);
 
         }
 
@@ -978,13 +983,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * Run app manager specifics to auto install and shutdown invalid items 
+     * @param runAutoInstall - determine if auto install should be run 
      */
-    private void _runAppManagerSync() {
+    private void _runAppManagerSync(boolean runAutoInstall) {
         logger.debug("Syncing to App Manager");
         AppManager appManager = UvmContextFactory.context().appManager();
 
         // always auto install if restricted or wizard is incomplete
-        if (isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
+        if (runAutoInstall) {
             logger.debug("Running auto install");
             if (appManager.isRestartingUnloaded() || appManager.isAutoInstallAppsFlag()) {
                 logger.debug("Setting auto install");
@@ -1026,6 +1032,58 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             license.setStatus("Valid");
         } else {
             license.setValid(Boolean.FALSE);
+        }
+    }
+
+    /**
+     * Check if the last time we checked licenses we weren't registered. We run auto install otherwise
+     * @return boolean on if registration has changed since we last checked
+     */
+    private boolean _checkLastRegistrationStatus() 
+    {
+        if (UvmContextFactory.context().isRegistered() == true && isLicenseServerRegisteredFlag() == false) {
+            setLicenseServerRegisteredFlag(true);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * isLicenseServerRegisteredFlag is true if license server knows is registered, false otherwise
+     * @return bool
+     */
+    public boolean isLicenseServerRegisteredFlag()
+    {
+        File keyFile = new File(LICENSE_SERVER_IS_REGISTERED_FLAG_FILE);
+        return keyFile.exists();
+    }
+
+    /**
+     * setLicenseServerRegisteredFlag - Enable or disable the license is registered apps flag.
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    public void setLicenseServerRegisteredFlag(boolean enabled)
+    {
+        File keyFile = new File(LICENSE_SERVER_IS_REGISTERED_FLAG_FILE);
+        boolean exists = keyFile.exists();
+        if(enabled){
+            // Enable by creating file.
+            if(!exists){
+                try {
+                    keyFile.createNewFile();
+                } catch (Exception e) {
+                    logger.error("Failed to create file", e);
+                }
+            }
+        }else{
+            if(exists){
+                // Disable by removing file
+                try {
+                    keyFile.delete();
+                } catch (Exception e) {
+                    logger.error("Failed to remove file", e);
+                }
+            }
         }
     }
 
