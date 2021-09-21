@@ -969,9 +969,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     }
                 }
             } else {
-                // download succeeded so save settings and map licenses
-                _saveSettings(this.settings);
+                // download succeeded so map licenses and save settings
                 _mapLicenses();
+                _saveSettings(this.settings);
             }
             _runAppManagerSync();
         }
