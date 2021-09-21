@@ -27,6 +27,11 @@ public interface AppManager
     public void doAutoInstall();
 
     /**
+     * Finish deferred auto install
+     */
+    public void finishDeferredAutoInstall();
+
+    /**
      * Get <code>App</code>s of all instantiated apps.
      *
      * @return list of all app ids.
