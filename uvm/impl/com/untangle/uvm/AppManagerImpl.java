@@ -1609,9 +1609,6 @@ public class AppManagerImpl implements AppManager
 
         AppManagerSettings newSettings = new AppManagerSettings();
         this._setSettings(newSettings);
-
-        // first run so create the auto install flag
-        setAutoInstallAppsFlag(true);
     }
 
     /**
