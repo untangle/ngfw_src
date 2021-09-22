@@ -899,7 +899,7 @@ public class AppManagerImpl implements AppManager
                                                        * left hand nav
                                                        */
         }
-        if (!UvmContextFactory.context().isDevel()) {
+        if (!UvmContextFactory.context().isDevel() && lm.getLicenseServerConnectivity()) {
             License webFilterLicense = lm.getLicense(License.WEB_FILTER);
             if (webFilterLicense != null && webFilterLicense.getValid() && !webFilterLicense.getTrial()) {
                 installableAppsMap.remove("Web Monitor"); /*
@@ -921,7 +921,7 @@ public class AppManagerImpl implements AppManager
                                                              * hand nav
                                                              */
         }
-        if (!UvmContextFactory.context().isDevel()) {
+        if (!UvmContextFactory.context().isDevel() && lm.getLicenseServerConnectivity()) {
             License spamBlockerLicense = lm.getLicense(License.SPAM_BLOCKER);
             if (spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial()) {
                 installableAppsMap.remove("Spam Blocker Lite"); /*
@@ -1188,6 +1188,13 @@ public class AppManagerImpl implements AppManager
 
         LicenseManager lm = UvmContextFactory.context().licenseManager();
 
+        // if there is no license server connectivity return now leaving the
+        // auto install flag set so we can try again later
+        if (lm.getLicenseServerConnectivity() == false) {
+            logger.info("Deferring auto install pending license server connectivity");
+            return;
+        }
+
         List<AppProperties> appPropsToInstall = getAllAppProperties();
 
         if (lm.isRestricted()) {
@@ -1235,6 +1242,15 @@ public class AppManagerImpl implements AppManager
         setAutoInstallAppsFlag(false);
 
         logger.info("Finished auto install");
+    }
+
+    /**
+     * Called to finish auto install that was deferred due to missing license connectivity
+     */
+    public void finishDeferredAutoInstall()
+    {
+        startAutoLoad();
+        doAutoInstall();
     }
 
     /**
@@ -1593,6 +1609,9 @@ public class AppManagerImpl implements AppManager
 
         AppManagerSettings newSettings = new AppManagerSettings();
         this._setSettings(newSettings);
+
+        // first run so create the auto install flag
+        setAutoInstallAppsFlag(true);
     }
 
     /**
