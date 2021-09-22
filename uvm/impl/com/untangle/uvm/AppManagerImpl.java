@@ -40,6 +40,7 @@ public class AppManagerImpl implements AppManager
 {
     private final static String APP_MANAGER_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/apps.js";
     private static final String APPS_AUTO_INSTALL_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/apps-auto-install-flag";
+    private static final String ONE_AUTO_INSTALL_COMPLETE_FILE_FLAG = System.getProperty("uvm.conf.dir") + "/one-auto-install-completed";
 
     private static HookCallback settingsChangedHook;
     private boolean lastWizardComplete = false;
@@ -98,6 +99,45 @@ public class AppManagerImpl implements AppManager
     public void setAutoInstallAppsFlag(boolean enabled)
     {
         File keyFile = new File(APPS_AUTO_INSTALL_FLAG_FILE);
+        boolean exists = keyFile.exists();
+        if(enabled){
+            // Enable by creating file.
+            if(!exists){
+                try {
+                    keyFile.createNewFile();
+                } catch (Exception e) {
+                    logger.error("Failed to create file", e);
+                }
+            }
+        }else{
+            if(exists){
+                // Disable by removing file
+                try {
+                    keyFile.delete();
+                } catch (Exception e) {
+                    logger.error("Failed to remove file", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * isOneAutoInstallComplete is true if flag is set (auto install has completed at least once), false otherwise
+     * @return bool
+     */
+    public boolean isOneAutoInstallComplete()
+    {
+        File keyFile = new File(ONE_AUTO_INSTALL_COMPLETE_FILE_FLAG);
+        return keyFile.exists();
+    }
+
+    /**
+     * setOneAutoInstallCompleteFlag - Enable or disable the one auto install complete flag.
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    private void setOneAutoInstallCompleteFlag(boolean enabled)
+    {
+        File keyFile = new File(ONE_AUTO_INSTALL_COMPLETE_FILE_FLAG);
         boolean exists = keyFile.exists();
         if(enabled){
             // Enable by creating file.
@@ -1188,10 +1228,10 @@ public class AppManagerImpl implements AppManager
 
         LicenseManager lm = UvmContextFactory.context().licenseManager();
 
-        // if there is no license server connectivity return now leaving the
+        // if there is no license server connectivity or no CC account return now leaving the
         // auto install flag set so we can try again later
-        if (lm.getLicenseServerConnectivity() == false) {
-            logger.info("Deferring auto install pending license server connectivity");
+        if (lm.getLicenseServerConnectivity() == false || (!lm.isRestricted() && !UvmContextFactory.context().isRegistered())) {
+            logger.info("Deferring auto install pending license server connectivity and/or a CC account registered");
             return;
         }
 
@@ -1240,6 +1280,7 @@ public class AppManagerImpl implements AppManager
         }
 
         setAutoInstallAppsFlag(false);
+        setOneAutoInstallCompleteFlag(true);
 
         logger.info("Finished auto install");
     }
@@ -1249,7 +1290,12 @@ public class AppManagerImpl implements AppManager
      */
     public void finishDeferredAutoInstall()
     {
-        startAutoLoad();
+        // only run auto load if it's not running already
+        if (!this.isRestartingUnloaded) {
+            this.setIsRestartingUnloaded(true);
+            this.startAutoLoad();
+            this.setIsRestartingUnloaded(false);
+        }
         doAutoInstall();
     }
 

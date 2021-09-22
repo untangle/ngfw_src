@@ -92,8 +92,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     private static final String EXPIRED = "expired";
 
-    private static final String LICENSE_SERVER_IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/license-is-registered";
-
     /**
      * update every 4 hours, leaves an hour window
      */
@@ -149,6 +147,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private boolean initialLicenseCheck = false;
 
     /**
+     * Boolean set after initial CC registration has been completed
+     */
+    private boolean initialCCCheck = false;
+
+    /**
      * Setup license manager application.
      * 
      *
@@ -168,6 +171,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         // try the initial license load
         this.reloadLicenses(true);
+
+        // if already registered, mark check as true
+        if (UvmContextFactory.context().isRegistered()) {
+            this.initialCCCheck = true;
+        }
 
         /**
          * If the connectivity flag is set after the initial load set the initial check
@@ -995,10 +1003,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 _saveSettings(this.settings);
             }
 
-            // determine if auto install should be run 
-            boolean runAutoInstall = this.isRestricted() || (!UvmContextFactory.context().isWizardComplete()) || this._checkLastRegistrationStatus();
-
-            _runAppManagerSync(runAutoInstall);
+            _runAppManagerSync();
 
         }
 
@@ -1007,14 +1012,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
     /**
      * Run app manager specifics to auto install and shutdown invalid items 
-     * @param runAutoInstall - determine if auto install should be run 
      */
-    private void _runAppManagerSync(boolean runAutoInstall) {
+    private void _runAppManagerSync() {
         logger.debug("Syncing to App Manager");
         AppManager appManager = UvmContextFactory.context().appManager();
 
         // always auto install if restricted or wizard is incomplete
-        if (runAutoInstall) {
+        if (this.isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
             logger.debug("Running auto install");
             if (appManager.isRestartingUnloaded() || appManager.isAutoInstallAppsFlag()) {
                 logger.debug("Setting auto install");
@@ -1054,12 +1058,20 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 pulse.stop();
                 pulse = new Pulse("uvm-license", task, TIMER_DELAY);
                 pulse.start();
+            }
 
-                AppManager appManager = UvmContextFactory.context().appManager();
-                if (appManager.isAutoInstallAppsFlag()) {
-                    logger.info("Finishing deferred auto install");
-                    appManager.finishDeferredAutoInstall();
-                }
+            /**
+             * If the initial CC check is false and we are now registered, set the check as true
+             */
+            if (UvmContextFactory.context().isRegistered() == true && initialCCCheck == false) {
+                initialCCCheck = true;
+            }
+
+            // if both CC and connectivity exists and one auto install hasn't been run and flag is se, then run it
+            AppManager appManager = UvmContextFactory.context().appManager();
+            if (initialLicenseCheck && initialCCCheck && !appManager.isOneAutoInstallComplete() && appManager.isAutoInstallAppsFlag()) {
+                logger.info("Finishing deferred auto install");
+                appManager.finishDeferredAutoInstall();
             }
         }
     }
@@ -1076,58 +1088,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             license.setStatus("Valid");
         } else {
             license.setValid(Boolean.FALSE);
-        }
-    }
-
-    /**
-     * Check if the last time we checked licenses we weren't registered. We run auto install otherwise
-     * @return boolean on if registration has changed since we last checked
-     */
-    private boolean _checkLastRegistrationStatus() 
-    {
-        if (UvmContextFactory.context().isRegistered() == true && isLicenseServerRegisteredFlag() == false) {
-            setLicenseServerRegisteredFlag(true);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * isLicenseServerRegisteredFlag is true if license server knows is registered, false otherwise
-     * @return bool
-     */
-    public boolean isLicenseServerRegisteredFlag()
-    {
-        File keyFile = new File(LICENSE_SERVER_IS_REGISTERED_FLAG_FILE);
-        return keyFile.exists();
-    }
-
-    /**
-     * setLicenseServerRegisteredFlag - Enable or disable the license is registered apps flag.
-     * @param enabled   If true, remove the flag.  If false, create it.
-     */
-    public void setLicenseServerRegisteredFlag(boolean enabled)
-    {
-        File keyFile = new File(LICENSE_SERVER_IS_REGISTERED_FLAG_FILE);
-        boolean exists = keyFile.exists();
-        if(enabled){
-            // Enable by creating file.
-            if(!exists){
-                try {
-                    keyFile.createNewFile();
-                } catch (Exception e) {
-                    logger.error("Failed to create file", e);
-                }
-            }
-        }else{
-            if(exists){
-                // Disable by removing file
-                try {
-                    keyFile.delete();
-                } catch (Exception e) {
-                    logger.error("Failed to remove file", e);
-                }
-            }
         }
     }
 

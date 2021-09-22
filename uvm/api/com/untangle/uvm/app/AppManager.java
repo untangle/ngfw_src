@@ -206,6 +206,11 @@ public interface AppManager
     boolean isAutoInstallAppsFlag();
 
     /**
+     * Returns true if one auto install completed
+     */
+    boolean isOneAutoInstallComplete();
+
+    /**
      * Returns true is apps are being loaded
      * 
      * @return a boolean value
