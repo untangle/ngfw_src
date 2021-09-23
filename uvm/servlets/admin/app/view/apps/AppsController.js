@@ -115,6 +115,9 @@ Ext.define('Ung.view.apps.AppsController', {
         // don't show install button if connection to license server is not up
         vm.set('licenseServerConnectivity', Rpc.directData('rpc.UvmContext.licenseManager.getLicenseServerConnectivity'));
 
+        // don't show install button if no cmd registration
+        vm.set('isRegistered', Rpc.directData('rpc.isRegistered'));
+
         // If installing recommended apps on initial install, note this on the console.
         var autoInstallAppsFlag = Rpc.directData('rpc.appManager').isAutoInstallAppsFlag();
         if(autoInstallAppsFlag){
