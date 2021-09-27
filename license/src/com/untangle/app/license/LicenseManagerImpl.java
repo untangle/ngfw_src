@@ -81,9 +81,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     public static final String SSL_INSPECTOR_OLDNAME = "https";
     public static final String LIVE_SUPPORT_OLDNAME = "support";
 
-    public static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
+    private static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
         "<strong>" + I18nUtil.marktr("Unable to establish connection to the License Service!") + "</strong> " + 
         I18nUtil.marktr("Installation of apps is disabled. Please ensure connectivity and ") + "<a href=\"/admin\">" + I18nUtil.marktr("try again") + "</a>";
+    private static final String CMD_URL = UvmContextFactory.context().getCmdUrl() + "/appliances/add/" + UvmContextFactory.context().getServerUID();
+    private static final String NO_COMMAND_CENTER_ACCOUNT = 
+        I18nUtil.marktr("This appliance is not connected to a Command Center account. Please")
+        + " <a href=\"" + CMD_URL + "\" target=\"_blank\">" + I18nUtil.marktr("connect the appliance to Command Center") + "</a> " 
+        + I18nUtil.marktr("to install applications.");
 
     private static final String EXPIRED = "expired";
 
@@ -933,6 +938,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                         if (msg.getMessage().equals(NO_LICENSE_SERVER_CONNECTION_MESSAGE) && msg.getHasClosure() == false && msg.getType() == UserLicenseMessage.UserLicenseMessageType.ALERT) {
                             noMessage = false;
                         }
+
+                        // remove CC message if exists
+                        if (msg.getMessage().equals(NO_COMMAND_CENTER_ACCOUNT) && msg.getHasClosure() == false && msg.getType() == UserLicenseMessage.UserLicenseMessageType.INFO) {
+                            iterator.remove();
+                        }
                     }
 
                     // if no message about connection exists, then add it
@@ -945,6 +955,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 }
             } else {
                 _mapLicenses();
+            }
+
+            // only show message if connected to license server, not registered, and is not restricted
+            if (connected && !UvmContextFactory.context().isRegistered() && !this.isRestricted()) {
+                logger.error("No connection to command center, not downloading licenses");
+
+                UserLicenseMessage noCCAccount = new UserLicenseMessage(NO_COMMAND_CENTER_ACCOUNT, false, UserLicenseMessage.UserLicenseMessageType.INFO);
+                this.settings.getUserLicenseMessages().add(noCCAccount);
             }
 
             // set settings if download was successful and to get UserLicense messages about disconnection
