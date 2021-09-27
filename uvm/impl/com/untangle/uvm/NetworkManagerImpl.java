@@ -710,6 +710,51 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Look through all interfaces for matching network and return address/alias.
+     *
+     * @param network    String of network.
+     * @param prefixLength Integer of network prefix.
+     * @return InetAddress of matching interface IP address or null if not found.
+     */
+    public InetAddress getInterfaceAddressForNetwork(String network, int prefixLength)
+    {
+        InetAddress matchingAddress = null;
+        IPMaskedAddress currentMaskedAddress, lookupMaskedAddress = new IPMaskedAddress( network, prefixLength );
+        /*
+         * Pull static addresses from non-WAN interfaces.
+         */
+        for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
+            if ( interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED ){
+                continue;
+            }
+            if ( interfaceSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC ){
+                continue;
+            }
+
+            currentMaskedAddress = new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix());
+            if(lookupMaskedAddress.getMaskedAddress().equals(currentMaskedAddress.getMaskedAddress())){
+                matchingAddress = interfaceSettings.getV4StaticAddress();
+                break;
+            }
+            for ( InterfaceSettings.InterfaceAlias alias : interfaceSettings.getV4Aliases() ) {
+                /**
+                 * Look at aliases.
+                 */
+                currentMaskedAddress = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
+                if(lookupMaskedAddress.getMaskedAddress().equals(currentMaskedAddress.getMaskedAddress())){
+                    matchingAddress = interfaceSettings.getV4StaticAddress();
+                    break;
+                }
+            }
+            if(matchingAddress != null){
+                break;
+            }
+        }
+        return matchingAddress;
+    }
+
+
+    /**
      * Modify reserved access rules by changing old port to new port.
      * This is used by some services where it is common to change the listening port, like WireGuard.
      *
