@@ -40,6 +40,7 @@ public class AppManagerImpl implements AppManager
 {
     private final static String APP_MANAGER_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/apps.js";
     private static final String APPS_AUTO_INSTALL_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/apps-auto-install-flag";
+    private static final String DEFERRED_AUTO_INSTALL_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/deferred-auto-install-flag";
 
     private static HookCallback settingsChangedHook;
     private boolean lastWizardComplete = false;
@@ -92,12 +93,41 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
+     * isAutoInstallDeferredFlag is true if auto install was deferred, false otherwise
+     * @return bool
+     */
+    public boolean isAutoInstallDeferredFlag()
+    {
+        File keyFile = new File(DEFERRED_AUTO_INSTALL_FLAG_FILE);
+        return keyFile.exists();
+    }
+
+    /**
      * setAutoInstallAppsFlag - Enable or disable the auto install apps flag.
      * @param enabled   If true, remove the flag.  If false, create it.
      */
     public void setAutoInstallAppsFlag(boolean enabled)
     {
-        File keyFile = new File(APPS_AUTO_INSTALL_FLAG_FILE);
+        _setAutoInstallFlag(enabled, APPS_AUTO_INSTALL_FLAG_FILE);
+    }
+
+    /**
+     * setAutoInstallDeferredFlag - Enable or disable the auto install defered flag.
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    public void setAutoInstallDeferredFlag(boolean enabled)
+    {
+        _setAutoInstallFlag(enabled, DEFERRED_AUTO_INSTALL_FLAG_FILE);
+    }
+
+    /**
+     * setAutoInstallFlag - Enable or disable the specified auto install flag
+     * @param enabled   If true, remove the flag.  If false, create it.
+     * @param filename  The file name of the target flag file
+     */
+    private void _setAutoInstallFlag(boolean enabled, String filename)
+    {
+        File keyFile = new File(filename);
         boolean exists = keyFile.exists();
         if(enabled){
             // Enable by creating file.
@@ -105,7 +135,7 @@ public class AppManagerImpl implements AppManager
                 try {
                     keyFile.createNewFile();
                 } catch (Exception e) {
-                    logger.error("Failed to create file", e);
+                    logger.error("Failed to create file: " + filename, e);
                 }
             }
         }else{
@@ -114,7 +144,7 @@ public class AppManagerImpl implements AppManager
                 try {
                     keyFile.delete();
                 } catch (Exception e) {
-                    logger.error("Failed to remove file", e);
+                    logger.error("Failed to remove file: " + filename, e);
                 }
             }
         }
@@ -899,7 +929,7 @@ public class AppManagerImpl implements AppManager
                                                        * left hand nav
                                                        */
         }
-        if (!UvmContextFactory.context().isDevel() && lm.getLicenseServerConnectivity()) {
+        if (!UvmContextFactory.context().isDevel()) {
             License webFilterLicense = lm.getLicense(License.WEB_FILTER);
             if (webFilterLicense != null && webFilterLicense.getValid() && !webFilterLicense.getTrial()) {
                 installableAppsMap.remove("Web Monitor"); /*
@@ -921,7 +951,7 @@ public class AppManagerImpl implements AppManager
                                                              * hand nav
                                                              */
         }
-        if (!UvmContextFactory.context().isDevel() && lm.getLicenseServerConnectivity()) {
+        if (!UvmContextFactory.context().isDevel()) {
             License spamBlockerLicense = lm.getLicense(License.SPAM_BLOCKER);
             if (spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial()) {
                 installableAppsMap.remove("Spam Blocker Lite"); /*
@@ -1026,9 +1056,19 @@ public class AppManagerImpl implements AppManager
 
         UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
 
-        if(isAutoInstallAppsFlag()){
-            // We rebooted during auto install of apps or licenseManager triggered, so continue installing.
-            doAutoInstall();
+        // always cleanup deferred flag on startup as it will be created if required
+        if (isAutoInstallDeferredFlag()) {
+            setAutoInstallDeferredFlag(false);
+        }
+
+        /**
+         * If auto install is already set there was likely a reboot while it was running.
+         * In this case, we clear the flag, set the deferred flag, and let the license
+         * manager take care of running the auto install again.
+         */
+        if(isAutoInstallAppsFlag()) {
+            setAutoInstallDeferredFlag(true);
+            setAutoInstallAppsFlag(false);
         }
 
         shutdownAppsWithInvalidLicense();
@@ -1172,6 +1212,7 @@ public class AppManagerImpl implements AppManager
         if ( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isAts() ) {
             logger.info("Don't run auto install");
             setAutoInstallAppsFlag(false);
+            setAutoInstallDeferredFlag(false);
             return;
         }
 
@@ -1188,12 +1229,19 @@ public class AppManagerImpl implements AppManager
 
         LicenseManager lm = UvmContextFactory.context().licenseManager();
 
-        // if there is no license server connectivity return now leaving the
-        // auto install flag set so we can try again later
+        // if there is no license server connectivity we can't install anything
         if (lm.getLicenseServerConnectivity() == false) {
             logger.info("Deferring auto install pending license server connectivity");
+            // if the auto install flag is set move it to the deferred flag
+            if (isAutoInstallAppsFlag()) {
+                setAutoInstallDeferredFlag(true);
+                setAutoInstallAppsFlag(false);
+            }
             return;
         }
+
+        // make sure apps installed before the license server was available get started
+        startAutoLoad();
 
         List<AppProperties> appPropsToInstall = getAllAppProperties();
 
@@ -1242,15 +1290,6 @@ public class AppManagerImpl implements AppManager
         setAutoInstallAppsFlag(false);
 
         logger.info("Finished auto install");
-    }
-
-    /**
-     * Called to finish auto install that was deferred due to missing license connectivity
-     */
-    public void finishDeferredAutoInstall()
-    {
-        startAutoLoad();
-        doAutoInstall();
     }
 
     /**
