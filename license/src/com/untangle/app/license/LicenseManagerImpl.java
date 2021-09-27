@@ -142,6 +142,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private boolean initialLicenseCheck = false;
 
     /**
+     * Boolean set when auto install is running
+     */
+    private boolean autoInstallRunning = false;
+
+    /**
      * Setup license manager application.
      * 
      *
@@ -311,6 +316,14 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final boolean isLicenseValid(String identifier)
     {
+        /**
+         * The router, ftp, and license services are core components of the
+         * platform and should always be allowed to install and run.
+         */
+        if (identifier.equals("router")) return true;
+        if (identifier.equals("ftp")) return true;
+        if (identifier.equals("license")) return true;
+
         License lic = getLicense(identifier);
         if (lic == null)
             return false;
@@ -972,6 +985,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 // download succeeded so map licenses and save settings
                 _mapLicenses();
                 _saveSettings(this.settings);
+
+                // if the deferred flag is set move it back to the auto install flag
+                AppManager appManager = UvmContextFactory.context().appManager();
+                if (appManager.isAutoInstallDeferredFlag()) {
+                    appManager.setAutoInstallAppsFlag(true);
+                    appManager.setAutoInstallDeferredFlag(false);
+                }
             }
             _runAppManagerSync();
         }
@@ -986,16 +1006,18 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.debug("Syncing to App Manager");
         AppManager appManager = UvmContextFactory.context().appManager();
 
-        // always auto install if restricted or wizard is incomplete
-        if (isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
+        // auto install if auto install flag is set, if restricted or wizard is incomplete
+        if (appManager.isAutoInstallAppsFlag() || isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
             logger.debug("Running auto install");
-            if (appManager.isRestartingUnloaded() || appManager.isAutoInstallAppsFlag()) {
+            if (appManager.isRestartingUnloaded() || autoInstallRunning) {
                 logger.debug("Setting auto install");
                 // don't instantiate apps while other apps are being loaded or already auto installing
                 appManager.setAutoInstallAppsFlag(true);
             } else {
                 logger.debug("Running auto install directly");
+                autoInstallRunning = true;
                 appManager.doAutoInstall();
+                autoInstallRunning = false;
             }
         }
 
@@ -1027,12 +1049,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 pulse.stop();
                 pulse = new Pulse("uvm-license", task, TIMER_DELAY);
                 pulse.start();
-
-                AppManager appManager = UvmContextFactory.context().appManager();
-                if (appManager.isAutoInstallAppsFlag()) {
-                    logger.info("Finishing deferred auto install");
-                    appManager.finishDeferredAutoInstall();
-                }
             }
         }
     }

@@ -27,11 +27,6 @@ public interface AppManager
     public void doAutoInstall();
 
     /**
-     * Finish deferred auto install
-     */
-    public void finishDeferredAutoInstall();
-
-    /**
      * Get <code>App</code>s of all instantiated apps.
      *
      * @return list of all app ids.
@@ -206,6 +201,13 @@ public interface AppManager
     boolean isAutoInstallAppsFlag();
 
     /**
+     * Returns true if apps auto intall was deferred
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isAutoInstallDeferredFlag();
+
+    /**
      * Returns true is apps are being loaded
      * 
      * @return a boolean value
@@ -224,6 +226,12 @@ public interface AppManager
      * @param enabled   If true, remove the flag.  If false, create it.
      */
     void setAutoInstallAppsFlag(boolean enabled);
+
+    /**
+     * Set/unset deferred auto install flag.
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    void setAutoInstallDeferredFlag(boolean enabled);
 
     /**
      * Syncs the license server state with local state
