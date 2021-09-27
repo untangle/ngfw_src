@@ -20,10 +20,12 @@ Ext.define('Ung.apps.virusblocker.MainController', {
             vm.set('settings.customBlockPageEnabled', url.length > 0);
         });
 
+        var mostRecentTrademarkEndYear = 2021;
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getSettings'),
-            Rpc.asyncPromise(v.appManager, 'isFileScannerAvailable')
+            Rpc.asyncPromise(v.appManager, 'isFileScannerAvailable'),
+            Rpc.asyncPromise('rpc.systemManager.getMilliseconds')
         ])
         .then( function(result){
             if(Util.isDestroyed(v, vm)){
@@ -32,6 +34,13 @@ Ext.define('Ung.apps.virusblocker.MainController', {
 
             vm.set('settings', result[0]);
             vm.set('isFileScannerAvailable', result[1]);
+
+            // Get the current year to show as the end year of the BitDefender trademark.
+            // This satisfies both our license agreement as well as let customers know
+            // that we are "current" regardless of the engine (we always download the most recent signatures) 
+            // However, don't show any earlier than our most recently known mark to show something wrong with a bad date
+            var currentDate = new Date(result[2]);
+            vm.set('trademarkEndYear', (currentDate.getFullYear() > mostRecentTrademarkEndYear) ? currentDate.getFullYear() : mostRecentTrademarkEndYear);
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
