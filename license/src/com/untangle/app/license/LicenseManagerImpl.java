@@ -320,10 +320,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * The router, ftp, and license services are core components of the
          * platform and should always be allowed to install and run.
          */
-        if (identifier.equals("router")) return true;
-        if (identifier.equals("ftp")) return true;
-        if (identifier.equals("license")) return true;
-
         License lic = getLicense(identifier);
         if (lic == null)
             return false;

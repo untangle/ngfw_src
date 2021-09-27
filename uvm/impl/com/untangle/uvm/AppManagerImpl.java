@@ -1071,7 +1071,14 @@ public class AppManagerImpl implements AppManager
             setAutoInstallAppsFlag(false);
         }
 
-        shutdownAppsWithInvalidLicense();
+        /**
+         * Since the restarting unloaded flag will be true when the license manager init function
+         * is called, we call reloadLicenses(blocking=false) here to trigger the initial auto
+         * install logic. Calling shutdownAppsWithInvalidLicense is no longer needed here since
+         * it will be called by _runAppManagerSync() which is called by _syncLicensesWithServer()
+         * which is called by reloadLicenses().
+         */
+        UvmContextFactory.context().licenseManager().reloadLicenses(false);
     }
 
     /**
@@ -1184,7 +1191,7 @@ public class AppManagerImpl implements AppManager
             List<App> list = appInstances(appProps.getName());
 
             /**
-             * If a app is "autoLoad" and is not loaded, instantiate it
+             * If an app is "autoLoad" and is not loaded, instantiate it
              */
             if (list.size() == 0) {
                 try {
@@ -1198,6 +1205,18 @@ public class AppManagerImpl implements AppManager
                 } catch (Exception exn) {
                     logger.warn("could not deploy: " + appProps.getName(), exn);
                     continue;
+                }
+            } else {
+                /**
+                 * If an app is "autoStart" make sure it is running
+                 */
+                if (!appProps.getAutoStart()) continue;
+                for(App app : list) {
+                    try {
+                        app.start();
+                    } catch (Exception exn) {
+                        logger.warn("could not start: " + appProps.getName(), exn);
+                    }
                 }
             }
         }
