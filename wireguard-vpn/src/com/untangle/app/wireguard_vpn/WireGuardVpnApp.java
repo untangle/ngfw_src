@@ -199,6 +199,9 @@ public class WireGuardVpnApp extends AppBase
         if( ( this.getRunState() == AppSettings.AppState.RUNNING ) &&
             ( restart == true ) ){
             this.WireGuardVpnManager.restart();
+        } else if (this.getRunState() != AppSettings.AppState.RUNNING) {
+            // Make sure /etc/wireguard/wg.conf is removed 
+            this.WireGuardVpnManager.removeConf();
         }
     }
 
