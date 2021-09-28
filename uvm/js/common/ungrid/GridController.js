@@ -538,6 +538,20 @@ Ext.define('Ung.cmp.GridController', {
                     // formBind: true
                     handler: function (btn)  {
                         record.set('password', btn.up('form').getForm().getValues().pass1);
+                        var changePasswordOptions = btn.up('grid').changePasswordOptions;
+
+                        if (changePasswordOptions &&
+                            changePasswordOptions.setRecordFields &&
+                            ( typeof changePasswordOptions.setRecordFields === 'object') ){
+                            // With optional changePasswordOptions.setRecordFields set these record
+                            // values which may be neccessar to properly force password change in backend.
+                            var key;
+                            for ( key in changePasswordOptions.setRecordFields){
+                                if(changePasswordOptions.setRecordFields.hasOwnProperty(key)){
+                                    record.set(key, changePasswordOptions.setRecordFields[key]);
+                                }
+                            }
+                        }
                         me.pswdDialog.close();
                     }
                 }]

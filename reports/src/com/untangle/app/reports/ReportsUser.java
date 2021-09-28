@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.Crypt;
 
 import com.untangle.uvm.PasswordUtil;
 
@@ -25,6 +26,7 @@ public class ReportsUser implements Serializable, JSONString
     private boolean emailAlerts = false;
     private boolean emailSummaries = true;
     private byte[] passwordHash = null;
+    private String passwordHashShadow = null;
     private boolean onlineAccess;
     private List<Integer> emailTemplateIds = new LinkedList<>();
 
@@ -45,6 +47,15 @@ public class ReportsUser implements Serializable, JSONString
     public byte[] trans_getPasswordHash() { return this.passwordHash; }
     public void setPasswordHash( byte[] newValue ) { this.passwordHash = newValue; }
 
+    public String getPasswordHashShadow() { return this.passwordHashShadow; }
+
+    public void setPasswordHashShadow( String newValue )
+    {
+        if ( this.passwordHashShadow == null ) {
+            this.passwordHashShadow = newValue;
+        }
+    }
+
     public List<Integer> getEmailTemplateIds() { return this.emailTemplateIds; }
     public void setEmailTemplateIds( List<Integer> newValue ) { this.emailTemplateIds = newValue; }
 
@@ -60,11 +71,14 @@ public class ReportsUser implements Serializable, JSONString
         if ( "".equals(password) )
             return;
         this.passwordHash = PasswordUtil.encrypt(password);
+        this.passwordHashShadow = Crypt.crypt(password);
     }
 
     public String getPasswordHashBase64()
     {
         if ( this.passwordHash == null || "".equals(this.passwordHash) )
+            return "";
+        else if ( this.passwordHashShadow != null )
             return "";
         else
             return new String(Base64.encodeBase64(passwordHash));
