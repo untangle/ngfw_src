@@ -316,10 +316,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     @Override
     public final boolean isLicenseValid(String identifier)
     {
-        /**
-         * The router, ftp, and license services are core components of the
-         * platform and should always be allowed to install and run.
-         */
         License lic = getLicense(identifier);
         if (lic == null)
             return false;
