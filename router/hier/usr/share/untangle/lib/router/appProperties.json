@@ -6,6 +6,7 @@
         "type" : "SERVICE",
         "invisible" : True,
         "autoLoad" : True,
+        "autoStart" : True,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
