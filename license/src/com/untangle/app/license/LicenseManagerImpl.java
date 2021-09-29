@@ -97,6 +97,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private static final long TIMER_DELAY = 1000 * 60 * 60 * 4;
 
+    /**
+     * check more frequently if no internet at startup
+     */
+    private static final long TIMER_DELAY_NO_INTERNET = 1000 * 60 * 10;
+
     private static final Logger logger = Logger.getLogger(LicenseManagerImpl.class);
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
@@ -137,6 +142,16 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private boolean licenseServerConnectivity = false;
 
     /**
+     * Boolean set after the initial license check has completed
+     */
+    private boolean initialLicenseCheck = false;
+
+    /**
+     * Boolean set when auto install is running
+     */
+    private boolean autoInstallRunning = false;
+
+    /**
      * Setup license manager application.
      * 
      *
@@ -147,18 +162,32 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         super( appSettings, appProperties );
 
-	    logger.info("Starting load");
+        logger.info("Starting load");
 
         this.licenseServerConnectivity = false;
 
         // initialize settings
         this._readLicenseSettings();
 
+        // try the initial license load
         this.reloadLicenses(true);
 
-        // Start periodic license updates.
-        this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
-        this.pulse.start();
+        /**
+         * If the connectivity flag is set after the initial load set the initial check
+         * flag and start the pulse at the normal refresh interval. Otherwise start the
+         * pulse with the shorter delay so we check more frequently until successful.
+         */
+        if (getLicenseServerConnectivity()) {
+            logger.info("License connectivity established - Starting normal refresh pulse");
+            initialLicenseCheck = true;
+            pulse = new Pulse("uvm-license", task, TIMER_DELAY);
+            pulse.start();
+        } else {
+            logger.info("License connectivity failed - Starting urgent refresh pulse");
+            initialLicenseCheck = false;
+            pulse = new Pulse("uvm-license", task, TIMER_DELAY_NO_INTERNET);
+            pulse.start();
+        }
     }
 
     /**
@@ -945,31 +974,36 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                         }
                     }
 
-                    // if no message about connection exists, then add it
+                    // if no message about connection exists, then add it and save settings
                     if (noMessage) {
                         UserLicenseMessage noLicenseConnection = new UserLicenseMessage(NO_LICENSE_SERVER_CONNECTION_MESSAGE,
                                                                         false,
                                                                         UserLicenseMessage.UserLicenseMessageType.ALERT);
                         this.settings.getUserLicenseMessages().add(noLicenseConnection);
+                        _saveSettings(this.settings);
                     }
                 }
             } else {
+                // download succeeded so show add the CC account message if not registered
+                // and not restricted, and then map and save the settings
+                if (connected && !UvmContextFactory.context().isRegistered() && !this.isRestricted()) {
+                    logger.error("No connection to command center, not downloading licenses");
+
+                    UserLicenseMessage noCCAccount = new UserLicenseMessage(NO_COMMAND_CENTER_ACCOUNT, false, UserLicenseMessage.UserLicenseMessageType.INFO);
+                    this.settings.getUserLicenseMessages().add(noCCAccount);
+                }
+
                 _mapLicenses();
+                _saveSettings(this.settings);
+
+                // if the deferred flag is set move it back to the auto install flag
+                AppManager appManager = UvmContextFactory.context().appManager();
+                if (appManager.isAutoInstallDeferredFlag()) {
+                    appManager.setAutoInstallAppsFlag(true);
+                    appManager.setAutoInstallDeferredFlag(false);
+                }
             }
-
-            // only show message if connected to license server, not registered, and is not restricted
-            if (connected && !UvmContextFactory.context().isRegistered() && !this.isRestricted()) {
-                logger.error("No connection to command center, not downloading licenses");
-
-                UserLicenseMessage noCCAccount = new UserLicenseMessage(NO_COMMAND_CENTER_ACCOUNT, false, UserLicenseMessage.UserLicenseMessageType.INFO);
-                this.settings.getUserLicenseMessages().add(noCCAccount);
-            }
-
-            // set settings if download was successful and to get UserLicense messages about disconnection
-            _saveSettings(this.settings);
-
             _runAppManagerSync();
-
         }
 
         logger.info("Reloading licenses... done" );
@@ -982,18 +1016,21 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.debug("Syncing to App Manager");
         AppManager appManager = UvmContextFactory.context().appManager();
 
-        // always auto install if restricted or wizard is incomplete
-        if (isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
+        // auto install if auto install flag is set, if restricted or wizard is incomplete
+        if (appManager.isAutoInstallAppsFlag() || isRestricted() || (!UvmContextFactory.context().isWizardComplete())) {
             logger.debug("Running auto install");
-            if (appManager.isRestartingUnloaded() || appManager.isAutoInstallAppsFlag()) {
+            if (appManager.isRestartingUnloaded() || autoInstallRunning) {
                 logger.debug("Setting auto install");
                 // don't instantiate apps while other apps are being loaded or already auto installing
                 appManager.setAutoInstallAppsFlag(true);
             } else {
                 logger.debug("Running auto install directly");
+                autoInstallRunning = true;
                 appManager.doAutoInstall();
+                autoInstallRunning = false;
             }
         }
+
         if(!appManager.isRestartingUnloaded()) {
             appManager.shutdownAppsWithInvalidLicense();
         }
@@ -1009,7 +1046,20 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          */
         public void run()
         {
-            _syncLicensesWithServer();    
+            _syncLicensesWithServer();
+
+            /**
+             * If the initial check is false and the sync we just called set the connectivity
+             * flag, we stop the active pulse which was created using the short retry interval
+             * and re-create using the normal update interval.
+             */
+            if ((initialLicenseCheck == false) && (getLicenseServerConnectivity() == true)) {
+                logger.info("License connectivity restored - Switching to normal refresh pulse");
+                initialLicenseCheck = true;
+                pulse.stop();
+                pulse = new Pulse("uvm-license", task, TIMER_DELAY);
+                pulse.start();
+            }
         }
     }
     

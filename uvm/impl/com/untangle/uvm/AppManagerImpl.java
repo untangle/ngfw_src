@@ -40,6 +40,7 @@ public class AppManagerImpl implements AppManager
 {
     private final static String APP_MANAGER_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/apps.js";
     private static final String APPS_AUTO_INSTALL_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/apps-auto-install-flag";
+    private static final String DEFERRED_AUTO_INSTALL_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/deferred-auto-install-flag";
 
     private static HookCallback settingsChangedHook;
     private boolean lastWizardComplete = false;
@@ -92,12 +93,41 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
+     * isAutoInstallDeferredFlag is true if auto install was deferred, false otherwise
+     * @return bool
+     */
+    public boolean isAutoInstallDeferredFlag()
+    {
+        File keyFile = new File(DEFERRED_AUTO_INSTALL_FLAG_FILE);
+        return keyFile.exists();
+    }
+
+    /**
      * setAutoInstallAppsFlag - Enable or disable the auto install apps flag.
      * @param enabled   If true, remove the flag.  If false, create it.
      */
     public void setAutoInstallAppsFlag(boolean enabled)
     {
-        File keyFile = new File(APPS_AUTO_INSTALL_FLAG_FILE);
+        _setAutoInstallFlag(enabled, APPS_AUTO_INSTALL_FLAG_FILE);
+    }
+
+    /**
+     * setAutoInstallDeferredFlag - Enable or disable the auto install defered flag.
+     * @param enabled   If true, remove the flag.  If false, create it.
+     */
+    public void setAutoInstallDeferredFlag(boolean enabled)
+    {
+        _setAutoInstallFlag(enabled, DEFERRED_AUTO_INSTALL_FLAG_FILE);
+    }
+
+    /**
+     * setAutoInstallFlag - Enable or disable the specified auto install flag
+     * @param enabled   If true, remove the flag.  If false, create it.
+     * @param filename  The file name of the target flag file
+     */
+    private void _setAutoInstallFlag(boolean enabled, String filename)
+    {
+        File keyFile = new File(filename);
         boolean exists = keyFile.exists();
         if(enabled){
             // Enable by creating file.
@@ -105,7 +135,7 @@ public class AppManagerImpl implements AppManager
                 try {
                     keyFile.createNewFile();
                 } catch (Exception e) {
-                    logger.error("Failed to create file", e);
+                    logger.error("Failed to create file: " + filename, e);
                 }
             }
         }else{
@@ -114,7 +144,7 @@ public class AppManagerImpl implements AppManager
                 try {
                     keyFile.delete();
                 } catch (Exception e) {
-                    logger.error("Failed to remove file", e);
+                    logger.error("Failed to remove file: " + filename, e);
                 }
             }
         }
@@ -1026,12 +1056,29 @@ public class AppManagerImpl implements AppManager
 
         UvmContextFactory.context().hookManager().registerCallback( HookManager.SETTINGS_CHANGE, settingsChangedHook );
 
-        if(isAutoInstallAppsFlag()){
-            // We rebooted during auto install of apps or licenseManager triggered, so continue installing.
-            doAutoInstall();
+        // always cleanup deferred flag on startup as it will be created if required
+        if (isAutoInstallDeferredFlag()) {
+            setAutoInstallDeferredFlag(false);
         }
 
-        shutdownAppsWithInvalidLicense();
+        /**
+         * If auto install is already set there was likely a reboot while it was running.
+         * In this case, we clear the flag, set the deferred flag, and let the license
+         * manager take care of running the auto install again.
+         */
+        if(isAutoInstallAppsFlag()) {
+            setAutoInstallDeferredFlag(true);
+            setAutoInstallAppsFlag(false);
+        }
+
+        /**
+         * Since the restarting unloaded flag will be true when the license manager init function
+         * is called, we call reloadLicenses(blocking=false) here to trigger the initial auto
+         * install logic. Calling shutdownAppsWithInvalidLicense is no longer needed here since
+         * it will be called by _runAppManagerSync() which is called by _syncLicensesWithServer()
+         * which is called by reloadLicenses().
+         */
+        UvmContextFactory.context().licenseManager().reloadLicenses(false);
     }
 
     /**
@@ -1144,7 +1191,7 @@ public class AppManagerImpl implements AppManager
             List<App> list = appInstances(appProps.getName());
 
             /**
-             * If a app is "autoLoad" and is not loaded, instantiate it
+             * If an app is "autoLoad" and is not loaded, instantiate it
              */
             if (list.size() == 0) {
                 try {
@@ -1159,6 +1206,18 @@ public class AppManagerImpl implements AppManager
                     logger.warn("could not deploy: " + appProps.getName(), exn);
                     continue;
                 }
+            } else {
+                /**
+                 * If an app is "autoStart" make sure it is running
+                 */
+                if (!appProps.getAutoStart()) continue;
+                for(App app : list) {
+                    try {
+                        app.start();
+                    } catch (Exception exn) {
+                        logger.warn("could not start: " + appProps.getName(), exn);
+                    }
+                }
             }
         }
     }
@@ -1172,6 +1231,7 @@ public class AppManagerImpl implements AppManager
         if ( UvmContextFactory.context().isDevel() || UvmContextFactory.context().isAts() ) {
             logger.info("Don't run auto install");
             setAutoInstallAppsFlag(false);
+            setAutoInstallDeferredFlag(false);
             return;
         }
 
@@ -1187,6 +1247,20 @@ public class AppManagerImpl implements AppManager
         int totalTnterfaceCount = UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces().size();
 
         LicenseManager lm = UvmContextFactory.context().licenseManager();
+
+        // if there is no license server connectivity we can't install anything
+        if (lm.getLicenseServerConnectivity() == false) {
+            logger.info("Deferring auto install pending license server connectivity");
+            // if the auto install flag is set move it to the deferred flag
+            if (isAutoInstallAppsFlag()) {
+                setAutoInstallDeferredFlag(true);
+                setAutoInstallAppsFlag(false);
+            }
+            return;
+        }
+
+        // make sure apps installed before the license server was available get started
+        startAutoLoad();
 
         List<AppProperties> appPropsToInstall = getAllAppProperties();
 

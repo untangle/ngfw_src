@@ -5,6 +5,7 @@
         "displayName" : "License Manager",
         "type" : "SERVICE",
         "invisible" : True,
-        "autoLoad" : True
+        "autoLoad" : True,
+        "autoStart": True
 }
 
