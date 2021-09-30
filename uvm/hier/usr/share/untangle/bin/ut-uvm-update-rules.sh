@@ -5,6 +5,16 @@
 # If it detects the untangle-vm is not running it removes the rules (if they exist)
 # If you pass -r as an option it will remove the rules regardless
 
+if [ "$t_script" != "" ] ; then
+  script_file_name=$t_script
+else
+  script_file_name=$0
+fi
+# Determine our fully qualified name if called via symlink (e.g.,800-uvm)
+script_file_name=$(readlink -f $script_file_name)
+# Determine location of "active" iptables directory.
+iptables_path=$([ -d @PREFIX@/etc/untangle/iptables-rules.d ] && echo @PREFIX@/etc/untangle/iptables-rules.d || echo /etc/untangle/iptables-rules.d)
+
 TUN_DEV=utun
 TUN_ADDR="192.0.2.200"
 FORCE_REMOVE="false"
@@ -81,6 +91,21 @@ insert_iptables_rules()
     ${IPTABLES} -I PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm'
 
     ${IPTABLES} -A POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM'
+
+    # Pull and call insert calls from other iptables scripts that
+    # want to be added to the top of the uvm-tcp-direct chain.
+    # Most notably, ipsec.
+    while read line; do
+        file_name=$(echo $line | cut -d: -f1 | xargs readlink -f)
+        if [ "$file_name" = "$script_file_name" ] ; then
+            # Ignore ourself
+            continue
+        fi
+        command=$(echo $line | cut --complement -d: -f1)
+        eval $command
+    done << EOT
+$(grep IPTABLES $iptables_path/* | grep "\-I uvm-tcp-redirect" | grep "\-t nat")
+EOT
 
     # We insert one -j DNAT rule for each local address
     # This is necessary so that the destination address is maintained when replying (with the SYN/ACK)

@@ -6,6 +6,7 @@ package com.untangle.app.ipsec_vpn;
 
 import java.util.LinkedList;
 import java.io.FileWriter;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
@@ -52,7 +53,43 @@ public class IpsecVpnScriptWriter
         try {
             script = new FileWriter(IPTABLES_IPSEC_SCRIPT, false);
             script.write("#!/bin/dash" + RET + RET + "# " + IPTABLES_IPSEC_SCRIPT + RET + IpsecVpnManager.FILE_DISCLAIMER);
-            script.write("if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + RET + RET);
+
+            /**
+             * Using our script and location, determine proper place to
+             * access ut-uvm-update-rules.sh
+             */
+            script.write("if [ \"$t_script\" != \"\" ] ; then" + RET);
+            script.write("  script_file_name=$t_script" + RET);
+            script.write("else" + RET);
+            script.write("  script_file_name=$0" + RET);
+            script.write("fi" + RET);
+            script.write("script_path=$(dirname $script_file_name)" + RET);
+            script.write("base_path=" + RET);
+            /**
+             * If we're not called from standard environment, we're probably in developer mode, so
+             * dial back to get developer "root"
+             */
+            script.write("if [ \"$script_path\" != \"/etc/untangle/iptables-rules.d\" ] ; then" + RET);
+            script.write("    new_base_path=$(dirname $(dirname $(dirname $script_path)))" + RET);
+            /**
+             * If our base candidate path is not "." (we were called locally from the production location)
+             * then use this new base candidate indicating a developer enviromnent.
+             */
+            script.write("    if  [ \"$new_base_path\" != \".\" ] ; then" + RET);
+            script.write("        base_path = $new_base_path" + RET);
+            script.write("    fi" + RET);
+            script.write("fi" + RET);
+
+            /**
+             * With the base path and full reference to ut-uvm-update-rules.sh, capture the
+             * variables we need to build our own DNAT rules.
+             */
+            script.write("uvm_rules_file_name=$base_path/usr/share/untangle/bin/ut-uvm-update-rules.sh" + RET);
+            script.write("# Get variables from untangle-vm script for non-bypass rules" + RET);
+            script.write("eval $(grep TUN_DEV= $uvm_rules_file_name)" + RET);
+            script.write("eval $(grep TCP_REDIRECT_PORTS= $uvm_rules_file_name)" + RET);
+
+            script.write(RET + "if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + RET + RET);
 
             script.write("# We put the L2TP port forward rules in their own chain that we can flush" + RET);
             script.write("# since the server address can be changed by the user meaning there is" + RET);
@@ -74,6 +111,20 @@ public class IpsecVpnScriptWriter
             script.write("${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir out --goto set-bypass-mark >/dev/null 2>&1" + RET);
             script.write("${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir in  --goto set-bypass-mark >/dev/null 2>&1" + RET + RET);
 
+            script.write("# Bypass local to local traffic on IPsec if bypass flag is not set" + RET);
+
+            /**
+             * Our specific chain for dnat mapping.
+             */
+            script.write("# DNAT chain for traffic from right networks to proper local interface" + RET);
+            script.write("${IPTABLES} -t nat -N uvm-ipsec-tcp-redirect >/dev/null 2>&1" + RET);
+            script.write("${IPTABLES} -t nat -F uvm-ipsec-tcp-redirect >/dev/null 2>&1" + RET + RET);
+
+            /**
+             * Remove our jump call in nat/uvm-tcp-redirect
+             */
+            script.write("${IPTABLES} -D uvm-tcp-redirect -t nat -j uvm-ipsec-tcp-redirect >/dev/null 2>&1" + RET + RET);
+
             if (settings.getBypassflag()) {
                 script.write("# The bypass flag is set so add IPsec traffic bypass rules" + RET);
                 script.write("${IPTABLES} -t filter -I bypass-rules -m policy --pol ipsec --dir out --goto set-bypass-mark" + RET);
@@ -86,16 +137,44 @@ public class IpsecVpnScriptWriter
 
                     IpsecVpnTunnel data;
                     int x;
+                    boolean active = false;
                     for (x = 0; x < tunnelList.size(); x++) {
                             data = tunnelList.get(x);
                             if (data.getActive() != true) continue;
 
                             String leftSubnet = data.getLeftSubnet();
+                            String[] leftSubnetParts = leftSubnet.split("/");
+                            if(leftSubnetParts.length == 0){
+                                // Empty.
+                                logger.warn("leftSubnet is empty");
+                                continue;
+                            }
+                            // From our left side determine our local interface address.
+                            InetAddress interfaceAddress = UvmContextFactory.context().networkManager().getInterfaceAddressForNetwork(leftSubnetParts[0], leftSubnetParts.length > 1 ? Integer.parseInt(leftSubnetParts[1]) : 32);
+                            if( interfaceAddress == null){
+                                // If we are unable to determine that interface IP address, we cannot add a DNAT rule.
+                                logger.warn("Unable to find local interface address for leftSubnet=" + leftSubnet);
+                                continue;
+                            }
                             String rightSubnet = data.getRightSubnet();
 
-                            script.write("# Bypass local to local traffic on IPsec if bypass flag is not set" + RET);
-                            script.write("${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir in -s " + rightSubnet + " -d " + leftSubnet + " --goto set-bypass-mark >/dev/null 2>&1" + RET);
-                            script.write("${IPTABLES} -t filter -I bypass-rules -m policy --pol ipsec --dir in -s " + rightSubnet + " -d " + leftSubnet + " --goto set-bypass-mark" + RET + RET);
+                            active = true;
+                            script.write(
+                                "${IPTABLES} -A uvm-ipsec-tcp-redirect -t nat -i ${TUN_DEV}" +
+                                " -p tcp --source " + rightSubnet +
+                                " --destination " + leftSubnet +
+                                " -j DNAT" +
+                                " --to-destination " + interfaceAddress.getHostAddress() + ":${TCP_REDIRECT_PORTS}" +
+                                " -m comment --comment \"Redirect reinjected ipsec for '" + data.getDescription() + "' to the untangle-vm\""
+                            + RET);
+                    }
+
+                    if(active == true){
+                        /**
+                         * We have at least one active tunnel and valid DNAT rule so INSERT
+                         * jump to the nat/uvm-ipsec-tcp-redirect chain from nat/uvm-tcp-redirect.
+                         */
+                        script.write("${IPTABLES} -I uvm-tcp-redirect -t nat -j uvm-ipsec-tcp-redirect >/dev/null 2>&1" + RET + RET);
                     }
                 }
             }
