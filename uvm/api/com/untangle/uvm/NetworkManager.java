@@ -64,6 +64,8 @@ public interface NetworkManager
 
     List<IPMaskedAddress> getLocalNetworks();
 
+    InetAddress getInterfaceAddressForNetwork(String network, int prefixLength);
+
     String getNetworkSettingsFilename();
 
     void updateReservedAccessRulePort(String oldPort, String newPort);
