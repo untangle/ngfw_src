@@ -272,7 +272,9 @@ class IPsecTests(NGFWTestCase):
         if (not tunnelUp):
             raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
         ipsecHostLANResultNoFW = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://%s/" % ipsecPcLANIP)
+        ipsecHostLANResultnoFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         assert (ipsecHostLANResultNoFW == 0)
+        assert (ipsecHostLANResultnoFWRW == 0)
 
         # Install firewall rule to generate syslog events
         rules = appFW.getRules()
@@ -281,13 +283,13 @@ class IPsecTests(NGFWTestCase):
         appFW.setRules(rules)
         # To and from the client IP should be blocked by the firewall rule
         ipsecHostLANResultFW = remote_control.run_command("wget -q -O /dev/null -4 -t 1 --timeout=5 http://%s/" % ipsecPcLANIP)
-        ipsecHostLANResultFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % ipsecTestLAN, host=ipsecPcLANIP)
+        ipsecHostLANResultFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         appData = self._app.getSettings()
         appData["bypassflag"] = True
         self._app.setSettings(appData)
         # Bypass true on IPsec should bypass firewall rules.
         ipsecHostLANResultFWBypassed = remote_control.run_command("wget -q -O /dev/null -4 -t 1 --timeout=5 http://%s/" % ipsecPcLANIP)
-        ipsecHostLANResultFWBypassedRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % ipsecTestLAN, host=ipsecPcLANIP)
+        ipsecHostLANResultFWBypassedRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         # clear out firwall rules before checking results so other tests are not affected.
         rules["list"]=[]
         appFW.setRules(rules)
