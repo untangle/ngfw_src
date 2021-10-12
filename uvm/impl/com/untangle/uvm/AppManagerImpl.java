@@ -1250,7 +1250,7 @@ public class AppManagerImpl implements AppManager
 
         // if there is no license server connectivity we can't install anything
         if (lm.getLicenseServerConnectivity() == false || (!lm.isRestricted() && UvmContextFactory.context().isRegistered() == false)) {
-            logger.info("Deferring auto install pending license server connectivity");
+            logger.info("Deferring auto install pending license server connectivity and/or command center account");
             // if the auto install flag is set move it to the deferred flag
             if (isAutoInstallAppsFlag()) {
                 setAutoInstallDeferredFlag(true);
