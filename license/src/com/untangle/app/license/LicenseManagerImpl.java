@@ -991,17 +991,17 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
                     UserLicenseMessage noCCAccount = new UserLicenseMessage(NO_COMMAND_CENTER_ACCOUNT, false, UserLicenseMessage.UserLicenseMessageType.INFO);
                     this.settings.getUserLicenseMessages().add(noCCAccount);
+                } else {
+                    // if the deferred flag is set move it back to the auto install flag
+                    AppManager appManager = UvmContextFactory.context().appManager();
+                    if (appManager.isAutoInstallDeferredFlag()) {
+                        appManager.setAutoInstallAppsFlag(true);
+                        appManager.setAutoInstallDeferredFlag(false);
+                    }
                 }
 
                 _mapLicenses();
                 _saveSettings(this.settings);
-
-                // if the deferred flag is set move it back to the auto install flag
-                AppManager appManager = UvmContextFactory.context().appManager();
-                if (appManager.isAutoInstallDeferredFlag()) {
-                    appManager.setAutoInstallAppsFlag(true);
-                    appManager.setAutoInstallDeferredFlag(false);
-                }
             }
             _runAppManagerSync();
         }
