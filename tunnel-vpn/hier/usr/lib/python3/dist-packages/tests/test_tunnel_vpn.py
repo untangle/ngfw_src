@@ -14,6 +14,7 @@ import runtests.test_registry as test_registry
 default_policy_id = 1
 app = None
 vpn_tunnel_file = "http://10.111.56.29/openvpn-ats-test-tunnelvpn-config.zip"
+qa_isolated_pc = "192.168.72.22"
 
 
 def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=200):
@@ -124,6 +125,7 @@ class TunnelVpnTests(NGFWTestCase):
         # wait for vpn tunnel to form
         timeout = 60
         connected = False
+        pingPcLanResult = ""
         while (not connected and timeout > 0):
             newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
             if (currentWanIP != newWanIP):
@@ -132,6 +134,7 @@ class TunnelVpnTests(NGFWTestCase):
                 connected = True
                 listOfConnections = self._app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
+                pingPcLanResult = remote_control.run_command("ping -c 1 %s" % qa_isolated_pc)
             else:
                 time.sleep(1)
                 timeout-=1
@@ -144,6 +147,7 @@ class TunnelVpnTests(NGFWTestCase):
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
         assert(connectStatus == "CONNECTED")
+        assert(pingPcLanResult == 0)
 
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
