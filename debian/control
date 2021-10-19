@@ -403,6 +403,7 @@ Depends: ${misc:Depends},
          untangle-libuvmthirdparty,
 	 untangle-sync-settings,
 	 untangle-python3-runtests,
+         untangle-python3-support-diagnostics,
 	 unzip,
          zip
 Description: UVM Platform
