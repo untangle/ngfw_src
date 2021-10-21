@@ -69,7 +69,7 @@ class Jars
                          Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/jradius-core-1.1.4.jar'),
                          Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/jradius-dictionary-1.1.4.jar')])
 
-    const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.1.6/dnsjava-2.1.6.jar') ])
+    const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-3.5.0-20211020/dnsjava-3.5.0-20211020.jar') ])
 
     const_set(:SqlLite, [ Jars.downloadTarget('sqlite-jdbc-3.15.1/sqlite-jdbc-3.15.1.jar') ])
     
