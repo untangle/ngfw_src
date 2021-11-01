@@ -139,7 +139,7 @@ class UvmTests(NGFWTestCase):
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
 
-            pat = re.compile(r'''.*URL=http://wiki.*.untangle.com/(.*)">.*$''')
+            pat = re.compile(r'''.*URL=https://wiki.*.untangle.com/(.*)">.*$''')
             version = uvmContext.getFullVersion()
             print("------------------------------------------------------")
             if ('subcat' in link):
@@ -149,7 +149,7 @@ class UvmTests(NGFWTestCase):
                     subLink = link['fragment'] + "/" + subLink
                 else:
                     subLink = link['fragment']
-                url = "http://wiki.untangle.com/get.php?fragment=" + subLink + "&uid=0000-0000-0000-0000&version=" + version + "&webui=true&lang=en"
+                url = "https://wiki.untangle.com/get.php?fragment=" + subLink + "&uid=0000-0000-0000-0000&version=" + version + "&webui=true&lang=en"
                 print(("Checking %s = %s " % (subLink, url)))
                 req = urllib.request.Request( url, headers=hdr) 
                 ret = urllib.request.urlopen( req, context=ctx )
