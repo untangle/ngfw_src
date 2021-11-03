@@ -53,7 +53,7 @@ if bay_trail ; then
   fi
 fi
 
-if dpkg --compare-versions $(uname -v | awk '{print $4}') lt "4.19.146-1+untangle5buster" ; then
+if dpkg --compare-versions $(uname -v | awk '{print $4}') lt "4.19.146-1+untangle1buster" ; then
   # reboot to latest 4.19.0 kernel
   echo "Rebooting after apt-get completes..."
   nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &  
