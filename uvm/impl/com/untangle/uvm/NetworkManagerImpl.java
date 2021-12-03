@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
@@ -2649,12 +2650,15 @@ public class NetworkManagerImpl implements NetworkManager
         String infoResult = UvmContextFactory.context().execManager().execOutput( "iw " + systemDev + " info" );
 
         String channelPattern = "^\\s+\\* (\\d)(\\d+) MHz \\[(\\d+)\\]";
-        String channelDisabledPattern = "passive scanning|no IBSS|disabled|no IR";
+        String channelDisabledPattern = "passive scanning|no IBSS|disabled|no IR|radar detection";
         String wiphyPattern = ".*wiphy (\\d)";
         Pattern channelRegex = Pattern.compile(channelPattern);
         Pattern channelDisabledRegex = Pattern.compile(channelDisabledPattern);
         Pattern wiphyRegex = Pattern.compile(wiphyPattern);
         Integer maxChannel = 0;
+        // - 165: "Just bad":
+        // https://community.netgear.com/t5/Nighthawk-WiFi-Routers/Why-you-should-NEVER-select-channel-165-in-5-GHz/td-p/1848856)
+        List<Integer> disabledChannels = new LinkedList<Integer>(Arrays.asList(165));
 
         // Automatic 2.4 Ghz
         // disabled NGFW-11496
@@ -2691,7 +2695,8 @@ public class NetworkManagerImpl implements NetworkManager
                 Matcher disabledMatch = channelDisabledRegex.matcher(line);
                 if ( match.find() ) {
                     Integer channel = Integer.valueOf(match.group(3));
-                    if ( disabledMatch.find() ) {
+                    if ( disabledMatch.find() ||
+                         disabledChannels.contains(channel)) {
                         logger.debug("Ignoring channel (disabled): " + channel);
                     } else {
                         logger.debug("Adding channel: " + channel);
