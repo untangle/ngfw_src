@@ -1076,6 +1076,11 @@ public class ConfigManagerImpl implements ConfigManager
         File thermalZonePath = new File("/sys/devices/virtual/thermal");
         String discoveryFile = null;
 
+        // NGFW-13936 - Make sure the directory actually exists
+        if (!thermalZonePath.exists()) {
+            return discoveryFile;
+        }
+
         for (File zone : thermalZonePath.listFiles()) {
             if (discoveryFile != null) {
                 return discoveryFile;
