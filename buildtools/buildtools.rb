@@ -4,6 +4,7 @@
 arch = `dpkg-architecture -qDEB_BUILD_ARCH_CPU`.strip()
 openjdk8 = "java-8-openjdk-#{arch}"
 openjdk11 = "java-11-openjdk-#{arch}"
+openjdk17 = "java-17-openjdk-#{arch}"
 
 jvm = case arch
       when "armel"
@@ -12,7 +13,7 @@ jvm = case arch
       when "armhf"
         File.exist?("/usr/lib/jvm/#{openjdk8}") ? openjdk8 : "jdk-7-oracle-arm-vfp-hflt"
       else
-        File.exist?("/usr/lib/jvm/#{openjdk11}") ? openjdk11 : openjdk8
+        File.exist?("/usr/lib/jvm/#{openjdk17}") ? openjdk17 : openjdk11
       end
 warn "JVM = #{jvm}"
 ENV['JAVA_HOME'] = "/usr/lib/jvm/#{jvm}"
