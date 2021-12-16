@@ -371,7 +371,7 @@ class UvmTests(NGFWTestCase):
         if untangleEmail == "message":
             raise unittest.SkipTest('Skipping no accound found:' + str(untanglePassword))
 
-        result = uvmContext.cloudManager().accountLogin( untangleEmail, untanglePassword )
+        result = uvmContext.cloudManager().accountLogin( untangleEmail, untanglePassword, uvmContext.getServerUID(), "", "", "")
         assert (result.get('success'))
 
     def test_101_account_login_invalid(self):
