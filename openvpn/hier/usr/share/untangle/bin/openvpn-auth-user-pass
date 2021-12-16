@@ -38,7 +38,7 @@ if password.startswith("SCRV1:"):
     otp = int(base64.b64decode(parts[2]))
     result = openvpnApp.userAuthenticate(username, password, otp)
 else:
-    result = openvpnApp.userAuthenticate(username, password)
+    result = openvpnApp.userAuthenticate(username, password, 0)
 
 sys.exit(result)
 
