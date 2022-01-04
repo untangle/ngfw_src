@@ -5,13 +5,11 @@ to connect with browser (for complete configuration)
 """
 import base64
 import getopt
-import json
 import md5
 import os
 import re
 import signal
 import sys
-import subprocess
 import traceback
 import crypt
 
@@ -31,7 +29,7 @@ from jsonrpc import JSONDecodeException
 import uvm
 
 Debug = False
-AppTitle = "Untangle Next Generation Firewall Configuration Console"
+AppTitle = "Next Generation Firewall Configuration Console"
 Require_Auth = True
 
 class UvmContext:
@@ -54,7 +52,7 @@ class UvmContext:
             if tries == 0:
                 break
             else:
-                print("Connecting to Untangle...")
+                print("Connecting to NGFW...")
             sleep(wait)
         raise
 
@@ -336,6 +334,7 @@ class Menu(Screen):
     """
     Menu class
     """
+    settings_changed = False
     menu_pos = 0
 
     def __init__(self, items, stdscreen):
@@ -352,8 +351,11 @@ class Menu(Screen):
             if "text" in item:
                 self.visible_items.append(item)
 
+        self.update_settings()
+
+    def update_settings(self):
         """
-        Get IP address of first interface that is not WAN to display recommended URL
+        Update settings for display
         """
         uvm = UvmContext()
         self.networkSettings = uvm.context.networkManager().getNetworkSettings()
@@ -398,6 +400,10 @@ class Menu(Screen):
         """
         super(Menu, self).display()
 
+        if Menu.settings_changed is True:
+            self.update_settings()
+            Menu.settings_changed = False
+
         for index, item in enumerate(self.visible_items):
             if index == self.menu_pos:
                 mode = curses.A_REVERSE
@@ -413,7 +419,7 @@ class Menu(Screen):
         # Footer
         height, width = self.stdscreen.getmaxyx()
         self.y_pos = height - 3
-        self.message( "Console is only for initial network configuration")
+        self.message( "This console is only for limited network configuration")
         self.message( "For full configuration browse to https://%s" % (self.internal_ip_address) )
 
     def navigate(self, n):
@@ -749,6 +755,7 @@ class RemapInterfaces(Form):
         self.window.refresh()
         self.current_mode = None
         uvm.context.networkManager().setNetworkSettings(networkSettings)
+        Menu.settings_changed = True
         uvm = None
         return False
 
@@ -851,6 +858,14 @@ class AssignInterfaces(Form):
         "text": "Netmask",
         "key": "v4StaticPrefix",
         "validators": ["empty", "prefix"]
+    },{
+        "text": "DHCP Range Start Address",
+        "key": "dhcpRangeStart",
+        "validators": ["empty", "ip"]
+    },{
+        "text": "DHCP Range End Address",
+        "key": "dhcpRangeEnd",
+        "validators": ["empty", "ip"]
     }]
 
     # primary/secondary only if use peer dns =false
@@ -1238,6 +1253,7 @@ class AssignInterfaces(Form):
         self.current_mode = None
         try:
             uvm.context.networkManager().setNetworkSettings(networkSettings)
+            Menu.settings_changed = True
         except:
             pass
         uvm = None
@@ -1341,6 +1357,7 @@ class RemoteSupport(Form):
         system_settings = uvm.context.systemManager().getSettings()
         system_settings["supportEnabled"] = self.mode_selected_item["configure"]["value"]
         system_settings = uvm.context.systemManager().setSettings(system_settings)
+        Menu.settings_changed = True
         uvm = None
         return False
 
@@ -1477,7 +1494,7 @@ class FactoryDefaults(Form):
         except:
             pass
         uvm = None
-        print("Connecting to Untangle...")
+        print("Connecting to NGFW...")
         sleep(30)
 
 class suspend_curses():
@@ -1668,7 +1685,7 @@ def main(argv):
         uvm = UvmContext(tries=30)
         uvm = None
     except:
-        print("Untangle is unavailable at this time")
+        print("NGFW is unavailable at this time")
         sys.exit(1)
 
     curses.wrapper(UiApp)
