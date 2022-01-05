@@ -1,0 +1,7 @@
+FROM untangleinc/ngfw:bullseye-base-multiarch
+LABEL maintainer="Sebastien Delafond <sdelafond@gmail.com>"
+
+# do not use official Debian mirrors
+RUN rm /etc/apt/sources.list
+
+RUN echo "deb http://package-server.untangle.int/public/bullseye current main non-free" > /etc/apt/sources.list.d/current.list
