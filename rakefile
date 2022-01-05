@@ -155,8 +155,8 @@ task :javadocanalyzer do
   sourcepath = javaDirs.map { |d| d.split('/')[1..2].join('/') }.uniq.join(',')
   puts sourcepath
 
-  Kernel.exec('./buildtools/javadoc-analyzer.py',
-              '--path='+sourcepath)
+  Kernel.exec("./buildtools/javadoc-analyzer.py",
+              "--path=#{sourcepath}")
 end
 
 task :javadoc => [:download] do

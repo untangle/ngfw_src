@@ -611,7 +611,8 @@ class JavaCompilerTarget < Target
     @javaModifiedFiles.each do |f|
       directory = File.dirname f
       filename = File.basename f
-      stdout, stderr, status = Open3.capture3('./buildtools/javadoc-analyzer.py --path=' + directory + " --filename=" + filename + " --detail_only")
+
+      stdout, stderr, status = Open3.capture3("./buildtools/javadoc-analyzer.py --path=#{directory} --filename=#{filename} --detail_only")
       if status != 0
         puts "missing documentation"
         missing_javadoc = 1
