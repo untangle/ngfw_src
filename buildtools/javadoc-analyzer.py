@@ -1,12 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-import copy
 import getopt
 import javalang
 import os
-import re
 import sys
-import time
 
 from timeit import default_timer as time
 
@@ -15,6 +12,7 @@ Type_name = None
 Validators = {}
 Show_valid = False
 Start_time = time()
+
 
 class JavaParser:
     def __init__(self, file_path):
@@ -35,8 +33,8 @@ class JavaParser:
 
         if type(tree) == tuple:
             for path, node in tree:
-                print("(tuple) node=%s" % ( str(node)))
-                print("(tuple) node type=%s" % ( str( type( node) ) ))
+                print(("(tuple) node=%s" % ( str(node))))
+                print(("(tuple) node type=%s" % ( str( type( node) ) )))
                 if type(node) is list or type(node) is tuple:
                     print("(tuple) do list")
                 else:
@@ -44,7 +42,7 @@ class JavaParser:
                     if "attr" in node:
                         print("(tuple) do attr")
                     else:
-                        print(self.get_node(node))
+                        print((self.get_node(node)))
         elif type(tree) == list:
             result = []
             for node in tree:
@@ -177,8 +175,8 @@ class JavaDocValidator:
     def validate(self):
 
         if Debug:
-            print("\tvalidating %s" % (self.get_definition()))
-            print(self.tree)
+            print(("\tvalidating %s" % (self.get_definition())))
+            print((self.tree))
         if "documentation" not in self.tree or self.tree["documentation"] is None:
             self.missing = True
             return
@@ -319,13 +317,13 @@ def get_files(paths):
 
 def print_summary_report( file_count, required_count, missing_count, invalid_count, valid_count):
     print("")
-    print("Total files %d, required javadocs %d" % ( file_count, required_count ))
+    print(("Total files %d, required javadocs %d" % ( file_count, required_count )))
     if required_count > 0:
         if missing_count > 0:
-            print("Missing \t %4d \t %4.2f%%" % (missing_count, ( float( missing_count ) / required_count * 100) ))
+            print(("Missing \t %4d \t %4.2f%%" % (missing_count, ( float( missing_count ) / required_count * 100) )))
         if invalid_count > 0:
-            print("Invalid \t %4d \t %4.2f%%" % (invalid_count, ( float( invalid_count ) / required_count * 100) ))
-        print("Valid   \t %4d \t %4.2f%%" % (valid_count, ( float(valid_count) / required_count * 100) ))
+            print(("Invalid \t %4d \t %4.2f%%" % (invalid_count, ( float( invalid_count ) / required_count * 100) )))
+        print(("Valid   \t %4d \t %4.2f%%" % (valid_count, ( float(valid_count) / required_count * 100) )))
     print("")
 
 def print_report(total_only=False, detail_only=False):
@@ -354,7 +352,7 @@ def print_report(total_only=False, detail_only=False):
             current_invalid_count = 0
             current_directory = directory
             if total_only is False and detail_only is False:
-                print("\n" + current_directory + "\n" + '=' * len(current_directory) + "\n")
+                print(("\n" + current_directory + "\n" + '=' * len(current_directory) + "\n"))
         total_file_count += 1
         current_file_count += 1
         total_required_count += len(Validators[file_path])
@@ -368,8 +366,8 @@ def print_report(total_only=False, detail_only=False):
                 print(file_path)
                 show_path = True
             if total_only is False and validator.valid is not True or Show_valid is True:
-                print("\t" +validator.get_definition())
-                print("\t\t" + "\n\t".join(report))
+                print(("\t" +validator.get_definition()))
+                print(("\t\t" + "\n\t".join(report)))
             if validator.valid is True:
                 total_valid_count += 1
                 current_valid_count += 1
@@ -387,7 +385,7 @@ def print_report(total_only=False, detail_only=False):
         print("Total Repository")
         print_summary_report( total_file_count, total_required_count, total_missing_count,total_invalid_count, total_valid_count)
         print("")
-        print("Elapsed %4.2f s" % (time() - Start_time))
+        print(("Elapsed %4.2f s" % (time() - Start_time)))
 
     return total_valid_count == total_required_count
 
@@ -432,10 +430,10 @@ def main(argv):
             show_detail_only = True
 
     if Debug is True:
-        print("path=" + path)
-        print("ignore_path=" + ",".join(ignore_paths))
+        print(("path=" + path))
+        print(("ignore_path=" + ",".join(ignore_paths)))
         if filename != None:
-            print("filename=" + filename)
+            print(("filename=" + filename))
 
     file_reports = {}
 
@@ -449,7 +447,7 @@ def main(argv):
                 ignore = True
         if ignore is True:
             if Debug:
-                print("\tIgnored: " + file_path)
+                print(("\tIgnored: " + file_path))
             continue
 
         if ( filename is not None ) and ( file_path.endswith("/" + filename) is False):
