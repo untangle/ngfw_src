@@ -13,14 +13,19 @@ env:
     - DOCKER_USERNAME: untangleengineering
       SSH_KEY: /tmp/travis-buildbot.rsa
       PACKAGE_SERVER_IP: 50.211.244.129
-      REPOSITORY: buster
       PKGTOOLS_COMMIT: origin/${TRAVIS_BRANCH}
       UPLOAD: scp
       VERBOSE: 1
       DEBUG: 1
   jobs:
-    - ARCHITECTURE: amd64
-    - ARCHITECTURE: arm64
+    - REPOSITORY: buster
+      ARCHITECTURE: amd64
+    - REPOSITORY: buster
+      ARCHITECTURE: arm64
+    - REPOSITORY: bullseye
+      ARCHITECTURE: amd64
+    - REPOSITORY: bullseye
+      ARCHITECTURE: arm64
 
 before_install:
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
