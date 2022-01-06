@@ -365,14 +365,16 @@ class Menu(Screen):
         uvm = None
 
         for interface in self.interfaces:
-            for device in self.deviceStatus["list"]:
-                if interface["physicalDev"] == device["deviceName"]:
-                    for k,v in device.iteritems():
-                        interface[k] = v
-            for interfaceStatus in self.interfaceStatus["list"]:
-                if interface["interfaceId"] == interfaceStatus["interfaceId"]:
-                    for k,v in interfaceStatus.iteritems():
-                        interface[k] = v
+            if self.deviceStatus is not None:
+                for device in self.deviceStatus["list"]:
+                    if interface["physicalDev"] == device["deviceName"]:
+                        for k,v in device.iteritems():
+                            interface[k] = v
+            if self.interfaceStatus is not None:
+                for interfaceStatus in self.interfaceStatus["list"]:
+                    if interface["interfaceId"] == interfaceStatus["interfaceId"]:
+                        for k,v in interfaceStatus.iteritems():
+                            interface[k] = v
 
         self.internal_ip_address = None
         for interface in self.interfaces:
@@ -1151,6 +1153,19 @@ class AssignInterfaces(Form):
             self.message( "Press [Enter] to confirm")
             self.message( "Press [Esc] to change addressed mode")
 
+    def textbox_validator( self, ch):
+        """
+        Validator to properly capture backspace key
+        """
+        if ch == 27:
+            self.textbox_cancel = True
+            return 10
+        elif ch == 127:
+            self.textboxValue = self.current_textbox.gather().strip().lower()[:-1]
+            return 8
+        else:
+            return ch
+
     def edit_field(self, edit_index, edit_item):
         """
         Edit the specified field with a textbox.
@@ -1158,21 +1173,24 @@ class AssignInterfaces(Form):
         value = self.mode_selected_item['interface'][edit_item["key"]]
         if value is None:
             value = ""
-        textbox = self.textbox( edit_index, 31, str(value) )
-        newValue = textbox.edit()
+        self.textbox_cancel = False
+        self.current_textbox = self.textbox( edit_index, 31, str(value) )
+        self.textboxValue = self.current_textbox.edit(self.textbox_validator)
+        if self.textbox_cancel is True:
+            self.textboxValue = value
 
         invalid_messages = None
         if "validators" in edit_item:
-            invalid_messages = Validator.check(newValue, edit_item["validators"] )
+            invalid_messages = Validator.check(self.textboxValue, edit_item["validators"] )
 
-        if  ( "allow_empty" in edit_item ) and ( edit_item["allow_empty"] is True ) and ( len(newValue.strip()) == 0 ):
+        if  ( "allow_empty" in edit_item ) and ( edit_item["allow_empty"] is True ) and ( len(self.textboxValue.strip()) == 0 ):
             invalid_messages = None
 
         if invalid_messages is not None:
             self.invalid_messages(invalid_messages)
         else:
-            if newValue != value:
-                self.mode_selected_item['interface'][edit_item["key"]] = newValue.strip()
+            if self.textboxValue != value:
+                self.mode_selected_item['interface'][edit_item["key"]] = self.textboxValue.strip()
             self.key = 27
 
     def action_interface(self):
