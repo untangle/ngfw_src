@@ -82,7 +82,7 @@ function getInterfaceStatus()
         if [ "${t_isConnected}" = "${FLAG_DISCONNECTED}" ] ; then
             # Try to access carrier directly
             if [ -f /sys/class/net/${t_intf}/carrier ] ; then
-                if [ $(cat /sys/class/net/${t_intf}/carrier) = "1" ] ; then
+                if [ "$(cat /sys/class/net/${t_intf}/carrier 2>/dev/null)" = "1" ] ; then
                     t_isConnected="${FLAG_CONNECTED}"
                 else
                     t_isConnected="${FLAG_DISCONNECTED}"
