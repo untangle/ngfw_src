@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm;
 
+import java.time.Duration;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -971,7 +973,9 @@ public class HostTableImpl implements HostTable
 
             try {
                 org.xbill.DNS.ExtendedResolver defaultResolver = new org.xbill.DNS.ExtendedResolver(new String[] { "127.0.0.1" });
-                defaultResolver.setTimeout(2);
+
+                Duration timeout = Duration.ofSeconds(2);
+                defaultResolver.setTimeout(timeout);
                 org.xbill.DNS.Lookup.setDefaultResolver(defaultResolver);
             } catch (Exception e) {
                 logger.warn("Exception:", e);
