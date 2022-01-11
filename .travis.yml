@@ -15,8 +15,6 @@ env:
       PACKAGE_SERVER_IP: 50.211.244.129
       PKGTOOLS_COMMIT: origin/${TRAVIS_BRANCH}
       UPLOAD: scp
-      VERBOSE: 1
-      DEBUG: 1
   jobs:
     - REPOSITORY: buster
       ARCHITECTURE: amd64
@@ -35,7 +33,7 @@ before_install:
 
 script:
 - docker-compose -f docker-compose.build.yml run pkgtools
-- travis_wait 40 docker-compose -f docker-compose.build.yml run build
+- docker-compose -f docker-compose.build.yml run build
 
 notifications:
   email: false
