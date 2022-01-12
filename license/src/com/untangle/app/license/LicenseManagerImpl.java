@@ -893,7 +893,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         /**
          * Save the settings
          */
-        logger.warn("Running save settings\n");
+        logger.debug("Running save settings\n");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
             settingsManager.save( System.getProperty("uvm.conf.dir") + "/licenses/licenses.js", newSettings );
@@ -983,8 +983,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                                                                         UserLicenseMessage.UserLicenseMessageType.ALERT,
                                                                         false);
                         this.settings.getUserLicenseMessages().add(noLicenseConnection);
-                        /*if (!this.settings.toJSONString().equals(oldSettingsString))
-                            _saveSettings(this.settings);*/
+                        if (!this.settings.toJSONString().equals(oldSettingsString)) {
+                            _saveSettings(this.settings);
+                        }
                     }
                 }
             } else {
