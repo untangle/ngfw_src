@@ -140,4 +140,13 @@ public class UserLicenseMessage
     public void setShowAsBanner(boolean newValue) {
         this.showAsBanner = newValue;
     }
+
+    /* Converts User License Message to string
+     *
+     * @return string representation 
+     */
+    @Override
+    public String toString() {  
+        return "<" + this.type + "/" + this.message + "/" + this.hasClosure + ">";
+    }
 }
