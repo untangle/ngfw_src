@@ -34,6 +34,7 @@ before_install:
 script:
 - docker-compose -f docker-compose.build.yml run pkgtools
 - docker-compose -f docker-compose.build.yml run build
+if: NOT (type = pull_request AND env(REPOSITORY) = bullseye)
 
 notifications:
   email: false
