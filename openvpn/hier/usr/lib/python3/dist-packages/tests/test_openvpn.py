@@ -210,6 +210,11 @@ class OpenVpnTests(NGFWTestCase):
         appWeb = None
         appDC = None
         tunnelApp = None
+        
+        appData = cls._app.getSettings()
+        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
+        cls._app.setSettings(appData)
+        
         if (uvmContext.appManager().isInstantiated(cls.appWebName())):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.appWebName())
@@ -296,7 +301,6 @@ class OpenVpnTests(NGFWTestCase):
         #set username/password in remoteServer settings
         appData = self._app.getSettings()
         appData["serverEnabled"]=True
-        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData["remoteServers"]["list"][0]["authUserPass"]=True
         appData["remoteServers"]["list"][0]["authUsername"]=ovpnlocaluser
         appData["remoteServers"]["list"][0]["authPassword"]=ovpnPasswd
@@ -357,7 +361,6 @@ class OpenVpnTests(NGFWTestCase):
         appData = self._app.getSettings()
         appData["serverEnabled"]=True
         siteName = appData['siteName']
-        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData['remoteClients']['list'][:] = []  
         appData['remoteClients']['list'].append(setUpClient())
         self._app.setSettings(appData)
@@ -494,7 +497,6 @@ class OpenVpnTests(NGFWTestCase):
         appData = self._app.getSettings()
         appData["serverEnabled"] = True
         siteName = appData['siteName']
-        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData['remoteClients']['list'][:] = []
         appData['remoteClients']['list'].append(setUpClient())
         self._app.setSettings(appData)
@@ -552,7 +554,6 @@ class OpenVpnTests(NGFWTestCase):
         assert(timeout <= 0)
 
         #create the same user again
-        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData['remoteClients']['list'][:] = []
         appData['remoteClients']['list'].append(setUpClient())
         self._app.setSettings(appData)
@@ -636,7 +637,6 @@ class OpenVpnTests(NGFWTestCase):
         appData = self._app.getSettings()
         appData["serverEnabled"]=True
         siteName = appData['siteName']
-        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData['remoteClients']['list'][:] = []  
         appData['remoteClients']['list'].append(setUpClient())
         #enable user/password authentication, set to local directory
@@ -728,7 +728,6 @@ class OpenVpnTests(NGFWTestCase):
         appData = self._app.getSettings()
         appData["serverEnabled"]=True
         siteName = appData['siteName']
-        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData['remoteClients']['list'][:] = []  
         appData['remoteClients']['list'].append(setUpClient())
         #enable user/password authentication, set to RADIUS directory
@@ -815,7 +814,6 @@ class OpenVpnTests(NGFWTestCase):
         appData = self._app.getSettings()
         appData["serverEnabled"]=True
         siteName = appData['siteName']
-        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData['remoteClients']['list'][:] = []  
         appData['remoteClients']['list'].append(setUpClient())
         #enable user/password authentication, set to AD directory
@@ -908,7 +906,6 @@ class OpenVpnTests(NGFWTestCase):
         appData = self._app.getSettings()
         appData["serverEnabled"]=True
         siteName = appData['siteName']
-        appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         appData['remoteClients']['list'][:] = []  
         appData['remoteClients']['list'].append(setUpClient())
         self._app.setSettings(appData)
