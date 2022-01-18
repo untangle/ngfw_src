@@ -796,7 +796,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             socket = new Socket();
             host = licenseUri.getHost() != null ? licenseUri.getHost(): "license.untangle.com";
             port = licenseUri.getPort() != -1 ? licenseUri.getPort() : 443;
-            socket.connect(new InetSocketAddress(host, port), 5000);
+            socket.connect(new InetSocketAddress(host, port), 30000);
         } catch (Exception e) {
             logger.error("Can't get to untangle license server");
             connected = false;
@@ -978,7 +978,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     if (noMessage) {
                         UserLicenseMessage noLicenseConnection = new UserLicenseMessage(NO_LICENSE_SERVER_CONNECTION_MESSAGE,
                                                                         false,
-                                                                        UserLicenseMessage.UserLicenseMessageType.ALERT);
+                                                                        UserLicenseMessage.UserLicenseMessageType.ALERT,
+                                                                        false);
                         this.settings.getUserLicenseMessages().add(noLicenseConnection);
                         _saveSettings(this.settings);
                     }
@@ -989,7 +990,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 if (connected && !UvmContextFactory.context().isRegistered() && !this.isRestricted()) {
                     logger.error("No connection to command center, not downloading licenses");
 
-                    UserLicenseMessage noCCAccount = new UserLicenseMessage(NO_COMMAND_CENTER_ACCOUNT, false, UserLicenseMessage.UserLicenseMessageType.INFO);
+                    UserLicenseMessage noCCAccount = new UserLicenseMessage(NO_COMMAND_CENTER_ACCOUNT, false, UserLicenseMessage.UserLicenseMessageType.INFO, true);
                     this.settings.getUserLicenseMessages().add(noCCAccount);
                 } else {
                     // if the deferred flag is set move it back to the auto install flag

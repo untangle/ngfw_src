@@ -29,6 +29,8 @@ public class UserLicenseMessage
     /* type of message */
     private UserLicenseMessageType type;
 
+    /* if should show as banner or just an alert */
+    private boolean showAsBanner; 
 
     /**
      * Blank constructor
@@ -38,6 +40,7 @@ public class UserLicenseMessage
         this.message = "";
         this.hasClosure = true;
         this.type = UserLicenseMessageType.INFO;
+        this.showAsBanner = true;
     }
 
     /**
@@ -48,12 +51,15 @@ public class UserLicenseMessage
      * @param hasClosure if message can be closable in UI
      *
      * @param type type of UserLicenseMessage from enum
+     *
+     * @param showAsBanner if message will show as banner in the UI
      */
-    public UserLicenseMessage(String message, boolean hasClosure, UserLicenseMessageType type) 
+    public UserLicenseMessage(String message, boolean hasClosure, UserLicenseMessageType type, boolean showAsBanner) 
     {
         this.message = message;
         this.hasClosure = hasClosure;
         this.type = type;
+        this.showAsBanner = showAsBanner;
     }
 
     /**
@@ -115,5 +121,23 @@ public class UserLicenseMessage
     public void setType(UserLicenseMessageType newValue)
     {
         this.type = newValue;
+    }
+
+    /**
+     * Get if should show message in banner
+     *
+     * @return if message should show as a banner
+     */
+    public boolean getShowAsBanner() {
+        return this.showAsBanner;
+    }
+
+    /**
+     * Set if message should show as banner
+     *
+     * @param newValue the boolean for if message will be shown as banner
+     */
+    public void setShowAsBanner(boolean newValue) {
+        this.showAsBanner = newValue;
     }
 }

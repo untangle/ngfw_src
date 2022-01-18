@@ -64,7 +64,9 @@ Ext.define('Ung.view.main.UserLicenseMessagesController', {
                     ]
                 };
 
-                messagesCmps.push(msgItem);
+                if (msg.showAsBanner) {
+                    messagesCmps.push(msgItem);
+                }
             });
 
             // remove all current UserLicenseMessages messages before adding new ones
