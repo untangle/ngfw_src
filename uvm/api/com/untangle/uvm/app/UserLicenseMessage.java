@@ -141,7 +141,8 @@ public class UserLicenseMessage
         this.showAsBanner = newValue;
     }
 
-    /* Converts User License Message to string
+    /** 
+     * Converts User License Message to string
      *
      * @return string representation 
      */
