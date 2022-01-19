@@ -1138,7 +1138,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         int numDevices = _getEstimatedNumDevices();
         String model = UvmContextFactory.context().getApplianceModel();
-        String uvmVersion = UvmContextFactory.context().version();
+        String uvmVersion = UvmContextFactory.context().getFullVersion();
         if (model != null) {
             try {
                 model = URLEncoder.encode(model,"UTF-8");
