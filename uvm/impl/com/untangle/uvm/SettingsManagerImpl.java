@@ -61,6 +61,11 @@ public class SettingsManagerImpl implements SettingsManager
      * Match for filename with leading directory
      */ 
     public static final Pattern FILE_MATCH = Pattern.compile("(.+)\\/([a-zA-Z0-9_\\-\\+@]+)\\.\\w+\\-version\\-([0-9\\-\\.]+)\\.\\w+$");
+
+    /**
+     * License file to exclude from settings changes events
+     */
+    public static final String LICENSE_FILE_NAME = "licenses.js";
     
     /**
      * Formatting for the version string (yyyy-mm-dd-hhmm)
@@ -558,7 +563,9 @@ public class SettingsManagerImpl implements SettingsManager
                         hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
                     }
                 }
-                UvmContextFactory.context().logEvent(new SettingsChangesEvent(outputFileName, username, hostname));
+                if (!outputFileName.contains(LICENSE_FILE_NAME)) {
+                    UvmContextFactory.context().logEvent(new SettingsChangesEvent(outputFileName, username, hostname));
+                }
             } catch ( Exception e ) {
                 logger.warn( "Failed to create symbolic link.", e );
             }
