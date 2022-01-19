@@ -893,6 +893,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         /**
          * Save the settings
          */
+        logger.debug("Running save settings\n");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
             settingsManager.save( System.getProperty("uvm.conf.dir") + "/licenses/licenses.js", newSettings );
@@ -944,6 +945,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         logger.info("Reloading licenses..." );
 
         synchronized (LicenseManagerImpl.this) {
+            String oldSettingsString = this.settings.toJSONString(); // need old settings
             this.settings.getUserLicenseMessages().clear(); // clear messages out
             boolean connected = _testLicenseConnectivity();
             boolean downloadSucceeded = false;
@@ -981,7 +983,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                                                                         UserLicenseMessage.UserLicenseMessageType.ALERT,
                                                                         false);
                         this.settings.getUserLicenseMessages().add(noLicenseConnection);
-                        _saveSettings(this.settings);
+                        if (!this.settings.toJSONString().equals(oldSettingsString)) {
+                            _saveSettings(this.settings);
+                        }
                     }
                 }
             } else {
@@ -1002,7 +1006,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 }
 
                 _mapLicenses();
-                _saveSettings(this.settings);
+                if (!this.settings.toJSONString().equals(oldSettingsString)) {
+                    _saveSettings(this.settings);
+                }
             }
             _runAppManagerSync();
         }
