@@ -6,9 +6,9 @@ import sys
 import glob
 import re
 import string
-import httplib
-import urllib
-import HTMLParser
+import http.client
+import urllib.request, urllib.parse, urllib.error
+import html.parser
 
 UNTANGLE_DIR = '%s/lib/python' % ( os.path.dirname(os.path.realpath(__file__) ) )
 sys.path.insert(0, UNTANGLE_DIR)

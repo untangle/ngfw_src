@@ -85,4 +85,4 @@ tunnel_raw = parse_output(tunnel_out)
 tunnel_status["wireguard"] = tunnel_raw
 
 tunnel_json = json.dumps(tunnel_status)
-print tunnel_json
+print(tunnel_json)

@@ -241,18 +241,18 @@ class WebBrowser:
         for index, value in enumerate(matches):
             images[index] = None
 
-            for key in value.keys():
+            for key in list(value.keys()):
                 if key == "height":
                     continue
 
-                for rkey in replacements.keys():
+                for rkey in list(replacements.keys()):
                     if rkey in value[key]:
                         value[key] = value[key].replace(rkey, replacements[rkey]) 
 
-                if type(value[key]) in [str, unicode]:
-                    value[key] = re.compile( ur''+value[key].replace("\\\\", "\\"), re.UNICODE )
+                if type(value[key]) in [str, str]:
+                    value[key] = re.compile( r''+value[key].replace("\\\\", "\\"), re.UNICODE )
 
-            for rkey in replacements.keys():
+            for rkey in list(replacements.keys()):
                 if rkey in searches[index]:
                         searches[index] = searches[index].replace(rkey, replacements[rkey]) 
 
@@ -276,7 +276,7 @@ class WebBrowser:
                             continue
 
                         match = True
-                        for key in value.keys():
+                        for key in list(value.keys()):
                             if key[0] == "!":
                                 if value[key].search( element.get_attribute(key[1:]) ) is not None:
                                     match = False
@@ -293,14 +293,14 @@ class WebBrowser:
                         if match is True:
                             if Debug:
                                 print("matched element=")
-                                for key in value.keys():
+                                for key in list(value.keys()):
                                     if key[0] == "!":
                                         print(key[1:] + "=" + str(element.get_attribute(key[1:])))
                                     else:
                                         print(key + "=" + str(element.get_attribute(key)))
                             x = int( element.location['x'] )
                             y = int( element.location['y'] )
-                            # print(( x, y, x + width, y + height ))
+                            # print( x, y, x + width, y + height )
                             images[index] = img.crop( ( x, y, x + width, y + height ) )
                             # save piece for debugging....
                             # images[index].save(self.temp_directory + "/cropped" + str(index) + ".png")
@@ -338,7 +338,7 @@ class WebBrowser:
                 continue
             # print(id)
             # print(images[id].size)
-            # print(( x, y, x + images[id].size[0], y + images[id].size[1]))
+            # print( x, y, x + images[id].size[0], y + images[id].size[1])
             # print("pasting " + str(id))
             self.cropped_image.paste(images[id], ( x, y, x + images[id].size[0], y + images[id].size[1]) )
             y = y + images[id].size[1]

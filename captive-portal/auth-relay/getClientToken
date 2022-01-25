@@ -17,7 +17,7 @@
 # back to using the user name. If that is not available we return an error
 # indicating we couldn't find the identity for the user.
 
-import urlparse
+import urllib.parse
 import requests
 import json
 import sys
@@ -160,7 +160,7 @@ if (qstring == None):
 	sys.exit()
 
 # Parse the individual parameters from the query string
-qparams = urlparse.parse_qs(qstring)
+qparams = urllib.parse.parse_qs(qstring)
 
 # Get the authPlatform parameter, return error if missing
 if ('authPlatform' in qparams):

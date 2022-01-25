@@ -123,7 +123,7 @@ def write_iptables_route_rule( file, route_rule, verbosity=0 ):
     iptables_conditions = IptablesUtil.conditions_to_iptables_string( route_rule['conditions']['list'], description, verbosity );
     iptables_commands = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + target for ipt in iptables_conditions ]
     accept_commands = [ "${IPTABLES} -t mangle -A wan-balancer-route-rules " + ipt + " -j ACCEPT " for ipt in iptables_conditions ]
-    all_commands = list(itertools.chain(*zip(iptables_commands,accept_commands)))
+    all_commands = list(itertools.chain(*list(zip(iptables_commands,accept_commands))))
     commands += all_commands
     
     file.write("# %s\n" % description);

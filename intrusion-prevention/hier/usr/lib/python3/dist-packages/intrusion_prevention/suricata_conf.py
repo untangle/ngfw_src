@@ -37,10 +37,10 @@ class SuricataConf:
         """
         def represent_bool(yaml_self, data):
             if data:
-                value = u'yes'
+                value = 'yes'
             else:
-                value = u'no'
-            return yaml_self.represent_scalar(u'tag:yaml.org,2002:bool', text_type(value))
+                value = 'no'
+            return yaml_self.represent_scalar('tag:yaml.org,2002:bool', text_type(value))
 
         ruamel.yaml.emitter.Emitter.write_comment_orig = ruamel.yaml.emitter.Emitter.write_comment
         def strip_empty_lines_write_comment(self, comment):

@@ -389,7 +389,7 @@ class ReportsTests(NGFWTestCase):
             if part.get_content_maintype() == "image":
                 for index, key in enumerate(part.keys()):
                     if key == "Content-ID":
-                        mime_content_ids.append(part.values()[index])
+                        mime_content_ids.append(list(part.values())[index])
             elif part.get_content_maintype() == "text":
                 parser.feed((part.get_payload(decode=True)).decode("utf-8"))
 
@@ -505,11 +505,11 @@ class ReportsTests(NGFWTestCase):
             if part.get_content_maintype() == "image":
                 # print("Image found")
                 for index, key in enumerate(part.keys()):
-                    if key == "Content-ID" and "untangle.int" in part.values()[index]:
+                    if key == "Content-ID" and "untangle.int" in list(part.values())[index]:
                         email_image = part.get_payload(decode=True)
                         im = Image.open(BytesIO(email_image))
                         (image_width,image_height) = im.size
-                        print("Image %s width: %d height: %d" % (part.values()[index], image_width, image_height))
+                        print("Image %s width: %d height: %d" % (list(part.values())[index], image_width, image_height))
                         assert(image_width <= 350 and image_height <= 350)
 
     @pytest.mark.slow

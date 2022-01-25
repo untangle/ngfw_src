@@ -361,19 +361,19 @@ class Menu(Screen):
         self.networkSettings = uvm.context.networkManager().getNetworkSettings()
         self.interfaceStatus = uvm.context.networkManager().getInterfaceStatus()
         self.deviceStatus = uvm.context.networkManager().getDeviceStatus()
-        self.interfaces = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
+        self.interfaces = [i for i in self.networkSettings["interfaces"]["list"] if i['isVlanInterface'] is False]
         uvm = None
 
         for interface in self.interfaces:
             if self.deviceStatus is not None:
                 for device in self.deviceStatus["list"]:
                     if interface["physicalDev"] == device["deviceName"]:
-                        for k,v in device.iteritems():
+                        for k,v in list(device.items()):
                             interface[k] = v
             if self.interfaceStatus is not None:
                 for interfaceStatus in self.interfaceStatus["list"]:
                     if interface["interfaceId"] == interfaceStatus["interfaceId"]:
-                        for k,v in interfaceStatus.iteritems():
+                        for k,v in list(interfaceStatus.items()):
                             interface[k] = v
 
         self.internal_ip_address = None
@@ -633,13 +633,13 @@ class RemapInterfaces(Form):
         self.networkSettings = uvm.context.networkManager().getNetworkSettings()
         self.interfaceStatus = uvm.context.networkManager().getInterfaceStatus()
         self.deviceStatus = uvm.context.networkManager().getDeviceStatus()
-        self.interface_selections = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
+        self.interface_selections = [i for i in self.networkSettings["interfaces"]["list"] if i['isVlanInterface'] is False]
         uvm = None
 
         for interface in self.interface_selections:
             for device in self.deviceStatus["list"]:
                 if interface["physicalDev"] == device["deviceName"]:
-                    for k,v in device.iteritems():
+                    for k,v in list(device.items()):
                         interface[k] = v
 
     def display_interface(self, show_selected_only=False):
@@ -908,17 +908,17 @@ class AssignInterfaces(Form):
         self.networkSettings = uvm.context.networkManager().getNetworkSettings()
         self.interfaceStatus = uvm.context.networkManager().getInterfaceStatus()
         self.deviceStatus = uvm.context.networkManager().getDeviceStatus()
-        self.interface_selections = filter( lambda i: i['isVlanInterface'] is False, self.networkSettings["interfaces"]["list"] )
+        self.interface_selections = [i for i in self.networkSettings["interfaces"]["list"] if i['isVlanInterface'] is False]
         uvm = None
         
         for interface in self.interface_selections:
             for device in self.deviceStatus["list"]:
                 if interface["physicalDev"] == device["deviceName"]:
-                    for k,v in device.iteritems():
+                    for k,v in list(device.items()):
                         interface[k] = v
             for interfaceStatus in self.interfaceStatus["list"]:
                 if interface["interfaceId"] == interfaceStatus["interfaceId"]:
-                    for k,v in interfaceStatus.iteritems():
+                    for k,v in list(interfaceStatus.items()):
                         interface[k] = v
 
         self.modes = self.modes_addressed
@@ -1673,7 +1673,7 @@ def handle_exceptions(tb):
         print("\n   Line: {0}\n Method: {1}\nCommand: {2}".format(traceback_args[1], traceback_args[2], traceback_args[3]))
         count += 1
     print("\n")
-    raw_input("Press [Enter] key to continue...")
+    eval(input("Press [Enter] key to continue..."))
 
 def main(argv):
     global Debug

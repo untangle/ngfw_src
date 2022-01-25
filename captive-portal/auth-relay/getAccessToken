@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import urlparse
+import urllib.parse
 import requests
 import json
 import sys
@@ -156,7 +156,7 @@ if (qstring == None):
 	sys.stdout.write("ERROR: missing query string")
 	sys.exit()
 
-qparams = urlparse.parse_qs(qstring)
+qparams = urllib.parse.parse_qs(qstring)
 
 if ('authType' in qparams):
 	authtype = qparams['authType'][0]

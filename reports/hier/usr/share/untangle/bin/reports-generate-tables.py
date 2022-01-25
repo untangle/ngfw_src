@@ -37,7 +37,7 @@ class ArgumentParser(object):
              for opt in optlist:
                   handlers[opt[0]](opt[1])
              return args
-        except getopt.GetoptError, exc:
+        except getopt.GetoptError as exc:
              print(exc)
              usage()
              exit(1)

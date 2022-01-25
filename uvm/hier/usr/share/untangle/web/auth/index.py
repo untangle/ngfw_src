@@ -7,7 +7,7 @@ import re
 import pycurl
 import json
 import crypt
-from StringIO import StringIO
+from io import StringIO
 
 from mod_python import apache, Session, util
 
@@ -37,7 +37,7 @@ def login(req, url=None, realm='Administrator', token=None):
     args = util.parse_qs(req.args or '')
 
     error_msg = None
-    if req.form.has_key('username') or req.form.has_key('password'):
+    if 'username' in req.form or 'password' in req.form:
         error_msg = '%s' % cgi.escape(_('Error: Username and Password do not match'))
 
     connection = req.connection
@@ -62,12 +62,12 @@ def login(req, url=None, realm='Administrator', token=None):
                 return apache.OK
             else:
                 url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
-                if req.form.has_key('fragment') and req.form['fragment'] != '':
+                if 'fragment' in req.form and req.form['fragment'] != '':
                     url = url + req.form['fragment']
                 util.redirect(req, url)
                 return
 
-    if req.form.has_key('username') and req.form.has_key('password'):
+    if 'username' in req.form and 'password' in req.form:
         username = req.form['username']
         password = req.form['password']
         # debug
@@ -85,7 +85,7 @@ def login(req, url=None, realm='Administrator', token=None):
                 return apache.OK
             else:
                 url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
-                if req.form.has_key('fragment') and req.form['fragment'] != '':
+                if 'fragment' in req.form and req.form['fragment'] != '':
                     url = url + req.form['fragment']
                 util.redirect(req, url)
                 return

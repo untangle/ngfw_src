@@ -8,7 +8,7 @@ import os
 import pwd
 import re
 import sets
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os.path
 import sys
 import traceback
@@ -16,6 +16,7 @@ import uvm
 import threading
 
 from mod_python import apache, Session, util
+from functools import reduce
 
 def authenhandler(req):
     if req.notes.get('authorized', 'false') == 'true':
@@ -23,7 +24,7 @@ def authenhandler(req):
     else:
         options = req.get_options()
 
-        if options.has_key('Realm'):
+        if 'Realm' in options:
             realm = options['Realm']
             apache.log_error('Auth failure [Not authorized]. Redirecting to auth page. (realm: %s)' % realm)
             apache.log_error('Not logged in. Redirect to auth page. (realm: %s)' % realm)
@@ -52,7 +53,7 @@ def headerparserhandler(req):
     options = req.get_options()
 
     realm = None
-    if options.has_key('Realm'):
+    if 'Realm' in options:
         realm = options['Realm']
     else:
         apache.log_error('no realm specified')
@@ -63,7 +64,7 @@ def headerparserhandler(req):
     if req.args != None:
         try:
             dict = util.FieldStorage(req)
-            if dict.has_key('token'):
+            if 'token' in dict:
                 token = dict['token']
         except:
             pass
@@ -109,10 +110,10 @@ def headerparserhandler(req):
     login_redirect(req, realm, token)
 
 def session_user(sess, realm):
-    if sess.has_key('apache_realms') and sess['apache_realms'].has_key(realm):
+    if 'apache_realms' in sess and realm in sess['apache_realms']:
         realm_record = sess['apache_realms'][realm]
 
-        if realm_record != None and realm_record.has_key('username'):
+        if realm_record != None and 'username' in realm_record:
             return realm_record['username']
 
     return None
@@ -146,7 +147,7 @@ def is_local_process_uid_authorized(req):
 
     q = remote_ip.split(".")
     q.reverse()
-    n = reduce(lambda a, b: long(a) * 256 + long(b), q)
+    n = reduce(lambda a, b: int(a) * 256 + int(b), q)
     hexaddr = "%08X" % n
     hexport = "%04X" % remote_port
 
@@ -182,10 +183,10 @@ def is_local_process_uid_authorized(req):
                                 apache.log_error('UID %s NOT authorized on via %s:%s' % (str(uid), str(remote_ip), str(remote_port)))
                                 # apache.log_error('%s' % (l))
                                 return False
-                    except Exception,e:
+                    except Exception as e:
                         apache.log_error('Bad line in /proc/net/tcp: %s: %s' % (line, traceback.format_exc(e)))
 
-        except Exception,e:
+        except Exception as e:
             apache.log_error('Exception reading /proc/net/tcp: %s' % traceback.format_exc(e))
         finally:
             infile.close()
@@ -216,12 +217,12 @@ def get_uvmlogin_uids():
 
 
 def login_redirect(req, realm, token=None):
-    url = urllib.quote(req.unparsed_uri)
+    url = urllib.parse.quote(req.unparsed_uri)
 
     if realm == "SetupWizard":
         realm = "Administrator"
 
-    realm_str = urllib.quote(realm)
+    realm_str = urllib.parse.quote(realm)
 
     if token != None:
         redirect_url = "/auth/login?url=%s&realm=%s&token=%s" % (url, realm_str, token)
@@ -230,18 +231,18 @@ def login_redirect(req, realm, token=None):
     util.redirect(req, redirect_url)
 
 def delete_session_user(sess, realm):
-    if sess.has_key('apache_realms'):
+    if 'apache_realms' in sess:
         apache_realms = sess['apache_realms']
         if realm in apache_realms:
             del apache_realms[realm]
 
 def save_session_user(sess, realm, username):
-    if sess.has_key('apache_realms'):
+    if 'apache_realms' in sess:
         apache_realms = sess['apache_realms']
     else:
         sess['apache_realms'] = apache_realms = {}
 
-    if not apache_realms.has_key(realm):
+    if realm not in apache_realms:
         apache_realms[realm] = {}
     apache_realms[realm]['username'] = username
 
@@ -252,10 +253,10 @@ def setup_gettext():
                                     languages=[lang],
                                     fallback=True)
         trans.install()
-    except Exception, e:
+    except Exception as e:
         apache.log_error('could not install language: %s lang. %s' % (lang, e))
-        import __builtin__
-        __builtin__.__dict__['_'] = unicode
+        import builtins
+        builtins.__dict__['_'] = str
 
 def get_company_name():
     company = 'Untangle'
@@ -290,7 +291,7 @@ def send_login_event(client_addr, login, local, succeeded, reason):
     try:
         uvmContext = uvm.Uvm().getUvmContext()
         uvmContext.adminManager().logAdminLoginEvent( str(login), local, str(client_addr), succeeded, reason )
-    except Exception, e:
+    except Exception as e:
         apache.log_error('error: %s' % repr(e))
 
 def log_login(req, login, succeeded, reason):

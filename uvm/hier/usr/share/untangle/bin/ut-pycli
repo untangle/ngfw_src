@@ -4,12 +4,12 @@ import sys
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import getopt
 import pycurl
 import codecs
 from copy import copy
-from StringIO import StringIO
+from io import StringIO
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from jsonrpc import JSONDecodeException
@@ -134,11 +134,11 @@ if __name__ == "__main__":
       else:
           errorstr = str(e)
       if (not parser.quiet):
-          print "Error: %s" % errorstr
+          print("Error: %s" % errorstr)
           if (errorstr.find("password") != -1):
-              print "Are you root? Did you supply a username/password?"
+              print("Are you root? Did you supply a username/password?")
           if (errorstr.find("unavailable") != -1):
-              print "Is the untangle-vm running?"
+              print("Is the untangle-vm running?")
       sys.exit(1)
         
   uvm = uvmContext
@@ -176,7 +176,7 @@ if __name__ == "__main__":
       try:
           remoteManager = manager(uvmContext)
           getattr( remoteManager, "api_" + method )( *script_args )
-      except JSONRPCException, e:
+      except JSONRPCException as e:
           sys.stderr.write( "Unable to make the request: (%s)\n" % str(e) )
       break
 

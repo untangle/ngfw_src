@@ -5,13 +5,14 @@ import sys
 import glob
 import re
 import string
+import importlib
 
 UNTANGLE_DIR = '%s/lib/python' % ( os.path.dirname(os.path.realpath(__file__) ) )
 sys.path.insert(0, UNTANGLE_DIR)
 
 import i18n
 
-reload(sys)  
+importlib.reload(sys)  
 sys.setdefaultencoding('utf8')
 
 languages = i18n.Languages()

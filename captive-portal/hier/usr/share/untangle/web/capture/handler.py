@@ -8,14 +8,14 @@ if "@PREFIX@" != '':
 
 from uvm import Uvm
 import zipfile
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import pprint
 import imp
 import time
 import os
 import uvm.i18n_helper
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from uvm.settings_reader import get_app_settings_item
 from uvm.settings_reader import get_appid_settings
@@ -109,7 +109,7 @@ def index(req):
         if (authenticationType == "GOOGLE") or ((authenticationType == "ANY_OAUTH") and (authmode == "GOOGLE")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authPlatform="365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com", authCode=authcode)).geturl()))
+            altres = urllib.request.urlopen(str(urlparse(uri_base.format(authPlatform="365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com", authCode=authcode)).geturl()))
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
@@ -119,7 +119,7 @@ def index(req):
             nonce = args['NONCE']
             host = args['HOST']
             uri = args['URI']
-            raw = urllib.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
             if captureApp == None:
                 captureApp = load_rpc_manager(appid)
@@ -131,7 +131,7 @@ def index(req):
                 if ((host == 'Empty') or (uri == 'Empty')):
                     page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                     return(page)
-                raw = urllib.unquote(uri).decode('utf8')
+                raw = urllib.parse.unquote(uri).decode('utf8')
                 if (nonce == 'a1b2c3d4e5f6'):
                     target = str("https://" + host + raw)
                 else:
@@ -142,7 +142,7 @@ def index(req):
         if (authenticationType == "FACEBOOK") or ((authenticationType == "ANY_OAUTH") and (authmode == "FACEBOOK")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authPlatform="1840471182948119", authCode=authcode)).geturl()))
+            altres = urllib.request.urlopen(str(urlparse(uri_base.format(authPlatform="1840471182948119", authCode=authcode)).geturl()))
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
@@ -152,7 +152,7 @@ def index(req):
             nonce = args['NONCE']
             host = args['HOST']
             uri = args['URI']
-            raw = urllib.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
             if captureApp == None:
                 captureApp = load_rpc_manager(appid)
@@ -164,7 +164,7 @@ def index(req):
                 if ((host == 'Empty') or (uri == 'Empty')):
                     page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                     return(page)
-                raw = urllib.unquote(uri).decode('utf8')
+                raw = urllib.parse.unquote(uri).decode('utf8')
                 if (nonce == 'a1b2c3d4e5f6'):
                     target = str("https://" + host + raw)
                 else:
@@ -175,7 +175,7 @@ def index(req):
         if (authenticationType == "MICROSOFT") or ((authenticationType == "ANY_OAUTH") and (authmode == "MICROSOFT")):
             # Here we call the relay server with the authcode that was returned to the client
             # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.urlopen(str(urlparse(uri_base.format(authPlatform="f8285e96-b240-4036-8ea5-f37cf6b981bb", authCode=authcode)).geturl()))
+            altres = urllib.request.urlopen(str(urlparse(uri_base.format(authPlatform="f8285e96-b240-4036-8ea5-f37cf6b981bb", authCode=authcode)).geturl()))
             altraw = altres.read()
 
             if ("ERROR:" in altraw):
@@ -185,7 +185,7 @@ def index(req):
             nonce = args['NONCE']
             host = args['HOST']
             uri = args['URI']
-            raw = urllib.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri).decode('utf8')
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
             if captureApp == None:
                 captureApp = load_rpc_manager(appid)
@@ -197,7 +197,7 @@ def index(req):
                 if ((host == 'Empty') or (uri == 'Empty')):
                     page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                     return(page)
-                raw = urllib.unquote(uri).decode('utf8')
+                raw = urllib.parse.unquote(uri).decode('utf8')
                 if (nonce == 'a1b2c3d4e5f6'):
                     target = str("https://" + host + raw)
                 else:
@@ -233,7 +233,7 @@ def index(req):
                     nonce = args['NONCE']
                     host = args['HOST']
                     uri = args['URI']
-                    raw = urllib.unquote(uri).decode('utf8')
+                    raw = urllib.parse.unquote(uri).decode('utf8')
                     if ((host == 'Empty') or (uri == 'Empty')):
                         page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                         return(page)
@@ -289,7 +289,7 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     captureApp = load_rpc_manager(appid)
 
     # call the app to authenticate the user
-    authResult = captureApp.userAuthenticate(address, username, urllib.quote(password))
+    authResult = captureApp.userAuthenticate(address, username, urllib.parse.quote(password))
 
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
@@ -305,7 +305,7 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
             if ((host == 'Empty') or (uri == 'Empty')):
                 page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                 return(page)
-            raw = urllib.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri).decode('utf8')
             if (nonce == 'a1b2c3d4e5f6'):
                 target = str("https://" + host + raw)
             else:
@@ -367,7 +367,7 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
             if ((host == 'Empty') or (uri == 'Empty')):
                 page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                 return(page)
-            raw = urllib.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri).decode('utf8')
             if (nonce == 'a1b2c3d4e5f6'):
                 target = str("https://" + host + raw)
             else:
@@ -487,9 +487,9 @@ def generate_page(req,captureSettings,args,extra=''):
         target += "&host=" + args['HOST']
         target += "&uri=" + args['URI']
 
-        page = replace_marker(page,'$.GoogleState.$', urllib.quote(target + "&authmode=GOOGLE").encode('utf8'))
-        page = replace_marker(page,'$.FacebookState.$', urllib.quote(target + "&authmode=FACEBOOK").encode('utf8'))
-        page = replace_marker(page,'$.MicrosoftState.$', urllib.quote(target + "&authmode=MICROSOFT").encode('utf8'))
+        page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE").encode('utf8'))
+        page = replace_marker(page,'$.FacebookState.$', urllib.parse.quote(target + "&authmode=FACEBOOK").encode('utf8'))
+        page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT").encode('utf8'))
 
         page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.untangle.com/callback.php"))
 

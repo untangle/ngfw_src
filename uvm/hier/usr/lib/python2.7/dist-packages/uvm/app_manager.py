@@ -38,7 +38,7 @@ class AppManager(Manager):
             appRunState = app.getRunState()
 
             policyId = None
-            if ( appSettings.has_key( "policyId" )): policyId = appSettings["policyId"]
+            if ( "policyId" in appSettings): policyId = appSettings["policyId"]
 
             if ( policyId == None or policyId == "null" ): 
                 policy = "Service"

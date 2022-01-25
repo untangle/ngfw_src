@@ -1,8 +1,8 @@
 import logging
 import pycurl
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import traceback
-from StringIO import StringIO
+from io import StringIO
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 
@@ -35,7 +35,7 @@ class CurlRequestHandler(object):
         self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )
         try:
             self.__curl.perform()
-        except Exception, e:
+        except Exception as e:
             print("Problem while asking for " + url)
             raise e
 
@@ -62,8 +62,8 @@ class Uvm:
 
         try:
             if ( username != None and password != None ):
-                handler.make_request( "http://" + hostname  + "/auth/login", urllib.urlencode({ "username" : username, "password" : password }))
-        except JSONRPCException,e:
+                handler.make_request( "http://" + hostname  + "/auth/login", urllib.parse.urlencode({ "username" : username, "password" : password }))
+        except JSONRPCException as e:
             print("Login error: ")
             traceback.print_exc(e)
             return None

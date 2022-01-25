@@ -62,7 +62,7 @@ class Iptables:
 
             entry_values.insert(0, entry_values[0])
             
-            self.data["active"].append(dict(zip(headers, entry_values)))
+            self.data["active"].append(dict(list(zip(headers, entry_values))))
 
     def get_json(self):
         """
@@ -94,9 +94,9 @@ class Iptables:
             if self.match_rule(active_rule, rule) is True:
                 try:
                     process = subprocess.Popen(self.iptables_command + " -t " + self.table + " -D " + self.chain + " " + str(active_rule["num"]), shell=True)
-                    print "deleted"
+                    print("deleted")
                 except:
-                    print "not delete"
+                    print("not delete")
 
 def main(argv):
     """
@@ -111,7 +111,7 @@ def main(argv):
         sys.exit(2)
     for opt, arg in opts:
         if opt in ( "-s", "--status"):
-            print iptables.get_json()
+            print(iptables.get_json())
         elif opt in ( "-d", "--delete"):
             iptables.delete(arg)
 
