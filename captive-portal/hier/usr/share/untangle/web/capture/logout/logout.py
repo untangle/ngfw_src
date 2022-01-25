@@ -3,7 +3,7 @@ from mod_python import apache
 import sys
 
 if "@PREFIX@" != '':
-    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
 from uvm import Uvm
 from mod_python import Cookie

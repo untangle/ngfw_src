@@ -1,4 +1,4 @@
-# $HeadURL: https://untangle.svn.beanstalkapp.com/ngfw/work/src/uvm/hier/usr/lib/python2.7/uvm/i18n_helper.py $
+# $HeadURL: https://untangle.svn.beanstalkapp.com/ngfw/work/src/uvm/hier/usr/lib/python3/uvm/i18n_helper.py $
 # Copyright (c) 2003-2009 Untangle, Inc.
 #
 # This program is free software; you can redistribute it and/or modify

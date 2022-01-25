@@ -13,7 +13,7 @@ ms = MoveSpec.new("./uvm/hier", FileList["./uvm/hier/**/*"], uvm.distDirectory)
 cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
 uvm.registerTarget('hier', cf)
 
-ms = MoveSpec.new("./uvm/hier/usr/lib/python2.7", FileList["./uvm/hier/usr/lib/python2.7/**/*"], "#{uvm.distDirectory}/usr/lib/python2.7/")
+ms = MoveSpec.new("./uvm/hier/usr/lib/python3", FileList["./uvm/hier/usr/lib/python3/**/*"], "#{uvm.distDirectory}/usr/lib/python3/")
 cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
 uvm.registerTarget('hier2', cf)
 
@@ -21,7 +21,7 @@ uvm.registerTarget('hier2', cf)
 ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/share/untangle/pycli/") ]
 cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
 uvm.registerTarget('python-jsonrpc', cf)
-ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/lib/python2.7/dist-packages/") ]
+ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/lib/python3/dist-packages/") ]
 cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
 uvm.registerTarget('python-jsonrpc2', cf)
 

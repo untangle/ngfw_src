@@ -7,8 +7,9 @@ import grp
 import os
 import pwd
 import re
-import sets
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import os.path
 import sys
 import traceback
@@ -18,6 +19,7 @@ import threading
 from mod_python import apache, Session, util
 from functools import reduce
 
+
 def authenhandler(req):
     if req.notes.get('authorized', 'false') == 'true':
         return apache.OK
@@ -26,19 +28,28 @@ def authenhandler(req):
 
         if 'Realm' in options:
             realm = options['Realm']
-            apache.log_error('Auth failure [Not authorized]. Redirecting to auth page. (realm: %s)' % realm)
-            apache.log_error('Not logged in. Redirect to auth page. (realm: %s)' % realm)
+            apache.log_error(
+                'Auth failure [Not authorized]. Redirecting to auth page. (realm: %s)' % realm)
+            apache.log_error(
+                'Not logged in. Redirect to auth page. (realm: %s)' % realm)
             login_redirect(req, realm)
         else:
-            apache.log_error('Auth failure [No realm specified]. Redirecting to auth page.')
+            apache.log_error(
+                'Auth failure [No realm specified]. Redirecting to auth page.')
             return apache.DECLINED
 
-def get_settings_item(a,b):
+
+def get_settings_item(a, b):
     return None
-def get_app_settings_item(a,b):
+
+
+def get_app_settings_item(a, b):
     return None
-def get_uvm_settings_item(a,b):
+
+
+def get_uvm_settings_item(a, b):
     return None
+
 
 try:
     from uvm.settings_reader import get_settings_item
@@ -48,6 +59,7 @@ except ImportError:
     pass
 
 SESSION_TIMEOUT = 1800
+
 
 def headerparserhandler(req):
     options = req.get_options()
@@ -90,24 +102,27 @@ def headerparserhandler(req):
         log_login(req, username, True, None)
         save_session_user(sess, realm, username)
 
-    #if sess.has_key('apache_realms'):
+    # if sess.has_key('apache_realms'):
     #    apache.log_error('DEBUG apache_realms: %s' % sess['apache_realms'])
     #    if sess['apache_realms'].has_key(realm):
     #        apache.log_error('DEBUG apache_realms[%s]: %s' % (realm, sess['apache_realms'][realm]))
-    #else:
+    # else:
     #    apache.log_error('DEBUG apache_realms: %s' % None)
 
     sess.save()
     sess.unlock()
 
     if username != None:
-        pw = base64.encodestring('%s' % username).strip()
+        pw_bytes = base64.b64encode(username.encode('ascii'))
+        pw = pw_bytes.decode('ascii').strip()
         req.headers_in['Authorization'] = "BASIC % s" % pw
         req.notes['authorized'] = 'true'
         return apache.OK
 
-    apache.log_error('Auth failure [Username not specified]. Redirecting to auth page. (realm: %s)' % realm)
+    apache.log_error(
+        'Auth failure [Username not specified]. Redirecting to auth page. (realm: %s)' % realm)
     login_redirect(req, realm, token)
+
 
 def session_user(sess, realm):
     if 'apache_realms' in sess and realm in sess['apache_realms']:
@@ -118,21 +133,25 @@ def session_user(sess, realm):
 
     return None
 
+
 def wizard_password_required():
     # If the wizard settings are missing, do not required the password
     if not os.path.exists("@PREFIX@/usr/share/untangle/conf/wizard.js"):
         return False
 
-    passwordRequired = get_settings_item("@PREFIX@/usr/share/untangle/conf/wizard.js","passwordRequired")
+    passwordRequired = get_settings_item(
+        "@PREFIX@/usr/share/untangle/conf/wizard.js", "passwordRequired")
     if passwordRequired:
         return True
 
     # If the wizard has not been completed, do not require the password
-    wizardComplete = get_settings_item("@PREFIX@/usr/share/untangle/conf/wizard.js","wizardComplete")
+    wizardComplete = get_settings_item(
+        "@PREFIX@/usr/share/untangle/conf/wizard.js", "wizardComplete")
     if wizardComplete == False:
         return False
-    
+
     return True
+
 
 def is_local_process_uid_authorized(req):
     (remote_ip, remote_port) = req.connection.remote_addr
@@ -154,7 +173,7 @@ def is_local_process_uid_authorized(req):
     # We have to attempt to read /proc/net/tcp several times.
     # This file is not immediately updated synchronously, so we must read it a few times until we find the socket in an established state
     uid = None
-    for count in range(0,5):
+    for count in range(0, 5):
         try:
             infile = open("/proc/net/tcp", "r")
             # for l in infile.read(500000).splitlines():
@@ -176,23 +195,28 @@ def is_local_process_uid_authorized(req):
                         if state == "01":
                             # If userid is in list of authorized userids
                             if uid in uids:
-                                apache.log_error('UID %s authorized as localadmin on via %s:%s' % (str(uid), str(remote_ip), str(remote_port)))
+                                apache.log_error('UID %s authorized as localadmin on via %s:%s' % (
+                                    str(uid), str(remote_ip), str(remote_port)))
                                 # apache.log_error('%s' % (l))
                                 return True
                             else:
-                                apache.log_error('UID %s NOT authorized on via %s:%s' % (str(uid), str(remote_ip), str(remote_port)))
+                                apache.log_error('UID %s NOT authorized on via %s:%s' % (
+                                    str(uid), str(remote_ip), str(remote_port)))
                                 # apache.log_error('%s' % (l))
                                 return False
                     except Exception as e:
-                        apache.log_error('Bad line in /proc/net/tcp: %s: %s' % (line, traceback.format_exc(e)))
+                        apache.log_error(
+                            'Bad line in /proc/net/tcp: %s: %s' % (line, traceback.format_exc(e)))
 
         except Exception as e:
-            apache.log_error('Exception reading /proc/net/tcp: %s' % traceback.format_exc(e))
+            apache.log_error('Exception reading /proc/net/tcp: %s' %
+                             traceback.format_exc(e))
         finally:
             infile.close()
 
     if uid == None:
-        apache.log_error('Failed to lookup PID for %s:%s' % ( str(remote_ip), str(remote_port) ) )
+        apache.log_error('Failed to lookup PID for %s:%s' %
+                         (str(remote_ip), str(remote_port)))
     # This is commented out because its just for debugging
     # This condition occurs regularly when connecting via a local browser
     # else:
@@ -201,8 +225,10 @@ def is_local_process_uid_authorized(req):
     return False
 
 # This function will authenticate root (0) and any user in uvmlogin group
+
+
 def get_uvmlogin_uids():
-    s = sets.Set([0])
+    s = set([0])
 
     try:
         for username in grp.getgrnam('uvmlogin')[3]:
@@ -225,16 +251,19 @@ def login_redirect(req, realm, token=None):
     realm_str = urllib.parse.quote(realm)
 
     if token != None:
-        redirect_url = "/auth/login?url=%s&realm=%s&token=%s" % (url, realm_str, token)
+        redirect_url = "/auth/login?url=%s&realm=%s&token=%s" % (
+            url, realm_str, token)
     else:
         redirect_url = "/auth/login?url=%s&realm=%s" % (url, realm_str)
     util.redirect(req, redirect_url)
+
 
 def delete_session_user(sess, realm):
     if 'apache_realms' in sess:
         apache_realms = sess['apache_realms']
         if realm in apache_realms:
             del apache_realms[realm]
+
 
 def save_session_user(sess, realm, username):
     if 'apache_realms' in sess:
@@ -245,6 +274,7 @@ def save_session_user(sess, realm, username):
     if realm not in apache_realms:
         apache_realms[realm] = {}
     apache_realms[realm]['username'] = username
+
 
 def setup_gettext():
     lang = get_uvm_language()
@@ -258,14 +288,16 @@ def setup_gettext():
         import builtins
         builtins.__dict__['_'] = str
 
+
 def get_company_name():
     company = 'Untangle'
 
-    oemName = get_settings_item("@PREFIX@/usr/share/untangle/conf/oem.js","oemName")
+    oemName = get_settings_item(
+        "@PREFIX@/usr/share/untangle/conf/oem.js", "oemName")
     if oemName != None:
         company = oemName
 
-    brandco = get_app_settings_item('branding-manager','companyName')
+    brandco = get_app_settings_item('branding-manager', 'companyName')
     if (brandco != None):
         company = brandco
 
@@ -274,14 +306,16 @@ def get_company_name():
 
     return company
 
+
 def get_uvm_language():
     lang = 'us'
 
-    setval = get_uvm_settings_item('language','language')
+    setval = get_uvm_settings_item('language', 'language')
     if (setval != None):
         lang = setval
 
     return lang
+
 
 def send_login_event(client_addr, login, local, succeeded, reason):
     # localadmin is used for local machine API calls
@@ -290,9 +324,11 @@ def send_login_event(client_addr, login, local, succeeded, reason):
         return
     try:
         uvmContext = uvm.Uvm().getUvmContext()
-        uvmContext.adminManager().logAdminLoginEvent( str(login), local, str(client_addr), succeeded, reason )
+        uvmContext.adminManager().logAdminLoginEvent(
+            str(login), local, str(client_addr), succeeded, reason)
     except Exception as e:
         apache.log_error('error: %s' % repr(e))
+
 
 def log_login(req, login, succeeded, reason):
     """ Send a login event to the admin login log
@@ -309,7 +345,9 @@ def log_login(req, login, succeeded, reason):
     if client_addr == "127.0.0.1" or client_addr == "::1":
         local = True
 
-    threading.Thread(target=lambda: send_login_event(client_addr, login, local, succeeded, reason)).start()
+    threading.Thread(target=lambda: send_login_event(
+        client_addr, login, local, succeeded, reason)).start()
+
 
 def write_error_page(req, msg):
     req.content_type = "text/html; charset=utf-8"
@@ -350,6 +388,6 @@ def write_error_page(req, msg):
 </div>
 </body>
 </html>
-""" % (us, us, cgi.escape(msg))
+""" % (us, us, html.escape(msg))
 
     req.write(html)
