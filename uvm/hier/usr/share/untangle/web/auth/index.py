@@ -1,6 +1,6 @@
 # $Id$
 import md5
-import cgi
+import html
 import base64
 import sys
 import re
@@ -38,7 +38,7 @@ def login(req, url=None, realm='Administrator', token=None):
 
     error_msg = None
     if 'username' in req.form or 'password' in req.form:
-        error_msg = '%s' % cgi.escape(_('Error: Username and Password do not match'))
+        error_msg = '%s' % html.escape(_('Error: Username and Password do not match'))
 
     connection = req.connection
     (addr, port) = connection.local_addr
@@ -95,11 +95,11 @@ def login(req, url=None, realm='Administrator', token=None):
     # some i18n company_names cause exception here, so wrap to handle this
     # revert to "Administrator Login" if exception occurs
     try:
-        title = cgi.escape(_("%s Administrator Login") % company_name)
+        title = html.escape(_("%s Administrator Login") % company_name)
     except:
         pass
 
-    host = cgi.escape(req.hostname)
+    host = html.escape(req.hostname)
 
     _write_login_form(req, title, host, error_msg)
 
@@ -234,22 +234,22 @@ def _admin_valid_login(req, realm, username, password, log=True):
     return False
 
 def _write_login_form(req, title, host, error_msg):
-    login_url = cgi.escape(req.unparsed_uri)
+    login_url = html.escape(req.unparsed_uri)
     req.content_type = "text/html; charset=utf-8"
     req.send_http_header()
 
     if error_msg == None:
         error_msg = ''
 
-    server_str = cgi.escape(_("Server:"))
-    username_str = cgi.escape(_("Username:"))
-    password_str = cgi.escape(_("Password:"))
-    login_str = cgi.escape(_("Login"))
+    server_str = html.escape(_("Server:"))
+    username_str = html.escape(_("Username:"))
+    password_str = html.escape(_("Password:"))
+    login_str = html.escape(_("Login"))
 
     if not type(title) is str:
-        title = cgi.escape(title).encode("utf-8")
+        title = html.escape(title).encode("utf-8")
     if not type(host) is str:
-        host = cgi.escape(host).encode("utf-8")
+        host = html.escape(host).encode("utf-8")
 
     try:
         default_username = get_uvm_settings_item('admin','defaultUsername')
@@ -271,7 +271,7 @@ def _write_login_form(req, title, host, error_msg):
     else:
         banner_msg = ""
 
-    html = """\
+    html_string = """\
 <!DOCTYPE html>
 <html>
 <head>
@@ -310,7 +310,7 @@ def _write_login_form(req, title, host, error_msg):
 </body>
 </html>""" % (title, login_url, title, host, banner_msg, error_msg, default_username, username_str, password_str, login_str, focus_field_id)
 
-    req.write(html)
+    req.write(html_string)
 
 def write_error_page(req, msg):
     req.content_type = "text/html; charset=utf-8"
@@ -327,7 +327,7 @@ def write_error_page(req, msg):
     if not type(msg) is str:
         msg = msg.encode("utf-8")
 
-    html = """\
+    html_string = """\
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
 <head>
@@ -351,7 +351,7 @@ def write_error_page(req, msg):
 </div>
 </body>
 </html>
-""" % (us, us, cgi.escape(msg))
+""" % (us, us, html.escape(msg))
 
-    req.write(html)
+    req.write(html_string)
 
