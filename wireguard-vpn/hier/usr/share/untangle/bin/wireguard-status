@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # Script to get the status of all wireguard interfaces and return to
 # the caller as json object. We call 'wg show all dump' which gives us

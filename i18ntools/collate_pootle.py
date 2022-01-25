@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Collect existing localization into single files by languages and perform
 error checking for non-matching strings for the the same key.

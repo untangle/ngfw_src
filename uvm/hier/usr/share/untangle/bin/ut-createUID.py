@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # This file creates a UID 
 # and writes the uid file  (default: /usr/share/untangle/conf/uid)

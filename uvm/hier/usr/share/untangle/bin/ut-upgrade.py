@@ -1,5 +1,5 @@
-#!/usr/bin/python -u
-# $Id$#!/usr/bin/python
+#!/usr/bin/python3 -u
+# $Id$#!/usr/bin/python3
 
 import getopt
 import sys

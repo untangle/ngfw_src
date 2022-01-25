@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import simplejson as json
 import copy
 import os

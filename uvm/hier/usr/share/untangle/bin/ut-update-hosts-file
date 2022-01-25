@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # This script reads all of the IP addresses from the interface status files
 # located in /var/lib/interface-status. The platform creates and removes status

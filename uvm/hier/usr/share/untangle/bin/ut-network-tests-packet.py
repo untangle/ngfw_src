@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/python3
 import os
 import getopt
 from multiprocessing import Process
