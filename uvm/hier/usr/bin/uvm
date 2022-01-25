@@ -17,7 +17,7 @@ import platform
 PREFIX = "@PREFIX@"
 
 # read the configuration
-exec(open(PREFIX + "/usr/share/untangle/conf/untangle-vm.conf"));
+exec(open(PREFIX + "/usr/share/untangle/conf/untangle-vm.conf").read());
 
 #p = subprocess.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=subprocess.PIPE)
 #os.dup2(p.stdin.fileno(), sys.stdout.fileno())
@@ -43,7 +43,7 @@ use_valgrind = False
 use_leakdetect = False
 
 def debug(string):
-    print string
+    print(string)
     sys.stdout.flush()
     syslog.syslog(string);
     
@@ -71,8 +71,8 @@ class ArgumentParser(object):
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
-        except getopt.GetoptError, exc:
-            print exc
+        except getopt.GetoptError as exc:
+            print(exc)
             printUsage()
             exit(1)
 
@@ -95,8 +95,7 @@ parser.parse_args()
 def set_proc_name(newname):
     from ctypes import cdll, byref, create_string_buffer
     libc = cdll.LoadLibrary('libc.so.6')
-    buff = create_string_buffer(len(newname)+1)
-    buff.value = newname
+    buff = create_string_buffer(newname.encode('ascii'))
     libc.prctl(15, byref(buff), 0, 0, 0)
 
 
@@ -515,7 +514,7 @@ while True:
             exit_code = (result & 0xff00) >> 8
 
             break;
-        except OSError,e :
+        except OSError as e :
             # If its EINTR (interrupted), dont print error
             if not (e.errno == 4):
                 debug(e); 

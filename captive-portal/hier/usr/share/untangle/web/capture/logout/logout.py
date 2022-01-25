@@ -81,13 +81,13 @@ def load_rpc_manager_list(appid=None):
     if (appid == None):
         applist = uvmContext.appManager().appInstancesIds()
         for item in applist['list']:
-            app = uvmContext.appManager().app(long(item))
+            app = uvmContext.appManager().app(int(item))
             name = app.getAppSettings()['appName']
             if (name == 'captive-portal'):
                 captureList.append(app)
     # appid was passed so use it
     else:
-        app = uvmContext.appManager().app(long(appid))
+        app = uvmContext.appManager().app(int(appid))
         captureList.append(app)
 
     # if we can't find the app then throw an exception
@@ -114,7 +114,7 @@ def load_capture_settings(req,appid=None):
     if (appid == None):
         captureSettings = get_app_settings('captive-portal')
     else:
-        captureSettings = get_appid_settings(long(appid))
+        captureSettings = get_appid_settings(int(appid))
 
     # add the company name to the app settings dictionary
     captureSettings['companyName'] = companyName

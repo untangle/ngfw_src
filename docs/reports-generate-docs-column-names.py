@@ -230,7 +230,7 @@ for line in iter(p.stdout.readline, ''):
         
 
 print("{")
-for key, value in sorted(dict.iteritems()):
+for key, value in sorted(dict.items()):
     if value == None:
         print("\nBad Value for key: " + key)
         sys.exit(1)

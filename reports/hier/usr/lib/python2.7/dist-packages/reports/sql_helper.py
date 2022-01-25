@@ -53,7 +53,7 @@ def print_timing(func):
                 filename = m.group(1)
                 line_number = v.co_firstlineno
 
-        fun_name = "%s (%s:%s)" % (func.func_name, filename, line_number)
+        fun_name = "%s (%s:%s)" % (func.__name__, filename, line_number)
 
         t1 = time.time()
         res = func(*arg)
@@ -126,7 +126,7 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         if auto_commit:
             connection.commit()
 
-    except Exception, e:
+    except Exception as e:
         if force_propagate:
             if auto_commit:
                 connection.rollback()
@@ -285,7 +285,7 @@ def clean_table(tablename, cutoff):
     # delete old events from the main table
     if column_exists( tablename, "time_stamp" ):
         if DBDRIVER == "sqlite":
-            cutoff = str(long(cutoff.strftime("%s"))*1000)
+            cutoff = str(int(cutoff.strftime("%s"))*1000)
             sql = "DELETE FROM %s WHERE time_stamp < %s;" % (tablename, cutoff)
             run_sql(sql)
         else:
@@ -420,7 +420,7 @@ def find_table_partitions(tablename=None):
     for t in get_tables( prefix ):
         m = re.search('%s(\d+)_(\d+)_(\d+)' % prefix, t)
         if m:
-            d = mx.DateTime.Date(*map(int, m.groups()))
+            d = mx.DateTime.Date(*list(map(int, m.groups())))
             tables.append((t, d))
     return tables
     

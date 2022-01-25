@@ -101,7 +101,7 @@ class SuricataSignatures:
         signatures_file = open(temp_file_name, "w")
         category = "undefined"
         # ? order by category
-        for signature in self.signatures.values():
+        for signature in list(self.signatures.values()):
             # if ( signature.get_enabled() == True ) and ( signature.path == signature_path ):
             if signature.get_enabled() is True:
                 if signature.category != category:
@@ -217,11 +217,11 @@ class SuricataSignatures:
             # Deleted signatures: Those only in previous and not in current
             #
             for rid in previous_signatures.get_signatures():
-                if current_signatures.get_signatures().has_key(rid) is False:
+                if (rid in current_signatures.get_signatures()) is False:
                     deleted_signature_rids.append(rid)
 
         for rid in current_signatures.get_signatures():
-            if previous_signatures is None or previous_signatures.get_signatures().has_key(rid) is False:
+            if previous_signatures is None or (rid in previous_signatures.get_signatures()) is False:
                 #
                 # New signatures: Only in current
                 #
@@ -236,14 +236,14 @@ class SuricataSignatures:
         # Remove deleted signatures
         #
         for rid in deleted_signature_rids:
-            if self.get_signatures().has_key(rid):
+            if rid in self.get_signatures():
                 self.delete_signature(rid)
 
         #
         # Add/modify signatures
         #
         for rid in added_signature_rids + modified_signature_rids:
-            if self.get_signatures().has_key(rid):
+            if rid in self.get_signatures():
                 #
                 # Replace modified signature
                 #
@@ -315,7 +315,7 @@ class SuricataSignatures:
         #
         for category in categories:
             for signature_id in category["ids"]:
-                if signature_id in self.signatures.keys():
+                if signature_id in list(self.signatures.keys()):
                     signature = self.get_signatures()[signature_id]
                     signature.set_category(category["category"])
                     # if sync_enabled == True:

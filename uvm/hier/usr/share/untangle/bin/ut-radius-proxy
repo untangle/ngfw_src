@@ -37,7 +37,7 @@ def parse_output(parse_data):
 # -----------------------------------------------------------------------------
 
 if len(sys.argv) < 3:
-    print "ERROR: You must provide the AD username and password"
+    print("ERROR: You must provide the AD username and password")
     sys.exit(1)
 
 netcmd = "/usr/bin/net ads status -U %s%%%s" % (sys.argv[1], sys.argv[2])
@@ -47,9 +47,9 @@ status_proc = subprocess.Popen(netcmd, stdout=subprocess.PIPE, stderr=subprocess
 status_txt = parse_output(status_out)
 
 if (len(status_txt) != 0):
-    print status_txt
+    print(status_txt)
 else:
     if (len(status_out) != 0):
-        print status_out
+        print(status_out)
     if (len(status_err) != 0):
-        print status_err
+        print(status_err)

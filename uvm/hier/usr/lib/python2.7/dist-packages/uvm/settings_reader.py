@@ -137,7 +137,7 @@ def get_settings_item_json(jsonObj,itemname):
     if (jsonObj == None):
         return(None)
 
-    if (not jsonObj.has_key(itemname)):
+    if (itemname not in jsonObj):
         return(None)
 
     value = jsonObj[itemname]

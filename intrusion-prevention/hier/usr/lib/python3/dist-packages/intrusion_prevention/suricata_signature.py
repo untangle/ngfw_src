@@ -101,7 +101,7 @@ class SuricataSignature:
         print(suricata signature)
         """
         print("signature dump")
-        for prop, value in vars(self).iteritems():
+        for prop, value in vars(self).items():
             print(prop, ": ", value)
 
     def set_action(self, log, block):
@@ -289,7 +289,7 @@ class SuricataSignature:
         if SuricataSignature.signature_enabled_overrides:
             for override in SuricataSignature.signature_enabled_overrides:
                 match = True
-                for signature_key in override.keys():
+                for signature_key in list(override.keys()):
                     if signature_key == "enabled":
                         continue
                     if override[signature_key] != self.options[signature_key]:
@@ -416,7 +416,7 @@ class SuricataSignature:
             variables -- key pair list of variables
         """
         variables = []
-        for prop, value in vars(self).iteritems():
+        for prop, value in vars(self).items():
             if isinstance(value, str) is False:
                 continue
             match_variable = re.search(SuricataSignature.var_regex, value)

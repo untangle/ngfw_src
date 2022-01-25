@@ -4,7 +4,7 @@
 Framework agnostic PEM file parsing functions.
 """
 
-from __future__ import absolute_import, division, print_function
+
 
 import hashlib
 import re
@@ -150,7 +150,7 @@ _PEM_TO_CLASS = {
 
 _PEM_RE = re.compile(
     b"-----BEGIN ("
-    + b"|".join(_PEM_TO_CLASS.keys())
+    + b"|".join(list(_PEM_TO_CLASS.keys()))
     + b""")-----\r?
 .+?\r?
 -----END \\1-----\r?\n?""",

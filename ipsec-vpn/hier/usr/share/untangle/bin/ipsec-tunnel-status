@@ -56,4 +56,4 @@ for token in wordlist:
 	
     index += 1
 
-print "| TUNNEL:%s LOCAL:%s REMOTE:%s STATE:%s IN:%d OUT:%d |" % (sys.argv[1] , lvalue, rvalue, svalue, ivalue , ovalue)
+print("| TUNNEL:%s LOCAL:%s REMOTE:%s STATE:%s IN:%d OUT:%d |" % (sys.argv[1] , lvalue, rvalue, svalue, ivalue , ovalue))

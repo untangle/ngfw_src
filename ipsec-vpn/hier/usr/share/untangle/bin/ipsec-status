@@ -199,20 +199,20 @@ policy_fwd = subprocess.Popen("/sbin/ip xfrm policy list dir fwd", stdout=subpro
 (policy_out,policy_err) = policy_fwd.communicate()
 policy_array = parse_output(policy_out, policy_array, policy_grid)
 
-print "{ javaClass: java.util.LinkedList, list: ["
+print("{ javaClass: java.util.LinkedList, list: [")
 
 first = True
 for entry in state_array:
     # add any missing tags to prevent dictionary exceptions
     for tag in state_tags:
-        if (not tag in entry.keys()): entry[tag] = "unknown"
+        if (not tag in list(entry.keys())): entry[tag] = "unknown"
 
     if first:
         first = False
     else:
-        print ","
+        print(",")
 
-    print "{ type:\"STATE\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", auth:\"%s\", spi:\"%s\", enc:\"%s\", flag:\"%s\", replayWindow:\"%s\", authKey:\"%s\", encKey:\"%s\", selSrc:\"%s\", selDst:\"%s\", javaClass:\"com.untangle.app.ipsec_vpn.ConnectionStatusRecord\" }" % (
+    print("{ type:\"STATE\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", auth:\"%s\", spi:\"%s\", enc:\"%s\", flag:\"%s\", replayWindow:\"%s\", authKey:\"%s\", encKey:\"%s\", selSrc:\"%s\", selDst:\"%s\", javaClass:\"com.untangle.app.ipsec_vpn.ConnectionStatusRecord\" }" % (
         entry['src'],
         entry['dst'],
         entry['proto'],
@@ -226,16 +226,16 @@ for entry in state_array:
         entry['auth_key'],
         entry['enc_key'],
         entry['sel_src'],
-        entry['sel_dst'])
+        entry['sel_dst']))
 
 for entry in policy_array:
     # add any missing tags to prevent dictionary exceptions
     for tag in policy_tags:
-        if (not tag in entry.keys()): entry[tag] = "unknown"
+        if (not tag in list(entry.keys())): entry[tag] = "unknown"
 
-    print ","
+    print(",")
 
-    print "{ type:\"POLICY\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", ptype:\"%s\", dir:\"%s\", priority:\"%s\", tmplSrc:\"%s\", tmplDst:\"%s\", javaClass:\"com.untangle.app.ipsec_vpn.ConnectionStatusRecord\" }" % (
+    print("{ type:\"POLICY\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", ptype:\"%s\", dir:\"%s\", priority:\"%s\", tmplSrc:\"%s\", tmplDst:\"%s\", javaClass:\"com.untangle.app.ipsec_vpn.ConnectionStatusRecord\" }" % (
         entry['src'],
         entry['dst'],
         entry['proto'],
@@ -245,6 +245,6 @@ for entry in policy_array:
         entry['dir'],
         entry['priority'],
         entry['tmpl_src'],
-        entry['tmpl_dst'])
+        entry['tmpl_dst']))
 
-print "] }"
+print("] }")

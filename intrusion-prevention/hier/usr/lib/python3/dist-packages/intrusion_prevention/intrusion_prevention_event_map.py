@@ -30,7 +30,7 @@ class IntrusionPreventionEventMap:
             }
         }
 
-        for signature in self.signatures.get_signatures().values():
+        for signature in list(self.signatures.get_signatures().values()):
             if signature.options["sid"] == "":
                 continue
             msg = signature.options["msg"]

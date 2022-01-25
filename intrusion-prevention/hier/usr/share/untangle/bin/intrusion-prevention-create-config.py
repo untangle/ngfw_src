@@ -90,7 +90,7 @@ def main(argv):
     ##
     ## Network rules
     ##
-    for signature in signatures.get_signatures().values():
+    for signature in list(signatures.get_signatures().values()):
         for rule in rules:
             if not rule.get_enabled():
                 continue
@@ -101,7 +101,7 @@ def main(argv):
     ##
     ## Process rules in order.
     ##
-    for signature in signatures.get_signatures().values():
+    for signature in list(signatures.get_signatures().values()):
         for rule in rules:
             if not rule.get_enabled():
                 continue
@@ -114,7 +114,7 @@ def main(argv):
     ##
     ## Disable signatures not modified by any rule.
     ##
-    for signature in signatures.get_signatures().values():
+    for signature in list(signatures.get_signatures().values()):
         if not signature.get_action_changed():
             signature.set_action(False, False)
 
@@ -124,7 +124,7 @@ def main(argv):
             'log': 0,
             'block': 0
         }
-        for signature in signatures.get_signatures().values():
+        for signature in list(signatures.get_signatures().values()):
             action = signature.get_action()
             if action["log"] is False and action["block"] is False:
                 signature_action_counts["disabled"] += 1

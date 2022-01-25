@@ -23,7 +23,7 @@ for line in iter(p.stdout.readline, ''):
             dict[category] = []
         dict[category].append(json_obj)
 
-    except Exception, e:
+    except Exception as e:
         print("Exception: %s" % filename, e)
         traceback.print_exc(e)
         sys.exit(1)

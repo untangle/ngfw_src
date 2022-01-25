@@ -84,7 +84,7 @@ class_name = ""
 # The config_scanner recursively walks and processes the config json
 def config_scanner(argjson):
 	# process everything in the argumented json
-	for key, value in argjson.items():
+	for key, value in list(argjson.items()):
 		# for dictionaries we put the key on the config stack and process
 		# recursively and then pass the dictionary to the insert_worker
 		if isinstance(value, dict):
@@ -123,7 +123,7 @@ def config_scanner(argjson):
 # in config_json.
 def modify_scanner(argjson,config_chunk):
 	# process everything in the argumented json
-	for key, value in argjson.items():
+	for key, value in list(argjson.items()):
 
 		# for dictionaries we put the key on the modify stack and process recursively
 		if isinstance(value, dict):
@@ -156,7 +156,7 @@ def modify_scanner(argjson,config_chunk):
 
 					# for each modify record make sure each find record exists in the target config_chunk
 					found_count = 0
- 					for find_key,find_val in argjson['list'][modrec]['find'].items():
+ 					for find_key,find_val in list(argjson['list'][modrec]['find'].items()):
 						search = config_chunk[cfgrec].get(find_key)
 						if search != None and search == find_val:
 							logging.info("FOUND %s=%s IN %s config_chunk[%d]", find_key, find_val, section_name, cfgrec)
@@ -164,7 +164,7 @@ def modify_scanner(argjson,config_chunk):
 
 					# if we found all of the find records then update the config_chunk with the change records
 					if found_count == len(argjson['list'][modrec]['find']):
-						for edit_key,edit_val in argjson['list'][modrec]['change'].items():
+						for edit_key,edit_val in list(argjson['list'][modrec]['change'].items()):
 							logging.info("CHANGE KEY:%s VAL:%s", edit_key, edit_val)
 							fixer = {}
 							fixer[edit_key] = edit_val
@@ -297,7 +297,7 @@ except Exception as exn:
 	exit(3)
 
 # look for the modify section that matches the settings class name
-if class_name in modify_data.keys():
+if class_name in list(modify_data.keys()):
 	modify_json = modify_data[class_name]
 else:
 	print("No settings overrides for class = %s" % class_name)

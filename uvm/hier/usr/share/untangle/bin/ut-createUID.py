@@ -30,7 +30,7 @@ class ArgumentParser(object):
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
-        except getopt.GetoptError, exc:
+        except getopt.GetoptError as exc:
             print(exc)
             printUsage()
             exit(1)
@@ -66,7 +66,7 @@ try:
         debian_distro='bullseye'
     else:
         print("Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro))
-except Exception,e:
+except Exception as e:
     traceback.print_exc()
     print("Unknown debian Version %s. Assuming \"%s\"" % (ver.strip(), debian_distro))
 

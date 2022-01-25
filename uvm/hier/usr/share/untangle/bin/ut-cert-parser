@@ -24,7 +24,7 @@ isRootCA = False
 def errorExit(message):
     problem = {}
     problem["errorData"] = message
-    print json.dumps(problem)
+    print(json.dumps(problem))
     exit()
 
 if len(sys.argv) < 2:
@@ -89,5 +89,5 @@ if (len(keyData) > 0):
 if (len(extraData) > 0):
     result["extraData"] = extraData
 
-print json.dumps(result)
+print(json.dumps(result))
 
