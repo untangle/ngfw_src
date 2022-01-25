@@ -123,7 +123,7 @@ class CBuilder
     info "[sharedlb] #{destination}"
     wLibFlags = wLib.map{ |l| "-l#{l}" }.join( " " )
     flags = @env.linkerFlags( libDir, lib )
-    cmd = "#{@env.cc} #{flags} -Wl,-whole-archive #{source.join( " " )} #{wLibFlags} -Wl,--no-whole-archive -shared -o #{destination}"
+    cmd = "#{@env.cc} -Wl,-whole-archive #{source.join( " " )} #{wLibFlags} -Wl,--no-whole-archive -shared -o #{destination} #{flags}"
 
     debug cmd
     raise "gcc failed" unless Kernel.system( cmd )
