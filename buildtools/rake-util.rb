@@ -37,7 +37,7 @@ class DebugLevel
   end
 
   def DebugLevel.[](name)
-    return DEFAULT if @@cache[name] == nil
+    return DEFAULT if @@cache[name].nil?
     @@cache[name]
   end
 
