@@ -1,7 +1,7 @@
 # $Id$
 
 import gettext
-import cgi
+import html
 import os
 import sys
 
@@ -146,7 +146,7 @@ def _write_error_page(req, msg):
         msg = msg.encode("utf-8")
 
 
-    html = """\
+    html_string = """\
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -172,9 +172,9 @@ def _write_error_page(req, msg):
         </form>
     </div>
     </body>
-    </html>""" % (us,us, cgi.escape(msg))
+    </html>""" % (us,us, html.escape(msg))
 
-    req.write(html)
+    req.write(html_string)
 
 def _write_loading_page(req):
     req.content_type = "text/html; charset=utf-8"
@@ -193,7 +193,7 @@ def _write_loading_page(req):
         msg = msg.encode("utf-8")
 
 
-    html = """\
+    html_string = """\
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -256,7 +256,7 @@ def _write_loading_page(req):
         </form>
     </div>
     </body>
-    </html>""" % (us, cgi.escape(msg), cgi.escape(msg));
+    </html>""" % (us, html.escape(msg), html.escape(msg));
 
-    req.write(html)
+    req.write(html_string)
 

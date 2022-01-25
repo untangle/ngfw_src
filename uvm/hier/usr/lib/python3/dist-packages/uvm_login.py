@@ -1,9 +1,9 @@
 # $Id: uvm_login.py 37268 2014-02-26 23:43:48Z dmorris $
 
 import base64
-import cgi
 import gettext
 import grp
+import html
 import os
 import pwd
 import re
@@ -364,7 +364,7 @@ def write_error_page(req, msg):
     if not type(msg) is str:
         msg = msg.encode("utf-8")
 
-    html = """\
+    html_string = """\
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
 <head>
@@ -390,4 +390,4 @@ def write_error_page(req, msg):
 </html>
 """ % (us, us, html.escape(msg))
 
-    req.write(html)
+    req.write(html_string)
