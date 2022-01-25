@@ -201,7 +201,7 @@ msgstr "Kliens"
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Information.js:32
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/extra/Sessions.js:439
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/extra/Hosts.js:495
-#: /ngfw/ngfw_src/uvm/hier/usr/lib/python2.7/dist-packages/uvm_login.py:317
+#: /ngfw/ngfw_src/uvm/hier/usr/lib/python3/dist-packages/uvm_login.py:317
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/auth/index.py:293
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/error/index.py:135
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/error/index.py:182
@@ -11430,7 +11430,7 @@ msgstr "Átjáró időtúllépés"
 msgid "HTTP Version Not Supported"
 msgstr "HTTP verzió nem támogatott"
 
-#: /ngfw/ngfw_src/uvm/hier/usr/lib/python2.7/dist-packages/uvm_login.py:319
+#: /ngfw/ngfw_src/uvm/hier/usr/lib/python3/dist-packages/uvm_login.py:319
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/auth/index.py:295
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/error/index.py:137
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/error/index.py:184

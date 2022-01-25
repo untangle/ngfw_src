@@ -50,11 +50,11 @@ fi
 # compile python files
 # FIXME: the list should be dynamic
 for d in reports tests uvm uvm_login.py intrusion_prevention ; do
-  pycompile /usr/lib/python2.7/dist-packages/$d
+  pycompile /usr/lib/python3/dist-packages/$d
 done
 
 # Remove old python cache directory.
-OLD_UVM_PYTHON_LIBRARY=/usr/lib/python2.7/uvm
+OLD_UVM_PYTHON_LIBRARY=/usr/lib/python3/uvm
 if [ -d $OLD_UVM_PYTHON_LIBRARY ] ; then
     rm -rf $OLD_UVM_PYTHON_LIBRARY
 fi

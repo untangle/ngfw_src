@@ -4,7 +4,7 @@ import getopt
 import sys
 
 if "@PREFIX@" != '':
-    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
 from uvm.settings_reader import get_uvm_settings_item
 from uvm.settings_reader import get_app_settings_item

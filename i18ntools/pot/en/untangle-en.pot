@@ -1551,7 +1551,7 @@ msgstr ""
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/error/index.py:137
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/error/index.py:184
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/auth/index.py:319
-#: /ngfw/ngfw_src/uvm/hier/usr/lib/python2.7/dist-packages/uvm_login.py:317
+#: /ngfw/ngfw_src/uvm/hier/usr/lib/python3/dist-packages/uvm_login.py:317
 #: /ngfw/ngfw_src/uvm/js/common/util/_Map.js:503
 #: /ngfw/ngfw_src/uvm/js/common/reports/cmp/GlobalConditions.js:51
 #: /ngfw/ngfw_src/openvpn/js/view/Server.js:5
@@ -9808,7 +9808,7 @@ msgstr ""
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/error/index.py:139
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/error/index.py:186
 #: /ngfw/ngfw_src/uvm/hier/usr/share/untangle/web/auth/index.py:321
-#: /ngfw/ngfw_src/uvm/hier/usr/lib/python2.7/dist-packages/uvm_login.py:319
+#: /ngfw/ngfw_src/uvm/hier/usr/lib/python3/dist-packages/uvm_login.py:319
 #, python-format
 msgid "%s Server"
 msgstr ""

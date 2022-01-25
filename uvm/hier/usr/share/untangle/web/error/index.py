@@ -8,7 +8,7 @@ import sys
 from mod_python import apache
 
 if "@PREFIX@" != '':
-    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
 import uvm_login
 

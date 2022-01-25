@@ -10,7 +10,7 @@ import sys
 import time
 
 if "@PREFIX@" != '':
-    sys.path.insert(0, '@PREFIX@/usr/lib/python2.7/dist-packages')
+    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
 Max_file_time = 4 * 60 * 60 
 
