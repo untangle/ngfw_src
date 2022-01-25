@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # This script is called by untangle-l2tp ip-up and ip-down scripts
 # and the ipsec-xauth-updown script to notify the IPsec app

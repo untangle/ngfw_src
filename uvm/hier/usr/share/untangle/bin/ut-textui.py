@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Text-based user inteface for configuring a subset of critcal items neccessary
 to connect with browser (for complete configuration)

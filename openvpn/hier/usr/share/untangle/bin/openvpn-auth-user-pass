@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # This script is called by OpenVPN when the auth-user-pass option is enabled.
 # It takes the username and password passed in the environment and

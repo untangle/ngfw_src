@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Rebuild gettext template file (.pot) and 
 synchronize with existing po files

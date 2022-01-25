@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Under iptables, nat, read upnp-rules chain
 # return Json output for UI

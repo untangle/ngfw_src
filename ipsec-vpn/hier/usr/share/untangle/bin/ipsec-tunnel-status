@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # Here we use the ipsec statusall command to get info about a specific tunnel.
 # We dig through the results to find the bytes_i and bytes_o values, and return
