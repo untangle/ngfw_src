@@ -47,18 +47,6 @@ if [ -f /usr/share/untangle/bin/oem-apply.sh ] ; then
     /usr/share/untangle/bin/oem-apply.sh
 fi
 
-# compile python files
-# FIXME: the list should be dynamic
-for d in reports tests uvm uvm_login.py intrusion_prevention ; do
-  pycompile /usr/lib/python3/dist-packages/$d
-done
-
-# Remove old python cache directory.
-OLD_UVM_PYTHON_LIBRARY=/usr/lib/python3/uvm
-if [ -d $OLD_UVM_PYTHON_LIBRARY ] ; then
-    rm -rf $OLD_UVM_PYTHON_LIBRARY
-fi
-
 # untangle-vm does not yet have a service file
 # it still uses an init'd script
 # for now we need to raise the global tasks max
