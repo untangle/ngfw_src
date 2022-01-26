@@ -154,7 +154,7 @@ def wizard_password_required():
 
 
 def is_local_process_uid_authorized(req):
-    (remote_ip, remote_port) = req.connection.remote_addr
+    (remote_ip, remote_port) = req.useragent_addr
 
     if remote_ip != "127.0.0.1":
         return False
@@ -340,7 +340,7 @@ def log_login(req, login, succeeded, reason):
         reason -- string conveys the reason the login failed, or None if the login succeeded
     """
     local = False
-    (client_addr, client_port) = req.connection.remote_addr
+    (client_addr, client_port) = req.useragent_addr
 
     if client_addr == "127.0.0.1" or client_addr == "::1":
         local = True
