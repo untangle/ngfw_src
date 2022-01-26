@@ -5,7 +5,7 @@ to connect with browser (for complete configuration)
 """
 import base64
 import getopt
-import md5
+import hashlib
 import os
 import re
 import signal
@@ -1584,7 +1584,8 @@ class Login(Screen):
                     pw_hash = base64.b64decode(pw_hash_base64)
                     raw_pw = pw_hash[0:len(pw_hash) - 8]
                     salt = pw_hash[len(pw_hash) - 8:]
-                    if raw_pw == md5.new(password.strip() + salt).digest():
+                    b = password + salt
+                    if raw_pw == hashlib.md5(b.encode('utf-8')).hexdigest():
                         self.authorized = True
                         self.process_continue = False
                     else:

