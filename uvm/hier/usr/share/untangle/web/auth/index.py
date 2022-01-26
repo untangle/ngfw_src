@@ -7,12 +7,13 @@ import re
 import pycurl
 import json
 import crypt
+import urllib.parse
 from io import StringIO
 
 from mod_python import apache, Session, util
 
-if "@PREFIX@" != '':
-    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
+if "" != '':
+    sys.path.insert(0, '/usr/lib/python3/dist-packages')
 
 import uvm_login
 
@@ -31,19 +32,41 @@ except ImportError:
 
 def login(req, url=None, realm='Administrator', token=None):
     uvm_login.setup_gettext()
-
+    req.log_error("url: %s" % (url,))
+    req.log_error("realm: %s" % (realm,))
     options = req.get_options()
-
-    args = util.parse_qs(req.args or '')
-
+    req.log_error("unparsed uri: %s" % (req.unparsed_uri,))
+    req.log_error("uri: %s" % (req.uri,))
+    req.log_error("old args: %s" % (req.args,))
+#    args = util.parse_qs(req.args or '')
+    args = urllib.parse.parse_qs(req.args)
+    req.log_error("args: %s" % (args,))    
+    form = {k:v[0] for k,v in args.items()}
+    req.log_error("new args: %s" % (form,))
+    req.log_error("old form: %s" % (req.form,))
+    for k, field in req.form.items():
+        if k in form:
+            continue
+        if type(k) is bytes:
+            k = k.decode("utf-8")
+        v = field.value
+        if type(v) is bytes:
+            v = v.decode('utf-8')
+        form[k] = v
+    req.log_error("new form: %s" % (form,))
+    url = form['url']
+    realm = form['realm']
+    if 'fragment' in form:
+        fragment = form['fragment']
+    
     error_msg = None
-    if 'username' in req.form or 'password' in req.form:
+    if 'username' in form or 'password' in form:
         error_msg = '%s' % html.escape(_('Error: Username and Password do not match'))
 
     connection = req.connection
     (addr, port) = connection.local_addr
-    is_local = re.match('127\.', connection.useragent_ip)
-    if connection.useragent_ip == '::1':
+    is_local = re.match('127\.', req.useragent_ip)
+    if req.useragent_ip == '::1':
         is_local = True
     if port == 80 and not get_uvm_settings_item('system','httpAdministrationAllowed') and not is_local:
         write_error_page(req, "Permission denied")
@@ -62,18 +85,19 @@ def login(req, url=None, realm='Administrator', token=None):
                 return apache.OK
             else:
                 url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
-                if 'fragment' in req.form and req.form['fragment'] != '':
-                    url = url + req.form['fragment']
+                if 'fragment' in form and form['fragment'] != '':
+                    url = url + form['fragment']
                 util.redirect(req, url)
                 return
 
-    if 'username' in req.form and 'password' in req.form:
-        username = req.form['username']
-        password = req.form['password']
+    if 'username' in form and 'password' in form:
+        username = form['username']
+        password = form['password']
         # debug
-        # req.log_error("User:Pass = %s %s" % (username,password))
+        req.log_error("User:Pass = %s %s" % (username,password))
 
         if _valid_login(req, realm, username, password):
+            req.log_error("login ok")
             sess = Session.Session(req, lock=0)
             sess.lock()
             sess.set_timeout(uvm_login.SESSION_TIMEOUT)
@@ -85,8 +109,8 @@ def login(req, url=None, realm='Administrator', token=None):
                 return apache.OK
             else:
                 url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
-                if 'fragment' in req.form and req.form['fragment'] != '':
-                    url = url + req.form['fragment']
+                if 'fragment' in form and form['fragment'] != '':
+                    url = url + form['fragment']
                 util.redirect(req, url)
                 return
 
@@ -121,6 +145,7 @@ def logout(req, url=None, realm='Administrator'):
 # internal methods ------------------------------------------------------------
 
 def _valid_login(req, realm, username, password):
+    req.log_error(realm)
     if realm == 'Administrator':
         return _admin_valid_login(req, realm, username, password)
     elif realm == 'Reports':
