@@ -42,8 +42,8 @@ def login(req, url=None, realm='Administrator', token=None):
 
     connection = req.connection
     (addr, port) = connection.local_addr
-    is_local = re.match('127\.', connection.remote_ip)
-    if connection.remote_ip == '::1':
+    is_local = re.match('127\.', connection.useragent_ip)
+    if connection.useragent_ip == '::1':
         is_local = True
     if port == 80 and not get_uvm_settings_item('system','httpAdministrationAllowed') and not is_local:
         write_error_page(req, "Permission denied")
