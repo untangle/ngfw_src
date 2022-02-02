@@ -136,7 +136,7 @@ public class WebrootQuery
     private static long BctidSocketPoolMaxWaitSeconds = 5L;
 
     private static int BctidClientConnectTimeout = 250;
-    private static int BctidClientReadTimeout = 2500;
+    private static int BctidClientReadTimeout = 5000;
 
     private int failures = 0;
 
