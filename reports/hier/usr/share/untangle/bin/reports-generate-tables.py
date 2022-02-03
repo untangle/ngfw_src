@@ -1,15 +1,11 @@
-#! /usr/bin/python3# $Id: reports-generate-reports.py 38486 2014-08-21 22:29:30Z cblaise $
+#! /usr/bin/python3
+# $Id: reports-generate-reports.py 38486 2014-08-21 22:29:30Z cblaise $
 
-import mx
 import os
-import re
 import sys
-import tempfile
-import time
-import shutil
-import datetime
 import traceback
 import getopt
+
 
 def usage():
      print("""\
@@ -17,6 +13,7 @@ usage: %s [options]
 Options:
     -d <driver>     : "postgresql" or "sqlite"
 """ % sys.argv[0])
+
 
 class ArgumentParser(object):
     def __init__(self):
@@ -40,6 +37,7 @@ class ArgumentParser(object):
              print(exc)
              usage()
              exit(1)
+
 
 DRIVER = 'postgresql'
 PYTHON_DIR = '@PREFIX@/usr/lib/python3/dist-packages'

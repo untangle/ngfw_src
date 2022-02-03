@@ -1,8 +1,13 @@
-#! /usr/bin/python3# $Id: reports-generate-reports.py 38486 2014-08-21 22:29:30Z cblaise $
+#! /usr/bin/python3
+# $Id: reports-generate-reports.py 38486 2014-08-21 22:29:30Z cblaise $
 
-import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil, datetime, traceback
-from subprocess import Popen, PIPE
-from psycopg2.extensions import DateFromMx, TimestampFromMx
+import datetime
+import getopt
+import os
+import os.path
+import sys
+import traceback
+
 
 def usage():
      print("""\
@@ -11,6 +16,7 @@ Options:
     -d <driver>     : "postgresql" or "sqlite"
     -h <int>        : hourly retention NOTE: Using this param will overwrite any daily retention passed in
 """ % sys.argv[0])
+
 
 class ArgumentParser(object):
     def __init__(self):
@@ -22,8 +28,8 @@ class ArgumentParser(object):
 
     def set_hourly( self, arg):
           global HOURLYRETENTION
-          HOURLYRETENTION = arg
-        
+          HOURLYRETENTION = float(arg)
+
     def parse_args( self ):
         handlers = {
             '-d' : self.set_driver,
@@ -39,6 +45,7 @@ class ArgumentParser(object):
              print(exc)
              usage()
              exit(1)
+
 
 DRIVER = 'postgresql'
 PYTHON_DIR = '@PREFIX@/usr/lib/python3/dist-packages'
@@ -64,12 +71,12 @@ try:
      db_retention = float(args[0])
 except:
      usage()
-     
-cutoff = mx.DateTime.today() - mx.DateTime.DateTimeDelta(db_retention)
+
+cutoff = datetime.date.today() - datetime.timedelta(days=db_retention)
 
 # If we receive anything in the hourly retention, use this instead of the daily cutoff
 if HOURLYRETENTION > 0:
-     cutoff = mx.DateTime.now() - mx.DateTime.TimeDelta(float(HOURLYRETENTION))
+     cutoff = datetime.datetime.now() - datetime.timedelta(hours=HOURLYRETENTION)
 
 for f in os.listdir(REPORTS_PYTHON_DIR):
      if f.endswith('py'):
@@ -87,5 +94,3 @@ for f in os.listdir(REPORTS_PYTHON_DIR):
           except:
                print("%s.cleanup_tables() Exception:" % name)
                traceback.print_exc()
-    
-
