@@ -1,4 +1,9 @@
-#! /bin/sh
+#!/bin/sh
+
+# see the following intranet page for more instructions and current
+# limitations:
+#
+#   https://intranet.untangle.com/display/ngfw/Next+Generation+Firewall+Development
 
 set -e
 
