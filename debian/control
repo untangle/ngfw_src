@@ -55,7 +55,7 @@ Architecture: all
 Conflicts: untangle-casing-smtp
 Replaces: untangle-casing-smtp
 Provides: untangle-casing-smtp
-Depends: ${misc:Depends}, untangle-vm, python | python3
+Depends: ${misc:Depends}, untangle-vm, python3
 Description: The SMTP Casing
  The SMTP Casing Application.
 
@@ -170,7 +170,7 @@ Conflicts: untangle-node-ipsec-vpn
 Replaces: untangle-node-ipsec-vpn
 Provides: untangle-node-ipsec-vpn
 Section: non-free/net
-Depends: ${misc:Depends}, untangle-vm, untangle-app-license, xl2tpd, python-netaddr | python3-netaddr, libstrongswan, libstrongswan-standard-plugins, libstrongswan-extra-plugins, strongswan, strongswan-charon, strongswan-libcharon, strongswan-starter, libcharon-extra-plugins
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, xl2tpd, python3-netaddr, libstrongswan, libstrongswan-standard-plugins, libstrongswan-extra-plugins, strongswan, strongswan-charon, strongswan-libcharon, strongswan-starter, libcharon-extra-plugins
 Description: IPsec VPN
  The IPsec VPN application
 
@@ -311,7 +311,7 @@ Architecture: all
 Conflicts: untangle-node-openvpn
 Replaces: untangle-node-openvpn
 Provides: untangle-node-openvpn
-Depends: ${misc:Depends}, untangle-vm, openssl, openvpn, python | python3
+Depends: ${misc:Depends}, untangle-vm, openssl, openvpn, python3
 Description: OpenVPN application
  The OpenVPN application.
 
@@ -344,7 +344,7 @@ Architecture: all
 Conflicts: untangle-node-reports
 Replaces: untangle-node-reports
 Provides: untangle-node-reports
-Depends: ${misc:Depends}, untangle-vm, untangle-database-config, python | python3
+Depends: ${misc:Depends}, untangle-vm, untangle-database-config, python3
 Description: Reports application
  The Reports application.
 
@@ -395,7 +395,6 @@ Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
 Depends: ${misc:Depends},
 	 ipset,
-	 python | python3,
 	 python3,
 	 systemd-sysv,
          untangle-development-runtime,
