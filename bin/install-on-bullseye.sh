@@ -21,9 +21,13 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0B9D6AE3627BF103
 # apt: add bullseye/current source
 echo 'deb http://package-server.untangle.int/public/bullseye current main non-free' > /etc/apt/sources.list.d/bullseye-current.list
 
-# apt: add bullseye dev source, and set its pinning to always take
+# apt: add bullseye dev sources, and set their pinning to always take
 # precedence over packages coming from the master branch
-echo 'deb [trusted=yes] http://package-server.untangle.int/dev/bullseye ngfw_src.bullseye main' > /etc/apt/sources.list.d/bullseye-dev.list
+cat > /etc/apt/sources.list.d/bullseye-dev.list <<EOF
+deb [trusted=yes] http://package-server.untangle.int/dev/bullseye ngfw_src.bullseye main
+deb [trusted=yes] http://package-server.untangle.int/dev/bullseye ngfw_pkgs.bullseye main
+EOF
+
 cat > /etc/apt/preferences.d/bullseye_dev.pref <<EOF
 Package: *
 Pin: release o=Untangle-dev
