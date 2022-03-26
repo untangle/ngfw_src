@@ -77,7 +77,7 @@ class BrandingManagerTests(NGFWTestCase):
         appData['contactEmail'] = newContactEmail;
         app.setSettings(appData)
         # test blockpage has all the changes
-        result = remote_control.run_command("wget -q -O - \"$@\" www.playboy.com",stdout=True)
+        result = remote_control.run_command("wget -q --no-check-certificate -O - \"$@\" www.playboy.com",stdout=True)
 
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
@@ -114,7 +114,7 @@ class BrandingManagerTests(NGFWTestCase):
         # Check login page for branding
         internalAdmin = None
         # print("IP address <%s>" % internalAdmin)
-        result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
+        result = remote_control.run_command("wget -q --no-check-certificate -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
         # print("page is <%s>" % result)
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
