@@ -1145,6 +1145,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         int numDevices = _getEstimatedNumDevices();
         String model = UvmContextFactory.context().getApplianceModel();
         String uvmVersion = UvmContextFactory.context().getFullVersion();
+        String serialNumber = UvmContextFactory.context().getServerSerialNumber();
         if (model != null) {
             try {
                 model = URLEncoder.encode(model,"UTF-8");
@@ -1156,6 +1157,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         return "uid=" + UvmContextFactory.context().getServerUID() +
             "&appliance=" + UvmContextFactory.context().isAppliance() +
             (model != null ? "&appliance-model=" + model : "") + 
+            (serialNumber != null ? "&serialNumber=" + serialNumber : "") + 
             "&numDevices=" + numDevices +
             "&version=" + uvmVersion;
     }
