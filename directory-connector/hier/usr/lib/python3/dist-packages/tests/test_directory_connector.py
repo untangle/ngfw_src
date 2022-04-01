@@ -5,6 +5,7 @@ import random
 import subprocess
 import requests
 import pytest
+import unittest
 
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
