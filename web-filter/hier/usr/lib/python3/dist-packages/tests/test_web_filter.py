@@ -193,11 +193,11 @@ class WebFilterTests(WebFilterBaseTests):
 
         settings["enforceSafeSearch"] = False
         self._app.setSettings(settings)
-        yahoo_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=p'")
+        yahoo_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=p'")
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        yahoo_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=r'")
+        yahoo_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=r'")
 
         assert(yahoo_result_with_safe == 0)
         assert(yahoo_result_without_safe == 0)
