@@ -188,7 +188,7 @@ class WebFilterBaseTests(NGFWTestCase):
     def test_015_porn_subdomain_and_url_is_blocked_by_default(self):
         result = self.get_web_request_results(url="http://www.playboy.com/about", expected="blockpage")
         assert (result == 0)
-        found = self.check_events("www.playboy.com", "/about", True)
+        found = self.check_events("www.playboy.com", "/", True)  # playboy redirects to HTTPS so URI is not shown.
         assert( found )
 
     def test_017_blockflag_url_right_side(self):
