@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Each time a new version of those packages (from Debian's -stable or
+# -security) is included in our release, the entire dist-upgrade fails
+# because their respective postinsts try, as per policy, to forcibly
+# restart the corresponding services.
+# We choose to mask those services, so the restarts don't fail, before
+# unmasking them again in untangle-vm's postinst
+systemctl mask freeradius-dhcp # NGFW-12934, NGFW-13249
+systemctl mask freeradius # NGFW-12934, NGFW-13249
+
+# at least in bullseye, freeradius-dhcp's postinst will happily call
+# the init.d script if the systemctl service is masked
+rm -f /etc/init.d/freeradius
+
+exit 0
