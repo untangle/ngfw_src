@@ -16,10 +16,6 @@ env:
       PKGTOOLS_COMMIT: origin/${TRAVIS_BRANCH}
       UPLOAD: scp
   jobs:
-    - REPOSITORY: buster
-      ARCHITECTURE: amd64
-    - REPOSITORY: buster
-      ARCHITECTURE: arm64
     - REPOSITORY: bullseye
       ARCHITECTURE: amd64
     # - REPOSITORY: bullseye
@@ -34,7 +30,6 @@ before_install:
 script:
 - docker-compose -f docker-compose.build.yml run pkgtools
 - docker-compose -f docker-compose.build.yml run build
-if: NOT (env(REPOSITORY) = buster AND branch = master)
 
 notifications:
   email: false
