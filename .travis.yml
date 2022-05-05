@@ -18,8 +18,8 @@ env:
   jobs:
     - REPOSITORY: bullseye
       ARCHITECTURE: amd64
-    # - REPOSITORY: bullseye
-    #   ARCHITECTURE: arm64
+    - REPOSITORY: bullseye
+      ARCHITECTURE: arm64
 
 before_install:
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
