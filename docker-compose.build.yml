@@ -17,9 +17,9 @@ services:
         git checkout $${PKGTOOLS_COMMIT} || true"
 
     build:
-      image: untangleinc/ngfw:${REPOSITORY:-buster}-build-multiarch
+      image: untangleinc/ngfw:${REPOSITORY:-bullseye}-build-multiarch
       environment:
-        REPOSITORY: ${REPOSITORY:-buster}
+        REPOSITORY: ${REPOSITORY:-bullseye}
         DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
