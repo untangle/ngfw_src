@@ -1111,7 +1111,7 @@ Ext.define('Ung.config.network.MainController', {
                 vlanTag: 1,
                 configType: 'ADDRESSED',
                 v4ConfigType: 'STATIC',
-                v6ConfigType: 'DISABLED',
+                v6ConfigType: 'DISABLED'
             });
         } else {
             // otherwise means editing existing interface
