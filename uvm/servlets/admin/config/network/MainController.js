@@ -1112,8 +1112,8 @@ Ext.define('Ung.config.network.MainController', {
                 configType: 'ADDRESSED',
                 v4ConfigType: 'STATIC',
                 v6ConfigType: 'DISABLED',
-		v6StaticDns2: null,
-		v6StaticDns1: null
+		// v6StaticDns2: null,
+		// v6StaticDns1: null
             });
         } else {
             // otherwise means editing existing interface
