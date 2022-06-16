@@ -59,7 +59,7 @@ def log(str):
     # wrap all attempts in try/except
     # if the parent dies, stdout might product a sigpipe
     # see we need to be careful with "print"
-    try: 
+    try:
         upgrade_log.write(str + "\n")
         upgrade_log.flush()
     except:
@@ -67,11 +67,11 @@ def log(str):
     try:
         if not QUIET:
             print(str)
-    except: 
+    except:
         pass
 
 def log_date( cmd ):
-    p = subprocess.Popen(["date","+%Y-%m-%d %H:%M"], stdout=subprocess.PIPE )
+    p = subprocess.Popen(["date","+%Y-%m-%d %H:%M"], stdout=subprocess.PIPE, universal_newlines=True)
     for line in iter(p.stdout.readline, ''):
         log( line.strip() + " " + cmd)
     p.wait()
@@ -79,7 +79,7 @@ def log_date( cmd ):
 
 def cmd_to_log(cmd):
     stdin=open(os.devnull, 'rb')
-    p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE, stdin=stdin )
+    p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE, stdin=stdin, universal_newlines=True)
     for line in iter(p.stdout.readline, ''):
         log( line.strip() )
     p.wait()
@@ -87,7 +87,7 @@ def cmd_to_log(cmd):
 
 def update():
     log("apt-get update %s" % UPDATE_OPTS)
-    p = subprocess.Popen(["sh","-c","apt-get update %s 2>&1" % UPDATE_OPTS], stdout=subprocess.PIPE)
+    p = subprocess.Popen(["sh","-c","apt-get update %s 2>&1" % UPDATE_OPTS], stdout=subprocess.PIPE, universal_newlines=True)
     for line in iter(p.stdout.readline, ''):
         if not re.search('^W: (Conflicting distribution|You may want to run apt-get update to correct these problems)', line):
             log( line.strip() )
@@ -95,7 +95,7 @@ def update():
     return p.returncode
 
 def check_upgrade():
-    p = subprocess.Popen(["sh","-c","apt-get -s dist-upgrade %s 2>&1" % UPGRADE_OPTS], stdout=subprocess.PIPE)
+    p = subprocess.Popen(["sh","-c","apt-get -s dist-upgrade %s 2>&1" % UPGRADE_OPTS], stdout=subprocess.PIPE, universal_newlines=True)
     for line in iter(p.stdout.readline, ''):
         if re.search('.*been kept back.*', line):
             log( "Packages have been kept back.\n" )
@@ -185,4 +185,3 @@ log("")
 log_date( os.path.basename( sys.argv[0]) + " done." )
 
 sys.exit(0)
-    
