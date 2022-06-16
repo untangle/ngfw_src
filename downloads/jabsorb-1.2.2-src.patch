@@ -213,36 +213,84 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
      }
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java
 --- jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java	2008-01-16 17:47:54.000000000 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2022-06-16 10:01:32.757248792 -0600
-@@ -565,6 +565,16 @@
-     {
-       // get original serialized version
-       // to recreate circular reference / duplicate object on the java side
-+      if (log.isDebugEnabled())
-+      {
-+	Class objClass = p.getObject().getClass();
-+	String stringRepresentation = p.getObject().toString();
-+	log.debug("tryUnmarshall: Got a serialized object of type: " + objClass.getName() +
-+		  " cached obj string rep: " + stringRepresentation +
-+		  " passed object JSON: " + json.toString() +
-+		  " Passed object class: " + json.getClass());
-+
-+      }	
-       return (ObjectMatch) p.getSerialized();
++++ jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2022-06-16 13:58:53.638953732 -0600
+@@ -32,6 +32,7 @@
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.NoSuchElementException;
++import java.util.Optional;
+ 
+ import org.jabsorb.serializer.MarshallException;
+ import org.jabsorb.serializer.ObjectMatch;
+@@ -553,21 +554,10 @@
+       Object json) throws UnmarshallException
+   {
+     // check for duplicate objects or circular references
+-    ProcessedObject p = state.getProcessedObject(json);
+-
+-    // if this object hasn't been seen before, mark it as seen and continue forth
+-
+-    if (p == null)
+-    {
+-      p = state.store(json);
+-    }
+-    else
+-    {
+-      // get original serialized version
+-      // to recreate circular reference / duplicate object on the java side
+-      return (ObjectMatch) p.getSerialized();
++    Optional<ProcessedObject> p = tryToFetchObjectFromCache(state, clazz, json);
++    if (p.isPresent()) {
++      return (ObjectMatch)p.get().getSerialized();
+     }
+-
+     /*
+      * If we have a JSON object class hint that is a sub class of the signature
+      * 'clazz', then override 'clazz' with the hint class.
+@@ -629,19 +619,9 @@
+       throws UnmarshallException
+   {
+     // check for duplicate objects or circular references
+-    ProcessedObject p = state.getProcessedObject(json);
+-
+-    // if this object hasn't been seen before, mark it as seen and continue forth
+-
+-    if (p == null)
+-    {
+-      p = state.store(json);
+-    }
+-    else
+-    {
+-      // get original serialized version
+-      // to recreate circular reference / duplicate object on the java side
+-      return p.getSerialized();
++    Optional<ProcessedObject> p = tryToFetchObjectFromCache(state, clazz, json);
++    if (p.isPresent()) {
++      return p.get().getSerialized();
      }
  
-@@ -637,12 +647,36 @@
-     {
-       p = state.store(json);
-     }
--    else
+     // If we have a JSON object class hint that is a sub class of the
+@@ -683,6 +663,48 @@
+       (jsonClass!=null?jsonClass.getName():"null") + " to " +  clazz.getName());
+   }
+ 
++  private Optional<ProcessedObject> tryToFetchObjectFromCache(SerializerState state, Class clazz, Object json)
++  {
++    // check for duplicate objects or circular references
++    ProcessedObject p = state.getProcessedObject(json);
++
++    // if this object hasn't been seen before, mark it as seen and continue forth
++    if (p == null)
++    {
++      p = state.store(json);
++    }
 +    else if (
 +      (clazz != null && (p.getSerialized() == null || p.getSerialized().getClass().equals(clazz)))
 +      ||
 +      clazz == null)
-     {
-       // get original serialized version
-       // to recreate circular reference / duplicate object on the java side
++    {
++      // get original serialized version
++      // to recreate circular reference / duplicate object on the java side
 +      if (log.isDebugEnabled())
 +      {
 +	Class objClass = p.getSerialized() == null ? null : p.getSerialized().getClass();
@@ -254,8 +302,8 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/s
 +		  " Passed object class: " + json.getClass());
 +
 +      }
-       return p.getSerialized();
-     }
++      return Optional.of(p);
++    }
 +    else if (clazz != null)
 +    {
 +      
@@ -266,10 +314,12 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/s
 +		  clazz.getName() + ", but of: " + pClass);
 +      }
 +    }
- 
-     // If we have a JSON object class hint that is a sub class of the
-     // signature 'clazz', then override 'clazz' with the hint class.
-@@ -718,7 +752,12 @@
++    return Optional.empty();
++  }
+   /**
+    * Find the corresponding java Class type from json (as represented by a
+    * JSONObject or JSONArray,) using the javaClass hinting mechanism. <p/> If
+@@ -718,7 +740,12 @@
        try
        {
          className = ((JSONObject) o).getString("javaClass");
@@ -283,7 +333,7 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/s
        }
        catch (Exception e)
        {
-@@ -746,9 +785,9 @@
+@@ -746,9 +773,9 @@
        {
          if (compClazz.isArray())
          {
