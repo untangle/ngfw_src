@@ -30,3 +30,4 @@ perl -i -pe 's/(?<=^USE_LXC_BRIDGE=).*/false/' /etc/default/lxc-net
 
 # notify reboot on the Untangle kernel
 uname -a | grep -qi untangle  || echo "You need to reboot on the Untangle kernel now"
+
