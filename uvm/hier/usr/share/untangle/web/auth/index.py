@@ -221,7 +221,7 @@ def _admin_valid_login(req, realm, username, password, log=True):
             continue;
         pw_hash_shadow = user.get('passwordHashShadow')
         if pw_hash_shadow:
-            if True or pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
+            if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
                 if log:
                     uvm_login.log_login(req, username, True, None)
                 return True
