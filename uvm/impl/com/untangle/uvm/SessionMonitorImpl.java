@@ -38,7 +38,9 @@ public class SessionMonitorImpl implements SessionMonitor
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final String conntrackCommand = "/usr/sbin/conntrack -L -f ipv6";
+    private final String[] conntrackCommands = new String[]{
+	"/usr/sbin/conntrack -L -f ipv6",
+	"/usr/sbin/conntrack -L -f ipv4"};
 
     public static final short PROTO_TCP = 6;
     public static final short PROTO_UDP = 17;
@@ -434,33 +436,43 @@ public class SessionMonitorImpl implements SessionMonitor
     }
 
     /**
-     * Parse proc/net/nf_conntrack
-     * and return a list of SessionMonitorEntry
+     * Parse conntrack sessions and return a list of SessionMonitorEntry
      * @return the list of sessions with the conntrack information
      */
     private List<SessionMonitorEntry> parseProcNetIpConntrack()
     {
         LinkedList<SessionMonitorEntry> list = new LinkedList<>();
+	Process proc = null;
 
-        Process proc = null;
-        OutputStreamWriter out = null;
-        BufferedReader in = null;
+        // Reading the results of running the conntrack command
+        // instead of reading /proc/net/ip_conntrack is magnitudes
+        // faster, especially on systems with 100k+ sessions.
+	for (String command: conntrackCommands) {
+	    try {
+		proc = Runtime.getRuntime().exec(command);
+		parseConntrackOutput(list, proc);
+	    } catch (IOException e) {
+		logger.error("Couldn't start parseProcNetIpConntrack command: \"" + command + "\"", e);
+	    }
+	}
+	return list;
+    }
 
-        // Reading the results of running the conntrack command instead of reading /proc/net/ip_conntrack
-        // is magnitudes faster, especially on systems with 100k+ sessions.
-        try {
-            proc = Runtime.getRuntime().exec(conntrackCommand);
-        } catch (IOException e) {
-            logger.error("Couldn't start parseProcNetIpConntrack", e);
-            return list;
-        }
-
+    /**
+     * Parse the output of an individual conntrack process, appending
+     * to the entries list.
+     * @param entries list of entries to add processed entries to.
+     * @param proc conntrack process to parse the output of.
+     */
+    private void parseConntrackOutput(List<SessionMonitorEntry> entries, Process proc)
+    {
         String line;
         // Cache for parsed IP addresseses.  This may sound a little ridiculous, but it helps
         // memory on large 100k+ session systems.
         Map<String, InetAddress> parsedInetAddresses = new HashMap<>();
-        out = new OutputStreamWriter(proc.getOutputStream());
-        in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+	OutputStreamWriter out = new OutputStreamWriter(proc.getOutputStream());
+        BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
         try {
             int partsIndexStart = 0;
@@ -559,7 +571,7 @@ public class SessionMonitorImpl implements SessionMonitor
                         }
                     }
 
-                    list.add(newEntry);
+                    entries.add(newEntry);
 
                 } catch ( Exception lineException ) {
                     logger.warn("Failed to parse /proc/net/ip_conntrack line: " + line, lineException);
@@ -567,7 +579,7 @@ public class SessionMonitorImpl implements SessionMonitor
             }
         } catch (IOException exn) {
             logger.warn("Exception reading conntrack", exn);
-        }finally{
+        } finally {
             try {
                 if (in != null) {
                     in.close();
@@ -584,7 +596,5 @@ public class SessionMonitorImpl implements SessionMonitor
                 }
             } catch (Exception ex) {}
         }
-
-        return list;
     }
 }
