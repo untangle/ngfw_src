@@ -10,11 +10,11 @@ import crypt
 import urllib.parse
 from io import StringIO
 from mod_python import apache, Session, util
+
+if "@PREFIX@" != '' and '@' not in '@PREFIX@':
+    sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
+
 from uvm import login_tools
-if "" != '':
-    sys.path.insert(0, '/usr/lib/python3/dist-packages')
-
-
 import uvm_login
 
 def get_app_settings_item(a,b):
