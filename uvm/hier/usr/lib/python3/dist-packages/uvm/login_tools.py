@@ -75,13 +75,9 @@ def reports_valid_login(req, realm, username, password, log=True):
         pw_hash_shadow = user.get('passwordHashShadow')
         if pw_hash_shadow:
             if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
-                # if log:
-                #     uvm_login.log_login(req, username, True, None)
                 log_login_if_necessary(log, req, username, True, None)
                 return True
             else:
-                # if log:
-                #     uvm_login.log_login(req, username, False, 'P')
                 log_login_if_necessary(log, req, username, False, 'P')
                 return False
         else:
@@ -91,17 +87,11 @@ def reports_valid_login(req, realm, username, password, log=True):
             salt = pw_hash[len(pw_hash) - 8:]
             b = password + salt
             if raw_pw == hashlib.md5(b.encode('utf-8')).hexdigest():
-                # if log:
-                #     uvm_login.log_login(req, username, True, None)
                 log_login_if_necessary(log, req, username, True, None)
                 return True
             else:
-                # if log:
-                #     uvm_login.log_login(req, username, False, 'P')
                 log_login_if_necessary(log, req, username, False, 'P')
                 return False
-    # if log:
-    #     uvm_login.log_login(req, username, False, 'U')
     log_login_if_necessary(log, req, username, False, 'P')
     return False
 
