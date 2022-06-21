@@ -96,6 +96,10 @@ def reports_valid_login(req, realm, username, password, log=True):
     return False
 
 def admin_valid_login(req, realm, username, password, log=True):
+    """
+    Returns True if this request with username/password is a valid
+    login.
+    """
     users = get_uvm_settings_item('admin','users')
     if users == None:
         return False;
@@ -130,13 +134,26 @@ def admin_valid_login(req, realm, username, password, log=True):
 
 def log_login_if_necessary(should_log, request, username, succeeded,
                            reason):
+    """
+    if should_log is true, log the login. This will try to import
+    uvm_login and use the uvm_login.log_login function if available,
+    else it will print to sys.stderr.
+
+    should_log -- should we log the login?
+    request -- the request object.
+    username -- username that attempted to log in.
+    succeeded -- did the login succeed?
+    reason -- reason for failure, if the login did not succeed.
+
+    returns -- None
+    """
     def logger(req, username, succeeded, reason):
         print(
             f"Login from {username} succeeded: {succeeded}, reason: {reason}",
             file=sys.stderr)
     try:
         import uvm_login
-        logger = uvm_login.login
+        logger = uvm_login.log_login
     except ImportError:
         pass
     logger(request, username, succeeded, reason)
