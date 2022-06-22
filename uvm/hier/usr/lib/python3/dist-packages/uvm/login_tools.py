@@ -21,7 +21,16 @@ try:
 except ImportError:
     pass
 
+
+# We define two logger classes so that when this module is imported
+# outside of a running apache instance, we can still run the functions
+# here. Otherwise we will fail to import since we would import
+# uvm_login.
 class UVMLoginLogger:
+    """
+    Logger class that logs login attempts via the uvm_login.log_login
+    function.
+    """
     def __init__(self, should_log):
         self._request = None
         self._realm = None
@@ -52,6 +61,10 @@ class UVMLoginLogger:
                                 None)
 
 class StderrLoginLogger:
+    """
+    Logger class that logs login attempts to sys.stderr via
+    print().
+    """
     def __init__(self, should_log):
         self._realm = None
         self._username = None
@@ -81,13 +94,23 @@ class StderrLoginLogger:
                 file=sys.stderr)
 
 class NullLogger:
+    """
+    Logger that doesn't do anything (for when you want an empty logger
+    to pass around).
+    """
     def log_success(self):
         pass
 
     def log_failure(self, reason):
         pass
 
+
+
+# Default logger just logs to stderr.
 loggerFactory = StderrLoginLogger
+
+# Try to use the uvm_login module to do logging, but this may not be
+# possible, if we are running outside of apache.
 try:
     import uvm_login
     loggerFactory = UVMLoginLogger
@@ -96,6 +119,10 @@ except:
 
 
 def get_logger(req, realm, username, password):
+    """
+    Construct a logger from loggerFactory and call relevant
+    setters.
+    """
     logger = loggerFactory(True)
     logger.set_request(req)
     logger.set_realm(realm)
@@ -130,10 +157,11 @@ def valid_token(req, token):
         curl.setopt( pycurl.NOSIGNAL, 1 )
         curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
         curl.setopt( pycurl.TIMEOUT, 30 )
-        #curl.setopt( pycurl.URL, "http://54.152.2.165:1337/AuthenticationService/1/CheckTokenAccess")
         curl.setopt( pycurl.URL, "https://auth.untangle.com/v1/CheckTokenAccess")
-        curl.setopt( pycurl.HTTPHEADER, ["Content-type: application/json", "Accept: application/json", "AuthRequest: 4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981"])
-        #curl.setopt( pycurl.VERBOSE, True )
+        curl.setopt( pycurl.HTTPHEADER,
+                     ["Content-type: application/json",
+                      "Accept: application/json",
+                      "AuthRequest: 4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981"])
         curl.setopt( pycurl.WRITEDATA, buffer )
 
         curl.perform()
