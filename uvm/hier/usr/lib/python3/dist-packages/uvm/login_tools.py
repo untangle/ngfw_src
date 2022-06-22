@@ -187,6 +187,18 @@ def admin_valid_login(req, realm, username, password, logger=StderrLoginLogger(T
 
 
 def check_password(user_dict, password, logger):
+    """
+    Check the password against whatever type of hash is stored in
+    user_dict, logging the result to logger, and returning True of the
+    password matches, False if not.
+
+    user_dict -- dictionary for the user.
+    password -- password string.
+    logger -- logger with log_sucess() and log_failure(string)
+    methods.
+
+    returns -- T/F.
+    """
     pw_hash_shadow = user_dict.get('passwordHashShadow')
     if pw_hash_shadow:
         if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
