@@ -9,7 +9,6 @@ import crypt
 import sys
 import urllib.parse
 from io import StringIO
-#import uvm_login
 
 def get_app_settings_item(a,b):
     return None
@@ -22,14 +21,97 @@ try:
 except ImportError:
     pass
 
+class UVMLoginLogger:
+    def __init__(self, should_log):
+        self._request = None
+        self._realm = None
+        self._username = None
+        self._should_log = should_log
+
+    def set_request(self, request):
+        self._request = request
+
+    def set_realm(self, realm):
+        self._realm = realm
+
+    def set_username(self, username):
+        self._username = username
+
+    def log_failure(self, reason):
+        if self._should_log:
+            uvm_login.log_login(self._request,
+                                self._username,
+                                False,
+                                reason)
+
+    def log_success(self):
+        if self._should_log:
+            uvm_login.log_login(self._request,
+                                self._username,
+                                True,
+                                None)
+
+class StderrLoginLogger:
+    def __init__(self, should_log):
+        self._realm = None
+        self._username = None
+        self._should_log = should_log
+
+    def set_request(self, request):
+        return
+
+    def set_realm(self, realm):
+        self._realm = realm
+
+    def set_username(self, username):
+        self._username = username
+
+    def log_success(self):
+        if self._should_log:
+            print(f"Successful login  of user: {self._username}"
+                  f" on realm: {self._realm}",
+                  file=sys.stderr)
+
+    def log_failure(self, reason):
+        if self._should_log:
+            print(
+                f"Failure to log in user: {self._username}"
+                f" on realm: {self._realm}"
+                f"reason: {reason}",
+                file=sys.stderr)
+
+class NullLogger:
+    def log_success(self):
+        pass
+
+    def log_failure(self, reason):
+        pass
+
+loggerFactory = StderrLoginLogger
+try:
+    import uvm_login
+    loggerFactory = UVMLoginLogger
+except:
+    pass
+
+
+def get_logger(req, realm, username, password):
+    logger = loggerFactory(True)
+    logger.set_request(req)
+    logger.set_realm(realm)
+    logger.set_username(username)
+    return logger
+
 def valid_login(req, realm, username, password):
+    logger = get_logger(req, realm, username, password)
     if realm == 'Administrator':
-        return admin_valid_login(req, realm, username, password)
+        return admin_valid_login(req, realm, username, password, logger)
     elif realm == 'Reports':
-        if admin_valid_login(req, 'Administrator', username, password, False):
+        if admin_valid_login(req, 'Administrator', username, password, NullLogger()):
             return True
         else:
-            return reports_valid_login(req, realm, username, password)
+            return reports_valid_login(req, realm, username, password,
+                                       logger)
     else:
         return False
 
@@ -62,7 +144,9 @@ def valid_token(req, token):
     except:
         return False
 
-def reports_valid_login(req, realm, username, password, log=True):
+
+
+def reports_valid_login(req, realm, username, password, logger=StderrLoginLogger(True)):
     users = get_app_settings_item('reports','reportsUsers')
     if users == None:
         return False;
@@ -71,31 +155,15 @@ def reports_valid_login(req, realm, username, password, log=True):
     for user in users['list']:
         if user['emailAddress'] != username:
             continue;
-
-        pw_hash_shadow = user.get('passwordHashShadow')
-        if pw_hash_shadow:
-            if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
-                log_login_if_necessary(log, req, username, True, None)
-                return True
-            else:
-                log_login_if_necessary(log, req, username, False, 'P')
-                return False
+        if check_password(user, password, logger):
+            return True
         else:
-            pw_hash_base64 = user['passwordHashBase64']
-            pw_hash = base64.b64decode(pw_hash_base64)
-            raw_pw = pw_hash[0:len(pw_hash) - 8]
-            salt = pw_hash[len(pw_hash) - 8:]
-            b = password + salt
-            if raw_pw == hashlib.md5(b.encode('utf-8')).hexdigest():
-                log_login_if_necessary(log, req, username, True, None)
-                return True
-            else:
-                log_login_if_necessary(log, req, username, False, 'P')
-                return False
-    log_login_if_necessary(log, req, username, False, 'P')
+            return False
+
+    logger.log_failure("U")
     return False
 
-def admin_valid_login(req, realm, username, password, log=True):
+def admin_valid_login(req, realm, username, password, logger=StderrLoginLogger(True)):
     """
     Returns True if this request with username/password is a valid
     login.
@@ -108,55 +176,38 @@ def admin_valid_login(req, realm, username, password, log=True):
     for user in users['list']:
         if user['username'] != username:
             continue;
-        pw_hash_shadow = user.get('passwordHashShadow')
-        if pw_hash_shadow:
-            if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
-                log_login_if_necessary(log, req, username, True, None)
-                return True
-            else:
-                log_login_if_necessary(log, req, username, False, 'P')
-                return False
+        if check_password(user, password, logger):
+            return True
         else:
-            pw_hash_base64 = user['passwordHashBase64']
-            pw_hash = base64.b64decode(pw_hash_base64)
-            raw_pw = pw_hash[0:len(pw_hash) - 8]
-            salt = pw_hash[len(pw_hash) - 8:]
-            b = password.encode('utf-8') + salt
-            if raw_pw == hashlib.md5(b).digest():
-                log_login_if_necessary(log, req, username, True, None)
-                return True
-            else:
-                log_login_if_necessary(log, req, username, False, 'P')
-                return False
-    log_login_if_necessary(log, req, username, false, 'U')
+            return False
+
+    logger.log_failure("U")
     return False
 
 
-def log_login_if_necessary(should_log, request, username, succeeded,
-                           reason):
-    """
-    if should_log is true, log the login. This will try to import
-    uvm_login and use the uvm_login.log_login function if available,
-    else it will print to sys.stderr.
 
-    should_log -- should we log the login?
-    request -- the request object.
-    username -- username that attempted to log in.
-    succeeded -- did the login succeed?
-    reason -- reason for failure, if the login did not succeed.
+def check_password(user_dict, password, logger):
+    pw_hash_shadow = user_dict.get('passwordHashShadow')
+    if pw_hash_shadow:
+        if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
+            logger.log_success()
+            return True
+        else:
+            logger.log_failure("P")
+            return False
+    else:
+        pw_hash_base64 = user_dict['passwordHashBase64']
+        pw_hash = base64.b64decode(pw_hash_base64)
+        raw_pw = pw_hash[0:len(pw_hash) - 8]
+        salt = pw_hash[len(pw_hash) - 8:]
+        b = password.encode('utf-8') + salt
+        if raw_pw == hashlib.md5(b).digest():
+            logger.log_success()
+            return True
+        else:
+            logger.log_failure("P")
+            return False
 
-    returns -- None
-    """
-    def logger(req, username, succeeded, reason):
-        print(
-            f"Login from {username} succeeded: {succeeded}, reason: {reason}",
-            file=sys.stderr)
-    try:
-        import uvm_login
-        logger = uvm_login.log_login
-    except ImportError:
-        pass
-    logger(request, username, succeeded, reason)
 
 
 def write_login_form(req, title, host, error_msg):
