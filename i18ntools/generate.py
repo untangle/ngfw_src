@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Rebuild gettext template file (.pot) and 
+Rebuild gettext template file (.pot) and
 synchronize with existing po files
 """
 import datetime
@@ -23,7 +23,7 @@ import i18n
 
 Debug=False
 
-importlib.reload(sys)  
+importlib.reload(sys)
 sys.setdefaultencoding('utf8')
 
 ngfw = i18n.Ngfw()
@@ -65,10 +65,10 @@ def get_keys(module):
                 #print(sys.exc_info()[0])
                 print("Ignoring file: " + full_file_name)
                 pass
-            
+
         for file_name in fnmatch.filter(file_names, '*.js'):
             full_file_name = root + "/" + file_name
-            
+
             ## xgettext does not support suffixes like "foo".t() only prefixes like _("foo")
             ## Instead we extract all strings with -a but we don't actually want ALL strings
             ## So we grep for t() to only process lines with t() on it.
@@ -77,7 +77,7 @@ def get_keys(module):
 
             command = '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' |  perl -pe "s/'((?:[^'\\\\\\]++|\\\\\\.)*)'\.t\(\)/_('\\1')/g" | xgettext -j --copyright-holder="%s" -LJavascript -o %s -''' %(full_file_name, ngfw.copyright, pot.file_name)
             try:
-                pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True)
                 std_out, std_err = pipes.communicate()
                 if pipes.returncode != 0:
                     print("error!")
@@ -96,7 +96,7 @@ def get_keys(module):
             ##
             command = '''cat %s | sed 's@#: standard input:@#: %s:@g' > /tmp/generated-locations.pot''' %(pot.file_name, full_file_name)
             try:
-                pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True)
                 std_out, std_err = pipes.communicate()
                 if pipes.returncode != 0:
                     print("error!")
@@ -111,7 +111,7 @@ def get_keys(module):
                 sys.exit(1)
 
             shutil.move("/tmp/generated-locations.pot", pot.file_name)
-                
+
         for file_name in fnmatch.filter(file_names, '*.py'):
             full_file_name = root + "/" + file_name
             call([

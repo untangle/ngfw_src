@@ -12,10 +12,10 @@ import time
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
-Max_file_time = 4 * 60 * 60 
+Max_file_time = 4 * 60 * 60
 
 ##
-## Capture all signals that should interrupt so 
+## Capture all signals that should interrupt so
 ## the writer process can be properly stopped.
 ##
 def signal_handler( signal, frame ):
@@ -45,14 +45,14 @@ class timeout:
 ##
 ## Create packet dump as a separate process.
 ##
-class DumpWriter:	
+class DumpWriter:
     def start( self, arguments, timeout, file_name, error_file_name ):
         args = shlex.split( arguments )
         args.insert( 0, tcpdump )
         args.append( "-w" )
         args.append( file_name )
- 
-        self.process = subprocess.Popen( args, stderr=open( error_file_name, 'wb'), stdout=open(os.devnull, 'wb') )
+
+        self.process = subprocess.Popen( args, stderr=open( error_file_name, 'wb'), stdout=open(os.devnull, 'wb'), universal_newlines=True )
 
     def terminate(self):
         self.process.terminate()
@@ -66,10 +66,10 @@ class DumpReader:
     def __init__( self, file_name, error_file_name ):
         self.dump_file_name = file_name
         self.error_file_name = error_file_name
-		
+
         self.printed_header = False
         self.last_line_count = 0
-		
+
     def header( self ):
         if self.printed_header == False and os.path.isfile( self.error_file_name ) == True:
             h = open( self.error_file_name )
@@ -84,16 +84,16 @@ class DumpReader:
             h.close()
             if count > 0:
                 self.printed_header = True
-				
+
     def read( self, search_string=None ):
         if self.printed_header == False:
             return
-		
+
         if self.last_line_count == 0:
             show_lines = 1
         else:
             show_lines = 0
-			
+
         if os.path.isfile( self.dump_file_name ) == False:
             return
 
@@ -105,7 +105,7 @@ class DumpReader:
         if search_string is not None:
             args.append('-A')
 
-        self.process = subprocess.Popen( args, stdout=subprocess.PIPE, stderr=open(os.devnull, 'wb') )
+        self.process = subprocess.Popen( args, stdout=subprocess.PIPE, stderr=open(os.devnull, 'wb'), universal_newlines=True )
         line_count = 0
         current_header = None
         current_payload = ""
@@ -114,7 +114,7 @@ class DumpReader:
             if show_lines == 0 and line_count == self.last_line_count:
                 show_lines = 1
                 continue
-			
+
             if show_lines == 1:
                 with timeout(seconds=5):
                     if search_string is None:
@@ -158,7 +158,7 @@ def usage():
     print("--arguments <list>\tcpdump arguments")
 
 ##
-## Main 
+## Main
 ##
 def main(argv):
     global _debug
@@ -167,7 +167,7 @@ def main(argv):
     global tcpdump
     _debug = False
     tcpdump = "/usr/sbin/tcpdump"
-	
+
     timeout = 5
     filename = "/tmp/network-tests"
     arguments = ""
@@ -204,23 +204,23 @@ def main(argv):
         os.makedirs( path )
 
     tcpdump_stderr_filename = filename + ".stderr"
-	
+
     dump_reader = DumpReader( filename, tcpdump_stderr_filename )
     dump_writer = DumpWriter()
     dump_writer.start( arguments, timeout, filename, tcpdump_stderr_filename )
-	
+
     while timeout > 0:
         dump_reader.header()
         dump_reader.read(search_string)
 
         timeout = timeout -1
-        time.sleep(1) 
+        time.sleep(1)
 
     dump_writer.terminate()
     dump_reader.read()
-    
+
     cleanup( path )
 
 if __name__ == "__main__":
     main( sys.argv[1:] )
-    
+

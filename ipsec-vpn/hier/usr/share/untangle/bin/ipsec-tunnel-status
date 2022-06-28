@@ -15,7 +15,7 @@ if (len(sys.argv) < 2):
     raise Exception("Invalid number of arguments")
 work_name = sys.argv[1]
 
-status_proc = subprocess.Popen("/usr/sbin/ipsec statusall " + work_name, stdout=subprocess.PIPE, shell=True)
+status_proc = subprocess.Popen("/usr/sbin/ipsec statusall " + work_name, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
 (status_out,status_err) = status_proc.communicate()
 
 wordlist = status_out.split()
@@ -53,7 +53,7 @@ for token in wordlist:
 
     if (token.startswith("bytes_o") == True):
         ovalue += int(wordlist[index - 1])
-	
+
     index += 1
 
 print("| TUNNEL:%s LOCAL:%s REMOTE:%s STATE:%s IN:%d OUT:%d |" % (sys.argv[1] , lvalue, rvalue, svalue, ivalue , ovalue))
