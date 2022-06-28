@@ -29,7 +29,7 @@ if prefix == "@PREFIX@": prefix = "" # for running in src
 prev = None
 
 cmd = "/usr/bin/find %s/usr/share/untangle/settings/ -type f -name '%s*' | xargs ls -1tr " % (prefix, filename)
-lines = subprocess.Popen(["/bin/bash","-c",cmd], stdout=subprocess.PIPE).communicate()[0].split('\n')
+lines = subprocess.Popen(["/bin/bash","-c",cmd], stdout=subprocess.PIPE, universal_newlines=True).communicate()[0].split('\n')
 
 print("There are %i changes:" % (len(lines)-2) )
 print("\n")

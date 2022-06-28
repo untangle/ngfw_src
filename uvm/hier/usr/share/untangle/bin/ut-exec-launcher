@@ -8,11 +8,11 @@ import base64;
 
 while 1:
     cmd = sys.stdin.readline()
-    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     std_out = proc.stdout.read();
     ret_code = proc.wait();
 
-    #f.write("Cmd: \"" + cmd);  
+    #f.write("Cmd: \"" + cmd);
     #f.write(json.dumps({"javaClass": "com.untangle.uvm.ExecManagerResult", "result": ret_code, "output": std_out}) + "\n");  f.flush();
 
     sys.stdout.write(json.dumps({"javaClass": "com.untangle.uvm.ExecManagerResult", "result": ret_code, "output": std_out}) + "\n");
