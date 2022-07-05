@@ -135,6 +135,13 @@ task :devel => [:build, :hier, :installuvmcore] do
   end
 end
 
+task :unittest do
+  Kernel.system(
+    {"PYTHONPATH" =>
+     "./uvm/hier/usr/lib/python3/dist-packages/"},
+    "python3 -m pytest ./uvm/hier/usr/lib/python3/dist-packages/unit_tests")
+end
+
 task :i18n => [:builduvmcore, :targets] do
   ## Generate and update po files
   #  raise "generate failed" unless Kernel.system("#{BuildEnv::SRC.i18ntools}/generate.py")
