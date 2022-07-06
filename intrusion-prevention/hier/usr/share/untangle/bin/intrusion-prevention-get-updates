@@ -460,7 +460,7 @@ class Update:
             patch_command_output = None
             patch_command = None
             try:
-                patch_command = subprocess.Popen(["patch","-p2","-ruN", "-i", "../{extract_relative_path}/{patch}.patch".format(extract_relative_path=self.extract_relative_path,patch=patch)], stderr=subprocess.STDOUT,stdout=subprocess.PIPE, cwd=self.working_current_path, universal_newlines=True)
+                patch_command = subprocess.Popen(["patch","-p2","-ruN", "-i", "../{extract_relative_path}/{patch}.patch".format(extract_relative_path=self.extract_relative_path,patch=patch)], stderr=subprocess.STDOUT,stdout=subprocess.PIPE, cwd=self.working_current_path, universal_newlines="text")
                 patch_command_output = patch_command.communicate()[0]
             except:
                 Logger.message("unable to apply patch={patch} to patch directory={working_current_path}".format(patch=patch, working_current_path=self.working_current_path), sys.exc_info(), target="log")
@@ -503,7 +503,7 @@ class Update:
             md5 = None
             md5_output = None
             try:
-                md5 = subprocess.Popen(["find", ".", "!", "-name", "suricatasignatures*.md5", "-type", "f", "-exec", "md5sum", "{}", "+"], stdout=subprocess.PIPE, cwd=self.working_current_path, universal_newlines=True)
+                md5 = subprocess.Popen(["find", ".", "!", "-name", "suricatasignatures*.md5", "-type", "f", "-exec", "md5sum", "{}", "+"], stdout=subprocess.PIPE, cwd=self.working_current_path, universal_newlines="text")
                 md5_output = md5.communicate()[0]
             except:
                 Logger.message("unable to validate md5sum", sys.exc_info())

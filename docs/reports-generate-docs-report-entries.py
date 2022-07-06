@@ -9,7 +9,7 @@ import traceback
 dict = {}
 
 # read the report entries and put in dictionary
-p = subprocess.Popen(["sh","-c","/usr/bin/find /usr/share/untangle/lib -path '*/reports/*.json' -print"], stdout=subprocess.PIPE, universal_newlines=True)
+p = subprocess.Popen(["sh","-c","/usr/bin/find /usr/share/untangle/lib -path '*/reports/*.json' -print"], stdout=subprocess.PIPE, universal_newlines="text")
 for line in iter(p.stdout.readline, ''):
     if 'appProperties.json' in line: continue
     filename = line.strip()

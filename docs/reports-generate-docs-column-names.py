@@ -197,7 +197,7 @@ dict = {
 
 
 # check for all names
-p = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"SELECT table_name FROM information_schema.tables where table_schema = 'reports' and table_name not like '%0%'\""], stdout=subprocess.PIPE, universal_newlines=True)
+p = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"SELECT table_name FROM information_schema.tables where table_schema = 'reports' and table_name not like '%0%'\""], stdout=subprocess.PIPE, universal_newlines="text")
 for line in iter(p.stdout.readline, ''):
     table_name = line.strip()
 
@@ -211,7 +211,7 @@ for line in iter(p.stdout.readline, ''):
         continue
     if "counts" in table_name:
         continue
-    p2 = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"\\d+ reports.%s\"" % table_name], stdout=subprocess.PIPE, universal_newlines=True)
+    p2 = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"\\d+ reports.%s\"" % table_name], stdout=subprocess.PIPE, universal_newlines="text")
     for line2 in iter(p2.stdout.readline, ''):
         parts = line2.split("|")
         column = parts[0]

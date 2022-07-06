@@ -52,7 +52,7 @@ class DumpWriter:
         args.append( "-w" )
         args.append( file_name )
 
-        self.process = subprocess.Popen( args, stderr=open( error_file_name, 'wb'), stdout=open(os.devnull, 'wb'), universal_newlines=True )
+        self.process = subprocess.Popen( args, stderr=open( error_file_name, 'wb'), stdout=open(os.devnull, 'wb'), universal_newlines="text" )
 
     def terminate(self):
         self.process.terminate()
@@ -105,7 +105,7 @@ class DumpReader:
         if search_string is not None:
             args.append('-A')
 
-        self.process = subprocess.Popen( args, stdout=subprocess.PIPE, stderr=open(os.devnull, 'wb'), universal_newlines=True )
+        self.process = subprocess.Popen( args, stdout=subprocess.PIPE, stderr=open(os.devnull, 'wb'), universal_newlines="text" )
         line_count = 0
         current_header = None
         current_payload = ""
