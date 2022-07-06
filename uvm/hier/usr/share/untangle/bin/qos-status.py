@@ -14,7 +14,7 @@ def run( cmd, ignore_errors=False, print_cmd=False ):
         print("ERROR: Command failed: %i \"%s\"" % (ret, cmd))
 
 def runSubprocess(cmd):
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, text=True)
     result=[]
     for line in proc.stdout:
         result.append(line)
@@ -64,7 +64,7 @@ def statusToJSON(input):
             continue
     newlist = sorted(output, key=lambda k: k['priority'])
     return newlist
-    
+
 
 def status( qos_interfaces, wan_intfs ):
 
@@ -77,7 +77,7 @@ def status( qos_interfaces, wan_intfs ):
         result= runSubprocess( "tc -s class ls dev %s | sed \"s/^class/interface: %s Outbound class/\"" % (wan_dev, wan_name) )
         result.extend( runSubprocess( "tc -s class ls dev %s | sed \"s/^class/interface: %s Inbound class/\"" % (imq_dev, wan_name)))
         json_objs.extend( statusToJSON(result) )
-       
+
         #run("echo ------ Qdisc  ------")
         #run("tc -s qdisc ls dev %s" % wan_dev)
         #run("tc -s qdisc ls dev %s" % imq_dev)
@@ -88,7 +88,7 @@ def status( qos_interfaces, wan_intfs ):
         #run("tc -s filter ls dev %s" % wan_dev)
         #run("tc -s filter ls dev %s" % imq_dev)
     print(json_objs)
-        
+
 
 #
 # Main
