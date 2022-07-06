@@ -15,7 +15,7 @@ if (len(sys.argv) < 2):
     raise Exception("Invalid number of arguments")
 work_name = sys.argv[1]
 
-status_proc = subprocess.Popen("/usr/sbin/ipsec statusall " + work_name, stdout=subprocess.PIPE, shell=True, universal_newlines="text")
+status_proc = subprocess.Popen("/usr/sbin/ipsec statusall " + work_name, stdout=subprocess.PIPE, shell=True, text=True)
 (status_out,status_err) = status_proc.communicate()
 
 wordlist = status_out.split()
