@@ -19,7 +19,7 @@ PREFIX = "@PREFIX@"
 # read the configuration
 exec(open(PREFIX + "/usr/share/untangle/conf/untangle-vm.conf").read());
 
-#p = subprocess.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=subprocess.PIPE, universal_newlines=True)
+#p = subprocess.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=subprocess.PIPE, universal_newlines="text")
 #os.dup2(p.stdin.fileno(), sys.stdout.fileno())
 #os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
@@ -461,7 +461,7 @@ while True:
         #os.dup2(so.fileno(), sys.stdout.fileno())
         #os.dup2(se.fileno(), sys.stderr.fileno())
 
-        p = subprocess.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=subprocess.PIPE, universal_newlines=True)
+        p = subprocess.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=subprocess.PIPE, universal_newlines="text")
         os.dup2(p.stdin.fileno(), sys.stdout.fileno())
         os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
