@@ -42,7 +42,7 @@ if len(sys.argv) < 3:
 
 netcmd = "/usr/bin/net ads status -U %s%%%s" % (sys.argv[1], sys.argv[2])
 
-status_proc = subprocess.Popen(netcmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines="text")
+status_proc = subprocess.Popen(netcmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 (status_out,status_err) = status_proc.communicate()
 status_txt = parse_output(status_out)
 

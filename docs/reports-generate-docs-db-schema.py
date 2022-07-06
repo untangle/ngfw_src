@@ -674,7 +674,7 @@ dict['interface_stat_events'].update({
 
 print("= Database Tables =")
 
-p = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"SELECT table_name FROM information_schema.tables where table_schema = 'reports' and table_name not like '%0%'\""], stdout=subprocess.PIPE, universal_newlines="text")
+p = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"SELECT table_name FROM information_schema.tables where table_schema = 'reports' and table_name not like '%0%'\""], stdout=subprocess.PIPE, text=True)
 for line in iter(p.stdout.readline, ''):
     table_name = line.strip()
 
@@ -707,7 +707,7 @@ for line in iter(p.stdout.readline, ''):
     print("!Description")
     print("|-")
 
-    p2 = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"\\d+ reports.%s\"" % table_name], stdout=subprocess.PIPE, universal_newlines="text")
+    p2 = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"\\d+ reports.%s\"" % table_name], stdout=subprocess.PIPE, text=True)
     for line2 in iter(p2.stdout.readline, ''):
         parts = line2.split("|")
         column = parts[0]

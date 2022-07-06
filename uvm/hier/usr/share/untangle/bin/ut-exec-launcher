@@ -8,7 +8,7 @@ import base64;
 
 while 1:
     cmd = sys.stdin.readline()
-    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines="text")
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     std_out = proc.stdout.read();
     ret_code = proc.wait();
 

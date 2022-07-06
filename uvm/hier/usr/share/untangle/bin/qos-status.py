@@ -14,7 +14,7 @@ def run( cmd, ignore_errors=False, print_cmd=False ):
         print("ERROR: Command failed: %i \"%s\"" % (ret, cmd))
 
 def runSubprocess(cmd):
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, universal_newlines="text")
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, text=True)
     result=[]
     for line in proc.stdout:
         result.append(line)

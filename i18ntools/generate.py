@@ -77,7 +77,7 @@ def get_keys(module):
 
             command = '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' |  perl -pe "s/'((?:[^'\\\\\\]++|\\\\\\.)*)'\.t\(\)/_('\\1')/g" | xgettext -j --copyright-holder="%s" -LJavascript -o %s -''' %(full_file_name, ngfw.copyright, pot.file_name)
             try:
-                pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines="text")
+                pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
                 std_out, std_err = pipes.communicate()
                 if pipes.returncode != 0:
                     print("error!")
@@ -96,7 +96,7 @@ def get_keys(module):
             ##
             command = '''cat %s | sed 's@#: standard input:@#: %s:@g' > /tmp/generated-locations.pot''' %(pot.file_name, full_file_name)
             try:
-                pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines="text")
+                pipes = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
                 std_out, std_err = pipes.communicate()
                 if pipes.returncode != 0:
                     print("error!")
