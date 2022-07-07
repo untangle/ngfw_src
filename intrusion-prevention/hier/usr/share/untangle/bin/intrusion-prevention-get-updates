@@ -32,8 +32,14 @@ import intrusion_prevention
 Debug = False
 Uvm_context = None
 Suricata_version_regex = re.compile(r'Suricata version (\d+)\.')
-Signature_url_template = "https://ids.untangle.com/suricatasignatures.tar.gz"
 Update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
+
+# get signature translated URI
+def get_signature_template_uri():
+	try:
+		return Uvm().getUvmContext().uriManager().getUri('https://ids.untangle.com/suricatasignatures.tar.gz')
+	except:
+		return 'https://ids.untangle.com/suricatasignatures.tar.gz'
 
 try:
     Uvm_context = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
@@ -629,7 +635,7 @@ def main(argv):
 
     force_sync = False
     signatures_template_directory = "/usr/share/untangle-suricata-config"
-    url_template = Signature_url_template
+    url_template = get_signature_template_uri()
 
     try:
         opts, args = getopt.getopt(argv, "hru:d", ["help", "signatures_template_directory=", "url=", "force_sync", "debug"] )

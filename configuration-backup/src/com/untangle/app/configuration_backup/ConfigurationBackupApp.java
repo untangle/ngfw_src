@@ -37,8 +37,8 @@ public class ConfigurationBackupApp extends AppBase
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/configuration-backup-send-backup.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-configuration-backup-nightly");
-    
-    private static final String BACKUP_URL = "https://boxbackup.untangle.com/boxbackup/backup.php";
+
+    private static final String BACKUP_URL = UvmContextFactory.context().uriManager().getUri("https://boxbackup.untangle.com/boxbackup/backup.php");
     private static final String TIMEOUT_SEC = "1200";
 
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
@@ -47,7 +47,7 @@ public class ConfigurationBackupApp extends AppBase
 
     /**
      * Initialize Configuration backup application
-     * 
+     *
      * @param appSettings
      *  Application settings
      * @param appProperties
@@ -149,14 +149,14 @@ public class ConfigurationBackupApp extends AppBase
              googleManager.isGoogleDriveConnected()) {
             uploadBackupToGoogleDrive( backupFile );
         }
-        
+
         try {
             backupFile.delete();
         } catch (Exception e) {
             logger.warn("Failed to delete backup file",e);
         }
     }
-    
+
     /**
      * Peform post initializaion
      */
@@ -324,7 +324,7 @@ public class ConfigurationBackupApp extends AppBase
             exitCode = 99;
             logger.warn("Exception running backup",e);
         }
-        
+
         if(exitCode != 0) {
             logger.error("Backup returned non-zero error code (" + exitCode + ")");
 
@@ -344,7 +344,7 @@ public class ConfigurationBackupApp extends AppBase
 
     /**
      * Write the cronjob file
-     */    
+     */
     private void writeCronFile()
     {
         // write the cron file for nightly runs
