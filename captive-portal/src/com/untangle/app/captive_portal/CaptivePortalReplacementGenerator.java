@@ -19,9 +19,9 @@ import org.apache.log4j.Logger;
  * This is the implementation of the replacement generator that creates the HTTP
  * redirect which is sent to unauthenticated clients to redirect them to the
  * captive portal login page.
- * 
+ *
  * @author mahotz
- * 
+ *
  */
 
 class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePortalBlockDetails>
@@ -42,8 +42,8 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         + "<P><H3>Please contact %s for assistance.</H3></P>"
         + "</BODY></HTML>";
 
-    protected static final String AUTH_REDIRECT_URI = "https://auth-relay.untangle.com/callback.php";
-    
+    protected static final String AUTH_REDIRECT_URI = UvmContextFactory.context().uriManager().getUri("https://auth-relay.untangle.com/callback.php");
+
     protected static final String GOOGLE_AUTH_HOST = "accounts.google.com";
     protected static final String GOOGLE_AUTH_PATH = "/o/oauth2/v2/auth";
     protected static final String GOOGLE_CLIENT_ID = "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com";
@@ -86,7 +86,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
     /**
      * Our constuctor
-     * 
+     *
      * @param appId
      *        The application ID
      * @param app
@@ -106,7 +106,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
     /**
      * The replacement to be returned for captured sessions.
-     * 
+     *
      * @param details
      *        The block details
      * @return The replacement to return to the client

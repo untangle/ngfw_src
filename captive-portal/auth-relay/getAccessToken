@@ -6,6 +6,15 @@ import json
 import sys
 import os
 
+from uvm import Uvm
+
+# get auth-relay translated URI
+def get_auth_relay_uri():
+	try:
+		return Uvm().getUvmContext().uriManager().getUri('https://auth-relay.untangle.com/callback.php')
+	except:
+		return 'https://auth-relay.untangle.com/callback.php'
+
 #------------------------------------------------------------------------------
 
 def handle_google(logfile,authcode):
@@ -19,7 +28,7 @@ def handle_google(logfile,authcode):
 		authdata['code'] = authcode
 		authdata['client_id'] = '365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com'
 		authdata['client_secret'] = '76RDgNAPNwZ6-frswmLPDaRJ'
-		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['redirect_uri'] = get_auth_relay_uri()
 		authdata['grant_type'] = 'authorization_code'
 		authresp = requests.post("https://www.googleapis.com/oauth2/v4/token", data=authdata)
 		authtext = authresp.text;
@@ -66,7 +75,7 @@ def handle_facebook(logfile,authcode):
 		authdata['code'] = authcode
 		authdata['client_id'] = '1840471182948119'
 		authdata['client_secret'] = '0f93a8ce9631adf41115447354432bb8'
-		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['redirect_uri'] = get_auth_relay_uri()
 		authdata['grant_type'] = 'authorization_code'
 		authresp = requests.get("https://graph.facebook.com/v2.9/oauth/access_token", params=authdata)
 		authtext = authresp.text;
@@ -112,7 +121,7 @@ def handle_microsoft(logfile,authcode):
 		authdata['code'] = authcode
 		authdata['client_id'] = 'f963a9b1-4d6c-4970-870d-3a75014e1364'
 		authdata['client_secret'] = 'qOYMyx9TdyAjveTQ6T1CA5e'
-		authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+		authdata['redirect_uri'] = get_auth_relay_uri()
 		authdata['grant_type'] = 'authorization_code'
 		authresp = requests.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", data=authdata)
 		authtext = authresp.text;

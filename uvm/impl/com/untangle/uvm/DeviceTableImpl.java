@@ -27,12 +27,12 @@ import com.untangle.uvm.util.Pulse;
  * DeviceTable stores a known "devices" (MAC addresses) that have ever been
  * seen. This table is useful for storing information know about the various
  * devices
- * 
+ *
  * Other Documentation in DeviceTable.java
  */
 public class DeviceTableImpl implements DeviceTable
 {
-    private static final String CLOUD_LOOKUP_URL = "https://labs.untangle.com/Utility/v1/mac";
+    private static final String CLOUD_LOOKUP_URL = UvmContextFactory.context().uriManager().getUri("https://labs.untangle.com/Utility/v1/mac");
     private static final String CLOUD_LOOKUP_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
     private static final int HIGH_WATER_SIZE = 30000; /* absolute max */
     private static final int LOW_WATER_SIZE = 25000; /*
@@ -65,7 +65,7 @@ public class DeviceTableImpl implements DeviceTable
 
     /**
      * Get the size of the device table
-     * 
+     *
      * @return The size of the device table
      */
     public int size()
@@ -75,7 +75,7 @@ public class DeviceTableImpl implements DeviceTable
 
     /**
      * Get the device table
-     * 
+     *
      * @return The device table
      */
     public Map<String, DeviceTableEntry> getDeviceTable()
@@ -85,7 +85,7 @@ public class DeviceTableImpl implements DeviceTable
 
     /**
      * Get the list of devices
-     * 
+     *
      * @return The list of devices
      */
     public synchronized LinkedList<DeviceTableEntry> getDevices()
@@ -96,7 +96,7 @@ public class DeviceTableImpl implements DeviceTable
 
     /**
      * Set the list of devices
-     * 
+     *
      * @param newDevices
      *        The list of devices
      */
@@ -130,7 +130,7 @@ public class DeviceTableImpl implements DeviceTable
 
     /**
      * Get a device table entry for a MAC address
-     * 
+     *
      * @param macAddress
      *        The MAC address
      * @return The device table entry, or null if not found
@@ -145,7 +145,7 @@ public class DeviceTableImpl implements DeviceTable
     /**
      * Add a device to the table, creating and returning a new entry, or
      * returning the existing entry if found.
-     * 
+     *
      * @param macAddress
      *        The mac address
      * @return The device table entry
@@ -186,7 +186,7 @@ public class DeviceTableImpl implements DeviceTable
 
     /**
      * Lookup the hardware vendor for a MAC address
-     * 
+     *
      * @param macAddress
      *        The MAC address
      * @return The hardware vendor, or null
@@ -296,7 +296,7 @@ public class DeviceTableImpl implements DeviceTable
                 {
                     /**
                      * Compare function for sorting and finding old entries
-                     * 
+                     *
                      * @param o1
                      *        The first entry
                      * @param o2
@@ -362,7 +362,7 @@ public class DeviceTableImpl implements DeviceTable
 
     /**
      * Add a device table entry to the table
-     * 
+     *
      * @param newEntry
      */
     private void addDevice(DeviceTableEntry newEntry)

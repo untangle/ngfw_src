@@ -9,6 +9,7 @@ import crypt
 import sys
 import urllib.parse
 from io import StringIO
+from uvm import Uvm
 
 def get_app_settings_item(a,b):
     return None
@@ -21,6 +22,11 @@ try:
 except ImportError:
     pass
 
+def get_auth_uri():
+    try:
+        return Uvm().getUvmContext().uriManager().getUri('https://auth.untangle.com/v1/CheckTokenAccess')
+    except:
+        return 'https://auth.untangle.com/v1/CheckTokenAccess'
 
 # We define two logger classes so that when this module is imported
 # outside of a running apache instance, we can still run the functions
@@ -157,7 +163,7 @@ def valid_token(req, token):
         curl.setopt( pycurl.NOSIGNAL, 1 )
         curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
         curl.setopt( pycurl.TIMEOUT, 30 )
-        curl.setopt( pycurl.URL, "https://auth.untangle.com/v1/CheckTokenAccess")
+        curl.setopt( pycurl.URL, get_auth_uri())
         curl.setopt( pycurl.HTTPHEADER,
                      ["Content-type: application/json",
                       "Accept: application/json",
