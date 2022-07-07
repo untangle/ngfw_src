@@ -64,7 +64,7 @@ public class LanguageManagerImpl implements LanguageManager
 {
     private static final String LANGUAGES_DIR;
     private static final String RESOURCES_DIR;
-    private static final String REMOTE_LANGUAGES_URL = "http://translations.untangle.com/";
+    private static final String REMOTE_LANGUAGES_URL = UvmContextFactory.context().uriManager().getUri("http://translations.untangle.com/");
     private static final String REMOTE_LANGUAGES_PROJECT = "ngfw";
     private static final String LOCALE_DIR = "/usr/share/locale";
     private static final String DEFAULT_LANGUAGE = "en";
@@ -169,7 +169,7 @@ public class LanguageManagerImpl implements LanguageManager
      * * Load all valid countries list.
      * * Initialize translations and translations last accessed maps.
      * * Start the translations map cleaner.
-     * 
+     *
      * @return Initialize instance of language manager.
      */
     public LanguageManagerImpl()
@@ -213,7 +213,7 @@ public class LanguageManagerImpl implements LanguageManager
 
         String source = newSettings.getSource();
         String language = newSettings.getLanguage();
-        if(!oldSource.equals(source) || 
+        if(!oldSource.equals(source) ||
            !oldLanguage.equals(language)){
             downloadLanguage(source, language);
             newSettings.setLastSynchronized(System.currentTimeMillis());
@@ -232,7 +232,7 @@ public class LanguageManagerImpl implements LanguageManager
     public void synchronizeLanguage()
     {
         downloadLanguage(languageSettings.getSource(), languageSettings.getLanguage());
-        
+
         synchronized( this ) {
             translations = new HashMap<>();
             translationsLastAccessed = new HashMap<>();
@@ -258,7 +258,7 @@ public class LanguageManagerImpl implements LanguageManager
             Set<String> available = new HashSet<>();
             Collections.addAll(available, (new File(source.getDirectory())).list());
             if(getRemoteLanguagesList(available, locales, source) == false){
-                // Add header 
+                // Add header
                 headerAdded = false;
             }else if(source.getId().equals("official")){
                 locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null));
@@ -313,7 +313,7 @@ public class LanguageManagerImpl implements LanguageManager
         }
 
         String translationKey = i18nModule + "_" + source.getId() + "_" + locale.getLanguage();
-        
+
         synchronized( this ) {
             map = translations.get(translationKey);
 
@@ -727,7 +727,7 @@ public class LanguageManagerImpl implements LanguageManager
                             lastAccessed = translationsLastAccessed.get(translationKey);
                             if(lastAccessed == 0L){
                                 continue;
-                            } 
+                            }
                             if((lastAccessed + CLEANER_LAST_ACCESS_MAX_TIME) < now){
                                 translationsLastAccessed.put(translationKey, 0L);
 
@@ -739,7 +739,7 @@ public class LanguageManagerImpl implements LanguageManager
                             }
                         }
                     }
-                    
+
                 } catch (Exception e) {
                     logger.warn("Exception while cleaning translations",e);
                 }
@@ -759,7 +759,7 @@ public class LanguageManagerImpl implements LanguageManager
                 return ls;
             }
         }
-        return null;        
+        return null;
     }
 
     /**
@@ -779,7 +779,7 @@ public class LanguageManagerImpl implements LanguageManager
             .setSocketTimeout(5000)
             .setConnectTimeout(5000)
             .setConnectionRequestTimeout(5000)
-            .build();        
+            .build();
         CloseableHttpClient httpClient = HttpClients.custom()
             .setDefaultRequestConfig(defaultRequestConfig)
             .build();
