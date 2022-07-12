@@ -173,7 +173,7 @@ def valid_token(req, token):
                 "Content-Type": 'application/json',
                 'Accept': 'application/json',
                 'AuthRequest':
-                '4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981'})
+                'B132C885-962B-4D63-8B2F-441B7A43CD93'})
         response.raise_for_status()
         value = response.json()
         return value
