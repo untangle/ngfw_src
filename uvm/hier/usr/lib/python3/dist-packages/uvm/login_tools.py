@@ -157,11 +157,12 @@ def getuid():
 
 
 AUTH_REQUEST_HEADER_TOKEN = 'B132C885-962B-4D63-8B2F-441B7A43CD93'
-def valid_token(req, token):
+
+
+def valid_token(token):
     """
     Returns true if token is valid.
 
-    req -- unused
     token -- a token string that we will check against auth.untangle.com
     """
     try:
