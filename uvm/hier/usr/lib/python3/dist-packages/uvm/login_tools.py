@@ -3,12 +3,13 @@ import html
 import base64
 import sys
 import re
-import pycurl
+#import pycurl
+import requests
 import json
 import crypt
 import sys
 import urllib.parse
-from io import StringIO
+import io
 
 def get_app_settings_item(a,b):
     return None
@@ -142,34 +143,41 @@ def valid_login(req, realm, username, password):
     else:
         return False
 
+
 def valid_token(req, token):
+    """
+    Returns true if token is valid.
+
+    req -- unused
+    token -- a token string that we will check against auth.untangle.com
+    """
     try:
-        uid=None
+        uid = None
         with open('/usr/share/untangle/conf/uid', 'r') as uidfile:
-            uid=uidfile.read().replace('\n', '')
+            uid = uidfile.read().replace('\n', '')
 
-        buffer = StringIO()
-        postdata = json.dumps({ "token": token, "resourceId": uid  })
+        postdata = json.dumps({"token": token, "resourceId": uid})
+        print("postdata: {!r}".format(postdata), file=sys.stderr)
+        response = requests.post(
+            'https://auth.untangle.com/v1/CheckTokenAccess',
+            data=postdata,
+            headers={
+                "Content-Type": 'application/json',
+                'Accept': 'application/json',
+                'AuthRequest':
+                '4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981'})
+        response.raise_for_status()
+        value = response.json()
 
-        curl = pycurl.Curl()
-        curl.setopt( pycurl.POST, 1 )
-        curl.setopt( pycurl.POSTFIELDS, postdata )
-        curl.setopt( pycurl.NOSIGNAL, 1 )
-        curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
-        curl.setopt( pycurl.TIMEOUT, 30 )
-        curl.setopt( pycurl.URL, "https://auth.untangle.com/v1/CheckTokenAccess")
-        curl.setopt( pycurl.HTTPHEADER,
-                     ["Content-type: application/json",
-                      "Accept: application/json",
-                      "AuthRequest: 4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981"])
-        curl.setopt( pycurl.WRITEDATA, buffer )
-
-        curl.perform()
-
-        body = buffer.getvalue()
-        print(body)
-        return (body == "true")
-    except:
+        print(
+            f"auth: login_tools.valid_token() request with token {token}/uid"
+            f" {uid} returned: {value}",
+            file=sys.stderr)
+        return value
+    except Exception as e:
+        print(
+            f"auth: login_tools.valid_token(): caught error: {e}",
+            file=sys.stderr)
         return False
 
 

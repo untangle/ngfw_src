@@ -75,11 +75,21 @@ def headerparserhandler(req):
     token = None
     if req.args != None:
         try:
+            # I cannot find good documentation on FieldStorage -- the
+            # documentation there is claims that things that come out
+            # of FieldStorage can't be bytes but they clearly have
+            # been. So we have this 'type switch' here to try to cover
+            # all possibilities.
             dict = util.FieldStorage(req)
-            if 'token' in dict:
-                token = dict['token']
-        except:
-            pass
+            token = dict.get('token', None)
+            if token is not None and isinstance(token.value, bytes):
+                token = token.value.decode('utf-8')
+            elif token is not None and isinstance(token.value, str):
+                token = token.value
+            else:
+                token = None
+        except Exception as e:
+            apache.log_error(f"Error trying to extract token: {e}")
 
     sess = Session.Session(req, lock=0)
     sess.lock()
