@@ -16,7 +16,9 @@ script_file_name=$(readlink -f $script_file_name)
 iptables_path=$([ -d @PREFIX@/etc/untangle/iptables-rules.d ] && echo @PREFIX@/etc/untangle/iptables-rules.d || echo /etc/untangle/iptables-rules.d)
 
 TUN_DEV=utun
-TUN_ADDR="192.0.2.200"
+TUN_IP_ADDR="192.0.2.200"
+TUN_IP_PREFIX=30
+TUN_MAC_ADDR="ea:e5:5d:ee:78:c3"
 FORCE_REMOVE="false"
 
 MASK_BYPASS=$((0x01000000))
@@ -139,11 +141,11 @@ EOT
     # Queue all of the UDP packets.
     ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE --queue-num 1982 -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
 
-    # DROP all packets exiting the server with the source address of TUN_ADDR
+    # DROP all packets exiting the server with the source address of TUN_IP_ADDR
     # This happens whenever conntrack does not properly remap the reply packet from the redirect
     # I have not been able to figure out the conditions in which this happens, but regardless its pointless to send a packet with this source address
     # as the destination will simply ignore it
-    ${IPTABLES} -I queue-to-uvm -t tune -s ${TUN_ADDR} -j DROP -m comment --comment 'Drop unmapped packets leaving server'
+    ${IPTABLES} -I queue-to-uvm -t tune -s ${TUN_IP_ADDR} -j DROP -m comment --comment 'Drop unmapped packets leaving server'
 
     # Redirect packets destined to non-local sockets to local
     ${IPTABLES} -I prerouting-untangle-vm -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
@@ -159,8 +161,14 @@ EOT
 
     # Unfortunately we have to give utun an address or the reinjection does not work
     # Use a bogus address
-    ifconfig ${TUN_DEV} ${TUN_ADDR} netmask 255.255.255.252
-    ifconfig ${TUN_DEV} up
+    ip addr change ${TUN_IP_ADDR}/${TUN_IP_PREFIX} dev ${TUN_DEV}
+    # Even though we set the mac address in the driver initialization in
+    # libnetcap, in Debian Bullseye, some library upgrade prevent the
+    # address from being changed there.  This match address needs to match
+    # since netcap sets it on the reinject packets it generates.
+    # So forcibily set it here.
+    ip link set dev ${TUN_DEV} address ${TUN_MAC_ADDR}
+    ip link set ${TUN_DEV} up
 
     if [ -f /proc/sys/net/ipv4/conf/${TUN_DEV}/rp_filter ]; then
         echo 0 > /proc/sys/net/ipv4/conf/${TUN_DEV}/rp_filter
