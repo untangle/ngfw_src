@@ -12,11 +12,9 @@ class TestTokenValid(unittest.TestCase):
         with patch('uvm.login_tools.getuid') as mock_getuid:
             mock_getuid.return_value = uid
             if isValid:
-                self.assertTrue(login_tools.valid_token(None,
-                                                        token_value))
+                self.assertTrue(login_tools.valid_token(token_value))
             else:
                 self.assertFalse(login_tools.valid_token(
-                    None,
                     token_value))
 
         self.mock_post.assert_called_with(
