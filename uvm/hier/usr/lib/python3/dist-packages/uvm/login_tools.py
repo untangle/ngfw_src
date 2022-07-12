@@ -156,6 +156,7 @@ def getuid():
     return uid
 
 
+AUTH_REQUEST_HEADER_TOKEN = 'B132C885-962B-4D63-8B2F-441B7A43CD93'
 def valid_token(req, token):
     """
     Returns true if token is valid.
@@ -172,8 +173,7 @@ def valid_token(req, token):
             headers={
                 "Content-Type": 'application/json',
                 'Accept': 'application/json',
-                'AuthRequest':
-                'B132C885-962B-4D63-8B2F-441B7A43CD93'})
+                'AuthRequest': AUTH_REQUEST_HEADER_TOKEN})
         response.raise_for_status()
         value = response.json()
         return value
