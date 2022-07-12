@@ -1,6 +1,6 @@
 diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
---- jabsorb-1.2.2.orig/build.xml	2017-03-15 15:15:58.287643239 -0700
-+++ jabsorb-1.2.2/build.xml	2017-03-15 15:16:18.826619969 -0700
+--- jabsorb-1.2.2.orig/build.xml	2008-01-16 17:47:54.000000000 -0700
++++ jabsorb-1.2.2/build.xml	2022-06-16 09:08:23.015636146 -0600
 @@ -53,13 +53,14 @@
    </target>
  
@@ -36,8 +36,8 @@ diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
      <delete file="${webapp}/WEB-INF/web.xml.generated" />
      <delete file="${webapp}/Test.java.txt" />
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java	2017-03-15 15:15:58.284643097 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2017-03-15 15:16:18.827620045 -0700
+--- jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java	2008-01-16 17:47:54.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2022-06-16 09:08:23.018636121 -0600
 @@ -108,8 +108,20 @@
   * <code>JSONRPCBridge.getGlobalBridge().registerClass("MyClass",
   * com.example.MyClass.class);</code>
@@ -212,9 +212,114 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/sr
            requestId, exceptionTransformer.transform(e));
      }
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java	2017-03-15 15:15:58.284643097 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2017-03-15 15:17:07.683943845 -0700
-@@ -718,7 +718,12 @@
+--- jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java	2008-01-16 17:47:54.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2022-06-16 13:58:53.638953732 -0600
+@@ -32,6 +32,7 @@
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.NoSuchElementException;
++import java.util.Optional;
+ 
+ import org.jabsorb.serializer.MarshallException;
+ import org.jabsorb.serializer.ObjectMatch;
+@@ -553,21 +554,10 @@
+       Object json) throws UnmarshallException
+   {
+     // check for duplicate objects or circular references
+-    ProcessedObject p = state.getProcessedObject(json);
+-
+-    // if this object hasn't been seen before, mark it as seen and continue forth
+-
+-    if (p == null)
+-    {
+-      p = state.store(json);
+-    }
+-    else
+-    {
+-      // get original serialized version
+-      // to recreate circular reference / duplicate object on the java side
+-      return (ObjectMatch) p.getSerialized();
++    Optional<ProcessedObject> p = tryToFetchObjectFromCache(state, clazz, json);
++    if (p.isPresent()) {
++      return (ObjectMatch)p.get().getSerialized();
+     }
+-
+     /*
+      * If we have a JSON object class hint that is a sub class of the signature
+      * 'clazz', then override 'clazz' with the hint class.
+@@ -629,19 +619,9 @@
+       throws UnmarshallException
+   {
+     // check for duplicate objects or circular references
+-    ProcessedObject p = state.getProcessedObject(json);
+-
+-    // if this object hasn't been seen before, mark it as seen and continue forth
+-
+-    if (p == null)
+-    {
+-      p = state.store(json);
+-    }
+-    else
+-    {
+-      // get original serialized version
+-      // to recreate circular reference / duplicate object on the java side
+-      return p.getSerialized();
++    Optional<ProcessedObject> p = tryToFetchObjectFromCache(state, clazz, json);
++    if (p.isPresent()) {
++      return p.get().getSerialized();
+     }
+ 
+     // If we have a JSON object class hint that is a sub class of the
+@@ -683,6 +663,48 @@
+       (jsonClass!=null?jsonClass.getName():"null") + " to " +  clazz.getName());
+   }
+ 
++  private Optional<ProcessedObject> tryToFetchObjectFromCache(SerializerState state, Class clazz, Object json)
++  {
++    // check for duplicate objects or circular references
++    ProcessedObject p = state.getProcessedObject(json);
++
++    // if this object hasn't been seen before, mark it as seen and continue forth
++    if (p == null)
++    {
++      p = state.store(json);
++    }
++    else if (
++      (clazz != null && (p.getSerialized() == null || p.getSerialized().getClass().equals(clazz)))
++      ||
++      clazz == null)
++    {
++      // get original serialized version
++      // to recreate circular reference / duplicate object on the java side
++      if (log.isDebugEnabled())
++      {
++	Class objClass = p.getSerialized() == null ? null : p.getSerialized().getClass();
++	String stringRepresentation = p.getSerialized() == null ? "null" : p.getSerialized().toString();
++	String className = objClass == null ? "nullClass" : objClass.getName();
++	log.debug("unmarshall: Got a serialized object of type: " + className +
++		  " cached obj string rep: " + stringRepresentation +
++		  " passed object JSON: " + json.toString() +
++		  " Passed object class: " + json.getClass());
++
++      }
++      return Optional.of(p);
++    }
++    else if (clazz != null)
++    {
++      
++      if (log.isDebugEnabled())
++      {
++	String pClass = (p.getSerialized() == null ? "nullClass" : p.getSerialized().getClass().getName());
++	log.debug("Not using cached object, which isn't a proper instance of: " +
++		  clazz.getName() + ", but of: " + pClass);
++      }
++    }
++    return Optional.empty();
++  }
+   /**
+    * Find the corresponding java Class type from json (as represented by a
+    * JSONObject or JSONArray,) using the javaClass hinting mechanism. <p/> If
+@@ -718,7 +740,12 @@
        try
        {
          className = ((JSONObject) o).getString("javaClass");
@@ -228,7 +333,7 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/s
        }
        catch (Exception e)
        {
-@@ -746,9 +750,9 @@
+@@ -746,9 +773,9 @@
        {
          if (compClazz.isArray())
          {
@@ -241,8 +346,8 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/s
        catch (ClassNotFoundException e)
        {
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java	2017-03-15 15:15:58.282643002 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2017-03-15 15:16:18.828620114 -0700
+--- jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java	2008-01-16 17:47:52.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2022-06-16 09:08:23.020636103 -0600
 @@ -107,6 +107,15 @@
    {
      log.info("analyzing " + clazz.getName());
@@ -260,8 +365,8 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-
      cd.clazz = clazz;
  
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2017-03-15 15:15:58.283643050 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2017-03-15 15:16:18.828620114 -0700
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2008-01-16 17:47:54.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2022-06-16 09:08:23.021636095 -0600
 @@ -97,6 +97,11 @@
      {
        returnValue = (Boolean) jso;
@@ -275,8 +380,8 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.j
      state.setSerialized(jso, returnValue);
      return returnValue;
 diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java
---- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java	2017-03-15 15:15:58.283643050 -0700
-+++ jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java	2017-03-15 15:16:18.828620114 -0700
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java	2008-01-16 17:47:54.000000000 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java	2022-06-16 09:08:23.021636095 -0600
 @@ -102,6 +102,10 @@
     */
    public ObjectMatch max(ObjectMatch m)
@@ -289,8 +394,8 @@ diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java jabsorb
      {
        return this;
 diff -urN jabsorb-1.2.2.orig/webapps/jsonrpc/jsonrpc.js jabsorb-1.2.2/webapps/jsonrpc/jsonrpc.js
---- jabsorb-1.2.2.orig/webapps/jsonrpc/jsonrpc.js	2017-03-15 15:15:58.287643239 -0700
-+++ jabsorb-1.2.2/webapps/jsonrpc/jsonrpc.js	2017-03-15 15:16:18.829620181 -0700
+--- jabsorb-1.2.2.orig/webapps/jsonrpc/jsonrpc.js	2008-01-16 17:47:36.000000000 -0700
++++ jabsorb-1.2.2/webapps/jsonrpc/jsonrpc.js	2022-06-16 09:08:23.022636086 -0600
 @@ -24,6 +24,8 @@
   *
   */

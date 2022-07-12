@@ -197,7 +197,7 @@ dict = {
 
 
 # check for all names
-p = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"SELECT table_name FROM information_schema.tables where table_schema = 'reports' and table_name not like '%0%'\""], stdout=subprocess.PIPE)
+p = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"SELECT table_name FROM information_schema.tables where table_schema = 'reports' and table_name not like '%0%'\""], stdout=subprocess.PIPE, text=True)
 for line in iter(p.stdout.readline, ''):
     table_name = line.strip()
 
@@ -211,7 +211,7 @@ for line in iter(p.stdout.readline, ''):
         continue
     if "counts" in table_name:
         continue
-    p2 = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"\\d+ reports.%s\"" % table_name], stdout=subprocess.PIPE)
+    p2 = subprocess.Popen(["sh","-c","psql -A -t -U postgres uvm -c \"\\d+ reports.%s\"" % table_name], stdout=subprocess.PIPE, text=True)
     for line2 in iter(p2.stdout.readline, ''):
         parts = line2.split("|")
         column = parts[0]
@@ -227,7 +227,7 @@ for line in iter(p.stdout.readline, ''):
             print("\nMissing description for column \"%s\" in table \"%s\"" % ( column, table_name  ))
             sys.exit(1)
 
-        
+
 
 print("{")
 for key, value in sorted(dict.items()):
@@ -238,4 +238,4 @@ for key, value in sorted(dict.items()):
     print(key + ": " + value + ",")
 
 print("}")
-    
+

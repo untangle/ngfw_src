@@ -251,9 +251,9 @@ class Screen(object):
     def key_process(self):
         """
         Handle keystrokes
-        
+
         If Enter, advance the current mode (if multiple modes exist)
-        If Esc, decriment current mode.  
+        If Esc, decrement current mode.
             If this is the starting mode, return False to exit process loop
         """
         if self.key in [curses.KEY_ENTER, ord('\n')]:
@@ -507,7 +507,7 @@ class Form(Screen):
         key = self.window.getch()
 
     def display(self):
-        """ 
+        """
         Display
         """
         super(Form, self).display()
@@ -554,7 +554,7 @@ class Form(Screen):
             else:
                 mode = curses.A_NORMAL
 
-            msg = '%-12s' % (item["text"]) 
+            msg = '%-12s' % (item["text"])
             self.window.addstr( self.y_pos + index, self.x_pos, item["text"], mode)
 
         self.y_pos += len(self.confirm_selections) + 1
@@ -656,7 +656,7 @@ class RemapInterfaces(Form):
                 if self.selected_device is not None:
                     if ( interface["deviceName"] == self.selected_device ):
                         select_mode = curses.A_REVERSE
-                    else:    
+                    else:
                         select_mode = curses.A_NORMAL
                 else:
                     if index == self.mode_menu_pos[self.current_mode]:
@@ -772,20 +772,20 @@ class AssignInterfaces(Form):
     modes_disabled = ['interface', 'config', 'confirm']
 
     config_selections = [{
-        "text": "Addressed", 
+        "text": "Addressed",
         "value": "ADDRESSED",
     },{
-        "text": "Bridged", 
+        "text": "Bridged",
         "value": "BRIDGED",
     },{
-        "text": "Disabled", 
+        "text": "Disabled",
         "value": "DISABLED",
     }]
 
     bridged_selections = []
 
     addressed_wan_selections = [{
-        "text": "DHCP", 
+        "text": "DHCP",
         "value": "DHCP"
     },{
         "text": "Static",
@@ -910,7 +910,7 @@ class AssignInterfaces(Form):
         self.deviceStatus = uvm.context.networkManager().getDeviceStatus()
         self.interface_selections = [i for i in self.networkSettings["interfaces"]["list"] if i['isVlanInterface'] is False]
         uvm = None
-        
+
         for interface in self.interface_selections:
             for device in self.deviceStatus["list"]:
                 if interface["physicalDev"] == device["deviceName"]:
@@ -971,7 +971,7 @@ class AssignInterfaces(Form):
             config = interface["configType"]
             for c in self.config_selections:
                 if c["value"] == config:
-                    config = c["text"] 
+                    config = c["text"]
 
             addressed = ""
             address = ''
@@ -992,7 +992,7 @@ class AssignInterfaces(Form):
 
             msg = '%-12s %-17s %-5s  %-10s %-10s %-18s' % (str(interface["connected"]), interface["name"], interface["isWan"], config, addressed, address,  )
             if show_selected_only is True:
-                index = 0            
+                index = 0
             self.window.addstr( self.y_pos + index, self.x_pos, msg, select_mode)
 
         self.y_pos = self.y_pos + 1
@@ -1016,15 +1016,15 @@ class AssignInterfaces(Form):
                 if item != self.mode_selected_item['config']:
                     continue
                 mode = curses.A_NORMAL
-            else: 
+            else:
                 if index == self.mode_menu_pos[self.current_mode]:
                     mode = curses.A_REVERSE
                 else:
                     mode = curses.A_NORMAL
 
-            msg = '%-12s' % (item["text"]) 
+            msg = '%-12s' % (item["text"])
             if show_selected_only is True:
-                index = 0            
+                index = 0
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos += 1
@@ -1051,7 +1051,7 @@ class AssignInterfaces(Form):
                 if item != self.mode_selected_item['addressed']:
                     continue
                 mode = curses.A_NORMAL
-            else: 
+            else:
                 if index == self.mode_menu_pos[self.current_mode]:
                     mode = curses.A_REVERSE
                 else:
@@ -1060,9 +1060,9 @@ class AssignInterfaces(Form):
             if show_selected_only is True:
                 index = 0
 
-            msg = '%-20s' % (item["text"]) 
+            msg = '%-20s' % (item["text"])
             if show_selected_only is True:
-                index = 0            
+                index = 0
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos += 1
@@ -1116,10 +1116,10 @@ class AssignInterfaces(Form):
 
     def display_edit(self,show_selected_only = False):
         """
-        Display address field edit 
+        Display address field edit
         """
         self.display_addressed(show_selected_only=True)
-    
+
         if "edit" not in self.mode_items:
             return
 
@@ -1143,7 +1143,7 @@ class AssignInterfaces(Form):
             if value is None:
                 value = ""
 
-            msg = '%-30s %-40s' % (item["text"], value) 
+            msg = '%-30s %-40s' % (item["text"], value)
             self.window.addstr( self.y_pos + index, self.x_pos, msg, mode)
 
         self.y_pos = self.y_pos + len(self.mode_items["edit"])
@@ -1294,7 +1294,7 @@ class Ping(Screen):
         except:
             pass
 
-        address = self.window.getstr(self.y_pos -1, 31, 50)
+        address = self.window.getstr(self.y_pos -1, 31, 50).decode('utf-8')
 
         try:
             curses.curs_set(0)
@@ -1559,7 +1559,7 @@ class Login(Screen):
             pass
 
         curses.noecho()
-        password = self.window.getstr(self.y_pos -1, len(label), 50)
+        password = self.window.getstr(self.y_pos -1, len(label), 50).decode('utf-8')
 
         try:
             curses.curs_set(0)

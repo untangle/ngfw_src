@@ -71,7 +71,7 @@ def log(str):
         pass
 
 def log_date( cmd ):
-    p = subprocess.Popen(["date","+%Y-%m-%d %H:%M"], stdout=subprocess.PIPE, universal_newlines=True)
+    p = subprocess.Popen(["date","+%Y-%m-%d %H:%M"], stdout=subprocess.PIPE, text=True)
     for line in iter(p.stdout.readline, ''):
         log( line.strip() + " " + cmd)
     p.wait()
@@ -79,7 +79,7 @@ def log_date( cmd ):
 
 def cmd_to_log(cmd):
     stdin=open(os.devnull, 'rb')
-    p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE, stdin=stdin, universal_newlines=True)
+    p = subprocess.Popen(["sh","-c","%s 2>&1" % (cmd)], stdout=subprocess.PIPE, stdin=stdin, text=True)
     for line in iter(p.stdout.readline, ''):
         log( line.strip() )
     p.wait()
@@ -87,7 +87,7 @@ def cmd_to_log(cmd):
 
 def update():
     log("apt-get update %s" % UPDATE_OPTS)
-    p = subprocess.Popen(["sh","-c","apt-get update %s 2>&1" % UPDATE_OPTS], stdout=subprocess.PIPE, universal_newlines=True)
+    p = subprocess.Popen(["sh","-c","apt-get update %s 2>&1" % UPDATE_OPTS], stdout=subprocess.PIPE, text=True)
     for line in iter(p.stdout.readline, ''):
         if not re.search('^W: (Conflicting distribution|You may want to run apt-get update to correct these problems)', line):
             log( line.strip() )
@@ -95,7 +95,7 @@ def update():
     return p.returncode
 
 def check_upgrade():
-    p = subprocess.Popen(["sh","-c","apt-get -s dist-upgrade %s 2>&1" % UPGRADE_OPTS], stdout=subprocess.PIPE, universal_newlines=True)
+    p = subprocess.Popen(["sh","-c","apt-get -s dist-upgrade %s 2>&1" % UPGRADE_OPTS], stdout=subprocess.PIPE, text=True)
     for line in iter(p.stdout.readline, ''):
         if re.search('.*been kept back.*', line):
             log( "Packages have been kept back.\n" )

@@ -23,6 +23,15 @@ import json
 import sys
 import os
 
+from uvm import Uvm
+
+# get auth-relay translated URI
+def get_auth_relay_uri():
+	try:
+		return Uvm().getUvmContext().uriManager().getUri('https://auth-relay.untangle.com/callback.php')
+	except:
+		return 'https://auth-relay.untangle.com/callback.php'
+
 #------------------------------------------------------------------------------
 # Function to retrieve user details from Google using the passed auth code,
 # client id, and secret. Details are logged to the passed open logfile.
@@ -32,7 +41,7 @@ def handle_google(logfile,authcode,cid,secret):
 	authdata['code'] = authcode
 	authdata['client_id'] = cid
 	authdata['client_secret'] = secret
-	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+	authdata['redirect_uri'] = get_auth_relay_uri()
 	authdata['grant_type'] = 'authorization_code'
 	authresp = requests.post("https://www.googleapis.com/oauth2/v4/token", data=authdata)
 	authtext = authresp.text;
@@ -70,7 +79,7 @@ def handle_facebook(logfile,authcode,cid,secret):
 	authdata['code'] = authcode
 	authdata['client_id'] = cid
 	authdata['client_secret'] = secret
-	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+	authdata['redirect_uri'] = get_auth_relay_uri()
 	authdata['grant_type'] = 'authorization_code'
 	authresp = requests.get("https://graph.facebook.com/v2.9/oauth/access_token", params=authdata)
 	authtext = authresp.text;
@@ -107,7 +116,7 @@ def handle_microsoft(logfile,authcode,cid,secret):
 	authdata['code'] = authcode
 	authdata['client_id'] = cid
 	authdata['client_secret'] = secret
-	authdata['redirect_uri'] = 'https://auth-relay.untangle.com/callback.php'
+	authdata['redirect_uri'] = get_auth_relay_uri()
 	authdata['grant_type'] = 'authorization_code'
 	authresp = requests.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", data=authdata)
 	authtext = authresp.text;
