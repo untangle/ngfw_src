@@ -54,17 +54,3 @@ class TestTokenValid(unittest.TestCase):
         mock_post.return_value = post_result
         self.mock_post = mock_post
         self.__do_token_run(False)
-
-
-
-        # with patch('uvm.login_tools.getuid') as mock_getuid:
-        #     mock_getuid.return_value = uid
-        #     self.assertTrue(login_tools.valid_token(None, token_value))
-        #     mock_post.assert_called_with(
-        #         login_tools.get_auth_uri(),
-        #         data=json.dumps({'token': token_value, 'resourceId': uid}),
-        #         headers={
-        #             "Content-Type": 'application/json',
-        #             'Accept': 'application/json',
-        #             'AuthRequest':
-        #             '4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981'})
