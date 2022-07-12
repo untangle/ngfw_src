@@ -32,8 +32,14 @@ import intrusion_prevention
 Debug = False
 Uvm_context = None
 Suricata_version_regex = re.compile(r'Suricata version (\d+)\.')
-Signature_url_template = "https://ids.untangle.com/suricatasignatures.tar.gz"
 Update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
+
+# get signature translated URI
+def get_signature_template_uri():
+	try:
+		return Uvm().getUvmContext().uriManager().getUri('https://ids.untangle.com/suricatasignatures.tar.gz')
+	except:
+		return 'https://ids.untangle.com/suricatasignatures.tar.gz'
 
 try:
     Uvm_context = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
@@ -66,7 +72,7 @@ class Logger:
     def message(*args, **kwargs):
         """
         Output messages.
-        *args contains message to display.  
+        *args contains message to display.
                 This can also contain sys.exc_info() for an exception stack trace, like:
                 Logger.message("Cannot do someting", sys.exc_info(), target="log")
         *kwargs can contain:
@@ -125,7 +131,7 @@ class Logger:
             # Remove messages we processed as sub messages
             for index in reversed(remove_message_indexes):
                 del messages[index]
-            
+
         full_message = message_joiner.join(str(message) for message in messages)
 
         target=Logger.target
@@ -392,7 +398,7 @@ class Update:
         self.patches = []
         for file_name in os.listdir( self.working_extract_path ):
             stem = pathlib.Path(file_name).stem
-            suffix = pathlib.Path(file_name).suffix 
+            suffix = pathlib.Path(file_name).suffix
             if suffix == ".patch":
                 if os.path.exists( "{path}/{stem}.md5".format(path=self.working_extract_path,stem=stem)) is False:
                     # Missing .md5 means incomplete patch
@@ -419,7 +425,7 @@ class Update:
             return self.install_patches()
         else:
             return self.install_full()
-        
+
     def install_patches(self):
         """
         Patch to copy of current
@@ -460,7 +466,7 @@ class Update:
             patch_command_output = None
             patch_command = None
             try:
-                patch_command = subprocess.Popen(["patch","-p2","-ruN", "-i", "../{extract_relative_path}/{patch}.patch".format(extract_relative_path=self.extract_relative_path,patch=patch)], stderr=subprocess.STDOUT,stdout=subprocess.PIPE, cwd=self.working_current_path)
+                patch_command = subprocess.Popen(["patch","-p2","-ruN", "-i", "../{extract_relative_path}/{patch}.patch".format(extract_relative_path=self.extract_relative_path,patch=patch)], stderr=subprocess.STDOUT,stdout=subprocess.PIPE, cwd=self.working_current_path, text=True)
                 patch_command_output = patch_command.communicate()[0]
             except:
                 Logger.message("unable to apply patch={patch} to patch directory={working_current_path}".format(patch=patch, working_current_path=self.working_current_path), sys.exc_info(), target="log")
@@ -503,7 +509,7 @@ class Update:
             md5 = None
             md5_output = None
             try:
-                md5 = subprocess.Popen(["find", ".", "!", "-name", "suricatasignatures*.md5", "-type", "f", "-exec", "md5sum", "{}", "+"], stdout=subprocess.PIPE, cwd=self.working_current_path)
+                md5 = subprocess.Popen(["find", ".", "!", "-name", "suricatasignatures*.md5", "-type", "f", "-exec", "md5sum", "{}", "+"], stdout=subprocess.PIPE, cwd=self.working_current_path, text=True)
                 md5_output = md5.communicate()[0]
             except:
                 Logger.message("unable to validate md5sum", sys.exc_info())
@@ -520,7 +526,7 @@ class Update:
                 for output in applied_md5:
                     Logger.message("applied md5: {output}".format(output=output))
 
-            diffs = set(patch_md5) ^ set(applied_md5) 
+            diffs = set(patch_md5) ^ set(applied_md5)
             if len(diffs):
                 for diff in list(diffs):
                     Logger.message("md5 mismatch: {diff}".format(diff=diff))
@@ -629,7 +635,7 @@ def main(argv):
 
     force_sync = False
     signatures_template_directory = "/usr/share/untangle-suricata-config"
-    url_template = Signature_url_template
+    url_template = get_signature_template_uri()
 
     try:
         opts, args = getopt.getopt(argv, "hru:d", ["help", "signatures_template_directory=", "url=", "force_sync", "debug"] )
@@ -673,7 +679,7 @@ def main(argv):
     ##
     ## For each set, a patch is attempted for each set.
     ##
-    ## Using a single Url allows those who use uriManager only need to specify a single 
+    ## Using a single Url allows those who use uriManager only need to specify a single
     ## Signature_url_template value that can follow across when snort versions change.
     ##
     urls = []
@@ -721,7 +727,7 @@ def main(argv):
         Update.synchronize()
 
     """
-    Always update last updated time even if nothing was downloaded 
+    Always update last updated time even if nothing was downloaded
     (suricata signatures aren't updated every day)
     Otherwise customers will call to complain.
     """
@@ -732,6 +738,6 @@ def main(argv):
         update_ran_file.close()
 
     print("time to update={elapsed:.2f}s".format(elapsed=time.time() - time_begin))
- 
+
 if __name__ == "__main__":
     main(sys.argv[1:])

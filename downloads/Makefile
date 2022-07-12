@@ -70,11 +70,11 @@ $(OUTPUT_DIRECTORY)/%: %.tar.bz2 $(OUTPUT_DIRECTORY).$(dir_target)
 # zips made from directory itself (yuck) Also, unzip can exit with
 # status 2 when everything is ok!
 $(OUTPUT_DIRECTORY)/%: %.zip $(OUTPUT_DIRECTORY).$(dir_target)
-	@echo "[unzip   ] $< -> $@"
-	@$(RM_DIR) $@
-	@-$(UNZIP) -d $@ $< > /dev/null 2>&1
-	@if [ -x $(<:.zip=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.zip=.post) $(OUTPUT_DIRECTORY) > /dev/null 2>&1; fi
-	@touch $@
+	echo "[unzip   ] $< -> $@"
+	$(RM_DIR) $@
+	-$(UNZIP) -d $@ $< 
+	if [ -x $(<:.zip=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.zip=.post) $(OUTPUT_DIRECTORY); fi
+	touch $@
 
 # Jars are simpler since there is no exclusion.
 $(OUTPUT_DIRECTORY)/%: %.jar $(OUTPUT_DIRECTORY).$(dir_target)

@@ -2,25 +2,30 @@ import hashlib
 import html
 import base64
 import sys
-import re
-#import pycurl
 import requests
 import json
 import crypt
-import sys
-import urllib.parse
-import io
+from uvm import Uvm
+
 
 def get_app_settings_item(a,b):
     return None
 def get_uvm_settings_item(a,b):
     return None
 
+
 try:
     from uvm.settings_reader import get_app_settings_item
     from uvm.settings_reader import get_uvm_settings_item
 except ImportError:
     pass
+
+
+def get_auth_uri():
+    try:
+        return Uvm().getUvmContext().uriManager().getUri('https://auth.untangle.com/v1/CheckTokenAccess')
+    except:
+        return 'https://auth.untangle.com/v1/CheckTokenAccess'
 
 
 # We define two logger classes so that when this module is imported
@@ -144,6 +149,13 @@ def valid_login(req, realm, username, password):
         return False
 
 
+def getuid():
+    uid = None
+    with open('/usr/share/untangle/conf/uid', 'r') as uidfile:
+        uid = uidfile.read().replace('\n', '')
+    return uid
+
+
 def valid_token(req, token):
     """
     Returns true if token is valid.
@@ -152,14 +164,10 @@ def valid_token(req, token):
     token -- a token string that we will check against auth.untangle.com
     """
     try:
-        uid = None
-        with open('/usr/share/untangle/conf/uid', 'r') as uidfile:
-            uid = uidfile.read().replace('\n', '')
-
+        uid = getuid()
         postdata = json.dumps({"token": token, "resourceId": uid})
-        print("postdata: {!r}".format(postdata), file=sys.stderr)
         response = requests.post(
-            'https://auth.untangle.com/v1/CheckTokenAccess',
+            get_auth_uri(),
             data=postdata,
             headers={
                 "Content-Type": 'application/json',
@@ -168,11 +176,6 @@ def valid_token(req, token):
                 '4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981'})
         response.raise_for_status()
         value = response.json()
-
-        print(
-            f"auth: login_tools.valid_token() request with token {token}/uid"
-            f" {uid} returned: {value}",
-            file=sys.stderr)
         return value
     except Exception as e:
         print(

@@ -68,7 +68,7 @@ public class UriManagerImpl implements UriManager
 
     /**
      * Get the settings
-     * 
+     *
      * @return The settings
      */
     public UriManagerSettings getSettings()
@@ -78,7 +78,7 @@ public class UriManagerImpl implements UriManager
 
     /**
      * Set the settings
-     * 
+     *
      * @param newSettings
      *        The new settings
      */
@@ -192,7 +192,7 @@ public class UriManagerImpl implements UriManager
             this.UriMap = new HashMap<>();
             this.HostUriTranslations = new HashMap<>();
             URIBuilder uriBuilder = null;
-            String keyHost = null; 
+            String keyHost = null;
             UriTranslation utExpanded;
             if(settings.getUriTranslations() != null){
                 for(UriTranslation ut : settings.getUriTranslations()){
@@ -253,6 +253,10 @@ public class UriManagerImpl implements UriManager
 
         uriTranslation = new UriTranslation();
         uriTranslation.setUri("https://auth-relay.untangle.com/callback.php");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://auth.untangle.com/v1/CheckTokenAccess");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();

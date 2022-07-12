@@ -183,19 +183,19 @@ def search_gridlist(name,grid_list):
 state_array = []
 policy_array = []
 
-state_proc = subprocess.Popen("/sbin/ip xfrm state list", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+state_proc = subprocess.Popen("/sbin/ip xfrm state list", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 (state_out,state_err) = state_proc.communicate()
 state_array = parse_output(state_out, state_array, state_grid)
 
-policy_in = subprocess.Popen("/sbin/ip xfrm policy list dir in", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+policy_in = subprocess.Popen("/sbin/ip xfrm policy list dir in", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 (policy_out,policy_err) = policy_in.communicate()
 policy_array = parse_output(policy_out, policy_array, policy_grid)
 
-policy_out = subprocess.Popen("/sbin/ip xfrm policy list dir out", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+policy_out = subprocess.Popen("/sbin/ip xfrm policy list dir out", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 (policy_out,policy_err) = policy_out.communicate()
 policy_array = parse_output(policy_out, policy_array, policy_grid)
 
-policy_fwd = subprocess.Popen("/sbin/ip xfrm policy list dir fwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+policy_fwd = subprocess.Popen("/sbin/ip xfrm policy list dir fwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 (policy_out,policy_err) = policy_fwd.communicate()
 policy_array = parse_output(policy_out, policy_array, policy_grid)
 
