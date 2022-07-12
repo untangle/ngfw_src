@@ -90,6 +90,8 @@ static int _netcap_init()
         return perrlog("uname");
     }
 
+    debug(0,"release=%s\n", utsn.release);
+
     is_new_kernel = 0;
     if ( strstr(utsn.release,"2.6.26") != NULL) {
         return perrlog( "Unsupported kernel: 2.6.26\n" );
@@ -129,34 +131,39 @@ static int _netcap_init()
     else if ( strstr(utsn.release,"4.9.28") != NULL ) {
         ip_saddr = 24;
         ip_sendnfmark = 25;
-        is_new_kernel = 443;
+        is_new_kernel = 492;
     }
     else if ( strstr(utsn.release,"4.9.0-11") != NULL ) {
         ip_saddr = 24;
         ip_sendnfmark = 25;
-        is_new_kernel = 443;
+        is_new_kernel = 490;
     }
     else if ( strstr(utsn.release,"4.19.0-6") != NULL ) {
         ip_saddr = 26;
         ip_sendnfmark = 27;
-        is_new_kernel = 443;
+        is_new_kernel = 419;
     }
     else if ( strstr(utsn.release,"4.19.0-8") != NULL ) {
         ip_saddr = 26;
         ip_sendnfmark = 27;
-        is_new_kernel = 443;
+        is_new_kernel = 419;
     }
     else if ( strstr(utsn.release,"5.10.0-9") != NULL ) {
         ip_saddr = 26;
         ip_sendnfmark = 27;
-        is_new_kernel = 443;
+        is_new_kernel = 510;
+    }
+    else if ( strstr(utsn.release,"5.10.0-14") != NULL ) {
+        ip_saddr = 27;
+        ip_sendnfmark = 28;
+        is_new_kernel = 510;
     }
     else {
         errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
         errlog( ERR_WARNING, "Assuming 5.10.0\n" );
         /* unknown kernel */ 
-        ip_saddr = 26;
-        ip_sendnfmark = 27;
+        ip_saddr = 27;
+        ip_sendnfmark = 28;
         is_new_kernel = 443;
     }
     
