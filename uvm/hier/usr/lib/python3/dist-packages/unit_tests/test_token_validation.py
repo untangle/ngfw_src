@@ -25,7 +25,7 @@ class TestTokenValid(unittest.TestCase):
             headers={
                 "Content-Type": 'application/json',
                 'Accept': 'application/json',
-                'AuthRequest': '4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981'})
+                'AuthRequest': login_tools.AUTH_REQUEST_HEADER_TOKEN})
 
     @patch('requests.post')
     def test_token_validity(self, mock_post):
