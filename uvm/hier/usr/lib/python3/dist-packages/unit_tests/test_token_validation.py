@@ -5,7 +5,9 @@ import json
 
 
 class TestTokenValid(unittest.TestCase):
-
+    """
+    Test token validation, the login_tools.valid_token() method.
+    """
     def __do_token_run(self, isValid):
         token_value = 'token'
         uid = 'uid'
@@ -27,6 +29,10 @@ class TestTokenValid(unittest.TestCase):
 
     @patch('requests.post')
     def test_token_validity(self, mock_post):
+        """
+        Test a normal 'valid' token using a mock to mock out the
+        requests.post function.
+        """
         post_result = MagicMock(return_value=None)
         post_result.raise_for_status = lambda: None
         post_result.json.return_value = True
@@ -36,6 +42,10 @@ class TestTokenValid(unittest.TestCase):
 
     @patch('requests.post')
     def test_invalid_token(self, mock_post):
+        """
+        Test that when the REST endpoint returns false, we also
+        do.
+        """
         post_result = MagicMock(return_value=None)
         post_result.raise_for_status = lambda: None
         post_result.json.return_value = False
@@ -45,6 +55,10 @@ class TestTokenValid(unittest.TestCase):
 
     @patch('requests.post')
     def test_bad_status(self, mock_post):
+        """
+        Test that when raise_for_status() does raise, we return
+        False.
+        """
         post_result = MagicMock(return_value=None)
         post_result.raise_for_status.side_effect = RuntimeError(
             "bad status code")
