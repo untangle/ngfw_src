@@ -107,6 +107,7 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
                 },
                 fieldLabel: 'Encryption'.t(),
                 labelWidth: 120,
+                width: 350,
                 editable: false,
                 displayField: 'name',
                 valueField: 'value'
@@ -201,6 +202,7 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
                 },
                 fieldLabel: 'Encryption'.t(),
                 labelWidth: 120,
+                width: 350,
                 editable: false,
                 displayField: 'name',
                 valueField: 'value'
