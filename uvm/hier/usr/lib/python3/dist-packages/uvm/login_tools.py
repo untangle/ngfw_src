@@ -2,19 +2,17 @@ import hashlib
 import html
 import base64
 import sys
-import re
-import pycurl
+import requests
 import json
 import crypt
-import sys
-import urllib.parse
-from io import StringIO
 from uvm import Uvm
+
 
 def get_app_settings_item(a,b):
     return None
 def get_uvm_settings_item(a,b):
     return None
+
 
 try:
     from uvm.settings_reader import get_app_settings_item
@@ -22,11 +20,13 @@ try:
 except ImportError:
     pass
 
+
 def get_auth_uri():
     try:
         return Uvm().getUvmContext().uriManager().getUri('https://auth.untangle.com/v1/CheckTokenAccess')
     except:
         return 'https://auth.untangle.com/v1/CheckTokenAccess'
+
 
 # We define two logger classes so that when this module is imported
 # outside of a running apache instance, we can still run the functions
@@ -148,34 +148,40 @@ def valid_login(req, realm, username, password):
     else:
         return False
 
-def valid_token(req, token):
+
+def getuid():
+    uid = None
+    with open('/usr/share/untangle/conf/uid', 'r') as uidfile:
+        uid = uidfile.read().replace('\n', '')
+    return uid
+
+
+AUTH_REQUEST_HEADER_TOKEN = 'B132C885-962B-4D63-8B2F-441B7A43CD93'
+
+
+def valid_token(token):
+    """
+    Returns true if token is valid.
+
+    token -- a token string that we will check against auth.untangle.com
+    """
     try:
-        uid=None
-        with open('/usr/share/untangle/conf/uid', 'r') as uidfile:
-            uid=uidfile.read().replace('\n', '')
-
-        buffer = StringIO()
-        postdata = json.dumps({ "token": token, "resourceId": uid  })
-
-        curl = pycurl.Curl()
-        curl.setopt( pycurl.POST, 1 )
-        curl.setopt( pycurl.POSTFIELDS, postdata )
-        curl.setopt( pycurl.NOSIGNAL, 1 )
-        curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
-        curl.setopt( pycurl.TIMEOUT, 30 )
-        curl.setopt( pycurl.URL, get_auth_uri())
-        curl.setopt( pycurl.HTTPHEADER,
-                     ["Content-type: application/json",
-                      "Accept: application/json",
-                      "AuthRequest: 4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981"])
-        curl.setopt( pycurl.WRITEDATA, buffer )
-
-        curl.perform()
-
-        body = buffer.getvalue()
-        print(body)
-        return (body == "true")
-    except:
+        uid = getuid()
+        postdata = json.dumps({"token": token, "resourceId": uid})
+        response = requests.post(
+            get_auth_uri(),
+            data=postdata,
+            headers={
+                "Content-Type": 'application/json',
+                'Accept': 'application/json',
+                'AuthRequest': AUTH_REQUEST_HEADER_TOKEN})
+        response.raise_for_status()
+        value = response.json()
+        return value
+    except Exception as e:
+        print(
+            f"auth: login_tools.valid_token(): caught error: {e}",
+            file=sys.stderr)
         return False
 
 

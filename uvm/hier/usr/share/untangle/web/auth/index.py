@@ -49,7 +49,7 @@ def login(req, url=None, realm='Administrator', token=None):
     realm = form['realm']
     if 'fragment' in form:
         fragment = form['fragment']
-    
+
     error_msg = None
     if 'username' in form or 'password' in form:
         error_msg = '%s' % html.escape(_('Error: Username and Password do not match'))
@@ -64,7 +64,7 @@ def login(req, url=None, realm='Administrator', token=None):
         return
 
     if token != None and get_uvm_settings_item('system','cloudEnabled'):
-        if login_tools.valid_token(req, token):
+        if login_tools.valid_token(token):
             sess = Session.Session(req, lock=0)
             sess.lock()
             sess.set_timeout(uvm_login.SESSION_TIMEOUT)
@@ -175,4 +175,3 @@ def write_error_page(req, msg):
 """ % (us, us, html.escape(msg))
 
     req.write(html_string)
-
