@@ -81,7 +81,20 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                 data: [
                     { name: '3DES', value: '3des' },
                     { name: 'AES-128', value: 'aes128' },
+                    { name: 'AES-128 GCM w/ 8 bit ICV', value: 'aes128gcm8' },
+                    { name: 'AES-128 GCM w/ 12 bit ICV', value: 'aes128gcm12' },
+                    { name: 'AES-128 GCM w/ 16 bit ICV', value: 'aes128gcm16' },
+                    { name: 'AES-128 GCM w/ 64 bit ICV', value: 'aes128gcm64' },
+                    { name: 'AES-128 GCM w/ 96 bit ICV', value: 'aes128gcm96' },
+                    { name: 'AES-128 GCM w/ 128 bit ICV', value: 'aes128gcm128' },
                     { name: 'AES-256', value: 'aes256' },
+                    { name: 'AES-256 GCM w/ 8 bit ICV', value: 'aes256gcm8' },
+                    { name: 'AES-256 GCM w/ 12 bit ICV', value: 'aes256gcm12' },
+                    { name: 'AES-256 GCM w/ 16 bit ICV', value: 'aes256gcm16' },
+                    { name: 'AES-256 GCM w/ 64 bit ICV', value: 'aes256gcm64' },
+                    { name: 'AES-256 GCM w/ 96 bit ICV', value: 'aes256gcm96' },
+                    { name: 'AES-256 GCM w/ 128 bit ICV', value: 'aes256gcm128' },
+                    { name: 'Camellia', value: 'camellia' },
                     { name: 'Blowfish', value: 'blowfish' },
                     { name: 'Twofish', value: 'twofish' },
                     { name: 'Serpent', value: 'serpent' }
@@ -147,7 +160,6 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                     { name: 'Blowfish', value: 'blowfish' },
                     { name: 'Twofish', value: 'twofish' },
                     { name: 'Serpent', value: 'serpent' }
-
                 ]
             },
 
