@@ -98,6 +98,9 @@ insert_iptables_rules()
     # want to be added to the top of the uvm-tcp-direct chain.
     # Most notably, ipsec.
     while read line; do
+        if [ "$line" = "" ] ; then
+            continue
+        fi
         file_name=$(echo $line | cut -d: -f1 | xargs readlink -f)
         if [ "$file_name" = "$script_file_name" ] ; then
             # Ignore ourself
@@ -160,7 +163,7 @@ EOT
     ip route add local 0.0.0.0/0 dev lo table 1000 >/dev/null 2>&1 # ignore error if exists
 
     # Unfortunately we have to give utun an address or the reinjection does not work
-    # Use a bogus address
+    # Use a bogus IP address
     ip addr change ${TUN_IP_ADDR}/${TUN_IP_PREFIX} dev ${TUN_DEV}
     # Even though we set the mac address in the driver initialization in
     # libnetcap, in Debian Bullseye, some library upgrade prevent the
