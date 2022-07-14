@@ -30,15 +30,12 @@ SETTINGS_NETWORK_BYPASSRULES_EOF
 )
 
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESPROCESSING" = "x" ]; then
-    echo "Missing iptablesProcessing!"
     return 0
 fi
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESNFQNUMBER" = "x" ]; then
-    echo "Missing iptablesNfqNumber!"
     return 0
 fi
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESMAXSCANSIZE" = "x" ]; then
-    echo "Missing iptablesMaxScanSize!"
     return 0
 fi
 
