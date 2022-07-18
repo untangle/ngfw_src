@@ -3,6 +3,11 @@
 # This script contains a number of helper functions which were moved out
 # of UVM to accomplish additional security hardning.
 
+testDiskFree()
+{
+    /usr/bin/df -k / | awk '//{printf("%d",$5)}'
+}
+
 testDiskError1()
 {
     /usr/bin/tail -n 15000 /var/log/kern.log | grep -m1 -B3 'DRDY ERR'
