@@ -163,7 +163,7 @@ def _write_error_page(req, msg):
     <div id="main" style="width: 500px; margin: 50px auto 0 auto;">
         <form class="form-signin">
             <center>
-                <img style="margin-bottom:10px; max-width: 150px; max-height: 140px;" src="/images/BrandingLogo.png"><br/>
+                <img style="margin-bottom:10px; max-width: 300px; max-height: 48px;" src="/images/BrandingLogo.png"><br/>
                 <span class="form-signin-heading"><strong>%s</strong></span>
              <br/>
                 <br/>
@@ -246,7 +246,7 @@ def _write_loading_page(req):
     <div id="main" style="width: 500px; margin: 50px auto 0 auto;">
         <form class="form-signin">
             <center>
-                <img style="margin-bottom:10px; max-width: 150px; max-height: 140px;" src="/images/BrandingLogo.png"><br/>
+                <img style="margin-bottom:10px; max-width: 300px; max-height: 48px;" src="/images/BrandingLogo.png"><br/>
              <br/>
                 <br/>
                 <span class="form-signin-heading">

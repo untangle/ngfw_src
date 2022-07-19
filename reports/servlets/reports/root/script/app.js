@@ -16,14 +16,14 @@ Ext.define('Ung.view.Main', {
         ui: 'navigation',
         border: false,
         style: {
-            background: '#1b1e26'
+            background: '#16325B'
         },
         layout: 'hbox',
         items: [{
             xtype: 'component',
             padding: '6 7 2 7',
             border: false,
-            html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
+            html: '<img src="' + '/images/BrandingLogo.png" style="height: 24px; margin-bottom: 3px;"/>',
             hrefTarget: '_self',
             href: '#'
         }, {

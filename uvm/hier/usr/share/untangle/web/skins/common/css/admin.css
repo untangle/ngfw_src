@@ -502,8 +502,8 @@ a.link,a.link:visited {
 .main-menu-btn.x-btn {
     border-radius: 3px;
     margin: 0 5px;
-    background-color: #1b1e26;
-    border-color: #1b1e26;
+    background-color: #16325B;
+    border-color: #16325B;
     background-image: none;
 }
 
@@ -571,7 +571,7 @@ a.link,a.link:visited {
 
 
 .notification-dd {
-    background: #1b1e26;
+    background: #16325B;
     color: #CCC;
     border: 0;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
@@ -609,7 +609,7 @@ a.link,a.link:visited {
 
 
 .user-menu-dd {
-    background: #1b1e26;
+    background: #16325B;
     border: 0;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.8);
     right: 0 !important;
@@ -707,7 +707,7 @@ a.link,a.link:visited {
 
 
 a.menu-link,a.menu-link:visited {
-    color: #1b1e26;
+    color: #16325B;
     text-decoration: none;
     text-transform: uppercase;
     margin: 0 5px;
@@ -743,7 +743,7 @@ a.forgot-password:hover {
 .main-menu {
     height: 66px;
     overflow: hidden;
-    background-color: #1b1e26;
+    background-color: #16325B;
     z-index: 999;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
 }
@@ -2013,7 +2013,7 @@ a.forgot-password:hover {
 .toast-exception .content {
     font-family: 'PT Sans', Tahoma, Geneva, sans-serif;
     color: #FFF;
-    background: #1B1E26;
+    background: #16325B;
     border-width: 0;
 }
 
@@ -2072,7 +2072,7 @@ a.forgot-password:hover {
 }
 
 .reg .branding {
-    background: #1b1e26;
+    background: #16325B;
 }
 .reg .branding img {
     max-height: 70px;

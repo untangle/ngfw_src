@@ -20,21 +20,17 @@ Ext.define('Ung.view.main.MainHeading', {
         responsiveConfig: null
     }, {
         text: 'Dashboard'.t(),
-        iconCls: 'fa fa-home fa-lg',
         handler: 'onDashboard',
         bind: { userCls: '{activeItem === "dashboardMain" ? "pressed" : ""}' }
     }, {
         text: 'Apps'.t(),
-        iconCls: 'fa fa-th fa-lg',
         bind: { href: '#apps/{policyId}', userCls: '{(activeItem === "apps" || activeItem === "appCard") ? "pressed" : ""}' },
     }, {
         text: 'Config'.t(),
-        iconCls: 'fa fa-cog fa-lg',
         href: '#config',
         bind: { userCls: '{(activeItem === "config" || activeItem === "configCard") ? "pressed" : ""}' },
     }, {
         text: 'Reports'.t(),
-        iconCls: 'fa fa-area-chart fa-lg',
         handler: 'onReports',
         bind: {
             userCls: '{activeItem === "reports" ? "pressed" : ""}',
@@ -42,22 +38,18 @@ Ext.define('Ung.view.main.MainHeading', {
     }, '->', {
         text: 'Sessions'.t(),
         href: '#sessions',
-        iconCls: 'monitor sessions',
         bind: { userCls: '{activeItem === "sessions" ? "pressed" : ""}' }
     }, {
         text: 'Hosts'.t(),
         href: '#hosts',
-        iconCls: 'monitor hosts',
         bind: { userCls: '{activeItem === "hosts" ? "pressed" : ""}' }
     }, {
         text: 'Devices'.t(),
         href: '#devices',
-        iconCls: 'monitor devices',
         bind: { userCls: '{activeItem === "devices" ? "pressed" : ""}' }
     }, {
         text: 'Users'.t(),
         href: '#users',
-        iconCls: 'monitor users',
         bind: { userCls: '{activeItem === "users" ? "pressed" : ""}' }
     }, {
         xtype: 'component',
@@ -116,49 +108,39 @@ Ext.define('Ung.view.main.MainHeading', {
             },
             items: [{
                 text: 'Dashboard'.t(),
-                iconCls: 'fa fa-home',
                 href: '#'
             }, {
                 text: 'Apps'.t(),
-                iconCls: 'fa fa-th',
                 href: '#apps' // href is not bindable in menu items, so no policy id passed from men uitem
             }, {
                 text: 'Config'.t(),
-                iconCls: 'fa fa-cog',
                 href: '#config'
             }, {
                 text: 'Reports'.t(),
-                iconCls: 'fa fa-line-chart',
                 href: '#reports'
             }, {
                 xtype: 'menuseparator'
             }, {
                 text: 'Sessions'.t(),
-                iconCls: 'monitor sessions',
                 href: '#sessions'
             }, {
                 text: 'Hosts'.t(),
-                iconCls: 'monitor hosts',
                 href: '#hosts'
             }, {
                 text: 'Devices'.t(),
-                iconCls: 'monitor devices',
                 href: '#devices'
             }, {
                 text: 'Users'.t(),
-                iconCls: 'monitor users',
                 href: '#users'
             }, {
                 xtype: 'menuseparator'
             }, {
                 text: 'Account Settings'.t(),
-                iconCls: 'fa fa-user-circle',
                 hrefTarget: '_blank',
                 href: Util.getStoreUrl() + '?action=my_account&' + Util.getAbout(),
                 responsiveConfig: null
             }, {
                 text: 'Logout'.t(),
-                iconCls: 'fa fa-sign-out',
                 href: '/auth/logout?url=/admin&realm=Administrator',
                 responsiveConfig: null
             }],

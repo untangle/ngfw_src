@@ -72,7 +72,7 @@ Ext.define('Ung.config.network.NetworkTest', {
         fieldStyle: {
             fontFamily: 'Courier, monospace',
             fontSize: '14px',
-            background: '#1b1e26',
+            background: '#16325B',
             color: 'lime'
         },
         // margin: 10,
