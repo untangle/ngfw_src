@@ -559,7 +559,7 @@ def load_capture_settings(req,appid=None):
     captureSettings = None
 
     # start with our company name
-    companyName = 'Untangle'
+    companyName = 'Arista'
 
     # if there is an OEM name configured we use that instead of our company name
     oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")

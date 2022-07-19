@@ -39,7 +39,7 @@ public class BrandingManagerSettings implements Serializable, JSONString
         this.setBannerMessage(copy.getBannerMessage());
     }
 
-    public String getCompanyName() { return null == companyName ? "Untangle" : companyName; }
+    public String getCompanyName() { return null == companyName ? "Arista" : companyName; }
     public void setCompanyName( String companyName ) { this.companyName = companyName; }
 
     public String getCompanyUrl() { return null == companyUrl ? "http://www.untangle.com" : companyUrl; }

@@ -16,7 +16,7 @@ public class BrandingManagerImpl implements BrandingManager
 {
     private DefaultBrandingManager defaultBranding;
 
-    private final String defaultCompanyName = "Untangle";
+    private final String defaultCompanyName = "Arista";
     private final String defaultCompanyUrl = "http://untangle.com/";
 
     /**
