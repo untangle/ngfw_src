@@ -300,7 +300,7 @@ def setup_gettext():
 
 
 def get_company_name():
-    company = 'Untangle'
+    company = 'Arista'
 
     oemName = get_settings_item(
         "@PREFIX@/usr/share/untangle/conf/oem.js", "oemName")
@@ -390,7 +390,7 @@ def write_error_page(req, msg):
 <div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">
 <div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">
 <center>
-<img alt=\"\" src=\"/images/BrandingLogo.png\" style=\"max-width: 150px; max-height: 140px;\"/><br /><br />
+<img alt=\"\" src=\"/images/BrandingLogo.png\" style=\"max-width: 300px; max-height: 48px;\"/><br /><br />
 <b>%s</b><br /><br />
 <em>%s</em>
 </center><br /><br />

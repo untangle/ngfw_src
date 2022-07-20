@@ -34,8 +34,8 @@
             max-width: none;
         }
         .branding-logo-setup {
-          height: 96px;
-          width: 150px;
+          height: 48px;
+          width: 307px;
         }        
     </style>
     <link href="styles/custom-setup.css" rel="stylesheet" type="text/css" />

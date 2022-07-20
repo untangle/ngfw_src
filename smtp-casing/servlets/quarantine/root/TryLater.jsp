@@ -14,8 +14,8 @@ String companyName = uvm.brandingManager().getCompanyName();
     <link href="/ext6.2/fonts/source-sans-pro/css/fonts.css" rel="stylesheet" />
  </head>
 <body style="margin: 0; padding: 0; font-family: 'Source Sans Pro', sans-serif;">
-    <div style="background: #1b1e26; height: 52px; color: #FFF;">
-        <img src="/images/BrandingLogo.png" style="height: 40px; margin: 6px; vertical-align: middle;"/>
+    <div style="background: #16325B; height: 52px; color: #FFF;">
+        <img src="/images/BrandingLogo.png" style="height: 24px; margin: 6px; vertical-align: middle;"/>
         <span style="font-size: 16px; color: #CCC;">Quarantine Service Error</span>
     </div>
 

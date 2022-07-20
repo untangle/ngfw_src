@@ -12,7 +12,7 @@ Ext.define('Ung.view.Main', {
         border: false,
         height: 52,
         style: {
-            background: '#1b1e26'
+            background: '#16325B'
         },
         items: [{
             xtype: 'button',
