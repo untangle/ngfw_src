@@ -21,7 +21,7 @@ Ext.define('Ung.Setup.Main', {
         items: [{
             xtype: 'component',
             style: { textAlign: 'center' },
-            html: '<img src="images/BrandingLogo.png" height=96/><h1>' + Ext.String.format('Thanks for choosing {0}!'.t(), rpc.oemShortName) + '</h1>'
+            html: '<img src="images/BrandingLogo.png" height=48/><h1>' + Ext.String.format('Thanks for choosing {0}!'.t(), rpc.oemShortName) + '</h1>'
         }]
     }],
     listeners: {

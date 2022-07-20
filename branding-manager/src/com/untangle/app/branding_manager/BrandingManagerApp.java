@@ -33,7 +33,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     private static final File DEFAULT_LOGO = new File("/var/www/images/DefaultLogo.png");
     private static final File BRANDING_LOGO = new File("/var/www/images/BrandingLogo.png");
 
-    private static final String DEFAULT_UNTANGLE_COMPANY_NAME = "Untangle";
+    private static final String DEFAULT_UNTANGLE_COMPANY_NAME = "Arista";
     private static final String DEFAULT_UNTANGLE_URL = "http://untangle.com/";
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -190,7 +190,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
          * If OEM, initialize settings differently
          */
         String oemName = UvmContextFactory.context().oemManager().getOemName();
-        if (oemName == null || oemName.equals("Untangle")) {
+        if (oemName == null || oemName.equals("Arista")) {
             newSettings.setCompanyName(DEFAULT_UNTANGLE_COMPANY_NAME);
             newSettings.setCompanyUrl(DEFAULT_UNTANGLE_URL);
         } else {

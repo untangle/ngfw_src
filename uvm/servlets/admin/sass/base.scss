@@ -1,7 +1,7 @@
 @import 'vars';
 cite {
     //border-bottom: 1px red dotted;
-    background: yellow;
+    // background: yellow;
     //background: rgba(255, 255, 0, 0.5);
     font-style: normal;
 }
@@ -12,7 +12,7 @@ cite {
 }
 
 .branding-logo {
-    height: 40px;
+    height: 24px;
 }
 
 // monitor icons
@@ -61,7 +61,7 @@ cite {
 
 .x-panel-body-navigation {
     /*background: -webkit-linear-gradient(top, rgb(40, 40, 40), rgb(25, 25, 25));*/
-    background: #1b1e26;
+    background: #16325B;
     color: #CCC;
 }
 
@@ -491,14 +491,14 @@ cite {
         padding: 5px 10px;
     }
     &:hover {
-        background: #1b1e26;
+        background: #16325B;
         .x-btn-inner {
             color: #FFF;
             font-size: 12px;
         }
     }
     &.x-btn-pressed {
-        background: #1b1e26;
+        background: #16325B;
         -webkit-box-shadow: inset 0 3px 5px #000;
         box-shadow: inset 0 3px 5px #000;
     }
@@ -532,27 +532,51 @@ cite {
 
 
 .x-toolbar-navigation {
-    background: #1b1e26;
+    background: #16325B;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
     z-index: 9999;
+    padding-bottom: 18px;
 }
 
 .x-toolbar-navigation .x-btn {
-    padding: 18px 10px;
-    background: transparent;
-    border-radius: 0;
+    padding: 2px 6px;
+    height: 28px;
+    border-radius: 4px;
+    // min-width: 100px;
+    margin: 9px 4px !important;
+    background: transparent !important;
     transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
+
+    &::before {
+        content: '';
+        background-color: #FFF;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        opacity: 0;
+    }
+
     &.logo {
-        padding: 6px 7px 2px 7px;
+        padding: 8px 0;
+        &::before {
+            content: unset;
+        }
     }
     .x-btn-inner {
         font-family: $custom-font;
         font-size: 14px;
+        font-weight: 600;
         color: #CCC;
+        text-transform: uppercase;
+        letter-spacing: 1px;
         transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
     &.x-btn-over {
-        background: #333333;
+        &::before {
+            opacity: 0.08;
+        }
         .x-btn-inner {
             color: #FFF;
         }
@@ -565,7 +589,9 @@ cite {
     }
 
     &.x-btn-menu-active {
-        background: #333333;
+        &::before {
+            opacity: 0.18;
+        }
     }
 
     .x-btn-icon-el {
@@ -576,13 +602,30 @@ cite {
     }
 
     &.x-btn-focus {
+        &::before {
+            opacity: 0.18;
+        }        
         box-shadow: none;
         .x-btn-wrap {
             outline: none;
         }
     }
+
+    &.x-btn-pressed {
+        &::before {
+            opacity: 0.18;
+        }
+        background: none;        
+        box-shadow: none;
+        .x-btn-wrap {
+            outline: none;
+        }
+    }
+
     &.pressed {
-        background: #3a3a3a;
+        &::before {
+            opacity: 0.18;
+        }
         .x-btn-inner {
             color: #FFF;
         }
@@ -789,10 +832,10 @@ span.fa:before {
 .heading-menu {
     border: 0;
     .x-menu-body {
-        background: #1b1e26;
+        background: #16325B;
     }
     .x-menu-item-focus {
-        background: #3a3a3a;
+        background: rgba(255,255,255,0.1);
         .x-menu-item-text, .x-menu-item-icon {
             color: #FFF;
         }
@@ -803,6 +846,8 @@ span.fa:before {
         color: #CCC;
         line-height: 36px;
         padding: 0 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     .x-menu-item-icon {
         color: #CCC;
@@ -821,7 +866,7 @@ span.fa:before {
 }
 .notification-menu {
     .x-menu-body {
-        background: #1b1e26;
+        background: #16325B;
         color: #CCC;
     }
     border: 0;

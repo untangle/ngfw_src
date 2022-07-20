@@ -101,7 +101,7 @@ def load_rpc_manager_list(appid=None):
 
 def load_capture_settings(req,appid=None):
 
-    companyName = 'Untangle'
+    companyName = 'Arista'
 
     oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
     if (oemName != None):

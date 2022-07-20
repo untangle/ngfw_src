@@ -317,7 +317,7 @@ def write_login_form(req, title, host, error_msg):
 <body>
 
 <header>
-    <img src="/images/BrandingLogo.png" style="max-width: 150px; max-height: 140px;">
+    <img src="/images/BrandingLogo.png" style="max-width: 300px; max-height: 48px;">
 </header>
 
 <div class="form-login">
