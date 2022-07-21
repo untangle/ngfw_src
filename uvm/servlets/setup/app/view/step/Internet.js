@@ -308,7 +308,7 @@ Ext.define('Ung.Setup.Internet', {
                         var remoteReachable = rpc.setup.getRemoteReachable();
                         Util.setRpcJsonrpc("admin");
                         if(remoteReachable == false){
-                            message = 'Unable to reach Command Center!'.t();
+                            message = 'Unable to reach ETM Dashboard!'.t();
                         }else{
                             nextDisabled = false;
                         }

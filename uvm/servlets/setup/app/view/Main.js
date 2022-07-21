@@ -85,7 +85,7 @@ Ext.define('Ung.Setup.Main', {
                     xtype: 'component',
                     margin: '0 0 20 0',
                     style: { textAlign: 'center' },
-                    html: 'To continue, you must log in using your Command Center account.  If you do not have one, you can create a free account.'.t(),
+                    html: 'To continue, you must log in using your ETM Dashboard account. If you do not have one, you can create a free account.'.t(),
                     hidden: true,
                     bind: {
                         hidden: '{remoteReachable == false || remoteReachable == null}'
@@ -118,8 +118,8 @@ Ext.define('Ung.Setup.Main', {
                     xtype: 'component',
                     margin: '0 0 20 0',
                     style: { textAlign: 'center' },
-                    html: '<p>' + 'To continue, you must connect to Command Center which is currently unreachable from this device.'.t() + '<br/>' + 
-                            '<p>' + 'You must configure Internet connectivity to Command Center to continue.'.t() + '<br/>',
+                    html: '<p>' + 'To continue, you must connect to ETM Dashboard which is currently unreachable from this device.'.t() + '<br/>' + 
+                            '<p>' + 'You must configure Internet connectivity to ETM Dashboard to continue.'.t() + '<br/>',
                     hidden: true,
                     bind: {
                         hidden: '{remoteReachable == true || remoteReachable == null}'

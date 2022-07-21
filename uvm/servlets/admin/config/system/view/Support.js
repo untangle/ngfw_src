@@ -19,7 +19,7 @@ Ext.define('Ung.config.system.view.Support', {
         title: 'Support'.t(),
         items: [{
             xtype: 'checkbox',
-            boxLabel: 'Connect to Command Center'.t(),
+            boxLabel: 'Connect to ETM Dashboard'.t(),
             bind: {
                  value: '{systemSettings.cloudEnabled}',
                  hidden: '{isCCHidden}'
