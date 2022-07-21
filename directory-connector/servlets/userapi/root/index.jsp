@@ -38,7 +38,7 @@ request.setAttribute( "i18n_map", uvm.languageManager().getTranslations("directo
  <!-- Content Start -->
 
     <div class="un_login_head">
-        <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.png" border="0" alt="<%=company%> logo" style="max-width: 150px; max-height: 140px;"/></a> <div><uvm:i18n>User Notification Login Script</uvm:i18n></div>
+        <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.png" border="0" alt="<%=company%> logo" style="max-width: 300px; max-height: 48px;"/></a> <div><uvm:i18n>User Notification Login Script</uvm:i18n></div>
     </div>
 
     <hr />
