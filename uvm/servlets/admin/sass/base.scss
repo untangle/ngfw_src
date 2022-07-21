@@ -873,18 +873,19 @@ span.fa:before {
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
     font-family: $custom-font;
     border-radius: 0 0 5px 5px;
-}
 
-.notification-menu ul {
-    margin: 0 5px 0 20px;
-    padding: 0;
+    h3 {
+        margin: 0 0 10px 0;
+        font-weight: normal;
+    }
+    ul {
+        margin: 0 5px 0 20px;
+        padding: 0;
+    }
+    a {
+        color: #e9d554; // arista yellow
+    }    
 }
-
-.notification-menu h3 {
-    margin: 0 0 10px 0;
-    font-weight: normal;
-}
-
 
 a.view-reports {
     text-decoration: none;
