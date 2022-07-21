@@ -12,7 +12,7 @@
         }
     ],
     "defaultColumns": ["time_stamp","username","hostname","c_client_addr","s_client_addr","protocol","c_client_port","s_client_port","s_server_addr","s_server_port"],
-    "description": "All sessions that have been NATd by Untangle.",
+    "description": "All sessions that have been NATd by Arista.",
     "displayOrder": 1060,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",

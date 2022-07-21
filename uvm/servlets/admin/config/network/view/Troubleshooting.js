@@ -120,7 +120,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
 
             viewModel: {
                 data: {
-                    description: 'The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client.'.t(),
+                    description: 'The <b>Connection Test</b> verifies that Arista can open a TCP connection to a port on the given host or client.'.t(),
                     emptyText: 'Connection Test Output'.t(),
                     destination: null,
                     port: null
