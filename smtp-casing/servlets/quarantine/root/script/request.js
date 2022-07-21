@@ -10,13 +10,13 @@ Ext.define('Ung.view.Main', {
         ui: 'navigation',
         dock: 'top',
         border: false,
-        height: 52,
+        height: 64,
         style: {
             background: '#16325B'
         },
         items: [{
-            xtype: 'button',
-            width: 80,
+            xtype: 'component',
+            width: 200,
             html: '<img src="' + '/images/BrandingLogo.png" class="branding-logo"/>',
             cls: 'logo',
             responsiveConfig: null
