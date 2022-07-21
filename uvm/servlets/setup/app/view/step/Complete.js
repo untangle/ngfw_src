@@ -61,7 +61,7 @@ Ext.define('Ung.Setup.Complete', {
                     xtype: 'component',
                     margin: '0 0 20 0',
                     style: { textAlign: 'center' },
-                    html: 'To continue, you must log in using your Command Center account.  If you do not have one, you can create a free account.'.t()
+                    html: 'To continue, you must log in using your ETM Dashboard account.  If you do not have one, you can create a free account.'.t()
                 });
                 items.push({
                     xtype: 'container',
