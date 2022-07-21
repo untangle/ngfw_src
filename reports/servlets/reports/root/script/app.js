@@ -15,6 +15,7 @@ Ext.define('Ung.view.Main', {
         dock: 'top',
         ui: 'navigation',
         border: false,
+        height: 64,
         style: {
             background: '#16325B'
         },
@@ -22,13 +23,11 @@ Ext.define('Ung.view.Main', {
         items: [{
             xtype: 'component',
             padding: '6 7 2 7',
+            width: 200,
             border: false,
-            html: '<img src="' + '/images/BrandingLogo.png" style="height: 24px; margin-bottom: 3px;"/>',
-            hrefTarget: '_self',
-            href: '#'
+            html: '<a href="#"><img src="' + '/images/BrandingLogo.png" style="height: 24px;"/></a>',
         }, {
             xtype: 'component',
-            flex: 1,
             html: '<h2 style="text-align: center; color: #CCC;">' + 'Reports'.t() + '</h2>'
         }]
     }],

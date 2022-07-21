@@ -17,7 +17,7 @@ Ext.define('Ung.view.main.Offline', {
         items: [{
             xtype: 'component',
             html: '<img src="/images/BrandingLogo.png" style="max-width: 300px; max-height: 48px;" />',
-            width: 166,
+            width: 400,
             height: 100
         }, {
             xtype: 'component',
