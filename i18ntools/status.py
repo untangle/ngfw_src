@@ -12,13 +12,12 @@ sys.path.insert(0, UNTANGLE_DIR)
 
 import i18n
 
-importlib.reload(sys)  
-sys.setdefaultencoding('utf8')
+importlib.reload(sys)
 
 languages = i18n.Languages()
 
 def usage():
-	print("Usage!")
+    print("Usage!")
 
 def main(argv):
     _debug = False

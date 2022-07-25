@@ -24,7 +24,6 @@ import i18n
 Debug=False
 
 importlib.reload(sys)
-sys.setdefaultencoding('utf8')
 
 ngfw = i18n.Ngfw()
 languages = i18n.Languages()
@@ -35,8 +34,8 @@ pot_file_name = "pot/en/untangle-en.pot"
 
 def get_keys(module):
     """
-	Walk source trees and pull text appropriately from
-	different types of files
+    Walk source trees and pull text appropriately from
+    different types of files
     """
     global pot
     module_source_directory = ngfw.get_module_directory(module)

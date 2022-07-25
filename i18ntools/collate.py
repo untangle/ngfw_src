@@ -15,8 +15,7 @@ sys.path.insert(0, UNTANGLE_DIR)
 
 import i18n
 
-importlib.reload(sys)  
-sys.setdefaultencoding('utf8')
+importlib.reload(sys)
 
 languages = i18n.Languages()
 
@@ -54,7 +53,7 @@ def main(argv):
     for po_base_path in po_base_paths:
         for root, dirs, files in os.walk(po_base_path):
             if "/i18ntools/" in root:
-            	# Ignore ourselves just in case we happen to have directory
+                # Ignore ourselves just in case we happen to have directory
                 continue
             if '.svn' in dirs:
                 dirs.remove(".svn")

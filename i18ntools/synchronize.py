@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Rebuild gettext template file (.pot) and 
+Rebuild gettext template file (.pot) and
 synchronize with existing po files
 """
 import datetime
@@ -19,8 +19,7 @@ sys.path.insert(0, UNTANGLE_DIR)
 
 import i18n
 
-importlib.reload(sys)  
-sys.setdefaultencoding('utf8')
+importlib.reload(sys)
 
 ngfw = i18n.Ngfw()
 languages = i18n.Languages()
