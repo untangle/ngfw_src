@@ -41,14 +41,14 @@ public class OemManagerImpl implements OemManager
         }
 
         if (readSettings != null) this.settings = readSettings;
-        else this.settings = new OemSettings("Arista", "Arista", "Untangle Server", "http://untangle.com", "https://www.untangle.com/legal", false);
+        else this.settings = new OemSettings("Arista", "Arista", "Arista Server", "http://untangle.com", "https://www.untangle.com/legal", false);
 
         logger.info("OEM: " + this.settings.getOemName());
     }
 
     /**
      * Get the OEM name
-     * 
+     *
      * @return The OEM name
      */
     @Override
@@ -59,7 +59,7 @@ public class OemManagerImpl implements OemManager
 
     /**
      * Get the OEM short name
-     * 
+     *
      * @return The OEM short name
      */
     @Override
@@ -70,7 +70,7 @@ public class OemManagerImpl implements OemManager
 
     /**
      * Get the OEM product name
-     * 
+     *
      * @return The OEM product name
      */
     @Override
@@ -81,7 +81,7 @@ public class OemManagerImpl implements OemManager
 
     /**
      * Get the OEM URL
-     * 
+     *
      * @return The OEM URL
      */
     @Override
@@ -165,8 +165,8 @@ public class OemManagerImpl implements OemManager
      *
      * @return the license agreement url
      */
-    @Override 
-    public String getLicenseAgreementUrl() 
+    @Override
+    public String getLicenseAgreementUrl()
     {
         UriManager uriManager = UvmContextFactory.context().uriManager();
         return uriManager.getUri(this.settings.getLicenseAgreementUrl());
@@ -174,12 +174,12 @@ public class OemManagerImpl implements OemManager
 
     /**
      * Get if local eula should be used
-     * 
+     *
      * @return if local eula should be used
      */
     @Override
-    public Boolean getUseLocalEula() 
+    public Boolean getUseLocalEula()
     {
-        return this.settings.getUseLocalEula();    
+        return this.settings.getUseLocalEula();
     }
 }

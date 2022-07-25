@@ -125,25 +125,25 @@ class PoRecord:
         self.source_record = record
 
     def get_revision_date(self):
-    	default_revision_date =  time.strptime("1970","%Y")
+        default_revision_date = time.strptime("1970","%Y")
 
         if self.source_record != None:
             headers = self.source_record.msg_str
         elif self.msg_id != "":
             headers = record.msg_str
         else:
-        	return default_revision_date
+            return default_revision_date
 
         for header in headers:
             last_revision_match = re.findall(PoRecord.regex_last_revision_date, header)
             if last_revision_match:
-            	last_revision_date = last_revision_match[0]
-            	tz_strip_space_pos = last_revision_date.rindex(" ")
-            	for sep in ["-", "+"]:
-            		tz_strip_char_pos = last_revision_date.rindex(sep)
-            		if tz_strip_char_pos and (tz_strip_char_pos > tz_strip_space_pos):
-            			last_revision_date = last_revision_date[0:tz_strip_char_pos]
-            			break
+                last_revision_date = last_revision_match[0]
+                tz_strip_space_pos = last_revision_date.rindex(" ")
+                for sep in ["-", "+"]:
+                    tz_strip_char_pos = last_revision_date.rindex(sep)
+                    if tz_strip_char_pos and (tz_strip_char_pos > tz_strip_space_pos):
+                        last_revision_date = last_revision_date[0:tz_strip_char_pos]
+                        break
 
                 for date_format in self.parse_date_formats:
                     try:

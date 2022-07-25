@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Rebuild gettext template file (.pot) and 
+Rebuild gettext template file (.pot) and
 synchronize with existing po files
 """
 import datetime
@@ -20,8 +20,7 @@ sys.path.insert(0, UNTANGLE_DIR)
 
 import i18n
 
-importlib.reload(sys)  
-sys.setdefaultencoding('utf8')
+importlib.reload(sys)
 
 ngfw = i18n.Ngfw()
 languages = i18n.Languages()
@@ -130,12 +129,12 @@ def main(argv):
             diff["add"].append(o_record)
         print("  Synchronizing: %s, %s," % (language["name"], pootle_file_name),)
 
-        ## Add non-empty 
+        ## Add non-empty
         for a_record in diff["add"]:
             pootle_po.add_record(a_record, replace_comments=True)
 
         print("%d added/modified" % (len(diff["add"])))
-        
+
         pootle_po.save()
 
 if __name__ == "__main__":
