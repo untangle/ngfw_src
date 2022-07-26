@@ -34,7 +34,6 @@ def statusToJSON(input):
     entry = {}
     skipEntry=False
     for line in input:
-        line = str(line, 'ascii','ignore')
         if count <= 3:
             res=parse.parse(indexMap[count],line)
             if res == None:
