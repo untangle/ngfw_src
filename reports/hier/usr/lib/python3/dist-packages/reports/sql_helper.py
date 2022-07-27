@@ -382,7 +382,7 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
         trigger_times = start_times
         yesterday = now - datetime.timedelta(days=1)
         if (table_exists(tablename + "_" + yesterday.strftime('%Y_%m_%d'))):
-            trigger_times.insert(0, now - yesterday)
+            trigger_times.insert(0, yesterday)
 
         __make_trigger( tablename, 'time_stamp', trigger_times )
 
