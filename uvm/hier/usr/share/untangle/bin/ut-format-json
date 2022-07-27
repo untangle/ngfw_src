@@ -6,7 +6,7 @@ fi
 
 FILENAME=$1
 
-python -m simplejson.tool $FILENAME > $FILENAME.tmp
+python3 -m simplejson.tool $FILENAME > $FILENAME.tmp
 
 if [ $? -eq 0 ] ; then
    cp $FILENAME.tmp $FILENAME
