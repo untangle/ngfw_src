@@ -166,7 +166,7 @@ def main(argv):
     global dump_writer
     global tcpdump
     _debug = False
-    tcpdump = "/usr/sbin/tcpdump"
+    tcpdump = "/usr/bin/tcpdump"
 
     timeout = 5
     filename = "/tmp/network-tests"
