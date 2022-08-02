@@ -6,6 +6,8 @@ import re
 import ruamel.yaml
 from ruamel.yaml.compat import text_type
 
+from ruamel.yaml import YAML
+
 class SuricataConf:
     """
     Suricata configuration file management.
@@ -30,7 +32,9 @@ class SuricataConf:
     def setup_yaml(self):
         """
 
-        [description]
+        Maintain consistency between original and diffs.
+
+        At one point Suricata consistently used yes|no for booleans.
 
         Returns:
             [type] -- [description]
@@ -42,14 +46,7 @@ class SuricataConf:
                 value = 'no'
             return yaml_self.represent_scalar('tag:yaml.org,2002:bool', text_type(value))
 
-        ruamel.yaml.emitter.Emitter.write_comment_orig = ruamel.yaml.emitter.Emitter.write_comment
-        def strip_empty_lines_write_comment(self, comment):
-            comment.value = comment.value.replace('\n', '')
-            if comment.value:
-                self.write_comment_orig(comment)
-
         ruamel.yaml.representer.RoundTripRepresenter.add_representer(bool, represent_bool)
-        ruamel.yaml.emitter.Emitter.write_comment = strip_empty_lines_write_comment
 
     def load(self):
         """
