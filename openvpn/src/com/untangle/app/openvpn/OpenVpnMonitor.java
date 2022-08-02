@@ -391,7 +391,7 @@ class OpenVpnMonitor implements Runnable
         String valueArray[] = line.split(",");
         if (!valueArray[TYPE_INDEX].equals("CLIENT_LIST")) return;
 
-        if (valueArray.length != TOTAL_INDEX) {
+        if (valueArray.length < TOTAL_INDEX) {
             logger.info("Unexpected client description length: " + valueArray.length + " Ignoring: " + line);
             return;
         }
