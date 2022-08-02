@@ -161,7 +161,7 @@ def main(argv):
         value = settings_variable["value"]
         if settings_variable["name"] == "HOME_NET":
             value = re.sub(r"\b\bdefault\b\b", default_home_net, value)
-            if value[0] != "[" and value.find(",") != -1:
+            if len(value) > 0 and value[0] != "[" and value.find(",") != -1:
                 value = "[" + value + "]"
         if settings_variable["name"] == "EXTERNAL_NET":
             value = re.sub(r"\b\bdefault\b\b", "any", value)
