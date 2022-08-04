@@ -256,8 +256,9 @@ public class LanguageManagerImpl implements LanguageManager
         /* Contact translation server */
         for(languageSource source : LanguageSources){
             Set<String> available = new HashSet<>();
+	    Set<String> alreadyFound = new HashSet<>();
             Collections.addAll(available, (new File(source.getDirectory())).list());
-            if(getRemoteLanguagesList(available, locales, source) == false){
+            if(getRemoteLanguagesList(alreadyFound, locales, source) == false){
                 // Add header
                 headerAdded = false;
             }else if(source.getId().equals("official")){
@@ -278,10 +279,14 @@ public class LanguageManagerImpl implements LanguageManager
                 }
                 String tokens[] = code.split("_");
                 String langCode = tokens[0];
+
                 String langName = allLanguages.get(langCode);
                 String countryCode = tokens.length == 2 ? tokens[1] : null;
                 String countryName = countryCode == null ? null : allCountries.get(countryCode);
-                locales.add(new LocaleInfo(source.id + "-" + langCode, langName, countryCode, countryName));
+		if (!alreadyFound.contains(langCode))
+		    locales.add(new LocaleInfo(source.id + "-" + langCode, langName, countryCode, countryName));
+		else
+		    logger.debug("Skipping already found code: " + langCode);
             }
         }
 
@@ -764,12 +769,12 @@ public class LanguageManagerImpl implements LanguageManager
 
     /**
      * Query Translation server and get the list of supported languages/
-     * @param  available Set of languages we have locally.
+     * @param  alreadyFound Set of languages we have locally.
      * @param  locales   Found locales.
      * @param  source    LanguageSource to use for query.
      * @return           boolean of true if was able to get remote list, false if failed.
      */
-    private boolean getRemoteLanguagesList(Set<String> available, List<LocaleInfo> locales, languageSource source ){
+    private boolean getRemoteLanguagesList(Set<String> alreadyFound, List<LocaleInfo> locales, languageSource source ){
         boolean result = true;
         boolean headerAdded = false;
 
@@ -842,6 +847,8 @@ public class LanguageManagerImpl implements LanguageManager
                                 }
                             }
                             statistics.append(I18nUtil.marktr("Percent completed") + ": " + stats.getDouble("translated_percent") + "%");
+			    alreadyFound.add(code);
+			    logger.debug("Found code: " + code);
                             locales.add(new LocaleInfo(source.getId() + "-" + code, stats.getString("name"), null, null, statistics.toString()));
                         }
                     }catch(JSONException e){
