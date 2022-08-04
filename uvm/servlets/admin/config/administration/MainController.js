@@ -1042,7 +1042,7 @@ Ext.define('Ung.cmp.AdminGridController', {
         var that = this;
 
         Ext.create('Ext.Window', {
-            title: 'Administrator Warning',
+            title: 'Administrator Warning'.t(),
             modal: true,
             maxWidth: 500,
             items: [{
