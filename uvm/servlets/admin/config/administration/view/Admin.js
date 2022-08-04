@@ -81,9 +81,13 @@ Ext.define('Ung.config.administration.view.Admin', {
             fieldLabel: 'Email Address'.t(),
             emptyText: '[no email]'.t(),
             vtype: 'email'
-        },{
+        }, {
             xtype: 'checkbox',
-            bind: '{record.emailAlerts}',
+            disabled: true,
+            bind: {
+                value: '{record.emailAlerts}',
+                disabled: '{!record.emailAddress}'
+            },
             fieldLabel: 'Email Alerts'.t()
         }, {
             xtype: 'textfield',
