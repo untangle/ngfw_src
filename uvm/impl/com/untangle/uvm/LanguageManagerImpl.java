@@ -767,10 +767,10 @@ public class LanguageManagerImpl implements LanguageManager
 
     /**
      * Query Translation server and get the list of supported languages/
-     * @param  alreadyFound Set of languages we have locally.
-     * @param  locales   Found locales.
-     * @param  source    LanguageSource to use for query.
-     * @return           boolean of true if was able to get remote list, false if failed.
+     * @param  alreadyFound Set to add languages we find remotely into, so we don't have them twice.
+     * @param  locales      Found locales.
+     * @param  source       LanguageSource to use for query.
+     * @return              boolean of true if was able to get remote	list, false if failed.
      */
     private boolean getRemoteLanguagesList(Set<String> alreadyFound, List<LocaleInfo> locales, languageSource source ){
         boolean result = true;
