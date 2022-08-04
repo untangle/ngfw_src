@@ -498,7 +498,7 @@ Ext.define('Ung.config.administration.MainController', {
     // uploadCertificate is a button handler to handle uploading of Server and Root certificates
     uploadCertificate: function (btn) {
         var me = this, v = this.getView(), certMode = btn.certMode;
-        
+
         //Use the certMode to figure out what type of upload this is
         if (certMode === "SERVER") {
             dialogTitle = 'Upload Server Certificate'.t();
@@ -589,8 +589,8 @@ Ext.define('Ung.config.administration.MainController', {
                                 }
 
                                 if(certMode == 'ROOT') {
-                                    me.refreshRootCertificate(); 
-                                    me.refreshRootCertificateList(); 
+                                    me.refreshRootCertificate();
+                                    me.refreshRootCertificateList();
                                 }
                             } else {
                                 Ext.MessageBox.alert('Certificate Upload Error'.t(), status.output);
@@ -646,7 +646,7 @@ Ext.define('Ung.config.administration.MainController', {
                 bind: '{rootCertStore}',
                 sortableColumns: false,
                 enableColumnHide: false,
-    
+
                 columns: [
                     {
                         header: 'Subject'.t(),
@@ -840,8 +840,8 @@ Ext.define('Ung.config.administration.MainController', {
                         }
 
                         if(item.certMode == 'ROOT') {
-                            me.refreshRootCertificate(); 
-                            me.refreshRootCertificateList(); 
+                            me.refreshRootCertificate();
+                            me.refreshRootCertificateList();
                         }
 
                         Util.successToast('Certificate removed'.t());
@@ -875,9 +875,9 @@ Ext.define('Ung.config.administration.MainController', {
                         return;
                     }
 
-                    // Refresh certs 
-                    me.refreshRootCertificate(); 
-                    me.refreshRootCertificateList(); 
+                    // Refresh certs
+                    me.refreshRootCertificate();
+                    me.refreshRootCertificateList();
                     v.setLoading(false);
                     Util.successToast('Root CA Updated'.t());
                 });
@@ -1031,7 +1031,7 @@ Ext.define('Ung.config.administration.MainController', {
     }
 });
 /**
- * AdminGridController is a grid component controller used by admin panels 
+ * AdminGridController is a grid component controller used by admin panels
  */
 Ext.define('Ung.cmp.AdminGridController', {
     extend: 'Ung.cmp.GridController',
@@ -1039,32 +1039,73 @@ Ext.define('Ung.cmp.AdminGridController', {
     alias: 'controller.unadmingrid',
 
     addRecord: function () {
-        Ext.MessageBox.show({
-            title: 'Administrator Warning'.t(),
-            msg: 'This action will add an ADMINISTRATOR account.'.t() + '<br/>' + '<br/>' +
-                '<b>' + 'ADMINISTRATORS (also sometimes known as admin or root or superuser) have ADMINISTRATOR access to the server.'.t() + '</b>' + '<br/>' + '<br/>' +
-                'Administrator accounts have the ability to do anything including:'.t() + '<br/>' +
-                '<ul>' +
-                '<li>' + 'Read/Modify any setting'.t() + '</li>' +
-                '<li>' + 'Restore/Backup all settings'.t() + '</li>' +
-                '<li>' + 'Create more administrators'.t() + '</li>' +
-                '<li>' + 'Delete/Modify/Create any file'.t() + '</li>' +
-                '<li>' + 'Run any command'.t() + '</li>' +
-                '<li>' + 'Install any software'.t() + '</li>' +
-                '<li>' + 'Complete control and access identical to what you now possess'.t() + '</li>' +
-                '</ul>' + '<br/>' +
-                'Do you understand the above statement?'.t() + '<br/>' +
-                '<input type="checkbox" id="admin_understand"/> <i>' + 'Yes, I understand.'.t() + '</i>' + '<br/>' +
-                '<br/>' +
-                'Do you wish to continue?'.t() + '<br/>',
-            buttons: Ext.MessageBox.YESNO,
-            fn: Ext.bind(function(btn) {
-                if (btn === 'yes') {
-                    if (Ext.get('admin_understand').dom.checked) {
-                        this.editorWin(null);
-                    }
-                }
-            }, this)});
-    },
+        var that = this;
 
+        Ext.create('Ext.Window', {
+            title: 'Administrator Warning',
+            modal: true,
+            maxWidth: 500,
+            items: [{
+                xtype: 'component',
+                padding: 10,
+                html: 'This action will add an ADMINISTRATOR account.'.t() + '<br/>' + '<br/>' +
+                    '<b>' + 'ADMINISTRATORS (also sometimes known as admin or root or superuser) have ADMINISTRATOR access to the server.'.t() + '</b>' + '<br/>' + '<br/>' +
+                    'Administrator accounts have the ability to do anything including:'.t() + '<br/>' +
+                    '<ul>' +
+                    '<li>' + 'Read/Modify any setting'.t() + '</li>' +
+                    '<li>' + 'Restore/Backup all settings'.t() + '</li>' +
+                    '<li>' + 'Create more administrators'.t() + '</li>' +
+                    '<li>' + 'Delete/Modify/Create any file'.t() + '</li>' +
+                    '<li>' + 'Run any command'.t() + '</li>' +
+                    '<li>' + 'Install any software'.t() + '</li>' +
+                    '<li>' + 'Complete control and access identical to what you now possess'.t() + '</li>' +
+                    '</ul>'
+            }, {
+                xtype: 'component',
+                padding: '0 10',
+                html: 'Do you understand the above statement?'.t()
+            }, {
+                xtype: 'checkbox',
+                reference: 'consent',
+                margin: 10,
+                boxLabel: 'Yes, I understand'.t(),
+                boxLabelAlign: 'after',
+            }],
+            dockedItems: {
+                xtype: 'toolbar',
+                dock: 'bottom',
+                ui: 'footer',
+                defaults: {
+                    minWidth: 60,
+                },
+                items: [{
+                    xtype: 'component',
+                    flex: 1
+                }, {
+                    xtype: 'component',
+                    html: 'Do you wish to continue?'.t(),
+                    bind: {
+                        hidden: '{!consent.checked}'
+                    }
+                }, {
+                    xtype: 'button',
+                    text: 'Yes'.t(),
+                    disabled: true,
+                    bind: {
+                        disabled: '{!consent.checked}'
+                    },
+                    handler: function(btn) {
+                        that.editorWin(null);
+                        btn.up('window').close();
+                    }
+                }, {
+                    xtype: 'button',
+                    text: 'No'.t(),
+                    handler: function(btn) {
+                        btn.up('window').close();
+                    }
+                }]
+            },
+        }).show();
+    }
 });
