@@ -285,8 +285,6 @@ public class LanguageManagerImpl implements LanguageManager
                 String countryName = countryCode == null ? null : allCountries.get(countryCode);
 		if (!alreadyFound.contains(langCode))
 		    locales.add(new LocaleInfo(source.id + "-" + langCode, langName, countryCode, countryName));
-		else
-		    logger.debug("Skipping already found code: " + langCode);
             }
         }
 
@@ -848,7 +846,6 @@ public class LanguageManagerImpl implements LanguageManager
                             }
                             statistics.append(I18nUtil.marktr("Percent completed") + ": " + stats.getDouble("translated_percent") + "%");
 			    alreadyFound.add(code);
-			    logger.debug("Found code: " + code);
                             locales.add(new LocaleInfo(source.getId() + "-" + code, stats.getString("name"), null, null, statistics.toString()));
                         }
                     }catch(JSONException e){
