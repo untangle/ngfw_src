@@ -296,7 +296,7 @@ def write_login_form(req, title, host, error_msg):
     banner_msg = get_app_settings_item('branding-manager','bannerMessage')
     if banner_msg != None and banner_msg != "":
         banner_msg = banner_msg.replace("\n", "<br/>")
-        banner_msg = "<p>" + banner_msg.encode('utf-8') + "</p>"
+        banner_msg = "<p>" + banner_msg + "</p>"
     else:
         banner_msg = ""
 
