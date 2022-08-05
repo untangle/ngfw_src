@@ -5,7 +5,7 @@
 
 testDiskFree()
 {
-    /usr/bin/df -k / | awk '//{printf("%d",$5)}'
+    /bin/df -k / | awk '//{printf("%d",$5)}'
 }
 
 testDiskError1()
