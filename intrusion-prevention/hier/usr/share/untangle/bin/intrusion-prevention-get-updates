@@ -480,7 +480,7 @@ class Update:
 
             if self.debug is True or patch_command.returncode != 0:
                 Logger.message("patch returncode={returncode}".format(returncode=patch_command.returncode))
-                for output in patch_command_output.decode("ascii").split("\n"):
+                for output in patch_command_output.split("\n"):
                     if len(output) > 0:
                         Logger.message("patch result={output}".format(output=output))
 
