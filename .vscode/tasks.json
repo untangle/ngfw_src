@@ -4,18 +4,32 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build ngfw",
+            "label": "Build remote",
             "type": "shell",
-            "command": "./.vscode/vsbuild.sh",
+            "command": "./.vscode/vsbuild.sh -e remote -t ${input:target_address} ",
             "group": {
-                "kind": "build",
-                "isDefault": true
+                "kind": "build"
             }
         },{
-            "label": "Setup glowroot",
+            "label": "Build local",
+            "type": "shell",
+            "command": "./.vscode/vsbuild.sh -e local",
+            "group": {
+                "kind": "build"
+            }
+        },{
+            "label": "Setup glowroot local",
             "type": "shell",
             "command": "./.vscode/glowroot.sh",
             "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "target_address",
+            "type":"promptString",
+            "description": "IP of target instance",
+            "default": ""
         }
     ]
 }
