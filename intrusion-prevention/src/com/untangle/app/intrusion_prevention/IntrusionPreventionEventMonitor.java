@@ -18,6 +18,7 @@ import com.untangle.uvm.UvmContextFactory;
  */
 class IntrusionPreventionEventMonitor implements Runnable
 {
+    /* Interval to run */
     public static final long SLEEP_TIME_MSEC = (long)30 * 1000;
 
     /* Delay a second while the thread is joining */
