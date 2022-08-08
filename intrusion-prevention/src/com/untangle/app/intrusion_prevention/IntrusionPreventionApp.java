@@ -940,8 +940,8 @@ public class IntrusionPreventionApp extends AppBase
     public void reloadEventMonitorMap()
     {
         if(this.ipsEventMonitor != null &&
-            this.ipsEventMonitor.unified2Parser != null){
-            this.ipsEventMonitor.unified2Parser.reloadEventMap();
+            this.ipsEventMonitor.fastParser != null){
+            this.ipsEventMonitor.fastParser.reloadEventMap();
         }
     }
 
