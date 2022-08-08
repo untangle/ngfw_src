@@ -21,9 +21,10 @@ CREATE TABLE reports.intrusion_prevention_events (
         dest_addr inet,
         dest_port int4,
         protocol int4,
+        protocol_name text,
         blocked boolean,
         category text,
         classtype text,
         msg text,
-        rid text)""", [], ["time_stamp"])
-    sql_helper.add_column('intrusion_prevention_events', 'rule_id', 'text') #rule_14.2
+        rule_id text)""", [], ["time_stamp"])
+    sql_helper.add_column('intrusion_prevention_events', 'protocol_name', 'text') # Change protocol from integer to text, 16.6
