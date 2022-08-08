@@ -17,8 +17,9 @@ public class IntrusionPreventionEventMapSignature implements Serializable
     private Long gid;
     private String rid = "";
     private String category = "";
-    private String classtype = "";
     private String msg = "";
+    private String classtype = "";
+    private String protocol = "";
 
     /**
      * Initialize object with empty valus.
@@ -36,19 +37,22 @@ public class IntrusionPreventionEventMapSignature implements Serializable
      *  Group id.
      * @param category
      *  Category
-     * @param classtype
-     *  Classtype.
      * @param msg
      *  Signature message.
+     * @param classtype
+     *  Classtype.
+     * @param protocol
+     *  Signature protocol.
      */
-    public IntrusionPreventionEventMapSignature(Long sid, Long gid, String rid, String category, String classtype, String msg )
+    public IntrusionPreventionEventMapSignature(Long sid, Long gid, String rid, String category, String msg, String classtype, String protocol )
     {
         this.sid = sid;
         this.gid = gid;
         this.rid = rid;
         this.category = category;
-        this.classtype = classtype;
         this.msg = msg;
+        this.classtype = classtype;
+        this.protocol = protocol;
     }
 
     /**
@@ -155,6 +159,21 @@ public class IntrusionPreventionEventMapSignature implements Serializable
      *  String of message.
      */
     public void setMsg( String msg ) { this.msg = msg; }
+
+    /**
+     * Return protocol.
+     *
+     * @return
+     *  String of protocol.
+     */
+    public String getProtocol() { return protocol; }
+    /**
+     * Set protocol.
+     *
+     * @param protocol
+     *  String of protocol.
+     */
+    public void setProtocol( String protocol ) { this.protocol = protocol; }
 
     /**
      * Return hascode.
