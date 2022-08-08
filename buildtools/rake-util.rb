@@ -92,7 +92,7 @@ class BuildEnv
     @home = home
 
     ## Prefix is the value used in substitutions
-    @prefix = $DevelBuild ? File.expand_path("#{home}/dist").sub('hades-','') : '';
+    @prefix = $DevelBuild && ( $DevelEnvironment == 'local' ) ? File.expand_path("#{home}/dist").sub('hades-','') : '';
 
     ## Flag indicating whether or not this is a development or
     ## package/production build.

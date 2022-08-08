@@ -19,6 +19,10 @@ warn "JVM = #{jvm}"
 ENV['JAVA_HOME'] = "/usr/lib/jvm/#{jvm}"
 
 $DevelBuild = ARGV.grep(/install/).empty?
+$DevelEnvironment = "local"
+if not (ENV['DEV_ENVIRONMENT'].nil?) then
+  $DevelEnvironment = $DevelBuild ? ENV['DEV_ENVIRONMENT'] : "local"
+end
 
 POTENTIAL_SRC_HOMES = [  ENV['SRC_HOME'], '../ngfw_src' ]
 POTENTIAL_SRC_HOMES << '.' unless `pwd` =~ /hades/
@@ -35,6 +39,7 @@ if not (ENV['BUILDBOT'].nil? or ENV['BUILDBOT'].empty?) then
 end
 puts "SRC_HOME = #{SRC_HOME}"
 puts "DevelBuild = #{$DevelBuild}"
+puts "DevelEnvironment = #{$DevelEnvironment}"
 
 ## This is how you define where the stamp file will go
 module Rake
