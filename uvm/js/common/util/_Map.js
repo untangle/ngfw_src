@@ -423,6 +423,10 @@ Ext.define('Ung.util.Map', {
             col: { text: 'Protocol'.t(), filter: Rndr.filters.numeric, width: 80 },
             fld: { type: 'integer', convert: Converter.protocol }
         },
+        protocol_name: {
+            col: { text: 'Protocol'.t(), width: 80 },
+            fld: { type: 'string'}
+        },
         component: {
             col: { text: 'Component'.t(), width: 100 },
             fld: { type: 'string' }
@@ -1168,7 +1172,7 @@ Ext.define('Ung.util.Map', {
             'source_port',
             'dest_addr',
             'dest_port',
-            'protocol',
+            'protocol_name',
             'blocked',
             'category',
             'classtype',
