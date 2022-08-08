@@ -8,7 +8,7 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "protocol",
+    "pieGroupColumn": "protocol_name",
     "pieSumColumn": "count(*)",
     "conditions": [{
         "column": "blocked",

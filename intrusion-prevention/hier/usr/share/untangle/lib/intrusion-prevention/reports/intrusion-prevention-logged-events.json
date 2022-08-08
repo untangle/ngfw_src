@@ -10,7 +10,7 @@
             "value": "false"
         }
     ],
-    "defaultColumns": ["time_stamp","rule_id", "sig_id","gen_id","class_id","source_addr","source_port","dest_addr","dest_port","protocol","category","classtype","msg"],
+    "defaultColumns": ["time_stamp","rule_id", "sig_id","gen_id","source_addr","source_port","dest_addr","dest_port","protocol_name","category","classtype","msg"],
     "description": "All sessions matching Intrusion Prevention signatures and logged.",
     "displayOrder": 1020,
     "javaClass": "com.untangle.app.reports.ReportEntry",

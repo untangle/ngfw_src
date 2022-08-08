@@ -110,7 +110,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         appSettings['signatures']['list'].append(create_signature( gid = "1", 
                                                 sid = "1999999", 
                                                 classtype="attempted-admin", 
-                                                category="app-detect",  
+                                                category="compromised",
                                                 msg="CompanySecret", 
                                                 log=True, 
                                                 block=False, 
