@@ -51,6 +51,7 @@ class IntrusionPreventionEventMap:
                 "category": signature.category,
                 "msg": msg,
                 "classtype": signature.options["classtype"],
+                "protocol": signature.protocol,
             })
 
     def save(self):
@@ -58,5 +59,5 @@ class IntrusionPreventionEventMap:
         Save event map
         """
         settings_file = open(self.file_name, "w")
-        json.dump(self.settings, settings_file)
+        json.dump(self.settings, settings_file, indent=4)
         settings_file.close()
