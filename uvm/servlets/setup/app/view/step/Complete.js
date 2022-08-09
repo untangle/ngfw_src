@@ -55,7 +55,7 @@ Ext.define('Ung.Setup.Complete', {
                 items.push({
                     xtype: 'component',
                     style: { textAlign: 'center' },
-                    html: '<img src="images/BrandingLogo.png" height=48/><h1>' + Ext.String.format('Thanks for choosing {0}!'.t(), rpc.oemName) + '</h1>'
+                    html: '<img src="images/BrandingLogo.png?' + (new Date()).getTime() + '" height=48/><h1>' + Ext.String.format('Thanks for choosing {0}!'.t(), rpc.oemName) + '</h1>'
                 });
                 items.push({
                     xtype: 'component',

@@ -4,6 +4,7 @@ import gettext
 import html
 import os
 import sys
+import time
 
 from mod_python import apache
 
@@ -134,6 +135,7 @@ def _write_error_page(req, msg):
     req.content_type = "text/html; charset=utf-8"
     req.send_http_header()
 
+    timestamp = time.time()
     us = _("Server")
     try:
         us = _("%s Server") % uvm_login.get_company_name()
@@ -163,7 +165,7 @@ def _write_error_page(req, msg):
     <div id="main" style="width: 500px; margin: 50px auto 0 auto;">
         <form class="form-signin">
             <center>
-                <img style="margin-bottom:10px; max-width: 300px; max-height: 48px;" src="/images/BrandingLogo.png"><br/>
+                <img style="margin-bottom:10px; max-width: 300px; max-height: 48px;" src="/images/BrandingLogo.png?%s"><br/>
                 <span class="form-signin-heading"><strong>%s</strong></span>
              <br/>
                 <br/>
@@ -172,7 +174,7 @@ def _write_error_page(req, msg):
         </form>
     </div>
     </body>
-    </html>""" % (us,us, html.escape(msg))
+    </html>""" % (us, timestamp, us, html.escape(msg))
 
     req.write(html_string)
 
@@ -181,6 +183,7 @@ def _write_loading_page(req):
     req.send_http_header()
     msg = 'Server is starting. Please wait.'
 
+    timestamp = time.time()
     us = _("Server")
     try:
         us = _("%s Server") % uvm_login.get_company_name()
@@ -246,7 +249,7 @@ def _write_loading_page(req):
     <div id="main" style="width: 500px; margin: 50px auto 0 auto;">
         <form class="form-signin">
             <center>
-                <img style="margin-bottom:10px; max-width: 300px; max-height: 48px;" src="/images/BrandingLogo.png"><br/>
+                <img style="margin-bottom:10px; max-width: 300px; max-height: 48px;" src="/images/BrandingLogo.png?%s"><br/>
              <br/>
                 <br/>
                 <span class="form-signin-heading">
@@ -256,7 +259,7 @@ def _write_loading_page(req):
         </form>
     </div>
     </body>
-    </html>""" % (us, html.escape(msg), html.escape(msg));
+    </html>""" % (us, html.escape(msg), timestamp, html.escape(msg));
 
     req.write(html_string)
 

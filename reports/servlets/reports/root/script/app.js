@@ -25,7 +25,7 @@ Ext.define('Ung.view.Main', {
             padding: '6 7 2 7',
             width: 200,
             border: false,
-            html: '<a href="#"><img src="' + '/images/BrandingLogo.png" style="height: 24px;"/></a>',
+            html: '<a href="#"><img src="' + '/images/BrandingLogo.png?' + (new Date()).getTime() + '" style="height: 24px;"/></a>',
         }, {
             xtype: 'component',
             html: '<h2 style="text-align: center; color: #CCC;">' + 'Reports'.t() + '</h2>'
