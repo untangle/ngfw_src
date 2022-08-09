@@ -8,6 +8,7 @@ import pycurl
 import json
 import crypt
 import urllib.parse
+import time
 from io import StringIO
 from mod_python import apache, Session, util
 
@@ -137,6 +138,7 @@ def write_error_page(req, msg):
     req.content_type = "text/html; charset=utf-8"
     req.send_http_header()
 
+    timestamp = time.time()
     us = _("Server")
     try:
         us = _("%s Server") % get_company_name()
@@ -164,7 +166,7 @@ def write_error_page(req, msg):
 <div id=\"main\" style=\"width:500px;margin:50px auto 0 auto;\">
 <div class=\"main-top-left\"></div><div class=\"main-top-right\"></div><div class=\"main-mid-left\"><div class=\"main-mid-right\"><div class=\"main-mid\">
 <center>
-<img alt=\"\" src=\"/images/BrandingLogo.png\" style=\"max-width: 300px; max-height: 48px;\"/><br /><br />
+<img alt=\"\" src=\"/images/BrandingLogo.png?%s\" style=\"max-width: 300px; max-height: 48px;\"/><br /><br />
 <b>%s</b><br /><br />
 <em>%s</em>
 </center><br /><br />
@@ -172,6 +174,6 @@ def write_error_page(req, msg):
 </div>
 </body>
 </html>
-""" % (us, us, html.escape(msg))
+""" % (us, timestamp, us, html.escape(msg))
 
     req.write(html_string)
