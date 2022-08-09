@@ -1050,42 +1050,6 @@ class NetworkTests(NGFWTestCase):
         assert( v2cResult == 0 )
         assert( v3Result == 1 )
 
-    def test_131_snmp_v3_sha_des_no_privacy_passphrase(self):
-        verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
-        system_settings['snmpSettings']['enabled'] = True
-        system_settings['snmpSettings']['communityString'] = "atstest"
-        system_settings['snmpSettings']['sysContact'] = "qa@untangle.com"
-        system_settings['snmpSettings']['sendTraps'] = True
-        system_settings['snmpSettings']['trapHost'] = remote_control.client_ip
-        system_settings['snmpSettings']['port'] = 161
-        commands = set_snmp_v3_settings( system_settings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "", False )
-        uvmContext.systemManager().setSettings(system_settings)
-        v2cResult = try_snmp_command( commands[0] )
-        v3Result = try_snmp_command( commands[1] )
-        uvmContext.systemManager().setSettings(orig_system_settings)
-        assert( v2cResult == 0 )
-        assert( v3Result == 0 )
-
-    def test_132_snmp_v3_md5_des_no_privacy_passphrase(self):
-        verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
-        system_settings['snmpSettings']['enabled'] = True
-        system_settings['snmpSettings']['communityString'] = "atstest"
-        system_settings['snmpSettings']['sysContact'] = "qa@untangle.com"
-        system_settings['snmpSettings']['sendTraps'] = True
-        system_settings['snmpSettings']['trapHost'] = remote_control.client_ip
-        system_settings['snmpSettings']['port'] = 161
-        commands = set_snmp_v3_settings( system_settings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "", False )
-        uvmContext.systemManager().setSettings(system_settings)
-        v2cResult = try_snmp_command( commands[0] )
-        v3Result = try_snmp_command( commands[1] )
-        uvmContext.systemManager().setSettings(orig_system_settings)
-        assert( v2cResult == 0 )
-        assert( v3Result == 0 )
-
     def test_133_snmp_v3_sha_des(self):
         verify_snmp_walk()
         orig_system_settings = uvmContext.systemManager().getSettings()
