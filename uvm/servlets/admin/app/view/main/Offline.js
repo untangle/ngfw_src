@@ -16,7 +16,7 @@ Ext.define('Ung.view.main.Offline', {
         style: { background: '#FFF' },
         items: [{
             xtype: 'component',
-            html: '<img src="/images/BrandingLogo.png" style="max-width: 300px; max-height: 48px;" />',
+            html: '<img src="/images/BrandingLogo.png?' + (new Date()).getTime() + '" style="max-width: 300px; max-height: 48px;" />',
             width: 400,
             height: 100
         }, {

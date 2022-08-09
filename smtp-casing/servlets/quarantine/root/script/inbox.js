@@ -91,7 +91,7 @@ Ext.define('Ung.view.Main', {
         items: [{
             xtype: 'component',
             width: 200,
-            html: '<img src="' + '/images/BrandingLogo.png" class="branding-logo"/>',
+            html: '<img src="' + '/images/BrandingLogo.png?' + (new Date()).getTime() + '" class="branding-logo"/>',
             cls: 'logo',
             responsiveConfig: null
         }, {

@@ -5,6 +5,7 @@ import sys
 import requests
 import json
 import crypt
+import time
 from uvm import Uvm
 
 
@@ -263,6 +264,7 @@ def check_password(user_dict, password, logger):
 
 
 def write_login_form(req, title, host, error_msg):
+    timestamp = time.time()
     login_url = html.escape(req.unparsed_uri)
     req.content_type = "text/html; charset=utf-8"
     req.send_http_header()
@@ -317,7 +319,7 @@ def write_login_form(req, title, host, error_msg):
 <body>
 
 <header>
-    <img src="/images/BrandingLogo.png" style="max-width: 300px; max-height: 48px;">
+    <img src="/images/BrandingLogo.png?%s" style="max-width: 300px; max-height: 48px;">
 </header>
 
 <div class="form-login">
@@ -337,6 +339,6 @@ def write_login_form(req, title, host, error_msg):
 <script type="text/javascript">document.getElementById('fragment').value=window.location.hash;</script>
 
 </body>
-</html>""" % (title, login_url, title, host, banner_msg, error_msg, default_username, username_str, password_str, login_str, focus_field_id)
+</html>""" % (title, timestamp, login_url, title, host, banner_msg, error_msg, default_username, username_str, password_str, login_str, focus_field_id)
 
     req.write(html_string)

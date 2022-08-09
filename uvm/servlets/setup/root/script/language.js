@@ -14,7 +14,7 @@ Ext.define('Ung.Lang.Main', {
             xtype: 'component',
             margin: '0 0 20 0',
             style: { textAlign: 'center' },
-            html: '<img src="images/BrandingLogo.png" class="branding-logo-setup" />'
+            html: '<img src="images/BrandingLogo.png?' + (new Date()).getTime() + '" class="branding-logo-setup" />'
         }, {
             xtype: 'container',
             layout: {
