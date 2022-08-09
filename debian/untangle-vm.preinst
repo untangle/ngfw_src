@@ -76,7 +76,7 @@ if [ -f /var/run/uvm.pid ] ; then
         echo "Stopped  untangle-vm  $?"
 
         echo "Restarting untangle-vm after apt-get completes..."
-	nohup /usr/bin/uvm-restart >> /var/log/uvm/restart.log 2>&1 &
+        nohup /usr/bin/uvm-restart >> /var/log/uvm/restart.log 2>&1 &
     fi
 fi
 
