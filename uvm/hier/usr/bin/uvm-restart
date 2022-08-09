@@ -53,7 +53,7 @@ while true; do
 	echo "`date -Iseconds` $0: starting untangle-vm"
 	systemctl restart untangle-vm
 	if [ -f /var/run/pyconnector.pid ] ; then
-	    systemctl restart pyconnector
+	    systemctl restart pyconnector || systemctl restart untangle-pyconnector
 	fi
 	exit
     else
