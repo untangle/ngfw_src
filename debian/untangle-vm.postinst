@@ -83,4 +83,9 @@ systemctl unmask suricata # NGFW-12939, NGFW-13217
 usermod -a -G winbindd_priv freerad
 chown root:winbindd_priv /var/lib/samba/winbindd_privileged
 
+# Restart pyconnector during uvm postinst here instead of uvm-restart
+if [ -f /var/run/pyconnector.pid ] ; then
+    systemctl restart untangle-pyconnector
+fi
+
 exit 0
