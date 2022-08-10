@@ -4,8 +4,7 @@ TARGET=
 PORT=22
 RAKE_LOG=rake.log
 
-while getopts "t:p:
-e:r:" flag; do
+while getopts "t:p:e:r:" flag; do
     case "${flag}" in
         t) TARGET=${OPTARG} ;;
         p) PORT=${OPTARG} ;;
@@ -23,6 +22,7 @@ if [ "$DEV_ENVIRONMENT" == "remote" ]; then
     ##
     ## Build in docker DEV_ENVIRONMENT
     ##
+    docker-compose -f docker-compose.build.yml run pkgtools
     VERBOSE=1 NO_CLEAN=1 RAKE_LOG=$RAKE_LOG DEV_ENVIRONMENT=$DEV_ENVIRONMENT docker-compose -f docker-compose.build.yml up dev-build
 elif [ "$DEV_ENVIRONMENT" == "remote"]; then
     ##
@@ -83,18 +83,3 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
     fi
 
 done
-
-# if [ -f .vscode/remote-hosts ]; then
-#     while read address; do
-#         [[ $address = \#* ]] && continue
-#         echo "Synchronzing begin with $address"
-#         rsync -a dist/usr/share/untangle/lib root@$address:/usr/share/untangle
-#         rsync -a dist/usr/share/untangle/bin root@$address:/usr/share/untangle
-#         rsync -a dist/usr/share/untangle/web root@$address:/usr/share/untangle
-
-#         if [ $RESTART -eq 1 ] ; then
-#             ssh root@$address "/etc/init.d/untangle-vm restart"
-#         fi
-#         echo "Synchronzing end with $address"
-#     done < .vscode/remote-hosts
-# fi
