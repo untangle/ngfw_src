@@ -117,7 +117,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                 action="alert", 
                                                 type="tcp"))
         # insert rule at the beginning of the list so other rules do not interfere. 
-        appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="app-detect"))
+        appSettings['rules']['list'].insert(0,create_rule(action="block", rule_type="CATEGORY", type_value="compromised"))
         app.setSettings(appSettings, True, True)
 
         self.do_wait_for_daemon_ready()
@@ -126,7 +126,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         loopLimit = 4
         # Send four requests for test rebustnewss 
         while (loopLimit > 0):
-            time.sleep(1)
+            time.sleep(4)
             loopLimit -= 1
             result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
@@ -136,8 +136,8 @@ class IntrusionPreventionTests(NGFWTestCase):
                                                'msg', "CompanySecret",
                                                'blocked', True,
                                                min_date=startTime)
-        # del appSettings['rules']['list'][0] # delete the first rule just added
-        # app.setSettings(appSettings, True, True)
+        del appSettings['rules']['list'][0] # delete the first rule just added
+        app.setSettings(appSettings, True, True)
         assert(found)
 
     @pytest.mark.slow
