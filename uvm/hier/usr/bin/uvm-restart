@@ -52,9 +52,7 @@ while true; do
     if [ "$mode" = "restart" ] ; then
 	echo "`date -Iseconds` $0: starting untangle-vm"
 	systemctl restart untangle-vm
-	if [ -f /var/run/pyconnector.pid ] ; then
-	    systemctl restart pyconnector
-	fi
+
 	exit
     else
 	echo "`date -Iseconds` $0: rebooting"
