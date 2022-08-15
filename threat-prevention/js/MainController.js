@@ -142,6 +142,15 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             }
         });
 
+        if(urlParts[3] != undefined){
+            // User specified url so pick the host.
+            lookupInput = urlParts[3];
+            if(urlParts[5] != undefined){
+                // Path also specified
+                lookupInput += urlParts[5];
+            }
+        }
+
         vm.set( 'threatLookupInfo.local', local);
         if(local){
             return;
@@ -163,12 +172,17 @@ Ext.define('Ung.apps.threatprevention.MainController', {
             urlAddress = lookupInput;
             ipAddress = null;
 
-            var ipResult = results[0][0];
-            if(ipResult.hasOwnProperty('ip')){
-                ipAddress = ipResult.ip;
+            var ipResult = {};
+            var ipOccurances = null;
+            if(results[0] != null){
+                // If path specified, we won't get an ip result
+                ipResult = results[0][0];
+                if(ipResult.hasOwnProperty('ip')){
+                    ipAddress = ipResult.ip;
+                }
+                ipOccurances = results[2][0]['queries']['getrephistory']['history_count'];
+                ipOccurances = (ipOccurances > 0) ? Ext.String.format('{0} occurrences', ipOccurances) : null;
             }
-            var ipOccurances = results[2][0]['queries']['getrephistory']['history_count'];
-            ipOccurances = (ipOccurances > 0) ? Ext.String.format('{0} occurrences', ipOccurances) : null;
 
             var urlResult = results[1][0];
             if(urlResult.hasOwnProperty('url')){
