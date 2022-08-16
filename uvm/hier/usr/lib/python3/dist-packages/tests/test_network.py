@@ -1353,7 +1353,7 @@ class NetworkTests(NGFWTestCase):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = False
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        result = remote_control.run_command("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
+        result = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
         assert(result != 0)
 
     # UPnP - Enabled
@@ -1364,7 +1364,7 @@ class NetworkTests(NGFWTestCase):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        result = remote_control.run_command("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
+        result = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
         assert(result == 0)
 
     # UPnP - Secure mode enabled
@@ -1376,8 +1376,8 @@ class NetworkTests(NGFWTestCase):
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['secureMode'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        result1 = remote_control.run_command("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
-        result2 = remote_control.run_command("/usr/bin/upnpc -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
+        result1 = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
+        result2 = remote_control.run_command("/usr/bin/upnpc -i -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
         assert(result1 == 0)
         assert(result2 == 0)
 
@@ -1390,8 +1390,8 @@ class NetworkTests(NGFWTestCase):
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['secureMode'] = False
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        result1 = remote_control.run_command("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
-        result2 = remote_control.run_command("/usr/bin/upnpc -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
+        result1 = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
+        result2 = remote_control.run_command("/usr/bin/upnpc -i -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
         assert(result1 == 0)
         assert(result2 == 1)
 
@@ -1437,7 +1437,7 @@ class NetworkTests(NGFWTestCase):
             ]
         }
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        result = remote_control.run_command("/usr/bin/upnpc -a %s 5559 5559 tcp 2>&1 | grep failed" % (remote_control.client_ip),stdout=False)
+        result = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp 2>&1 | grep failed" % (remote_control.client_ip),stdout=False)
         assert(result == 0)
 
     def test_180_netflow_enable_disable(self):
