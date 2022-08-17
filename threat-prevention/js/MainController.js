@@ -184,9 +184,12 @@ Ext.define('Ung.apps.threatprevention.MainController', {
                 ipOccurances = (ipOccurances > 0) ? Ext.String.format('{0} occurrences', ipOccurances) : null;
             }
 
-            var urlResult = results[1][0];
-            if(urlResult.hasOwnProperty('url')){
-                urlAddress = urlResult.url;
+            var urlResult = {};
+            if(results[1] != null){
+                urlResult = results[1][0];
+                if(urlResult.hasOwnProperty('url')){
+                    urlAddress = urlResult.url;
+                }
             }
             var urlOccurances = results[3][1]['queries']['getrepinfo']['threathistory'];
             urlOccurances = (urlOccurances > 0) ? Ext.String.format('{0} occurrences', urlOccurances) : null;
