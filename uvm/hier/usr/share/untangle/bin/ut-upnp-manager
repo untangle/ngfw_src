@@ -103,7 +103,7 @@ def main(argv):
     Main loop
     """
 
-    iptables = Iptables("nat", "upnp-rules")
+    iptables = Iptables("nat", "MINIUPNPD")
     try:
         opts, args = getopt.getopt(argv, "sd", ["status", "delete="] )
     except getopt.GetoptError:
