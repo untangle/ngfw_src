@@ -42,7 +42,7 @@ def get_signature_template_uri():
 		return 'https://ids.untangle.com/suricatasignatures.tar.gz'
 
 try:
-    Uvm_context = Uvm().getUvmContext(hostname="localhost", username=None, password=None, timeout=60)
+    Uvm_context = Uvm().getUvmContext(hostname="localhost", username=None, password=None)
 except:
     Logger.message("Unable to get uvm context", sys.exc_info(), target="log")
     sys.exit(1)
