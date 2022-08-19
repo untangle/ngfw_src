@@ -32,8 +32,8 @@ AD_PASSWORD = "passwd"
 AD_DOMAIN = "adtest.adtesting.int"
 AD_USER = "user_28004"
 TEST_SERVER_HOST = 'test.untangle.com'
-ACCOUNT_FILE_SERVER = "10.111.56.29"
-ACCOUNT_FILE = "/tmp/account_login.json"
+ACCOUNT_FILE_SERVER = "ats-iqd.untangle.int"
+ACCOUNT_FILE = "/test/account_login.json"
 
 # special Untangle box configured as a OpenVPN server
 VPN_SERVER_IP = "10.111.56.96"
