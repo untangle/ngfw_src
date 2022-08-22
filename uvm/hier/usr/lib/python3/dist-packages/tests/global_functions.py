@@ -346,20 +346,17 @@ def get_app_metric_value(app, label):
     return metric.get('value')
 
 def get_live_account_info(accounttype):
-    # Tries to file account password file and returns account and password if available
-    ACCOUNT_FILE_SERVERPing = subprocess.call(["ping","-c","1",ACCOUNT_FILE_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    if ACCOUNT_FILE_SERVERPing != 0:
-        return ("message",ACCOUNT_FILE_SERVER + " not available")
-    # result_ping = subprocess.check_output("ping -c 1 " + ACCOUNT_FILE_SERVER, shell=True)
-    # remove old file if it exist
-    account_url = "http://" + ACCOUNT_FILE_SERVER + "/account_login.json"
-    response = urllib.request.urlopen(account_url)
-    accounts = json.loads((response.read()).decode("utf-8"))
+    account_url = "http://" + ACCOUNT_FILE_SERVER + "/test/account_login.json"
+    try:
+        response = urllib.request.urlopen(account_url,timeout=10)
+        accounts = json.loads((response.read()).decode("utf-8"))
 
-    for account in accounts: #i is each student's name, class, and number
-        if account[0] == accounttype:
-            return (account[1], account[2])
-    return ("message",accounttype + " account not found")
+        for account in accounts: #i is each student's name, class, and number
+            if account[0] == accounttype:
+                return (account[1], account[2])
+        return ("message",accounttype + " account not found")
+    except:
+        return (None, None)
 
 def get_wan_tuples():
     myWANs = []
