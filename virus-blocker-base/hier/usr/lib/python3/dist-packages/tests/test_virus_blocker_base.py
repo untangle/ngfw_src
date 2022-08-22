@@ -87,9 +87,9 @@ class VirusBlockerBaseTests(NGFWTestCase):
         # sitting on our path
         cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
         remote_control.run_command("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-        result = remote_control.run_command("wget -q -O /tmp/eicar https://test.untangle.com/virus/eicar.com")
+        result = remote_control.run_command("wget --no-hsts -q -O /tmp/eicar https://test.untangle.com/virus/eicar.com")
         assert (result == 0)
-        result = remote_control.run_command("wget -q -O /tmp/std_022_ftpVirusBlocked_file https://test.untangle.com/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --no-hsts  -q -O /tmp/std_022_ftpVirusBlocked_file https://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         cls.md5StdNum = md5StdNum
@@ -125,12 +125,12 @@ class VirusBlockerBaseTests(NGFWTestCase):
 
     # test that client can http download zip
     def test_012_httpNonVirusNotBlocked(self):
-        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget --no-hsts -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
         assert (result == 0)
 
     # test that client can http download pdf
     def test_013_httpNonVirusPDFNotBlocked(self):
-        result = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/test/test.pdf")
+        result = remote_control.run_command("wget --no-hsts -q -O /dev/null http://test.untangle.com/test/test.pdf")
         assert (result == 0)
 
     # test that client can block virus http download zip
@@ -141,10 +141,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         pre_events_scan = global_functions.get_app_metric_value(self._app,"scan")
         pre_events_block = global_functions.get_app_metric_value(self._app,"block")
 
-        result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
-        # temporary for debugging
-        if (result == 1):
-            remote_control.run_command("wget -q -O /tmp/eicar_wget_output.zip http://test.untangle.com/virus/eicar.zip")
+        result = remote_control.run_command("wget --no-hsts -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
         post_events_scan = global_functions.get_app_metric_value(self._app,"scan")
@@ -157,14 +154,14 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_016_httpVirusBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
-        result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
+        result = remote_control.run_command("wget --no-hsts  -q -O - http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
     def test_017_httpVirusZipBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
-        result = remote_control.run_command("wget -q -O - http://" + testsite + "/virus/fedexvirus.zip 2>&1 | grep -q blocked")
+        result = remote_control.run_command("wget --no-hsts -q -O - http://" + testsite + "/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block a partial fetch after full fetch (using cache)
@@ -180,24 +177,28 @@ class VirusBlockerBaseTests(NGFWTestCase):
     @pytest.mark.failure_behind_ngfw
     def test_019_httpEicarPassSite(self):
         addPassSite(self._app, testsite)
-        result = remote_control.run_command("wget -q -O - http://" + testsite + "/virus/eicar.zip 2>&1 | grep -q blocked")
+        result = remote_control.run_command("wget --no-hsts -q -O - http://" + testsite + "/virus/eicar.zip 2>&1 | grep -q blocked")
         nukePassSites(self._app)
         assert (result == 1)
 
     # test that client can ftp download zip
     def test_021_ftpNonVirusNotBlocked(self):
+        if self.ftp_user_name is None:
+            raise unittest.SkipTest("Unable to obtain FTP credentials")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
+        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
         assert (result == 0)
 
     # test that client can ftp download PDF
     def test_023_ftpNonVirusPDFNotBlocked(self):
+        if self.ftp_user_name is None:
+            raise unittest.SkipTest("Unable to obtain FTP credentials")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test/test.pdf")
+        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test/test.pdf")
         assert (result == 0)
 
     # test that client can block virus ftp download zip
@@ -205,11 +206,13 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_025_ftpVirusBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
+        if self.ftp_user_name is None:
+            raise unittest.SkipTest("Unable to obtain FTP credentials")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_025_ftpVirusBlocked_file")
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_025_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_025_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_025_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
@@ -227,12 +230,14 @@ class VirusBlockerBaseTests(NGFWTestCase):
     # test that client can ftp download zip from pass site
     @pytest.mark.failure_behind_ngfw
     def test_027_ftpVirusPassSite(self):
+        if self.ftp_user_name is None:
+            raise unittest.SkipTest("Unable to obtain FTP credentials")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         addPassSite(self._app, global_functions.ftp_server)
         remote_control.run_command("rm -f /tmp/temp_027_ftpVirusPassSite_file")
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_027_ftpVirusPassSite_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_027_ftpVirusPassSite_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         nukePassSites(self._app)
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_027_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
@@ -244,7 +249,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
         fname = sys._getframe().f_code.co_name
-        result = remote_control.run_command("wget -q -O - http://" + testsite + "/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
+        result = remote_control.run_command("wget --no-hsts -q -O - http://" + testsite + "/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Infected Web Events',None,1)
@@ -257,7 +262,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
 
     def test_101_eventlog_httpNonVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = remote_control.run_command("wget -q -O - http://" + testsite + "/test/test.zip?arg=%s 2>&1 | grep -q text123" % fname)
+        result = remote_control.run_command("wget --no-hsts  -q -O - http://" + testsite + "/test/test.zip?arg=%s 2>&1 | grep -q text123" % fname)
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Clean Web Events',None,1)
@@ -270,13 +275,15 @@ class VirusBlockerBaseTests(NGFWTestCase):
 
     @pytest.mark.failure_behind_ngfw
     def test_102_eventlog_ftpVirus(self):
+        if self.ftp_user_name is None:
+            raise unittest.SkipTest("Unable to obtain FTP credentials")
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
+        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip")
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
@@ -287,11 +294,13 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert( found )
 
     def test_103_eventlog_ftpNonVirus(self):
+        if self.ftp_user_name is None:
+            raise unittest.SkipTest("Unable to obtain FTP credentials")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
+        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Clean Ftp Events',None,1)
@@ -309,7 +318,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
-        result = remote_control.run_command("wget -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
+        result = remote_control.run_command("wget --no-hsts -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
         assert (result == 0)
         result = remote_control.run_command("chmod 775 /tmp/email_script.py")
         assert (result == 0)
@@ -335,7 +344,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         result = remote_control.run_command("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         # download the email script
-        result = remote_control.run_command("wget -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
+        result = remote_control.run_command("wget --no-hsts -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
         assert (result == 0)
         result = remote_control.run_command("chmod 775 /tmp/email_script.py")
         assert (result == 0)
@@ -363,7 +372,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
             nukePassSites(self._app)
             assert( False )
         # download the email script
-        result = remote_control.run_command("wget -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
+        result = remote_control.run_command("wget --no-hsts -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
         if result != 0:
             nukePassSites(self._app)
             assert( False )
@@ -393,7 +402,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
-        result = remote_control.run_command("wget -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
+        result = remote_control.run_command("wget --no-hsts -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
         assert (result == 0)
         result = remote_control.run_command("chmod 775 /tmp/email_script.py")
         assert (result == 0)
@@ -423,12 +432,14 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_120_ftpLargeClean(self):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
+        if self.ftp_user_name is None:
+            raise unittest.SkipTest("Unable to obtain FTP credentials")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         md5LargePDFClean = "06b3cc0a1430c2aaf449b46c72fecee5"
         remote_control.run_command("rm -f /tmp/temp_120_ftpVirusClean_file")
-        result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_120_ftpVirusClean_file ftp://" + global_functions.ftp_server + "/debian-live-8.6.0-amd64-standard.iso")
+        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_120_ftpVirusClean_file ftp://" + global_functions.ftp_server + "/debian-live-8.6.0-amd64-standard.iso")
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_120_ftpVirusClean_file | awk '{print $1}'\"", stdout=True)
         print("md5LargePDFClean <%s> vs md5TestNum <%s>" % (md5LargePDFClean, md5TestNum))
@@ -439,7 +450,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         #find 'zip' file extension and enable scan option
         enableFileExtensionScan(self._app, "zip")
 
-        remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.zip 2>&1")
+        remote_control.run_command("wget --no-hsts -q -O - http://test.untangle.com/test/test.zip 2>&1")
 
         events = global_functions.get_events(self.displayName(),'Scanned Web Events',None,1)
         assert(events != None)
@@ -461,7 +472,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         virusSettings['enableLocalScan'] = False
         self._app.setSettings(virusSettings)
 
-        result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
+        result = remote_control.run_command("wget --no-hsts -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
 
         virusSettings['enableCloudScan'] = True
         virusSettings['enableLocalScan'] = True
