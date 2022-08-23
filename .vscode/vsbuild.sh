@@ -32,22 +32,22 @@ elif [ "$DEV_ENVIRONMENT" == "remote"]; then
     rake |& tee $RAKE_LOG
 else
     echo "Unknown DEV_ENVIRONMENT=$DEV_ENVIRONMENT"
-    exit
+    exit 1
 fi
 
 ##
 ## Review output of build
 ##
 if [ $(grep -c "missing documentation" $RAKE_LOG) -gt 0 ] ; then 
-    exit
+    exit 1
 fi
 
 if [ $(grep -c error $RAKE_LOG) -gt 0 ] ; then 
-    exit
+    exit 1
 fi
 
 if [ $(grep -c "jslint failed" $RAKE_LOG) -gt 0 ] ; then 
-    exit
+    exit 1
 fi
 
 ##
