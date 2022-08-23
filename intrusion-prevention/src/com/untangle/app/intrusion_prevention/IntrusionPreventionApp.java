@@ -586,15 +586,17 @@ public class IntrusionPreventionApp extends AppBase
     protected void preStart( boolean isPermanentTransition )
     {
         String rulesFilename = null;
+        boolean rulesFilenameExists = false;
         try{
             rulesFilename = this.settings.getSuricataSettings().getString("default-rule-path");
             rulesFilename += "/" + this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
+            File f = new File( rulesFilename );
+            rulesFilenameExists = f.exists();
         }catch(Exception e){
             logger.warn("preStart: Unable to get rulesFilename", e);
         }
 
-        File f = new File( rulesFilename );
-        if( !f.exists() ){
+        if( !rulesFilenameExists ){
             reconfigure(false);
         }
 
@@ -630,14 +632,14 @@ public class IntrusionPreventionApp extends AppBase
         try{
             rulesFilename = this.settings.getSuricataSettings().getString("default-rule-path");
             rulesFilename += "/" + this.settings.getSuricataSettings().getJSONArray("rule-files").get(0);
+            File f = new File( rulesFilename );
+            if(f.exists() ){
+                f.delete();
+            }
         }catch(Exception e){
             logger.warn("preStart: Unable to get rulesFilename", e);
         }
 
-        File f = new File( rulesFilename );
-        if(f.exists() ){
-            f.delete();
-        }
     }
 
     /**
