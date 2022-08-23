@@ -74,6 +74,10 @@ class IntrusionPreventionTests(NGFWTestCase):
 
     updates_path = "/usr/share/untangle-suricata-config"
 
+    @classmethod
+    def initial_extra_setup(cls):
+        cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
+
     @staticmethod
     def module_name():
         # cheap trick to force class variables _app and _appSettings into
@@ -123,12 +127,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
-        loopLimit = 4
-        # Send four requests for test rebustnewss 
-        while (loopLimit > 0):
-            time.sleep(4)
-            loopLimit -= 1
-            result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+        remote_control.run_command("wget --no-hsts --no-hsts -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
@@ -149,22 +148,13 @@ class IntrusionPreventionTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
-        rule_desc = appSettings['rules']['list'][0]['description']
-        if rule_desc != "ATS rule":
-            raise unittest.SkipTest('Skipping as test test_030_rule_add is needed')
-        else:
-            appSettings['rules']['list'][0]['action'] = "log"
-            app.setSettings(appSettings, True, True)
+        appSettings['rules']['list'][0]['action'] = "log"
+        app.setSettings(appSettings, True, True)
 
         self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
-        loopLimit = 4
-        # Send four requests for test rebustnewss 
-        while (loopLimit > 0):
-            time.sleep(1)
-            loopLimit -= 1
-            result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+        remote_control.run_command("wget --no-hsts -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
@@ -288,7 +278,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         while (loopLimit > 0):
             time.sleep(1)
             loopLimit -= 1
-            result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+            result = remote_control.run_command("wget --no-hsts -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
         time.sleep(10)
         app.forceUpdateStats()
@@ -312,6 +302,18 @@ class IntrusionPreventionTests(NGFWTestCase):
         # assert(pre_events_scan < post_events_scan)
         assert(pre_events_detect < post_events_detect)
         assert(pre_events_block < post_events_block)    
+
+    def test_070_ftp_traffic_doesnt_crash(self):
+        """
+        Verify that FTP does not cause system to crash
+        """
+        if self.ftp_user_name is None:
+            raise unittest.SkipTest("Unable to obtain FTP credentials")
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (ftp_result != 0):
+            raise unittest.SkipTest("FTP server not available")
+        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
+        assert (result == 0)
 
     @pytest.mark.slow
     def test_080_nmap_log(self):
