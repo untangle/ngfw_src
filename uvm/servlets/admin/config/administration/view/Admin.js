@@ -35,6 +35,14 @@ Ext.define('Ung.config.administration.view.Admin', {
             password: null
         },
 
+        // disable column moving and prevent editing "admin" account name
+        enableColumnMove: false,
+        listeners: {
+            cellclick: function(grid,td,cellIndex,record,tr,rowIndex,e,eOpts)  {
+                if (cellIndex === 0 && record.data.username === 'admin') { return false; }
+            }
+        },
+
         columns: [{
             header: 'Username'.t(),
             width: Renderer.usernameWidth,
@@ -58,13 +66,21 @@ Ext.define('Ung.config.administration.view.Admin', {
             dataIndex: 'emailAddress',
             editor: {
                 emptyText: '[no email]'.t(),
-                vtype: 'email'
-            }
+                vtype: 'email'               
+            }      
         }, {
             xtype: 'checkcolumn',
             header: 'Email Alerts'.t(),
             dataIndex: 'emailAlerts',
-            width: Renderer.booleanWidth + 20
+            width: Renderer.booleanWidth + 20,
+            listeners: {
+                // prevent enabling email alerts if missing email address
+                beforecheckchange: function(column, rowIndex, checked, record) {
+                    if (checked && !record.data.emailAddress) {
+                        return false;
+                    }
+                }
+            }
         }],
         editorFields: [{
             xtype: 'textfield',

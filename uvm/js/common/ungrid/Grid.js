@@ -312,7 +312,9 @@ Ext.define('Ung.cmp.Grid', {
                         hideable: false,
                         isDisabled: function (table, rowIndex, colIndex, item, record) {
                             // NGFW-14137 prevent removing all admin accounts
-                            if (record.data.javaClass === 'com.untangle.uvm.AdminUserSettings' && record.store.data.length <= 1) return true;
+                            if (record.data.javaClass === 'com.untangle.uvm.AdminUserSettings') {
+                                return record.getData().username === 'admin';
+                            }
                             return record.get('readOnly') || table.up('grid').getController().isRecordRestricted(record) || false;
                         }
                     };
