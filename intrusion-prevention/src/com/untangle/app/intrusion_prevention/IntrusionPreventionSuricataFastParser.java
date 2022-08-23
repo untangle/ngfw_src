@@ -57,9 +57,11 @@ public class IntrusionPreventionSuricataFastParser
     private long lastPosition = 0L;
 
     private static final Pattern LogEntry;
+    private static SimpleDateFormat dateFormat;
 
     static {
         LogEntry = Pattern.compile("^[^ ]+ ( \\[([^\\]]+)\\] | )\\[\\*\\*\\] \\[(\\d+):(\\d+):(\\d+)\\] .+ \\[\\*\\*\\] \\[[^\\]]+\\] \\[[^\\]]+\\] \\{([^\\}]+)\\} ([\\d+\\.]+)\\:(\\d+) [^ ]+ ([\\d+\\.]+)\\:(\\d+).*");
+        dateFormat = new SimpleDateFormat("MM/dd/yyyy-HH:mm:ss.SSSSSS");
     }
     /**
      * Indexes into regex capture.
@@ -193,7 +195,6 @@ public class IntrusionPreventionSuricataFastParser
                     }
                 }
 
-                logger.warn("line=" + line);
                 IntrusionPreventionLogEvent ipsEvent = null;
                 try{
                     ipsEvent = parseEvent(line);
@@ -206,7 +207,6 @@ public class IntrusionPreventionSuricataFastParser
                 }    
             }
             lastPosition += bytesRead;
-            logger.warn("bytesRead=" + bytesRead);
         } catch (IOException e) {
             logger.warn("Unable to process fast log: ",e);
         } finally {
@@ -234,7 +234,6 @@ public class IntrusionPreventionSuricataFastParser
         if ( spacePos > 0 ){
             String timestampString = logEvent.substring(0, spacePos);
             try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/YYYY-hh:mm:ss.SSSSSS");
                 timestamp = dateFormat.parse(timestampString).getTime();
             } catch(Exception e) {}
         }
