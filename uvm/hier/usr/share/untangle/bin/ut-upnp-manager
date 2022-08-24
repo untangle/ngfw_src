@@ -39,7 +39,10 @@ class Iptables:
                 address = destination_ip_address
             else:
                 address = entry_values[9]
-            key = f"{address} {entry_values[10]} {entry_values[11]}"
+            port = entry_values[11]
+            if ":" in port:
+                port = port[port.find(":")+1:]
+            key = f"{address} {entry_values[10]} {port}"
         return key
 
     def parse(self):
