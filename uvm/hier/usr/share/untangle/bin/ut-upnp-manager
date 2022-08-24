@@ -3,8 +3,6 @@
 # Under iptables, nat, read upnp-rules chain
 # return Json output for UI
 
-# iptables -t nat -L upnp-rules -nv
-
 import getopt
 import json
 import re
@@ -13,17 +11,36 @@ import sys
 
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
-
-
 class Iptables:
 
     regex_chain_prefix = re.compile(r'^Chain ([^w]+)')
     iptables_command = "/sbin/iptables"
 
-    def __init__(self, table, chain):
-    	self.table = table
-    	self.chain = chain
-    	self.parse()
+    def __init__(self, nat_table, filter_table, chain):
+        """
+        Initialize with values to look for
+        """
+        self.nat_table = nat_table
+        self.filter_table = filter_table
+        # Currently same chain name is used in both filter and nat tables
+        self.chain = chain
+        self.parse()
+
+    def get_filter_key(self, entry_values, destination_ip_address=None):
+        """
+        Build key for filter table information for lookups
+
+        When called from filter table processing, use values.
+        When calld from nat table processing, needs explicit destination address
+        """
+        key = None
+        if len(entry_values) > 11:
+            if destination_ip_address is not None:
+                address = destination_ip_address
+            else:
+                address = entry_values[9]
+            key = f"{address} {entry_values[10]} {entry_values[11]}"
+        return key
 
     def parse(self):
         """
@@ -32,7 +49,26 @@ class Iptables:
         self.data = {
         	"active": []
         }
-        process = subprocess.Popen(self.iptables_command + " -t " + self.table + " -L " + self.chain + " -nv --line-numbers", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
+
+        # Filter table contains traffic information but not full source/destination.
+        # Build hash of these entries with a key so when processing the nat table
+        # (which has more information) can lookup from this hash to populate accomanying
+        # bytes/packets counts.
+        process = subprocess.Popen(self.iptables_command + " -t " + self.filter_table + " -L " + self.chain + " -nv --line-numbers", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
+        (process_stdout, process_stderror) = process.communicate()
+        filter_table = {}
+        for entry in process_stdout.splitlines():
+            if re.match(self.regex_chain_prefix, entry):
+                continue
+            entry_values = entry.split()
+            if len(entry_values) < 11:
+                continue
+            key = self.get_filter_key(entry_values)
+            if key is None:
+                continue
+            filter_table[key] = entry_values
+
+        process = subprocess.Popen(self.iptables_command + " -t " + self.nat_table + " -L " + self.chain + " -nv --line-numbers", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
         (process_stdout, process_stderror) = process.communicate()
         headers = []
         for entry in process_stdout.splitlines():
@@ -49,6 +85,7 @@ class Iptables:
                 headers.append("upnp_client_port")
                 continue
 
+            destination_ip_address = None
             for index, value in enumerate(entry_values):
                 if ":" in value:
                 	# Break down dnat values
@@ -56,12 +93,17 @@ class Iptables:
                     if ":" in entry_values[index]:
                     	# Break down client
                         value = entry_values[index]
+                        destination_ip_address = value[:value.find(":")]
                         port = value[value.find(":"):]
                         entry_values[index] = value[:value.find(":"):]
                         entry_values.append(port)
 
-            entry_values.insert(0, entry_values[0])
+            filter_key = self.get_filter_key(entry_values, destination_ip_address)
+            if filter_key in filter_table:
+                entry_values[0] = filter_table[filter_key][0]
+                entry_values[1] = filter_table[filter_key][1]
 
+            entry_values.insert(0, entry_values[0])
             self.data["active"].append(dict(list(zip(headers, entry_values))))
 
     def get_json(self):
@@ -93,7 +135,7 @@ class Iptables:
         for active_rule in self.data["active"]:
             if self.match_rule(active_rule, rule) is True:
                 try:
-                    process = subprocess.Popen(self.iptables_command + " -t " + self.table + " -D " + self.chain + " " + str(active_rule["num"]), shell=True, text=True)
+                    process = subprocess.Popen(self.iptables_command + " -t " + self.nat_table + " -D " + self.chain + " " + str(active_rule["num"]), shell=True, text=True)
                     print("deleted")
                 except:
                     print("not delete")
@@ -103,7 +145,7 @@ def main(argv):
     Main loop
     """
 
-    iptables = Iptables("nat", "MINIUPNPD")
+    iptables = Iptables("nat", "filter", "MINIUPNPD")
     try:
         opts, args = getopt.getopt(argv, "sd", ["status", "delete="] )
     except getopt.GetoptError:
