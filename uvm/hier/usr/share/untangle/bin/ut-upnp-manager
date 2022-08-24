@@ -103,8 +103,8 @@ class Iptables:
 
             filter_key = self.get_filter_key(entry_values, destination_ip_address)
             if filter_key in filter_table:
-                entry_values[0] = filter_table[filter_key][0]
                 entry_values[1] = filter_table[filter_key][1]
+                entry_values[2] = filter_table[filter_key][2]
 
             entry_values.insert(0, entry_values[0])
             self.data["active"].append(dict(list(zip(headers, entry_values))))
