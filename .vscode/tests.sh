@@ -5,33 +5,29 @@
 TARGET=local
 CLIENT_TARGET=
 PORT=22
-TEST_SUITES=
-TESTS=
+RUNTESTS_ARGUMENTS=
+RUNTESTS_GET_ARGUMENT=
 
 ##
 ## Read command-line arguments
 ##
-while getopts ":t:h:s:p:" flag; do
+while getopts "t:h:p:gr:" flag; do
     case "${flag}" in
+        r) RUNTESTS_ARGUMENTS=${OPTARG};;
         t) TARGET=${OPTARG} ;;
         h) CLIENT_TARGET=${OPTARG} ;;
-        s) TEST_SUITES=${OPTARG%% *} TESTS=${OPTARG#* } ;;
         p) PORT=${OPTARG} ;;
+        g) RUNTESTS_GET_ARGUMENT=-g ;;
+        *) echo "Unknown argument ${!OPTIND}"
+        ;;
     esac
 done
 shift $((OPTIND-1))
 
-if [ "$TESTS" == "$TEST_SUITES" ] ; then
-    ##
-    ## If tests = test suites, it means there was no space and only suite shoudl be run.
-    ##
-    TESTS=
-fi
-
-echo "CLIENT_TARGET=$CLIENT_TARGET"
 echo "TARGET=$TARGET"
-echo "TEST_SUITES=$TEST_SUITES"
-echo "TESTS=$TESTS"
+echo "CLIENT_TARGET=$CLIENT_TARGET"
+echo "RUNTESTS_ARGUMENTS=$RUNTESTS_ARGUMENTS"
+echo "RUNTESTS_GET_ARGUMENT=$RUNTESTS_GET_ARGUMENT"
 
 # Break target down by commas into an array.
 TARGET_ADDRESSES=()
@@ -54,21 +50,23 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
 
     ssh-copy-id -p $PORT root@$target_address
 
-    ##
-    ## Setup SSH between 
-    ##
-    scp $LOCAL_TESTS_TARGET_SCRIPT root@$target_address:$TARGET_TESTS_TARGET_SCRIPT
-    ssh root@$target_address "$TARGET_TESTS_TARGET_SCRIPT $CLIENT_TARGET"
+    if [ "${CLIENT_TARGET}" != "" ] ; then
+        ##
+        ## Setup testshell
+        ##
+        scp $LOCAL_TESTS_TARGET_SCRIPT root@$target_address:$TARGET_TESTS_TARGET_SCRIPT
+        ssh root@$target_address "$TARGET_TESTS_TARGET_SCRIPT $CLIENT_TARGET"
+    fi
 
     ##
     ## Build runtests command line
     ##
-    TARGET_COMMAND="/usr/bin/runtests -t $TEST_SUITES"
-    if [ "$TESTS" != "" ] ; then
+    TARGET_COMMAND="/usr/bin/runtests ${RUNTESTS_ARGUMENTS}"
+    if [ "${RUNTESTS_GET_ARGUMENT}" != "" ] ; then
         ##
-        ## Specific tests within the suite(s)
+        ## Pass get argumnt
         ##
-        TARGET_COMMAND="$TARGET_COMMAND -T $TESTS"
+        TARGET_COMMAND="$TARGET_COMMAND ${RUNTESTS_GET_ARGUMENT}"
     fi
     if [ "$CLIENT_TARGET" != "" ]; then
         ##
