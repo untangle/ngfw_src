@@ -18,9 +18,16 @@
                 "kind": "build"
             }
         },{
+            "label": "Search for tests",
+            "type": "shell",
+            "command": "./.vscode/tests.sh -t ${input:target_address} -g -r \"${input:tests}\"",
+            "group": {
+                "kind": "build"
+            }
+        },{
             "label": "Run tests",
             "type": "shell",
-            "command": "./.vscode/tests.sh -t \"${input:target_address}\" -h \"${input:test_client_address}\" -s \"${input:tests}\"  ",
+            "command": "./.vscode/vsbuild.sh -e remote -t ${input:target_address} && ./.vscode/tests.sh -t \"${input:target_address}\" -h \"${input:test_client_address}\" -r \"${input:tests}\"  ",
             "group": {
                 "kind": "build"
             }
@@ -41,20 +48,20 @@
         {
             "id": "target_address",
             "type":"promptString",
-            "description": "IP Address of NGFW",
+            "description": "IP address of NGFW",
             "default": ""
         },
         {
             "id": "test_client_address",
             "type":"promptString",
-            "description": "IP Address of test client",
+            "description": "IP address of test client",
             "default": ""
         },
         {
             "id": "tests",
             "type":"promptString",
-            "description": "Tests to run (comma separated suites optionally separated by space and followed by comma separated tests",
-            "default": "uvm test_010_client_is_online"
-        },
+            "description": "Tests to run (runtests arguments like -t <suite> amd/or -T <tests> comma separated",
+            "default": "-t uvm -T test_010_client_is_online"
+        }
     ]
 }
