@@ -7,7 +7,6 @@ if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
 from uvm import Uvm
-import zipfile
 import urllib.request, urllib.parse, urllib.error
 import pprint
 import imp
@@ -39,7 +38,7 @@ class HandlerCookie:
             args = split_args(self.req.args);
             appid = args['APPID']
         self.captureSettings = load_capture_settings(self.req,appid)
-        self.cookie = Cookie.get_cookies(self.req, Cookie.MarshalCookie, secret=str(self.captureSettings["secretKey"]))
+        self.cookie = Cookie.get_cookies(self.req, Class=Cookie.MarshalCookie, secret=str(self.captureSettings["secretKey"]))
 
     def is_valid(self):
         if self.get_field("username") != None:
@@ -79,14 +78,14 @@ def index(req):
 
     # get the original destination and other arguments passed
     # in the URL when the redirect was generated
+    args_keys = ['AUTHCODE', 'AUTHMODE', 'METHOD', 'NONCE', 'HOST','URI']
     args = split_args(req.args);
-    if (not 'AUTHCODE' in args): args['AUTHCODE'] = "Empty"
-    if (not 'AUTHMODE' in args): args['AUTHMODE'] = "Empty"
-    if (not 'METHOD' in args):   args['METHOD'] = "Empty"
-    if (not 'NONCE' in args):    args['NONCE'] = "Empty"
-    if (not 'APPID' in args):    args['APPID'] = "Empty"
-    if (not 'HOST' in args):     args['HOST'] = "Empty"
-    if (not 'URI' in args):      args['URI'] = "Empty"
+    for key in args_keys:
+        if not key in args:
+            args[key] = "Empty"
+        else:
+            if type(args[key]) == bytes:
+                args[key] = args[key].decode('utf-8')
 
     # load the configuration data
     appid = args['APPID']
@@ -119,7 +118,7 @@ def index(req):
             nonce = args['NONCE']
             host = args['HOST']
             uri = args['URI']
-            raw = urllib.parse.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri)
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
             if captureApp == None:
                 captureApp = load_rpc_manager(appid)
@@ -131,7 +130,7 @@ def index(req):
                 if ((host == 'Empty') or (uri == 'Empty')):
                     page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                     return(page)
-                raw = urllib.parse.unquote(uri).decode('utf8')
+                raw = urllib.parse.unquote(uri)
                 if (nonce == 'a1b2c3d4e5f6'):
                     target = str("https://" + host + raw)
                 else:
@@ -152,7 +151,7 @@ def index(req):
             nonce = args['NONCE']
             host = args['HOST']
             uri = args['URI']
-            raw = urllib.parse.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri)
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
             if captureApp == None:
                 captureApp = load_rpc_manager(appid)
@@ -164,7 +163,7 @@ def index(req):
                 if ((host == 'Empty') or (uri == 'Empty')):
                     page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                     return(page)
-                raw = urllib.parse.unquote(uri).decode('utf8')
+                raw = urllib.parse.unquote(uri)
                 if (nonce == 'a1b2c3d4e5f6'):
                     target = str("https://" + host + raw)
                 else:
@@ -185,7 +184,7 @@ def index(req):
             nonce = args['NONCE']
             host = args['HOST']
             uri = args['URI']
-            raw = urllib.parse.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri)
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
             if captureApp == None:
                 captureApp = load_rpc_manager(appid)
@@ -233,7 +232,7 @@ def index(req):
                     nonce = args['NONCE']
                     host = args['HOST']
                     uri = args['URI']
-                    raw = urllib.parse.unquote(uri).decode('utf8')
+                    raw = urllib.parse.unquote(uri)
                     if ((host == 'Empty') or (uri == 'Empty')):
                         page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                         return(page)
@@ -279,6 +278,19 @@ def index(req):
 # that store the details of the page originally requested.
 
 def authpost(req,username,password,method,nonce,appid,host,uri):
+    if type(username) == bytes:
+        username = username.decode('utf-8')
+    if type(password) == bytes:
+        password = password.decode('utf-8')
+    if type(method) == bytes:
+        method = method.decode('utf-8')
+    if type(nonce) == bytes:
+        nonce = nonce.decode('utf-8')
+    if type(host) == bytes:
+        host = host.decode('utf-8')
+    if type(uri) == bytes:
+        uri = uri.decode('utf-8')
+
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
@@ -305,7 +317,7 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
             if ((host == 'Empty') or (uri == 'Empty')):
                 page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                 return(page)
-            raw = urllib.parse.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri)
             if (nonce == 'a1b2c3d4e5f6'):
                 target = str("https://" + host + raw)
             else:
@@ -343,7 +355,17 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
 # in the POST data.  To handle this scenario, we use a function parameter
 # default of 'empty' which will cause app.userActivate to return false.
 
-def infopost(req,method,nonce,appid,host,uri,agree='empty'):
+def infopost(req,method,nonce,appid,host,uri,agree=b'empty'):
+    if type(method) == bytes:
+        method = method.decode('utf-8')
+    if type(nonce) == bytes:
+        nonce = nonce.decode('utf-8')
+    if type(host) == bytes:
+        host = host.decode('utf-8')
+    if type(uri) == bytes:
+        uri = uri.decode('utf-8')
+    if type(agree) == bytes:
+        agree = agree.decode('utf-8')
 
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
@@ -367,7 +389,7 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
             if ((host == 'Empty') or (uri == 'Empty')):
                 page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                 return(page)
-            raw = urllib.parse.unquote(uri).decode('utf8')
+            raw = urllib.parse.unquote(uri)
             if (nonce == 'a1b2c3d4e5f6'):
                 target = str("https://" + host + raw)
             else:
@@ -487,9 +509,9 @@ def generate_page(req,captureSettings,args,extra=''):
         target += "&host=" + args['HOST']
         target += "&uri=" + args['URI']
 
-        page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE").encode('utf8'))
-        page = replace_marker(page,'$.FacebookState.$', urllib.parse.quote(target + "&authmode=FACEBOOK").encode('utf8'))
-        page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT").encode('utf8'))
+        page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE").decode('utf8'))
+        page = replace_marker(page,'$.FacebookState.$', urllib.parse.quote(target + "&authmode=FACEBOOK").decode('utf8'))
+        page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT").decode('utf8'))
 
         page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.untangle.com/callback.php"))
 
@@ -628,8 +650,10 @@ def extjs_reply(status,message,filename=""):
 
 def replace_marker(page,marker,output):
 
-    if not type(output) is str:
-        output = output.encode("utf-8")
+    if type(marker) == bytes:
+        marker = marker.decode("utf-8")
+    if type(output) == bytes:
+        output = output.decode("utf-8")
 
     page = page.replace(marker,output)
 
