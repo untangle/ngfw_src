@@ -131,8 +131,10 @@ def load_capture_settings(req,appid=None):
 # into the page template files
 
 def replace_marker(page,marker,output):
-    if not type(output) is str:
-        output = output.encode("utf-8")
+    if type(marker) == bytes:
+        marker = marker.decode("utf-8")
+    if type(output) == bytes:
+        output = output.decode("utf-8")
 
     page = page.replace(marker,output)
 
