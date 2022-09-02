@@ -505,3 +505,79 @@ def check_clamd_ready():
     print("Number of sleep cycles waiting: %d" % i)
 
     return True
+
+def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=None, cookies_save_file=None, cookies_load_file=None, override_arguments=None, extra_arguments=None):
+    """
+    Build wget command
+
+    wget is best for straight http (not https) testing
+
+    Default arguments should be evident, but of particular note are:
+    override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
+    extra_arguments     Additional arguments not otherwise processed.
+    """
+    if uri is None:
+        uri = f"http://{TEST_SERVER_HOST}/"
+
+    arguments = []
+    if override_arguments is not None:
+        # Allow completely custom arguments
+        arguments = override_arguments
+    else:
+        # Current versions enable hsts by default which bypasses uvm!
+        arguments.append("--no-hsts")
+        # We only process ipv4.
+        arguments.append("--inet4-only")
+        if tries is not None:
+            arguments.append(f"--tries={tries}")
+        if timeout is not None:
+            arguments.append(f"--timeout={timeout}")
+
+    optional_arguments = []
+    if log_file is not None:
+        optional_arguments.append(f"--append-output={log_file}")
+    if output_file is not None:
+        optional_arguments.append(f"--output-document={output_file}")
+    if cookies_save_file is not None:
+        optional_arguments.append(f"--save-cookies={cookies_save_file}")
+    if cookies_load_file is not None:
+        optional_arguments.append(f"--load-cookies={cookies_load_file}")
+
+    if extra_arguments is not None:
+        optional_arguments.append(extra_arguments)
+
+    return f"wget {' '.join(arguments)} {' '.join(optional_arguments)} {uri}"
+
+def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None):
+    """
+    Build curl command
+
+    curl is best for straight https testing
+
+    Default arguments should be evident, but of particular note are:
+    override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
+    extra_arguments     Additional arguments not otherwise processed.
+    """
+    if uri is None:
+        uri = f"https://{TEST_SERVER_HOST}/"
+
+    arguments = []
+    if override_arguments is not None:
+        # Allow completely custom arguments
+        arguments = override_arguments
+    else:
+        arguments.append("--silent")
+        arguments.append("--insecure")
+        arguments.append("--location")
+        if connect_timeout is not None:
+            arguments.append(f"--connect-timeout {connect_timeout}")
+        if max_time is not None:
+            arguments.append(f"--max-time {max_time}")
+
+    optional_arguments = []
+    if output_file is not None:
+        optional_arguments.append(f"--output {output_file}")
+    if extra_arguments is not None:
+        optional_arguments.append(extra_arguments)
+
+    return f"curl {' '.join(arguments)} {' '.join(optional_arguments)} {uri}"
