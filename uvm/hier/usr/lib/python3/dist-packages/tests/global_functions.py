@@ -525,7 +525,10 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
         arguments = override_arguments
     else:
         # Current versions enable hsts by default which bypasses uvm!
-        arguments.append("--no-hsts")
+        # --no-hsts only available on version > 1.2
+        no_hsts_result = remote_control.run_command("wget --help | grep no-hsts")
+        if (no_hsts_result ==0):
+            arguments.append("--no-hsts")
         # We only process ipv4.
         arguments.append("--inet4-only")
         if tries is not None:
