@@ -820,7 +820,7 @@ class CaptivePortalTests(NGFWTestCase):
         assert(cookie_expires) # verify there is a cookie time
         # Save the cookie file since it is used in the next test.
         remote_control.run_command("cp " + cookie_file_name + " " + savedCookieFileName)
-        second_difference = int(remote_control.run_command("expr $(date +%s) - " + cookie_expires.decode(),stdout=True))
+        second_difference = int(remote_control.run_command("expr $(date +%s) - " + cookie_expires,stdout=True))
         print("second_difference: %i cookie_timeout: %i" %(second_difference, cookie_timeout))
         assert(second_difference > cookie_timeout)
 
@@ -1046,7 +1046,7 @@ class CaptivePortalTests(NGFWTestCase):
         
         # revert back to standard ports
         set_http_https_ports(80,443)
-        assert ("8081" in result.decode())
+        assert ("8081" in result)
         assert (search == 0)
 
     def test_090_always_use_secure_capture(self):
