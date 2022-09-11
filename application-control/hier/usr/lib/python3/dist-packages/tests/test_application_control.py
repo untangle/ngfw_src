@@ -121,9 +121,9 @@ class ApplicationControlTests(NGFWTestCase):
 
     def test_023_protoRule_Facebook(self):
         touchProtoRule(self._app, "Facebook",False,False)
-        result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://facebook.com/")
+        result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 --user-agent=Firefox https://facebook.com/")
         touchProtoRule(self._app, "Facebook",True,True)
-        result2 = remote_control.run_command("wget --no-check-certificate -4 -q -O /dev/null -t 2 --timeout=5 https://facebook.com/")
+        result2 = remote_control.run_command("wget --no-check-certificate -4 -q -O /dev/null -t 2 --timeout=5 --user-agent=Firefox https://facebook.com/")
         touchProtoRule(self._app, "Facebook",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
