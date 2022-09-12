@@ -21,12 +21,12 @@ from uvm import Uvm
 
 # ATS Global Constants
 OFFICE_NETWORKS = ('10.111.0.0/16','10.112.0.0/16','10.113.0.0/16')
-IPERF_SERVERS = [('10.111.0.0/16','10.111.56.23'),] # SJ Office network
-RADIUS_SERVER = "10.111.56.28"
+IPERF_SERVERS = [('10.112.0.0/16','10.112.56.23'),] # SJ Office network
+RADIUS_SERVER = "10.112.56.28"
 RADIUS_SERVER_PASSWORD = "chakas"
 RADIUS_USER = "normal"
 RADIUS_PASSWORD = "passwd"
-AD_SERVER = "10.111.56.46"
+AD_SERVER = "10.112.56.46"
 AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
 AD_DOMAIN = "adtest.adtesting.int"
@@ -36,19 +36,19 @@ ACCOUNT_FILE_SERVER = "ats-iqd.untangle.int"
 ACCOUNT_FILE = "/test/account_login.json"
 
 # special Untangle box configured as a OpenVPN server
-VPN_SERVER_IP = "10.111.56.96"
+VPN_SERVER_IP = "10.112.56.96"
 
 # special box within VPN_SERVER_IP's network
 VPN_SERVER_LAN_IP = "192.168.235.96"
 
 # special Untangle box configured as a OpenVPN server with User/Pass authentication enabled
-VPN_SERVER_USER_PASS_IP = "10.111.56.93"
+VPN_SERVER_USER_PASS_IP = "10.112.56.93"
 
 # special box within VPN_SERVER_USER_PASS_IP's network
 VPN_SERVER_USER_PASS_LAN_IP = "192.168.235.43"
 
 # special box with testshell in the sudoer group  - used to connect to vpn as client
-VPN_CLIENT_IP = "10.111.56.23"  
+VPN_CLIENT_IP = "10.112.56.23"  
 
 # special Untangle box configured as WireGuard VPN server
 WG_VPN_SERVER_IP = "10.113.150.117"
@@ -65,7 +65,7 @@ WG_VPN_SERVICE_INFO = {
 WG_VPN_SERVER_LAN_IP = "192.168.20.170"
 
 # Servers running remote syslog
-LIST_SYSLOG_SERVER = '10.111.56.23'
+LIST_SYSLOG_SERVER = '10.112.56.23'
 
 uvmContext = Uvm().getUvmContext(timeout=240)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
