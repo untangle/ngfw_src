@@ -127,7 +127,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
-        remote_control.run_command("wget --no-hsts --no-hsts -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+        remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com/CompanySecret",))
 
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
@@ -154,7 +154,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         self.do_wait_for_daemon_ready()
 
         startTime = datetime.datetime.now()
-        remote_control.run_command("wget --no-hsts -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+        remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com/CompanySecret",))
 
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
@@ -278,7 +278,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         while (loopLimit > 0):
             time.sleep(1)
             loopLimit -= 1
-            result = remote_control.run_command("wget --no-hsts -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+            result = remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com/CompanySecret",))
 
         time.sleep(10)
         app.forceUpdateStats()
@@ -312,7 +312,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
-        result = remote_control.run_command("wget --no-hsts --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /dev/null ftp://" + global_functions.ftp_server + "/test.zip")
+        result = remote_control.run_command(global_functions.build_wget_command(uri="--user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' ftp://" + global_functions.ftp_server + "/test.zip",))
         assert (result == 0)
 
     @pytest.mark.slow
