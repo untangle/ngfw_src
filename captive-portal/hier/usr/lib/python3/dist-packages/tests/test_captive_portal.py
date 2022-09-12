@@ -695,7 +695,7 @@ class CaptivePortalTests(NGFWTestCase):
         # check if RADIUS login and password a second time.
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_040c.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"), stdout=True)
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_040c.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"), stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040c.out")
         assert (search == 0)
 
