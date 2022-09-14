@@ -28,6 +28,7 @@ vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip
 vpnSite2SiteHostname = "untangle-ats-vpn-8251"
 vpnSite2SiteUserPassFile = "http://test.untangle.com/test/openvpn-site2siteUserPass-config.zip"
 vpnSite2SiteUserPassHostname = "untangle93-6105"
+vpn_tunnel_file = "http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip"
 tunnelApp = None
 tunnelUp = False
 ovpnlocaluser = "ovpnlocaluser"
@@ -867,7 +868,6 @@ class OpenVpnTests(NGFWTestCase):
     def test_80_OpenVPNTunnelVPNConflict(self):
         """test conflict of OpenVPN and TunnelVPN when 'boundInterfaceId' is set to the first wan IP"""
         global tunnelApp
-        vpn_tunnel_file = "http://10.111.56.29/openvpn-ats-test-tunnelvpn-config.zip"
         index_of_wans = global_functions.get_wan_tuples()
         if index_of_wans == []:
             raise unittest.SkipTest("No static or auto WAN")
