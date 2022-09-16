@@ -192,7 +192,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
                 try {
                     // grab the subject distinguished name from the certificate
-                    ldapName = new LdapName(serverCert.getSubjectDN().getName());
+                    ldapName = new LdapName(serverCert.getSubjectX500Principal().getName());
                 }
 
                 catch (Exception exn) {

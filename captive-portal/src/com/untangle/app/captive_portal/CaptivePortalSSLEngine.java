@@ -124,7 +124,7 @@ public class CaptivePortalSSLEngine
 
         // catch any exceptions
         catch (Exception exn) {
-            logger.debug("Exception calling clilentDataWorker", exn);
+            logger.debug("Exception calling clientDataWorker", exn);
         }
 
         // null result means something went haywire
@@ -153,14 +153,21 @@ public class CaptivePortalSSLEngine
      */
     private boolean clientDataWorker(AppTCPSession session, ByteBuffer data) throws Exception
     {
-        ByteBuffer target = ByteBuffer.allocate(32768);
         boolean allowed = false;
         boolean done = false;
         HandshakeStatus status;
 
         logger.debug("PARAM_BUFFER = " + data.toString());
 
-        if (sniHostname == null) sniHostname = extractSNIhostname(data.duplicate());
+        if (sniHostname == null){
+            try{
+                sniHostname = extractSNIhostname(data.duplicate());
+            }catch (Exception exn) {
+                // The client is almost certainly sending us a bad TLS packet.
+                session.release();
+                return true;
+            }
+        }
 
         CaptivePortalSettings.AuthenticationType authType = captureApp.getSettings().getAuthenticationType();
 
@@ -208,8 +215,8 @@ public class CaptivePortalSSLEngine
 
         // attach the subject and issuer names just like SSL Inspector for use by the rule matcher
         if (serverCert != null) {
-            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SUBJECT_DN, serverCert.getSubjectDN().toString());
-            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_ISSUER_DN, serverCert.getIssuerDN().toString());
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SUBJECT_DN, serverCert.getSubjectX500Principal().toString());
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_ISSUER_DN, serverCert.getIssuerX500Principal().toString());
         }
 
         // do the rule check again now that we have the SSL attachments
@@ -257,17 +264,17 @@ public class CaptivePortalSSLEngine
 
             // handle unwrap during handshake
             case NEED_UNWRAP:
-                done = doNeedUnwrap(data, target);
+                done = doNeedUnwrap(data);
                 break;
 
             // handle wrap during handshake
             case NEED_WRAP:
-                done = doNeedWrap(data, target);
+                done = doNeedWrap(data);
                 break;
 
             // handle data when no handshake is in progress
             case NOT_HANDSHAKING:
-                done = doNotHandshaking(data, target);
+                done = doNotHandshaking(data);
                 break;
 
             // should never happen but we handle just to be safe
@@ -281,7 +288,7 @@ public class CaptivePortalSSLEngine
     }
 
     /**
-     * Called when SSLEngin status = NEED_TASK
+     * Called when SSLEngine status = NEED_TASK
      * 
      * @param data
      *        The buffer to be processed
@@ -305,19 +312,23 @@ public class CaptivePortalSSLEngine
      * 
      * @param data
      *        Source buffer for encrypted SSL data
-     * @param target
-     *        Target buffer for unencrypted data
      * @return True when all data has been processed, false when data remains
      *         and additional SSLEngine operations are required
      * @throws Exception
      */
-    private boolean doNeedUnwrap(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedUnwrap(ByteBuffer data) throws Exception
     {
         SSLEngineResult result;
+        ByteBuffer target = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
 
         // unwrap the argumented data into the engine buffer
         result = sslEngine.unwrap(data, target);
         logger.debug("EXEC_UNWRAP " + result.toString());
+
+        if(result.getStatus() == SSLEngineResult.Status.OK && data.hasRemaining() == false){
+            // Nothing more to process.
+            return true;
+        }
 
         if (result.getStatus() == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
             // underflow during unwrap means the SSLEngine needs more data
@@ -348,15 +359,14 @@ public class CaptivePortalSSLEngine
      * 
      * @param data
      *        Source buffer for unencrypted SSL data
-     * @param target
-     *        Target buffer for encrypted data
      * @return True when all data has been processed, false when data remains
      *         and additional SSLEngine operations are required
      * @throws Exception
      */
-    private boolean doNeedWrap(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedWrap(ByteBuffer data) throws Exception
     {
         SSLEngineResult result;
+        ByteBuffer target = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
 
         // wrap the argumented data into the engine buffer
         result = sslEngine.wrap(data, target);
@@ -365,17 +375,21 @@ public class CaptivePortalSSLEngine
         // check for engine problems
         if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
+        // If we produced something for the other side, send it.
+        if (result.bytesProduced() != 0){
+            target.flip();
+            session.sendDataToClient(target);
+        }
+
         // if the engine result hasn't changed we need more processing
         if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP) return false;
 
-        // if the wrap call didn't produce any data return null
-        if (result.bytesProduced() == 0) return false;
+        if(data.remaining() > 0 ){
+            // More data here almost certainly means we've transitioned to FINISHED/NOT_HANDSHAKING mode
+            // and the remainder should be handled there.
+            return false;
+        }
 
-        // the wrap call produced some data so return it to the client
-        target.flip();
-        ByteBuffer array[] = new ByteBuffer[1];
-        array[0] = target;
-        session.sendDataToClient(array);
         return true;
     }
 
@@ -384,13 +398,11 @@ public class CaptivePortalSSLEngine
      * 
      * @param data
      *        Source buffer for encrypted SSL data
-     * @param target
-     *        Target buffer for unencrypted data
      * @return True when all data has been processed, false when data remains
      *         and additional SSLEngine operations are required
      * @throws Exception
      */
-    private boolean doNotHandshaking(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNotHandshaking(ByteBuffer data) throws Exception
     {
         Token[] response = null;
         SSLEngineResult result = null;
@@ -399,6 +411,7 @@ public class CaptivePortalSSLEngine
         String uriStr = null;
         String vector = new String();
         int top, end;
+        ByteBuffer target = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
 
         // we call unwrap for all data we receive from the client 
         result = sslEngine.unwrap(data, target);
@@ -472,10 +485,9 @@ public class CaptivePortalSSLEngine
         session.release();
 
         // return the now encrypted reply buffer back to the client
-        ByteBuffer array[] = new ByteBuffer[1];
         obuff.flip();
-        array[0] = obuff;
-        session.sendDataToClient(array);
+        session.sendDataToClient(obuff);
+
         return true;
     }
 

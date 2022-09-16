@@ -138,7 +138,6 @@ public class ThreatPreventionSSLEngine
 
     private boolean clientDataWorker(ByteBuffer data) throws Exception
     {
-        ByteBuffer target = ByteBuffer.allocate(32768);
         boolean done = false;
         HandshakeStatus status;
 
@@ -174,17 +173,17 @@ public class ThreatPreventionSSLEngine
 
             // handle unwrap during handshake
             case NEED_UNWRAP:
-                done = doNeedUnwrap(data, target);
+                done = doNeedUnwrap(data);
                 break;
 
             // handle wrap during handshake
             case NEED_WRAP:
-                done = doNeedWrap(data, target);
+                done = doNeedWrap(data);
                 break;
 
             // handle data when no handshake is in progress
             case NOT_HANDSHAKING:
-                done = doNotHandshaking(data, target);
+                done = doNotHandshaking(data);
                 break;
 
             // should never happen but we handle just to be safe
@@ -224,18 +223,22 @@ public class ThreatPreventionSSLEngine
      * 
      * @param data
      *        The data received
-     * @param target
-     *        The buffer to store the unwrapped data
      * @return True to continue the parser loop, false to break out
      * @throws Exception
      */
-    private boolean doNeedUnwrap(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedUnwrap(ByteBuffer data) throws Exception
     {
         SSLEngineResult result;
+        ByteBuffer target = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
 
         // unwrap the argumented data into the engine buffer
         result = sslEngine.unwrap(data, target);
         logger.debug("EXEC_UNWRAP " + result.toString());
+
+        if(result.getStatus() == SSLEngineResult.Status.OK && data.hasRemaining() == false){
+            // Nothing more to process.
+            return true;
+        }
 
         if (result.getStatus() == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
             // underflow during unwrap means the SSLEngine needs more data
@@ -267,14 +270,13 @@ public class ThreatPreventionSSLEngine
      * 
      * @param data
      *        The data received
-     * @param target
-     *        The buffer to store the wrapped data
      * @return True to continue the parser loop, false to break out
      * @throws Exception
      */
-    private boolean doNeedWrap(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedWrap(ByteBuffer data) throws Exception
     {
         SSLEngineResult result;
+        ByteBuffer target = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
 
         // wrap the argumented data into the engine buffer
         result = sslEngine.wrap(data, target);
@@ -283,17 +285,21 @@ public class ThreatPreventionSSLEngine
         // check for engine problems
         if (result.getStatus() != SSLEngineResult.Status.OK) throw new Exception("SSLEngine wrap fault");
 
+        // If we produced something for the other side, send it.
+        if (result.bytesProduced() != 0){
+            target.flip();
+            session.sendDataToClient(target);
+        }
+
         // if the engine result hasn't changed we need more processing
         if (result.getHandshakeStatus() == HandshakeStatus.NEED_WRAP) return false;
 
-        // if the wrap call didn't produce any data return null
-        if (result.bytesProduced() == 0) return false;
+        if(data.remaining() > 0 ){
+            // More data here almost certainly means we've transitioned to FINISHED/NOT_HANDSHAKING mode
+            // and the remainder should be handled there.
+            return false;
+        }
 
-        // the wrap call produced some data so return it to the client
-        target.flip();
-        ByteBuffer array[] = new ByteBuffer[1];
-        array[0] = target;
-        session.sendDataToClient(array);
         return true;
     }
 
@@ -304,14 +310,13 @@ public class ThreatPreventionSSLEngine
      * 
      * @param data
      *        The data received
-     * @param target
-     *        The buffer to store the unwrapped data
      * @return True to continue the parser loop, false to break out
      * @throws Exception
      */
-    private boolean doNotHandshaking(ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNotHandshaking(ByteBuffer data) throws Exception
     {
         SSLEngineResult result = null;
+        ByteBuffer target = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
         String vector = new String();
 
         // we call unwrap for all data we receive from the client 
@@ -349,10 +354,8 @@ public class ThreatPreventionSSLEngine
         session.release();
 
         // return the now encrypted reply buffer back to the client
-        ByteBuffer array[] = new ByteBuffer[1];
         obuff.flip();
-        array[0] = obuff;
-        session.sendDataToClient(array);
+        session.sendDataToClient(obuff);
         return true;
     }
 
