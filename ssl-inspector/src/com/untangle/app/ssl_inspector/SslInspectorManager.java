@@ -65,7 +65,7 @@ class SslInspectorManager
 
     // This is the list of subject name tags that we know work with the
     // openssl utility. The key is the tag we retrieve from the server cert
-    // by calling X509Certificate.getSubjectDN().getName() and the object
+    // by calling X509Certificate.getSubjectX500Principal().getName() and the object
     // is the exact string that openssl expects to be passed in the subject.
     static {
         validSubjectList.put("C", "C");
@@ -218,7 +218,7 @@ class SslInspectorManager
             String certHostName = new String();
 
             // grab the subject distinguished name from the certificate
-            LdapName ldapDN = new LdapName(baseCert.getSubjectDN().getName());
+            LdapName ldapDN = new LdapName(baseCert.getSubjectX500Principal().getName());
 
             // we only want the CN from the certificate
             for (Rdn rdn : ldapDN.getRdns()) {
@@ -344,7 +344,7 @@ class SslInspectorManager
         StringBuilder certSANlist = new StringBuilder(1024);
 
         // grab the subject distinguished name from the certificate
-        LdapName ldapDN = new LdapName(baseCert.getSubjectDN().getName());
+        LdapName ldapDN = new LdapName(baseCert.getSubjectX500Principal().getName());
 
         // use the valid items in the SubjectDN received from the external
         // server to generate the subject field for our fake certificate
