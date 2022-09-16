@@ -119,8 +119,8 @@ class TrustCatalog
             TrustedCertificate item = new TrustedCertificate();
 
             item.setCertAlias(alias);
-            item.setIssuedTo(cert.getSubjectDN().toString());
-            item.setIssuedBy(cert.getIssuerDN().toString());
+            item.setIssuedTo(cert.getSubjectX500Principal().toString());
+            item.setIssuedBy(cert.getIssuerX500Principal().toString());
             item.setDateValid(cert.getNotBefore().toString());
             item.setDateExpire(cert.getNotAfter().toString());
 
@@ -185,7 +185,7 @@ class TrustCatalog
             oStream.close();
 
             // return success code and the cert subject
-            return new ExecManagerResult(0, certObject.getSubjectDN().toString());
+            return new ExecManagerResult(0, certObject.getSubjectX500Principal().toString());
         }
 
         catch (Exception exn) {

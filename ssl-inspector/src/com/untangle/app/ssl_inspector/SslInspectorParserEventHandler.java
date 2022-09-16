@@ -686,10 +686,10 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // attach the subject and issuer names for use by the rule matcher
         if (serverCert != null) {
-            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SUBJECT_DN, serverCert.getSubjectDN().toString());
-            logger.debug("CERTCACHE FOUND SubjectDN = " + serverCert.getSubjectDN());
-            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_ISSUER_DN, serverCert.getIssuerDN().toString());
-            logger.debug("CERTCACHE FOUND IssuerDN = " + serverCert.getIssuerDN());
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SUBJECT_DN, serverCert.getSubjectX500Principal().toString());
+            logger.debug("CERTCACHE FOUND SubjectDN = " + serverCert.getSubjectX500Principal());
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_ISSUER_DN, serverCert.getIssuerX500Principal().toString());
+            logger.debug("CERTCACHE FOUND IssuerDN = " + serverCert.getIssuerX500Principal());
         }
 
         // if we didn't create an invalid packet rule matcher above then

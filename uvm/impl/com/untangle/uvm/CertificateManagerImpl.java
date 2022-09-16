@@ -405,8 +405,8 @@ public class CertificateManagerImpl implements CertificateManager
 
             certInfo.setDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
             certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
-            certInfo.setCertSubject(certObject.getSubjectDN().toString());
-            certInfo.setCertIssuer(certObject.getIssuerDN().toString());
+            certInfo.setCertSubject(certObject.getSubjectX500Principal().toString());
+            certInfo.setCertIssuer(certObject.getIssuerX500Principal().toString());
 
             List<String> usageList = certObject.getExtendedKeyUsage();
             if (usageList != null) {
@@ -550,7 +550,7 @@ public class CertificateManagerImpl implements CertificateManager
             if(certObject != null) {
                 certInfo.setDateValid(simpleDateFormat.parse(certObject.getNotBefore().toString()));
                 certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
-                certInfo.setCertSubject(certObject.getSubjectDN().toString());
+                certInfo.setCertSubject(certObject.getSubjectX500Principal().toString());
             }
         }
 
