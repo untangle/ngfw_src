@@ -127,7 +127,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         if (certHolder != null) {
             serverCertificate = certHolder.getCertificate();
             if (serverCertificate != null) {
-                logger.debug("CertCache Found " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectDN().toString() + ") IssuerDN(" + serverCertificate.getIssuerDN().toString() + ")");
+                logger.debug("CertCache Found " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
                 return (serverCertificate);
             }
         }
@@ -213,7 +213,7 @@ public class CertCacheManagerImpl implements CertCacheManager
             serverCertificate = (X509Certificate) certList[0];
             certTable.remove(serverAddress);
             certTable.put(serverAddress, new CertificateHolder(serverCertificate));
-            logger.info("CertCache Fetch " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectDN().toString() + ") IssuerDN(" + serverCertificate.getIssuerDN().toString() + ")");
+            logger.info("CertCache Fetch " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
         }
 
         // we log and ignore all socket timeout exceptions 
@@ -281,7 +281,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         // not found, null or expired certificate so replace
         certTable.remove(serverAddress);
         certTable.put(serverAddress, new CertificateHolder(serverCertificate));
-        logger.debug("CertCache Update " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectDN().toString() + ") IssuerDN(" + serverCertificate.getIssuerDN().toString() + ")");
+        logger.debug("CertCache Update " + serverAddress + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
     }
 
     /**
