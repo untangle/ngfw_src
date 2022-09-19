@@ -4,23 +4,59 @@
 # This file should be rewritten as a run-parts script on a /etc/untangle/restore.d directory
 # This would allow us to create plugins for other packages in the restore.d directory
 
+# A simgple "rm -rf *" can fail if the command path exceeds a length.
+remove_path(){
+    path=$1
+
+    if [ -d $path ]; then
+        # Remove all directories under the path
+        for dir in $path/*; do
+            rm -rf $dir
+        done
+    elif [ -f $path ]; then
+        # Remove all files with the same path root.  For example passing
+        # wizard.js removes that file along with files like wizard.js-version-2022-09-19-164126.916.js
+        for file in $path*; do
+            rm -f $file
+        done
+    fi
+}
+
 systemctl stop untangle-vm
 
+#
+# Remove files
+#
 echo "Removing settings and configuration..."
+remove_path /usr/share/untangle/settings
+remove_path /usr/share/untangle/conf/wizard.js
+remove_path /usr/share/untangle/conf/uris.js
 
-# drop settings and other state
-rm -f /usr/share/untangle/conf/wizard-complete-flag
-rm -f /usr/share/untangle/conf/wizard.js
-rm -rf /usr/share/untangle/settings/*
+# Remove most old logs
+find /var/log -name "*gz" | xargs rm -f
+find /var/log -name "*.1" | xargs rm -f
+find /var/log -name "*.2" | xargs rm -f
+find /var/log -name "*.3" | xargs rm -f
+find /var/log -name "*.4" | xargs rm -f
+find /var/log/uvm/* | xargs rm -f
+
+rm -f /usr/share/untangle/conf/*js
+rm -f /usr/share/untangle/conf/*flag*
+
 rm -rf /usr/share/untangle/quarantine
 rm -rf /etc/openvpn/*
+
 rm -f /var/cache/untangle-ssl/*.p12
 rm -f /usr/share/untangle/tempfs-database.backup
 
+#
 # drop database
+#
 if [ -f /usr/bin/psql ] ; then
+    systemctl start postgresql
     psql -U postgres -c "DROP SCHEMA reports CASCADE" uvm >/dev/null 2>&1
     psql -U postgres -c "DROP DATABASE IF EXISTS uvm" >/dev/null 2>&1
+    systemctl stop postgresql
 fi
 if [ -f /var/lib/sqlite/reports.db ] ; then
     rm -f /var/lib/sqlite/reports.db
@@ -28,10 +64,13 @@ fi
 
 echo "Removing settings and configuration...done"
 
-echo "Restoring File System State..."
-
-# restore canonical files
-tar -C / -zxf /usr/share/untangle/conf/canonical.tar.gz
+# Restore canonical files
+# Used for restoring system to non-standard reset state.
+# For example, allow ATS to restore to the previous network settings to avoid manual reconfiguration.
+canonical_file=/usr/share/untangle/conf/canonical.tar.gz
+if [ -f $canonical_file ]; then
+    tar -C / -zxf $canonical_file
+fi
 
 # restore logo
 cp -f /var/www/images/DefaultLogo.png /var/www/images/BrandingLogo.png
