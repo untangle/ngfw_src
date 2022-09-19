@@ -298,8 +298,6 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject doFactoryReset()
     {
-        logger.info("CMAN_HIST doFactoryReset()");
-
         new java.util.Timer().schedule(new java.util.TimerTask()
         {
             /**
@@ -310,9 +308,9 @@ public class ConfigManagerImpl implements ConfigManager
             @Override
             public void run()
             {
-                context.execManager().exec("nohup " + FACTORY_RESET_SCRIPT + " force-reboot");
+                context.execManager().exec("nohup " + FACTORY_RESET_SCRIPT + " force-reboot >/dev/null 2>&1 &");
             }
-        }, 5000);
+        }, 1000);
 
         return createResponse(0, "Factory reset initiated. System is restarting.");
     }
