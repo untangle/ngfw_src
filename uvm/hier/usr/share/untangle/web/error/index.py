@@ -129,6 +129,11 @@ def status505(req):
     uvm_login.setup_gettext()
     _write_error_page(req, _("HTTP Version Not Supported"))
 
+def factoryDefaults(req):
+    uvm_login.setup_gettext()
+    _write_error_page(req, _("System is being reset to factory defaults.  After it is finished, the system will reboot without previous network settings.  You will need to access the system locally to reconfigure."))
+
+
 # private methods --------------------------------------------------------------
 
 def _write_error_page(req, msg):
