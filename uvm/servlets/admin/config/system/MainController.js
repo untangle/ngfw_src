@@ -255,23 +255,25 @@ Ext.define('Ung.config.system.MainController', {
 
     factoryDefaults: function () {
         Ext.MessageBox.confirm('Reset to Factory Defaults Warning'.t(),
-            'This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST.'.t(),
+            'THIS WILL RESET ALL SETTINGS TO FACTORY DEFAULTS'.t() +
+            '<br><br>' +
+            'ALL CURRENT SETTINGS WILL BE LOST.'.t() +
+            '<br><br>' +
+            'AFTER IT IS FINISHED, YOU WILL NEED TO ACCESS THE SYSTEM LOCALLY TO RECONFIGURE.'.t(),
             function (btn) {
                 if (btn === 'yes') {
-                    // Ung.MetricManager.stop(); stop metrics
+                    var me = this;
                     Ext.MessageBox.wait('Resetting to factory defaults...'.t(), 'Please wait'.t(), {
                         interval: 20,
                         increment: 500,
+                        duration: 1000,
                         animate: true,
-                        text: ''
+                        text: '',
+                        fn: function(){
+                            me.location = "/error/factoryDefaults";
+                        }
                     });
-                    rpc.execManager.exec(function (result, ex) {
-                        Ext.MessageBox.hide();
-                        if (ex) { console.error(ex); Util.handleException(ex); return; }
-                        Ext.MessageBox.alert(
-                            'Factory Defaults'.t(),
-                            'All settings have been reset to factory defaults.', console.log('reload homepage'));
-                    }, 'nohup /usr/share/untangle/bin/ut-factory-defaults');
+                    rpc.UvmContext.configManager().doFactoryReset();
                 }
             });
     },
