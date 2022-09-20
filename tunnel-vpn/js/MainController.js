@@ -63,13 +63,13 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         v.setLoading(true);
 
         vm.set('providers',{
-            Untangle: {
-                description: 'Untangle'.t(),
+            Arista: {
+                description: 'Arista'.t(),
                 userAuth: false,
-                providerTitle: 'Upload the Untangle OpenVPN config zip',
-                providerInstructions: '<li>' + 'Log in the main Untangle server'.t() + '<br/>' +
+                providerTitle: 'Upload the Arista OpenVPN config zip',
+                providerInstructions: '<li>' + 'Log in the main Arists server'.t() + '<br/>' +
                     '<li>' + 'Inside "OpenVPN" app settings in Server > Remote Clients add new client and hit Save'.t() + '<br/>' +
-                    '<li>' + 'Click Download for the new client and download the configuration zip file for remote Untangle OpenVPN clients'.t() + '<br/>' +
+                    '<li>' + 'Click Download for the new client and download the configuration zip file for remote Arista OpenVPN clients'.t() + '<br/>' +
                     '<li>' + 'Upload the zip file below'.t() + '<br/>'
             },
             NordVPN: {
