@@ -64,7 +64,7 @@ if [ ! -f "${filename}" ]; then
     cleanup 1
 fi
 
-if [ "$provider" == "Untangle" ] ; then
+if [ "$provider" == "Untangle" ] || [ "$provider" == "NGFirewall" ] ; then
     # Untangle provides both zip files and ovpn files
     if [[ "$filename" == *zip ]] ; then
         importZip
