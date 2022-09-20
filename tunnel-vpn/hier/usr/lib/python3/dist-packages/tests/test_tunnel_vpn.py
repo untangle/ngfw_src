@@ -9,6 +9,7 @@ from tests.global_functions import uvmContext
 from tests.common import NGFWTestCase
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
+import tests.global_functions as global_functions
 
 
 default_policy_id = 1
@@ -31,14 +32,13 @@ def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=2
             "tunnelId": vpn_tunnel_id
     }
 
-
-def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Untangle",vpn_tunnel_id=200):
+def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",vpn_tunnel_id=200):
     return {
             "allTraffic": False,
             "enabled": vpn_enabled,
             "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
-            "name": "tunnel-Untangle",
-            "provider": "Untangle",
+            "name": "tunnel-Arista",
+            "provider": "Arista",
             "tags": {
                 "javaClass": "java.util.LinkedList",
                 "list": []
@@ -69,13 +69,13 @@ class TunnelVpnTests(NGFWTestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_createVPNTunnel(self):
-        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpn_tunnel_file + " -O /tmp/config.zip", shell=True)
-        if (result != 0):
-            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
-        currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
         print("Original WAN IP: " + currentWanIP)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=vpn_tunnel_file), shell=True)
+        if (result != 0):
+            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
         self._app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
 
         appData = self._app.getSettings()
@@ -87,7 +87,7 @@ class TunnelVpnTests(NGFWTestCase):
         timeout = 60
         connected = False
         while (not connected and timeout > 0):
-            newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+            newWanIP = global_functions.get_public_ip_address()
             if (currentWanIP != newWanIP and newWanIP != ""):
                 listOfConnections = self._app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
@@ -108,13 +108,13 @@ class TunnelVpnTests(NGFWTestCase):
         assert(connectStatus == "CONNECTED")
 
     def test_030_createVPNAnyTunnel(self):
-        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpn_tunnel_file + " -O /tmp/config.zip", shell=True)
-        if (result != 0):
-            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
-        currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
         print("Original WAN IP: " + currentWanIP)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=vpn_tunnel_file), shell=True)
+        if (result != 0):
+            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
         self._app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
 
         appData = self._app.getSettings()
@@ -127,7 +127,7 @@ class TunnelVpnTests(NGFWTestCase):
         connected = False
         pingPcLanResult = ""
         while (not connected and timeout > 0):
-            newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+            newWanIP = global_functions.get_public_ip_address()
             if (currentWanIP != newWanIP):
                 listOfConnections = self._app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
