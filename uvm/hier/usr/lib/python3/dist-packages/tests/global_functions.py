@@ -570,7 +570,7 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
 
     return f"wget {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
 
-def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None):
+def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None, location=False, range=None):
     """
     Build curl command
 
@@ -595,10 +595,14 @@ def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=No
             arguments.append(f"--connect-timeout {connect_timeout}")
         if max_time is not None:
             arguments.append(f"--max-time {max_time}")
+        if location is True:
+            arguments.append("--location")
 
     optional_arguments = []
     if output_file is not None:
         optional_arguments.append(f"--output {output_file}")
+    if range is not None:
+        optional_arguments.append(f"--range {range}")
     if extra_arguments is not None:
         optional_arguments.append(extra_arguments)
 
