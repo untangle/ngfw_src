@@ -9,6 +9,7 @@ import datetime
 import random
 import string
 import html
+import inspect
 
 import runtests.remote_control as remote_control
 import runtests
@@ -89,12 +90,12 @@ def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=F
         time.sleep(1)
         if localcall:
             try:
-                result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py", shell=True)
+                result = subprocess.check_output(build_wget_command(output_file="-", uri="test.untangle.com/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
             except:
                 pass
         else:
-            result = remote_control.run_command("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
-    result = result.rstrip()
+            result = subprocess.check_output(build_wget_command(output_file="-", uri=f"{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
+    result = result.decode().rstrip()
     return result
     
 def get_hostname_ip_address(resolver="8.8.8.8", hostname=TEST_SERVER_HOST):
@@ -199,7 +200,7 @@ def get_download_speed(download_server="",meg=20):
             else:
                 # Use QA web server in the office for more reliable results
                 download_server = ACCOUNT_FILE_SERVER
-        result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://" + download_server + "/%iMB.zip 2>&1 | tail -2"%meg, stdout=True)
+        result = remote_control.run_command(build_wget_command(quiet=False, log_file="/dev/stdout", output_file="/dev/null", timeout=60, uri="http://" + download_server + f"/{meg}MB.zip") +  " 2>&1 | tail -2", stdout=True)
         match = re.search(r'([0-9.]+) [KM]B\/s', result)
         bandwidth_speed =  match.group(1)
         # cast string to float for comparsion.
@@ -210,6 +211,7 @@ def get_download_speed(download_server="",meg=20):
         # print("bandwidth_speed <%s>" % bandwidth_speed)
         return bandwidth_speed
     except Exception as e:
+        print(e)
         return None
 
 def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
@@ -377,7 +379,8 @@ def get_wan_tuples():
             if wan_ip:
                 wanExtip = get_public_ip_address(extra_options="--bind-address=" + wan_ip,localcall=True)
                 wanExtip = wanExtip.rstrip()
-                wanTup = (wanIndex,wan_ip,wanExtip.decode("utf-8"),wanGateway)
+                wanTup = (wanIndex,wan_ip,wanExtip,wanGateway)
+                # wanTup = (wanIndex,wan_ip,wanExtip,wanGateway)
                 myWANs.append(wanTup)
     return myWANs
 
@@ -506,7 +509,7 @@ def check_clamd_ready():
 
     return True
 
-def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=None, cookies_save_file=None, cookies_load_file=None, override_arguments=None, extra_arguments=None):
+def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=None, cookies_save_file=None, cookies_load_file=None, header=None, user_agent=None, post_data=None, override_arguments=None, extra_arguments=None, ignore_certificate=True, user=None, password=None, quiet=True, all_parameters=False):
     """
     Build wget command
 
@@ -516,6 +519,7 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
     override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
     extra_arguments     Additional arguments not otherwise processed.
     """
+    global Wget_hsts
     if uri is None:
         uri = f"http://{TEST_SERVER_HOST}/"
 
@@ -524,32 +528,47 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
         # Allow completely custom arguments
         arguments = override_arguments
     else:
-        # Current versions enable hsts by default which bypasses uvm!
-        # --no-hsts only available on version > 1.2
-        no_hsts_result = remote_control.run_command("wget --help | grep no-hsts")
-        if (no_hsts_result ==0):
-            arguments.append("--no-hsts")
+        arguments.append("--no-hsts")
         # We only process ipv4.
         arguments.append("--inet4-only")
+
+        if quiet is True:
+            arguments.append("--quiet")
         if tries is not None:
             arguments.append(f"--tries={tries}")
         if timeout is not None:
             arguments.append(f"--timeout={timeout}")
 
+        if ignore_certificate is True and "https" in uri:
+            arguments.append(f"--no-check-certificate")
+
+        if all_parameters is True:
+            arguments.append(f'"$@"')
+
     optional_arguments = []
     if log_file is not None:
-        optional_arguments.append(f"--append-output={log_file}")
+        optional_arguments.append(f"--output-file={log_file}")
     if output_file is not None:
         optional_arguments.append(f"--output-document={output_file}")
     if cookies_save_file is not None:
         optional_arguments.append(f"--save-cookies={cookies_save_file}")
     if cookies_load_file is not None:
         optional_arguments.append(f"--load-cookies={cookies_load_file}")
+    if header is not None:
+        optional_arguments.append(f"--header='{header}'")
+    if user_agent is not None:
+        optional_arguments.append(f"--user-agent='{user_agent}'")
+    if post_data is not None:
+        optional_arguments.append(f"--post-data='{post_data}'")
+    if user is not None:
+        optional_arguments.append(f"--user='{user}'")
+    if password is not None:
+        optional_arguments.append(f"--password='{password}'")
 
     if extra_arguments is not None:
         optional_arguments.append(extra_arguments)
 
-    return f"wget {' '.join(arguments)} {' '.join(optional_arguments)} {uri}"
+    return f"wget {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
 
 def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None):
     """
@@ -558,7 +577,7 @@ def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=No
     curl is best for straight https testing
 
     Default arguments should be evident, but of particular note are:
-    override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
+    override_arguments  If you really want to ignore the standard arguments and options, use it.
     extra_arguments     Additional arguments not otherwise processed.
     """
     if uri is None:
@@ -583,4 +602,26 @@ def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=No
     if extra_arguments is not None:
         optional_arguments.append(extra_arguments)
 
-    return f"curl {' '.join(arguments)} {' '.join(optional_arguments)} {uri}"
+    return f"curl {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
+
+Output_names = []
+def get_new_output_filename(name=None):
+    """
+    Get a unique, indexed filename into /tmp.
+
+    if name not specified, use calling method's name.
+    """
+    if name is None:
+        name = inspect.stack()[1].function
+
+    index = 1
+    base_name = "".join(c for c in name if c.isalnum() or c == '_')
+
+    name = f"{base_name}_{index}"
+    while name in Output_names:
+        index += 1
+        name = f"{base_name}_{index}"
+
+    Output_names.append(name)
+
+    return f"/tmp/{name}.out"
