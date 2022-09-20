@@ -92,7 +92,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         while (md5SmallVirus == md5TestNum) and (counter > 0):
             counter -= 1
             remote_control.run_command("rm -f /tmp/temp_230_httpVirusBlocked_file")
-            result = remote_control.run_command("wget -q -O /tmp/temp_230_httpVirusBlocked_file http://test.untangle.com/test/UntangleVirus.exe")
+            result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_230_httpVirusBlocked_file", uri="http://test.untangle.com/test/UntangleVirus.exe"))
             assert (result == 0)
             md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_230_httpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
             print("md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum))
@@ -106,7 +106,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         while (md5LargeVirus == md5TestNum) and (counter > 0):
             counter -= 1
             remote_control.run_command("rm -f /tmp/temp_240_httpVirusBlocked_file")
-            result = remote_control.run_command("wget -q -O /tmp/temp_240_httpVirusBlocked_file http://test.untangle.com/test/UntangleLargeVirus.exe")
+            result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_240_httpVirusBlocked_file", uri="http://test.untangle.com/test/UntangleLargeVirus.exe"))
             assert (result == 0)
             md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_240_httpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
             print("md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum))
@@ -123,7 +123,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         while (md5SmallVirus == md5TestNum) and (counter > 0):
             counter -= 1
             remote_control.run_command("rm -f /tmp/temp_250_ftpVirusBlocked_file")
-            result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/test/UntangleVirus.exe")
+            result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_250_ftpVirusBlocked_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/test/UntangleVirus.exe"))
             assert (result == 0)
             md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_250_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
             print("md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum))
@@ -140,7 +140,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         while (md5LargeVirus == md5TestNum) and (counter > 0):
             counter -= 1
             remote_control.run_command("rm -f /tmp/temp_260_ftpVirusBlocked_file")
-            result = remote_control.run_command("wget --user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://" + global_functions.ftp_server + "/test/UntangleLargeVirus.exe")
+            result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_260_ftpVirusBlocked_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/test/UntangleLargeVirus.exe"))
             assert (result == 0)
             md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_260_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
             print("md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum))
@@ -149,7 +149,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
     # test the cloud scanner with http using our special large clean file
     def test_270_httpMemoryLargeClean(self):
         remote_control.run_command("rm -f /tmp/temp_270_httpMemoryClean_file")
-        result = remote_control.run_command("wget -q -O /tmp/temp_270_httpMemoryClean_file http://test.untangle.com/5MB.zip")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_270_httpMemoryClean_file", uri="http://test.untangle.com/5MB.zip"))
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_270_httpMemoryClean_file | awk '{print $1}'\"", stdout=True)
         print("md5LargeClean <%s> vs md5TestNum <%s>" % (md5LargeClean, md5TestNum))
