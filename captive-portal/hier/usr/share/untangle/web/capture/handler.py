@@ -23,7 +23,27 @@ from uvm.settings_reader import get_settings_item
 
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
 
-OAUTH_TYPES = ['GOOGLE', 'FACEBOOK', 'MICROSOFT', 'ANY_OAUTH']
+# Dictionary of Oauth providers by name, each with the following fields:
+# platform  Identifier to pass to auth-relay
+# method    Captive Portal application method name to register the session
+OAUTH_PROVIDERS = {
+    "GOOGLE": {
+        "platform": "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com",
+        "method": "googleLogin"
+    },
+    "FACEBOOK": {
+        "platform": "1840471182948119",
+        "method": "facebookLogin"
+    },
+    "MICROSOFT": {
+        "platform": "f8285e96-b240-4036-8ea5-f37cf6b981bb",
+        "method": "microsoftLogin"
+    },
+    "ANY_OAUTH": {
+        "platform": None,
+        "method": None
+    }
+}
 
 ## PythonOption ApplicationPath /
 #mod_python.session.application_path /
@@ -98,21 +118,27 @@ def index(req):
     if (authcode != "Empty"):
         authenticationType = captureSettings.get("authenticationType")
         uri_base = None
-        if authenticationType in OAUTH_TYPES:
+        if authenticationType in list(OAUTH_PROVIDERS.keys()):
+            if authmode == "Empty":
+                authmode = authenticationType
             ut = Uvm().getUvmContext().uriManager().getUriTranslationByHost("auth-relay.untangle.com")
             port = ""
             if ut['port'] != -1:
                 ut['port'] = ":" + str(ut['port'])
             uri_base = ut['scheme'] + '://' + ut['host'] + port + "/cgi-bin/getClientToken?authPlatform={authPlatform}&authCode={authCode}"
 
-        if (authenticationType == "GOOGLE") or ((authenticationType == "ANY_OAUTH") and (authmode == "GOOGLE")):
-            # Here we call the relay server with the authcode that was returned to the client
-            # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.request.urlopen(str(urlparse(uri_base.format(authPlatform="365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com", authCode=authcode)).geturl()))
-            altraw = altres.read()
+            alt_raw = None
+            if authmode in OAUTH_PROVIDERS and OAUTH_PROVIDERS[authmode] is not None and OAUTH_PROVIDERS[authmode]["platform"] is not None:
+                # Call the relay server with the authcode that was returned to the client
+                # This will confirm the user is actually authenticated and return the email address
+                alt_res = urllib.request.urlopen(str(urlparse(uri_base.format(authPlatform=OAUTH_PROVIDERS[authmode]["platform"], authCode=authcode)).geturl()))
+                alt_raw = alt_res.read().decode()
 
-            if ("ERROR:" in altraw):
-                page = "<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>" + altraw + "</H1></BODY></HTML>"
+            if (alt_raw is None or "ERROR:" in alt_raw):
+                ## Authentication failure.
+                if alt_raw is None:
+                    alt_raw = f"Unknown authmode: {authmode}"
+                page = f"<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>{alt_raw}</H1></BODY></HTML>"
                 return(page)
 
             nonce = args['NONCE']
@@ -122,86 +148,30 @@ def index(req):
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
             if captureApp == None:
                 captureApp = load_rpc_manager(appid)
-            captureApp.googleLogin(address,altraw)
+
+            # Notify app of authentication success
+            loginMethod=getattr(captureApp,OAUTH_PROVIDERS[authmode]["method"])
+            loginMethod(address, alt_raw)
+
             redirectUrl = captureSettings.get('redirectUrl')
             if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+                # Use redirect URI
                 target = str(redirectUrl)
             else:
                 if ((host == 'Empty') or (uri == 'Empty')):
+                    # No host or URI
                     page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
                     return(page)
+
                 raw = urllib.parse.unquote(uri)
                 if (nonce == 'a1b2c3d4e5f6'):
-                    target = str("https://" + host + raw)
+                    scheme = "https"
                 else:
-                    target = str("http://" + host + raw)
-            util.redirect(req, target)
-            return
-
-        if (authenticationType == "FACEBOOK") or ((authenticationType == "ANY_OAUTH") and (authmode == "FACEBOOK")):
-            # Here we call the relay server with the authcode that was returned to the client
-            # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.request.urlopen(str(urlparse(uri_base.format(authPlatform="1840471182948119", authCode=authcode)).geturl()))
-            altraw = altres.read()
-
-            if ("ERROR:" in altraw):
-                page = "<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>" + altraw + "</H1></BODY></HTML>"
-                return(page)
-
-            nonce = args['NONCE']
-            host = args['HOST']
-            uri = args['URI']
-            raw = urllib.parse.unquote(uri)
-            address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
-            if captureApp == None:
-                captureApp = load_rpc_manager(appid)
-            captureApp.facebookLogin(address,altraw)
+                    scheme = "http"
+                target = f"{scheme}://{host}{raw}"
             redirectUrl = captureSettings.get('redirectUrl')
-            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
-                target = str(redirectUrl)
-            else:
-                if ((host == 'Empty') or (uri == 'Empty')):
-                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
-                    return(page)
-                raw = urllib.parse.unquote(uri)
-                if (nonce == 'a1b2c3d4e5f6'):
-                    target = str("https://" + host + raw)
-                else:
-                    target = str("http://" + host + raw)
             util.redirect(req, target)
-            return
 
-        if (authenticationType == "MICROSOFT") or ((authenticationType == "ANY_OAUTH") and (authmode == "MICROSOFT")):
-            # Here we call the relay server with the authcode that was returned to the client
-            # This will confirm the user is actually authenticated and return the email address
-            altres = urllib.request.urlopen(str(urlparse(uri_base.format(authPlatform="f8285e96-b240-4036-8ea5-f37cf6b981bb", authCode=authcode)).geturl()))
-            altraw = altres.read()
-
-            if ("ERROR:" in altraw):
-                page = "<HTML><HEAD><TITLE>Login Failure</TITLE></HEAD><BODY><H1>" + altraw + "</H1></BODY></HTML>"
-                return(page)
-
-            nonce = args['NONCE']
-            host = args['HOST']
-            uri = args['URI']
-            raw = urllib.parse.unquote(uri)
-            address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
-            if captureApp == None:
-                captureApp = load_rpc_manager(appid)
-            captureApp.microsoftLogin(address,altraw)
-            redirectUrl = captureSettings.get('redirectUrl')
-            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
-                target = str(redirectUrl)
-            else:
-                if ((host == 'Empty') or (uri == 'Empty')):
-                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
-                    return(page)
-                raw = urllib.parse.unquote(uri).decode('utf8')
-                if (nonce == 'a1b2c3d4e5f6'):
-                    target = str("https://" + host + raw)
-                else:
-                    target = str("http://" + host + raw)
-            util.redirect(req, target)
             return
 
     # if configured for any OAuth provider create and return the selection page
@@ -509,9 +479,9 @@ def generate_page(req,captureSettings,args,extra=''):
         target += "&host=" + args['HOST']
         target += "&uri=" + args['URI']
 
-        page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE").decode('utf8'))
-        page = replace_marker(page,'$.FacebookState.$', urllib.parse.quote(target + "&authmode=FACEBOOK").decode('utf8'))
-        page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT").decode('utf8'))
+        page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE"))
+        page = replace_marker(page,'$.FacebookState.$', urllib.parse.quote(target + "&authmode=FACEBOOK"))
+        page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT"))
 
         page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.untangle.com/callback.php"))
 
