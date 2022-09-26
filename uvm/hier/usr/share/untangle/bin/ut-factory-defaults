@@ -40,7 +40,10 @@ find /var/log -name "*.3" | xargs rm -f
 find /var/log -name "*.4" | xargs rm -f
 find /var/log/uvm/* | xargs rm -f
 
-rm -f /usr/share/untangle/conf/*js
+rm -f /usr/share/untangle/conf/wizard.js*
+rm -f /usr/share/untangle/conf/uris.js*
+rm -f /usr/share/untangle/conf/capture-users*.js*
+rm -f /usr/share/untangle/conf/greylist.js*
 rm -f /usr/share/untangle/conf/*flag*
 
 rm -rf /usr/share/untangle/quarantine
