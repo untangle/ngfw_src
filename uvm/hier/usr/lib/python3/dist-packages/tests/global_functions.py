@@ -80,6 +80,7 @@ except socket.error:
     test_server_ip = "35.153.140.77"
     
 ftp_server = test_server_ip
+ftp_server = "192.168.25.51"
 iperf_server = ""
 
 def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):
@@ -111,7 +112,7 @@ def get_hostname_ip_address(resolver="8.8.8.8", hostname=TEST_SERVER_HOST):
             found = False
         else:
             found = True
-    hostname_ip = hostname_ip.rstrip()
+    hostname_ip = hostname_ip.decode().rstrip()
     return hostname_ip
     
 def verify_iperf_configuration(wan_ip):
