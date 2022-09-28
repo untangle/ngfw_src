@@ -844,7 +844,7 @@ class NetworkTests(NGFWTestCase):
         index_of_wans = global_functions.get_wan_tuples()
         if (len(index_of_wans) > 1):
             raise unittest.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
-            
+
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
         outside_IP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
@@ -873,7 +873,7 @@ class NetworkTests(NGFWTestCase):
             f.write(newText)        
         # subprocess.check_output("sed -i \'s/myip.dnsomatic.com/test.untangle.com/\cgi-bin\/myipaddress.py/g\' /etc/ddclient.conf", shell=True)
         subprocess.check_output("systemctl restart ddclient.service", shell=True)
-        
+
         loop_counter = 80
         dyn_IP_found = False
         while loop_counter > 0 and not dyn_IP_found:
@@ -887,7 +887,7 @@ class NetworkTests(NGFWTestCase):
             # time.sleep(10)
             loop_counter -= 1
             dynIP = global_functions.get_hostname_ip_address(hostname=dyn_hostname)
-            print(("IP address of outside_IP <%s> dynIP <%s> " % (outside_IP,dynIP)))
+            print(f"For dyn_hostname={dyn_hostname}, outside_IP={outside_IP}, current dynIP={dynIP}")
             dyn_IP_found = False
             if outside_IP == dynIP:
                 dyn_IP_found = True
