@@ -12,11 +12,11 @@ SSH_COMMAND="ssh -i $SOURCE_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=30
 
 echo "SSH_COMAND=$SSH_COMMAND"
 
-eval $SSH_COMMAND "ls"
-if [ $? -ne 0 ] ; then
+CONNECT_VERIFY=$(eval $SSH_COMMAND "pwd")
+if [ "$CONNECT_VERIFY" = "" ] ; then
     # Unable to access via key
-    echo "Unable to access $CLIENT_TARGET with $ACTIVE_KEY"
-    exit
+    echo "Unable to access $CLIENT_TARGET with $SOURCE_KEY"
+    exit 1
 fi
 
 SETUP_TESTSHELL_SCRIPT=/root/setup_testshell.sh
@@ -28,6 +28,10 @@ eval '$SSH_COMMAND "apt-get update && apt-get -y install wget sudo resolvconf"'
 eval '$SSH_COMMAND "cd /root; wget -O $SETUP_TESTSHELL_SCRIPT $SETUP_TESTSHELL_URI "'
 eval '$SSH_COMMAND "chmod 775 $SETUP_TESTSHELL_SCRIPT"'
 eval '$SSH_COMMAND "echo y | $SETUP_TESTSHELL_SCRIPT"'
+
 ## Add testshell to sudoers
-eval '$SSH_COMMAND "echo \"testshell ALL=(ALL) NOPASSWD: ALL\" >> /etc/sudoers"'
+grep -q "testshell ALL=(ALL) NOPASSWD: ALL" /etc/sudoers
+if [ $? -ne 0 ] ; then
+    eval '$SSH_COMMAND "echo \"testshell ALL=(ALL) NOPASSWD: ALL\" >> /etc/sudoers"'
+fi
 
