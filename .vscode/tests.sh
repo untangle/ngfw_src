@@ -50,12 +50,26 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
 
     ssh-copy-id -p $PORT root@$target_address
 
+    TARGET_RESULT=
     if [ "${CLIENT_TARGET}" != "" ] ; then
         ##
         ## Setup testshell
         ##
         scp $LOCAL_TESTS_TARGET_SCRIPT root@$target_address:$TARGET_TESTS_TARGET_SCRIPT
         ssh root@$target_address "$TARGET_TESTS_TARGET_SCRIPT $CLIENT_TARGET"
+        TARGET_RESULT=$?
+    fi
+
+    if [ $TARGET_RESULT -ne 0 ] ; then
+        echo
+        echo "*** Unable to setup target client"
+        echo
+        continue
+    fi
+
+    if [ "${RUNTESTS_ARGUMENTS}" = "setup" ]; then
+        # Just perform setup on target.  Useful for configuraring WAN client that needs to connect back.
+        continue
     fi
 
     ##
