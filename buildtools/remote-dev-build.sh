@@ -12,6 +12,14 @@ echo "deb http://package-server/public/$REPOSITORY $DISTRIBUTION main non-free" 
 apt-get update
 apt -o Dpkg::Options::="--force-overwrite" build-dep -y --host-architecture $ARCHITECTURE .
 
-echo "RAKE_LOG=$RAKE_LOG"
-rm -f $RAKE_LOG
-rake |& tee $RAKE_LOG
+if [ "$BUILD_TYPE" = "rake" ] ; then
+  # Full uvm build
+  echo "RAKE_LOG=$RAKE_LOG"
+  rm -f $RAKE_LOG
+  rake |& tee $RAKE_LOG
+elif [ "$BUILD_TYPE" = "i18n" ] ; then
+  # i18n template build
+  cd i18ntools
+  ./generate.py
+  cd -
+fi

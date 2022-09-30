@@ -19,6 +19,7 @@ services:
     build:
       image: untangleinc/ngfw:${REPOSITORY:-bullseye}-build-multiarch
       environment:
+        BUILD_TYPE: ${BUILD_TYPE:-rake}
         REPOSITORY: ${REPOSITORY:-bullseye}
         DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
@@ -50,6 +51,7 @@ services:
     dev-build:
       image: untangleinc/ngfw:${REPOSITORY:-bullseye}-build-multiarch
       environment:
+        BUILD_TYPE: ${BUILD_TYPE:-rake}
         REPOSITORY: ${REPOSITORY:-bullseye}
         DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
