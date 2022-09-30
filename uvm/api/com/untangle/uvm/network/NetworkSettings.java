@@ -44,6 +44,7 @@ public class NetworkSettings implements Serializable, JSONString
     private String  dynamicDnsServiceName = null;
     private String  dynamicDnsServiceUsername = null;
     private String  dynamicDnsServicePassword = null;
+    private String  dynamicDnsServiceZone = null;
     private String  dynamicDnsServiceHostnames = null;
 
     private boolean enableSipNatHelper = false;
@@ -129,6 +130,9 @@ public class NetworkSettings implements Serializable, JSONString
     public String getDynamicDnsServicePassword() { return this.dynamicDnsServicePassword; }
     public void setDynamicDnsServicePassword( String newValue ) { this.dynamicDnsServicePassword = newValue; }
     
+    public String getDynamicDnsServiceZone() { return this.dynamicDnsServiceZone; }
+    public void setDynamicDnsServiceZone( String newValue ) { this.dynamicDnsServiceZone = newValue; }
+
     public String getDynamicDnsServiceHostnames() { return this.dynamicDnsServiceHostnames; }
     public void setDynamicDnsServiceHostnames( String newValue ) { this.dynamicDnsServiceHostnames = newValue; }
     
