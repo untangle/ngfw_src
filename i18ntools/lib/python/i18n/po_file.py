@@ -3,8 +3,8 @@ PO file management
 """
 import re
 import os
+import shutil
 import sys
-import sre_parse
 
 from i18n.po_record import PoRecord
 from i18n.utility import Utility
@@ -263,12 +263,12 @@ class PoFile:
         pofile = open(self.file_name, "w")
         pofile.close()
 
-    def rename(self, new_file_name):
+    def copy(self, new_file_name):
         """
         Rename to new filename
         """
         self.make_directories(new_file_name)
-        os.rename(self.file_name, new_file_name)
+        shutil.copy(self.file_name, new_file_name)
         self.file_name = new_file_name
 
     def get_record_by_msgid(self, msg_id):
