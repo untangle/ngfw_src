@@ -167,15 +167,15 @@ def main(argv):
     #
     # Process source files
     #
-    print("Processing source files...")
+    print("Processing source files...", flush=True)
     pot.reset()
     modules = ngfw.modules
     for module in modules:
-        print("\t" + module)
+        print("\t" + module, flush=True)
         get_keys(module)
 
     # Change comments to not have path leading to "ngfw"
-    print("Converting comments...")
+    print("Converting comments...", flush=True)
     pot.load()
     invalid_msg_id_count = 0
     for record in pot.records:
@@ -191,7 +191,7 @@ def main(argv):
         print("Invalid string count: %d" % invalid_msg_id_count)
     pot.save()
 
-    pot.rename(pot_file_name)
+    pot.copy(pot_file_name)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
