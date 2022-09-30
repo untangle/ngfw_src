@@ -28,9 +28,10 @@ class Ngfw:
             directories = Utility.get_base_path().split("/")
             while found == False and len(directories) > 0:
                 check_path = "/".join(directories)
-                if os.path.isdir(check_path + "/ngfw_src"):
+                if os.path.isdir(check_path + "/ngfw_src") or os.path.isdir(check_path + "/build"):
                     found = True
                     self.base_path = check_path
+                    break
                 del directories[len(directories)-1]
 
             if found == False:
