@@ -1,6 +1,7 @@
 {
     "copyright": "Untangle, Inc.",
     "directories": [
+        "build",
         "ngfw_pkgs",
         "ngfw_src",
 		"ngfw_hades-pkgs"
