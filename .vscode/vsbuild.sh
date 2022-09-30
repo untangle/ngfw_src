@@ -3,19 +3,22 @@ DEV_ENVIRONMENT=local
 TARGET=
 PORT=22
 RAKE_LOG=rake.log
+BUILD_TYPE=rake
 
-while getopts "t:p:e:r:" flag; do
+while getopts "t:p:e:r:b:" flag; do
     case "${flag}" in
         t) TARGET=${OPTARG} ;;
         p) PORT=${OPTARG} ;;
         e) DEV_ENVIRONMENT=${OPTARG} ;;
         r) RAKE_LOG=${OPTARG} ;;
+        b) BUILD_TYPE=${OPTARG} ;;
     esac
 done
 shift $((OPTIND-1))
 
 echo "TARGET=$TARGET"
 echo "DEV_ENVIRONMENT=$DEV_ENVIRONMENT"
+echo "BUILD_TYPE=$BUILD_TYPE"
 echo "RAKE_LOG=$RAKE_LOG"
 
 if [ "$DEV_ENVIRONMENT" == "remote" ]; then
@@ -23,7 +26,7 @@ if [ "$DEV_ENVIRONMENT" == "remote" ]; then
     ## Build in docker DEV_ENVIRONMENT
     ##
     docker-compose -f docker-compose.build.yml run pkgtools
-    VERBOSE=1 NO_CLEAN=1 RAKE_LOG=$RAKE_LOG DEV_ENVIRONMENT=$DEV_ENVIRONMENT docker-compose -f docker-compose.build.yml up dev-build
+    VERBOSE=1 NO_CLEAN=1 RAKE_LOG=$RAKE_LOG DEV_ENVIRONMENT=$DEV_ENVIRONMENT BUILD_TYPE=$BUILD_TYPE docker-compose -f docker-compose.build.yml up dev-build
 elif [ "$DEV_ENVIRONMENT" == "remote"]; then
     ##
     ## Compile ngfw and restart uvm if neccessary.
