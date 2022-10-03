@@ -534,6 +534,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         // 66080 = 0x10220 = DONT_EXPIRE_PASSWORD (65536-0x10000) +
         // NORMAL_ACCOUNT (512-0x200) + PASSWD_NOTREQD (32-0x0020)
         // 66112 = 0x10240 = DONT_EXPIRE_PASSWORD (65536-0x10000) +
+        // 262144 = 0x40000 = SMARTCARD_REQUIRED +
         // NORMAL_ACCOUNT (512-0x200) + PASSWD_CANT_CHANGE (64-0x0040)
         // Need to add three more values for each + 1 and + 8 and + 9!
         // For more info, look here: http://support.microsoft.com/kb/305144
@@ -541,7 +542,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         // (|userAccountControl=512)(|(UserAccountControl=513)|(UserAccountControl=514)(UserAccountControl=544))
 
         if ( this.userAccountControl == null ) {
-            int[] values = { 1, 8, 32, 64, 65536 };
+            int[] values = { 1, 8, 32, 64, 65536, 262144 };
 
             Set<String> valueSet  = new HashSet<>();
             for ( int c = 0 ; c < Math.pow( 2, (double) values.length + 1 ) - 1 ; c++ ) {
