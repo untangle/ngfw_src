@@ -108,8 +108,8 @@ Ext.define('Ung.config.network.view.Hostname', {
             hidden: true,
             bind: {
                 value: '{settings.dynamicDnsServiceZone}',
-                disabled: '{settings.dynamicDnsServiceName != "cloudflare" ? true : false}',
-                hidden: '{settings.dynamicDnsServiceName != "cloudflare" ? true : false}'
+                disabled: '{settings.dynamicDnsServiceName !== "cloudflare"}',
+                hidden: '{settings.dynamicDnsServiceName !== "cloudflare"}'
             }
         }, {
             xtype: 'textfield',
