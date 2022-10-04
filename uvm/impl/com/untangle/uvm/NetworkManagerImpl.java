@@ -720,7 +720,7 @@ public class NetworkManagerImpl implements NetworkManager
     public InetAddress getInterfaceAddressForNetwork(String network, int prefixLength)
     {
         InetAddress matchingAddress = null;
-        IPMaskedAddress currentMaskedAddress, lookupMaskedAddress = new IPMaskedAddress( network, prefixLength );
+        IPMaskedAddress currentMaskedAddress, lookupMaskedAddress;
         /*
          * Pull static addresses from non-WAN interfaces.
          */
@@ -732,7 +732,10 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
             }
 
+            // The interface masked network.
             currentMaskedAddress = new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix());
+            // The lookup network, using the larger network (smaller prefix) of itself or this interface.
+            lookupMaskedAddress = new IPMaskedAddress( network, interfaceSettings.getV4StaticPrefix() < prefixLength ? interfaceSettings.getV4StaticPrefix() : prefixLength);
             if(lookupMaskedAddress.getMaskedAddress().equals(currentMaskedAddress.getMaskedAddress())){
                 matchingAddress = interfaceSettings.getV4StaticAddress();
                 break;
@@ -741,7 +744,10 @@ public class NetworkManagerImpl implements NetworkManager
                 /**
                  * Look at aliases.
                  */
+                // The interface masked alias network.
                 currentMaskedAddress = new IPMaskedAddress( alias.getStaticAddress(), alias.getStaticNetmask() );
+                // The lookup network, using the larger network (smaller prefix) of itself or this alias.
+                lookupMaskedAddress = new IPMaskedAddress( network, alias.getStaticPrefix() < prefixLength? alias.getStaticPrefix() : prefixLength);
                 if(lookupMaskedAddress.getMaskedAddress().equals(currentMaskedAddress.getMaskedAddress())){
                     matchingAddress = interfaceSettings.getV4StaticAddress();
                     break;
