@@ -16,6 +16,7 @@ public class LocaleInfo implements Serializable {
     private String countryCode;
     private String countryName;
     private String statistics = "";
+    private boolean enabled = true;
 
     /**
      * Initialize empty instance of LocaleInfo.
@@ -41,15 +42,17 @@ public class LocaleInfo implements Serializable {
      * @param languageName String of longer language name.
      * @param countryCode String of short country code.
      * @param countryName String of longer country name.
+     * @param enabled True if enabled, false if not
      * @return Instance of LocaleInfo.
      */
     public LocaleInfo(String languageCode, String languageName,
-            String countryCode, String countryName) {
+            String countryCode, String countryName, boolean enabled) {
         super();
         this.countryCode = countryCode;
         this.countryName = countryName;
         this.languageCode = languageCode;
         this.languageName = languageName;
+        this.enabled = enabled;
     }
 
     /**
@@ -59,16 +62,18 @@ public class LocaleInfo implements Serializable {
      * @param countryCode String of short country code.
      * @param countryName String of longer country name.
      * @param statistics String of statistics.
+     * @param enabled True if enabled, false if not
      * @return Instance of LocaleInfo.
      */
     public LocaleInfo(String languageCode, String languageName,
-            String countryCode, String countryName, String statistics) {
+            String countryCode, String countryName, String statistics, boolean enabled) {
         super();
         this.countryCode = countryCode;
         this.countryName = countryName;
         this.languageCode = languageCode;
         this.languageName = languageName;
         this.statistics = statistics;
+        this.enabled = enabled;
     }
 
     /**
@@ -165,6 +170,21 @@ public class LocaleInfo implements Serializable {
      */
     public String getStatistics(){
         return statistics;
+    }
+
+    /**
+     * Return enabled
+     * @return boolean of enabled
+     */
+    public boolean getEnabled(){
+        return enabled;
+    }
+    /**
+     * Set enabled
+     * @param enabled True to enable, false to disable
+     */
+    public void setEnabled(boolean enabled){
+        this.enabled = enabled;
     }
 
 }

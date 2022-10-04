@@ -256,13 +256,13 @@ public class LanguageManagerImpl implements LanguageManager
         /* Contact translation server */
         for(languageSource source : LanguageSources){
             Set<String> available = new HashSet<>();
-	    Set<String> alreadyFound = new HashSet<>();
+	        Set<String> alreadyFound = new HashSet<>();
             Collections.addAll(available, (new File(source.getDirectory())).list());
             if(getRemoteLanguagesList(alreadyFound, locales, source) == false){
                 // Add header
                 headerAdded = false;
             }else if(source.getId().equals("official")){
-                locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null));
+                locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null, true));
                 defaultAdded = true;
             }
 
@@ -270,10 +270,10 @@ public class LanguageManagerImpl implements LanguageManager
                 /* Add local-only stragglers like test.*/
                 /* Or if server had problems, everything local. */
                 if(headerAdded == false){
-                    locales.add(new LocaleInfo(null, "<em><b>" + source.title + "</b></em>", null, null));
+                    locales.add(new LocaleInfo(null, "<em><b>" + source.title + "</b></em>", null, null, true));
                     headerAdded = true;
                     if(source.getId().equals("official")){
-                        locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null));
+                        locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null, true));
                         defaultAdded = true;
                     }
                 }
@@ -284,7 +284,7 @@ public class LanguageManagerImpl implements LanguageManager
                 String countryCode = tokens.length == 2 ? tokens[1] : null;
                 String countryName = countryCode == null ? null : allCountries.get(countryCode);
 		if (!alreadyFound.contains(langCode))
-		    locales.add(new LocaleInfo(source.id + "-" + langCode, langName, countryCode, countryName));
+		    locales.add(new LocaleInfo(source.id + "-" + langCode, langName, countryCode, countryName, true));
             }
         }
 
@@ -823,6 +823,8 @@ public class LanguageManagerImpl implements LanguageManager
                         String[] codes = remoteStats.names().join(",").split(",");
                         Arrays.sort(codes);
                         String code;
+                        LocaleInfo header = null;
+                        int enabledCount = 0;
                         for(int i = 0; i < codes.length; i++){
                             code = codes[i];
                             code = code.substring(1,code.length()-1);
@@ -831,10 +833,23 @@ public class LanguageManagerImpl implements LanguageManager
                             }
                             if(headerAdded == false){
                                 // Add header
-                                locales.add(new LocaleInfo(null, "<em><b>" + source.getTitle() + "</b></em>", null, null));
+                                header = new LocaleInfo(null, "<em><b>" + source.getTitle() + "</b></em>", null, null, true);
+                                locales.add(header);
                                 headerAdded = true;
                             }
                             stats = remoteStats.getJSONObject(code);
+
+                            boolean enabled = false;
+                            try{
+                                // We set this from the static server, reliably only.
+                                enabled = stats.getBoolean("enabled");
+                            }catch(Exception JSONException){
+                                // If not defined, from Weblate/Pootle, assume to be enabled.
+                                enabled = true;
+                            }
+                            if(enabled){
+                                enabledCount++;
+                            }
                             StringBuilder statistics = new StringBuilder();
                             if(!stats.isNull("last_change")){
                                 int lastChange = stats.getInt("last_change");
@@ -845,8 +860,11 @@ public class LanguageManagerImpl implements LanguageManager
                                 }
                             }
                             statistics.append(I18nUtil.marktr("Percent completed") + ": " + stats.getDouble("translated_percent") + "%");
-			    alreadyFound.add(code);
-                            locales.add(new LocaleInfo(source.getId() + "-" + code, stats.getString("name"), null, null, statistics.toString()));
+			                alreadyFound.add(code);
+                            locales.add(new LocaleInfo(source.getId() + "-" + code, stats.getString("name"), null, null, statistics.toString(), enabled));
+                        }
+                        if(header != null){
+                            header.setEnabled(enabledCount == codes.length);
                         }
                     }catch(JSONException e){
                         logger.warn("JSON Exception " + e);

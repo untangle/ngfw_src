@@ -80,7 +80,15 @@ Ext.define('Ung.config.system.MainController', {
                     .then( function(result){
                         if(!Util.isDestroyed(v,vm)){
                             v.setLoading(false);
-                            vm.set('languagesList', result);
+                            var languageList = [];
+                            result["list"].forEach( function(language){
+                                // Only add enabled languages
+                                // OR if a disabled language matches the currently selected.
+                                if(language["enabled"] === true || language["languageCode"] == languageSettings['language']){
+                                    languageList.push(language);
+                                }
+                            });
+                            vm.set('languagesList', {"list": languageList});
                         }
                     });
             }else{
