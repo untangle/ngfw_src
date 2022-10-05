@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.util.List;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -70,7 +69,6 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final Logger logger = Logger.getLogger(getClass());
 
     private LinkedList<LocalDirectoryUser> currentList;
-    private NetworkSaveHookCallback networkSaveHookCallback = new NetworkSaveHookCallback();
 
     private boolean radiusProxyComputerAccountExists = false;
 
@@ -80,9 +78,6 @@ public class LocalDirectoryImpl implements LocalDirectory
     public LocalDirectoryImpl()
     {
         loadUsersList();
-
-        // install a callback for network settings changes
-        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, networkSaveHookCallback);
     }
 
     /**
@@ -566,7 +561,8 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         // update xauth.secrets and chap-secrets for IPsec and untangle.local for RADIUS
         updateXauthSecrets(list);
-        updateChapSecrets(list);
+        // Update chap-secrets
+        UvmContextFactory.context().syncSettings().run(LOCAL_DIRECTORY_SETTINGS_FILE);
         updateRadiusConfiguration(list);
         this.currentList = list;
     }
@@ -596,84 +592,10 @@ public class LocalDirectoryImpl implements LocalDirectory
         // settings loaded so assign to currentList and write IPsec and RADIUS secrets
         else {
             updateXauthSecrets(users);
-            updateChapSecrets(users);
+            // Update chap-secrets
+            UvmContextFactory.context().syncSettings().run(LOCAL_DIRECTORY_SETTINGS_FILE);
             updateRadiusConfiguration(users);
             this.currentList = users;
-        }
-    }
-
-    /**
-     * This takes the local directory user information and appends it to
-     * /etc/ppp/chap-secrets
-     * 
-     * The IPsec L2TP feature uses LocalDirectory for login credentials so any
-     * time we load or save the list we'll call this function which will export
-     * all of the user/pass info to the chap-secrets file
-     * 
-     * This is necessary because L2TP (xl2tpd) uses pppd to authenticate users
-     * So the passwords need to be written to chap-secrets.
-     * 
-     * XXX: Unfortunately, /etc/ppp/chap-secrets is managed by sync-settings
-     * Modifying this file directly outside of sync-settings will break the
-     * change detection in sync-settings. sync-settings will write its version,
-     * then we will append the info here and then next time sync-settings runs
-     * it will see a difference. This will cause unnecssary network restarts if:
-     * 1) There is PPPoE on a WAN interface 2) L2TP is enabled 3) Local
-     * Directory is non empty
-     * 
-     * Unfortunately there is no easy fix to this because there is no way to
-     * tell xl2tpd/pppd to use a separate secretes file. The solution would be
-     * to move local directory into network settings or change sync-settings to
-     * read local directory settings (or ideally all settings)
-     * 
-     * @param list
-     *        The list of LocalDirectoryUsers
-     */
-    private void updateChapSecrets(LinkedList<LocalDirectoryUser> list)
-    {
-        if (list == null) return;
-        if (list.size() == 0) return;
-        String chapFile = "/etc/ppp/chap-secrets";
-        List<String> chapData;
-        FileWriter chap = null;
-
-        try {
-            // read all the lines from the existing file
-            chapData = Files.readAllLines(Paths.get(chapFile), Charset.forName("UTF-8"));
-
-            // now that we have the contents write to the file without append
-            chap = new FileWriter(chapFile, false);
-
-            // start by writing everything except our local directory users to the file 
-            for (String line : chapData) {
-                String[] fields = line.split("\\s+");
-                // if this is one of our user entries just ignore it
-                if ((fields.length > 3) && (fields[1].equals("untangle-l2tp"))) continue;
-                // not one of ours so write to the file as-is
-                chap.write(line + "\n");
-            }
-
-            // now append all the username/password pairs to the file
-            for (LocalDirectoryUser user : list) {
-                if (user.getUsername() == null || user.getPasswordBase64Hash() == null) continue;
-                byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
-                String userPassword = new String(rawPassword);
-                chap.write(user.getUsername() + "\t\t");
-                chap.write("untangle-l2tp\t\t");
-                chap.write("\"" + userPassword + "\"\t\t");
-                chap.write("*\n");
-            }
-
-            chap.flush();
-            chap.close();
-        } catch (Exception exn) {
-            logger.error("Exception creating L2TP chap-secrets file", exn);
-        } finally {
-            try {
-                chap.close();
-            } catch (IOException ex) {
-                logger.error("Exception closing L2TP chap-secrets file", ex);
-            }
         }
     }
 
@@ -1197,41 +1119,5 @@ public class LocalDirectoryImpl implements LocalDirectory
         truncatedHash %= 1000000;
 
         return (truncatedHash == code);
-    }
-
-    /**
-     * This hook is called when network settings are changed This is necessary
-     * becaus saving network setttings writes /etc/ppp/chap-secrets and we need
-     * to append local directory information onto that file
-     */
-    private class NetworkSaveHookCallback implements HookCallback
-    {
-        /**
-         * Constructor
-         */
-        NetworkSaveHookCallback()
-        {
-        }
-
-        /**
-         * Get the name of our callback hook
-         * 
-         * @return The name
-         */
-        public String getName()
-        {
-            return "local-directory-network-settings-change-hook";
-        }
-
-        /**
-         * Callback function
-         * 
-         * @param args
-         *        Callback arguments
-         */
-        public void callback(Object... args)
-        {
-            updateChapSecrets(currentList);
-        }
     }
 }
