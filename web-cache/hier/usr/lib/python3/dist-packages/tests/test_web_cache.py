@@ -43,7 +43,7 @@ class WebCacheTests(NGFWTestCase):
 
         app.clearSquidCache()
         for x in range(0, 10):
-            result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/")
+            result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
             time.sleep(1)
         assert (result == 0)
         time.sleep(65) # summary-events only written every 60 seconds

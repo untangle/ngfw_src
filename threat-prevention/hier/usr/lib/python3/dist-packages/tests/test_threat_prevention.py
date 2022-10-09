@@ -103,8 +103,12 @@ class ThreatpreventionTests(NGFWTestCase):
 
     @pytest.mark.failure_behind_pihole
     def test_020_basic_block(self):
-        result = remote_control.run_command("wget -q -4 -t 2 -O - http://account.paypal-inc.tribesiren.com 2>&1 | grep -q blocked")
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file=output_file_name, uri="http://account.paypal-inc.tribesiren.com"))
         assert (result == 0)
+        search = remote_control.run_command(f"grep -q 'blocked' {output_file_name}")
+        assert (search == 0)
+
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -114,8 +118,12 @@ class ThreatpreventionTests(NGFWTestCase):
         assert( found )
         
     def test_030_test_untangle_com_reachable(self):
-        result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file=output_file_name, uri="http://test.untangle.com/test/testPage1.html"))
         assert (result == 0)
+        search = remote_control.run_command(f"grep -q 'text123' {output_file_name}")
+        assert (search == 0)
+
         events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -128,8 +136,12 @@ class ThreatpreventionTests(NGFWTestCase):
         self.rules_clear()
         self.rule_add("DST_ADDR",global_functions.test_server_ip)
 
-        result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blocked")
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file=output_file_name, uri="http://test.untangle.com/test/testPage1.html"))
         assert (result == 0)
+        search = remote_control.run_command(f"grep -q blocked {output_file_name}")
+        assert (search == 0)
+
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -142,8 +154,12 @@ class ThreatpreventionTests(NGFWTestCase):
         self.rules_clear()
         self.rule_add("DST_PORT","80")
 
-        result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blocked")
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file=output_file_name, uri="http://test.untangle.com/test/testPage1.html"))
         assert (result == 0)
+        search = remote_control.run_command(f"grep -q blocked {output_file_name}")
+        assert (search == 0)
+
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -152,14 +168,18 @@ class ThreatpreventionTests(NGFWTestCase):
                                             self.eventAppName() + '_flagged', True )
         assert( found )
         
-    def test_033_block_by_Hostname(self):
+    def test_033_block_by_mac_address(self):
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         self.rules_clear()
         self.rule_add("DST_PORT","53",action="pass")  # allow DNS otherwise bridged configs fail
-        self.rule_add("HOST_HOSTNAME",entry['hostname'])
+        self.rule_add("SRC_MAC",entry['macAddress'])
 
-        result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blocked")
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file=output_file_name, uri="http://test.untangle.com/test/testPage1.html"))
         assert (result == 0)
+        search = remote_control.run_command(f"grep -q blocked {output_file_name}")
+        assert (search == 0)
+
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -173,8 +193,10 @@ class ThreatpreventionTests(NGFWTestCase):
         self.rule_add("SRC_ADDR",remote_control.client_ip,action="pass",flagged=False) # 1st rule
         self.rule_add("DST_PORT","80",action="block")  # 2nd rule
 
-        result = remote_control.run_command("wget -q -4 -t 2 http://test.untangle.com/")
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file=output_file_name))
         assert (result == 0)
+
         events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -188,8 +210,10 @@ class ThreatpreventionTests(NGFWTestCase):
         self.rules_clear()
         self.rule_add("SRC_ADDR",remote_control.client_ip,action="pass",flagged=False)
 
-        result = remote_control.run_command("wget -q -4 -t 2 -O - http://account.paypal-inc.tribesiren.com 2>&1 | grep -q blocked")
-        assert (result != 0)
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file=output_file_name, uri="http://account.paypal-inc.tribesiren.com"))
+        assert (result == 0)
+
         events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -201,12 +225,22 @@ class ThreatpreventionTests(NGFWTestCase):
     def test_080_multiple_rule_conditions_matching(self):
         """Verify that conditions are AND logic"""
         self.rules_clear()
+        print(f"test_server_ip={global_functions.test_server_ip}")
         self.multiple_rule_add("DST_ADDR",global_functions.test_server_ip,"DST_PORT","443")
-        result = remote_control.run_command("wget -q -4 -t 2 -O - http://test.untangle.com 2>&1 | grep -q Hi")
+
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file=output_file_name))
         assert (result == 0)
-        result = remote_control.run_command("wget --no-check-certificate -q -4 -t 2 -O - https://test.untangle.com 2>&1 | grep -q blocked")
+        search = remote_control.run_command(f"grep -q Hi {output_file_name}")
+        assert (search == 0)
+
+        output_file_name=global_functions.get_new_output_filename()
+        result = remote_control.run_command(global_functions.build_curl_command(output_file=output_file_name, uri="https://test.untangle.com"))
+        assert (result == 0)
+        search = remote_control.run_command(f"grep -q blocked {output_file_name}")
+        assert (search == 0)
+
         self.rules_clear()
-        assert (result == 0)
         events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 1,

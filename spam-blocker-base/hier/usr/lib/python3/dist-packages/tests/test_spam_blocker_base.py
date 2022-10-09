@@ -22,7 +22,8 @@ smtpServerHost = global_functions.TEST_SERVER_HOST
 
 def getLatestMailSender():
     remote_control.run_command("rm -f mailpkg.tar") # remove all previous mail packages
-    results = remote_control.run_command("wget -q http://test.untangle.com/test/mailpkg.tar")
+    results = remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com/test/mailpkg.tar"))
+
     # print("Results from getting mailpkg.tar <%s>" % results)
     results = remote_control.run_command("tar -xvf mailpkg.tar")
     # print("Results from untaring mailpkg.tar <%s>" % results)
@@ -240,7 +241,8 @@ class SpamBlockerBaseTests(NGFWTestCase):
             timeout -= 1
             time.sleep(1)
             # Check to see if the delivered email file is present
-            emailContext = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + to_address + " 2>&1 | grep spam-status" ,stdout=True)
+            # Original: emailContext = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + to_address + " 2>&1 | grep spam-status" ,stdout=True)
+            emailContext = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://test.untangle.com/cgi-bin/getEmail.py?toaddress={to_address}") + " 2>&1" ,stdout=True)
             if (emailContext != ""):
                 emailFound = True
                 

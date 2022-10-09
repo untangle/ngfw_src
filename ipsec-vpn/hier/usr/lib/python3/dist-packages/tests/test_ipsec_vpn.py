@@ -258,7 +258,7 @@ class IPsecTests(NGFWTestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecHostLANIP}/"))
         assert (ipsecHostLANResult == 0)
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
         assert (ipsecPcLanResult == 0)
@@ -271,7 +271,7 @@ class IPsecTests(NGFWTestCase):
     def test_025_verifyIPsecBypass(self):           
         if (not tunnelUp):
             raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
-        ipsecHostLANResultNoFW = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://%s/" % ipsecPcLANIP)
+        ipsecHostLANResultNoFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecPcLANIP}/"))
         ipsecHostLANResultnoFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         assert (ipsecHostLANResultNoFW == 0)
         assert (ipsecHostLANResultnoFWRW == 0)
@@ -282,13 +282,13 @@ class IPsecTests(NGFWTestCase):
         rules["list"].append(create_firewall_rule("DST_ADDR",remote_control.client_ip))
         appFW.setRules(rules)
         # To and from the client IP should be blocked by the firewall rule
-        ipsecHostLANResultFW = remote_control.run_command("wget -q -O /dev/null -4 -t 1 --timeout=5 http://%s/" % ipsecPcLANIP)
+        ipsecHostLANResultFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecPcLANIP}/"))
         ipsecHostLANResultFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         appData = self._app.getSettings()
         appData["bypassflag"] = True
         self._app.setSettings(appData)
         # Bypass true on IPsec should bypass firewall rules.
-        ipsecHostLANResultFWBypassed = remote_control.run_command("wget -q -O /dev/null -4 -t 1 --timeout=5 http://%s/" % ipsecPcLANIP)
+        ipsecHostLANResultFWBypassed = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecPcLANIP}/"))
         ipsecHostLANResultFWBypassedRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         # clear out firwall rules before checking results so other tests are not affected.
         rules["list"]=[]
@@ -313,7 +313,7 @@ class IPsecTests(NGFWTestCase):
         while (ipsecHostLANResult != 0 and timeout > 0):
             timeout -= 1
             time.sleep(1)
-            ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecHostLANIP}/"))
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
         # delete tunnel
         nukeIPSecTunnels(self._app)
@@ -512,7 +512,7 @@ class IPsecTests(NGFWTestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecHostLANIP}/"))
         post_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
         nukeIPSecTunnels(self._app)
         assert (ipsecHostLANResult == 0)

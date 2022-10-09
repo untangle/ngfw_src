@@ -432,7 +432,8 @@ class WanBalancerTests(NGFWTestCase):
             # Test that only the routed interface is used 5 times2
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                # result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                result = global_functions.get_public_ip_address()
                 print("WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
@@ -489,7 +490,8 @@ class WanBalancerTests(NGFWTestCase):
                 while (timeout > 0 and result == ""):
                     time.sleep(1)
                     timeout -= 1
-                    result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                    # result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                    result = global_functions.get_public_ip_address()
                 print("Network Routed IP %s and retrieved IP %s" % (routedIP, result))
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
