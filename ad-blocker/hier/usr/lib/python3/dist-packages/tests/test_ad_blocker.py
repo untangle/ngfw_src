@@ -76,7 +76,7 @@ class AdBlockerTests(NGFWTestCase):
         # download a known list so the test URLs are matching
         if os.path.isdir('/usr/share/untangle/lib/ad-blocker/'):
             result = subprocess.call("rm /usr/share/untangle/lib/ad-blocker/adblock_easylist_2_0.txt", shell=True)
-            result_download = subprocess.call("wget -q --timeout=3 http://" + global_functions.ACCOUNT_FILE_SERVER + "/test/adblock_easylist_2_0.txt -O /usr/share/untangle/lib/ad-blocker/adblock_easylist_2_0.txt", shell=True)
+            result_download = subprocess.call(global_functions.build_wget_command(output_file="/usr/share/untangle/lib/ad-blocker/adblock_easylist_2_0.txt", uri="http://" + global_functions.ACCOUNT_FILE_SERVER + "/test/adblock_easylist_2_0.txt"), shell=True)
             if result_download != 0:
                 NGFWTestCase.skipTest(cls,"Failed to download stock adblock_list")
         # reload the rules
@@ -92,11 +92,11 @@ class AdBlockerTests(NGFWTestCase):
 
         # check that "ad" is blocked - can't use test.untangle.com because everything *untangle* is ignored
     def test_021_adIsBlocked(self):
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://ads.pubmatic.com/AdServer/js/showad.js"))
         assert (result != 0)
          
     def test_022_notBlocked(self):
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.google.com"))
         assert (result == 0)
         events = global_functions.get_events('Ad Blocker','All Ad Events',None,1)
         assert( events != None )
@@ -110,7 +110,7 @@ class AdBlockerTests(NGFWTestCase):
         fname = sys._getframe().f_code.co_name
         # specify an argument so it isn't confused with other events
         eventTime = datetime.datetime.now()
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js?arg=%s" % fname)
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"http://ads.pubmatic.com/AdServer/js/showad.js?arg={fname}"))
         assert ( result != 0 )
 
         events = global_functions.get_events('Ad Blocker','Blocked Ad Events',None,1)
@@ -123,40 +123,40 @@ class AdBlockerTests(NGFWTestCase):
         
     def test_024_userDefinedAdIsBlocked(self):
         addRule("google.com", True, "description", True)
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.google.com"))
         nukeRules("userRules")
         assert (result != 0)
         
     @pytest.mark.failure_behind_pihole
     def test_025_userDefinedAdNotBlocked(self):
         addRule("showad.js", True, "description", False)
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://ads.pubmatic.com/AdServer/js/showad.js"))
         nukeRules("userRules")
         assert (result == 0)
            
     def test_026_passSiteDisabled(self):
         addPassRule("ads.pubmatic.com", False, "passedUrls")
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://ads.pubmatic.com/AdServer/js/showad.js"))
         nukeRules("passedUrls")
         assert (result != 0)
          
     @pytest.mark.failure_behind_pihole
     def test_027_passSiteEnabled(self):
         addPassRule("ads.pubmatic.com", True, "passedUrls")
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://ads.pubmatic.com/AdServer/js/showad.js"))
         nukeRules("passedUrls")
         assert (result == 0)
         
     def test_028_passClientDisabled(self):
         addPassRule(remote_control.client_ip, False, "passedClients")
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://ads.pubmatic.com/AdServer/js/showad.js"))
         nukeRules("passedClients")
         assert (result != 0)
          
     @pytest.mark.failure_behind_pihole
     def test_029_passClientEnabled(self):
         addPassRule(remote_control.client_ip, True, "passedClients")
-        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://ads.pubmatic.com/AdServer/js/showad.js"))
         nukeRules("passedClients")
         assert (result == 0)
         
@@ -165,7 +165,7 @@ class AdBlockerTests(NGFWTestCase):
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://test.untangle.com/mycookie.php ; grep -q untangle.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ;" + global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/mycookie.php", cookies_save_file="/tmp/testcookie.txt") + "; grep -q untangle.com /tmp/testcookie.txt")
         assert (result == 0)
  
     # verify a test.untangle.com cookie can be blocked
@@ -174,7 +174,7 @@ class AdBlockerTests(NGFWTestCase):
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://test.untangle.com/mycookie.php ; grep -q untangle.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ;" + global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/mycookie.php", cookies_save_file="/tmp/testcookie.txt") + "; grep -q untangle.com /tmp/testcookie.txt")
         assert (result == 1)
          
     # verify a test.untangle.com cookie can be blocked, but set both "enabled" and "blocked" params
@@ -183,7 +183,7 @@ class AdBlockerTests(NGFWTestCase):
         # remove any previous instance of testcookie.txt
         remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://test.untangle.com/mycookie.php ; grep -q untangle.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ;" + global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/mycookie.php", cookies_save_file="/tmp/testcookie.txt") + "; grep -q untangle.com /tmp/testcookie.txt")
         assert (result == 1)
 
     # verify update mechanism

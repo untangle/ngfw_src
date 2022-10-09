@@ -107,23 +107,23 @@ class ApplicationControlTests(NGFWTestCase):
         assert (result == 0)
 
     def test_020_protoRule_Default_Google(self):
-        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.google.com"))
         assert (result == 0)
 
     def test_021_protoRule_Block_Google(self):
         touchProtoRule(self._app, "Google",False,False)
-        result1 = remote_control.run_command("wget -4 -q -O /dev/null -t 2 --timeout=5 http://www.google.com/")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.google.com"))
         touchProtoRule(self._app, "Google",True,True)
-        result2 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.google.com"))
         touchProtoRule(self._app, "Google",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
 
     def test_023_protoRule_Facebook(self):
         touchProtoRule(self._app, "Facebook",False,False)
-        result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 --user-agent=Firefox https://facebook.com/")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://facebook.com/", user_agent="Firefox"))
         touchProtoRule(self._app, "Facebook",True,True)
-        result2 = remote_control.run_command("wget --no-check-certificate -4 -q -O /dev/null -t 2 --timeout=5 --user-agent=Firefox https://facebook.com/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://facebook.com/", user_agent="Firefox"))
         touchProtoRule(self._app, "Facebook",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
@@ -143,10 +143,10 @@ class ApplicationControlTests(NGFWTestCase):
         pingResult = subprocess.call(["ping","-c","1",global_functions.ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if pingResult:
             raise unittest.SkipTest(global_functions.ftp_server + " not reachable")
-        ftpUserName, ftpPassword = global_functions.get_live_account_info("ftp")            
-        result1 = remote_control.run_command("wget --user=" + ftpUserName + " --password='" + ftpPassword + "' -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftp_server + "/")
+        ftpUserName, ftpPassword = global_functions.get_live_account_info("ftp")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="ftp://" + global_functions.ftp_server + "/", user=ftpUserName, password=ftpPassword))
         touchProtoRule(self._app, "FTP",True,True)
-        result2 = remote_control.run_command("wget --user=" + ftpUserName + " --password='" + ftpPassword + "' -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftp_server + "/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="ftp://" + global_functions.ftp_server + "/", user=ftpUserName, password=ftpPassword))
         touchProtoRule(self._app, "FTP",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
@@ -155,9 +155,9 @@ class ApplicationControlTests(NGFWTestCase):
         pre_count = global_functions.get_app_metric_value(app,"pass")
 
         touchProtoRule(self._app, "Pandora",False,False)
-        result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://pandora.com/"))
         touchProtoRule(self._app, "Pandora",True,True)
-        result2 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://pandora.com/"))
         touchProtoRule(self._app, "Pandora",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
@@ -167,48 +167,48 @@ class ApplicationControlTests(NGFWTestCase):
         assert(pre_count < post_count)
 
     def test_030_logicRule_Allow_Gmail(self):
-        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://mail.google.com/"))
         assert (result == 0)
         
     def test_031_logicRule_Block_Gmail(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_APPLICATION", "GMAIL"))
-        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://mail.google.com/"))
         assert (result != 0)
 
     def test_032_logicRule_Block_Gmail_by_ProtoChain(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PROTOCHAIN", "*/SSL*"))
-        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://mail.google.com/"))
         assert (result != 0)
 
     def test_033_logicRule_Block_Gmail_by_Category(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CATEGORY", "Mail"))
-        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://mail.google.com/"))
         assert (result != 0)
 
     def test_034_logicRule_Block_Gmail_by_Productivity(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PRODUCTIVITY", ">2"))
-        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://mail.google.com/"))
         assert (result != 0)
 
     def test_035_logicRule_Block_Gmail_by_Risk(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_RISK", "<5"))
-        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://mail.google.com/"))
         assert (result != 0)
 
     def test_036_logicRule_Block_Gmail_by_Confidence(self):
         nukeLogicRules(self._app)
         appendLogicRule(self._app, create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CONFIDENCE", ">50"))
-        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="https://mail.google.com/"))
         assert (result != 0)
 
     def test_100_eventlog_Block_Google(self):
         touchProtoRule(self._app, "Google",True,True)
-        result = remote_control.run_command("wget -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.google.com/"))
         assert (result != 0)
         time.sleep(1)
 
