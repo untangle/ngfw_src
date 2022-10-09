@@ -138,7 +138,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
         updateSignatureDays: Ext.create('Ext.data.ArrayStore', {
             fields: [ 'displayValue', 'value' ],
             data: [
-                [ ' '.t(), "None" ],
+                [ 'None'.t(), "None" ],
                 [ 'Sunday'.t(), "Sunday" ],
                 [ 'Monday'.t(), "Monday" ],
                 [ 'Tuesday'.t(), "Tuesday" ],
@@ -430,7 +430,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
             ["nfs-events", 'These rules log events related to malformed NFS requests and responses.'.t() ],
             ["ntp-events", 'These rules log events related to malformed NTP requests and responses.'.t() ],
             ["p2p", 'This category deals with pua or Potentially Unwanted Applications that deal with p2p.'.t() ],
-            ["policy", "This category is for the rules for things that are often disallowed by company or organizational policy. Myspace, Ebay, that kind of thing. ".t() ],
+            ["policy", "This category is for the rules for things that are often disallowed by company or organizational policy. Myspace, Ebay, that kind of thing.".t() ],
             ["pop3", 'This category is for signatures that may indicate the presence of the pop3 protocol or vulnerabilities in the pop3 protocol on the network.'.t() ],
             ["rpc", 'Remote Proceudre Call exploits.'.t() ],
             ["scada", 'SCADA sourced exploits.'.t() ],
