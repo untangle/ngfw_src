@@ -377,6 +377,5 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         }
         return true;
     },
-    isHostnameValidText: 'A hostname can only contain numbers, letters, dashes and periods'.t() +
-                         ' and cannot begin with a period'.t(),
+    isHostnameValidText: 'A hostname can only contain numbers, letters, dashes and periods and cannot begin with a period'.t(),
 });
