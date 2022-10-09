@@ -326,7 +326,6 @@ class CaptivePortalTests(NGFWTestCase):
                                             'captive_portal_blocked', True )
         assert( found )
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_021b.out", uri="http://" + global_functions.get_lan_ip() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_021b.out")
@@ -351,7 +350,6 @@ class CaptivePortalTests(NGFWTestCase):
         assert (search == 0)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         appWeb.setBlockedUrls(rules_orig)
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_022b.out",uri="http://" + global_functions.get_lan_ip() + "/capture/logout"))
         assert (result == 0)
@@ -378,13 +376,12 @@ class CaptivePortalTests(NGFWTestCase):
         # Verify anonymous works
         appid = str(self._app.getAppSettings()["id"])
         print('appid is %s' % appid)  # debug line
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_023a.out", uri="'" + global_functions.get_http_url() + "capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_023a.out", uri=global_functions.get_http_url() + "capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_023a.out")
         assert (search == 0)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_023b.out", uri=global_functions.get_http_url() + "capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_023b.out")
@@ -411,7 +408,7 @@ class CaptivePortalTests(NGFWTestCase):
         # Verify anonymous works
         appid = str(self._app.getAppSettings()["id"])
         print('appid is %s' % appid)  # debug line
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_024a.out", uri="'" +global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_024a.out", uri=global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_024a.out")
         assert (search == 0)
@@ -445,13 +442,12 @@ class CaptivePortalTests(NGFWTestCase):
         # Verify anonymous works
         appid = str(self._app.getAppSettings()["id"])
         print('appid is %s' % appid ) # debug line
-        result = remote_control.run_command(global_functions.build_curl_command(output_file="/tmp/capture_test_025a.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_curl_command(output_file="/tmp/capture_test_025a.out", uri=global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_025a.out")
         assert (search == 0)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_025b.out", uri=global_functions.get_http_url() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_025b.out")
@@ -529,7 +525,7 @@ class CaptivePortalTests(NGFWTestCase):
         # check if local directory login and password
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_030a.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_030a.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
@@ -537,7 +533,6 @@ class CaptivePortalTests(NGFWTestCase):
         assert(foundUsername)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_030b.out", uri=global_functions.get_http_url() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_030b.out")
@@ -565,7 +560,7 @@ class CaptivePortalTests(NGFWTestCase):
         # check if local directory login and password
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_030a.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_030a.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
@@ -573,7 +568,6 @@ class CaptivePortalTests(NGFWTestCase):
         assert(foundUsername)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_030b.out", uri=global_functions.get_http_url() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_030b.out")
@@ -607,7 +601,7 @@ class CaptivePortalTests(NGFWTestCase):
         # check if AD login and password
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035a.out",uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035a.out",uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035a.out")
         assert (search == 0)
@@ -621,13 +615,12 @@ class CaptivePortalTests(NGFWTestCase):
         assert (search == 0)
 
         # try second time to login,
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035c.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035c.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035c.out")
         assert (search == 0)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_035d.out", uri=global_functions.get_http_url() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_035d.out")
@@ -636,7 +629,7 @@ class CaptivePortalTests(NGFWTestCase):
         assert(not foundUsername)
 
         # check extend ascii in login and password bug 10860
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035e.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035e.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035e.out")
         assert (search == 0)
@@ -681,12 +674,11 @@ class CaptivePortalTests(NGFWTestCase):
         # check if RADIUS login and password
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_040a.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"), stdout=True)
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_040a.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"), stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040a.out")
         assert (search == 0)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_040b.out", uri=global_functions.get_http_url() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_040b.out")
@@ -695,12 +687,11 @@ class CaptivePortalTests(NGFWTestCase):
         # check if RADIUS login and password a second time.
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_040c.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"), stdout=True)
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_040c.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"), stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040c.out")
         assert (search == 0)
 
         # logout user to clean up test a second time.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_040d.out", uri=global_functions.get_http_url() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_040d.out")
@@ -740,7 +731,7 @@ class CaptivePortalTests(NGFWTestCase):
         appid = str(self._app.getAppSettings()["id"])
 
         # connect and auth to get cookie
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, cookies_save_file=cookie_file_name, uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, cookies_save_file=cookie_file_name, uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' " + capture_file_name)
         assert (search == 0)
@@ -750,13 +741,13 @@ class CaptivePortalTests(NGFWTestCase):
         self._app.runCleanup() # run the periodic cleanup task to remove expired users
 
         # try again without cookie (confirm session not active)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, uri="'" + global_functions.get_http_url() + "/capture/handler.py/?username=&password=&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, uri=global_functions.get_http_url() + "/capture/handler.py/?username=&password=&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' " + capture_file_name)
         assert (search == 1)
 
         # try again with cookie
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, cookies_load_file=cookie_file_name, uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, cookies_load_file=cookie_file_name, uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' " + capture_file_name)
         assert (search == 0)
@@ -805,7 +796,7 @@ class CaptivePortalTests(NGFWTestCase):
         appid = str(self._app.getAppSettings()["id"])
 
         # connect and auth to get cookie
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, cookies_save_file=cookie_file_name, uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, cookies_save_file=cookie_file_name, uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' " + capture_file_name)
         assert (search == 0)
@@ -850,7 +841,7 @@ class CaptivePortalTests(NGFWTestCase):
         # # check if local directory login and password
         appid = str(self._app.getAppSettings()["id"])
 
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, cookies_load_file=savedCookieFileName, uri="'" + global_functions.get_http_url() + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file=capture_file_name, cookies_load_file=savedCookieFileName, uri=global_functions.get_http_url() + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         remote_control.run_command("rm " + savedCookieFileName)
         search = remote_control.run_command("grep -q 'Hi!' " + capture_file_name)
@@ -880,7 +871,7 @@ class CaptivePortalTests(NGFWTestCase):
         # check if local directory login and password
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_060a.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_060a.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_060a.out")
         assert (search == 0)
@@ -888,7 +879,6 @@ class CaptivePortalTests(NGFWTestCase):
         assert(foundUsername)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_060b.out", uri=global_functions.get_http_url() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_060b.out")
@@ -926,18 +916,17 @@ class CaptivePortalTests(NGFWTestCase):
         # check if local directory login and password
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_065a.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + random_user + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_065a.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + random_user + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_065a.out")
         assert (search == 0)
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_065b.out", uri=global_functions.get_http_url() + "/capture/logout"))
 
         # Wait for the user to expire plus 30 secs
         time.sleep(180)
 
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_065c.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + random_user + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_065c.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + random_user + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_065c.out")
         assert (search != 0)
@@ -972,7 +961,7 @@ class CaptivePortalTests(NGFWTestCase):
         # check if local directory login and password
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_070c.out", uri="'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/'"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_070c.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + local_user_name + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_070c.out")
         assert (search == 0)
@@ -980,7 +969,6 @@ class CaptivePortalTests(NGFWTestCase):
         assert(foundUsername)
 
         # logout user to clean up test.
-        # wget --no-hsts  http://<internal IP>/capture/logout
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_070d.out", uri=global_functions.get_http_url() + "/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_070d.out")
@@ -1041,7 +1029,7 @@ class CaptivePortalTests(NGFWTestCase):
             timeout -= 1
             time.sleep(1)
             result_dns = remote_control.run_command("host test.untangle.com")
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_080.out"), stdout=True)
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_080.out", extra_arguments="--server-response"), stdout=True)
         search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_080.out")
         
         # revert back to standard ports

@@ -60,10 +60,10 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_019_porn_is_blocked_alt_port(self):
         setHttpHttpsPorts(8081,443)
-        result = self.get_web_request_results(url="http://playboy.com/", expected="blockpage")
+        result = self.get_web_request_results(url="http://www.playboy.com/", expected="blockpage")
         setHttpHttpsPorts(80,443)
         assert (result == 0)
-        found = self.check_events("playboy.com", "/", True)
+        found = self.check_events("www.playboy.com", "/", True)
         assert( found )
 
     def test_029_blocked_url_https_http_alt_ports(self):
@@ -81,7 +81,7 @@ class WebFilterTests(WebFilterBaseTests):
         self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=True, flagged=True)
         # specify an argument so it isn't confused with other events
         eventTime = datetime.datetime.now()
-        result1 = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://test.untangle.com/test/testPage1.html?arg={fname}") + " 2>&1 >/dev/null")
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -98,7 +98,7 @@ class WebFilterTests(WebFilterBaseTests):
         settings = self._app.getSettings()
         settings["passReferers"] = False
         self._app.setSettings(settings)
-        resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        resultReferer = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/test/refererPage.html", header="Referer: http://test.untangle.com/test/testPage1.html") + " 2>&1 | grep -q 'Welcome to the referer page.'")
         print("result %s passReferers %s" % (resultReferer,settings["passReferers"]))
 
         self.block_url_list_clear()
@@ -112,7 +112,7 @@ class WebFilterTests(WebFilterBaseTests):
         settings = self._app.getSettings()
         settings["passReferers"] = True
         self._app.setSettings(settings)
-        resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        resultReferer = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/test/refererPage.html", header="Referer: http://test.untangle.com/test/testPage1.html") + " 2>&1 | grep -q 'Welcome to the referer page.'")
         print("result %s passReferers %s" % (resultReferer,settings["passReferers"]))
 
         self.block_url_list_clear()
@@ -171,33 +171,33 @@ class WebFilterTests(WebFilterBaseTests):
         settings = self._app.getSettings()
         settings["enforceSafeSearch"] = False
         self._app.setSettings(settings)
-        google_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=off'");
+        google_result_without_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.google.com/search?hl=en&q=boobs&safe=off", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'safe=off'")
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        google_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=strict'");
+        google_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.google.com/search?hl=en&q=boobs&safe=off", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'safe=strict'")
 
         assert( google_result_without_safe == 0 )
         assert( google_result_with_safe == 0 )
 
         settings["enforceSafeSearch"] = False
         self._app.setSettings(settings)
-        bing_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.bing.com/search?q=boobs&adlt=off' | grep -q 'adlt=off'")
+        bing_result_without_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.bing.com/search?q=boobs&adlt=off", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'adlt=off'")
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        bing_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.bing.com/search?q=boobs&adlt=off' | grep -q 'adlt=strict'")
-    
+        bing_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.bing.com/search?q=boobs&adlt=off", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'adlt=strict'")
+
         assert(bing_result_without_safe == 0)
         assert(bing_result_with_safe == 0)
 
         settings["enforceSafeSearch"] = False
         self._app.setSettings(settings)
-        yahoo_result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=p'")
+        yahoo_result_without_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://search.yahoo.com/search?p=boobs&vm=p", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'vm=p'")
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        yahoo_result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://search.yahoo.com/search?p=boobs&vm=p' | grep -q 'vm=r'")
+        yahoo_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://search.yahoo.com/search?p=boobs&vm=p", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'vm=r'")
 
         assert(yahoo_result_with_safe == 0)
         assert(yahoo_result_without_safe == 0)
@@ -210,7 +210,7 @@ class WebFilterTests(WebFilterBaseTests):
         self._app.setSettings(settings)
         # this test URL should be blocked but allow
         remote_control.run_command("rm -f /tmp/web_filter_base_test_120.log")
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/web_filter_base_test_120.log -O /tmp/web_filter_base_test_120.out http://test.untangle.com/test/testPage1.html")
+        result = remote_control.run_command(global_functions.build_wget_command(log_file="/tmp/web_filter_base_test_120.log", output_file="/tmp/web_filter_base_test_120.out", uri="http://test.untangle.com/test/testPage1.html", extra_arguments="--server-response"))
         resultButton = remote_control.run_command("grep -q 'unblock' /tmp/web_filter_base_test_120.out")
         resultBlock = remote_control.run_command("grep -q 'blockpage' /tmp/web_filter_base_test_120.out")
 
@@ -220,14 +220,14 @@ class WebFilterTests(WebFilterBaseTests):
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         blockPageIP = ip[0]
         # print('Block page IP address is %s' % blockPageIP)
-        blockParamaters = re.findall( r'\?(.*)\s', ipfind )
+        blockParamaters = re.findall( r'\?(.*)', ipfind )
         paramaters = blockParamaters[0]
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password="
         # print("unBlockParameters %s" % unBlockParameters)
         print("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
-        remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
-        resultUnBlock = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://" + blockPageIP + "/" + self.shortAppName() + "/unblock", post_data=unBlockParameters))
+        resultUnBlock = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/test/testPage1.html") + " 2>&1 | grep -q text123")
 
         self.block_url_list_clear()
         self._app.flushAllUnblockedItems()
@@ -249,23 +249,23 @@ class WebFilterTests(WebFilterBaseTests):
 
         # this test URL should be blocked but allow
         remote_control.run_command("rm -f /tmp/%s.log"%fname)
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/%s.log -O /tmp/%s.out http://test.untangle.com/test/testPage2.html"%(fname,fname))
+        result = remote_control.run_command(global_functions.build_wget_command(log_file=f"/tmp/{fname}.log", output_file=f"/tmp/{fname}.out", uri="http://test.untangle.com/test/testPage2.html", extra_arguments="--server-response"))
         resultButton = remote_control.run_command("grep -q 'unblock' /tmp/%s.out"%fname)
         resultBlock = remote_control.run_command("grep -q 'blockpage' /tmp/%s.out"%fname)
 
         # get the IP address of the block page
-        ipfind = remote_control.run_command("grep 'Location' /tmp/%s.log"%fname,stdout=True)
+        ipfind = remote_control.run_command("grep 'Location' /tmp/%s.log" % fname,stdout=True)
         print('ipFind %s' % ipfind)
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         blockPageIP = ip[0]
         # print('Block page IP address is %s' % blockPageIP)
-        blockParamaters = re.findall( r'\?(.*)\s', ipfind )
+        blockParamaters = re.findall( r'\?(.*)', ipfind )
         paramaters = blockParamaters[0]
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password=atstest"
         # print("unBlockParameters %s" % unBlockParameters)
-        remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
-        resultUnBlock = remote_control.run_command("wget -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://" + blockPageIP + "/" + self.shortAppName() + "/unblock", post_data=unBlockParameters))
+        resultUnBlock = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/test/testPage2.html") + " 2>&1 | grep -q text123")
 
         settings = self._app.getSettings()
         settings["unblockMode"] = "None"

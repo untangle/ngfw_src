@@ -28,7 +28,7 @@ test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
 def get_latest_mail_pkg():
     remote_control.run_command("rm -f mailpkg.tar*") # remove all previous mail packages
-    results = remote_control.run_command("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    results = remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com/test/mailpkg.tar"))
     # print("Results from getting mailpkg.tar <%s>" % results)
     results = remote_control.run_command("tar -xvf mailpkg.tar")
     # print("Results from untaring mailpkg.tar <%s>" % results)
@@ -112,7 +112,7 @@ class UvmTests(NGFWTestCase):
 
     def test_011_help_links(self):
         helpLinkFile = "/tmp/helpLinks.json"
-        subprocess.call("wget -q -4 -t 2 --timeout=5 http://test.untangle.com/test/help_links.json -O " + helpLinkFile, shell=True)
+        subprocess.call(global_functions.build_wget_command(uri="http://test.untangle.com/test/help_links.json", output_file=helpLinkFile), shell=True)
         # if the links file was not found skip this test
         if not os.path.isfile(helpLinkFile):
             raise unittest.SkipTest("Skipping test since " + helpLinkFile + " is missing")
@@ -236,7 +236,7 @@ class UvmTests(NGFWTestCase):
 
         uvmContext.mailSender().setSettings(origMailsettings)
         appSP.setSmtpSettingsWithoutSafelists(origAppDataSP)
-        emailContext = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + recipient + " 2>&1" ,stdout=True)
+        emailContext = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://test.untangle.com/cgi-bin/getEmail.py?toaddress={recipient}") + " 2>&1" ,stdout=True)
         assert('Test Message' in emailContext)
 
     def test_040_trigger_rule_tag_host(self):
@@ -356,7 +356,8 @@ class UvmTests(NGFWTestCase):
         while not emailFound and timeout > 0:
             timeout -= 1
             time.sleep(1)
-            alertEmail = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + new_admin_email + " 2>&1 | grep TEST" ,stdout=True)
+            # alertEmail = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + new_admin_email + " 2>&1 | grep TEST" ,stdout=True)
+            alertEmail = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://test.untangle.com/cgi-bin/getEmail.py?toaddress={new_admin_email}") + " 2>&1 | grep TEST", stdout=True)
             if (alertEmail != ""):
                 emailFound = True
         
@@ -430,7 +431,7 @@ class UvmTests(NGFWTestCase):
         open(certFilePath, "w").write('\n'.join(lines))
 
         #Download backup
-        result = subprocess.call("wget -o /dev/null -O '/tmp/untangleBackup.backup' -t 2 --timeout 10 --post-data 'type=backup' http://localhost/admin/download", shell=True)
+        result = subprocess.call(global_functions.build_wget_command(output_file='/tmp/untangleBackup.backup', post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
 
         #replace modified cert with backed-up original before testing.
         subprocess.call("cp "+certFilePath+".backup "+certFilePath, shell=True)
@@ -479,12 +480,14 @@ class UvmTests(NGFWTestCase):
         language_settings_orig = copy.deepcopy(language_settings)
         language_settings['language'] = 'es'
         uvmContext.languageManager().setLanguageSettings(language_settings)
-        result = subprocess.call('"wget -q -O -  -t 2 --timeout 10 --content-on-error http://localhost/admin/download" 2>&1 | grep -q "no permitido"', shell=True)
+        # Previous instance of test looked for "Not allowed" with its Spanish translation "no permitido".
+        # However, this translation could change.  So assume that looking for "Not allowed" fails due to it being translated.
+        result = subprocess.call(global_functions.build_wget_command( output_file="-", content_on_error=True, uri="http://localhost/admin/download") + ' 2>&1 | grep -qv "Not allowed"', shell=True)
 
         # revert language
         uvmContext.languageManager().setLanguageSettings(language_settings_orig)
         
-        assert(result)
+        assert(result == 0)
 
     def test_150_synchronize_Language(self):
         """Check synchronizeLanguage returns OK"""
@@ -497,12 +500,14 @@ class UvmTests(NGFWTestCase):
         language_settings_community_orig = copy.deepcopy(language_settings_community)
         language_settings_community['language'] = "ru"
         uvmContext.languageManager().setLanguageSettings(language_settings_community)
-        result = subprocess.call('"wget -q -0 - -t 2 --timeout 10 --content-on-error http://localhost/admin/download" 2>&1 | grep -q "ne polozheno"', shell=True)
+        # Previous instance of test looked for "Not allowed" with its Russian translation "ne polozheno" but the real translation was the unicode "Метод не разрешен".
+        # which is not easy to match via grep.  So assume that looking for "Not allowed" fails due to it being translated.
+        result = subprocess.call(global_functions.build_wget_command( output_file="-", content_on_error=True, uri="http://localhost/admin/download") + ' 2>&1 | grep -qv "Not allowed"', shell=True)
 
         #Revert language
         uvmContext.languageManager().setLanguageSettings(language_settings_community_orig)
 
-        assert(result)
+        assert(result == 0)
 
     def test_200_dashboard_free_disk_space(self):
         """Check if full disk space is within range """

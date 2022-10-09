@@ -24,7 +24,7 @@ smtpServerHost = global_functions.TEST_SERVER_HOST
 def getLatestMailSender():
     global mail_app
     remote_control.run_command("rm -f mailpkg.tar*") # remove all previous mail packages
-    results = remote_control.run_command("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    results = remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com/test/mailpkg.tar"))
     #  check if the download was successful
     if (results != 0):
         # check if existing mail app is already there
