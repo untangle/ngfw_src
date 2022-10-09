@@ -77,7 +77,7 @@ class BrandingManagerTests(NGFWTestCase):
         appData['contactEmail'] = newContactEmail;
         app.setSettings(appData)
         # test blockpage has all the changes
-        result = remote_control.run_command("wget -q --no-check-certificate -O - \"$@\" www.playboy.com",stdout=True)
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri="www.playboy.com"),stdout=True)
 
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
@@ -114,7 +114,7 @@ class BrandingManagerTests(NGFWTestCase):
         # Check login page for branding
         internalAdmin = None
         # print("IP address <%s>" % internalAdmin)
-        result = remote_control.run_command("wget -q --no-check-certificate -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
         # print("page is <%s>" % result)
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
@@ -135,7 +135,7 @@ class BrandingManagerTests(NGFWTestCase):
         app.setSettings(appData)
 
         internalAdmin = None
-        result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html</b> and<br/>multiple<br/>lines.*', re.DOTALL|re.MULTILINE)
         if re.match(myRegex,result):
             assert(True)
@@ -152,7 +152,7 @@ class BrandingManagerTests(NGFWTestCase):
         app.setSettings(appData)
 
         internalAdmin = None
-        result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html</b> and<br/>multiple<br/>lines.*', re.DOTALL|re.MULTILINE)
         if re.match(myRegex,result):
             assert(False)

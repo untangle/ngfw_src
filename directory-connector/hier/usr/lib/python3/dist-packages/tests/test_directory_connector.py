@@ -182,7 +182,7 @@ def register_username(http_admin_url, user):
     Register user name
     """
     register_url = http_admin_url + "userapi/registration?username=" + user + "&domain=adtesting.int&hostname=adtest2&action=login"
-    result = remote_control.run_command(("wget -q -O /dev/null '%s'" % (register_url,)))
+    result = remote_control.run_command(global_functions.build_wget_command(log_file="/dev/null", uri=register_url))
     return result
 
 def register_username_old(http_admin_url, user):
@@ -190,7 +190,7 @@ def register_username_old(http_admin_url, user):
     Register old user name
     """
     register_url = http_admin_url + "adpb/registration?username=" + user + "&domain=adtesting.int&hostname=adtest2&action=login"
-    result = remote_control.run_command(("wget -q -O /dev/null '%s'" % (register_url,)))
+    result = remote_control.run_command(global_functions.build_wget_command(log_file="/dev/null", uri=register_url))
     return result
 
 def find_name_in_host_table (hostname='test'):
