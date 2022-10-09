@@ -260,7 +260,7 @@ class PolicyManagerTests(NGFWTestCase):
         rules["list"].append(newRule)
         secondRackWebfilter.setBlockedUrls(rules)
         # verify traffic is now blocked (third rack inherits web filter from second rack)
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/test/testPage1.html") + "2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # direct traffic to second rack after local authentication
@@ -289,7 +289,7 @@ class PolicyManagerTests(NGFWTestCase):
         appendRule(self._app, createPolicySingleConditionRule("USERNAME","[authenticated]", secondRackId))
         
         # check that basic captive page is shown
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/policy_test_040.log -O /tmp/policy_test_040.out http://www.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/policy_test_040.out", log_file="/tmp/policy_test_040.log", uri="http://www.google.com/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'username and password' /tmp/policy_test_040.out")
         assert (search == 0)
@@ -301,14 +301,14 @@ class PolicyManagerTests(NGFWTestCase):
         print('Capture IP address is %s' % captureIP)
         appid = str(defaultRackCaptivePortal.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command("wget -q -O /dev/null -t 2 --timeout=5   \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=" + captureIP + "&uri=/\'")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://{captureIP}/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid={appid}&host={captureIP}&uri=/"))
         assert (result == 0)
         # verify the username is assigned to the IP
         userHost = uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
         assert (userHost['username'] == "test20")
         userHost = uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
         # firewall on rack 2 is blocking all, we should not get the test.untangle.com page
-        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 -a /tmp/policy_test_040a.log -O /tmp/policy_test_040a.out http://www.google.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/policy_test_040a.out", log_file="/tmp/policy_test_040a.log", uri="http://www.google.com/"))
         search = remote_control.run_command("grep -q 'Hi!' /tmp/policy_test_040a.out")
         assert (search != 0)
         # Or the captive page
@@ -316,7 +316,7 @@ class PolicyManagerTests(NGFWTestCase):
         assert (search != 0)
         
         # Logout
-        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 -a /tmp/policy_test_040b.log -O /tmp/policy_test_040b.out http://" + captureIP + "/capture/logout")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/policy_test_040b.out", log_file="/tmp/policy_test_040b.log", uri=f"http://{captureIP}/capture/logout"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/policy_test_040b.out")
         assert (search == 0)
