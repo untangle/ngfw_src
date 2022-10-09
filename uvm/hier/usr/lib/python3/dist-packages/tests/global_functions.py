@@ -510,7 +510,7 @@ def check_clamd_ready():
 
     return True
 
-def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=None, cookies_save_file=None, cookies_load_file=None, header=None, user_agent=None, post_data=None, override_arguments=None, extra_arguments=None, ignore_certificate=True, user=None, password=None, quiet=True, all_parameters=False):
+def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=None, cookies_save_file=None, cookies_load_file=None, header=None, user_agent=None, post_data=None, override_arguments=None, extra_arguments=None, ignore_certificate=True, user=None, password=None, quiet=True, all_parameters=False, content_on_error=False):
     """
     Build wget command
 
@@ -561,6 +561,8 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
         optional_arguments.append(f"--user-agent='{user_agent}'")
     if post_data is not None:
         optional_arguments.append(f"--post-data='{post_data}'")
+    if content_on_error is not False:
+        optional_arguments.append(f"--content-on-error")
     if user is not None:
         optional_arguments.append(f"--user='{user}'")
     if password is not None:
@@ -571,7 +573,7 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
 
     return f"wget {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
 
-def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None, location=False, range=None):
+def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None, location=False, range=None, trace_ascii_file=None, user_agent=None, user=None, password=None):
     """
     Build curl command
 
@@ -604,8 +606,17 @@ def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=No
         optional_arguments.append(f"--output {output_file}")
     if range is not None:
         optional_arguments.append(f"--range {range}")
+    if trace_ascii_file is not None:
+        optional_arguments.append(f"--trace-ascii {trace_ascii_file}")
+    if user_agent is not None:
+        optional_arguments.append(f"--user-agent '{user_agent}'")
     if extra_arguments is not None:
         optional_arguments.append(extra_arguments)
+    if user is not None:
+        if password is not None:
+            optional_arguments.append(f"--user '{user}:{password}'")
+        else:
+            optional_arguments.append(f"--user '{user}'")
 
     return f"curl {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
 
