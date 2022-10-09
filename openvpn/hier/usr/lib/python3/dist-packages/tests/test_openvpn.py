@@ -100,7 +100,7 @@ def configureVPNClientForConnection(clientLink):
     "download client config from passed link, unzip, and copy to correct location"
     result = 1
     #download config
-    subprocess.call("wget -o /dev/null -t 1 --timeout=3 http://localhost" + clientLink + " -O /tmp/clientconfig.zip", shell=True)
+    subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=f"http://localhost{clientLink}", output_file="/tmp/clientconfig.zip"), shell=True)
     #copy config to remote host
     subprocess.call("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + remote_control.host_key_file + " /tmp/clientconfig.zip testshell@" + global_functions.VPN_CLIENT_IP + ":/tmp/>/dev/null 2>&1", shell=True)
     #unzip files
@@ -249,7 +249,7 @@ class OpenVpnTests(NGFWTestCase):
         if (vpnHostResult != 0):
             raise unittest.SkipTest("No paried VPN server available")
         # Download remote system VPN config
-        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteFile + " -O /tmp/config.zip", shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteFile, output_file="/tmp/config.zip"), shell=True)
         assert (result == 0) # verify the download was successful
         self._app.importClientConfig("/tmp/config.zip")
         # wait for vpn tunnel to form
@@ -295,7 +295,7 @@ class OpenVpnTests(NGFWTestCase):
             raise unittest.SkipTest("User/Pass VPN server not available")
 
         # Download remote system VPN config
-        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteUserPassFile + " -O /tmp/UserPassConfig.zip", shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteUserPassFile, output_file="/tmp/UserPassConfig.zip"), shell=True)
         assert(result == 0) #verify download was successful
         self._app.importClientConfig("/tmp/UserPassConfig.zip")
 
@@ -321,7 +321,7 @@ class OpenVpnTests(NGFWTestCase):
             # skip http test on bridged configurations since 10.111.0.0 network
             result = 0
         else:
-            result = remote_control.run_command("wget -T 3 -t 2 -q -O - http://" + global_functions.VPN_SERVER_USER_PASS_LAN_IP + " 2>&1 | grep -q Debian")
+            result = remote_control.run_command(global_functions.build_wget_command(uri=global_functions.VPN_SERVER_USER_PASS_LAN_IP, output_file="-") + " 2>&1 | grep -q Debian")
         listOfServers = self._app.getRemoteServersStatus()
 
         #remove server from remoteServers so it doesn't interfere with later tests
@@ -454,7 +454,7 @@ class OpenVpnTests(NGFWTestCase):
 
             # run a web request to internet and make sure it goes through web filter
             # debug remote_control.run_command("wget --no-check-certificate -O /tmp/test_050_createClientVPNFullTunnel.txt http://www.playboy.com", host=vpnPoolAddressIP)
-            webresult = remote_control.run_command("wget  --no-check-certificate --timeout=4 -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
+            webresult = remote_control.run_command(global_functions.build_wget_command(uri="http://www.playboy.com", output_file="-", ignore_certificate=True) + "| grep -q blockpage", host=vpnPoolAddressIP)
 
             print("result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult))
         else:
@@ -920,10 +920,10 @@ class OpenVpnTests(NGFWTestCase):
         tunnelApp.start()
 
         #set up TunnelVPN
-        result = subprocess.call("wget -o /dev/null -t 1 --timeout=3 " + vpn_tunnel_file + " -O /tmp/config.zip", shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpn_tunnel_file, output_file="/tmp/config.zip"), shell=True)
         if (result != 0):
             raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
-        currentWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+        currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
         # print("Original WAN IP: " + currentWanIP)
@@ -943,7 +943,7 @@ class OpenVpnTests(NGFWTestCase):
             listOfConnections = tunnelApp.getTunnelStatusList()
             connectStatus = listOfConnections['list'][0]['stateInfo']
             if (connectStatus == "CONNECTED"):
-                newWanIP = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                newWanIP = global_functions.get_public_ip_address()
                 if (currentWanIP != newWanIP):
                     connected = True
                 else:
