@@ -66,7 +66,7 @@ class ApplicationControlLiteTests(NGFWTestCase):
                     protocol="HTTP", 
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
         nukepatterns(self._app)
         assert (result == 0)
         time.sleep(3);
@@ -88,7 +88,7 @@ class ApplicationControlLiteTests(NGFWTestCase):
                     blocked=True,
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
         assert (result != 0)
         time.sleep(3);
 
@@ -109,7 +109,7 @@ class ApplicationControlLiteTests(NGFWTestCase):
                     blocked=True,
                     category="Web", 
                     description="File Transfer Protocol")
-        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="ftp://test.untangle.com/"))
         assert (result != 0)
         time.sleep(3);
 

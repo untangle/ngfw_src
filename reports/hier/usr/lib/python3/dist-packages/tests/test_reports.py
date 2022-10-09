@@ -143,7 +143,7 @@ def fetch_email( filename, email_address, tries=80 ):
     while tries > 0:
         tries -= 1
         # Check to see if the delivered email file is present
-        result = remote_control.run_command("wget -q --timeout=20 --tries=1 -O %s http://test.untangle.com/cgi-bin/getEmail.py?toaddress=%s 2>&1" % (filename, email_address))
+        result = remote_control.run_command(global_functions.build_wget_command(timeout=20, tries=1, output_file=filename, uri=f"http://test.untangle.com/cgi-bin/getEmail.py?toaddress={email_address}") + " 2>&1" )
         time.sleep(30)
         if (result == 0):
             if (remote_control.run_command("grep -q -i 'Subject: .*Report.*' %s 2>&1" % filename) == 0):
@@ -302,11 +302,11 @@ class ReportsTests(NGFWTestCase):
         csv_tmp = "/tmp/test_50_export_report_events.csv"
         subprocess.call(('/bin/rm -f %s' % csv_tmp), shell=True)
 
-        remote_control.run_command("wget -q -O /dev/null http://test.untangle.com")
-        remote_control.run_command("wget -q -O /dev/null http://www.untangle.com")
-        remote_control.run_command("wget -q -O /dev/null http://news.google.com")
-        remote_control.run_command("wget -q -O /dev/null http://www.yahoo.com")
-        remote_control.run_command("wget -q -O /dev/null http://www.reddit.com")
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.untangle.com"))
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://news.google.com"))
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.yahoo.com"))
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.reddit.com"))
         self._app.flushEvents()
         time.sleep(5)
         
@@ -324,7 +324,7 @@ class ReportsTests(NGFWTestCase):
         post_data += "&arg6=" + str(current_epoch)  # epach end time
         # print(post_data)
         
-        subprocess.call(("wget -q -O %s --post-data='%s' http://localhost/admin/download" % (csv_tmp,post_data)), shell=True)
+        subprocess.call(global_functions.build_wget_command(output_file=csv_tmp, post_data=post_data, uri="http://localhost/admin/download"), shell=True)
         result = subprocess.check_output('wc -l /tmp/test_50_export_report_events.csv', shell=True)
         print("Result of wc on %s : %s" % (csv_tmp,str(result)))
         assert(int.from_bytes(result,byteorder='little') > 3)
@@ -592,10 +592,10 @@ class ReportsTests(NGFWTestCase):
         self._app.setSettings(settings)
         adminURL = global_functions.get_http_url()
         print("URL %s" % adminURL)
-        resultLoginPage = subprocess.call("wget -q -O - " + adminURL + "reports 2>&1 | grep -q Login", shell=True)
+        resultLoginPage = subprocess.call(global_functions.build_wget_command(output_file="-", uri=adminURL + "reports") + " 2>&1 | grep -q Login", shell=True)
         assert (resultLoginPage == 0)
         
-        resultLoginPage = subprocess.call("wget -q -O - " + adminURL + '"auth/login?url=/reports&realm=Reports&username=' + test_email_address + '&password=passwd" 2>&1 | grep -q Report', shell=True)
+        resultLoginPage = subprocess.call(global_functions.build_wget_command(output_file="-", uri=adminURL + 'auth/login?url=/reports&realm=Reports&username=' + test_email_address + "&password=passwd") + " 2>&1 | grep -q Report", shell=True)
         assert (resultLoginPage == 0)
         
     @classmethod

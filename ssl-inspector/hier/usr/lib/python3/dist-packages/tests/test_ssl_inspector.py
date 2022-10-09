@@ -18,7 +18,7 @@ pornServerName="www.pornhub.com"
 testedServerName="news.ycombinator.com"
 testedServerURLParts = testedServerName.split(".")
 testedServerDomainWildcard = "*" + testedServerURLParts[-2] + "." + testedServerURLParts[-1]
-dropboxIssuer="/C=US/ST=California/L=San Francisco/O=Dropbox"
+dropboxIssuer="C = US, ST = California, L = San Francisco, O = \\\"Dropbox, Inc\\\""
 
 
 def createSSLInspectRule(url=testedServerDomainWildcard):
@@ -129,11 +129,11 @@ class SslInspectorTests(NGFWTestCase):
 
     def test_015_checkWebFilterBlockInspected(self):
         addBlockedUrl(testedServerName)
-        remote_control.run_command('curl -s -4 --connect-timeout 10 --trace-ascii /tmp/ssl_test_015.trace --output /tmp/ssl_test_015.output --insecure https://%s' % (testedServerName))
+        remote_control.run_command(global_functions.build_curl_command(trace_ascii_file="/tmp/ssl_test_015.trace", output_file="/tmp/ssl_test_015.output", uri=f"https://{testedServerName}"))
         nukeBlockedUrls()
         result = remote_control.run_command('grep blockpage /tmp/ssl_test_015.trace')
         assert (result == 0)
-        result = remote_control.run_command("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://%s 2>&1 | grep -q blockpage" % (pornServerName))
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"https://{pornServerName}") +  " 2>&1 | grep -q blockpage" )
         assert (result == 0)        
 
     @pytest.mark.failure_in_podman
@@ -145,7 +145,7 @@ class SslInspectorTests(NGFWTestCase):
             raise unittest.SkipTest('SSL Inspector does not have Ignore Dropbox rule')
 
     def test_030_checkSslInspectorInspectorEventLog(self):
-        remote_control.run_command('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
+        remote_control.run_command(global_functions.build_curl_command(trace_ascii_file="/tmp/ssl_test_030.trace", output_file="/tmp/ssl_test_030.output", uri=f"https://{testedServerName}"))
         events = global_functions.get_events('SSL Inspector','All Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -155,7 +155,7 @@ class SslInspectorTests(NGFWTestCase):
 
     def test_040_checkWebFilterEventLog(self):
         addBlockedUrl(testedServerName)
-        remote_control.run_command('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
+        remote_control.run_command(global_functions.build_curl_command(trace_ascii_file="/tmp/ssl_test_040.trace", output_file="/tmp/ssl_test_040.output", uri=f"https://{testedServerName}"))
         nukeBlockedUrls()
 
         events = global_functions.get_events('Web Filter','Blocked Web Events',None,1)
@@ -196,7 +196,7 @@ class SslInspectorTests(NGFWTestCase):
         uri = "/search?q=oneterm&qs=n&form=QBRE"
         for t in termTests:
             eventTime = datetime.datetime.now()
-            result = remote_control.run_command("curl -s -4 -o /dev/null -A 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1' --connect-timeout 10 --insecure 'https://%s%s'" % ( t["host"], t["uri"] ) )
+            result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1", uri=f"https://{t['host']}{t['uri']}"))
             assert( result == 0 )
 
             events = global_functions.get_events('Web Filter','All Search Events',None,1)
@@ -223,7 +223,7 @@ class SslInspectorTests(NGFWTestCase):
         search_term_rule_add(term)
         for t in termTests:
             eventTime = datetime.datetime.now()
-            result = remote_control.run_command("curl -s -4 -o /dev/null -A 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1' --connect-timeout 10 --insecure 'https://%s%s'" % ( t["host"], t["uri"] ) )
+            result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1", uri=f"https://{t['host']}{t['uri']}"))
             assert( result == 0 )
             events = global_functions.get_events("Web Filter",'All Search Events',None,1)
             found = global_functions.check_events( events.get('list'), 5,
@@ -244,7 +244,7 @@ class SslInspectorTests(NGFWTestCase):
         settings["restrictYoutube"] = True
         appWeb.setSettings(settings)
         
-        result = remote_control.run_command("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://www.youtube.com/watch?v=esXGGdVL7ug 2>&1 | grep -q \'Loading icon\">'")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"https://www.youtube.com/watch?v=esXGGdVL7ug") +  " 2>&1 | grep -q \'Loading icon\">'" )
         assert( result != 0 )
 
     @classmethod

@@ -67,7 +67,7 @@ class ConfigurationBackupTests(NGFWTestCase):
         subprocess.call("rm -rf /tmp/cloudBackup*", shell=True)
 
         #download local backup
-        subprocess.call("wget -o /dev/null -O '/tmp/localBackup.backup' -t 2 --timeout 3 --post-data 'type=backup' http://localhost/admin/download", shell=True)
+        subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/localBackup.backup", post_data="type=backup", uri="http://localhost/admin/download"), shell=True)
         #extract backup
         subprocess.call("mkdir /tmp/localBackup", shell=True)
         subprocess.call("tar -xf /tmp/localBackup.backup -C /tmp/localBackup", shell=True)
