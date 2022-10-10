@@ -91,12 +91,12 @@ def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=F
         time.sleep(1)
         if localcall:
             try:
-                result = subprocess.check_output(build_wget_command(output_file="-", uri="test.untangle.com/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
+                result = subprocess.check_output(build_wget_command(output_file="-", uri="https://test.untangle.com/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
             except:
                 pass
         else:
-            result = subprocess.check_output(build_wget_command(output_file="-", uri=f"{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
-    result = result.decode().rstrip()
+            result = subprocess.check_output(build_wget_command(output_file="-", uri=f"https://{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
+    result = result.rstrip()
     return result
     
 def get_hostname_ip_address(resolver="8.8.8.8", hostname=TEST_SERVER_HOST):
@@ -112,7 +112,7 @@ def get_hostname_ip_address(resolver="8.8.8.8", hostname=TEST_SERVER_HOST):
             found = False
         else:
             found = True
-    hostname_ip = hostname_ip.decode().rstrip()
+    hostname_ip = hostname_ip.rstrip()
     return hostname_ip
     
 def verify_iperf_configuration(wan_ip):
