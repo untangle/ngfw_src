@@ -21,6 +21,7 @@ Ext.define('Ung.config.network.view.Hostname', {
             items: [{
                 xtype: 'textfield',
                 fieldLabel: 'Hostname'.t(),
+                labelWidth: 150,
                 labelAlign: 'right',
                 emptyText: 'hostname',
                 allowBlank: false,
@@ -41,6 +42,7 @@ Ext.define('Ung.config.network.view.Hostname', {
             items: [{
                 xtype: 'textfield',
                 fieldLabel: 'Domain Name'.t(),
+                labelWidth: 150,
                 labelAlign: 'right',
                 emptyText: 'example.com',
                 allowBlank: false,
@@ -68,7 +70,8 @@ Ext.define('Ung.config.network.view.Hostname', {
             }
         },
         defaults: {
-            labelAlign: 'right'
+            labelAlign: 'right',
+            labelWidth: 150
         },
         items: [{
             xtype: 'combo',
@@ -86,7 +89,7 @@ Ext.define('Ung.config.network.view.Hostname', {
                     ['freedns','FreeDNS'],
                     ['google','Google'],
                     ['googledomains','Google Domains'],
-                    //['cloudflare','Cloudflare'],
+                    ['cloudflare','Cloudflare'],
                     ['duckdns','DuckDNS']
                    ]
         }, {
@@ -95,9 +98,19 @@ Ext.define('Ung.config.network.view.Hostname', {
             bind: '{settings.dynamicDnsServiceUsername}'
         }, {
             xtype: 'textfield',
-            fieldLabel: 'Password'.t(),
-            bind: '{settings.dynamicDnsServicePassword}',
-            inputType: 'password'
+            fieldLabel: 'Password or API Token'.t(),
+            inputType: 'password',
+            bind: '{settings.dynamicDnsServicePassword}'
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Zone'.t(),
+            disabled: true,
+            hidden: true,
+            bind: {
+                value: '{settings.dynamicDnsServiceZone}',
+                disabled: '{settings.dynamicDnsServiceName !== "cloudflare"}',
+                hidden: '{settings.dynamicDnsServiceName !== "cloudflare"}'
+            }
         }, {
             xtype: 'textfield',
             fieldLabel: 'Hostname(s)'.t(),
