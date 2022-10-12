@@ -6840,7 +6840,7 @@ msgstr "Anzahl der aufzubewahrenden Protokolle pro Protokolltyp"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/view/Support.js:27
 msgid "Allow secure remote access to {0} support team"
-msgstr "Dem Supporteam sicheren Remote-Zugriff gewähren"
+msgstr "Dem Supporteam sicheren {0} Remote-Zugriff gewähren"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/config/system/view/Support.js:37
 msgid "Download System Logs"
@@ -13648,7 +13648,7 @@ msgstr "Verfügbare Signaturen"
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:145
 msgid "{0}Warning:{1} No signatures are enabled for Log or Block."
-msgstr "{0}Warnung:{1}{0} Für \"Protokollieren\" oder \"Blockieren\" sind keine Signaturen aktiviert."
+msgstr "{0}Warnung:{1} Für \"Protokollieren\" oder \"Blockieren\" sind keine Signaturen aktiviert."
 
 #: /ngfw/ngfw_src/intrusion-prevention/js/view/Status.js:150
 #: /ngfw/ngfw_src/phish-blocker/js/view/Status.js:46
