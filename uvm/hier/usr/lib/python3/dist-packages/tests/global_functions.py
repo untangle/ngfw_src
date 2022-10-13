@@ -80,7 +80,6 @@ except socket.error:
     test_server_ip = "35.153.140.77"
     
 ftp_server = test_server_ip
-ftp_server = "192.168.25.51"
 iperf_server = ""
 
 def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):
