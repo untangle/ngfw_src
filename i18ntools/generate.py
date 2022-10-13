@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-Rebuild gettext template file (.pot) and
-synchronize with existing po files
+Rebuild gettext template file (.pot).
 """
 import datetime
 import fnmatch
@@ -29,7 +28,6 @@ ngfw = i18n.Ngfw()
 languages = i18n.Languages()
 
 pot = i18n.PotFile(language="en", file_name="/tmp/generated.pot")
-# pot = i18n.PotFile(language="en", file_name="pot/en/untangle-en.pot")
 pot_file_name = "pot/en/untangle-en.pot"
 
 def get_keys(module):

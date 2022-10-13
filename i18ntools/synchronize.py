@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-Rebuild gettext template file (.pot) and
-synchronize with existing po files
+Synchronize template (.pot) with existing .po files
 """
 import datetime
 import fnmatch
@@ -32,10 +31,11 @@ def main(argv):
     Main entry for generate
     """
     global pot
-    language_ids = languages.get_enabled_ids()
+    source_ids = languages.get_source_ids()
+    language_ids = None
 
     try:
-        opts, args = getopt.getopt(argv, "hpl:d", ["help", "language=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsl:s:d", ["help", "language=", "source=", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -45,6 +45,8 @@ def main(argv):
             sys.exit()
         elif opt in ( "-l", "--language"):
             language_ids = arg.split(",")
+        elif opt in ( "-s", "--source"):
+            source_ids = arg.split(",")
 
     if os.path.isfile(pot_file_name) is False:
         print("Missing template file %s" % (pot_file_name))
@@ -55,45 +57,36 @@ def main(argv):
     print("Synchronizing po languages...")
     total_character_count = 0
     total_word_count = 0
-    for language in languages.get_enabled():
-        if language["id"] == "en":
-            continue
+    for source_id in source_ids:
+        for language_id in languages.get_language_ids(source_id):
+            if language_ids is not None and language_id not in language_ids:
+                continue
+            if language_id == "en":
+                continue
+        
+            # print(f"{source_id}{language_id}")
+            language = languages.get_by_id(language_id)
 
-        po = i18n.PoFile(language=language["id"])
-        po.load()
+            po = i18n.PoFile(source=source_id, language=language_id)
+            po.load()
+            print(f"{source_id:9} {language['name']:20} {po.get_abbreviated_file_name():24}", end='')
 
-        diff = {
-            "add": [x for x in pot.records if not po.get_record_by_msgid(x.msg_id)],
-            "remove": [x for x in po.records if not pot.get_record_by_msgid(x.msg_id)]
-        }
-        print("  Synchronizing: %s, %s," % (language["name"], po.file_name),)
+            language = languages.get_by_id(language_id)
+            diff = {
+                "add": [x for x in pot.records if not po.get_record_by_msgid(x.msg_id)],
+                "remove": [x for x in po.records if not pot.get_record_by_msgid(x.msg_id)]
+            }
 
-        for diff_record in diff["remove"]:
-            po.remove_record(diff_record)
+            for diff_record in diff["remove"]:
+                po.remove_record(diff_record)
 
-        ## Add new and synchronize comments for existing
-        for record in pot.records:
-            po.add_record(record, replace_comments=True)
+            ## Add new and synchronize comments for existing
+            for record in pot.records:
+                po.add_record(record, replace_comments=True)
 
-        print("%d added, %d removed" % (len(diff["add"]), len(diff["remove"])),)
+            print(f" added={len(diff['add']):<5} removed={len(diff['remove']):<5}", flush=True)
 
-        character_count = 0
-        word_count = 0
-        for record in po.records:
-            if record.msg_id == "":
-                now = datetime.datetime.now()
-                record.replace_msg_str("PO-Revision-Date:", "PO-Revision-Date: " + now.strftime("%Y-%m-%d %H:%M%z") + '\\n')
-            record.set_verified()
-            if len("".join(record.msg_str)) == 0:
-                character_count = character_count + len(record.msg_id)
-                word_count = word_count + len(re.findall(r'\w+', record.msg_id))
-        print(", %d/%d chars/words to translate" % (character_count, word_count))
-        total_character_count = total_character_count + character_count
-        total_word_count = total_word_count + word_count
-
-        po.save()
-
-    print("%d/%d chars/words total to translate" % (total_character_count, total_word_count))
+            po.save()
 
 if __name__ == "__main__":
     main(sys.argv[1:])
