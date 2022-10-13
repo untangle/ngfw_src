@@ -21,7 +21,7 @@ class PoFile:
     path = "/po"
     extension = "po"
 
-    def __init__(self, language, file_name=None):
+    def __init__(self, source="official", language="en", file_name=None):
         """
         Init
         """
@@ -30,18 +30,25 @@ class PoFile:
         if file_name != None:
             self.file_name = file_name
         else:
-            self.build_file_name()
+            self.build_file_name(source)
 
         self.add_record_statistics = {}
 
-    def build_file_name(self):
+    def build_file_name(self, source="official"):
         """
         Create filename from language
         """
-        self.file_name = Utility.get_base_path() + self.path + "/%s/untangle-%s.%s" % (self.language, self.language, self.extension)
+        self.file_name = f"{Utility.get_base_path()}{self.path}/{source}/{self.language}/untangle-{self.language}.{self.extension}"
+
+    def exists(self):
+        return os.path.isfile(self.file_name)
 
     def set_file_name(self, file_name):
         self.file_name = file_name
+
+    def get_abbreviated_file_name(self):
+        paths = self.file_name.split('/')[-2:]
+        return "/".join(paths)
 
     def load(self):
         """
