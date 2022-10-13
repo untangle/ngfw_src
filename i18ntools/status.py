@@ -22,10 +22,11 @@ def usage():
 def main(argv):
     _debug = False
     source_po_file_name = None
-    language_ids = languages.get_enabled_ids()
+    source_ids = languages.get_source_ids()
+    language_ids = None
 
     try:
-        opts, args = getopt.getopt(argv, "hsl:d", ["help", "language=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsl:s:d", ["help", "language=", "source=", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -36,17 +37,22 @@ def main(argv):
         elif opt in ( "-d", "--debug"):
             _debug = True
         elif opt in ( "-l", "--language"):
-            language_id = arg.split(",")
+            language_ids = arg.split(",")
+        elif opt in ( "-s", "--source"):
+            source_ids = arg.split(",")
 
-    for language_id in language_ids:
-        po = i18n.PoFile(language=language_id, file_name=source_po_file_name)
-        po.load()
+    for source_id in source_ids:
+        for language_id in languages.get_language_ids(source_id):
+            if language_ids is not None and language_id not in language_ids:
+                continue
 
-        language = languages.get_by_id(language_id)
-        print("Status: %s" % (language["name"]))
-        print(" file=%s," % (po.file_name))
+            po = i18n.PoFile(language=language_id, source=source_id, file_name=source_po_file_name)
+            po.load()
 
-        print(" total records=%d, updated_records=%d, completed=%2.2f%%" % ((po.total_record_count(), po.updated_record_count(), (float(po.updated_record_count()) / po.total_record_count()) * 100)))
+            language = languages.get_by_id(language_id)
+            print(f"{source_id:9} {language['name']:20} {po.get_abbreviated_file_name():24}", end='')
+
+            print(f" total={po.total_record_count():<5} updated={po.updated_record_count():<5} completed={float((po.updated_record_count()) / po.total_record_count()) * 100:05.2f}%", flush=True)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
