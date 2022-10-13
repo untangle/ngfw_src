@@ -1,5 +1,5 @@
 {
-    "copyright": "Untangle, Inc.",
+    "copyright": "Arista Network",
     "directories": [
         "build",
         "ngfw_pkgs",
@@ -40,6 +40,7 @@
         "web-cache",
         "application-control",
         "captive-portal",
-	    "ssl-inspector"
+	    "ssl-inspector",
+	    "threat-prevention"
 	]
 }
