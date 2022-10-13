@@ -21,25 +21,25 @@ ipsecTestLAN = ""
 orig_netsettings = None
 
 # hardcoded for ats testing
-l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.89","10.112.11.53","10.111.0.134",
-                    "10.111.56.91","10.111.56.94","10.111.56.57","10.111.56.58","10.111.56.59"]
-l2tpClientHost = "10.111.56.84"  # Windows 10 using builtin OpenSSH
-l2tpAliasIP = "10.111.56.200"
+l2tpServerHosts = ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
+                    "10.112.56.91","10.112.56.94","10.112.56.57","10.112.56.58","10.112.56.59"]
+l2tpClientHost = "10.112.56.84"  # Windows 10 using builtin OpenSSH
+l2tpAliasIP = "10.112.56.200"
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
-ipsecHost = "10.111.56.96"
+ipsecHost = "10.112.56.96"
 ipsecHostLANIP = "192.168.235.96"
 ipsecPcLANIP = "192.168.235.83"
 ipsecHostLAN = "192.168.235.0/24"
 ipsecHostname = "ipsecsite.untangle.int"
-configuredHostIPs = [('10.111.0.134','192.168.14.1','192.168.14.0/24'), # ATS
-                     ('10.111.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
-                     ('10.111.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
-                     ('10.111.56.89','10.111.56.89','10.111.56.15/32'), # QA 3 Bridged
-                     ('10.111.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
-                     ('10.111.56.57','192.168.4.1','192.168.4.0/24'), # QA box .57
-                     ('10.111.56.58','192.168.12.1','192.168.12.0/24'), # QA box .58
-                     ('10.111.56.59','192.168.10.59','192.168.10.0/24')] # QA box .59
+configuredHostIPs = [('10.112.0.134','192.168.14.1','192.168.14.0/24'), # ATS
+                     ('10.112.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
+                     ('10.112.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
+                     ('10.112.56.89','10.112.56.89','10.112.56.15/32'), # QA 3 Bridged
+                     ('10.112.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
+                     ('10.112.56.57','192.168.4.1','192.168.4.0/24'), # QA box .57
+                     ('10.112.56.58','192.168.12.1','192.168.12.0/24'), # QA box .58
+                     ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box .59
 
 
 def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLANRange=""):
@@ -58,9 +58,22 @@ def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLA
         "rightSubnet": remoteLAN, # remote LAN range
         "rightId": "%any",
         "runmode": "start", 
-        "secret": "supersecret"
+        "secret": "supersecret",
+        "phase1Manual": True,
+        "phase1Lifetime": "28800",
+        "phase1Group": "modp2048",
+        "phase1Hash": "sha1",
+        "phase1Cipher": "aes128",
+        "dpdtimeout": "120",
+        "phase2Manual": True,
+        "phase2Lifetime": "3600",
+        "phase2Group": "modp2048",
+        "phase2Hash": "sha1",
+        "phase2Cipher": "aes256gcm128",
+        "ikeVersion": 2
     }    
 
+    
 def nukeIPSecTunnels(app):
     ipsecSettings = app.getSettings()
     ipsecSettings["tunnels"]["list"] = []
@@ -258,7 +271,7 @@ class IPsecTests(NGFWTestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecHostLANIP}/"))
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecHostLANIP}/"))
         assert (ipsecHostLANResult == 0)
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
         assert (ipsecPcLanResult == 0)
@@ -271,7 +284,7 @@ class IPsecTests(NGFWTestCase):
     def test_025_verifyIPsecBypass(self):           
         if (not tunnelUp):
             raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
-        ipsecHostLANResultNoFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecPcLANIP}/"))
+        ipsecHostLANResultNoFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecPcLANIP}/"))
         ipsecHostLANResultnoFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         assert (ipsecHostLANResultNoFW == 0)
         assert (ipsecHostLANResultnoFWRW == 0)
@@ -282,13 +295,13 @@ class IPsecTests(NGFWTestCase):
         rules["list"].append(create_firewall_rule("DST_ADDR",remote_control.client_ip))
         appFW.setRules(rules)
         # To and from the client IP should be blocked by the firewall rule
-        ipsecHostLANResultFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecPcLANIP}/"))
+        ipsecHostLANResultFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecPcLANIP}/"))
         ipsecHostLANResultFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         appData = self._app.getSettings()
         appData["bypassflag"] = True
         self._app.setSettings(appData)
         # Bypass true on IPsec should bypass firewall rules.
-        ipsecHostLANResultFWBypassed = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecPcLANIP}/"))
+        ipsecHostLANResultFWBypassed = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecPcLANIP}/"))
         ipsecHostLANResultFWBypassedRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
         # clear out firwall rules before checking results so other tests are not affected.
         rules["list"]=[]
@@ -313,7 +326,7 @@ class IPsecTests(NGFWTestCase):
         while (ipsecHostLANResult != 0 and timeout > 0):
             timeout -= 1
             time.sleep(1)
-            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecHostLANIP}/"))
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecHostLANIP}/"))
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
         # delete tunnel
         nukeIPSecTunnels(self._app)
@@ -512,7 +525,7 @@ class IPsecTests(NGFWTestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"https://{ipsecHostLANIP}/"))
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecHostLANIP}/"))
         post_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
         nukeIPSecTunnels(self._app)
         assert (ipsecHostLANResult == 0)
