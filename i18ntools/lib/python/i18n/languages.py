@@ -5,8 +5,8 @@ Supported languages
 import json
 import sys
 
-
 from i18n.utility import Utility
+from i18n.po_file import PoFile
 
 class Languages:
     """
@@ -34,9 +34,18 @@ class Languages:
             self.__dict__[key] = settings[key]
         ngfw_file.close()
 
+    def get_source_ids(self):
+        """
+        Return list of source ids
+        """
+        ids = []
+        for source in self.sources:
+            ids.append(source["id"])
+        return ids
+
     def get_enabled(self):
         """
-        Return enabled languae records
+        Return enabled language records
         """
         enabled = []
         for language in self.languages:
@@ -44,13 +53,16 @@ class Languages:
                 enabled.append(language)
         return enabled
 
-    def get_enabled_ids(self):
+    # def get_enabled_ids(self, source="offical"):
+    def get_language_ids(self, source="offical"):
         """
-        Return enabled languae ids
+        Return existing language ids
         """
         enabled = []
         for language in self.languages:
-            if language["enabled"] == True:
+            po_file = PoFile(source, language["id"])
+            if(po_file.exists()):
+                # print(po_file.file_name)
                 enabled.append(language["id"])
         return enabled
 
