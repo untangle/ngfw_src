@@ -46,7 +46,7 @@ VPN_SERVER_LAN_IP = "192.168.235.96"
 VPN_SERVER_USER_PASS_IP = "10.112.56.93"
 
 # special box within VPN_SERVER_USER_PASS_IP's network
-VPN_SERVER_USER_PASS_LAN_IP = "192.168.235.43"
+VPN_SERVER_USER_PASS_LAN_IP = "192.168.235.83"
 
 # special box with testshell in the sudoer group  - used to connect to vpn as client
 VPN_CLIENT_IP = "10.112.56.23"  
@@ -80,7 +80,6 @@ except socket.error:
     test_server_ip = "35.153.140.77"
     
 ftp_server = test_server_ip
-ftp_server = "192.168.25.51"
 iperf_server = ""
 
 def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):

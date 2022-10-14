@@ -289,7 +289,7 @@ class PolicyManagerTests(NGFWTestCase):
         appendRule(self._app, createPolicySingleConditionRule("USERNAME","[authenticated]", secondRackId))
         
         # check that basic captive page is shown
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/policy_test_040.out", log_file="/tmp/policy_test_040.log", uri="http://www.google.com/"))
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/policy_test_040.out", log_file="/tmp/policy_test_040.log", uri="http://www.google.com/", quiet=False))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'username and password' /tmp/policy_test_040.out")
         assert (search == 0)
