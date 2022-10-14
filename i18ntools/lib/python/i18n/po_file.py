@@ -4,6 +4,7 @@ PO file management
 import re
 import os
 import shutil
+import subprocess
 import sys
 
 from i18n.po_record import PoRecord
@@ -21,30 +22,37 @@ class PoFile:
     path = "/po"
     extension = "po"
 
-    def __init__(self, source="official", language="en", file_name=None):
+    source_id = None
+    language_id = None
+
+    def __init__(self, source_id="official", language_id="en", file_name=None):
         """
         Init
         """
-        self.language = language
+        self.source_id = source_id
+        self.language_id = language_id
         self.records = []
         if file_name != None:
             self.file_name = file_name
         else:
-            self.build_file_name(source)
+            self.build_file_name(source_id)
 
         self.add_record_statistics = {}
 
-    def build_file_name(self, source="official"):
+    def build_file_name(self, source_id="official"):
         """
         Create filename from language
         """
-        self.file_name = f"{Utility.get_base_path()}{self.path}/{source}/{self.language}/untangle-{self.language}.{self.extension}"
+        self.file_name = f"{Utility.get_base_path()}{self.path}/{source_id}/{self.language_id}/untangle-{self.language_id}.{self.extension}"
 
     def exists(self):
         return os.path.isfile(self.file_name)
 
     def set_file_name(self, file_name):
         self.file_name = file_name
+
+    def get_file_name(self):
+        return self.file_name
 
     def get_abbreviated_file_name(self):
         paths = self.file_name.split('/')[-2:]
@@ -286,3 +294,18 @@ class PoFile:
             if record.msg_id == msg_id:
                 return record
         return None
+
+    def get_last_modified(self):
+        """
+        Return last modified timeof file
+        """
+        return int(os.path.getmtime(self.file_name))
+
+    def package(self, output_path):
+        """
+        Create mo file and zip it.
+        """
+        command = f"msgfmt -o {output_path}untangle.mo {self.file_name}"
+        if Utility.run_command(f"msgfmt -o {output_path}untangle.mo {self.file_name}") is True:
+            Utility.run_command(f"zip -j {output_path}{self.source_id}_{self.language_id}.zip {output_path}untangle.mo")
+            os.remove(f"{output_path}untangle.mo")
