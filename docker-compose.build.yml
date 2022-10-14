@@ -83,5 +83,16 @@ services:
         - /etc/apt/apt.conf.d/01proxy:/etc/apt/apt.conf.d/01proxy
       entrypoint: ./buildtools/remote-dev-build.sh
 
+    # External server for testing/development of:
+    # - translations.untangle.com
+    # (this is suitable to expand to other things hosted on bd.untangle.com)
+    external-services:
+      image: httpd:latest
+      container_name: external-services
+      ports:
+        - "0.0.0.0:80:80"
+      volumes:
+        - ./i18ntools/translations:/usr/local/apache2/htdocs/translations
+        - ./external-services/httpd.conf:/usr/local/apache2/conf/httpd.conf
 volumes:
   pkgtools:
