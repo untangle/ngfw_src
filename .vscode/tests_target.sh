@@ -8,6 +8,7 @@ CLIENT_TARGET=$1
 ## Build SSH command base we will use to communicate with client
 ##
 SOURCE_KEY=/usr/lib/runtests/test_shell.key
+chmod 600 $SOURCE_KEY
 SSH_COMMAND="ssh -i $SOURCE_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=300 -o ConnectionAttempts=15 root@$CLIENT_TARGET"
 
 echo "SSH_COMAND=$SSH_COMMAND"
