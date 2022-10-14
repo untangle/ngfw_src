@@ -2,6 +2,9 @@
 i18n related utilty
 """
 import os
+import subprocess
+import sys
+
 from os.path import expanduser
 
 class Utility:
@@ -24,3 +27,20 @@ class Utility:
             base_path = home = expanduser("~")
             
         return base_path
+
+    @staticmethod
+    def run_command(command):
+        """
+        Execuute a shell command
+        """
+        try:
+            subprocess_command = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True, text=True)
+            subprocess_command_output = subprocess_command.communicate()[0]
+        except:
+            if subprocess_command_output != None:
+                for output in subprocess_command_output.decode("ascii").split("\n"):
+                    if len(output) > 0:
+                        print(f"shell_command: command={command} result={output}".format(output=output))
+            return False
+
+        return True
