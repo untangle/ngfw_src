@@ -18,8 +18,12 @@ if [ "$BUILD_TYPE" = "rake" ] ; then
   rm -f $RAKE_LOG
   rake |& tee $RAKE_LOG
 elif [ "$BUILD_TYPE" = "i18n" ] ; then
-  # i18n template build
+  echo "i18n build"
+  apt-get install zip
   cd i18ntools
-  ./generate.py
+  ./build-template.py
+  ./synchronize.py
+  ./status.py
+  ./build-translations.py
   cd -
 fi
