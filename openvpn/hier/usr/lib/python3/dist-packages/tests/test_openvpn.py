@@ -320,7 +320,7 @@ class OpenVpnTests(NGFWTestCase):
         appData["remoteServers"]["list"][:] = []
         self._app.setSettings(appData)
 
-        assert(remoteHostResultUserPass)
+        assert(remoteHostResultUserPass)  # NGFW-13424
         assert (result == 0) # if web site found
         #print(listOfServers)
         assert(listOfServers["list"][0]['name'] == vpnSite2SiteUserPassHostname)
