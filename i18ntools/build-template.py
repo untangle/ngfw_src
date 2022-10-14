@@ -27,7 +27,7 @@ importlib.reload(sys)
 ngfw = i18n.Ngfw()
 languages = i18n.Languages()
 
-pot = i18n.PotFile(language="en", file_name="/tmp/generated.pot")
+pot = i18n.PotFile(language_id="en", file_name="/tmp/generated.pot")
 pot_file_name = "pot/en/untangle-en.pot"
 
 def get_keys(module):

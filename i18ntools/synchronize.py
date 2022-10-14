@@ -24,7 +24,7 @@ ngfw = i18n.Ngfw()
 languages = i18n.Languages()
 
 pot_file_name = "pot/en/untangle-en.pot"
-pot = i18n.PotFile(language="en", file_name=pot_file_name)
+pot = i18n.PotFile(language_id="en", file_name=pot_file_name)
 
 def main(argv):
     """
@@ -55,8 +55,6 @@ def main(argv):
     pot.load()
 
     print("Synchronizing po languages...")
-    total_character_count = 0
-    total_word_count = 0
     for source_id in source_ids:
         for language_id in languages.get_language_ids(source_id):
             if language_ids is not None and language_id not in language_ids:
@@ -67,7 +65,7 @@ def main(argv):
             # print(f"{source_id}{language_id}")
             language = languages.get_by_id(language_id)
 
-            po = i18n.PoFile(source=source_id, language=language_id)
+            po = i18n.PoFile(source_id=source_id, language_id=language_id)
             po.load()
             print(f"{source_id:9} {language['name']:20} {po.get_abbreviated_file_name():24}", end='')
 
