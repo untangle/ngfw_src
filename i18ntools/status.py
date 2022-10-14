@@ -46,7 +46,7 @@ def main(argv):
             if language_ids is not None and language_id not in language_ids:
                 continue
 
-            po = i18n.PoFile(language=language_id, source=source_id, file_name=source_po_file_name)
+            po = i18n.PoFile(language_id=language_id, source_id=source_id, file_name=source_po_file_name)
             po.load()
 
             language = languages.get_by_id(language_id)
