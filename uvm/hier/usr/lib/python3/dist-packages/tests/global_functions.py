@@ -12,6 +12,7 @@ import html
 import inspect
 
 import runtests.remote_control as remote_control
+import runtests.overrides as overrides
 import runtests
 from . import ipaddr
 import smtplib
@@ -21,7 +22,7 @@ import urllib.request, urllib.parse, urllib.error
 from uvm import Uvm
 
 # ATS Global Constants
-OFFICE_NETWORKS = ('10.111.0.0/16','10.112.0.0/16','10.113.0.0/16')
+OFFICE_NETWORKS = ['10.111.0.0/16','10.112.0.0/16','10.113.0.0/16']
 IPERF_SERVERS = [('10.112.0.0/16','10.112.56.23'),] # SJ Office network
 RADIUS_SERVER = "10.112.56.28"
 RADIUS_SERVER_PASSWORD = "chakas"
@@ -117,8 +118,12 @@ def get_hostname_ip_address(resolver="8.8.8.8", hostname=TEST_SERVER_HOST):
 def verify_iperf_configuration(wan_ip):
     # https://iperf.fr/
     global iperf_server
+
     # check if there is an iperf server on the same network
-    for iperf_server_pair in IPERF_SERVERS:
+    iperf_servers = overrides.get("IPERF_SERVERS")
+    if iperf_servers is None:
+        iperf_servers = IPERF_SERVERS
+    for iperf_server_pair in iperf_servers:
         if ipaddr.IPv4Address(wan_ip) in ipaddr.IPv4Network(iperf_server_pair[0]):
             iperf_server = iperf_server_pair[1]
             break
@@ -304,7 +309,10 @@ def check_events( events, num_events, *args, **kwargs):
     return (find_event( events, num_events, *args, **kwargs) != None)
 
 def is_in_office_network(wan_ip):
-    for office_network_test in OFFICE_NETWORKS:
+    office_networks = overrides.get("OFFICE_NETWORKS")
+    if office_networks is None:
+        office_networks = OFFICE_NETWORKS
+    for office_network_test in office_networks:
         if ipaddr.IPv4Address(wan_ip) in ipaddr.IPv4Network(office_network_test):
             return True
     return False
