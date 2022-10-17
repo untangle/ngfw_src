@@ -305,6 +305,10 @@ class PoFile:
         """
         Create mo file and zip it.
         """
+        # Build packages for translators.
+        Utility.run_command(f"zip -j {output_path}{self.source_id}_{self.language_id}_po.zip {self.file_name}")
+
+        # Build machine object packages
         command = f"msgfmt -o {output_path}untangle.mo {self.file_name}"
         if Utility.run_command(f"msgfmt -o {output_path}untangle.mo {self.file_name}") is True:
             Utility.run_command(f"zip -j {output_path}{self.source_id}_{self.language_id}.zip {output_path}untangle.mo")
