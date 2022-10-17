@@ -76,15 +76,13 @@ class IntrusionPreventionTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
+        global app, appSettings
         cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
+        app = IntrusionPreventionTests._app
+        appSettings = IntrusionPreventionTests._appSettings
 
     @staticmethod
     def module_name():
-        # cheap trick to force class variables _app and _appSettings into
-        # global namespace as app and appSettings
-        global app, appSettings
-        app = IntrusionPreventionTests._app
-        appSettings = IntrusionPreventionTests._appSettings
         return "intrusion-prevention"
 
     @staticmethod
@@ -199,7 +197,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,5)
         found = global_functions.check_events( events.get('list'), 5,
-                                               'protocol', "1",
+                                               'protocol_name', "icmp",
                                                'blocked', False,
                                                min_date=startTime)
         del appSettings['rules']['list'][0] # delete the first rule just added
