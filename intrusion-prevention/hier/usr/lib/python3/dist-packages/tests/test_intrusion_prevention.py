@@ -310,7 +310,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
-        result = remote_control.run_command(global_functions.build_wget_command(uri="--user=" + self.ftp_user_name + " --password='" + self.ftp_password + "' ftp://" + global_functions.ftp_server + "/test.zip",))
+        result = remote_control.run_command(global_functions.build_wget_command(user=self.ftp_user_name, password=self.ftp_password, uri=f"ftp://{global_functions.ftp_server}/test.zip"))
         assert (result == 0)
 
     @pytest.mark.slow
