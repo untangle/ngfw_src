@@ -126,7 +126,7 @@ ScssBuilder.new(uvm, "reports-all", "./uvm/js/common/reports/sass", "script/comm
 ScssBuilder.new(uvm, "setup-all", "./uvm/servlets/setup/sass", "setup/styles")
 
 ## i18n
-poFiles = FileList["./i18ntools/po/**/*.po"]
+poFiles = FileList["./i18ntools/po/official/**/*.po"]
 if ( poFiles.length > 0 )
   poFiles.each do |f|
     pol = PoMsgFmtTarget.new(uvm_lib, [f], 'msgfmt', f, "#{uvm.distDirectory}")
