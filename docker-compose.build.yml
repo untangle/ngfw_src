@@ -87,12 +87,12 @@ services:
     # - translations.untangle.com
     # (this is suitable to expand to other things hosted on bd.untangle.com)
     external-services:
-      image: httpd:latest
+      image: nginx:latest
       container_name: external-services
       ports:
         - "0.0.0.0:80:80"
       volumes:
-        - ./i18ntools/translations:/usr/local/apache2/htdocs/translations
-        - ./external-services/httpd.conf:/usr/local/apache2/conf/httpd.conf
+        - ./i18ntools/translations:/usr/share/nginx/html/translations
+        - ./external-services/default.conf:/etc/nginx/conf.d/default.conf
 volumes:
   pkgtools:
