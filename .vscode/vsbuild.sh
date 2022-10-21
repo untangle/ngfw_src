@@ -27,7 +27,7 @@ if [ "$DEV_ENVIRONMENT" == "remote" ]; then
     ##
     docker-compose -f docker-compose.build.yml run pkgtools
     VERBOSE=1 NO_CLEAN=1 RAKE_LOG=$RAKE_LOG DEV_ENVIRONMENT=$DEV_ENVIRONMENT BUILD_TYPE=$BUILD_TYPE docker-compose -f docker-compose.build.yml up dev-build
-elif [ "$DEV_ENVIRONMENT" == "remote"]; then
+elif [ "$DEV_ENVIRONMENT" == "remote" ]; then
     ##
     ## Compile ngfw and restart uvm if neccessary.
     ##
@@ -76,10 +76,13 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
     echo "Copying to $target_address..."
 
     ssh-copy-id -p $PORT root@$target_address
+    rsync -a dist/etc/* root@$address:/etc
     rsync -a dist/usr/lib root@$address:/usr
     rsync -a dist/usr/share/untangle/lib root@$address:/usr/share/untangle
     rsync -a dist/usr/share/untangle/bin root@$address:/usr/share/untangle
     rsync -a dist/usr/share/untangle/web root@$address:/usr/share/untangle
+
+    ssh root@$address "systemctl daemon-reload"
 
     if [ $RESTART -eq 1 ] ; then
         ssh root@$address "/etc/init.d/untangle-vm restart"
