@@ -15,6 +15,7 @@ from .global_functions import uvmContext
 from tests.common import NGFWTestCase
 import runtests.test_registry as test_registry
 import runtests.remote_control as remote_control
+import runtests.overrides as overrides
 from . import global_functions
 from . import ipaddr
 
@@ -28,7 +29,10 @@ run_ftp_inbound_tests = None
 wan_ip = None
 device_in_office = False
 dyndns_resolver = "8.8.8.8"
-office_ftp_client = "10.112.56.23"
+#office_ftp_client = "10.112.56.23"
+office_ftp_client = overrides.get('office_ftp_client')
+if office_ftp_client is None:
+    ftp_server = "10.112.56.23"
 #dyndns_resolver = "resolver1.dyndnsinternetguide.com"
 
 def get_usable_name(dyn_checkip):
@@ -504,7 +508,7 @@ class NetworkTests(NGFWTestCase):
             ping_result = remote_control.run_command("ping -c 1 %s" % test_untangle_com_ip)
         result = remote_control.run_command("ping -c 1 %s" % test_untangle_com_ip)
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","80","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://1.2.3.4/test/testPage1.html") + " 2>&1 | grep -q text123")
         assert(result == 0)
 
         events = global_functions.get_events('Network','Port Forwarded Sessions',None,5)
@@ -520,19 +524,20 @@ class NetworkTests(NGFWTestCase):
     # test basic port forward (tcp port 443)
     def test_021_port_forward_443(self):
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,443),'portForwardRules')
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="https://1.2.3.4/test/testPage1.html") + " 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test port forward (changing the port 80 -> 81)
     def test_022_port_forward_new_port(self):
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","81","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4:81/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://1.2.3.4/test/testPage1.html") + " 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test port forward using DST_LOCAL condition
     def test_023_port_forward_dst_local(self):
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","81","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q -O - http://%s:81/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        wan_address = uvmContext.networkManager().getFirstWanAddress()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://{wan_address}:81/test/testPage1.html") + " 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test port forward that uses the http port (move http to different port)
@@ -540,7 +545,8 @@ class NetworkTests(NGFWTestCase):
         orig_ports = get_http_https_ports()
         set_htp_https_ports( 8080, 4343 )
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","80","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q -O - http://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        wan_address = uvmContext.networkManager().getFirstWanAddress()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://{wan_address}/test/testPage1.html") + " 2>&1 | grep -q text123")
         set_htp_https_ports( orig_ports[0], orig_ports[1])
         assert(result == 0)
 
@@ -549,7 +555,8 @@ class NetworkTests(NGFWTestCase):
         orig_ports = get_http_https_ports()
         set_htp_https_ports( 8080, 4343 )
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","443","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,443),'portForwardRules')
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://%s/test/testPage1.html 2>&1 | grep -q text123" % uvmContext.networkManager().getFirstWanAddress())
+        wan_address = uvmContext.networkManager().getFirstWanAddress()
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"https://{wan_address}/test/testPage1.html") + " 2>&1 | grep -q text123")
         set_htp_https_ports( orig_ports[0], orig_ports[1])
         assert(result == 0)
 
@@ -564,9 +571,9 @@ class NetworkTests(NGFWTestCase):
     # test port forward to multiple ports (tcp port 80,443)
     def test_027_port_forward_multiport(self):
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","80,443","DST_ADDR","1.2.3.4","PROTOCOL","TCP",test_untangle_com_ip,None),'portForwardRules')
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q -O - http://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://1.2.3.4/test/testPage1.html") + " 2>&1 | grep -q text123")
         assert(result == 0)
-        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -q --no-check-certificate -O - https://1.2.3.4/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"https://1.2.3.4/test/testPage1.html") + " 2>&1 | grep -q text123")
         assert(result == 0)
 
     # test a port forward from outside if possible
@@ -646,10 +653,10 @@ class NetworkTests(NGFWTestCase):
         app_fw = uvmContext.appManager().instantiate("firewall", default_policy_id)
         nuke_first_level_rule('bypassRules')
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"http://test.untangle.com"))
         # Block port 80 and verify it's closed
         append_firewall_rule(app_fw, create_single_condition_firewall_rule("DST_PORT","80"))
-        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"http://test.untangle.com/"))
 
         # add bypass rule for the client and enable bypass logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -658,7 +665,7 @@ class NetworkTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # verify the client can still get out (and that the traffic is bypassed)
-        result3 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result3 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"http://test.untangle.com/"))
 
         events = global_functions.get_events('Network','Bypassed Sessions',None,100)
 
@@ -682,10 +689,10 @@ class NetworkTests(NGFWTestCase):
     def test_070_ftp_modes(self):
         nuke_first_level_rule('bypassRules')
 
-        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        pasv_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        port_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", extra_arguments="--no-passive-ftp", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--epsv", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--eprt -P -", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
         assert (port_result == 0)
@@ -706,10 +713,10 @@ class NetworkTests(NGFWTestCase):
         append_firewall_rule(app_fw, create_single_condition_firewall_rule("DST_PORT","21", blocked=False))
         append_firewall_rule(app_fw, create_single_condition_firewall_rule("PROTOCOL","TCP", blocked=True))
 
-        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        pasv_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        port_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", extra_arguments="--no-passive-ftp", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--epsv", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--eprt -P -", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
 
         uvmContext.appManager().destroy( app_fw.getAppSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -725,10 +732,10 @@ class NetworkTests(NGFWTestCase):
     def test_072_ftp_modes_bypassed(self):
         set_first_level_rule(create_bypass_condition_rule("DST_PORT","21"),'bypassRules')
 
-        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        pasv_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        port_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", extra_arguments="--no-passive-ftp", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--epsv", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--eprt -P -", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -746,8 +753,8 @@ class NetworkTests(NGFWTestCase):
         netsettings['filterRules']['list'] = [ create_filter_rules("DST_PORT","21","PROTOCOL","TCP",False), create_filter_rules("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        pasv_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
-        port_result = remote_control.run_command("wget --user=" + self.ftpUserName + " --password='" + self.ftpPassword + "' -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
+        pasv_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
+        port_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", extra_arguments="--no-passive-ftp", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
         epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
         eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
 
@@ -768,10 +775,10 @@ class NetworkTests(NGFWTestCase):
 
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.client_ip,""),'portForwardRules')
 
-        pasv_result = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_ip + "/" + ftp_file_name,host=office_ftp_client)
-        port_result = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_ip + "/" + ftp_file_name,host=office_ftp_client)
-        epsv_result = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_ip + "/" + ftp_file_name,host=office_ftp_client)
-        eprt_result = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + wan_ip + "/" + ftp_file_name,host=office_ftp_client)
+        pasv_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
+        port_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", extra_arguments="--no-passive-ftp", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
+        epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", extra_arguments="--epsv", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
+        eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", extra_arguments="--eprt -P -", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -792,10 +799,10 @@ class NetworkTests(NGFWTestCase):
         netsettings['portForwardRules']['list'] = [ create_port_forward_triple_condition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.client_ip,"") ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        pasv_result = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_ip + "/" + ftp_file_name,host=office_ftp_client)
-        port_result = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_ip + "/" + ftp_file_name,host=office_ftp_client)
-        epsv_result = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_ip + "/" + ftp_file_name,host=office_ftp_client)
-        eprt_result = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + wan_ip + "/" + ftp_file_name,host=office_ftp_client)
+        pasv_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
+        port_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", extra_arguments="--no-passive-ftp", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
+        epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", extra_arguments="--epsv", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
+        eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", extra_arguments="--eprt -P -", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -812,7 +819,7 @@ class NetworkTests(NGFWTestCase):
         # add a route to 127.0.0.1 to blackhole that IP
         set_first_level_rule(create_route_rule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
 
-        postResult = remote_control.run_command("wget -t 1 --timeout=3 http://test.untangle.com")
+        postResult = remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com"))
 
         # restore setting before validating results
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -1194,7 +1201,7 @@ class NetworkTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
 
         # Add a block rule for port 80 and enabled blocked session logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -1204,7 +1211,7 @@ class NetworkTests(NGFWTestCase):
 
         for i in range(0, 10):
             # make the request again which should now be blocked and logged
-            result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+            result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
 
             # grab all of the blocked events for checking later
             events = global_functions.get_events('Network','Blocked Sessions',None,100)
@@ -1235,7 +1242,7 @@ class NetworkTests(NGFWTestCase):
     # Test that filter rule's SRC_ADDR condition supports commas
     def test_151_filter_rules_blocked_src_comma(self):
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
 
         # Add a block rule for port 80 and enabled blocked session logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -1243,7 +1250,7 @@ class NetworkTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # make the request again which should now be blocked
-        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
 
         # put the network settings back the way we found them
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -1255,7 +1262,7 @@ class NetworkTests(NGFWTestCase):
     # This is because iptables only supports so many entries so the rules must be broken apart
     def test_152_filter_rules_blocked_src_comma_many(self):
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
 
         str = ""
         for i in range(0,20):
@@ -1268,7 +1275,7 @@ class NetworkTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # make the request again which should now be blocked
-        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
 
         # put the network settings back the way we found them
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -1295,7 +1302,7 @@ class NetworkTests(NGFWTestCase):
         
         print((found_host.get('macAddress')))
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
 
         # Add a block rule for port 80 and enabled blocked session logging
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -1303,7 +1310,7 @@ class NetworkTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # make the request again which should now be blocked
-        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
 
         # put the network settings back the way we found them
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -1314,7 +1321,7 @@ class NetworkTests(NGFWTestCase):
     # Test that filter rule's CLIENT_TAGGED condition supports commas
     def test_154_filter_rules_blocked_client_tagged(self):
         # verify port 80 is open
-        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5  http://test.untangle.com")
+        result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
 
         global_functions.host_tags_add("foobar")
         
@@ -1324,7 +1331,7 @@ class NetworkTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # make the request again which should now be blocked
-        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
 
         global_functions.host_tags_clear()
         
