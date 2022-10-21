@@ -516,7 +516,7 @@ class Update:
 
             applied_md5 = []
             if md5_output is not None:
-                for output in md5_output.decode("ascii").split("\n"):
+                for output in md5_output.split("\n"):
                     if len(output) > 0:
                         applied_md5.append(output)
                 # applied_md5.append("blah")
