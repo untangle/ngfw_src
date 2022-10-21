@@ -30,13 +30,13 @@ SETTINGS_NETWORK_BYPASSRULES_EOF
 )
 
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESPROCESSING" = "x" ]; then
-    return 0
+    return 1
 fi
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESNFQNUMBER" = "x" ]; then
-    return 0
+    return 1
 fi
 if [ "x$SETTINGS_INTRUSIONPREVENTION_IPTABLESMAXSCANSIZE" = "x" ]; then
-    return 0
+    return 1
 fi
 
 SURICATA_RUNNING=$(ps -e -o command h | cut -f1 -d' ' | grep [s]uricata | wc -l)
@@ -109,6 +109,10 @@ insert_suricata_iptables_table_chain()
 
     # Ignore UDP/domain traffic
     ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -p udp --dport 53 -j RETURN -m comment --comment "Ignore UDP/domain traffic"
+    if [ "${SETTINGS_INTRUSIONPREVENTION_IPTABLESPROCESSING}" = "pre" ] ; then
+        # A bug in suricata 6.0.1 causes a kernel panic when processing FTP traffic in pre-routing mode.
+        ${IPTABLES} -t ${table} -A ${CHAIN_NAME_SURICATA} -p tcp --dport 21 -j RETURN -m comment --comment "Ignore TCP/ftp traffic"
+    fi
 
     # mangle: special hook to allow bypass of a development machine or network
     if [ ! -z ${SURICATA_DEV_NETWORK} ]; then
