@@ -620,7 +620,13 @@ public class IntrusionPreventionApp extends AppBase
     @Override
     protected void postStart( boolean isPermanentTransition )
     {
-        iptablesRules();
+        if( iptablesRules() == false ){
+            // Most likely the template has changed and needs to be updated.
+            reconfigure(false);
+            if( iptablesRules() == false ){
+                logger.warn("Unable to start iptables rules");
+            }
+        }
     }
 
     /**
@@ -891,8 +897,9 @@ public class IntrusionPreventionApp extends AppBase
 
     /**
      * Insert or remove iptables rules if suricata daemon is running
+     * @return true if script ran successfully, false if not
      */
-    private synchronized void iptablesRules()
+    private synchronized boolean iptablesRules()
     {
         File f = new File( IPTABLES_SCRIPT  );
         if( !f.exists() ){
@@ -909,10 +916,7 @@ public class IntrusionPreventionApp extends AppBase
             logger.warn( "Unable to process " + IPTABLES_SCRIPT + ":", e );
         }
 
-        if ( result.getResult() != 0 ) {
-            logger.error("Failed to run " + IPTABLES_SCRIPT+ " (return code: " + result.getResult() + ")");
-            throw new RuntimeException("Failed to manage iptables rules");
-        }
+        return result.getResult() == 0 ? true : false;
     }
 
     /**
