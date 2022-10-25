@@ -36,7 +36,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'dpddelay': '30',
         'dpdtimeout': '120',
         'phase1Manual': true,
-        'phase1Cipher': 'aes256gcm128',
+        'phase1Cipher': 'aes256',
         'phase1Hash': 'sha1',
         'phase1Group': 'modp2048',
         'phase1Lifetime' : '28800',
