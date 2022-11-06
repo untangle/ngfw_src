@@ -129,7 +129,7 @@ class WebFilterBaseTests(NGFWTestCase):
 
     def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options=""):
         app_name = self._app.getAppName()
-        if ("https" in url) or ("playboy" in url):
+        if ("https" in url) or ("pornhub" in url):
             extra_options += "--no-check-certificate "
         if ((expected == None) or (("monitor" in app_name) and (expected == "blockpage"))):
             result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=url,extra_arguments=extra_options))
@@ -172,22 +172,22 @@ class WebFilterBaseTests(NGFWTestCase):
         assert( found )
 
     def test_013_porn_is_blocked_by_default(self):
-        result = self.get_web_request_results(url="http://playboy.com/", expected="blockpage")
+        result = self.get_web_request_results(url="http://pornhub.com/", expected="blockpage")
         assert (result == 0)
-        found = self.check_events("playboy.com", "/", True)
+        found = self.check_events("pornhub.com", "/", True)
         assert( found )
 
     def test_014_porn_subdomain_is_blocked_by_default(self):
-        result = self.get_web_request_results(url="http://www.playboy.com/", expected="blockpage")
+        result = self.get_web_request_results(url="http://www.pornhub.com/", expected="blockpage")
         assert (result == 0)
-        found = self.check_events("www.playboy.com", "/", True)
+        found = self.check_events("www.pornhub.com", "/", True)
         assert( found )
 
     @pytest.mark.failure_in_podman
     def test_015_porn_subdomain_and_url_is_blocked_by_default(self):
-        result = self.get_web_request_results(url="http://www.playboy.com/about", expected="blockpage")
+        result = self.get_web_request_results(url="http://www.pornhub.com/view_video.php", expected="blockpage")
         assert (result == 0)
-        found = self.check_events("www.playboy.com", "/about", True)
+        found = self.check_events("www.pornhub.com", "/view_video.php", True)
         assert( found )
 
     def test_017_blockflag_url_right_side(self):
@@ -365,8 +365,8 @@ class WebFilterBaseTests(NGFWTestCase):
         # this test URL should NOT be blocked (porn is blocked by default, but sssh.com is now on pass list
         result1 = self.get_web_request_results(url="http://www.sssh.com/")
         found1 = self.check_events("www.sssh.com", "/", False)
-        result2 = self.get_web_request_results(url="http://www.playboy.com/")
-        found2 = self.check_events("www.playboy.com", "/", True)
+        result2 = self.get_web_request_results(url="http://www.pornhub.com/")
+        found2 = self.check_events("www.pornhub.com", "/", True)
         self.block_url_list_clear()
         assert (result1 == 0)
         assert (result2 == 0)
@@ -526,9 +526,9 @@ class WebFilterBaseTests(NGFWTestCase):
 
     def test_530_https_porn_is_blocked(self):
         """check for block page with HTTPS request"""
-        result = self.get_web_request_results(url="https://www.playboy.com/", expected="blockpage")
+        result = self.get_web_request_results(url="https://www.pornhub.com/", expected="blockpage")
         assert (result == 0)
-        found = self.check_events("www.playboy.com", "/", True)
+        found = self.check_events("www.pornhub.com", "/", True)
         assert( found )
 
     def test_550_https_with_sni(self):
@@ -582,7 +582,7 @@ class WebFilterBaseTests(NGFWTestCase):
     def test_564_pass_url_works_with_https_sni(self):
         """verify that an entry in the pass list overrides a blocked category"""
         self.pass_url_list_add("pornhub.com")
-        # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
+        # this test URL should NOT be blocked (porn is blocked by default, but pornhub.com now on pass list
         result1 = self.get_web_request_results(url="https://pornhub.com/test/testPage1.html", expected="blockpage")
         result2 = self.get_web_request_results(url="https://www.pornhub.com/test/testPage1.html", expected="blockpage")
         self.pass_url_list_clear()
