@@ -60,10 +60,10 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_019_porn_is_blocked_alt_port(self):
         setHttpHttpsPorts(8081,443)
-        result = self.get_web_request_results(url="http://www.playboy.com/", expected="blockpage")
+        result = self.get_web_request_results(url="http://www.pornhub.com/", expected="blockpage")
         setHttpHttpsPorts(80,443)
         assert (result == 0)
-        found = self.check_events("www.playboy.com", "/", True)
+        found = self.check_events("www.pornhub.com", "/", True)
         assert( found )
 
     def test_029_blocked_url_https_http_alt_ports(self):
@@ -1257,7 +1257,7 @@ class WebFilterTests(WebFilterBaseTests):
     def test_010_0000_rule_condition_web_filter_category(self):
         "test WEB_FILTER_CATEGORY"
         self.rule_add("WEB_FILTER_CATEGORY","Pornography")
-        result = self.get_web_request_results(url="http://playboy.com", expected="blockpage")
+        result = self.get_web_request_results(url="http://pornhub.com", expected="blockpage")
         self.rules_clear()
         assert (result == 0)
 
@@ -1271,7 +1271,7 @@ class WebFilterTests(WebFilterBaseTests):
     def test_010_0000_rule_condition_web_filter_category(self):
         "test WEB_FILTER_CATEGORY_DESCRIPTION"
         self.rule_add("WEB_FILTER_CATEGORY_DESCRIPTION","*sexual*")
-        result = self.get_web_request_results(url="http://playboy.com", expected="blockpage")
+        result = self.get_web_request_results(url="http://pornhub.com", expected="blockpage")
         self.rules_clear()
         assert (result == 0)
 
