@@ -9,7 +9,7 @@ echo
 
 for i in main balance default local ; do
     echo " = IPv4 Table $i = "
-    ip -4 route show table $i
+    ip -4 route show table $i 2>/dev/null
     echo
 done
 
@@ -19,7 +19,7 @@ echo
 
 awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
     echo " = IPv4 Table $table = "
-    ip -4 route show table $table
+    ip -4 route show table $table 2>/dev/null
     echo
 done
 
@@ -38,13 +38,13 @@ echo
 # no balance table for IPv6
 for i in main default local ; do
     echo " = IPv6 Table $i = "
-    ip -6 route show table $i
+    ip -6 route show table $i 2>/dev/null
     echo
 done
 
 awk '/uplink/ {print $2}' /etc/iproute2/rt_tables | while read table ; do
     echo " = IPv6 Table $table = "
-    ip -6 route show table $table
+    ip -6 route show table $table 2>/dev/null
     echo
 done
 
@@ -53,4 +53,4 @@ echo
 echo
 
 echo " = IPsec Rules = "
-ip route show table 220
+ip route show table 220 2>/dev/null
