@@ -72,7 +72,7 @@ class TunnelVpnTests(NGFWTestCase):
         currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
-        print("Original WAN IP: " + currentWanIP)
+        print("Original WAN IP: " + str(currentWanIP))
         result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=vpn_tunnel_file), shell=True)
         if (result != 0):
             raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
@@ -111,7 +111,7 @@ class TunnelVpnTests(NGFWTestCase):
         currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
-        print("Original WAN IP: " + currentWanIP)
+        print("Original WAN IP: " + str(currentWanIP))
         result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=vpn_tunnel_file), shell=True)
         if (result != 0):
             raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
