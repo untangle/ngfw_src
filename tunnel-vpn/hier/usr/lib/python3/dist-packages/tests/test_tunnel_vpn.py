@@ -14,7 +14,7 @@ import tests.global_functions as global_functions
 
 default_policy_id = 1
 app = None
-vpn_tunnel_file = "http://10.111.56.29/openvpn-ats-test-tunnelvpn-config.zip"
+vpn_tunnel_file = "http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip"
 qa_isolated_pc = "192.168.72.22"
 
 
