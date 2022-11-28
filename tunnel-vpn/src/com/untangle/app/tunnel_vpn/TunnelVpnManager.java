@@ -178,6 +178,7 @@ public class TunnelVpnManager
         cmd += "--script-security 2 ";
         cmd += "--up " + System.getProperty("prefix") + "/usr/share/untangle/bin/tunnel-vpn-up.sh ";
         cmd += "--down " + System.getProperty("prefix") + "/usr/share/untangle/bin/tunnel-vpn-down.sh ";
+        cmd += "--route-noexec ";
         cmd += "--management 127.0.0.1 " + (TunnelVpnApp.BASE_MGMT_PORT + tunnelId) + " ";
         if (interfaceId != null && interfaceId != 0) {
             // if bound to a specific interface, specify that interface's main IP as the local address
