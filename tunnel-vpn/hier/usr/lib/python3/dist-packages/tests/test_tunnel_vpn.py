@@ -98,14 +98,21 @@ class TunnelVpnTests(NGFWTestCase):
                 time.sleep(1)
                 timeout-=1
 
-        # remove the added tunnel
+        # remove the rule to see if traffic is sent through WAN by default
         appData['rules']['list'][:] = []
+        self._app.setSettings(appData)
+        time.sleep(5)
+        newWanIP2 = global_functions.get_public_ip_address()
+
+        # remove the added tunnel
         appData['tunnels']['list'][:] = []
         self._app.setSettings(appData)
 
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
         assert(connectStatus == "CONNECTED")
+        # If the VPN tunnel is routed without rules, fail the test
+        assert(currentWanIP == newWanIP2)
 
     def test_030_createVPNAnyTunnel(self):
         currentWanIP = global_functions.get_public_ip_address()
