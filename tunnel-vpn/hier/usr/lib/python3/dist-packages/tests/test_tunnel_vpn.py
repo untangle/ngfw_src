@@ -14,7 +14,7 @@ import tests.global_functions as global_functions
 
 default_policy_id = 1
 app = None
-vpn_tunnel_file = "http://10.111.56.29/openvpn-ats-test-tunnelvpn-config.zip"
+vpn_tunnel_file = "http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip"
 qa_isolated_pc = "192.168.72.22"
 
 
@@ -72,7 +72,7 @@ class TunnelVpnTests(NGFWTestCase):
         currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
-        print("Original WAN IP: " + currentWanIP)
+        print("Original WAN IP: " + str(currentWanIP))
         result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=vpn_tunnel_file), shell=True)
         if (result != 0):
             raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
@@ -98,20 +98,27 @@ class TunnelVpnTests(NGFWTestCase):
                 time.sleep(1)
                 timeout-=1
 
-        # remove the added tunnel
+        # remove the rule to see if traffic is sent through WAN by default
         appData['rules']['list'][:] = []
+        self._app.setSettings(appData)
+        time.sleep(5)
+        newWanIP2 = global_functions.get_public_ip_address()
+
+        # remove the added tunnel
         appData['tunnels']['list'][:] = []
         self._app.setSettings(appData)
 
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
         assert(connectStatus == "CONNECTED")
+        # If the VPN tunnel is routed without rules, fail the test
+        assert(currentWanIP == newWanIP2)
 
     def test_030_createVPNAnyTunnel(self):
         currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
-        print("Original WAN IP: " + currentWanIP)
+        print("Original WAN IP: " + str(currentWanIP))
         result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=vpn_tunnel_file), shell=True)
         if (result != 0):
             raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
