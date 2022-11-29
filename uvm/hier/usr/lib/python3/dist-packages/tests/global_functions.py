@@ -97,7 +97,7 @@ def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=F
             except:
                 pass
         else:
-            result = subprocess.check_output(build_wget_command(output_file="-", uri=f"https://{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
+            result = remote_control.run_command(build_wget_command(output_file="-", uri=f"https://{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), stdout=True)
     result = result.rstrip()
     return result
     
