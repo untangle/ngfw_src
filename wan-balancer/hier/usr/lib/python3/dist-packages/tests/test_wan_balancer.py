@@ -239,7 +239,7 @@ class WanBalancerTests(NGFWTestCase):
             wanIndex = wanIndexTup[0]
             set_wan_weight(wanIndex, 100)
             # get the WAN IP address which was weighted to 100
-            weightedIP = wanIndexTup[2].decode("utf-8")
+            weightedIP = wanIndexTup[2]
             # Test that only the weighted interface is used 10 times
             for x in range(0, 9):
                 result = global_functions.get_public_ip_address()
