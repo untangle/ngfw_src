@@ -13,7 +13,7 @@ fi
 VERSION=$(cat /usr/share/untangle/lib/untangle-libuvm-api/VERSION)
 
 cat << SCRIPT > $PATCH_NAME
-if [ `cat /usr/share/untangle/lib/untangle-libuvm-api/VERSION` != '$VERSION' ] ; then 
+if [ \`cat /usr/share/untangle/lib/untangle-libuvm-api/VERSION\` != '$VERSION' ] ; then 
    echo "This patch can only be run on $VERSION" ;
    exit 1
 fi
