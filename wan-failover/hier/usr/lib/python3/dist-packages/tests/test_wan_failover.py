@@ -335,7 +335,7 @@ class WanFailoverTests(NGFWTestCase):
                     # make this interface test disconnected
                     build_wan_test(wanIndex, "ping", pingHost="192.168.244.1")
                 else:
-                    validWanIP = wanIndexTup[2]
+                    validWanIP =  wanIndexTup[2].decode("utf-8") 
                     build_wan_test(upWanIndex, "ping", pingHost="8.8.8.8")
                     print("validIP is %s" % validWanIP)
 

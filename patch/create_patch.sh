@@ -4,8 +4,7 @@ TARBALL=$1
 PATCH_NAME=$2
 
 if [ "$TARBALL" = "" ] ; then
-    echo "Missing tarball"
-    exit
+    TARBALL=patch.tgz
 fi
 if [ "$PATCH_NAME" = "" ] ; then
     PATCH_NAME=patch.sh
