@@ -764,8 +764,8 @@ public class LocalDirectoryImpl implements LocalDirectory
                 fw.write("}\n");
                 fw.write("checkrad = ${sbindir}/checkrad\n");
                 fw.write("security {\n");
-                fw.write("\tuser = root\n");
-                fw.write("\tgroup = root\n");
+                fw.write("\tuser = freerad\n");
+                fw.write("\tgroup = freerad\n");
                 fw.write("\tallow_core_dumps = no\n");
                 fw.write("\tmax_attributes = 200\n");
                 fw.write("\treject_delay = 1\n");

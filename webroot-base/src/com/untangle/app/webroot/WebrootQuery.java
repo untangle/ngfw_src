@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -343,10 +344,16 @@ public class WebrootQuery
                 rawAnswer = responseBuilder.toString();
             }while(!nFound);
         }catch(ConnectException ce){
-            logger.warn("Unable to connect.");
+            logger.warn("Unable to connect:", ce);
+            BctidSocketRunnersCount.decrementAndGet();
+            bctidSocket = null;
+        }catch(SocketTimeoutException ste){
+            logger.warn("Read timeout:", ste);
+            failed = true;
             BctidSocketRunnersCount.decrementAndGet();
             bctidSocket = null;
         }catch(Exception e){
+            // All other exceptions
             try{
                 bctidSocket.close();
             }catch(Exception e2){
@@ -387,6 +394,11 @@ public class WebrootQuery
         }
 
         // logger.warn("rawAnswer=" + rawAnswer);
+
+        if(rawAnswer == null){
+            logger.warn("apiDaemon: Umable to retreive answer");
+            return null;
+        }
 
         try{
             answer = new JSONArray(rawAnswer);
