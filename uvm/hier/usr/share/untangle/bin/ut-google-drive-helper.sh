@@ -6,7 +6,7 @@
 refreshToken()
 {
     shift
-    python -m simplejson.tool $1.gd/credentials.json | grep refresh_token | awk '{print $2}' | sed 's/\"//g'
+    python3 -m simplejson.tool $1.gd/credentials.json | grep refresh_token | awk '{print $2}' | sed 's/\"//g'
 }
 
 $1 "$@"
