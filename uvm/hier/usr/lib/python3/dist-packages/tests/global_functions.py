@@ -10,6 +10,7 @@ import random
 import string
 import html
 import inspect
+import sys
 
 import runtests.remote_control as remote_control
 import runtests.overrides as overrides
@@ -585,7 +586,9 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
     if extra_arguments is not None:
         optional_arguments.append(extra_arguments)
 
-    return f"wget {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
+    command = f"wget {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
+    print(f"{sys._getframe().f_code.co_name}: {command}" )
+    return command
 
 def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None, location=False, range=None, trace_ascii_file=None, user_agent=None, user=None, password=None):
     """
@@ -632,7 +635,42 @@ def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=No
         else:
             optional_arguments.append(f"--user '{user}'")
 
-    return f"curl {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
+    command = f"curl {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
+    print(f"{sys._getframe().f_code.co_name}: {command}" )
+    return command
+
+def build_postgres_command(override_arguments=None, extra_arguments=None, user="postgres", database="uvm", pset="pager=off", query=None):
+    """
+    Build posgres command
+
+    override_arguments  If you really want to ignore the standard arguments and options, use it.
+    extra_arguments     Additional arguments not otherwise processed.
+    """
+    if query is None:
+        query = f"select count(*) from information_schema.tables where table_schema = 'reports'"
+
+    arguments = []
+    if override_arguments is not None:
+        # Allow completely custom arguments
+        arguments = override_arguments
+    else:
+        arguments.append("--tuples-only")
+        arguments.append("--no-align")
+        arguments.append(f"--username={user}")
+        arguments.append(f"--dbname={database}")
+        arguments.append(f"--pset={pset}")
+
+    optional_arguments = []
+    if extra_arguments is not None:
+        optional_arguments.append(extra_arguments)
+
+    if type(query) == list:
+        query = ';'.join(query)
+
+    command = f"psql {' '.join(arguments)} {' '.join(optional_arguments)} -c \"{query}\""
+    print(f"{sys._getframe().f_code.co_name}: {command}" )
+    return command
+
 
 Output_names = []
 def get_new_output_filename(name=None):
