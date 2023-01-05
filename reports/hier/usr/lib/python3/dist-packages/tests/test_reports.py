@@ -6,12 +6,15 @@ import re
 import base64
 import calendar
 import email
+import re
 import runtests
 import unittest
 import pytest
+import datetime
 
 from io import BytesIO as BytesIO
 from datetime import datetime
+from datetime import date
 from datetime import timedelta
 from html.parser import HTMLParser
 
@@ -150,6 +153,38 @@ def fetch_email( filename, email_address, tries=80 ):
                 return True
     return False
 
+def create_previous_day_table(table_name="sessions", days=1):
+    """
+    For the specified table, create new dated table(s) previous to the earliest dated table
+    """
+    previous_day = timedelta(days)
+
+    result = subprocess.check_output(global_functions.build_postgres_command(query=f"select table_name from information_schema.tables where table_schema = 'reports' and table_name like '{table_name}_%' order by table_name asc"), shell=True)
+    tables = result.decode("utf-8").split("\n")
+    if len(tables) == 0:
+        raise unittest.SkipTest(f'No {table_name} tables exist')
+
+    earliest_table = tables[0]
+
+    # Parse earliest table date to datetime
+    m = re.search('(\d{4}_\d{2}_\d{2})$', earliest_table)
+    earliest_date = None
+    if m is not None:
+        # Found match
+        earliest_date = datetime.strptime(m.group(1), "%Y_%m_%d")
+    else:
+        # No match; use today
+        earliest_date = date.today()
+
+    while days > 0:
+        new_date = (earliest_date - previous_day).strftime("%Y_%m_%d")
+        new_table = f"{table_name}_{new_date}"
+        new_start_time = (earliest_date - previous_day).strftime("%Y_%m_%d 00:00:00")
+        new_end_time = (earliest_date - previous_day).strftime("%Y_%m_%d 23:59:59")
+        # Create empty table and partition into postgres
+        subprocess.check_output(global_functions.build_postgres_command(query=f"create table reports.{new_table} (check (time_stamp >= '{new_start_time}' and time_stamp < '{new_end_time}')) inherits (reports.{table_name})"), shell=True)
+        earliest_date = new_date
+        days =- 1
 
 @pytest.mark.reports
 class ReportsTests(NGFWTestCase):
@@ -597,7 +632,118 @@ class ReportsTests(NGFWTestCase):
         
         resultLoginPage = subprocess.call(global_functions.build_wget_command(output_file="-", uri=adminURL + 'auth/login?url=/reports&realm=Reports&username=' + test_email_address + "&password=passwd") + " 2>&1 | grep -q Report", shell=True)
         assert (resultLoginPage == 0)
-        
+
+    def test_data_retention_days(self):
+        """
+        Day retention removal
+
+        Get the earliest table (if found) and creating the previous day's table, run clean, then compare number of tables.
+        The cleaner should remove the new table and the before/after counts should be different.
+        """
+        # On a new system we won't have more than a day's worth of logs
+        settings = self._app.getSettings()
+        settings["dbRetention"] = 1
+        self._app.setSettings(settings)
+
+        # Create at table eligible for removal
+        # NOTE: Create 2 previous tables since running the hourly test will remove yesterday's table
+        # not leaving enough tables for this test to be verified.
+        create_previous_day_table(days=2)
+
+        # Get current count of tables
+        result = subprocess.check_output(global_functions.build_postgres_command(query="select count(*) from information_schema.tables where table_schema = 'reports'"), shell=True)
+        start_count = int(result.decode("utf-8"))
+
+        # Run clean command from cron
+        result = subprocess.check_output('$(cat /etc/cron.daily/reports-cron | grep "reports-clean-tables.py")', shell=True)
+
+        # Get post count of tables
+        result = subprocess.check_output(global_functions.build_postgres_command(query="select count(*) from information_schema.tables where table_schema = 'reports'"), shell=True)
+        end_count = int(result.decode("utf-8"))
+
+        # After cleaning, expecting to have less tables
+        print(f"Pre/post table counts: {start_count} < {end_count}")
+        assert(end_count < start_count)
+
+    def test_data_retention_hours(self):
+        """
+        Hour retention removal
+
+        Using the sessions table (which should always be populated with something), copy the last record to be earlier than now.
+        Get the earliest table (if found) and creating the previous day's table, run clean, then compare number of records.
+        NOTE: This because going back an hour can cause a table constraint violation, we make sure we create the previous day.
+        Example: If the earliest timestamp is 2023-01-01 00:10:00 and we go back two hours, that timestamp will be 2022-12-31 22:10:00.
+        Attempting to change that timestamp in the reports.sessions_2023_01_01 table will cause a violation.
+        So we unconditionally create reports.sessions_2022_12_31, catch the exception violation, 
+        and attempt to copy make the same change reports.sessions_2022_12_31. 
+        """
+        table_name = "sessions"
+        settings = self._app.getSettings()
+        settings["dbRetentionHourly"] = 1
+        self._app.setSettings(settings)
+
+        # For safety, create earlier table in case we need to cross day boundary
+        create_previous_day_table()
+
+        # start_count = 0
+        # end_count = 0
+        # Get the latest timestamp; otherwise we may have more in our post clean query.
+        result = subprocess.check_output(global_functions.build_postgres_command(query=f"select time_stamp from reports.{table_name} order by time_stamp desc limit 1"), shell=True)
+        # Important: Keep as a string so we have an exact match!
+        original_latest_time_stamp_string = result.decode("utf-8").strip()
+
+        # Get earliest timestamp in table
+        result = subprocess.check_output(global_functions.build_postgres_command(query=f"select time_stamp from reports.{table_name} order by time_stamp asc limit 1"), shell=True)
+        # Important: Keep as a string so we have an exact match!
+        original_early_time_stamp_string = result.decode("utf-8").strip()
+
+        original_early_time_stamp = datetime.strptime(original_early_time_stamp_string.split(".")[0], "%Y-%m-%d %H:%M:%S")
+
+        # Table that the timestamp currently belongs
+        original_table_name = f"{table_name}_{original_early_time_stamp.strftime('%Y_%m_%d')}"
+
+        # Create adjusted timestamp.  2 hours to guarantee 1 hour age will catch.
+        previous_time = timedelta(hours=2)
+        new_early_time_stamp = datetime.strptime(original_early_time_stamp_string.split(".")[0], "%Y-%m-%d %H:%M:%S") - previous_time
+        # Alternate table name to attempt
+        target_table_name = f"{table_name}_{new_early_time_stamp.strftime('%Y_%m_%d')}"
+
+        print(f"original_early_time_stamp={original_early_time_stamp}")
+        print(f"new_early_time_stamp={new_early_time_stamp}")
+        print(f"target_table={target_table_name}")
+
+        # Copy that original early record, update its timestamp to new early time.
+        populate_sql_commands = [
+                f"create temporary table temp_table as (select * from reports.{original_table_name} where time_stamp = '{original_early_time_stamp_string}')",
+                f"update temp_table set time_stamp = '{new_early_time_stamp}'",
+        ]
+        try:
+            # Attempt to make record copy in original table.
+            commands = populate_sql_commands[:]
+            commands.append(f"insert into reports.{original_table_name} select * from temp_table")
+            result = subprocess.check_output(global_functions.build_postgres_command(query=commands),shell=True, stderr=subprocess.STDOUT)
+        except Exception as e:
+            # Unable to record copy in original table; do in previous day.
+            commands = populate_sql_commands[:]
+            commands.append(f"insert into reports.{target_table_name} select * from temp_table")
+            result = subprocess.check_output(global_functions.build_postgres_command(query=commands),shell=True, stderr=subprocess.STDOUT)
+            pass
+
+        # Get current record count
+        result = subprocess.check_output(global_functions.build_postgres_command(query=f"select count(*) from reports.sessions where time_stamp < '{original_latest_time_stamp_string}'"), shell=True)
+        start_count = int(result.decode("utf-8"))
+
+        # Run clean
+        result = subprocess.check_output('$(cat /etc/cron.hourly/reports-cron | grep "reports-clean-tables.py")', shell=True)
+
+        # Get post clean record count
+        result = subprocess.check_output(global_functions.build_postgres_command(query=f"select count(*) from reports.sessions where time_stamp < '{original_latest_time_stamp_string}'"), shell=True)
+        end_count = int(result.decode("utf-8"))
+
+        # After cleaning, expecting to have less records
+        print(f"Pre/post record counts: {start_count} < {end_count}")
+        assert(end_count < start_count)
+
     @classmethod
     def final_extra_tear_down(cls):
         global web_app
