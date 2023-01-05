@@ -894,6 +894,7 @@ class NetworkTests(NGFWTestCase):
             # time.sleep(10)
             loop_counter -= 1
             dynIP = global_functions.get_hostname_ip_address(hostname=dyn_hostname)
+            dynIP = dynIP.decode('utf8')
             print(f"For dyn_hostname={dyn_hostname}, outside_IP={outside_IP}, current dynIP={dynIP}")
             dyn_IP_found = False
             if outside_IP == dynIP:
