@@ -177,14 +177,14 @@ def create_previous_day_table(table_name="sessions", days=1):
         earliest_date = date.today()
 
     while days > 0:
-        new_date = (earliest_date - previous_day).strftime("%Y_%m_%d")
-        new_table = f"{table_name}_{new_date}"
+        new_date = (earliest_date - previous_day)
+        new_table = f"{table_name}_{new_date.strftime('%Y_%m_%d')}"
         new_start_time = (earliest_date - previous_day).strftime("%Y_%m_%d 00:00:00")
         new_end_time = (earliest_date - previous_day).strftime("%Y_%m_%d 23:59:59")
         # Create empty table and partition into postgres
         subprocess.check_output(global_functions.build_postgres_command(query=f"create table reports.{new_table} (check (time_stamp >= '{new_start_time}' and time_stamp < '{new_end_time}')) inherits (reports.{table_name})"), shell=True)
         earliest_date = new_date
-        days =- 1
+        days = days - 1
 
 @pytest.mark.reports
 class ReportsTests(NGFWTestCase):
