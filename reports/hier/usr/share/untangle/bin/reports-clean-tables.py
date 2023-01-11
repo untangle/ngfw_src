@@ -75,7 +75,7 @@ except:
 cutoff = datetime.date.today() - datetime.timedelta(days=db_retention)
 
 # If we receive anything in the hourly retention, use this instead of the daily cutoff
-if HOURLYRETENTION > 0:
+if HOURLYRETENTION is not None and HOURLYRETENTION > 0:
      cutoff = datetime.datetime.now() - datetime.timedelta(hours=HOURLYRETENTION)
 
 for f in os.listdir(REPORTS_PYTHON_DIR):
