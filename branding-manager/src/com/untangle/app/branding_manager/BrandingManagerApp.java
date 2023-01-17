@@ -34,7 +34,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     private static final File BRANDING_LOGO = new File("/var/www/images/BrandingLogo.png");
 
     private static final String DEFAULT_UNTANGLE_COMPANY_NAME = "Arista";
-    private static final String DEFAULT_UNTANGLE_URL = "http://untangle.com/";
+    private static final String DEFAULT_UNTANGLE_URL = "http://edge.arista.com/";
 
     private final Logger logger = Logger.getLogger(getClass());
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
