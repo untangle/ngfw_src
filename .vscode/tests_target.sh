@@ -27,8 +27,10 @@ if [ "$CONNECT_VERIFY" = "" ] ; then
     echo
     echo "Unable to communicate using private key."
     echo 
-    echo "Verify in /etc/sshd_config:"
+    # echo "Verify in /etc/sshd_config:"
+    echo "Verify in //etc/ssh/sshd_config:"
     echo "  PermitRootLogin yes"
+    echo "Restart sshd"
     echo
     echo "Setup key from appliance using:"
     echo "$ssh_copy_id -f -i $SOURCE_PUB_KEY root@$CLIENT_TARGET"
@@ -36,6 +38,8 @@ if [ "$CONNECT_VERIFY" = "" ] ; then
     echo "***"
     exit 1
 fi
+
+## !!! check DNS resolver
 
 ## Install required Debian packages
 eval '$SSH_COMMAND "apt-get update && apt-get -y install wget sudo resolvconf"'
