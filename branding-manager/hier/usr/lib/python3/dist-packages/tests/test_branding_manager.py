@@ -59,7 +59,17 @@ class BrandingManagerTests(NGFWTestCase):
         
     @pytest.mark.failure_behind_ngfw
     def test_015_check_default_branding(self):
-        # Get blockpage information
+        global appData
+        # Checking default information
+        assert(default_company_name in appData['companyName'])
+        assert(default_company_url in appData['companyUrl'])
+        assert(default_contact_name in appData['contactName'])
+        assert(default_contact_email in appData['contactEmail'])
+        assert(default_banner_message in appData['bannerMessage'])
+        
+    @pytest.mark.failure_behind_ngfw
+    def test_019_check_blockpage_branding(self):
+        # Get blockpage
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri="www.playboy.com"),stdout=True)
         
         # Verify Title of blockpage as default company name
@@ -71,7 +81,7 @@ class BrandingManagerTests(NGFWTestCase):
         print("in :\"%s\""%matchText)
         assert(default_company_name in matchText)
         
-        # Verify email address is in the contact link
+        # Verify email address is in the contact link in blockpage
         myRegex = re.compile(r'mailto:(.*?)\?', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
@@ -79,7 +89,7 @@ class BrandingManagerTests(NGFWTestCase):
         print("in :\"%s\""%matchText)
         assert(default_contact_email in matchText)
         
-        # Verify contact name is in the mailto
+        # Verify contact name is in the mailto in blockpage
         myRegex = re.compile('mailto:.*?>(.*?)</a>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
@@ -87,15 +97,18 @@ class BrandingManagerTests(NGFWTestCase):
         print("in :\"%s\""%matchText)
         assert(default_contact_name in matchText)
         
-        # Verify URL is in the Logo box
+        # Verify URL is in the Logo box in blockpage
         myRegex = re.compile('<a href=\"(.*?)\"><img .* src=\"/images/BrandingLogo', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         print("looking for: \"%s\""%default_company_url)
         print("in :\"%s\""%matchText)
         assert(default_company_url in matchText)
         
+    @pytest.mark.failure_behind_ngfw
+    def test_020_check_login_page_branding(self):
         # Check login page for branding
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
+        
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
