@@ -10,24 +10,13 @@ import tests.global_functions as global_functions
 
 app = None
 appWeb = None
-newCompanyName = "Some new long name"
-newURL = "https://test.untangle.com/cgi-bin/myipaddress.py"
-newContactName = "Skynet"
-newContactEmail = "skynet@untangle.com"
+default_company_name   = "Arista"
+default_company_url    = "http://edge.arista.com"
+default_contact_name   = "your network administrator"
+default_contact_email  = ""
+default_banner_message = ""
 
 default_policy_id = 1
-
-def setDefaultBrandingManagerSettings(app):
-    appData = {
-        "javaClass": "com.untangle.app.branding_manager.BrandingManagerSettings",
-        "companyName": "Untangle",
-        "companyUrl": "http://untangle.com/",
-        "contactName": "your network administrator",
-        "contactEmail": None,
-        "bannerMessage": None,
-        "defaultLogo": True
-    }
-    app.setSettings(appData)
     
 @pytest.mark.branding_manager
 class BrandingManagerTests(NGFWTestCase):
@@ -67,105 +56,87 @@ class BrandingManagerTests(NGFWTestCase):
 
     def test_011_license_valid(self):
         assert(global_functions.uvmContextLongTimeout.licenseManager().isLicenseValid(self.module_name()))
-
+        
     @pytest.mark.failure_behind_ngfw
-    def test_020_changeBranding(self):
-        global app, appWeb, appData
-        appData['companyName'] = newCompanyName;
-        appData['companyUrl'] = newURL;
-        appData['contactName'] = newContactName;
-        appData['contactEmail'] = newContactEmail;
-        app.setSettings(appData)
-        # test blockpage has all the changes
+    def test_015_check_default_branding(self):
+        global appData
+        # Checking default information
+        assert(default_company_name in appData['companyName'])
+        assert(default_company_url in appData['companyUrl'])
+        assert(default_contact_name in appData['contactName'])
+        assert(default_contact_email in appData['contactEmail'])
+        assert(default_banner_message in appData['bannerMessage'])
+        
+    @pytest.mark.failure_behind_ngfw
+    def test_019_check_blockpage_branding(self):
+        # Get blockpage
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri="www.playboy.com"),stdout=True)
-
-        # Verify Title of blockpage as company name
+        
+        # Verify Title of blockpage as default company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
-        print("looking for: \"%s\""%newCompanyName)
+        print("looking for: \"%s\""%default_company_name)
         print("in :\"%s\""%matchText)
-        assert(newCompanyName in matchText)
-
-        # Verify email address is in the contact link
+        assert(default_company_name in matchText)
+        
+        # Verify email address is in the contact link in blockpage
         myRegex = re.compile(r'mailto:(.*?)\?', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
-        print("looking for: \"%s\""%newContactEmail)
+        print("looking for: \"%s\""%default_contact_email)
         print("in :\"%s\""%matchText)
-        assert(newContactEmail in matchText)
-
-        # Verify contact name is in the mailto
+        assert(default_contact_email in matchText)
+        
+        # Verify contact name is in the mailto in blockpage
         myRegex = re.compile('mailto:.*?>(.*?)</a>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.strip()
-        print("looking for: \"%s\""%newContactName)
+        print("looking for: \"%s\""%default_contact_name)
         print("in :\"%s\""%matchText)
-        assert(newContactName in matchText)
-
-        # Verify URL is in the Logo box
+        assert(default_contact_name in matchText)
+        
+        # Verify URL is in the Logo box in blockpage
         myRegex = re.compile('<a href=\"(.*?)\"><img .* src=\"/images/BrandingLogo', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
-        print("looking for: \"%s\""%newURL)
+        print("looking for: \"%s\""%default_company_url)
         print("in :\"%s\""%matchText)
-        assert(newURL in matchText)
-       
+        assert(default_company_url in matchText)
+        
+    @pytest.mark.failure_behind_ngfw
+    def test_020_check_login_page_branding(self):
         # Check login page for branding
-        internalAdmin = None
-        # print("IP address <%s>" % internalAdmin)
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
-        # print("page is <%s>" % result)
+        
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
         matchText = matchText.split("|")[0]
         matchText = matchText.strip()
-        print("looking for: \"%s\""%newCompanyName)
+        print("looking for: \"%s\""%default_company_name)
         print("in :\"%s\""%matchText)
-        assert(newCompanyName in matchText)
+        assert(default_company_name in matchText)
 
-    def test_021_changeBranding_bannerMessage_added(self):
+    def test_021_changeBranding_bannerMessage(self):
         global app, appWeb, appData
-        appData['companyName'] = newCompanyName;
-        appData['companyUrl'] = newURL;
-        appData['contactName'] = newContactName;
-        appData['contactEmail'] = newContactEmail;
+        
+        # TODO Just like the changes above, I think this may be unnecessary. Not sure though. Do we need to test multi-line?
         appData['bannerMessage'] = "A regulation banner requirement containing a mix of text including <b>html</b> and\nmultiple\nlines"
         app.setSettings(appData)
-
-        internalAdmin = None
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html</b> and<br/>multiple<br/>lines.*', re.DOTALL|re.MULTILINE)
-        if re.match(myRegex,result):
-            assert(True)
-        else:
-            assert(False)
-        
-    def test_022_changeBranding_bannerMessage_removed(self):
-        global app, appWeb, appData
-        appData['companyName'] = newCompanyName;
-        appData['companyUrl'] = newURL;
-        appData['contactName'] = newContactName;
-        appData['contactEmail'] = newContactEmail;
-        appData['bannerMessage'] = ""
+        assert(re.match(myRegex, result))
+            
+        appData['bannerMessage'] = default_banner_message
         app.setSettings(appData)
-
-        internalAdmin = None
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html</b> and<br/>multiple<br/>lines.*', re.DOTALL|re.MULTILINE)
-        if re.match(myRegex,result):
-            assert(False)
-        else:
-            assert(True)
+        assert(not re.match(myRegex, result))
         
     @classmethod
     def final_extra_tear_down(cls):
         global appWeb
-
-        if cls._app != None:
-            # Restore original settings to return to initial settings
-            setDefaultBrandingManagerSettings(cls._app)
         if appWeb != None:
             global_functions.uvmContext.appManager().destroy( appWeb.getAppSettings()["id"] )
             appWeb = None
