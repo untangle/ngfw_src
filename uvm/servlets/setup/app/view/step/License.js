@@ -57,7 +57,7 @@ Ext.define('Ung.Setup.License', {
                 "text-align": "center"
             },
             // NOTE: These placeholder urls are filled in for uri translations in afterRender.
-            html: '<p>' + Ext.String.format('After installation, this license is available at {0}'.t(), '<a style="color: blue;" id="licenseUrl" href="https://www.untangle.com/legal" target="_blank">https://www.untangle.com/legal</a>') + '</p>'
+            html: '<p>' + Ext.String.format('After installation, this license is available at {0}'.t(), '<a style="color: blue;" id="licenseUrl" href="https://www.arista.com/assets/data/pdf/software-agreement/EndUserLicenseAgreement.pdf" target="_blank">https://www.arista.com/assets/data/pdf/software-agreement/EndUserLicenseAgreement.pdf</a>') + '</p>'
         },{
             xtype: 'container',
             margin: '8 0',

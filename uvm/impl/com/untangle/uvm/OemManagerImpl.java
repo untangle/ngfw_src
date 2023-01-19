@@ -41,7 +41,7 @@ public class OemManagerImpl implements OemManager
         }
 
         if (readSettings != null) this.settings = readSettings;
-        else this.settings = new OemSettings("Arista", "Arista", "Arista Server", "http://untangle.com", "https://www.untangle.com/legal", false);
+        else this.settings = new OemSettings("Arista", "Arista", "Arista Server", "http://untangle.com", "https://www.arista.com/assets/data/pdf/software-agreement/EndUserLicenseAgreement.pdf", false);
 
         logger.info("OEM: " + this.settings.getOemName());
     }

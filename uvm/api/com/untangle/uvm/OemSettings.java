@@ -18,7 +18,7 @@ public class OemSettings implements Serializable, JSONString
     private String oemShortName;
     private String oemProductName;
     private String oemUrl;
-    private String licenseAgreementUrl = "http://www.untangle.com/legal";
+    private String licenseAgreementUrl = "https://www.arista.com/assets/data/pdf/software-agreement/EndUserLicenseAgreement.pdf"; 
     private Boolean useLocalEula = false;
 
     public OemSettings() { }
@@ -68,7 +68,7 @@ public class OemSettings implements Serializable, JSONString
     public void setOemUrl( String newValue ) { this.oemUrl = newValue; }
 
     /**
-     * The license agreement ie https://www.untangle.com/legal/ 
+     * The license agreement ie https://www.arista.com/assets/data/pdf/software-agreement/EndUserLicenseAgreement.pdf 
      */
     public String getLicenseAgreementUrl() { return licenseAgreementUrl; }
     public void setLicenseAgreementUrl( String newValue ) { this.licenseAgreementUrl = newValue; }
