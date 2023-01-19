@@ -24,7 +24,7 @@ public class WizardSettings implements Serializable, JSONString
     private boolean passwordRequired = false;
     private String completedStep;
     private String[] steps = null;
-    private String remoteEulaSrc = "https://www.untangle.com/legal";
+    private String remoteEulaSrc = "https://www.arista.com/assets/data/pdf/software-agreement/EndUserLicenseAgreement.pdf";
 
     public WizardSettings() { }
 
