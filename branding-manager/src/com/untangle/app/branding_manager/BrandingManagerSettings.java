@@ -15,11 +15,14 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class BrandingManagerSettings implements Serializable, JSONString
 {
+    private static final String DEFAULT_COMPANY_NAME   = "Arista";
+    private static final String DEFAULT_COMPANY_URL    = "http://edge.arista.com";
+    private static final String DEFAULT_CONTACT_NAME   = "your network administator";
     private byte[] logo = null;
-    private String companyName = "MyCompany";
-    private String companyUrl = "http://www.example.com";
-    private String contactName = "your network administrator";
-    private String contactEmail = null;
+    private String companyName = DEFAULT_COMPANY_NAME;
+    private String companyUrl = DEFAULT_COMPANY_URL;
+    private String contactName = I18nUtil.marktr(DEFAULT_CONTACT_NAME);
+    private String contactEmail = "";
     private boolean defaultLogo = true;
     private String bannerMessage = "";
 
@@ -39,13 +42,13 @@ public class BrandingManagerSettings implements Serializable, JSONString
         this.setBannerMessage(copy.getBannerMessage());
     }
 
-    public String getCompanyName() { return null == companyName ? "Arista" : companyName; }
+    public String getCompanyName() { return null == companyName ? DEFAULT_COMPANY_NAME : companyName; }
     public void setCompanyName( String companyName ) { this.companyName = companyName; }
 
-    public String getCompanyUrl() { return null == companyUrl ? "http://www.untangle.com" : companyUrl; }
+    public String getCompanyUrl() { return null == companyUrl ? DEFAULT_COMPANY_URL : companyUrl; }
     public void setCompanyUrl( String companyUrl ) { this.companyUrl = companyUrl; }
 
-    public String getContactName() { return null == contactName ? I18nUtil.marktr("your network administrator") : contactName; }
+    public String getContactName() { return null == contactName ? I18nUtil.marktr(DEFAULT_CONTACT_NAME) : contactName; }
     public void setContactName( String name ) { this.contactName = name; }
 
     public String getContactEmail() { return contactEmail; }
