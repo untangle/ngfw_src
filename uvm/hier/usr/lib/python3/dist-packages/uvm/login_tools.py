@@ -24,7 +24,7 @@ except ImportError:
 
 def get_auth_uri():
     try:
-        return Uvm().getUvmContext().uriManager().getUri('https://auth.untangle.com/v1/CheckTokenAccess') # TODO does this URL exist on edge.arista?
+        return Uvm().getUvmContext().uriManager().getUri('https://auth.untangle.com/v1/CheckTokenAccess')
     except:
         return 'https://auth.untangle.com/v1/CheckTokenAccess'
 
