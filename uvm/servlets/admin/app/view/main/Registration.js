@@ -91,9 +91,9 @@ Ext.define('Ung.view.main.Registration', {
                     cls: 'welcome',
                     bind: {
                         html: '<h1>' + Ext.String.format('Congratulations! {0} is ready to be configured.'.t(), rpc.companyName) + '</h1>' +
-                            '<p>' + 'Please register with an untangle.com account before continuing.'.t() + '<br/>' + 'Registering gets you the following benefits:'.t() + '</p>' +
+                            '<p>' + 'Please register with an edge.arista.com account before continuing.'.t() + '<br/>' + 'Registering gets you the following benefits:'.t() + '</p>' + // TODO this is another ticket
                             '<ul>' +
-                                '<li>' + 'Access to your account on untangle.com'.t() + '</li>' +
+                                '<li>' + 'Access to your account on edge.arista.com'.t() + '</li>' +
                                 '<li>' + 'Manage your licences, renewals, servers, and contact info all from one dashboard.'.t() + '</li>' +
                                 '<li>' + 'Easily transfer licences between servers.'.t() + '</li>' +
                             '</ul>' +
