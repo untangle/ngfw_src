@@ -392,6 +392,19 @@ class UvmTests(NGFWTestCase):
                                                'succeeded', True,
                                                'login', 'admin' )
         assert( found )
+        
+    def test_103_registration_congrats(self):
+        uri = "unknown"
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=uri),stdout=True)
+        
+        # Probably don't need all this
+        #cloudManager = uvmContext.cloudManager()
+        #object_methods = [method_name for method_name in dir(cloudManager)]
+        #print(type(cloudManager))
+        #print(str(cloudManager))
+        #print(object_methods)
+        
+        assert(False)
 
     # Make sure the HostsFileManager is working as expected
     def test_110_hosts_file_manager(self):
