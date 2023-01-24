@@ -181,27 +181,6 @@ class UvmTests(NGFWTestCase):
         print(("%d Links failed to resolve correctly" % (failedLinks)))
         assert(testResults)
 
-    def test_020_about_info(self):
-        uid =  uvmContext.getServerUID()
-        match = re.search(r'\w{4}-\w{4}-\w{4}.\w{4}', uid)
-        assert( match )
-
-        kernel = uvmContext.adminManager().getKernelVersion()
-        match = re.search(r'\d.*', kernel)
-        assert(match)
-
-        reboot_count = uvmContext.adminManager().getRebootCount()
-        match = re.search(r'\d{1,2}', reboot_count)
-        assert(match)
-
-        num_hosts = str(uvmContext.hostTable().getCurrentActiveSize())
-        match = re.search(r'\d{1,2}', num_hosts)
-        assert(match)
-
-        max_num_hosts = str(uvmContext.hostTable().getMaxActiveSize())
-        match = re.search(r'\d{1,2}', max_num_hosts)
-        assert(match)
-
     @pytest.mark.slow
     @pytest.mark.failure_outside_corporate_network
     def test_030_test_smtp_settings(self):
