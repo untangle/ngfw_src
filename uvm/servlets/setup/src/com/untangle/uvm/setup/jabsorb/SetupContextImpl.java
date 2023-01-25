@@ -207,7 +207,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("remote", getRemote());
             json.put("remoteUrl", this.context.getCmdUrl());
             json.put("serverUID", this.context.getServerUID());
-            json.put("licenseTestUrl", this.context.uriManager().getUriWithPath("https://www.untangle.com/favicon.ico"));
+            json.put("licenseTestUrl", this.context.uriManager().getUriWithPath("https://www.edge.arista.com/favicon.ico"));
 
         } catch (Exception e) {
             logger.error("Error generating WebUI startup object", e);
