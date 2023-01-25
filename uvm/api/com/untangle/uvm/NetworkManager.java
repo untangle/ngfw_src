@@ -6,6 +6,8 @@ package com.untangle.uvm;
 import java.util.List;
 import java.net.InetAddress;
 
+import org.json.JSONArray;
+
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
@@ -52,7 +54,11 @@ public interface NetworkManager
 
     boolean isWanInterface( int interfaceId );
 
-    List<Integer> getWirelessChannels( String systemDev );
+    boolean isWirelessRegulatoryCompliant( String systemDev );
+
+    String getWirelessRegulatoryCountryCode( String systemDev );
+
+    JSONArray getWirelessChannels( String systemDev, String region );
 
     String getUpnpManager(String command, String arguments);
 
