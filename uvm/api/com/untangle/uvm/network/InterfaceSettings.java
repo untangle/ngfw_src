@@ -117,6 +117,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private String wirelessPassword = null;
     private Integer wirelessChannel = null;
     private Integer wirelessVisibility = 0;
+    private String wirelessCountryCode = "";
     
     public InterfaceSettings() { }
 
@@ -323,6 +324,9 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public Integer getWirelessVisibility() { return this.wirelessVisibility; }
     public void setWirelessVisibility( Integer newValue ) { this.wirelessVisibility = newValue; }
+
+    public String getWirelessCountryCode() { return this.wirelessCountryCode; }
+    public void setWirelessCountryCode( String newValue ) { this.wirelessCountryCode = newValue; }
 
     /**
      * Interface alias.
