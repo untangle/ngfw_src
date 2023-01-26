@@ -1506,6 +1506,65 @@ class NetworkTests(NGFWTestCase):
                 global_functions.get_download_speed()
         assert(qos_data[0]["priority"] != '')
 
+    def test_201_wireless_current_country_code_channels(self):
+        """
+        Verify we can get channels for the current country code
+        """
+        wireless_interfaces_found = False
+        wireless_system_dev = None
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWirelessInterface'] is True:
+                wireless_interfaces_found = True
+                wireless_system_dev = interface["systemDev"]
+                break
+
+        if wireless_interfaces_found is False:
+            raise unittest.SkipTest("missing wireless interfaces")
+
+        channels = uvmContext.networkManager().getWirelessChannels(wireless_system_dev,"")
+        assert(len(channels) > 0)
+
+    def test_202_wireless_test_country_code_channels(self):
+        """
+        Verify we can get channels for the new target country code
+        """
+        wireless_interfaces_found = False
+        wireless_system_dev = None
+        original_wireless_country_code = None
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWirelessInterface'] is True:
+                wireless_interfaces_found = True
+                original_wireless_country_code = interface['wirelessCountryCode']
+                interface['wirelessCountryCode'] = ""
+                wireless_system_dev = interface["systemDev"]
+                break
+
+        if wireless_interfaces_found is False:
+            raise unittest.SkipTest("missing wireless interfaces")
+
+        if uvmContext.networkManager().isWirelessRegulatoryCompliant(wireless_system_dev) is False:
+            raise unittest.SkipTest("cannot change country code on non-compliant driver")
+
+        # Get current channels
+        original_channels = uvmContext.networkManager().getWirelessChannels(wireless_system_dev,"")
+        assert(len(original_channels) > 0)
+
+        current_driver_regulatory_country_code = uvmContext.networkManager().getWirelessRegulatoryCountryCode(wireless_system_dev)
+
+        # Want a different regulatory country code to verify the country counts are not the same
+        if original_wireless_country_code == "US" or current_driver_regulatory_country_code == "US":
+            test_country_code = "JP"
+        else:
+            test_country_code = "US"
+        test_channels = uvmContext.networkManager().getWirelessChannels(wireless_system_dev,test_country_code)
+        assert(len(test_channels) > 0)
+
+        print(f"expecting: original_channels={len(original_channels)} != test_channels={len(test_channels)}")
+
+        assert(len(test_channels) != len(original_channels))
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings
