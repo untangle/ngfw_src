@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-import getopt
+import argparse
 import json
 import re
 import subprocess
-import sys
 
 Result = {}
-Debug = False
+DEBUG = False
 
 class WirelessInterface():
     """
@@ -22,7 +21,7 @@ class WirelessInterface():
     # - 165: "Just bad":
     Disabled_channels = ["165"]
 
-    Iw_reg_group_re = re.compile("^(global|phy\#\d+)")
+    Iw_reg_group_re = re.compile("^(global|phy#\d+)")
     Iw_reg_country_re = re.compile("country ([^:]+):")
 
     def __init__(self, interface_name=None):
@@ -42,16 +41,16 @@ class WirelessInterface():
         result = False
 
         command = ["iw","reg","get"]
-        if Debug:
-            Result["debug"].append(' '.join(command))
+        if DEBUG:
+            Result["DEBUG"].append(' '.join(command))
         proc = subprocess.Popen(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True)
         while True:
             line = proc.stdout.readline()
             if not line:
                 break
             line = line.rstrip()
-            if Debug:
-                Result["debug"].append(line)
+            if DEBUG:
+                Result["DEBUG"].append(line)
 
             if line.startswith("phy#") and line == self.get_physical_name():
                 # Presence of physical name indicates driver is complaint.
@@ -67,18 +66,18 @@ class WirelessInterface():
         if self.physical_name is None:
             # Only lookup if we've not determined the physical name yet.
             command = ["iw",self.interface_name,"info"]
-            if Debug:
-                Result["debug"].append(' '.join(command))
+            if DEBUG:
+                Result["DEBUG"].append(' '.join(command))
             proc = subprocess.Popen(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True)
             while True:
                 line = proc.stdout.readline()
                 if not line:
                     break
-                if Debug:
-                    Result["debug"].append(line)
+                if DEBUG:
+                    Result["DEBUG"].append(line)
 
                 matches = WirelessInterface.Iw_info_wiphy_re.search(line)
-                if matches is not None:
+                if matches:
                     # Found the physical numeric identifier.  Physical name is phy#<identifier>.
                     self.physical_name = f"phy#{matches.group(1)}"
 
@@ -90,8 +89,8 @@ class WirelessInterface():
         """
         if self.region is None:
             command = ["iw",self.get_physical_name(), "reg","get"]
-            if Debug:
-                Result["debug"].append(' '.join(command))
+            if DEBUG:
+                Result["DEBUG"].append(' '.join(command))
             proc = subprocess.Popen(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True)
             groups = {}
             current_group = None
@@ -100,18 +99,18 @@ class WirelessInterface():
                 if not line:
                     break
 
-                if Debug:
-                    Result["debug"].append(line)
+                if DEBUG:
+                    Result["DEBUG"].append(line)
 
                 matches = WirelessInterface.Iw_reg_group_re.search(line)
-                if matches is not None:
+                if matches:
                     # Found the current group.
                     current_group = matches.group(1)
                     continue
 
-                if current_group is not None:
+                if current_group:
                     matches = WirelessInterface.Iw_reg_country_re.search(line)
-                    if matches is not None:
+                    if matches:
                         # Found the country code
                         groups[current_group] = matches.group(1)
                         current_group = None
@@ -133,25 +132,24 @@ class WirelessInterface():
         channels = []
 
         current_region = self.get_regulatory_country_code()
-        if region is not None:
+        if region:
             # Temporarily set the region
             command = ["iw","reg","set", region]
-            if Debug:
-                Result["debug"].append(' '.join(command))
-            region_command = subprocess.Popen(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True)
-            region_command_output = region_command.communicate()[0]
+            if DEBUG:
+                Result["DEBUG"].append(' '.join(command))
+            subprocess.run(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True, check=False)
 
         in_frequencies = False
         command = ["iw",self.get_physical_name(),"info"]
-        if Debug:
-            Result["debug"].append(' '.join(command))
+        if DEBUG:
+            Result["DEBUG"].append(' '.join(command))
         proc = subprocess.Popen(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True)
         while True:
             line = proc.stdout.readline()
             if not line:
                 break
-            if Debug:
-                Result["debug"].append(line)
+            if DEBUG:
+                Result["DEBUG"].append(line)
 
             if ":" in line:
                 # Channels to scape are under Frequenies: sections
@@ -161,10 +159,10 @@ class WirelessInterface():
             if in_frequencies:
                 # Process channels in frequencies section
                 matches = WirelessInterface.Iw_info_invalid_channels_re.search(line)
-                if matches is not None:
+                if matches:
                     continue
                 matches = WirelessInterface.Iw_info_channel_re.search(line)
-                if matches is not None:
+                if matches:
                     if matches.group(3) in WirelessInterface.Disabled_channels:
                         continue
                     # iw displays frequency as MHz, but we want to present as GHz.
@@ -173,86 +171,52 @@ class WirelessInterface():
                         "frequency": f"{matches.group(1)}.{matches.group(2)} GHz"
                     })
 
-        if region is not None:
+        if region:
             # Set the region back to current
             command = ["iw","reg","set", current_region]
-            if Debug:
-                Result["debug"].append(' '.join(command))
-            region_command = subprocess.Popen(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True)
-            region_command_output = region_command.communicate()[0]
+            if DEBUG:
+                Result["DEBUG"].append(' '.join(command))
+            subprocess.run(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True, check=False)
 
         return channels
 
-def usage():
-    """
-    Usage
-    """
-    print("usage")
-    print("help\t\tUsage")
-    print("debug\t\tInclude debug in result")
-    print("query\t\tMethod[,args].  This can be specified multiple times.")
-    print()
-    print("Valid query arguments include:")
-    print("\tis_regulatory_compliant\t\tBoolean true if driver is iw compliant, false otherwise")
-    print("\tget_physical_name\t\tReturn string of physical name (e.g.,phy#0)")
-    print("\tget_regulatory_country_code\tReturn string region (country)")
-    print("\tget_channels\t\t\tReturn list of channels and frequencies.  If region argument is passed, get list for that region")
-    print()
-    print("Result returned as json object")
-
-def main(argv):
+def main():
     """
     Main
     """
-    global Debug
+    global DEBUG
     global Result
 
-    try:
-        opts, args = getopt.getopt(argv, "hdirq", ["help", "debug", "interface=", "query="] )
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("-d", "--debug", help="Include DEBUG in result", action="store_true")
+    arg_parser.add_argument("-i", "--interface", help="Interface name", required=True)
+    arg_parser.add_argument("-q", "--query", help="Query to run", required=True, action="append")
 
-    interface_name = None
-    queries = []
-    invalid = False
-    for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            usage()
-            sys.exit()
-        elif opt in ("-d", "--debug"):
-            Debug = True
-        elif opt in ("-i", "--interface"):
-            interface_name = arg
-        elif opt in ("-q", "--query"):
-            if "," in arg:
-                [query,query_args] = arg.split(",")
-            else:
-                query = arg
-                query_args = None
+    args = arg_parser.parse_args()
 
-            queries.append({"query": query, "args": query_args})
-            if query not in dir(WirelessInterface):
-                print(f"unknown query method: {arg}")
-                invalid = True
-    
-    if interface_name is None or invalid is True:
-        print("Missing interface")
-        usage()
-        sys.exit(2)
+    DEBUG=args.debug
+    if DEBUG is True:
+        Result["DEBUG"] = []
+        Result["DEBUG"].append(f"interface={args.interface}")
 
-    if Debug is True:
-        Result["debug"] = []
-        Result["debug"].append(f"interface_name={interface_name}")
-
-    interface = WirelessInterface(interface_name)
-    for q in queries:
-        if q["args"] is not None:
-            Result[q["query"]] = getattr(interface, q["query"])(q["args"])
+    interface = WirelessInterface(args.interface)
+    for query in args.query:
+        if "," in query:
+            [method,args] = query.split(",")
         else:
-            Result[q["query"]] = getattr(interface, q["query"])()
-    
+            method = query
+            args = None
+
+        if method not in dir(WirelessInterface):
+            print(f"unknown query method: {method}")
+            continue
+
+        if args:
+            Result[method] = getattr(interface, method)(args)
+        else:
+            Result[method] = getattr(interface, method)()
+
     print(json.dumps(Result))
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
