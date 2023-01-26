@@ -19,6 +19,10 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -71,6 +75,7 @@ public class NetworkManagerImpl implements NetworkManager
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
     private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";
     private final String upnpManagerScript = System.getProperty("uvm.bin.dir") + "/ut-upnp-manager";
+    private final String wirelessInterfaceScript = System.getProperty("uvm.bin.dir") + "/wireless-interface.py";
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
     private final String settingsFilenameBackup = "/etc/untangle/network.js";
@@ -2645,82 +2650,62 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Query a wireless card for a list of supported channels
+     * Query a wireless device to determine if it complies with wireless regions.
      * @param systemDev
-     * @return a list of the support wifi channels (never null)
+     * @return a boolean of whether wireless driver complies with regional settings
      */
-    public List<Integer> getWirelessChannels( String systemDev )
+    public boolean isWirelessRegulatoryCompliant( String systemDev )
     {
-        List<Integer> channels = new LinkedList<>();
-
-        String infoResult = UvmContextFactory.context().execManager().execOutput( "iw " + systemDev + " info" );
-
-        String channelPattern = "^\\s+\\* (\\d)(\\d+) MHz \\[(\\d+)\\]";
-        String channelDisabledPattern = "passive scanning|no IBSS|disabled|no IR|radar detection";
-        String wiphyPattern = ".*wiphy (\\d)";
-        Pattern channelRegex = Pattern.compile(channelPattern);
-        Pattern channelDisabledRegex = Pattern.compile(channelDisabledPattern);
-        Pattern wiphyRegex = Pattern.compile(wiphyPattern);
-        Integer maxChannel = 0;
-        // - 165: "Just bad":
-        // https://community.netgear.com/t5/Nighthawk-WiFi-Routers/Why-you-should-NEVER-select-channel-165-in-5-GHz/td-p/1848856)
-        List<Integer> disabledChannels = new LinkedList<Integer>(Arrays.asList(165));
-
-        // Automatic 2.4 Ghz
-        // disabled NGFW-11496
-        // channels.add(new Integer(-1));
-
-        String wiphyId = "";
-
-        try {
-            String lines[] = infoResult.split("\\n");
-            for ( String line : lines ) {
-                Matcher match = wiphyRegex.matcher(line);
-                if ( match.find() ) {
-                    wiphyId = match.group(1);
-                }
-            }
-        } catch (Exception e) {
-            logger.error( "Error parsing wiphy", e );
-            return channels;
+        boolean compliant = false;
+        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=is_regulatory_compliant");
+        JSONObject jo = null;
+        try{
+            jo = new JSONObject(result);
+            compliant = jo.getBoolean("is_regulatory_compliant");
+        }catch( JSONException e ){
+            logger.warn("Unable to parse wireless driver compliance: " + result);
         }
+        return compliant;
+    }
 
-        if ( wiphyId.length() == 0 ) {
-            logger.error( "Error parsing wiphy for dev: " + systemDev );
-            return channels;
+    /**
+     * Query a wireless device to determine if it complies with wireless regions.
+     * @param systemDev
+     * @return string of wireless driver regulaatory country code
+     */
+    public String getWirelessRegulatoryCountryCode( String systemDev )
+    {
+        String country_code = "";
+        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_regulatory_country_code");
+        JSONObject jo = null;
+        try{
+            jo = new JSONObject(result);
+            country_code = jo.getString("get_regulatory_country_code");
+        }catch( JSONException e ){
+            logger.warn("Unable to parse wireless driver country code: " + result);
         }
+        return country_code;
+    }
 
-        logger.debug("Query supported channels for " + systemDev + " / phy" + wiphyId + " with: iw phy" + wiphyId + " info");
-        String channelResult = UvmContextFactory.context().execManager().execOutput( "iw phy" + wiphyId + " info" );
-
-        try {
-            String lines[] = channelResult.split("\\n");
-            for ( String line : lines ) {
-                logger.debug("Parsing line: " + line);
-                Matcher match = channelRegex.matcher(line);
-                Matcher disabledMatch = channelDisabledRegex.matcher(line);
-                if ( match.find() ) {
-                    Integer channel = Integer.valueOf(match.group(3));
-                    if ( disabledMatch.find() ||
-                         disabledChannels.contains(channel)) {
-                        logger.debug("Ignoring channel (disabled): " + channel);
-                    } else {
-                        logger.debug("Adding channel: " + channel);
-                        channels.add(channel);
-                        if (channel > maxChannel) maxChannel = channel;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.error( "Error parsing wireless channels", e );
-            return channels;
+    /**
+     * Query a wireless device for a list of supported channels
+     * @param systemDev
+     * @param region
+     * @return a JSON array containing a list of the support wifi channels where each entry is a JSONobject containing the keys:
+     *      channel     Numeric channel identifier.
+     *      frequency   String frequency in GHz for display
+     */
+    public JSONArray getWirelessChannels( String systemDev, String region )
+    {
+        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_channels," + region);
+        JSONObject jo = null;
+        try{
+            jo = new JSONObject(result);
+            return jo.getJSONArray("get_channels");
+        }catch(JSONException e ){
+            logger.warn("Unable to parse wireless channels: " + result);
         }
-	
-        // Automatic 5 Ghz
-        // disabled NGFW-11496
-        // if (maxChannel > 11) channels.add(1, new Integer( -2 ));
-
-        return channels;
+        return null;
     }
 
     /**
@@ -2764,14 +2749,23 @@ public class NetworkManagerImpl implements NetworkManager
                 continue;
             i++;
 
-            List<Integer> channels = getWirelessChannels( intf.getSystemDev() );
+            JSONArray channels = getWirelessChannels( intf.getSystemDev(), intf.getWirelessCountryCode() );
             if ( channels == null ) {
                 logger.warn("Unabled to determine supported channels for " + intf.getSystemDev());
                 continue;
             }
             int maxChannel = 0;
             int minChannel = 99999;
-            for ( Integer ch : channels ) {
+            int ch = 0;
+            JSONObject channelFrequency = null;
+            for (int j = 0; j < channels.length(); j++) {
+                try{
+                    channelFrequency = channels.getJSONObject(j);
+                    ch = channelFrequency.getInt("channel");
+                }catch(JSONException e){
+                    logger.warn("Unable to determine supported channels for " + intf.getSystemDev());
+                    continue;
+                }
                 if ( ch > maxChannel ) maxChannel = ch;
                 if ( ch < minChannel ) minChannel = ch;
             }
