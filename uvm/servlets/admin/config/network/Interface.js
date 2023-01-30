@@ -136,16 +136,6 @@ Ext.define('Ung.config.network.Interface', {
         //         value: '{intf.isVlanInterface}',
         //         hidden: '{isDisabled}'
         //     }
-        // }, {
-        //     // is Wireless
-        //     xtype: 'checkbox',
-        //     fieldLabel: 'Is Wireless Interface'.t(),
-        //     // readOnly: true,
-        //     bind: {
-        //         value: '{intf.isWirelessInterface}',
-        //         hidden: '{isDisabled}'
-        //     }
-        // },
         ],
     }, {
         xtype: 'tabpanel',
@@ -805,6 +795,40 @@ Ext.define('Ung.config.network.Interface', {
                 minLength: 8,
                 maskRe: /[a-zA-Z0-9~@#%_=,\!\-\/\?\(\)\[\]\\\^\$\+\*\.\|]/
             }, {
+                xtype: 'combo',
+                fieldLabel: 'Regulatory Country'.t(),
+                width: 475,
+                bind: {
+                    value: '{intf.wirelessCountryCode}',
+                    store: '{wirelessCountryList}',
+                    hidden: '{intf.wirelessMode === "CLIENT"}'
+                },
+                editable: false,
+                queryMode: 'local',
+                listeners: {
+                    afterrender: function(){
+                        // Default value for country code is empty so it can be populated from cmd.
+                        // If empty now, get the current country code from the driver.
+                        var me = this;
+                        var vm = me.up('window').getViewModel();
+                        if(!vm.get('intf').get('wirelessCountryCode')){
+                            // Directly get the value since the bind won't be complete by the time we get here.
+                            Ext.Deferred.sequence([
+                                Rpc.asyncPromise('rpc.networkManager.getWirelessRegulatoryCountryCode', vm.get("intf").get("systemDev"))
+                            ],this)
+                            .then(function(result) {
+                                me.setValue(result[0]);
+                            }, function (ex) {
+                                Util.handleException(ex);
+                            });
+                        }
+                    },
+                    change: function (rg, newValue) {
+                        var vm = this.up('window').getViewModel();
+                        this.up('config-network').getController().getWireless(vm, newValue);
+                    }
+                }
+            }, {
                 // channel
                 xtype: 'combo',
                 bind: {
@@ -815,6 +839,14 @@ Ext.define('Ung.config.network.Interface', {
                 fieldLabel: 'Channel'.t(),
                 editable: false,
                 queryMode: 'local'
+            }, {
+                xtype: 'component',
+                hidden: true,
+                padding: '0 0 0 150',
+                bind: {
+                    hidden: '{wirelessRegulatoryCompliant || intf.wirelessMode === "CLIENT"}'
+                },
+                html: 'Adapter driver may not support regulatory country channels'.t()
             }]
         }, {
             title: 'DHCP Configuration'.t(),
