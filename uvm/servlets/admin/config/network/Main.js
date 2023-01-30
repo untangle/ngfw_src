@@ -8,11 +8,10 @@ Ext.define('Ung.config.network.Main', {
         'Ung.config.network.MainModel',
         'Ung.config.network.Interface',
 
-        // 'Ung.view.grid.Grid',
-        // 'Ung.store.RuleConditions',
         'Ung.store.Rule',
         'Ung.model.Rule',
-        'Ung.cmp.Grid'
+        'Ung.cmp.Grid',
+        'Ung.util.Renderer'
     ],
     /* requires-end */
     controller: 'config-network',
