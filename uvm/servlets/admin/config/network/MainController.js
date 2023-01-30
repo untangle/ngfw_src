@@ -1190,7 +1190,6 @@ Ext.define('Ung.config.network.MainController', {
             if(wantCountry == null){
                 // Try our defined country.
                 wantCountry = vm.get('intf').get('wirelessCountryCode');
-                wantCountry = "";
                 if(wantCountry == ""){
                     // Get what the driver says we are
                     wantCountry = Rpc.directData('rpc.networkManager.getWirelessRegulatoryCountryCode', vm.get('intf').get('systemDev'));
