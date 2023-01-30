@@ -817,7 +817,9 @@ Ext.define('Ung.config.network.Interface', {
                                 Rpc.asyncPromise('rpc.networkManager.getWirelessRegulatoryCountryCode', vm.get("intf").get("systemDev"))
                             ],this)
                             .then(function(result) {
-                                me.setValue(result[0]);
+                                if(result && result.length > 0){
+                                    me.setValue(result[0]);
+                                }
                             }, function (ex) {
                                 Util.handleException(ex);
                             });
