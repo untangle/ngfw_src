@@ -73,19 +73,29 @@ while IFS=',' read -ra ADDRESSES; do
 done <<< "$TARGET"
 
 for target_address in "${TARGET_ADDRESSES[@]}"; do
-    echo "Copying to $target_address..."
+    echo "Synchronizing to $target_address..."
 
-    ssh-copy-id -p $PORT root@$target_address
-    rsync -a dist/etc/* root@$address:/etc
-    rsync -a dist/usr/lib root@$address:/usr
-    rsync -a dist/usr/share/untangle/lib root@$address:/usr/share/untangle
-    rsync -a dist/usr/share/untangle/bin root@$address:/usr/share/untangle
-    rsync -a dist/usr/share/untangle/web root@$address:/usr/share/untangle
+    port=$PORT
+    target_address=$target_address
+    if [[ $target_address == *":"* ]] ; then
+        port=${target_address#*:}
+        target_address=${target_address%:*}
+    fi
 
-    ssh root@$address "systemctl daemon-reload"
+    ssh-copy-id -p $port root@$target_address
+
+    rsync -a -e "ssh -p $port" dist/etc/* root@$target_address:/etc
+    rsync -a -e "ssh -p $port" dist/usr/lib root@$target_address:/usr
+    rsync -a -e "ssh -p $port" dist/usr/share/java/uvm/* root@$target_address:/usr/share/java/uvm
+    rsync -a -e "ssh -p $port" dist/usr/share/untangle/bin root@$target_address:/usr/share/untangle
+    rsync -a -e "ssh -p $port" dist/usr/share/untangle/lib root@$target_address:/usr/share/untangle
+    rsync -a -e "ssh -p $port"  dist/usr/share/untangle/web root@$target_address:/usr/share/untangle
+
+    ssh -p $port root@$target_address "systemctl daemon-reload"
 
     if [ $RESTART -eq 1 ] ; then
-        ssh root@$address "/etc/init.d/untangle-vm restart"
+        ssh -p $port root@$target_address "/etc/init.d/untangle-vm restart"
     fi
+    echo "...completed"
 
 done
