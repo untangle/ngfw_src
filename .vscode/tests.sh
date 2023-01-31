@@ -48,9 +48,16 @@ CLIENT_SSH_OPTIONS="-o StrictHostKeyChecking=no -o ConnectTimeout=300 -o Connect
 for target_address in "${TARGET_ADDRESSES[@]}"; do
     echo "Running tests on $target_address..."
 
-    ssh-copy-id -p $PORT root@$target_address
+    port=$PORT
+    target_address=$target_address
+    if [[ $target_address == *":"* ]] ; then
+        port=${target_address#*:}
+        target_address=${target_address%:*}
+    fi
 
-    TARGET_RESULT=
+    ssh-copy-id -p $port root@$target_address
+
+    TARGET_RESULT=0
     if [ "${CLIENT_TARGET}" != "" ] ; then
         ##
         ## Setup testshell
@@ -91,7 +98,7 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
     echo
     echo "$TARGET_COMMAND"
     echo
-    ssh root@$target_address "$TARGET_COMMAND"
+    ssh -p $port root@$target_address "$TARGET_COMMAND"
     echo
-    ssh root@$target_address "grep "^Skipped" /tmp/unittest.log"
+    ssh -p $port root@$target_address "grep "^Skipped" /tmp/unittest.log"
 done
