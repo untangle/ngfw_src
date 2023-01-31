@@ -1056,50 +1056,6 @@ Ext.define('Ung.config.network.MainController', {
         Ext.MessageBox.hide();
     },
 
-    wirelessChannelsMap: {
-        '-1':  [-1,  'Automatic 2.4 GHz'.t()],
-        '-2':  [-2,  'Automatic 5 GHz'.t()],
-        '1':   [1,   '1 - 2.412 GHz'.t()],
-        '2':   [2,   '2 - 2.417 GHz'.t()],
-        '3':   [3,   '3 - 2.422 GHz'.t()],
-        '4':   [4,   '4 - 2.427 GHz'.t()],
-        '5':   [5,   '5 - 2.432 GHz'.t()],
-        '6':   [6,   '6 - 2.437 GHz'.t()],
-        '7':   [7,   '7 - 2.442 GHz'.t()],
-        '8':   [8,   '8 - 2.447 GHz'.t()],
-        '9':   [9,   '9 - 2.452 GHz'.t()],
-        '10':  [10,  '10 - 2.457 GHz'.t()],
-        '11':  [11,  '11 - 2.462 GHz'.t()],
-        '12':  [12,  '12 - 2.467 GHz'.t()],
-        '13':  [13,  '13 - 2.472 GHz'.t()],
-        '14':  [14,  '14 - 2.484 GHz'.t()],
-        '36':  [36,  '36 - 5.180 GHz'.t()],
-        '40':  [40,  '40 - 5.200 GHz'.t()],
-        '44':  [44,  '44 - 5.220 GHz'.t()],
-        '48':  [48,  '48 - 5.240 GHz'.t()],
-        '52':  [52,  '52 - 5.260 GHz'.t()],
-        '56':  [56,  '56 - 5.280 GHz'.t()],
-        '60':  [60,  '60 - 5.300 GHz'.t()],
-        '64':  [64,  '64 - 5.320 GHz'.t()],
-        '100': [100, '100 - 5.500 GHz'.t()],
-        '104': [104, '104 - 5.520 GHz'.t()],
-        '108': [108, '108 - 5.540 GHz'.t()],
-        '112': [112, '112 - 5.560 GHz'.t()],
-        '116': [116, '116 - 5.580 GHz'.t()],
-        '120': [120, '120 - 5.600 GHz'.t()],
-        '124': [124, '124 - 5.620 GHz'.t()],
-        '128': [128, '128 - 5.640 GHz'.t()],
-        '132': [132, '132 - 5.660 GHz'.t()],
-        '136': [136, '136 - 5.680 GHz'.t()],
-        '140': [140, '140 - 5.700 GHz'.t()],
-        '144': [144, '144 - 5.720 GHz'.t()],
-        '149': [149, '149 - 5.745 GHz'.t()],
-        '153': [153, '153 - 5.765 GHz'.t()],
-        '157': [157, '157 - 5.785 GHz'.t()],
-        '161': [161, '161 - 5.805 GHz'.t()],
-        '165': [165, '165 - 5.825 GH'.t()]
-    },
-
     editInterface: function (cmp, rowIndex, colIndex, item, e, record) {
         var me = this;
 
@@ -1164,6 +1120,8 @@ Ext.define('Ung.config.network.MainController', {
                 data: {
                     // intf: btn.getWidgetRecord().copy(null)
                     intf: me.editIntf,
+                    wirelessRegulatoryCompliant: true,
+                    wirelessCountryList: [],
                     wirelessChannelsList: [],
                     vrrpmaster: false
                 },
@@ -1210,25 +1168,6 @@ Ext.define('Ung.config.network.MainController', {
             });
         });
 
-
-        // wireless channels
-        var wirelessChannelsArr = [];
-        if (me.editIntf.get('isWirelessInterface')) {
-            Rpc.asyncData('rpc.networkManager.getWirelessChannels', me.editIntf.get('systemDev'))
-            .then(function(result) {
-                if (result && result.list) {
-                    Ext.Array.each(result.list, function (ch) {
-                        if (me.wirelessChannelsMap[ch]) {
-                            wirelessChannelsArr.push(me.wirelessChannelsMap[ch]);
-                        }
-                    });
-                    me.dialog.getViewModel().set('wirelessChannelsList', wirelessChannelsArr);
-                }
-            }, function (ex) {
-                Util.handleException(ex);
-            });
-        }
-
         // check VRRP master
         if (me.editIntf.get('vrrpEnabled') && me.editIntf.get('interfaceId') > 0) {
             Rpc.asyncData('rpc.networkManager.isVrrpMaster', me.editIntf.get('interfaceId'))
@@ -1237,6 +1176,63 @@ Ext.define('Ung.config.network.MainController', {
             }, function (ex) {
                 Util.handleException(ex);
             });
+        }
+
+        me.getWireless(me.dialog.getViewModel(), null);
+    },
+    getWireless: function(vm, wantCountry){
+        // wireless channels
+        if (vm.get('intf').get('isWirelessInterface')) {
+            var wirelessChannels = [
+            [-1,  'Automatic 2.4 GHz'.t()],
+            [-2,  'Automatic 5 GHz'.t()]
+            ];
+            if(wantCountry == null){
+                // Try our defined country.
+                wantCountry = vm.get('intf').get('wirelessCountryCode');
+                if(wantCountry == ""){
+                    // Get what the driver says we are
+                    wantCountry = Rpc.directData('rpc.networkManager.getWirelessRegulatoryCountryCode', vm.get('intf').get('systemDev'));
+                }
+            }
+            Ext.Deferred.sequence([
+                Rpc.asyncPromise('rpc.networkManager.isWirelessRegulatoryCompliant', vm.get('intf').get('systemDev')),
+                Rpc.asyncPromise('rpc.networkManager.getWirelessChannels', vm.get('intf').get('systemDev'), wantCountry)
+            ],this)
+            .then(function(result) {
+                if(result){
+                    vm.set('wirelessRegulatoryCompliant', result[0]);
+                    Ext.Array.each(result[1], function (ch) {
+                        wirelessChannels.push([ch["channel"], ch["channel"] + " - " + ch["frequency"]]);
+                    });
+                    vm.set('wirelessChannelsList', wirelessChannels);
+
+                    // Make sure current channel exists in new list.
+                    var currentChannel = vm.get('intf').get('wirelessChannel');
+                    var matchCurrentChannel = false;
+                    Ext.Array.each(wirelessChannels, function (ch) {
+                        if(ch[0] == currentChannel){
+                            matchCurrentChannel = true;
+                        }
+                    });
+                    if(!matchCurrentChannel){
+                        // Not found; set to automatic
+                        vm.get('intf').set('wirelessChannel', -1);
+                    }
+                }
+            }, function (ex) {
+                Util.handleException(ex);
+            });
+            // Build country list
+            wirelessCountryList = [];
+            for(var country in Ung.util.Renderer.countryMap){
+                if(country == 'XU' || country == 'XL'){
+                    // Do not provide "unknowns" as options!
+                    continue;
+                }
+                wirelessCountryList.push([country, Ung.util.Renderer.countryMap[country]]);
+            }
+            vm.set('wirelessCountryList', wirelessCountryList);
         }
     },
     cancelEdit: function (button) {
@@ -1586,6 +1582,9 @@ Ext.define('Ung.config.network.MainController', {
         },
 
         speedRenderer: function( value ){
+            if( value == 0){
+                return '';
+            }
             if( value >= 1000 ){
                 return (value / 1000) + ' ' + 'Gbit'.t();
             }
