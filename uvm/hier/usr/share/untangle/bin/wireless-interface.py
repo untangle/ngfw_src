@@ -88,7 +88,7 @@ class WirelessInterface():
         Determine the region.
         """
         if self.region is None:
-            command = ["iw",self.get_physical_name(), "reg","get"]
+            command = ["iw","reg","get"]
             if DEBUG:
                 Result["DEBUG"].append(' '.join(command))
             proc = subprocess.Popen(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True)
@@ -118,8 +118,15 @@ class WirelessInterface():
             if self.get_physical_name() in groups:
                 # Exact physical name match (aka complaint)
                 self.region = groups[self.get_physical_name()]
-            elif "global" in groups:
-                # Non-compliant driver; try global
+
+            if "global" in groups:
+                # Based on what we've seen it's the global group that matters.
+                # The physical region usually does not match the global, but if
+                # we've seen the physical decvice appear in this query,
+                # it seems to mean it always follows what the global is, even
+                # if the physical is different.
+                # That seems to make sense since regulatory setting is a systemwide
+                # setting at this time.
                 self.region = groups["global"]
 
         return self.region
