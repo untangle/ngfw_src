@@ -8,7 +8,7 @@
 OPENSSL_CONF="@PREFIX@/usr/share/untangle/conf/ut-openssl.cnf"
 OPENSSL_TOOL="/usr/bin/openssl"
 CERT_PATH="/var/cache/untangle-ssl"
-SUBJECT="/C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
+SUBJECT="/C=US/ST=California/L=Santa Clara/O=Arista/OU=Security/CN=edge.arista.com"
 CA_NAME="UntangleRootCA"
 
 # Even though these aren't used when creating the root certificate
@@ -33,8 +33,8 @@ show_usage()
 echo " "
 echo "  USAGE: ut-rootgen name subject"
 echo " "
-echo "  name = UntangleRootCA"
-echo "  subject = /C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.untangle.com"
+echo "  name = AristaRootCA"
+echo "  subject = /C=US/ST=California/L=Santa Clara/O=Arista/OU=Security/CN=edge.arista.com"
 echo " "
 echo "  WARNING: Any existing root CA files with the same name will be deleted and created from scratch!"
 echo " "
