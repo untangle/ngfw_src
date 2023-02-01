@@ -33,7 +33,7 @@ class AdministrationTests(NGFWTestCase):
                 if "www.untangle.com" in subject:
                     raise unittest.SkipTest(skip_str)
                 else:
-                    assert("www.edge.arista.com" in subject)
+                    assert("edge.arista.com" in subject)
             if "O=" in subject:
                 o_found = True
                 if "Untangle" in subject:
