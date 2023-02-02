@@ -25,7 +25,7 @@ echo " "
 echo "  USAGE: ut-certgen certfile subject [ alternates ]"
 echo " "
 echo "  certfile = www.domain.com"
-echo "  subject = /C=US/ST=California/L=Sunnyvale/O=Untangle/OU=Security/CN=www.domain.com"
+echo "  subject = /C=US/ST=California/L=Santa Clara/O=Arista/OU=Security/CN=www.domain.com"
 echo "  alternates = DNS:ftp.domain.com,DNS:mail.domain.com"
 echo " "
 }
