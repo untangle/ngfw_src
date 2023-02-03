@@ -1223,10 +1223,6 @@ Ext.define('Ung.config.network.MainController', {
                     // Build country list
                     wirelessCountryList = [];
                     for(var country in Ung.util.Renderer.countryMap){
-                        if(country == 'XU' || country == 'XL'){
-                            // Do not provide "unknowns" as options!
-                            continue;
-                        }
                         if(Array.isArray(result[2]) && result[2].includes(country)){
                             // Only show countries included in regulatory country list.
                             wirelessCountryList.push([country, Ung.util.Renderer.countryMap[country]]);
