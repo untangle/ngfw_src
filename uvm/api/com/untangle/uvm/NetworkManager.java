@@ -56,6 +56,8 @@ public interface NetworkManager
 
     boolean isWirelessRegulatoryCompliant( String systemDev );
 
+    JSONArray getWirelessValidRegulatoryCountryCodes( String systemDev );
+
     String getWirelessRegulatoryCountryCode( String systemDev );
 
     JSONArray getWirelessChannels( String systemDev, String region );
