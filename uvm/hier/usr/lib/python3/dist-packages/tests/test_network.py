@@ -1565,6 +1565,27 @@ class NetworkTests(NGFWTestCase):
 
         assert(len(test_channels) != len(original_channels))
 
+    def test_203_wireless_valid_regulatory_country_codes(self):
+        """
+        Verify we have a non-zero list of regulatory country codes
+        If our list is zero, we are likely missing a crda file like /usr/lib/crda/regulatory.bin.
+        """
+        wireless_interfaces_found = False
+        wireless_system_dev = None
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWirelessInterface'] is True:
+                wireless_interfaces_found = True
+                wireless_system_dev = interface["systemDev"]
+                break
+
+        if wireless_interfaces_found is False:
+            raise unittest.SkipTest("missing wireless interfaces")
+
+        countries = uvmContext.networkManager().getWirelessValidRegulatoryCountryCodes(wireless_system_dev)
+        print(countries)
+        assert(len(countries) > 0)
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings
