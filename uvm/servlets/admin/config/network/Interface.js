@@ -825,9 +825,12 @@ Ext.define('Ung.config.network.Interface', {
                             });
                         }
                     },
-                    change: function (rg, newValue) {
-                        var vm = this.up('window').getViewModel();
-                        this.up('config-network').getController().getWireless(vm, newValue);
+                    change: function (rg, newValue, oldValue) {
+                        if(oldValue !== null && newValue != oldValue){
+                            // Refresh values to re-populate channel list
+                            var vm = this.up('window').getViewModel();
+                            this.up('config-network').getController().getWireless(vm, newValue);
+                        }
                     }
                 }
             }, {
