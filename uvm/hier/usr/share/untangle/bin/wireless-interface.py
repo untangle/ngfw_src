@@ -83,6 +83,34 @@ class WirelessInterface():
 
         return self.physical_name
 
+    def get_valid_country_codes(self):
+        """
+        Query regulatory database and return valid country codes
+        """
+        country_codes = []
+        command = ["regdbdump","/usr/lib/crda/regulatory.bin"]
+        if DEBUG:
+            Result["DEBUG"].append(' '.join(command))
+        proc = subprocess.Popen(command, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, text=True)
+        groups = {}
+        current_group = None
+        while True:
+            line = proc.stdout.readline()
+            if not line:
+                break
+
+            if DEBUG:
+                Result["DEBUG"].append(line)
+
+            matches = WirelessInterface.Iw_reg_country_re.search(line)
+            if matches:
+                # Found the country code
+                if matches.group(1) == "00":
+                    # Ignore the "unset" value
+                    continue
+                country_codes.append(matches.group(1))
+        return country_codes
+
     def get_regulatory_country_code(self):
         """
         Determine the region.

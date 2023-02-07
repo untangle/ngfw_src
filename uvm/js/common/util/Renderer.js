@@ -924,6 +924,7 @@ Ext.define('Ung.util.Renderer', {
         DZ: 'Algeria'.t(),
         AS: 'American Samoa'.t(),
         AD: 'Andorra'.t(),
+        AN: 'Netherlands Antilles'.t(),
         AO: 'Angola'.t(),
         AI: 'Anguilla'.t(),
         AQ: 'Antarctica'.t(),
