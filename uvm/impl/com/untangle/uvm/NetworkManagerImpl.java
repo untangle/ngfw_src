@@ -2650,6 +2650,24 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Query a wireless device for valid regulatory country codes
+     * @param systemDev
+     * @return a JSON array containing a list of strings of two letter country codes like US, JP, etc.
+     */
+    public JSONArray getWirelessValidRegulatoryCountryCodes( String systemDev )
+    {
+        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_valid_country_codes");
+        JSONObject jo = null;
+        try{
+            jo = new JSONObject(result);
+            return jo.getJSONArray("get_valid_country_codes");
+        }catch(JSONException e ){
+            logger.warn("Unable to parse wireless regulatory country codes: " + result);
+        }
+        return null;
+    }
+
+    /**
      * Query a wireless device to determine if it complies with wireless regions.
      * @param systemDev
      * @return a boolean of whether wireless driver complies with regional settings

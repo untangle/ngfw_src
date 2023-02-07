@@ -1197,7 +1197,8 @@ Ext.define('Ung.config.network.MainController', {
             }
             Ext.Deferred.sequence([
                 Rpc.asyncPromise('rpc.networkManager.isWirelessRegulatoryCompliant', vm.get('intf').get('systemDev')),
-                Rpc.asyncPromise('rpc.networkManager.getWirelessChannels', vm.get('intf').get('systemDev'), wantCountry)
+                Rpc.asyncPromise('rpc.networkManager.getWirelessChannels', vm.get('intf').get('systemDev'), wantCountry),
+                Rpc.asyncPromise('rpc.networkManager.getWirelessValidRegulatoryCountryCodes', vm.get('intf').get('systemDev'))
             ],this)
             .then(function(result) {
                 if(result){
@@ -1219,20 +1220,19 @@ Ext.define('Ung.config.network.MainController', {
                         // Not found; set to automatic
                         vm.get('intf').set('wirelessChannel', -1);
                     }
+                    // Build country list
+                    wirelessCountryList = [];
+                    for(var country in Ung.util.Renderer.countryMap){
+                        if(Array.isArray(result[2]) && result[2].includes(country)){
+                            // Only show countries included in regulatory country list.
+                            wirelessCountryList.push([country, Ung.util.Renderer.countryMap[country]]);
+                        }
+                    }
+                    vm.set('wirelessCountryList', wirelessCountryList);
                 }
             }, function (ex) {
                 Util.handleException(ex);
             });
-            // Build country list
-            wirelessCountryList = [];
-            for(var country in Ung.util.Renderer.countryMap){
-                if(country == 'XU' || country == 'XL'){
-                    // Do not provide "unknowns" as options!
-                    continue;
-                }
-                wirelessCountryList.push([country, Ung.util.Renderer.countryMap[country]]);
-            }
-            vm.set('wirelessCountryList', wirelessCountryList);
         }
     },
     cancelEdit: function (button) {
