@@ -1183,10 +1183,6 @@ Ext.define('Ung.config.network.MainController', {
     getWireless: function(vm, wantCountry){
         // wireless channels
         if (vm.get('intf').get('isWirelessInterface')) {
-            var wirelessChannels = [
-            [-1,  'Automatic 2.4 GHz'.t()],
-            [-2,  'Automatic 5 GHz'.t()]
-            ];
             if(wantCountry == null){
                 // Try our defined country.
                 wantCountry = vm.get('intf').get('wirelessCountryCode');
@@ -1203,9 +1199,24 @@ Ext.define('Ung.config.network.MainController', {
             .then(function(result) {
                 if(result){
                     vm.set('wirelessRegulatoryCompliant', result[0]);
+                    wirelessChannels = [];
+                    var found2Ghz = false;
+                    var found5Ghz = false;
                     Ext.Array.each(result[1], function (ch) {
                         wirelessChannels.push([ch["channel"], ch["channel"] + " - " + ch["frequency"]]);
+                        if(ch["frequency"].includes("2.")){
+                            found2Ghz = true;
+                        }
+                        if(ch["frequency"].includes("5.")){
+                            found5Ghz = true;
+                        }
                     });
+                    if(found5Ghz){
+                        wirelessChannels.splice(0, 0, [-2,  'Automatic 5 GHz'.t()]);
+                    }
+                    if(found2Ghz){
+                        wirelessChannels.splice(0, 0, [-1,  'Automatic 2.4 GHz'.t()]);
+                    }
                     vm.set('wirelessChannelsList', wirelessChannels);
 
                     // Make sure current channel exists in new list.
