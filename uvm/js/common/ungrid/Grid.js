@@ -257,9 +257,6 @@ Ext.define('Ung.cmp.Grid', {
                                     return '';
                                 }
                                 else {
-                                    // This is the notification you're getting. Somehow the passwordHashBase64 has been set here, and it never should be!
-                                    console.log("HEYO");
-                                    console.log("'" + record.get('passwordHashBase64') + "'");
                                     return 'This user\'s password is stored using a weak hash.  Change immediately!'.t();
                                 }
                             }
