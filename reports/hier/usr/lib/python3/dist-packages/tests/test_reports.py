@@ -101,7 +101,6 @@ def create_reports_user(profile_email=test_email_address, email_template_id=1, a
             },
             "javaClass": "com.untangle.app.reports.ReportsUser",
             "onlineAccess": access,
-            "passwordHashBase64": passwd_encoded.decode("utf-8")
     }
 
 
@@ -113,7 +112,6 @@ def create_admin_user(useremail=test_email_address):
             "emailAlerts": True,
             "emailAddress": useremail,
             "javaClass": "com.untangle.uvm.AdminUserSettings",
-            "passwordHashBase64": "YWdlQWnp64i/3IZ6O34JLF0h+BJQ0J3W",
             "username": username
         }
 
