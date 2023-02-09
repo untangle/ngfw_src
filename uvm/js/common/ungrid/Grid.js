@@ -245,17 +245,19 @@ Ext.define('Ung.cmp.Grid', {
                         handler: 'changePassword',
                         items: [{
                             getClass: function(v, meta, record) {
-                                if (record.get('passwordHashBase64') != '') {
-                                    return 'fa fa-exclamation-triangle fa-orange';
-                                } else {
+                                if (record.get('passwordHashBase64') == '' || record.get('passwordHashBase64') == null) {
                                     return 'fa fa-lock';
+                                }
+                                else {
+                                    return 'fa fa-exclamation-triangle fa-orange';
                                 }
                             },
                             getTip: function(value, metadata, record, row, col, store) {
-                                if (record.get('passwordHashBase64') != '') {
-                                    return 'This user\'s password is stored using a weak hash.  Change immediately!'.t();
-                                } else {
+                                if (record.get('passwordHashBase64') == '' || record.get('passwordHashBase64') == null) {
                                     return '';
+                                }
+                                else {
+                                    return 'This user\'s password is stored using a weak hash.  Change immediately!'.t();
                                 }
                             }
                         }]
