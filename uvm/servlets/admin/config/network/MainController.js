@@ -1211,12 +1211,14 @@ Ext.define('Ung.config.network.MainController', {
                             found5Ghz = true;
                         }
                     });
-                    if(found5Ghz){
-                        wirelessChannels.splice(0, 0, [-2,  'Automatic 5 GHz'.t()]);
-                    }
-                    if(found2Ghz){
-                        wirelessChannels.splice(0, 0, [-1,  'Automatic 2.4 GHz'.t()]);
-                    }
+                    // This code will be relevant once we support automatic channels but since
+                    // we don't at this time, don't add these entries.
+                    // if(found5Ghz){
+                    //     wirelessChannels.splice(0, 0, [-2,  'Automatic 5 GHz'.t()]);
+                    // }
+                    // if(found2Ghz){
+                    //     wirelessChannels.splice(0, 0, [-1,  'Automatic 2.4 GHz'.t()]);
+                    // }
                     vm.set('wirelessChannelsList', wirelessChannels);
 
                     // Make sure current channel exists in new list.
