@@ -11,7 +11,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
-        html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  'Use this page to configure each interface\'s configuration and its mapping to a physical network card.'.t()
+        html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  'Use this page to configure each interface\'s configuration and its mapping to a physical network card. <br/>' + 'TODO: You\'re at max interfaces, dummy'.t()
     }],
 
     items: [{
@@ -32,6 +32,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             iconCls: 'fa fa-plus',
             hidden: true,
             bind: { hidden: '{!settings.vlansEnabled}' },
+            disabled: '{allowAddInterfaces === false}',
             handler: 'externalAction',
             action: 'editInterface'
         }, {
