@@ -495,7 +495,7 @@ class NetworkTests(NGFWTestCase):
         netspace_manager = uvmContext.netspaceManager()
         new_ip = netspace_manager.getAvailableAddressSpace("IPv4", 1).split("/")[0]
         new_netsettings = uvmContext.networkManager().getNetworkSettings()
-        for id in range(0, 255):
+        for id in range(0, 253): # The maximum number of interfaces is 253
             if id in used_ids:
                 continue # iterate id, that one is taken
             testVlanIdDev = physicalDev + "." + str(id)
@@ -507,7 +507,7 @@ class NetworkTests(NGFWTestCase):
         network_manager.setNetworkSettings(new_netsettings)
         num_interfaces = len(network_manager.getNetworkSettings()['interfaces']['list'])
         print(num_interfaces)
-        assert(num_interfaces == 255)
+        assert(num_interfaces == 253)
         freeId = network_manager.getNextFreeInterfaceId(network_manager.getNetworkSettings())
         print(freeId)
         assert(freeId == -1)

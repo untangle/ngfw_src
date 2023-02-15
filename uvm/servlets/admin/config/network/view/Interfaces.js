@@ -11,7 +11,16 @@ Ext.define('Ung.config.network.view.Interfaces', {
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
-        html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  'Use this page to configure each interface\'s configuration and its mapping to a physical network card. <br/>' + 'TODO: You\'re at max interfaces, dummy'.t()
+        html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  'Use this page to configure each interface\'s configuration and its mapping to a physical network card.'.t()
+    }, {
+        xtype: 'tbtext',
+        padding: '0 5',
+        style: { fontSize: '12px' },
+        hidden: true,
+        bind: {
+            hidden: '{allowAddInterfaces}'
+        }, 
+        html: '<br/><strong style="color:#FF0000">' + 'Maximum VLAN Interfaces reached.'.t() + '</strong>'
     }],
 
     items: [{
