@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -855,8 +854,8 @@ public class NetworkManagerImpl implements NetworkManager
         if ( this.networkSettings.getInterfaces() != null ) {
             for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
                 try {
-                    interfaceSettingsById[intf.getInterfaceId()] = intf;
-                }
+                interfaceSettingsById[intf.getInterfaceId()] = intf;
+            }
                 catch (ArrayIndexOutOfBoundsException e) {
                     logger.warn("Skipping out-of-bounds physical interface: " + intf.getInterfaceId());
                     continue;
@@ -866,7 +865,7 @@ public class NetworkManagerImpl implements NetworkManager
         if ( this.networkSettings.getVirtualInterfaces() != null ) {
             for ( InterfaceSettings intf : this.networkSettings.getVirtualInterfaces() ) {
                 try {
-                    interfaceSettingsById[intf.getInterfaceId()] = intf;
+                interfaceSettingsById[intf.getInterfaceId()] = intf;
                 }
                 catch (ArrayIndexOutOfBoundsException e) {
                     logger.warn("Skipping out-of-bounds virtual interface: " + intf.getInterfaceId());
@@ -1714,29 +1713,29 @@ public class NetworkManagerImpl implements NetworkManager
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             int freeId = this.getNextFreeInterfaceId(networkSettings);
             if (intf.getInterfaceId() > 0 || freeId != 1) {
-                if (!intf.getIsVlanInterface())
-                    continue;
-                if ( intf.getVlanTag() == null )
-                    throw new RuntimeException("VLAN tag missing on VLAN interface");
-                if ( intf.getVlanParent() == null )
-                    throw new RuntimeException("VLAN parent missing on VLAN interface");
-
+            if (!intf.getIsVlanInterface())
+                continue;
+            if ( intf.getVlanTag() == null )
+                throw new RuntimeException("VLAN tag missing on VLAN interface");
+            if ( intf.getVlanParent() == null )
+                throw new RuntimeException("VLAN parent missing on VLAN interface");
+                
                 if (intf.getInterfaceId() < 0) {
                     intf.setInterfaceId(freeId);
                 }
-                
-                InterfaceSettings parent = null;
-                for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
-                    if ( intf.getVlanParent() == intf2.getInterfaceId() )
-                        parent = intf2;
-                }
 
-                if (parent == null)
-                    throw new RuntimeException( "Unable to find parent of VLAN: " + intf.getVlanParent() );
+            InterfaceSettings parent = null;
+            for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
+                if ( intf.getVlanParent() == intf2.getInterfaceId() )
+                    parent = intf2;
+            }
 
-                intf.setPhysicalDev( parent.getPhysicalDev() );
-                intf.setSystemDev( parent.getSystemDev() + "." + intf.getVlanTag() );
-                intf.setSymbolicDev( intf.getSystemDev() );
+            if (parent == null)
+                throw new RuntimeException( "Unable to find parent of VLAN: " + intf.getVlanParent() );
+
+            intf.setPhysicalDev( parent.getPhysicalDev() );
+            intf.setSystemDev( parent.getSystemDev() + "." + intf.getVlanTag() );
+            intf.setSymbolicDev( intf.getSystemDev() );
             }
         }
 

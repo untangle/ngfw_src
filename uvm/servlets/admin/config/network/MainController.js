@@ -93,7 +93,7 @@ Ext.define('Ung.config.network.MainController', {
             vm.set('nextHopDevicesList', nextHopDevices);
             vm.set('savedSettings', Ext.merge({}, result[0]));
             vm.set('settings', result[0]);
-            vm.set('allowAddInterfaces', Rpc.directData('rpc.networkManager.getNextFreeInterfaceId', result[0], 1) != -1);
+            vm.set('allowAddInterfaces', Rpc.directData('rpc.networkManager.getNextFreeInterfaceId', result[0]) != -1);
 
             // check if Allow SSH access rule is enabled
             var accessRulesSshEnabled = me.isSshAccessRuleEnabled(vm.get('settings'));
