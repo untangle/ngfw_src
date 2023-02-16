@@ -20,7 +20,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         bind: {
             hidden: '{allowAddInterfaces}'
         }, 
-        html: '<br/><strong style="color:#FF0000">' + 'Maximum VLAN Interfaces reached.'.t() + '</strong>'
+        html: '<br/><strong style="color:#FF0000">' + 'Maximum number of interfaces reached.'.t() + '</strong>'
     }],
 
     items: [{

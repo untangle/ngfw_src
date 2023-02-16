@@ -851,10 +851,13 @@ public class NetworkManagerImpl implements NetworkManager
         for ( int i = 0 ; i < interfaceSettingsById.length ; i++ ) {
             interfaceSettingsById[i] = null;
         }
+        // Users cannot add interfaces greater than 253 through the UI, but 
+        // could still add them manually into network.js. This skips any 
+        // leftover interfaces, preventing a nasty error message
         if ( this.networkSettings.getInterfaces() != null ) {
             for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
                 try {
-                interfaceSettingsById[intf.getInterfaceId()] = intf;
+                    interfaceSettingsById[intf.getInterfaceId()] = intf;
             }
                 catch (ArrayIndexOutOfBoundsException e) {
                     logger.warn("Skipping out-of-bounds physical interface: " + intf.getInterfaceId());
@@ -865,7 +868,7 @@ public class NetworkManagerImpl implements NetworkManager
         if ( this.networkSettings.getVirtualInterfaces() != null ) {
             for ( InterfaceSettings intf : this.networkSettings.getVirtualInterfaces() ) {
                 try {
-                interfaceSettingsById[intf.getInterfaceId()] = intf;
+                    interfaceSettingsById[intf.getInterfaceId()] = intf;
                 }
                 catch (ArrayIndexOutOfBoundsException e) {
                     logger.warn("Skipping out-of-bounds virtual interface: " + intf.getInterfaceId());
@@ -1711,8 +1714,6 @@ public class NetworkManagerImpl implements NetworkManager
          * Handle VLAN interfaces
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-            int freeId = this.getNextFreeInterfaceId(networkSettings);
-            if (intf.getInterfaceId() > 0 || freeId != 1) {
             if (!intf.getIsVlanInterface())
                 continue;
             if ( intf.getVlanTag() == null )
@@ -1720,9 +1721,9 @@ public class NetworkManagerImpl implements NetworkManager
             if ( intf.getVlanParent() == null )
                 throw new RuntimeException("VLAN parent missing on VLAN interface");
                 
-                if (intf.getInterfaceId() < 0) {
-                    intf.setInterfaceId(freeId);
-                }
+            if (intf.getInterfaceId() < 0) {
+                intf.setInterfaceId(this.getNextFreeInterfaceId(networkSettings));
+            }
 
             InterfaceSettings parent = null;
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
@@ -1736,7 +1737,6 @@ public class NetworkManagerImpl implements NetworkManager
             intf.setPhysicalDev( parent.getPhysicalDev() );
             intf.setSystemDev( parent.getSystemDev() + "." + intf.getVlanTag() );
             intf.setSymbolicDev( intf.getSystemDev() );
-            }
         }
 
         /**
