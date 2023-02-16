@@ -332,7 +332,7 @@ def append_vlan(parentInterfaceID):
 
     testVLANIP = find_used_ip("1.2.3.4")
     if testVLANIP:
-    # no unused IP found
+        # no unused IP found
         return False
 
     # Check thast VLAN ID is not used
