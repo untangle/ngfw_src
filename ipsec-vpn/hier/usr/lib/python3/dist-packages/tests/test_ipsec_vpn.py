@@ -11,6 +11,7 @@ from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
+import runtests.overrides as overrides
 
 default_policy_id = 1
 appAD = None
@@ -20,27 +21,30 @@ tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
 
-# hardcoded for ats testing
-l2tpServerHosts = ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
+# Defaults for ATS
+l2tpServerHosts = overrides.get("l2tpServerHosts", default=
+                    ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
                     "10.112.56.91","10.112.56.94","10.112.56.57","10.112.56.58","10.112.56.59"]
-l2tpClientHost = "10.112.56.84"  # Windows 10 using builtin OpenSSH
-l2tpAliasIP = "10.112.56.200"
-l2tpLocalUser = "test"
-l2tpLocalPassword = "passwd"
-ipsecHost = "10.112.56.96"
-ipsecHostLANIP = "192.168.235.96"
-ipsecPcLANIP = "192.168.235.83"
-ipsecHostLAN = "192.168.235.0/24"
-ipsecHostname = "ipsecsite.untangle.int"
-configuredHostIPs = [('10.112.0.134','192.168.14.1','192.168.14.0/24'), # ATS
-                     ('10.112.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
-                     ('10.112.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
-                     ('10.112.56.89','10.112.56.89','10.112.56.15/32'), # QA 3 Bridged
-                     ('10.112.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
-                     ('10.112.56.57','192.168.4.1','192.168.4.0/24'), # QA box .57
-                     ('10.112.56.58','192.168.12.1','192.168.12.0/24'), # QA box .58
-                     ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box .59
-
+)
+l2tpClientHost = overrides.get("l2tpClientHost", default="10.112.56.84")  # Windows 10 using builtin OpenSSH
+l2tpAliasIP = overrides.get("l2tpAliasIP", default="10.112.56.200")
+l2tpLocalUser = overrides.get("l2tpLocalUser", default="test")
+l2tpLocalPassword = overrides.get("l2tpLocalPassword", default="passwd")
+ipsecHost = overrides.get("ipsecHost", default="10.112.56.96")
+ipsecHostLANIP = overrides.get("ipsecHostLANIP", default="192.168.235.96")
+ipsecPcLANIP = overrides.get("ipsecPcLANIP", default="192.168.235.83")
+ipsecHostLAN = overrides.get("ipsecHostLAN", default="192.168.235.0/24")
+ipsecHostLAN = overrides.get("ipsecHostLAN", default="ipsecsite.untangle.int")
+configuredHostIPs = overrides.get("configuredHostIPs", default=
+                        [('10.112.0.134','192.168.14.1','192.168.14.0/24'), # ATS
+                        ('10.112.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
+                        ('10.112.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
+                        ('10.112.56.89','10.112.56.89','10.112.56.15/32'), # QA 3 Bridged
+                        ('10.112.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
+                        ('10.112.56.57','192.168.4.1','192.168.4.0/24'), # QA box .57
+                        ('10.112.56.58','192.168.12.1','192.168.12.0/24'), # QA box .58
+                        ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box .59
+)
 
 def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLANRange=""):
     return {
@@ -248,7 +252,7 @@ class IPsecTests(NGFWTestCase):
     def test_020_createIpsecTunnel(self):
         global tunnelUp, ipsecTestLAN
         if (ipsecHostResult != 0):
-            raise unittest.SkipTest("No paried IPSec server available")
+            raise unittest.SkipTest("No paired IPSec server available")
         pre_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
@@ -270,7 +274,7 @@ class IPsecTests(NGFWTestCase):
         while (ipsecHostLANResult != 0 and timeout > 0):
             timeout -= 1
             time.sleep(1)
-            # ping the remote LAN to see if the IPsec tunnel is connected.
+            # Access remote LAN to see if the IPsec tunnel is connected.
             ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecHostLANIP}/"))
         assert (ipsecHostLANResult == 0)
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
@@ -281,6 +285,104 @@ class IPsecTests(NGFWTestCase):
         post_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
         assert(pre_events_enabled < post_events_enabled)
     
+    def test_021_no_vlan_conflict(self):
+        """
+        Ensure that traffic is not marked for the last LAN interface
+        """
+        if (not tunnelUp):
+            raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
+
+        ##
+        ## Add a dummy vlan inteface
+        ##
+        vlan_interface_name = "ats_vlan"
+        network_settings = copy.deepcopy(orig_netsettings)
+        vlan_netspace = uvmContext.netspaceManager().getAvailableAddressSpace("IPv4", 1);
+        vlan_host, vlan_netmask = global_functions.cidr_to_netmask(vlan_netspace)
+        network_settings["interfaces"]["list"].append({
+            "configType": "ADDRESSED",
+            "dhcpEnabled": False,
+            "dhcpLeaseDuration": 0,
+            "dhcpOptions": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "downloadBandwidthKbps": 0,
+            "hidden": False,
+            "interfaceId": -1,
+            "isVirtualInterface": False,
+            "isVlanInterface": True,
+            "isWan": False,
+            "isWirelessInterface": False,
+            "javaClass": "com.untangle.uvm.network.InterfaceSettings",
+            "name": vlan_interface_name,
+            "physicalDev": "eth1",
+            "symbolicDev": "eth1.999",
+            "systemDev": "eth1.999",
+            "uploadBandwidthKbps": 0,
+            "v4Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v4ConfigType": "STATIC",
+            "v4NatEgressTraffic": True,
+            "v4NatIngressTraffic": False,
+            "v4PPPoEUsePeerDns": False,
+            "v4StaticAddress": vlan_host,
+            "v4StaticNetmask": vlan_netmask,
+            "v4StaticPrefix": vlan_netspace.split("/")[1],
+            "v6Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v6ConfigType": "STATIC",
+            "vlanParent": 2,
+            "vlanTag": 999,
+            "vrrpAliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "vrrpEnabled": False,
+            "wirelessCountryCode": "",
+            "wirelessMode": "AP",
+            "wirelessVisibility": 0
+        })
+        uvmContext.networkManager().setNetworkSettings(network_settings)
+        network_settings = uvmContext.networkManager().getNetworkSettings()
+        interface_id = None
+        for interface in network_settings["interfaces"]["list"]:
+            if interface["name"] == vlan_interface_name:
+                interface_id = interface["interfaceId"]
+
+        ##
+        ## Filter block rule for the vlan interface
+        ##
+        network_settings["filterRules"]["list"].append({
+                "blocked": True,
+                "conditions": {
+                    "javaClass": "java.util.LinkedList",
+                    "list": [
+                        {
+                            "conditionType": "SRC_INTF",
+                            "invert": False,
+                            "javaClass": "com.untangle.uvm.network.FilterRuleCondition",
+                            "value": interface_id
+                        }
+                    ]
+                },
+                "description": "ats block vlan",
+                "enabled": True,
+                "ipv6Enabled": False,
+                "javaClass": "com.untangle.uvm.network.FilterRule",
+                "ruleId": -1
+        })
+        uvmContext.networkManager().setNetworkSettings(network_settings)
+
+        # Attempt to ping from the remote network back to us
+        # If we are marked for the vlan, this will fail
+        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % remote_control.client_ip, host=ipsecPcLANIP)
+        assert(ipsecPcLanResult != 1)
+
     def test_025_verifyIPsecBypass(self):           
         if (not tunnelUp):
             raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
@@ -339,7 +441,7 @@ class IPsecTests(NGFWTestCase):
         if (l2tpClientHostResult != 0):
             raise unittest.SkipTest("l2tpClientHostResult not available")
         if (not wan_IP in l2tpServerHosts):
-            raise unittest.SkipTest("No paried L2TP client available")
+            raise unittest.SkipTest("No paired L2TP client available")
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         appData = self._app.getSettings()
         appData = createL2TPconfig(appData,"LOCAL_DIRECTORY")
@@ -476,7 +578,7 @@ class IPsecTests(NGFWTestCase):
         if (l2tpClientHostResult != 0):
             raise unittest.SkipTest("l2tpClientHostResult not available")
         if (not wan_IP in l2tpServerHosts):
-            raise unittest.SkipTest("No paried L2TP client available")
+            raise unittest.SkipTest("No paired L2TP client available")
         # Configure RADIUS settings
         appAD.setSettings(createRadiusSettings())
         appData = self._app.getSettings()
@@ -498,7 +600,7 @@ class IPsecTests(NGFWTestCase):
 
     def test_060_createIpsecTunnelHostname(self):
         if (ipsecHostResult != 0):
-            raise unittest.SkipTest("No paried IPSec server available")
+            raise unittest.SkipTest("No paired IPSec server available")
         pre_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
