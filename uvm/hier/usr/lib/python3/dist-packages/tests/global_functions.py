@@ -332,7 +332,16 @@ def is_bridged(wan_ip):
     if ipaddr.IPv4Address(wan_ip) in ipaddr.IPv4Network(hostname_cidr):
         return True
     return False
-    
+
+def cidr_to_netmask(cidr):
+    """
+    From a cidr notation string, return network/netmask.
+    """
+    network, net_bits = cidr.split('/')
+    host_bits = 32 - int(net_bits)
+    netmask = socket.inet_ntoa(struct.pack('!I', (1 << 32) - (1 << host_bits)))
+    return network, netmask
+
 def send_test_email(mailhost=TEST_SERVER_HOST):
     sender = 'atstest@test.untangle.com'
     receivers = ['atstest@test.untangle.com']
