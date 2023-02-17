@@ -219,7 +219,7 @@ def create_dns_rule( networkAddr, name):
         "name": name
          }
 
-def create_vlan_interface( physicalInterface, symInterface, sysInterface, ipV4address):
+def create_vlan_interface(interfaceId, name, physicalInterface, symInterface, sysInterface, ipV4address):
     return {
             "addressed": True,
             "bridged": False,
@@ -230,11 +230,11 @@ def create_vlan_interface( physicalInterface, symInterface, sysInterface, ipV4ad
                 "list": []
             },
             "disabled": False,
-            "interfaceId": 100,
+            "interfaceId": interfaceId,
             "isVlanInterface": True,
             "isWan": False,
             "javaClass": "com.untangle.uvm.network.InterfaceSettings",
-            "name": "network_tests_010",
+            "name": name,
             "physicalDev": physicalInterface, #"eth1",
             "raEnabled": False,
             "symbolicDev": symInterface, #"eth1.1",
@@ -355,7 +355,7 @@ def append_vlan(parentInterfaceID):
         return False
 
     # if valid VLAN interface and IP is available, create a VLAN
-    netsettings['interfaces']['list'].append(create_vlan_interface(physicalDev,testVlanIdDev,testVlanIdDev,str(testVLANIP)))
+    netsettings['interfaces']['list'].append(create_vlan_interface(physicalDev,"network_tests",testVlanIdDev,testVlanIdDev,str(testVLANIP)))
     uvmContext.networkManager().setNetworkSettings(netsettings)
     return testVLANIP
 
@@ -468,8 +468,8 @@ class NetworkTests(NGFWTestCase):
     def test_010_client_is_online(self):
         result = remote_control.is_online()
         assert (result == 0)
-
-    def test_015_add_vlan(self):
+        
+    def test_014_add_vlan(self):
         raise unittest.SkipTest("Review changes in test")
         # Add a test static VLAN
         test_vlan_ip = append_vlan(remote_control.interface)
@@ -480,7 +480,44 @@ class NetworkTests(NGFWTestCase):
         else:
             # no VLAN was created so skip test
             unittest.SkipTest("No VLAN or IP address available")
-
+            
+    def test_015_add_many_vlans(self):
+        network_manager = uvmContext.networkManager()
+        
+        assigned_intfs = []
+        for interface in network_manager.getNetworkSettings()['interfaces']['list']:
+            assigned_intfs += [interface['interfaceId']]
+            if interface['interfaceId'] == remote_control.interface and interface['configType'] == 'ADDRESSED':
+                physicalDev = interface['physicalDev']
+        for interface in network_manager.getNetworkSettings()['virtualInterfaces']['list']:
+            assigned_intfs += [interface['interfaceId']]
+        if not physicalDev:
+            unittest.SkipTest("No physical device available")
+            
+        max_interfaces = 253
+        netspace_manager = uvmContext.netspaceManager()
+        new_ip = netspace_manager.getAvailableAddressSpace("IPv4", 1).split("/")[0]
+        new_netsettings = uvmContext.networkManager().getNetworkSettings()
+        for id in range(1, max_interfaces):
+            # only adding if not used already
+            if id not in assigned_intfs:
+                testVlanIdDev = physicalDev + "." + str(id)
+                # assigning negative numbers to all interfaces we add, like the ui does
+                vlan_intf = create_vlan_interface(id * -1, "network_tests_" + str(id), physicalDev, testVlanIdDev, testVlanIdDev, new_ip)
+                new_netsettings['interfaces']['list'].append(vlan_intf)
+                new_ip = netspace_manager.getAvailableAddressSpace("IPv4", 1).split("/")[0]
+        
+        network_manager.setNetworkSettings(new_netsettings)
+        num_interfaces  = len(network_manager.getNetworkSettings()['interfaces']       ['list'])
+        num_interfaces += len(network_manager.getNetworkSettings()['virtualInterfaces']['list'])
+        print(num_interfaces)
+        assert(num_interfaces == max_interfaces)
+        freeId = network_manager.getNextFreeInterfaceId(network_manager.getNetworkSettings())
+        print(freeId)
+        assert(freeId == -1)
+        
+        # Re-setting network settings for other tests
+        network_manager.setNetworkSettings(orig_netsettings)
 
     def test_016_add_alias(self):
         # raise unittest.SkipTest("Review changes in test")

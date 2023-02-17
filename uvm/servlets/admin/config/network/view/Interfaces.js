@@ -12,6 +12,15 @@ Ext.define('Ung.config.network.view.Interfaces', {
         padding: '8 5',
         style: { fontSize: '12px' },
         html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  'Use this page to configure each interface\'s configuration and its mapping to a physical network card.'.t()
+    }, {
+        xtype: 'tbtext',
+        padding: '0 5',
+        style: { fontSize: '12px' },
+        hidden: true,
+        bind: {
+            hidden: '{allowAddInterfaces}'
+        }, 
+        html: '<br/><strong style="color:#FF0000">' + 'Maximum number of interfaces reached.'.t() + '</strong>'
     }],
 
     items: [{
@@ -31,7 +40,8 @@ Ext.define('Ung.config.network.view.Interfaces', {
             text: 'Add Tagged VLAN Interface'.t(),
             iconCls: 'fa fa-plus',
             hidden: true,
-            bind: { hidden: '{!settings.vlansEnabled}' },
+            bind: { hidden: '{!settings.vlansEnabled}',
+                    disabled: '{!allowAddInterfaces}' },
             handler: 'externalAction',
             action: 'editInterface'
         }, {

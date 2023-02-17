@@ -11,12 +11,14 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.json.JSONString;
 
 /**
  * The class <code>IPMaskedAddress</code> represents a masked IP address.
  */
 @SuppressWarnings("serial")
-public class IPMaskedAddress implements Serializable
+public class IPMaskedAddress implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger(IPMaskedAddress.class);
 
@@ -161,6 +163,12 @@ public class IPMaskedAddress implements Serializable
     public IPMaskedAddress(InetAddress addr)
     {
         this(addr.getHostAddress());
+    }
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 
     /**
