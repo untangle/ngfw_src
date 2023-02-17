@@ -219,7 +219,7 @@ def create_dns_rule( networkAddr, name):
         "name": name
          }
 
-def create_vlan_interface(interfaceId, physicalInterface, symInterface, sysInterface, ipV4address):
+def create_vlan_interface(interfaceId, name, physicalInterface, symInterface, sysInterface, ipV4address):
     return {
             "addressed": True,
             "bridged": False,
@@ -234,7 +234,7 @@ def create_vlan_interface(interfaceId, physicalInterface, symInterface, sysInter
             "isVlanInterface": True,
             "isWan": False,
             "javaClass": "com.untangle.uvm.network.InterfaceSettings",
-            "name": "network_tests_010",
+            "name": name,
             "physicalDev": physicalInterface, #"eth1",
             "raEnabled": False,
             "symbolicDev": symInterface, #"eth1.1",
@@ -355,7 +355,7 @@ def append_vlan(parentInterfaceID):
         return False
 
     # if valid VLAN interface and IP is available, create a VLAN
-    netsettings['interfaces']['list'].append(create_vlan_interface(physicalDev,testVlanIdDev,testVlanIdDev,str(testVLANIP)))
+    netsettings['interfaces']['list'].append(create_vlan_interface(physicalDev,"network_tests",testVlanIdDev,testVlanIdDev,str(testVLANIP)))
     uvmContext.networkManager().setNetworkSettings(netsettings)
     return testVLANIP
 
@@ -484,11 +484,13 @@ class NetworkTests(NGFWTestCase):
     def test_015_add_many_vlans(self):
         network_manager = uvmContext.networkManager()
         
-        used_ids = []
+        assigned_intfs = []
         for interface in network_manager.getNetworkSettings()['interfaces']['list']:
-            used_ids += [interface['interfaceId']]
+            assigned_intfs += [interface['interfaceId']]
             if interface['interfaceId'] == remote_control.interface and interface['configType'] == 'ADDRESSED':
                 physicalDev = interface['physicalDev']
+        for interface in network_manager.getNetworkSettings()['virtualInterfaces']['list']:
+            assigned_intfs += [interface['interfaceId']]
         if not physicalDev:
             unittest.SkipTest("No physical device available")
             
@@ -496,17 +498,18 @@ class NetworkTests(NGFWTestCase):
         netspace_manager = uvmContext.netspaceManager()
         new_ip = netspace_manager.getAvailableAddressSpace("IPv4", 1).split("/")[0]
         new_netsettings = uvmContext.networkManager().getNetworkSettings()
-        for id in range(0, max_interfaces):
-            if id in used_ids:
-                continue # iterate id, that one is taken
-            testVlanIdDev = physicalDev + "." + str(id)
-            if id not in used_ids:
-                vlan_intf = create_vlan_interface(id, physicalDev, testVlanIdDev, testVlanIdDev, new_ip)
+        for id in range(1, max_interfaces):
+            # only adding if not used already
+            if id not in assigned_intfs:
+                testVlanIdDev = physicalDev + "." + str(id)
+                # assigning negative numbers to all interfaces we add, like the ui does
+                vlan_intf = create_vlan_interface(id * -1, "network_tests_" + str(id), physicalDev, testVlanIdDev, testVlanIdDev, new_ip)
                 new_netsettings['interfaces']['list'].append(vlan_intf)
                 new_ip = netspace_manager.getAvailableAddressSpace("IPv4", 1).split("/")[0]
         
         network_manager.setNetworkSettings(new_netsettings)
-        num_interfaces = len(network_manager.getNetworkSettings()['interfaces']['list'])
+        num_interfaces  = len(network_manager.getNetworkSettings()['interfaces']       ['list'])
+        num_interfaces += len(network_manager.getNetworkSettings()['virtualInterfaces']['list'])
         print(num_interfaces)
         assert(num_interfaces == max_interfaces)
         freeId = network_manager.getNextFreeInterfaceId(network_manager.getNetworkSettings())
