@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
@@ -94,7 +95,7 @@ public class NetworkManagerImpl implements NetworkManager
      * This array holds the current interface Settings indexed by the interface ID.
      * This enabled fast lookups with iterating the list in findInterfaceId()
      */
-    private InterfaceSettings[] interfaceSettingsById = new InterfaceSettings[255];
+    private InterfaceSettings[] interfaceSettingsById = new InterfaceSettings[InterfaceSettings.MAX_INTERFACE_ID];
 
     /**
      * NetworkManagerImpl constructor
@@ -840,7 +841,7 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * sets values in the interafceSettingsById map for quick lookups
+     * sets values in the interfaceSettingsById map for quick lookups
      */
     private void configureInterfaceSettingsArray()
     {
@@ -850,14 +851,29 @@ public class NetworkManagerImpl implements NetworkManager
         for ( int i = 0 ; i < interfaceSettingsById.length ; i++ ) {
             interfaceSettingsById[i] = null;
         }
+        // Users cannot add interfaces greater than 253 through the UI, but 
+        // could still add them manually into network.js. This skips any 
+        // leftover interfaces, preventing a nasty error message
         if ( this.networkSettings.getInterfaces() != null ) {
             for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-                interfaceSettingsById[intf.getInterfaceId()] = intf;
+                try {
+                    interfaceSettingsById[intf.getInterfaceId()] = intf;
+            }
+                catch (ArrayIndexOutOfBoundsException e) {
+                    logger.warn("Skipping out-of-bounds physical interface: " + intf.getInterfaceId());
+                    continue;
+                }
             }
         }
         if ( this.networkSettings.getVirtualInterfaces() != null ) {
             for ( InterfaceSettings intf : this.networkSettings.getVirtualInterfaces() ) {
-                interfaceSettingsById[intf.getInterfaceId()] = intf;
+                try {
+                    interfaceSettingsById[intf.getInterfaceId()] = intf;
+                }
+                catch (ArrayIndexOutOfBoundsException e) {
+                    logger.warn("Skipping out-of-bounds virtual interface: " + intf.getInterfaceId());
+                    continue;
+                }
             }
         }
 
@@ -889,7 +905,7 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Creating new InterfaceSettings for " + deviceName);
 
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
-                int interfaceId = getNextFreeInterfaceId( netSettings, 1 );
+                int interfaceId = this.getNextFreeInterfaceId( netSettings );
                 interfaceSettings.setInterfaceId( interfaceId );
                 interfaceSettings.setName("Interface " + interfaceId);
                 interfaceSettings.setPhysicalDev( deviceName );
@@ -1704,10 +1720,11 @@ public class NetworkManagerImpl implements NetworkManager
                 throw new RuntimeException("VLAN tag missing on VLAN interface");
             if ( intf.getVlanParent() == null )
                 throw new RuntimeException("VLAN parent missing on VLAN interface");
+                
+            if (intf.getInterfaceId() < 0) {
+                intf.setInterfaceId(this.getNextFreeInterfaceId(networkSettings));
+            }
 
-            if ( intf.getInterfaceId() < 0 )
-                intf.setInterfaceId( getNextFreeInterfaceId( networkSettings, 100 ) );
-            
             InterfaceSettings parent = null;
             for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
                 if ( intf.getVlanParent() == intf2.getInterfaceId() )
@@ -2923,18 +2940,17 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Provide the first free interface ID higher than the specified minimum
+     * Provide the first free interface ID
      *
      * @param netSettings - the network settings to use to check for a free ID
-     * @param minimum - the minimum ID. It will start looking for a free ID at this minimum
-     * @return the next available ID greater than or equal to minimum, or -1 if not found.
+     * @return the next available ID, or -1 if not found.
      */
-    public int getNextFreeInterfaceId(NetworkSettings netSettings, int minimum)
+    public int getNextFreeInterfaceId(NetworkSettings netSettings)
     {
         if (netSettings == null)
-            return minimum;
+            return 1;
         int freeId;
-        for (freeId = minimum ; freeId < InterfaceSettings.MAX_INTERFACE_ID ; freeId++) {
+        for (freeId = 1 ; freeId < InterfaceSettings.MAX_INTERFACE_ID ; freeId++) {
             boolean found = false;
             if ( netSettings.getInterfaces() != null ) {
                 for ( InterfaceSettings intfSettings : netSettings.getInterfaces() ) {
@@ -2956,7 +2972,7 @@ public class NetworkManagerImpl implements NetworkManager
             if (found) continue;
             return freeId;
         }
-        logger.warn("Failed to find a free interface Id (min:" + minimum + " max:"  + freeId + ")");
+        logger.warn("Failed to find a free interface Id ("  + freeId + ")");
         return -1;
     }
 
