@@ -63,8 +63,6 @@ class PerformanceTests(NGFWTestCase):
         # Start iperf server
         iperf_server_running = remote_control.run_command("pidof iperf", host=global_functions.iperf_server)
         if iperf_server_running == 1:
-            ## !!! change to use build_iperf_command
-            # remote_control.run_command("iperf -s >/dev/null 2>&1 &", global_functions.iperf_server)
             remote_control.run_command(global_functions.build_iperf_command(mode="server", fork=True), global_functions.iperf_server)
 
         # Test expects that iperf server is DIRECTLY on the WAN network,
@@ -221,6 +219,7 @@ class PerformanceTests(NGFWTestCase):
             remote_control.run_command("pkill --signal 9 iperf", host=global_functions.iperf_server)
             time.sleep(1)
             iperf_running = remote_control.run_command("pidof iperf", host=global_functions.iperf_server)
+
 
 
     @classmethod
