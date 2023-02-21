@@ -34,7 +34,7 @@ AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
 AD_DOMAIN = "adtest.adtesting.int"
 AD_USER = "user_28004"
-TEST_SERVER_HOST = 'test.untangle.com'
+TEST_SERVER_HOST = overrides.get("TEST_SERVER_HOST", default='test.untangle.com')
 ACCOUNT_FILE_SERVER = "ats-iqd.untangle.int"
 ACCOUNT_FILE = "/test/account_login.json"
 
@@ -162,7 +162,17 @@ iperf_results_re = re.compile('^\[\s+\d+\]\s+([0-9]*[.][0-9]*)\-([0-9]*[.][0-9]*
 def get_iperf_results(duration=30):
     """
     Run iperf and return results
+
+    Returns a dictionary with the following keys:
+    duration: duration of the test in seconds
+    transferred: number of bytes transferred
+    throughput: number of bytes per second
     """
+    results = {
+        "duration": 0,
+        "transferred": 0,
+        "throughput": 0,
+    }
     result = 0
     start_time = None
     end_time = None
@@ -182,18 +192,22 @@ def get_iperf_results(duration=30):
         # If we don't get here either:
         # - Something fundamentally wrong went wrong with the iperf command
         # - Our regex failed
-        start_time = matches.group(1)
-        stop_time = matches.group(2)
+        start_time = float(matches.group(1))
+        stop_time = float(matches.group(2))
+        results["duration"] = stop_time - start_time 
+
         transferred_amount = float(matches.group(3))
         transferred_size = matches.group(4)
-        rate_amount = float(matches.group(5))
-        rate_size = matches.group(6)
-        rate_interval = matches.group(7)
+        results["transferred"] = from_si_prefix(f"{transferred_amount}{transferred_size}")
 
-        transferred_value = from_si_prefix(f"{transferred_amount}{transferred_size}")
-        rate_value = from_si_prefix(f"{rate_amount}{rate_size}")
+        throughput_amount = float(matches.group(5))
+        throughput_size = matches.group(6)
+        # Expecting this to be seconds.
+        throughput_interval = matches.group(7)
 
-    return transferred_value, rate_value
+        results["throughput"] = from_si_prefix(f"{throughput_amount}{throughput_size}")
+
+    return results
 
 def build_iperf_command(mode="client", server_address=None, override_arguments=None, extra_arguments=None, fork=False, duration=30):
     """
