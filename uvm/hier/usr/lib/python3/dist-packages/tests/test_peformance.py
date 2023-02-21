@@ -110,7 +110,7 @@ class PerformanceTests(NGFWTestCase):
         bypass_throughput = []
         for i in range(Performance_throughput_iterations):
             iperf_results = global_functions.get_iperf_results(duration=Performance_throughput_duration)
-            bypass_throughput.append(iperf_results[1])
+            bypass_throughput.append(iperf_results["throughput"])
         bypass_throughput_average = sum(bypass_throughput) / len(bypass_throughput)
 
         ## Remove bypass rule
@@ -171,7 +171,7 @@ class PerformanceTests(NGFWTestCase):
                 application_throughput = []
                 for i in range(Performance_throughput_iterations):
                     iperf_results = global_functions.get_iperf_results(duration=Performance_throughput_duration)
-                    application_throughput.append(iperf_results[1])
+                    application_throughput.append(iperf_results["throughput"])
                 application_average = sum(application_throughput) / len(application_throughput)
 
                 if application != None:
@@ -222,7 +222,6 @@ class PerformanceTests(NGFWTestCase):
             time.sleep(1)
             iperf_running = remote_control.run_command("pidof iperf", host=global_functions.iperf_server)
 
-        assert(True is True)
 
     @classmethod
     def final_extra_tear_down(cls):
