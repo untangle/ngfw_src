@@ -24,7 +24,7 @@ from uvm import Uvm
 
 # ATS Global Constants
 OFFICE_NETWORKS = ['10.111.0.0/16','10.112.0.0/16','10.113.0.0/16']
-IPERF_SERVERS = [('10.112.0.0/16','10.112.56.23'),] # SJ Office network
+IPERF_SERVERS = overrides.get("IPERF_SERVERS", default=[('10.112.0.0/16','10.112.56.23'),])
 RADIUS_SERVER = "10.112.56.28"
 RADIUS_SERVER_PASSWORD = "chakas"
 RADIUS_USER = "normal"
@@ -81,9 +81,7 @@ except socket.error:
     print("Using default IP as DNS failed")
     test_server_ip = "35.153.140.77"
 
-ftp_server = overrides.get('ftp_server')
-if ftp_server is None:
-    ftp_server = test_server_ip
+ftp_server = overrides.get('ftp_server', test_server_ip)
 iperf_server = ""
 
 def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):
@@ -123,7 +121,7 @@ def get_hostname_ip_address(resolver="8.8.8.8", hostname=TEST_SERVER_HOST):
     hostname_ip = hostname_ip.rstrip()
     return hostname_ip
     
-def verify_iperf_configuration(wan_ip):
+def verify_iperf_configuration(wan_ip, ignore_running=False):
     # https://iperf.fr/
     global iperf_server
 
@@ -143,17 +141,250 @@ def verify_iperf_configuration(wan_ip):
     if iperf_serverReachable != 0:
         print("iperf Server is unreachable.")
         return False
-    # Check to see if some other test is using iperf for UDP testing
-    iperfRunning = remote_control.run_command("pidof iperf", host=iperf_server)
-    if iperfRunning == 0:
-        print("iperf is already running on server.")
-        return False
+    if ignore_running is False:
+        # Check to see if some other test is using iperf for UDP testing
+        iperfRunning = remote_control.run_command("pidof iperf", host=iperf_server)
+        if iperfRunning == 0:
+            print("iperf is already running on server.")
+            return False
     # Check that the client has iperf
     clientHasIperf = remote_control.run_command("test -x /usr/bin/iperf")
     if clientHasIperf != 0:
         print("iperf not installed on client.")
         return False
     return True
+
+# For parsing final iperf results:
+# [  3] 0.0000-10.0006 sec  9.59 GBytes  8.24 Gbits/sec
+# Also, transferred/rate can be non-float:
+# [  3] 0.0000-5.0005 sec   952 MBytes  1.60 Gbits/sec"
+iperf_results_re = re.compile('^\[\s+\d+\]\s+([0-9]*[.][0-9]*)\-([0-9]*[.][0-9]*)\s+sec\s+([0-9]*[.]*[0-9]*)\s+([^\s]+)\s+([0-9]*[.]*[0-9]*)\s+([^/]+)/(.+)')
+def get_iperf_results(duration=30):
+    """
+    Run iperf and return results
+    """
+    result = 0
+    start_time = None
+    end_time = None
+    transferred_amount = None
+    transferred_size = None
+    rate_amount = None
+    rate_size = None
+    rate_interval = None
+
+    iperf_results = remote_control.run_command(build_iperf_command(duration=duration), stdout=True)
+
+    last_line = iperf_results.splitlines()[-1]
+    matches = iperf_results_re.match(last_line)
+    transferred_value = 0
+    rate_value = 0
+    if matches is not None:
+        # If we don't get here either:
+        # - Something fundamentally wrong went wrong with the iperf command
+        # - Our regex failed
+        start_time = matches.group(1)
+        stop_time = matches.group(2)
+        transferred_amount = float(matches.group(3))
+        transferred_size = matches.group(4)
+        rate_amount = float(matches.group(5))
+        rate_size = matches.group(6)
+        rate_interval = matches.group(7)
+
+        transferred_value = from_si_prefix(f"{transferred_amount}{transferred_size}")
+        rate_value = from_si_prefix(f"{rate_amount}{rate_size}")
+
+    return transferred_value, rate_value
+
+def build_iperf_command(mode="client", server_address=None, override_arguments=None, extra_arguments=None, fork=False, duration=30):
+    """
+    Build iperf command
+
+    Default arguments should be evident, but of particular note are:
+    override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
+    extra_arguments     Additional arguments not otherwise processed.
+    """
+    if mode == "client":
+        if server_address is None:
+            server_address = iperf_server
+
+    arguments = []
+    if override_arguments is not None:
+        # Allow completely custom arguments
+        arguments = override_arguments
+    else:
+        if mode == "client":
+            if duration is not None:
+                arguments.append(f"--time {duration}")
+
+    optional_arguments = []
+    if fork:
+        optional_arguments.append(" >/dev/null 2>&1 &")
+
+    if extra_arguments is not None:
+        optional_arguments.append(extra_arguments)
+
+    if mode == "client":
+        command = f"iperf -c {server_address} {' '.join(arguments)} {' '.join(optional_arguments)}"
+    elif mode == "server":
+        command = f"iperf -s {' '.join(arguments)} {' '.join(optional_arguments)}"
+    else:
+        command = f"iperf {' '.join(arguments)} {' '.join(optional_arguments)}"
+
+    print(f"{sys._getframe().f_code.co_name}: {command}" )
+    return command
+
+Si_prefixes = {
+    # yocto
+    'y': {
+        "bit": 1e-24,
+        "dec": 1e-24
+    },
+    # zepto
+    'z': {
+        "bit": 1e-21,
+        "dec": 1e-21
+    },
+    # atto
+    'a': {
+        "bit": 1e-18,
+        "dec": 1e-18
+    },
+    # femto
+    'f': {
+        "bit": 1e-15,
+        "dec": 1e-15
+    },
+    # pico
+    'p': {
+        "bit": 1e-12,
+        "dec": 1e-12
+    },
+    # nano
+    'n': {
+        "bit": 1e-9,
+        "dec": 1e-9
+    },
+    # micro
+    'u': {
+        "bit": 1e-6,
+        "dec": 1e-6
+    },
+    # mili
+    'm': {
+        "bit": 1e-3,
+        "dec": 1e-3
+    },
+    # centi
+    'c': {
+        "bit": 1e-2,
+        "dec": 1e-2
+    },
+    # deci
+    'd': {
+        "bit": 1e-1,
+        "dec": 1e-1
+    },
+    # kilo
+    'k': {
+        "bit": 2<<9,
+        "dec": 1e3
+    },
+    # mega
+    'M': {
+        "bit": 2<<19,
+        "dec": 1e6
+    },
+    # giga
+    'G': {
+        "bit": 2<<19,
+        "dec": 1e9
+    },
+    # tera
+    'T': {
+        "bit": 2<<29,
+        "dec": 1e12
+    },
+    # peta
+    'P': {
+        "bit": 2<<39,
+        "dec": 1e15
+    },
+    # exa
+    'E': {
+        "bit": 2<<49,
+        "dec": 1e18
+    },
+    # zetta
+    'Z': {
+        "bit": 2<<59,
+        "dec": 1e21
+    },
+    # yotta
+    'Y': {
+        "bit": 2<<69,
+        "dec": 1e24
+    }
+}
+Si_from_match_re=re.compile('^([0-9]*[.][0-9]*)\s*(.+)')
+
+def from_si_prefix(si_value, type="bit"):
+    """
+    Convert si value into raw non sa value 
+    """
+    value = None
+    matches = Si_from_match_re.match(si_value)
+    if matches is not None:
+        prefix = matches.group(2)[0]
+        if prefix in Si_prefixes:
+            value = float(matches.group(1)) * Si_prefixes[prefix][type]
+    return value
+
+def to_si_prefix(value, unit="bit", type="bit"):
+    """
+    Convert value into si prefix with optional unit
+    """
+    last_si = None
+    for si in Si_prefixes:
+        if last_si is None:
+            last_si = si
+        if value < Si_prefixes[si][type]:
+            break
+        last_si = si
+
+    value = value / Si_prefixes[last_si][type]
+    return f"{value:.2f} {last_si}{unit}"
+
+def get_host_hops(host_address):
+    """
+    Run traceroute to determine number of hops to reach host.
+    """
+    traceroute_result = remote_control.run_command(f"sudo traceroute -n -I {host_address}", stdout=True)
+    # Expecting our last result line to look like:
+    # 2  192.168.25.57  1.034 ms * *
+    return int(traceroute_result.split("\n")[-1].strip().split(" ")[0])
+
+def restart_uvm():
+    """
+    Restart uvm.
+    IMPORTANT: This changes uvmContext!
+    """
+    global uvmContext
+    subprocess.call(["/etc/init.d/untangle-vm","restart"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+    uvmContext = None
+    max_tries = 60
+    while max_tries > 0:
+        try:
+            uvmContext = Uvm().getUvmContext(timeout=240)
+        except Exception as e:
+            pass
+        if uvmContext is not None:
+            break
+        max_tries -= 1
+        time.sleep(1)
+
+    return uvmContext
+
 
 def find_syslog_server(wan_ip):
     syslog_ip = ""
