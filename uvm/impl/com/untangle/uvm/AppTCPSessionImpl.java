@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.ObjectCrumb;
@@ -27,6 +29,8 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 public class AppTCPSessionImpl extends AppSessionImpl implements AppTCPSession
 {
+    private static final Logger logger = Logger.getLogger(AppTCPSessionImpl.class);
+
     private static final ByteBuffer EMPTY_BUF = ByteBuffer.allocate(0);
     private static final String TEMP_FILE_KEY = "temp_file_attachemnt_key";
 
@@ -36,6 +40,23 @@ public class AppTCPSessionImpl extends AppSessionImpl implements AppTCPSession
     protected long[] readBufferSize;
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
+
+    /**
+     * Size of buffer to work with.
+     * The faster the network and ability to process, the bigger the size performs throughput impact
+     */
+    private static int Buffer_size = 8 * 1024;
+
+    static {
+        String temp;
+        if ((temp = System.getProperty("tcp_buffer_size")) != null) {
+            try {
+                Buffer_size = Integer.parseInt(temp);
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "tcp_buffer_size" ),e);
+            }
+        }
+    }
 
     /**
      * Constructor
@@ -190,8 +211,8 @@ public class AppTCPSessionImpl extends AppSessionImpl implements AppTCPSession
          */
         clientLineBuffering(false);
         serverLineBuffering(false);
-        readBufferSize[CLIENT] = 8192;
-        readBufferSize[SERVER] = 8192;
+        readBufferSize[CLIENT] = Buffer_size;
+        readBufferSize[SERVER] = Buffer_size;
         readLimit[CLIENT] = readBufferSize[CLIENT];
         readLimit[SERVER] = readBufferSize[SERVER];
 
