@@ -12,7 +12,6 @@ Ext.define('Ung.view.main.MainController', {
     listen: {
         global: {
             afterlaunch: 'afterLaunch',
-            openregister: 'openRegister'
         }
     },
 
@@ -33,19 +32,10 @@ Ext.define('Ung.view.main.MainController', {
                 }
                 if (!result) {
                     me.openOffline();
-                } else {
-                    me.openRegister();
                 }
             },function(ex){
                 Util.handleException(ex);
             });
-        }
-    },
-
-    openRegister: function () {
-        if (!rpc.UvmContext.isCCHidden()) {
-            var regView = Ext.create('Ung.view.main.Registration', {});
-            regView.show();
         }
     },
 
