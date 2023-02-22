@@ -10,10 +10,26 @@ public class TCPSource extends Source
 {
     protected SourceEndpointListener listener = null;
     
-    private static final int MAX_READ_SIZE = 8 * 1024;
     private static final int READ_RESET = -1;
 
     private boolean spliceEnabled = false;
+
+    /**
+     * Size of buffer to work with.
+     * The faster the network and ability to process, the bigger the size performs throughput impact
+     */
+    private static int MAX_READ_SIZE = 8 * 1024;
+
+    static {
+        String temp;
+        if ((temp = System.getProperty("tcp_buffer_size")) != null) {
+            try {
+                MAX_READ_SIZE = Integer.parseInt(temp);
+            } catch (Exception e) {
+                // This is also read in TCPSessionImpl which will log parsing errors
+            }
+        }
+    }
 
     /**
      * TCPSource
