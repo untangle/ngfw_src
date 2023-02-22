@@ -3,6 +3,7 @@ import pytest
 from unittest import TestCase
 
 import runtests
+import tests.global_functions
 from tests.global_functions import uvmContext
 
 
@@ -55,6 +56,11 @@ class NGFWTestCase(TestCase):
 
     @classmethod
     def initial_setup(cls, unused=None):
+        global uvmContext
+
+        # Re-obtain uvm context reference in case another test restarted it
+        uvmContext = tests.global_functions.uvmContext
+
         cls._orig_netsettings = uvmContext.networkManager().getNetworkSettings()
 
         if not cls.not_an_app:
@@ -89,6 +95,10 @@ class NGFWTestCase(TestCase):
 
     @classmethod
     def final_tear_down(cls, unused=None):
+        global uvmContext
+        # Re-obtain uvm context reference in case another test restarted it
+        uvmContext = tests.global_functions.uvmContext
+
         uvmContext.networkManager().setNetworkSettings(cls._orig_netsettings)
 
         if cls._app:
