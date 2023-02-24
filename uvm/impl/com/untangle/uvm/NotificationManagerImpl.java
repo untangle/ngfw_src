@@ -193,6 +193,11 @@ public class NotificationManagerImpl implements NotificationManager
         } catch(Exception e) {
             logger.warn("Notification test exception", e);
         }
+        try {
+            testInterfacesOverloaded(notificationList);
+        } catch(Exception e) {
+            logger.warn("Notification test exception", e);
+        }
 
         /**
          * Disabled Tests
@@ -974,6 +979,23 @@ public class NotificationManagerImpl implements NotificationManager
             UserLicenseMessage msg = iterator.next();
             String notificationText = i18nUtil.tr(msg.getMessage());
             notificationList.add(notificationText);
+        }
+    }
+
+    /**
+     * This test checks if the interfaces have overflowed. In that case, the user needs to delete an interface and reboot.
+     * 
+     * @param notificationList - the current list of notifications
+     */
+    private void testInterfacesOverloaded(List<String> notificationList)
+    {
+        List<InterfaceSettings> interfaceList = UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces();
+        if (interfaceList.size() > InterfaceSettings.MAX_INTERFACE_ID) {
+            for (InterfaceSettings intf : interfaceList) {
+                if (intf.getInterfaceId() == -1) {
+                    notificationList.add(i18nUtil.tr("The number of available interfaces has been exceeded. Please remove or delete an interface and reboot."));
+                }
+            }
         }
     }
 }
