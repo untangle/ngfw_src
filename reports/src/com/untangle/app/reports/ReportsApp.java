@@ -400,6 +400,15 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     }
 
     /**
+     * Retrieve length of report event queue.
+     *
+     * @return Integer of length of event queue
+     */
+    public int getEventQueueSize(){
+        return ReportsApp.eventWriter.getQueueSize();
+    }
+
+    /**
      * Force all currently pending events to be written to disk.
      * 
      */
