@@ -206,9 +206,18 @@ public class EventWriterImpl implements Runnable
                     /**
                      * Copy all events out of the queue
                      */
-                    while ((event = inputQueue.poll()) != null && logQueue.size() < MAX_EVENTS_PER_CYCLE) {
-                        logQueue.add(event);
-                    }
+                    /*
+                     * Wait for event to be read from queue
+                     */
+                    event = inputQueue.take();
+                    /**
+                     * Drain batch of events directly into log queue
+                     */
+                    int drained = inputQueue.drainTo(logQueue, MAX_EVENTS_PER_CYCLE);
+                    /**
+                     * Add the event that triggered us first
+                     */
+                    logQueue.addFirst(event);
 
                     /**
                      * Check queue lengths
@@ -337,6 +346,16 @@ public class EventWriterImpl implements Runnable
         }
 
     }
+
+        /**
+     * Retrieve length of report event queue.
+     *
+     * @return Integer of length of event queue
+     */
+    public int getQueueSize(){
+        return inputQueue.size();
+    }
+
 
     /**
      * Get the average write time per event.
