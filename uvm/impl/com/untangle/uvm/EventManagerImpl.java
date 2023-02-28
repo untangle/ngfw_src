@@ -1697,7 +1697,6 @@ public class EventManagerImpl implements EventManager
                         for(LogEvent lqevent: logQueue){
                             UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, lqevent);
                         }
-                        // event = null;
                         /**
                          * Check queue lengths
                          */
@@ -1709,7 +1708,6 @@ public class EventManagerImpl implements EventManager
                             logger.warn("OVERLOAD: Low Water Mark reached for remote event queue. Continuing normal operation.");
                             remoteOverloadedFlag = false;
                         }
-
                     } catch (Exception e) {
                         logger.warn("Failed to run event rules.", e);
                         try {this.wait(1000);} catch (Exception exc) {}
