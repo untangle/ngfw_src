@@ -362,6 +362,13 @@ class ReportsTests(NGFWTestCase):
         print("Result of wc on %s : %s" % (csv_tmp,str(result)))
         assert(int.from_bytes(result,byteorder='little') > 3)
 
+    def test_99_queue_process(self):
+        """
+        Generate "a lot" of traffic and verify the report event queue is quickly processed
+        """
+        # webfilter already enabled
+        global_functions.wait_for_event_queue_drain(queue_size_key="eventQueueReportsSize")
+
     @pytest.mark.slow
     @pytest.mark.failure_behind_ngfw
     def test_100_email_report_admin(self):
