@@ -1079,7 +1079,15 @@ public class EventManagerImpl implements EventManager
         }
         if(remoteEventWriter.enabled){
             // Send to cmd
-            remoteEventWriter.inputQueue.offer(event);
+            if ( this.remoteOverloadedFlag ) {
+                if ( System.currentTimeMillis() - this.lastRemoteLoggedWarningTime > 60000 ) {
+                    logger.warn("Remote event queue overloaded, discarding event");
+                    this.lastRemoteLoggedWarningTime = System.currentTimeMillis();
+                }
+                return;
+            }else{
+                remoteEventWriter.inputQueue.offer(event);
+            }
         }
         // Process for local events (alerts, tags, syslog, etc)
         String simpleName = event.getClass().getSimpleName();
@@ -1642,8 +1650,7 @@ public class EventManagerImpl implements EventManager
          */
         protected void start()
         {
-            // UvmContextFactory.context().newThread(this,"Local event writer", Thread.NORM_PRIORITY - 1).start();
-            UvmContextFactory.context().newThread(this,"Local event writer", Thread.NORM_PRIORITY + 2).start();
+            UvmContextFactory.context().newThread(this,"Local event writer", Thread.NORM_PRIORITY - 1).start();
         }
 
         /**
