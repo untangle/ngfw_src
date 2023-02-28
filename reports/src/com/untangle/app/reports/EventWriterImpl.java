@@ -206,18 +206,9 @@ public class EventWriterImpl implements Runnable
                     /**
                      * Copy all events out of the queue
                      */
-                    /*
-                     * Wait for event to be read from queue
-                     */
-                    event = inputQueue.take();
-                    /**
-                     * Drain batch of events directly into log queue
-                     */
-                    int drained = inputQueue.drainTo(logQueue, MAX_EVENTS_PER_CYCLE);
-                    /**
-                     * Add the event that triggered us first
-                     */
-                    logQueue.addFirst(event);
+                    while ((event = inputQueue.poll()) != null && logQueue.size() < MAX_EVENTS_PER_CYCLE) {
+                        logQueue.add(event);
+                    }
 
                     /**
                      * Check queue lengths
