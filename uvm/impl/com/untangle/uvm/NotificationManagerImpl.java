@@ -989,13 +989,8 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testInterfacesOverloaded(List<String> notificationList)
     {
-        List<InterfaceSettings> interfaceList = UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces();
-        if (interfaceList.size() > InterfaceSettings.MAX_INTERFACE_ID) {
-            for (InterfaceSettings intf : interfaceList) {
-                if (intf.getInterfaceId() == -1) {
-                    notificationList.add(i18nUtil.tr("The number of available interfaces has been exceeded. Please remove or delete an interface and reboot."));
-                }
-            }
+        if (UvmContextFactory.context().networkManager().getInterfacesOverloadedFlag()) {
+            notificationList.add(i18nUtil.tr("The number of available interfaces has been exceeded. Please remove or delete an interface and reboot."));
         }
     }
 }
