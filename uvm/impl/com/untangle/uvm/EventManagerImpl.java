@@ -105,6 +105,8 @@ public class EventManagerImpl implements EventManager
     private LogEvent mostRecentPreviewEvent = null;
 
     private final HookCallback settingsChangeHook = new SettingsHook();;
+    private static HookCallback appInstantiateHook;
+    private static HookCallback appDestroyHook;
 
     /**
      * The current event settings
@@ -112,6 +114,9 @@ public class EventManagerImpl implements EventManager
     private EventSettings settings;
 
     private static Map<String, Boolean> classesToProcess = new HashMap<>();
+    private static Map<String, Integer> EventsSeen = new HashMap<>();
+
+    private Reporting reportsApp = null;
 
     /**
      * Initialize event manager.
@@ -156,6 +161,11 @@ public class EventManagerImpl implements EventManager
 
         SyslogManagerImpl.reconfigureCheck(settingsFilename, this.settings);
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.SETTINGS_CHANGE, this.settingsChangeHook );
+
+        appInstantiateHook = new AppInstantiateHook();
+        appDestroyHook = new AppDestroyHook();
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.APPLICATION_INSTANTIATE, appInstantiateHook );
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.APPLICATION_DESTROY, appDestroyHook );
     }
 
     /**
@@ -1026,22 +1036,35 @@ public class EventManagerImpl implements EventManager
             }
             return;
         }else{
-            if(classesToProcess.size() == 0 ||
-                classesToProcess.get(event.getClass().getSimpleName()) != null){
-                localEventWriter.inputQueue.offer(event);
-            }
+            localEventWriter.inputQueue.offer(event);
         }
-        if ( this.remoteOverloadedFlag ) {
-            if ( System.currentTimeMillis() - this.lastRemoteLoggedWarningTime > 60000 ) {
-                logger.warn("Remote event queue overloaded, discarding event");
-                this.lastRemoteLoggedWarningTime = System.currentTimeMillis();
-            }
-            return;
-        }else{
-            if(remoteEventWriter.enabled){
-                remoteEventWriter.inputQueue.offer(event);
-            }
-        }
+    }
+
+    /**
+     * Retrieve length of event queue.
+     *
+     * @return Integer of length of event queue
+     */
+    public int getEventQueueSize(){
+        return localEventWriter.inputQueue.size();
+    }
+
+    /**
+     * Return map of event classes and number of times they were seen
+     *
+     * @return Map of string (name) and integer (counts).
+     */
+    public Map<String, Integer> getEventsSeenCounts(){
+        return EventsSeen;
+    }
+
+    /**
+     * Retrieve length of event queue.
+     *
+     * @return Integer of length of cmd queue
+     */
+    public int getRemoteEventQueueSize(){
+        return remoteEventWriter.inputQueue.size();
     }
 
     /**
@@ -1050,28 +1073,49 @@ public class EventManagerImpl implements EventManager
      */
     private void runEvent( LogEvent event )
     {
-        if(event.getClass().getSimpleName().equals(PREVIEW_EVENT_CLASS_NAME)){
-            synchronized( this ) {
-                mostRecentPreviewEvent = event;
+        if (this.reportsApp != null){
+            // Send to reports app
+            this.reportsApp.logEvent(event);
+        }
+        if(remoteEventWriter.enabled){
+            // Send to cmd
+            if ( this.remoteOverloadedFlag ) {
+                if ( System.currentTimeMillis() - this.lastRemoteLoggedWarningTime > 60000 ) {
+                    logger.warn("Remote event queue overloaded, discarding event");
+                    this.lastRemoteLoggedWarningTime = System.currentTimeMillis();
+                }
+                return;
+            }else{
+                remoteEventWriter.inputQueue.offer(event);
             }
         }
-
-        try {
-            runAlertRules( event );
-        } catch ( Exception e ) {
-            logger.warn("Failed to evaluate alert rules.", e);
+        // Process for local events (alerts, tags, syslog, etc)
+        String simpleName = event.getClass().getSimpleName();
+        if(!EventsSeen.containsKey(simpleName)){
+            EventsSeen.put(simpleName, 0);
+        }else{
+            EventsSeen.put(simpleName,EventsSeen.get(simpleName) + 1);
         }
+        if(!classesToProcess.containsKey(simpleName)){
+            event = null;
+        }else{
+            try {
+                runAlertRules( event );
+            } catch ( Exception e ) {
+                logger.warn("Failed to evaluate alert rules.", e);
+            }
 
-        try {
-            runTriggerRules( event );
-        } catch ( Exception e ) {
-            logger.warn("Failed to evaluate trigger rules.", e);
-        }
+            try {
+                runTriggerRules( event );
+            } catch ( Exception e ) {
+                logger.warn("Failed to evaluate trigger rules.", e);
+            }
 
-        try {
-            runSyslogRules( event );
-        } catch ( Exception e ) {
-            logger.warn("Failed to evaluate syslog rules.", e);
+            try {
+                runSyslogRules( event );
+            } catch ( Exception e ) {
+                logger.warn("Failed to evaluate syslog rules.", e);
+            }
         }
         event = null;
     }
@@ -1554,6 +1598,8 @@ public class EventManagerImpl implements EventManager
         private volatile Thread thread;
         private final LinkedTransferQueue<LogEvent> inputQueue = new LinkedTransferQueue<>();
 
+        private final int MAX_EVENTS_PER_CYCLE = 50000;
+
         /**
          * Run event queue.
          */
@@ -1566,31 +1612,35 @@ public class EventManagerImpl implements EventManager
              * Loop indefinitely and continue running event rules
              */
             while (thread != null) {
-                synchronized( this ) {
-                    try {
-                        // only log this warning once every 10 seconds
-                        if (inputQueue.size() > 20000 && System.currentTimeMillis() - lastLoggedWarningTime > 10000 ) {
-                            logger.warn("Large local input queue size: " + inputQueue.size());
-                            lastLoggedWarningTime = System.currentTimeMillis();
-                        }
+                // only log this warning once every 10 seconds
+                if (inputQueue.size() > 20000 && System.currentTimeMillis() - lastLoggedWarningTime > 10000 ) {
+                        logger.warn("Large local input queue size: " + inputQueue.size());
+                    lastLoggedWarningTime = System.currentTimeMillis();
+                }
 
-                        runEvent( inputQueue.take() );
-                        /**
-                         * Check queue lengths
-                         */
-                        if (!localOverloadedFlag && inputQueue.size() > HIGH_WATER_MARK)  {
-                            logger.warn("OVERLOAD: High Water Mark reached for local event queue.");
-                            localOverloadedFlag = true;
-                        }
-                        if (localOverloadedFlag && inputQueue.size() < LOW_WATER_MARK) {
-                            logger.warn("OVERLOAD: Low Water Mark reached for local event queue. Continuing normal operation.");
-                            localOverloadedFlag = false;
-                        }
-
-                    } catch (Exception e) {
-                        logger.warn("Failed to run event rules.", e);
-                        try {this.wait(1000);} catch (Exception exc) {}
-                    } 
+                try {
+                    // Wait for queue to have something
+                    runEvent(inputQueue.take());
+                    // Attempt to drain a batch of events
+                    ArrayList<LogEvent> logQueue = new ArrayList<LogEvent>();
+                    int drained = inputQueue.drainTo(logQueue, MAX_EVENTS_PER_CYCLE);
+                    for(LogEvent event: logQueue){
+                        runEvent( event );
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to run event rules.", e);
+                    try {this.wait(1000);} catch (Exception exc) {}
+                }
+                /**
+                 * Check queue lengths
+                 */
+                if (!localOverloadedFlag && inputQueue.size() > HIGH_WATER_MARK)  {
+                    logger.warn("OVERLOAD: High Water Mark reached for local event queue.");
+                    localOverloadedFlag = true;
+                }
+                if (localOverloadedFlag && inputQueue.size() < LOW_WATER_MARK) {
+                    logger.warn("OVERLOAD: Low Water Mark reached for local event queue. Continuing normal operation.");
+                    localOverloadedFlag = false;
                 }
             }
         }
@@ -1624,6 +1674,7 @@ public class EventManagerImpl implements EventManager
         private volatile Thread thread;
         private final LinkedTransferQueue<LogEvent> inputQueue = new LinkedTransferQueue<>();
         public Boolean enabled = false;
+        private static int MAX_EVENTS_PER_CYCLE = 50000;
 
         /**
          * Run event queue.
@@ -1647,7 +1698,12 @@ public class EventManagerImpl implements EventManager
 
                         LogEvent event = inputQueue.take();
                         UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event);
-                        event = null;
+                        // Attempt to drain a larger amount to process
+                        ArrayList<LogEvent> logQueue = new ArrayList<LogEvent>();
+                        int drained = inputQueue.drainTo(logQueue, MAX_EVENTS_PER_CYCLE);
+                        for(LogEvent lqevent: logQueue){
+                            UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, lqevent);
+                        }
                         /**
                          * Check queue lengths
                          */
@@ -1659,7 +1715,6 @@ public class EventManagerImpl implements EventManager
                             logger.warn("OVERLOAD: Low Water Mark reached for remote event queue. Continuing normal operation.");
                             remoteOverloadedFlag = false;
                         }
-
                     } catch (Exception e) {
                         logger.warn("Failed to run event rules.", e);
                         try {this.wait(1000);} catch (Exception exc) {}
@@ -1759,5 +1814,72 @@ public class EventManagerImpl implements EventManager
             SystemSettings settings = (SystemSettings)o;
             remoteEventWriter.enabled = settings.getCloudEnabled();
         }
-    }
+    }    /**
+    * Hook into application instantiations.
+    */
+   private class AppInstantiateHook implements HookCallback
+   {
+       /**
+       * @return Name of callback hook
+       */
+       public String getName()
+       {
+           return "uvmcontext-application-instantiate-hook";
+       }
+
+       /**
+        * Callback documentation
+        *
+        * @param args  Args to pass
+        */
+       public void callback( Object... args )
+       {
+           String appName = (String) args[0];
+           Object app = args[1];
+
+           if(appName == null){
+               return;
+           }
+           if(appName.equals("reports")){
+               synchronized(this){
+                   reportsApp = (Reporting) app;
+               }
+           }
+       }
+   }
+
+   /**
+    * Hook into application destroys.
+    */
+   private class AppDestroyHook implements HookCallback
+   {
+       /**
+       * @return Name of callback hook
+       */
+       public String getName()
+       {
+           return "uvmcontext-application-destroy-hook";
+       }
+
+       /**
+        * Callback documentation
+        *
+        * @param args  Args to pass
+        */
+       public void callback( Object... args )
+       {
+           String appName = (String) args[0];
+
+           if(appName == null){
+               return;
+           }
+           if(appName.equals("reports")){
+               synchronized(this){
+                   reportsApp = null;
+               }
+           }
+       }
+   }
+
+
 }
