@@ -346,6 +346,21 @@ class UvmTests(NGFWTestCase):
         
         assert(emailFound)
 
+    def test_99_queue_process(self):
+        """
+        Generate "a lot" of traffic and verify the log event queue is quickly processed
+        """
+        default_policy_id = 1
+        application_name = "web-filter"
+        if uvmContext.appManager().isInstantiated(application_name):
+            raise unittest.SkipTest(f"app {application_name} already instantiated")
+
+        application = uvmContext.appManager().instantiate(application_name, default_policy_id)
+
+        global_functions.wait_for_event_queue_drain(queue_size_key="eventQueueSize")
+
+        uvmContext.appManager().destroy( application.getAppSettings()["id"] )
+
     def test_100_account_login(self):
         untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
         if untangleEmail == "message":

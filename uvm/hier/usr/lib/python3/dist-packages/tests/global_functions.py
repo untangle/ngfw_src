@@ -247,6 +247,147 @@ def build_iperf_command(mode="client", server_address=None, override_arguments=N
     print(f"{sys._getframe().f_code.co_name}: {command}" )
     return command
 
+# For parsing final wrk results:
+#   73197 requests in 30.04s, 59.33MB read
+#   Socket errors: connect 0, read 0, write 1, timeout 0
+# Requests/sec:   2436.31
+# Transfer/sec:      1.97MB
+# iperf_results_re = re.compile('^\[\s+\d+\]\s+([0-9]*[.][0-9]*)\-([0-9]*[.][0-9]*)\s+sec\s+([0-9]*[.]*[0-9]*)\s+([^\s]+)\s+([0-9]*[.]*[0-9]*)\s+([^/]+)/(.+)')
+wrk_requests_result_re = re.compile('^\s*(\d+) requests in ([0-9]*[.]*[0-9]*)([^,]+),\s+([0-9]*[.]*[0-9]*)([^,]+)([^\s]+) read')
+wrk_errors_result_re = re.compile('^\s+Socket errors: connect (\d+), read (\d+), write (\d+), timeout (\d+)')
+wrk_rate_result_re = re.compile('^Requests/sec:\s+([0-9]*[.]*[0-9]*)')
+wrk_transfer_result_re = re.compile('^Transfer/sec:\s+([0-9]*[.]*[0-9]*)([^\s]+)')
+def get_wrk_results(duration=30):
+    """
+    Run iperf and return results
+    """
+    results = {
+        "requests": 0,
+        "transferred": 0,
+        "rate": 0,
+        "throughput": 0,
+        "errors": {
+            "connect": 0,
+            "read": 0,
+            "write": 0,
+            "timeout": 0,
+        }
+    }
+    wrk_results = remote_control.run_command(build_wrk_command(duration=duration), stdout=True)
+
+    for wrk_result in wrk_results.split("\n"):
+        print(f"wrk_result: {wrk_result}")
+        matches = wrk_requests_result_re.match(wrk_result)
+        if matches is not None:
+            results["requests"] = matches.group(1)
+            results["duration"] = float(matches.group(2))
+            # results["transferred"] = float(matches.group(4))
+            results["transferred"] = from_si_prefix(f"{matches.group(4)}{matches.group(5)}")
+            continue
+
+        matches = wrk_errors_result_re.match(wrk_result)
+        if matches is not None:
+            results["errors"]["connect"] = matches.group(1)
+            results["errors"]["read"] = matches.group(2)
+            results["errors"]["write"] = matches.group(3)
+            results["errors"]["timeout"] = matches.group(4)
+            continue
+
+        matches = wrk_rate_result_re.match(wrk_result)
+        if matches is not None:
+            request_value = float(matches.group(1))
+            results["rate"] = request_value
+            continue
+
+        matches = wrk_transfer_result_re.match(wrk_result)
+        if matches is not None:
+            throughput_amount = float(matches.group(1))
+            throughput_size = matches.group(2)
+            throughput_value = from_si_prefix(f"{throughput_amount}{throughput_size}")
+            results["throughput"] = throughput_value
+            continue
+
+    return results
+
+def build_wrk_command(uri=None, override_arguments=None, extra_arguments=None, threads=100, connections=700, duration=30):
+    """
+    Build wrk command
+
+    Default arguments should be evident, but of particular note are:
+    override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
+    extra_arguments     Additional arguments not otherwise processed.
+    """
+    if uri is None:
+        uri = f"http://{TEST_SERVER_HOST}/"
+
+    arguments = []
+    if override_arguments is not None:
+        # Allow completely custom arguments
+        arguments = override_arguments
+    else:
+        if duration is not None:
+            arguments.append(f"--duration {duration}")
+        if threads is not None:
+            arguments.append(f"--threads {threads}")
+        if connections is not None:
+            arguments.append(f"--connections {connections}")
+
+    optional_arguments = []
+
+    if extra_arguments is not None:
+        optional_arguments.append(extra_arguments)
+
+    command = f"wrk {' '.join(arguments)} {' '.join(optional_arguments)} {uri}"
+
+    print(f"{sys._getframe().f_code.co_name}: {command}" )
+    return command
+
+def verify_wrk_configuration():
+    """
+    Verify wrk is ready
+    """
+    wrk_available = remote_control.run_command(f"which wrk 1> /dev/null 2>&1")
+    if wrk_available != 0:
+        print("wrk not available")
+        return False
+    return True
+
+def wait_for_event_queue_drain(queue_size_key="eventQueueSize"):
+    """
+    Run wrk and wait for specified queue to drain below a minimum amount
+
+    NOTE: To generate the maximum number of events, enable an HTTP processing app web-filter.
+    """
+    # Don't penalize if an event happens to come through
+    min_events = 10
+    # Time to wait for queue to drain to min_events or less
+    max_watch_seconds = 60
+
+    wrk_available = verify_wrk_configuration()
+    if not wrk_available:
+        raise unittest.SkipTest("wrk not on client")
+
+    wrk_results = get_wrk_results()
+    # wrk output can be useful for debugging
+    print(wrk_results)
+
+    # It's not uncommon for the queue size to be empty at this point.
+    # It would be more "visually" interesting if we forked the wrk process
+    # and monitor the queue in that way. 
+    queue_size = 0
+    max_time = datetime.datetime.now() + datetime.timedelta(seconds=max_watch_seconds)
+    while True:
+        queue_size = uvmContext.metricManager().getStats()["systemStats"][queue_size_key]
+        print(f"queue_size: {queue_size}")
+        sys.stdout.flush()
+        if queue_size < min_events:
+            break
+        if datetime.datetime.now() > max_time:
+            break
+        time.sleep(10)
+
+    assert queue_size <= min_events, f"{queue_size_key} queue drained below {min_events}"
+
 Si_prefixes = {
     # yocto
     'y': {
@@ -300,6 +441,11 @@ Si_prefixes = {
     },
     # kilo
     'k': {
+        "bit": 2<<9,
+        "dec": 1e3
+    },
+    # kilo
+    'K': {
         "bit": 2<<9,
         "dec": 1e3
     },
