@@ -338,6 +338,16 @@ public class EventWriterImpl implements Runnable
 
     }
 
+        /**
+     * Retrieve length of report event queue.
+     *
+     * @return Integer of length of event queue
+     */
+    public int getQueueSize(){
+        return inputQueue.size();
+    }
+
+
     /**
      * Get the average write time per event.
      *

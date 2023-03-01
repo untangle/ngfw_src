@@ -27,8 +27,10 @@ import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.logging.InterfaceStatEvent;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.app.AppMetric;
+import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.util.Pulse;
 
 /**
@@ -584,6 +586,7 @@ public class MetricManagerImpl implements MetricManager
             m.put("diskReadsPerSecond", (diskReads1 - diskReads0) / dt);
             m.put("diskWritesPerSecond", (diskWrites1 - diskWrites0) / dt);
         }
+
         lastDiskUpdate = currentTime;
     }
 
@@ -644,6 +647,19 @@ public class MetricManagerImpl implements MetricManager
                 getCpuUsage(m);
                 getNetDevUsage(m);
                 getDiskUsage(m);
+
+                // Event queues
+                m.put("eventQueueSize", UvmContextFactory.context().eventManager().getEventQueueSize());
+                m.put("eventQueueRemoteSize", UvmContextFactory.context().eventManager().getEventQueueSize());
+                App reportsApp = UvmContextFactory.context().appManager().app("reports");
+                if(reportsApp != null && AppState.RUNNING.equals(reportsApp.getRunState())) {
+                    Reporting app = (Reporting) reportsApp;
+                    m.put("eventQueueReportsSize", app.getEventQueueSize());
+                }
+                Map<String,Integer> seenEvents = UvmContextFactory.context().eventManager().getEventsSeenCounts();
+                for(Map.Entry<String,Integer> entry: seenEvents.entrySet()){
+                    m.put("eventSeen_" + entry.getKey(), entry.getValue());
+                }
 
                 long time = System.nanoTime();
                 if ((time - lastLogTimeStamp) / ONE_BILLION >= SYSTEM_STAT_LOG_DELAY) {

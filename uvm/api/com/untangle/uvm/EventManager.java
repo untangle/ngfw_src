@@ -25,6 +25,12 @@ public interface EventManager
 
     public void logEvent( LogEvent evt );
 
+    public int getEventQueueSize();
+
+    public Map<String, Integer>  getEventsSeenCounts();
+
+    public int getRemoteEventQueueSize();
+
     public JSONArray getTemplateParameters();
 
     public Map<String,String> emailAlertFormatPreview(AlertRule rule, LogEvent event, String subjectTemplate, String bodyTemplate, boolean convert);
