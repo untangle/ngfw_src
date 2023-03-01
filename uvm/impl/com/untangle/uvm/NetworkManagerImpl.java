@@ -911,16 +911,20 @@ public class NetworkManagerImpl implements NetworkManager
             if ( ! foundMatchingInterface ) {
                 logger.warn("Found unmapped new physical device: " + deviceName);
                 logger.warn("Creating new InterfaceSettings for " + deviceName);
-
-                InterfaceSettings interfaceSettings = new InterfaceSettings();
                 int interfaceId = this.getNextFreeInterfaceId( netSettings );
+                String interfaceName = "Interface " + interfaceId;
                 if (interfaceId == -1) {
+                    // note: we never need to explicitly set this flag to false. The user needs to 
+                    // restart to solve the problem (which is told to them in NotificationManagerImpl). 
+                    // On restart, the flag will always be false initially.
                     this.setInterfacesOverloadedFlag(true);
-                    logger.warn("No space for added physical interface");
+                    logger.warn("No space for added physical interface '" + interfaceName + "'");
                     continue;
                 }
+
+                InterfaceSettings interfaceSettings = new InterfaceSettings();
                 interfaceSettings.setInterfaceId( interfaceId );
-                interfaceSettings.setName("Interface " + interfaceId);
+                interfaceSettings.setName(interfaceName);
                 interfaceSettings.setPhysicalDev( deviceName );
                 interfaceSettings.setSystemDev( deviceName );
                 interfaceSettings.setSymbolicDev( deviceName );
