@@ -103,7 +103,7 @@ public class NetworkManagerImpl implements NetworkManager
      * 1. Filled up all of the virtual interfaces
      * 2. Attempted to add a physical interface
      */
-    private boolean interfacesOverloadedFlag = true; // TODO set to false
+    private boolean interfacesOverloadedFlag = false;
 
     /**
      * NetworkManagerImpl constructor
