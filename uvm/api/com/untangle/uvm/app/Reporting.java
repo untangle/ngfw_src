@@ -23,4 +23,7 @@ public interface Reporting
     List<String> getAlertEmailAddresses();
 
     Connection getDbConnection();
+
+    int getEventQueueSize();
+
 }
