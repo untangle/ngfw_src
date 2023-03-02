@@ -11,7 +11,6 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-import org.json.JSONString;
 
 /**
  * The class <code>IPMaskedAddress</code> represents a masked IP address.
