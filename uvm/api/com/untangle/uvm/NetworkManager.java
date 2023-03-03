@@ -78,4 +78,8 @@ public interface NetworkManager
 
     void updateReservedAccessRulePort(String oldPort, String newPort);
 
+    void setInterfacesOverloadedFlag(boolean value);
+
+    boolean getInterfacesOverloadedFlag();
+
 }

@@ -85,7 +85,7 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ADDRESS = "static-address";
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
-    
+
     /**
      * The current network settings
      */
@@ -96,6 +96,14 @@ public class NetworkManagerImpl implements NetworkManager
      * This enabled fast lookups with iterating the list in findInterfaceId()
      */
     private InterfaceSettings[] interfaceSettingsById = new InterfaceSettings[InterfaceSettings.MAX_INTERFACE_ID];
+
+    /**
+     * This flag indicates if the physical interfaces have been overloaded.
+     * It is set when a physical interface cannot get a free interfaceId. This likely means the user has:
+     * 1. Filled up all of the virtual interfaces
+     * 2. Attempted to add a physical interface
+     */
+    private boolean interfacesOverloadedFlag = false;
 
     /**
      * NetworkManagerImpl constructor
@@ -903,9 +911,16 @@ public class NetworkManagerImpl implements NetworkManager
             if ( ! foundMatchingInterface ) {
                 logger.warn("Found unmapped new physical device: " + deviceName);
                 logger.warn("Creating new InterfaceSettings for " + deviceName);
-
-                InterfaceSettings interfaceSettings = new InterfaceSettings();
                 int interfaceId = this.getNextFreeInterfaceId( netSettings );
+                if (interfaceId == -1) {
+                    // note: we never need to explicitly set this flag to false. The user needs to 
+                    // restart to solve the problem (which is told to them in NotificationManagerImpl). 
+                    // On restart, the flag will always be false initially.
+                    this.setInterfacesOverloadedFlag(true);
+                    logger.warn("No space for added physical interface '" + deviceName + "'");
+                    continue;
+                }
+                InterfaceSettings interfaceSettings = new InterfaceSettings();
                 interfaceSettings.setInterfaceId( interfaceId );
                 interfaceSettings.setName("Interface " + interfaceId);
                 interfaceSettings.setPhysicalDev( deviceName );
@@ -3156,5 +3171,24 @@ public class NetworkManagerImpl implements NetworkManager
             IPMaskedAddress intfma = new IPMaskedAddress( address, netmask );
             nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_DYNAMIC_ADDRESS, intfma);
         }
+    }
+
+    /**
+     * Sets the interfacesOverloadedFlag, to handle cases where the user must remove interfaces and restart the NGFW box
+     * 
+     * @param value
+     *      - The new flag value
+     */
+    public void setInterfacesOverloadedFlag(boolean value) {
+        this.interfacesOverloadedFlag = value;
+    }
+
+    /**
+     * Gets the interfacesOverloadedFlag, to handle cases where the user must remove interfaces and restart the NGFW box
+     * 
+     * @return the current flag value
+     */
+    public boolean getInterfacesOverloadedFlag() {
+        return this.interfacesOverloadedFlag;
     }
 }
