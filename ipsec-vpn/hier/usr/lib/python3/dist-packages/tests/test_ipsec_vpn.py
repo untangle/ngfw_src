@@ -381,6 +381,9 @@ class IPsecTests(NGFWTestCase):
         # Attempt to ping from the remote network back to us
         # If we are marked for the vlan, this will fail
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % remote_control.client_ip, host=ipsecPcLANIP)
+        # clear firewall rule in case test fails so it does not affect other tests
+        network_settings["filterRules"]["list"] =[]
+        uvmContext.networkManager().setNetworkSettings(network_settings)
         assert(ipsecPcLanResult != 1)
 
     def test_025_verifyIPsecBypass(self):           
