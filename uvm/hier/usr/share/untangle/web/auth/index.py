@@ -53,7 +53,7 @@ def login(req, url=None, realm='Administrator', token=None):
 
     error_msg = None
     if 'username' in form or 'password' in form:
-        error_msg = '%s' % html.escape(_('Error: Username and Password do not match'))
+        error_msg = '%s' % html.escape(_('Error: Authentication credentials do not match'))
 
     connection = req.connection
     (addr, port) = connection.local_addr
