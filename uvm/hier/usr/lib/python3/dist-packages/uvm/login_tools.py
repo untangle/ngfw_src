@@ -104,7 +104,7 @@ class Totp:
         secret=uri_qs['secret'][0]
 
         totp = pyotp.TOTP(secret)
-        if totp.verify(totp_code, valid_windows=1):
+        if totp.verify(totp_code, valid_window=1):
             return True
 
         logger.log_failure("T")
@@ -416,7 +416,7 @@ def write_login_form(req, title, host, error_msg):
         <h2>{title}</h2>
         <p class="server">{host}</p>
         <div class="banner">{banner_msg}</div>
-        <p class="error"{error_msg}</p>
+        <p class="error">{error_msg}</p>
         <input id="fragment" type="hidden"   name="fragment" value=""/>
         <input id="username" type="text"     name="username" value="{default_username}" placeholder="{username_str}"/>
         <input id="password" type="password" name="password" placeholder="{password_str}"/>
