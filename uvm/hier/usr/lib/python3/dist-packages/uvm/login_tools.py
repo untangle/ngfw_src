@@ -81,11 +81,10 @@ class Totp:
         return client_addr == "127.0.0.1" or client_addr == "::1"
 
     @classmethod
-    def validate(cls, req, totp_code, logger):
+    def validate(cls, totp_code, logger):
         """
         Determine if specified totp_code is valid.
 
-        :param req          Request object.
         :param totp_code    String of TOTP code
         :param logger       Logger object.
         :returns            True if totp_code matches, False otherwise.
@@ -278,7 +277,7 @@ def reports_valid_login(req, realm, username, password, totp, logger=StderrLogin
             continue
         if check_password(user, password, logger):
             if Totp.enabled(req):
-                return Totp.validate(req, totp, logger)
+                return Totp.validate(totp, logger)
             else:
                 return True
         else:
@@ -302,7 +301,7 @@ def admin_valid_login(req, realm, username, password, totp, logger=StderrLoginLo
             continue
         if check_password(user, password, logger):
             if Totp.enabled(req):
-                return Totp.validate(req, totp, logger)
+                return Totp.validate(totp, logger)
             else:
                 return True
         else:
