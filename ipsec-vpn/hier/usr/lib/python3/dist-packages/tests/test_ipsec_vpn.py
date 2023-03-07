@@ -34,7 +34,7 @@ ipsecHost = overrides.get("ipsecHost", default="10.112.56.96")
 ipsecHostLANIP = overrides.get("ipsecHostLANIP", default="192.168.235.96")
 ipsecPcLANIP = overrides.get("ipsecPcLANIP", default="192.168.235.83")
 ipsecHostLAN = overrides.get("ipsecHostLAN", default="192.168.235.0/24")
-ipsecHostLAN = overrides.get("ipsecHostLAN", default="ipsecsite.untangle.int")
+ipsecHostname = overrides.get("ipsecHostLAN", default="ipsecsite.untangle.int")
 configuredHostIPs = overrides.get("configuredHostIPs", default=
                         [('10.112.0.134','192.168.14.1','192.168.14.0/24'), # ATS
                         ('10.112.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
@@ -381,6 +381,9 @@ class IPsecTests(NGFWTestCase):
         # Attempt to ping from the remote network back to us
         # If we are marked for the vlan, this will fail
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % remote_control.client_ip, host=ipsecPcLANIP)
+        # clear firewall rule in case test fails so it does not affect other tests
+        network_settings["filterRules"]["list"] =[]
+        uvmContext.networkManager().setNetworkSettings(network_settings)
         assert(ipsecPcLanResult != 1)
 
     def test_025_verifyIPsecBypass(self):           

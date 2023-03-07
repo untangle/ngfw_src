@@ -107,7 +107,7 @@ class WireGuardVpnTests(NGFWTestCase):
     def test_020_createWireGuardTunnel(self):
         """Set up WireGuard Tunnel and ping between hosts behind each end"""
         if (vpnHostResult != 0):
-            raise unittest.SkipTest("No paried VPN server available")
+            raise unittest.SkipTest("No paired VPN server available")
         
         #get and overwrite local service settings to match tunnel settings on the remote/static test box
         appData = self._app.getSettings()
