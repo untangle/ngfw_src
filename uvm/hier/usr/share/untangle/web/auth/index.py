@@ -85,8 +85,11 @@ def login(req, url=None, realm='Administrator', token=None):
     if 'username' in form and 'password' in form:
         username = form['username']
         password = form['password']
+        totp = None
+        if 'totp' in form:
+            totp = form['totp']
 
-        if login_tools.valid_login(req, realm, username, password):
+        if login_tools.valid_login(req, realm, username, password, totp):
             sess = Session.Session(req, lock=0)
             sess.lock()
             sess.set_timeout(uvm_login.SESSION_TIMEOUT)
