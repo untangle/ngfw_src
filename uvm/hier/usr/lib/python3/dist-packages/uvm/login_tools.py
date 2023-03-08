@@ -89,6 +89,10 @@ class Totp:
         :param logger       Logger object.
         :returns            True if totp_code matches, False otherwise.
         """
+        if totp_code is None:
+            logger.log_failure("T")
+            return False
+
         raw_uri=None
         with open(Totp.cmd_file_path, "r") as file:
             raw_uri=file.read()
@@ -216,7 +220,7 @@ def get_logger(req, realm, username, password):
     logger.set_username(username)
     return logger
 
-def valid_login(req, realm, username, password, totp):
+def valid_login(req, realm, username, password, totp=None):
     logger = get_logger(req, realm, username, password)
     if realm == 'Administrator':
         return admin_valid_login(req, realm, username, password, totp, logger)
@@ -266,7 +270,7 @@ def valid_token(token):
 
 
 
-def reports_valid_login(req, realm, username, password, totp, logger=StderrLoginLogger(True)):
+def reports_valid_login(req, realm, username, password, totp=None, logger=StderrLoginLogger(True)):
     users = get_app_settings_item('reports','reportsUsers')
     if users == None:
         return False
@@ -286,7 +290,7 @@ def reports_valid_login(req, realm, username, password, totp, logger=StderrLogin
     logger.log_failure("U")
     return False
 
-def admin_valid_login(req, realm, username, password, totp, logger=StderrLoginLogger(True)):
+def admin_valid_login(req, realm, username, password, totp=None, logger=StderrLoginLogger(True)):
     """
     Returns True if this request with username/password is a valid
     login.
