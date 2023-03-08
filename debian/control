@@ -396,6 +396,7 @@ Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
 Depends: ${misc:Depends},
 	 ipset,
 	 python3,
+         python3-pyotp,
 	 systemd-sysv,
          untangle-development-runtime,
 	 untangle-libuvm,
