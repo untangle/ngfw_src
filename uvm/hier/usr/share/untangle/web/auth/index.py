@@ -53,7 +53,7 @@ def login(req, url=None, realm='Administrator', token=None):
 
     error_msg = None
     if 'username' in form or 'password' in form:
-        error_msg = '%s' % html.escape(_('Error: Username and Password do not match'))
+        error_msg = '%s' % html.escape(_('Error: Authentication credentials do not match'))
 
     connection = req.connection
     (addr, port) = connection.local_addr
@@ -85,8 +85,11 @@ def login(req, url=None, realm='Administrator', token=None):
     if 'username' in form and 'password' in form:
         username = form['username']
         password = form['password']
+        totp = None
+        if 'totp' in form:
+            totp = form['totp']
 
-        if login_tools.valid_login(req, realm, username, password):
+        if login_tools.valid_login(req, realm, username, password, totp):
             sess = Session.Session(req, lock=0)
             sess.lock()
             sess.set_timeout(uvm_login.SESSION_TIMEOUT)

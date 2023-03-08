@@ -45,6 +45,7 @@ rm -f /usr/share/untangle/conf/uris.js*
 rm -f /usr/share/untangle/conf/capture-users*.js*
 rm -f /usr/share/untangle/conf/greylist.js*
 rm -f /usr/share/untangle/conf/*flag*
+rm -f /usr/share/untangle/conf/cmd_*
 
 rm -rf /usr/share/untangle/quarantine
 rm -rf /etc/openvpn/*
