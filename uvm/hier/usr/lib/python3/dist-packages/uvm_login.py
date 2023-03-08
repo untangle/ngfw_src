@@ -166,8 +166,10 @@ def wizard_password_required():
 def is_local_process_uid_authorized(req):
     (remote_ip, remote_port) = req.useragent_addr
 
-    if remote_ip != "127.0.0.1":
+    if remote_ip != "127.0.0.1" and remote_ip != "::1":
         return False
+    # If came in from ipv6, set to ipv4
+    remote_ip = "127.0.0.1"
 
     # This determines the PID of the connecting process
     # and determines if it is from a process who is owned by root
