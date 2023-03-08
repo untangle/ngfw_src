@@ -727,14 +727,13 @@ def check_events( events, num_events, *args, **kwargs):
 
 def get_and_check_events(prefix="", report_category="", report_title="", report_conditions=None, event_limit=5, check_num_events=5, matches={}):
     """
-    Retreive events from event report and look for matching events
+    Retrieve events from specified event report and look for matching events
     """
     events = get_events(report_category, report_title, report_conditions, event_limit)
     assert events != None, f"{prefix} total events found"
     print(events)
     found = check_events( events.get('list'), check_num_events, matches)
-    assert found, f"{prefix} matches found"
-
+    assert found, f"{prefix} event matches found"
 
 def is_in_office_network(wan_ip):
     office_networks = overrides.get("OFFICE_NETWORKS")
