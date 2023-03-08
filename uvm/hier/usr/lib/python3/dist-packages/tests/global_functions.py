@@ -654,9 +654,21 @@ def find_event( events, num_events, *args, **kwargs):
         min_date = runtests.test_start_time
     else:
         min_date = kwargs.get('min_date')
+
     if (len(args) % 2) != 0:
-        print("Invalid argument length")
-        return None
+        if type(args[0]) == dict:
+            # Use first element as a dict for matches
+            matches = args[0]
+        else:
+            # Otherwise, provide a mismatch prevents key/pair matching
+            print("Invalid argument length")
+            return None
+    else:
+        # Build matches dictionary
+        matches = {}
+        for i in range(0, int(len(args)/2)):
+            matches[args[i*2]] = args[i*2+1]
+
     num_checked = 0
     while num_checked < num_events:
         if len(events) <= num_checked:
@@ -680,9 +692,10 @@ def find_event( events, num_events, *args, **kwargs):
         # if one doesn't match continue to the next event
         # if all match, return True
         allMatched = True
-        for i in range(0, int(len(args)/2)):
-            key = args[i*2]
-            expectedValue = args[i*2+1]
+
+        print("event:")
+        for key in matches.keys():
+            expectedValue = matches.get(key)
             actualValue = event.get(key)
             # HTML strings are escaped now.
             if type(actualValue) is str:
@@ -694,9 +707,14 @@ def find_event( events, num_events, *args, **kwargs):
                     alternateValue = 1
                 else:
                     alternateValue = 0
-            print(("key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) )))
-            if str(expectedValue) != str(actualValue) and str(alternateValue) != str(actualValue):
-                print(("mismatch event[%s] expectedValue %s != actualValue %s " % ( key, str(expectedValue), str(actualValue) )))
+            # mismatch = str(expectedValue) != str(actualValue) and str(alternateValue) != str(actualValue)
+            match = str(expectedValue) == str(actualValue) or str(alternateValue) == str(actualValue)
+            if match:
+                compare = "=="
+            else:
+                compare = "!="
+            print(f"key={key:10} expectedValue={expectedValue:<10} {compare} actualValue={actualValue:<10} {match}")
+            if not match:
                 allMatched = False
                 break
 
@@ -706,6 +724,16 @@ def find_event( events, num_events, *args, **kwargs):
 
 def check_events( events, num_events, *args, **kwargs):
     return (find_event( events, num_events, *args, **kwargs) != None)
+
+def get_and_check_events(prefix="", report_category="", report_title="", report_conditions=None, event_limit=5, check_num_events=5, matches={}):
+    """
+    Retrieve events from specified event report and look for matching events
+    """
+    events = get_events(report_category, report_title, report_conditions, event_limit)
+    assert events != None, f"{prefix} total events found"
+    print(events)
+    found = check_events( events.get('list'), check_num_events, matches)
+    assert found, f"{prefix} event matches found"
 
 def is_in_office_network(wan_ip):
     office_networks = overrides.get("OFFICE_NETWORKS")
@@ -990,7 +1018,7 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
     print(f"{sys._getframe().f_code.co_name}: {command}" )
     return command
 
-def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None, location=False, range=None, trace_ascii_file=None, user_agent=None, user=None, password=None):
+def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None, location=False, range=None, trace_ascii_file=None, user_agent=None, user=None, password=None, request=None, form=None):
     """
     Build curl command
 
@@ -1034,6 +1062,11 @@ def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=No
             optional_arguments.append(f"--user '{user}:{password}'")
         else:
             optional_arguments.append(f"--user '{user}'")
+    if request is not None:
+        optional_arguments.append(f"--request '{request}'")
+    if form is not None:
+        for key in form.keys():
+            optional_arguments.append(f"--form '{key}={form[key]}'")
 
     command = f"curl {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
     print(f"{sys._getframe().f_code.co_name}: {command}" )

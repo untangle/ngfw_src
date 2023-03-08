@@ -444,7 +444,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         reason_admin_logins: {
-            col: { text: 'Reason'.t(), dataIndex: 'reason', width: 100 },
+            col: { text: 'Reason'.t(), dataIndex: 'reason', width: 100, flex: 1 },
             fld: { name: 'reason', type: 'string', convert: Converter.loginFailureReason }
         },
         receiver: {
@@ -1856,7 +1856,8 @@ Ext.define('Ung.util.Map', {
 
     loginFailureReasons: {
         U: 'invalid username'.t(),
-        P: 'invalid password'.t()
+        P: 'invalid password'.t(),
+        T: 'invalid TOTP'.t()
     },
 
     icmps: {
