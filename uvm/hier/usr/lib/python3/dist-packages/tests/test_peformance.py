@@ -31,6 +31,7 @@ Performance_throughput_applications = overrides.get("Performance_throughput_appl
 
 class PerformanceTests(NGFWTestCase):
     not_an_app = True
+    run_order = 3
 
     @staticmethod
     def module_name():
@@ -219,8 +220,6 @@ class PerformanceTests(NGFWTestCase):
             remote_control.run_command("pkill --signal 9 iperf", host=global_functions.iperf_server)
             time.sleep(1)
             iperf_running = remote_control.run_command("pidof iperf", host=global_functions.iperf_server)
-
-
 
     @classmethod
     def final_extra_tear_down(cls):
