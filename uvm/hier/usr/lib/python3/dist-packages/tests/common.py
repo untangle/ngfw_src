@@ -21,6 +21,12 @@ class NGFWTestCase(TestCase):
     _appSettings = None
     default_policy_id = 1
 
+    # Run positions =
+    # 1 first
+    # 2 Normal
+    # 3 after all others (like peformance)
+    run_order=2
+
     # once we switch to pytest this should be converted to a class variable
     @staticmethod
     def module_name():
