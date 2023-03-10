@@ -436,81 +436,86 @@ class UvmTests(NGFWTestCase):
         """
         TestTotp.setup(enable=True)
 
-        uri = "http://localhost/auth/login?url=/admin&realm=Administrator"
-        override_arguments=["--silent", "-6"]
+        try:
+            uri = "http://localhost/auth/login?url=/admin&realm=Administrator"
+            override_arguments=["--silent", "-6"]
 
-        # Bad username
-        bad_username = f"bad_{Login_username}"
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username": bad_username, "password": Login_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+            # Bad username
+            bad_username = f"bad_{Login_username}"
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username": bad_username, "password": Login_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        global_functions.get_and_check_events(
-            prefix="bad username",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": bad_username,
-                "local": True,
-                "succeeded": False,
-                "reason": "U"
-            })
+            global_functions.get_and_check_events(
+                prefix="bad username",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": bad_username,
+                    "local": True,
+                    "succeeded": False,
+                    "reason": "U"
+                })
 
-        # Bad password
-        bad_password = f"bad_{Login_password}"
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username": Login_username, "password": bad_password}
-            ), 
-            shell=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+            # Bad password
+            bad_password = f"bad_{Login_password}"
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username": Login_username, "password": bad_password}
+                ), 
+                shell=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        global_functions.get_and_check_events(
-            prefix="bad password",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": True,
-                "succeeded": False,
-                "reason": "P"
-            })
+            global_functions.get_and_check_events(
+                prefix="bad password",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": True,
+                    "succeeded": False,
+                    "reason": "P"
+                })
 
-        # Successful local login
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username":Login_username, "password": Login_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+            # Successful local login
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username":Login_username, "password": Login_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        global_functions.get_and_check_events(
-            prefix="successful login",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": True,
-                "succeeded": True
-            })
+            global_functions.get_and_check_events(
+                prefix="successful login",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": True,
+                    "succeeded": True
+                })
+
+        except AssertionError as e:
+            TestTotp.teardown()
+            raise AssertionError(e)
 
         TestTotp.teardown()
 
@@ -519,210 +524,215 @@ class UvmTests(NGFWTestCase):
         Non-local authentication, TOTP enabled
         """
         TestTotp.setup(enable=True)
-        lan_ip = global_functions.get_lan_ip()
-        uri = f"http://{lan_ip}/auth/login?url=/admin&realm=Administrator"
-        override_arguments=["--silent"]
 
-        # Bad username
-        bad_username = f"bad_{Login_username}"
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username": bad_username, "password": Login_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+        try:
+            lan_ip = global_functions.get_lan_ip()
+            uri = f"http://{lan_ip}/auth/login?url=/admin&realm=Administrator"
+            override_arguments=["--silent"]
 
-        global_functions.get_and_check_events(
-            prefix="bad username",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": bad_username,
-                "local": False,
-                "succeeded": False,
-                "reason": "U"
-            })
+            # Bad username
+            bad_username = f"bad_{Login_username}"
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username": bad_username, "password": Login_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        # Bad password
-        bad_password = f"bad_{Login_password}"
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username": Login_username, "password": bad_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+            global_functions.get_and_check_events(
+                prefix="bad username",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": bad_username,
+                    "local": False,
+                    "succeeded": False,
+                    "reason": "U"
+                })
 
-        global_functions.get_and_check_events(
-            prefix="bad password",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": False,
-                "reason": "P"
-            })
+            # Bad password
+            bad_password = f"bad_{Login_password}"
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username": Login_username, "password": bad_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        # Username and password but no TOTP
-        curl_result = remote_control.run_command(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username":Login_username, "password": Login_password}
-            ),
-            stdout=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result, "username, passwod, no totp"
-        time.sleep(Login_event_delay)
+            global_functions.get_and_check_events(
+                prefix="bad password",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": False,
+                    "reason": "P"
+                })
 
-        global_functions.get_and_check_events(
-            prefix="no totp",
-            report_category="Administration", 
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": False,
-                "reason": "T"
-            })
+            # Username and password but no TOTP
+            curl_result = remote_control.run_command(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username":Login_username, "password": Login_password}
+                ),
+                stdout=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result, "username, passwod, no totp"
+            time.sleep(Login_event_delay)
 
-        # Username and password but TOTP many slots ago
-        totp_code = TestTotp.get_code(counter_offset=-3)
-        assert totp_code is not None, "got totp code"
-        curl_result = remote_control.run_command(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username":Login_username, "password": Login_password, "totp": totp_code}
-            ),
-            stdout=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result, "many totp slots ago"
-        time.sleep(Login_event_delay)
+            global_functions.get_and_check_events(
+                prefix="no totp",
+                report_category="Administration", 
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": False,
+                    "reason": "T"
+                })
 
-        global_functions.get_and_check_events(
-            prefix="totp too old",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": False,
-                "reason": "T"
-            })
+            # Username and password but TOTP many slots ago
+            totp_code = TestTotp.get_code(counter_offset=-3)
+            assert totp_code is not None, "got totp code"
+            curl_result = remote_control.run_command(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username":Login_username, "password": Login_password, "totp": totp_code}
+                ),
+                stdout=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result, "many totp slots ago"
+            time.sleep(Login_event_delay)
 
-        # Username and password but TOTP many slots from now
-        totp_code = TestTotp.get_code(counter_offset=3)
-        assert totp_code is not None, "got totp code"
-        curl_result = remote_control.run_command(
-            global_functions.build_curl_command(
-            uri=uri,
-            override_arguments=override_arguments,
-            request="POST",
-            form={"username":Login_username, "password": Login_password, "totp": totp_code}
-            ),
-            stdout=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result, "many totp slots from now"
-        time.sleep(Login_event_delay)
+            global_functions.get_and_check_events(
+                prefix="totp too old",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": False,
+                    "reason": "T"
+                })
 
-        global_functions.get_and_check_events(
-            prefix="totp too new",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": False,
-                "reason": "T"
-            })
-
-        # Username and password and current TOTP
-        totp_code = TestTotp.get_code()
-        assert totp_code is not None, "got totp code"
-        curl_result = remote_control.run_command(
-            global_functions.build_curl_command(
+            # Username and password but TOTP many slots from now
+            totp_code = TestTotp.get_code(counter_offset=3)
+            assert totp_code is not None, "got totp code"
+            curl_result = remote_control.run_command(
+                global_functions.build_curl_command(
                 uri=uri,
                 override_arguments=override_arguments,
                 request="POST",
                 form={"username":Login_username, "password": Login_password, "totp": totp_code}
-            ),
-            stdout=True)
-        print(curl_result)
-        assert Login_success_response in curl_result, "current totp"
-        time.sleep(Login_event_delay)
+                ),
+                stdout=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result, "many totp slots from now"
+            time.sleep(Login_event_delay)
 
-        global_functions.get_and_check_events(
-            prefix="successful current totp",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": True
-            })
+            global_functions.get_and_check_events(
+                prefix="totp too new",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": False,
+                    "reason": "T"
+                })
 
-        # Username and password and last TOTP
-        totp_code = TestTotp.get_code(counter_offset=-1)
-        assert totp_code is not None, "got totp code"
-        curl_result = remote_control.run_command(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username":Login_username, "password": Login_password, "totp": totp_code}
-            ),
-            stdout=True)
-        print(curl_result)
-        assert Login_success_response in curl_result, "last totp"
-        time.sleep(Login_event_delay)
+            # Username and password and current TOTP
+            totp_code = TestTotp.get_code()
+            assert totp_code is not None, "got totp code"
+            curl_result = remote_control.run_command(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username":Login_username, "password": Login_password, "totp": totp_code}
+                ),
+                stdout=True)
+            print(curl_result)
+            assert Login_success_response in curl_result, "current totp"
+            time.sleep(Login_event_delay)
 
-        global_functions.get_and_check_events(
-            prefix="successful last totp",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": True
-            })
+            global_functions.get_and_check_events(
+                prefix="successful current totp",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": True
+                })
 
-        # Username and password and next TOTP
-        totp_code = TestTotp.get_code(counter_offset=1)
-        assert totp_code is not None, "got totp code"
-        curl_result = remote_control.run_command(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username":Login_username, "password": Login_password, "totp": totp_code}
-            ),
-            stdout=True)
-        print(curl_result)
-        assert Login_success_response in curl_result, "next totp"
-        time.sleep(Login_event_delay)
+            # Username and password and last TOTP
+            totp_code = TestTotp.get_code(counter_offset=-1)
+            assert totp_code is not None, "got totp code"
+            curl_result = remote_control.run_command(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username":Login_username, "password": Login_password, "totp": totp_code}
+                ),
+                stdout=True)
+            print(curl_result)
+            assert Login_success_response in curl_result, "last totp"
+            time.sleep(Login_event_delay)
 
-        global_functions.get_and_check_events(
-            prefix="successful next totp",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": True
-            })
+            global_functions.get_and_check_events(
+                prefix="successful last totp",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": True
+                })
+
+            # Username and password and next TOTP
+            totp_code = TestTotp.get_code(counter_offset=1)
+            assert totp_code is not None, "got totp code"
+            curl_result = remote_control.run_command(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username":Login_username, "password": Login_password, "totp": totp_code}
+                ),
+                stdout=True)
+            print(curl_result)
+            assert Login_success_response in curl_result, "next totp"
+            time.sleep(Login_event_delay)
+
+            global_functions.get_and_check_events(
+                prefix="successful next totp",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": True
+                })
+        except AssertionError as e:
+            TestTotp.teardown()
+            raise AssertionError(e)
 
         TestTotp.teardown()
 
