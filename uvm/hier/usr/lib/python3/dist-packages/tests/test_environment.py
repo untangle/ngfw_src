@@ -14,6 +14,7 @@ class EnvironmentTests(NGFWTestCase):
     """NGFW environment tests"""
 
     not_an_app = True
+    run_order = 1
 
     @staticmethod
     def module_name():
