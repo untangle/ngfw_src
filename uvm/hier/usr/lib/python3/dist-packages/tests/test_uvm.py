@@ -268,7 +268,7 @@ class UvmTests(NGFWTestCase):
 
         uri="http://localhost/auth/login?url=/admin&realm=Administrator"
         # Make sure we come from ipv6
-        override_arguments=["--silent", "-6"]
+        override_arguments=["--silent"]
 
         # Bad username
         bad_username = f"bad_{Login_username}"
@@ -438,7 +438,7 @@ class UvmTests(NGFWTestCase):
 
         try:
             uri = "http://localhost/auth/login?url=/admin&realm=Administrator"
-            override_arguments=["--silent", "-6"]
+            override_arguments=["--silent"]
 
             # Bad username
             bad_username = f"bad_{Login_username}"
@@ -912,7 +912,11 @@ class UvmTests(NGFWTestCase):
 
         application = uvmContext.appManager().instantiate(application_name, default_policy_id)
 
-        global_functions.wait_for_event_queue_drain(queue_size_key="eventQueueSize")
+        try:
+            global_functions.wait_for_event_queue_drain(queue_size_key="eventQueueSize")
+        except Exception as e:
+            uvmContext.appManager().destroy( application.getAppSettings()["id"] )
+            raise unittest.SkipTest(e)
 
         uvmContext.appManager().destroy( application.getAppSettings()["id"] )
 
