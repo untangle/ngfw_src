@@ -483,7 +483,7 @@ class NetworkTests(NGFWTestCase):
             
     def test_015_add_many_vlans(self):
         network_manager = uvmContext.networkManager()
-        
+        physicalDev = []
         assigned_intfs = []
         for interface in network_manager.getNetworkSettings()['interfaces']['list']:
             assigned_intfs += [interface['interfaceId']]
