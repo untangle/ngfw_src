@@ -95,7 +95,7 @@ public class NetworkManagerImpl implements NetworkManager
      * This array holds the current interface Settings indexed by the interface ID.
      * This enabled fast lookups with iterating the list in findInterfaceId()
      */
-    private InterfaceSettings[] interfaceSettingsById = new InterfaceSettings[InterfaceSettings.MAX_INTERFACE_ID];
+    private InterfaceSettings[] interfaceSettingsById = new InterfaceSettings[InterfaceSettings.MAX_INTERFACE_ID + 1];
 
     /**
      * This flag indicates if the physical interfaces have been overloaded.
