@@ -40,12 +40,26 @@ Ext.define('Ung.cmp.RecordEditorController', {
             });
         }
 
+        var fields = this.mainGrid.editorFields;
+        for (var i = 0; i < fields.length; i++) {
+            if(fields[i].xtype === 'ungrid') {
+                // Build stores for ugrid fields
+                if ("store" in fields[i].bind){
+                    var storeName = fields[i].bind["store"].replace('{', '').replace('}', '');
+                    var storeObj = {};
+                    var listProperty = fields[i].bind["listProperty"];
+                    var dataValue = "record." + (listProperty != null ? listProperty : storeName ) + ".list";
+                    storeObj[storeName] = {data: '{' + dataValue + '}'};
+                    vm.setStores(storeObj);
+                }
+            }
+        }
+
         /**
          * if record has action object
          * hard to explain but needed to keep dirty state (show as modified)
          */
         if (v.record.get('action') && (typeof v.record.get('action') === 'object')) {
-            // console.log('do action bind');
             this.actionBind = vm.bind({
                 bindTo: '{_action}',
                 deep: true
@@ -88,6 +102,37 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 v.record.set(field, vm.get('record').get(field));
             }
         }
+
+        // Update from any ugrids
+        v.query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+
+            if(store.type == "chained"){
+                return;
+            }
+            if(grid.listProperty == null){
+                return;
+            }
+
+            /**
+             * Important!
+             * update custom grids only if are modified records or it was reordered via drag/drop
+             */
+            if (store.getModifiedRecords().length > 0 || store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                v.record.set(grid.listProperty, {
+                    javaClass: 'java.util.LinkedList',
+                    list: Ext.Array.pluck(store.getRange(), 'data')
+                });
+
+            }
+        });
+
         if (this.action === 'add') {
             this.mainGrid.getStore().add(v.record);
         }
