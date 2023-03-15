@@ -30,22 +30,13 @@ class AdministrationTests(NGFWTestCase):
         for subject in cert_subjects:
             if "CN=" in subject:
                 cn_found = True
-                if "www.untangle.com" in subject:
-                    raise unittest.SkipTest(skip_str)
-                else:
-                    assert("edge.arista.com" in subject)
+                assert(subject in ["CN=www.untangle.com","CN=edge.arista.com"])
             if "O=" in subject:
                 o_found = True
-                if "Untangle" in subject:
-                    raise unittest.SkipTest(skip_str)
-                else:
-                    assert("Arista" in subject)
+                assert(subject in ["O=Untangle","O=Arista","O=Security"])
             if "L=" in subject:
                 l_found = True
-                if "Sunnyvale" in subject:
-                    raise unittest.SkipTest(skip_str)
-                else:
-                    assert("Santa Clara" in subject)
+                assert(subject in ["L=Sunnyvale","L=Santa Clara"])
         assert(cn_found and o_found and l_found)
     
 test_registry.register_module("administration-tests", AdministrationTests)
