@@ -105,6 +105,7 @@ Ext.define('Ung.config.network.MainModel', {
                 sortType: 'asUnString'
             }]
         },
+        dhcpRelays: { data: '{settings.dhcpRelays.list}' },
         dynamicDhcpEntries:  {
             data: [],
             fields:[{
