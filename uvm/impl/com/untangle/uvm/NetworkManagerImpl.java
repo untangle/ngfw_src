@@ -53,6 +53,7 @@ import com.untangle.uvm.network.QosRuleCondition;
 import com.untangle.uvm.network.QosPriority;
 import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DhcpStaticEntry;
+import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
@@ -90,6 +91,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
+    private Integer currentVersion = 9;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
@@ -166,9 +168,8 @@ public class NetworkManagerImpl implements NetworkManager
             updateNetworkReservations(readSettings);
             configureInterfaceSettingsArray();
 
-            /* 15.2 conversion */
-            if ( this.networkSettings.getVersion() < 8 ) {
-                convertSettingsV8();
+            if ( this.networkSettings.getVersion() < currentVersion ) {
+                convertSettings();
             }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
@@ -1101,7 +1102,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 8 ); // Currently on v8 (as of v15.2)
+            newSettings.setVersion( currentVersion );
 
             String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
             try {
@@ -1269,6 +1270,7 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setFilterRules( new LinkedList<FilterRule>() );
             newSettings.setAccessRules( defaultAccessRules() );
             newSettings.setStaticDhcpEntries( new LinkedList<DhcpStaticEntry>() );
+            newSettings.setDhcpRelays( new LinkedList<DhcpRelay>() );
 
             /**
              * If this is a netboot (untangle local installation)
@@ -2992,62 +2994,18 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * convertSettingsV8
-     * Add default access rules for RADIUS server and wireguard tunnels
+     * convertSettings
+     * Convert settings to latest version
      */
-    private void convertSettingsV8()
+    private void convertSettings()
     {
         try {
-            List<FilterRule> accessRules = this.networkSettings.getAccessRules();
-
-            for( FilterRule rule : accessRules ) {
-                int pos = 1;
-                if ("Allow OpenVPN".equals(rule.getDescription())) {
-                    FilterRule filterRuleWireGuard = new FilterRule();
-                    filterRuleWireGuard.setReadOnly( true );
-                    filterRuleWireGuard.setEnabled( true );
-                    filterRuleWireGuard.setIpv6Enabled( true );
-                    filterRuleWireGuard.setDescription( "Allow WireGuard" );
-                    filterRuleWireGuard.setBlocked( false );
-                    List<FilterRuleCondition> ruleWireGuardConditions = new LinkedList<>();
-                    FilterRuleCondition ruleWireGuardMatcher1 = new FilterRuleCondition();
-                    ruleWireGuardMatcher1.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
-                    ruleWireGuardMatcher1.setValue("UDP");
-                    FilterRuleCondition ruleWireGuardMatcher2 = new FilterRuleCondition();
-                    ruleWireGuardMatcher2.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
-                    ruleWireGuardMatcher2.setValue("51820");
-                    FilterRuleCondition ruleWireGuardMatcher3 = new FilterRuleCondition();
-                    ruleWireGuardMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
-                    ruleWireGuardMatcher3.setValue("wan");
-                    ruleWireGuardConditions.add(ruleWireGuardMatcher1);
-                    ruleWireGuardConditions.add(ruleWireGuardMatcher2);
-                    ruleWireGuardConditions.add(ruleWireGuardMatcher3);
-                    filterRuleWireGuard.setConditions( ruleWireGuardConditions );
-
-                    accessRules.add( pos, filterRuleWireGuard );
-
-                    break;
-                }
-                pos++;
-            }
-
-            List<InterfaceSettings> virtualInterfaces = this.networkSettings.getVirtualInterfaces();
-
-            InterfaceSettings virtualIntf = new InterfaceSettings(InterfaceSettings.WIREGUARD_INTERFACE_ID,"WireGuard VPN");
-            virtualIntf.setIsVirtualInterface(true);
-            virtualIntf.setConfigType(null);
-            virtualIntf.setV4ConfigType(null);
-            virtualIntf.setV4Aliases(null);
-            virtualIntf.setV6ConfigType(null);
-            virtualIntf.setV6Aliases(null);
-            virtualIntf.setVrrpAliases(null);
-            virtualInterfaces.add(0, virtualIntf);
-
+            this.networkSettings.setDhcpRelays( new LinkedList<DhcpRelay>() );
         } catch (Exception e) {
             logger.warn("Exception converting Networking Settings",e);
         }
 
-        this.networkSettings.setVersion( 8 );
+        this.networkSettings.setVersion( currentVersion );
         this.setNetworkSettings( this.networkSettings, false );
     }
 
