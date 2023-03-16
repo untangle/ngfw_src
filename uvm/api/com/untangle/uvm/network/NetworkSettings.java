@@ -34,6 +34,7 @@ public class NetworkSettings implements Serializable, JSONString
     private List<BypassRule> bypassRules = null;
     private List<StaticRoute> staticRoutes = null;
     private List<DhcpStaticEntry> staticDhcpEntries = null;
+    private List<DhcpRelay> dhcpRelays = null;
     private List<FilterRule> accessRules = null;
     private List<FilterRule> filterRules = null;
     
@@ -112,6 +113,9 @@ public class NetworkSettings implements Serializable, JSONString
     public List<DhcpStaticEntry> getStaticDhcpEntries() { return this.staticDhcpEntries; }
     public void setStaticDhcpEntries( List<DhcpStaticEntry> newValue ) { this.staticDhcpEntries = newValue; }
     
+    public List<DhcpRelay> getDhcpRelays() { return this.dhcpRelays; }
+    public void setDhcpRelays( List<DhcpRelay> newValue ) { this.dhcpRelays = newValue; }
+
     public String getHostName() { return this.hostName; }
     public void setHostName( String newValue ) { this.hostName = newValue; }
 
