@@ -483,17 +483,17 @@ class NetworkTests(NGFWTestCase):
             
     def test_015_add_many_vlans(self):
         network_manager = uvmContext.networkManager()
-        physicalDev = []
+        physicalDev = ""
         assigned_intfs = []
         for interface in network_manager.getNetworkSettings()['interfaces']['list']:
             assigned_intfs += [interface['interfaceId']]
-            if interface['interfaceId'] == remote_control.interface and interface['configType'] == 'ADDRESSED':
+            if interface['interfaceId'] == remote_control.interface and interface['configType'] in ['ADDRESSED','BRIDGED']:
                 physicalDev = interface['physicalDev']
         for interface in network_manager.getNetworkSettings()['virtualInterfaces']['list']:
             assigned_intfs += [interface['interfaceId']]
         if not physicalDev:
             unittest.SkipTest("No physical device available")
-            
+
         max_interfaces = 253
         netspace_manager = uvmContext.netspaceManager()
         new_ip = netspace_manager.getAvailableAddressSpace("IPv4", 1).split("/")[0]
