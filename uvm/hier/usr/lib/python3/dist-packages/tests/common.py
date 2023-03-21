@@ -21,6 +21,8 @@ class NGFWTestCase(TestCase):
     _appSettings = None
     default_policy_id = 1
 
+    apps = {}
+
     # Run positions =
     # 1 first
     # 2 Normal
@@ -37,8 +39,28 @@ class NGFWTestCase(TestCase):
         return getattr(runtests, 'skip_instantiated', True)
 
     @classmethod
-    def get_app(cls):
-        return cls._app
+    def get_app(cls, name=None):
+        """
+        Return app by name
+        """
+        if name is None:
+            # Return this tests primary app
+            return cls._app
+        elif name in cls.apps:
+            # We've instantiated a secondary app and it exists
+            return cls.apps[name]
+        else:
+            # Instantiated a secondary app
+            if (uvmContext.appManager().isInstantiated(name)):
+                if cls.skip_instantiated():
+                    pytest.skip( f'app {name} already instantiated')
+                else:
+                    app = uvmContext.appManager().app(name)
+            else:
+                app = uvmContext.appManager().instantiate(name, cls.default_policy_id)
+            app.start()
+            cls.apps[name] = app
+            return app
 
     @classmethod
     def get_app_settings(cls):
@@ -106,6 +128,12 @@ class NGFWTestCase(TestCase):
         uvmContext = tests.global_functions.uvmContext
 
         uvmContext.networkManager().setNetworkSettings(cls._orig_netsettings)
+
+        # Shut down secondary apps
+        for app in cls.apps.values():
+            app.stop()
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+        cls.apps = {}
 
         if cls._app:
             cls.final_extra_tear_down()
