@@ -7,7 +7,7 @@ CLIENT_TARGET=
 PORT=22
 RUNTESTS_ARGUMENTS=
 RUNTESTS_GET_ARGUMENT=
-
+RUNTESTS_VSCODE_DIRECTORY=.vscode/runtests
 ##
 ## Read command-line arguments
 ##
@@ -57,6 +57,10 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
 
     ssh-copy-id -p $port root@$target_address
 
+    if [ -d $RUNTESTS_VSCODE_DIRECTORY ]; then
+        rsync -a -e "ssh -p $port" $RUNTESTS_VSCODE_DIRECTORY root@$target_address:/root
+    fi
+
     TARGET_RESULT=0
     if [ "${CLIENT_TARGET}" != "" ] ; then
         ##
@@ -82,10 +86,16 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
     ##
     ## Build runtests command line
     ##
-    TARGET_COMMAND="/usr/bin/runtests ${RUNTESTS_ARGUMENTS}"
+    # TARGET_COMMAND="/usr/bin/runtests ${RUNTESTS_ARGUMENTS}"
+    TARGET_COMMAND="/usr/bin/runtests"
+    if [ -f $RUNTESTS_VSCODE_DIRECTORY/overrides.json ] ; then 
+        TARGET_COMMAND="$TARGET_COMMAND -o /root/runtests/overrides.json"
+    fi
+    TARGET_COMMAND="$TARGET_COMMAND ${RUNTESTS_ARGUMENTS}"
+
     if [ "${RUNTESTS_GET_ARGUMENT}" != "" ] ; then
         ##
-        ## Pass get argumnt
+        ## Pass get argument
         ##
         TARGET_COMMAND="$TARGET_COMMAND ${RUNTESTS_GET_ARGUMENT}"
     fi
@@ -98,6 +108,7 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
     echo
     echo "$TARGET_COMMAND"
     echo
+
     ssh -p $port root@$target_address "$TARGET_COMMAND"
     echo
     ssh -p $port root@$target_address "grep "^Skipped" /tmp/unittest.log"
