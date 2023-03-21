@@ -7,7 +7,7 @@ Ext.define ('Ung.model.Interface', {
         { name: 'configType', type: 'string' },
 
         { name: 'dhcpDnsOverride', type: 'string' },
-        { name: 'dhcpEnabled', type: 'boolean', defaultValue: false },
+        { name: 'dhcpType', type: 'string', defaultValue: "DISABLED" },
         { name: 'dhcpGatewayOverride', type: 'auto', defaultValue: null },
         { name: 'dhcpLeaseDuration', type: 'number', defaultValue: null },
         { name: 'dhcpNetmaskDuration', type: 'auto', defaultValue: null },
