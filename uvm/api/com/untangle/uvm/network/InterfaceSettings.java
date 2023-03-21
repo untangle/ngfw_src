@@ -90,7 +90,12 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress v6StaticDns1; /* the dns1  of this interface if configured static, or dhcp override */
     private InetAddress v6StaticDns2; /* the dns2  of this interface if configured static, or dhcp override */
 
+    // After 17, we can remove dhcpEnabled and associated getter/setters
+    // (if we remove now, the missing variable will cause us to be unable to load settings)
     private Boolean dhcpEnabled; /* is DHCP serving enabled on this interface? */
+    public static enum DhcpType { SERVER, RELAY, DISABLED };
+    private DhcpType dhcpType = DhcpType.DISABLED;
+
     private InetAddress dhcpRangeStart; /* where do DHCP leases start? example: 192.168.2.100*/
     private InetAddress dhcpRangeEnd; /* where do DHCP leases end? example: 192.168.2.200 */
     private Integer dhcpLeaseDuration; /* DHCP lease duration in seconds */
@@ -98,7 +103,9 @@ public class InterfaceSettings implements Serializable, JSONString
     private Integer     dhcpPrefixOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
     private String dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
     private List<DhcpOption> dhcpOptions; /* DHCP dnsmasq options */
-    
+
+    private InetAddress dhcpRelayAddress; /* DHCP relay server IP address */
+
     private Boolean raEnabled; /* are IPv6 router advertisements available? */
     
     private Integer downloadBandwidthKbps; /* Download Bandwidth available on this WAN interface (for QoS) */
@@ -265,6 +272,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public Boolean getDhcpEnabled() { return this.dhcpEnabled; }
     public void setDhcpEnabled( Boolean newValue ) { this.dhcpEnabled = newValue; }
 
+    public DhcpType getDhcpType() { return this.dhcpType; }
+    public void setDhcpType( DhcpType newValue ) { this.dhcpType = newValue; }
+
     public InetAddress getDhcpRangeStart() { return this.dhcpRangeStart; }
     public void setDhcpRangeStart( InetAddress newValue ) { this.dhcpRangeStart = newValue; }
 
@@ -286,6 +296,9 @@ public class InterfaceSettings implements Serializable, JSONString
     public List<DhcpOption> getDhcpOptions() { return this.dhcpOptions; }
     public void setDhcpOptions( List<DhcpOption> newValue ) { this.dhcpOptions = newValue; }
     
+    public InetAddress getDhcpRelayAddress() { return this.dhcpRelayAddress; }
+    public void setDhcpRelayAddress( InetAddress newValue ) { this.dhcpRelayAddress = newValue; }
+
     public Boolean getRaEnabled() { return this.raEnabled; }
     public void setRaEnabled( Boolean newValue ) { this.raEnabled = newValue; }
 
