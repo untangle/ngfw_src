@@ -19,6 +19,9 @@ import runtests.overrides as overrides
 from . import global_functions
 from . import ipaddr
 
+import tests.test_ipsec_vpn as test_ipsec_vpn
+
+DHCP_RELAY_ADDRESS=overrides.get("DHCP_RELAY_ADDRESS",default=test_ipsec_vpn.IPSEC_HOST_LAN_IP)
 
 ftp_file_name = ""
 
@@ -1622,6 +1625,184 @@ class NetworkTests(NGFWTestCase):
         countries = uvmContext.networkManager().getWirelessValidRegulatoryCountryCodes(wireless_system_dev)
         print(countries)
         assert(len(countries) > 0)
+
+    def test_350_lan_dhcp_server(self):
+        """
+        Verify DHCP server on LAN interface
+        """
+        lan_interface = None
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface.get("configType") != 'ADDRESSED':
+                continue
+            if interface.get("isWan"):
+                continue
+            lan_interface = interface
+            break
+
+        if lan_interface is None:
+            raise unittest.SkipTest("missing LAN interface")
+
+        lan_address = lan_interface["v4StaticAddress"]
+        lan_subnet = lan_interface["v4StaticNetmask"]
+
+        # Default DHCP settings
+        lan_interface["dhcpType"] = "SERVER"
+        dhcp_range_start = ".".join(lan_address.split(".")[0:3]) + ".98"
+        dhcp_range_end = ".".join(lan_address.split(".")[0:3]) + ".99"
+        lan_interface["dhcpRangeStart"] = dhcp_range_start
+        lan_interface["dhcpRangeEnd"] = dhcp_range_end
+        lan_interface["dhcpDnsOverride"] = ""
+        lan_interface["dhcpGatewayOverride"] = ""
+        lan_interface["dhcpNetmaskOverride"] = ""
+        lan_interface["dhcpPrefixOverride"] = None
+        lan_interface["dhcpOptions"]["list"] = []
+
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        dhcp_results = global_functions.get_dhcp_client_results()
+        if dhcp_results["no_privileges"]:
+            raise unittest.SkipTest("client does not have privileges")
+
+        print(dhcp_results)
+        assert dhcp_results["dhcp"]["ip_offered"] == dhcp_range_start or dhcp_results["dhcp"]["ip_offered"] == dhcp_range_end, "offered IP address in range"
+        assert dhcp_results["dhcp"]["subnet_mask"] == lan_subnet, "subnet mask"
+        assert dhcp_results["dhcp"]["router"] == lan_address, "gateway address is lan address"
+        assert dhcp_results["dhcp"]["domain_name_server"] == lan_address, "dns address is lan address"
+
+    def test_351_lan_dhcp_server_override_and_options(self):
+        """
+        Verify DHCP server on LAN interface
+        """
+        lan_interface = None
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface.get("configType") != 'ADDRESSED':
+                continue
+            if interface.get("isWan"):
+                continue
+            lan_interface = interface
+            break
+
+        if lan_interface is None:
+            raise unittest.SkipTest("missing LAN interface")
+
+        lan_address = lan_interface["v4StaticAddress"]
+        lan_subnet = lan_interface["v4StaticNetmask"]
+
+        # Override and some options
+        lan_interface["dhcpType"] = "SERVER"
+        dhcp_range_start = ".".join(lan_address.split(".")[0:3]) + ".98"
+        dhcp_range_end = ".".join(lan_address.split(".")[0:3]) + ".99"
+        lan_dns = ".".join(lan_address.split(".")[0:3]) + ".10"
+        lan_gateway = ".".join(lan_address.split(".")[0:3]) + ".11"
+        lan_prefix = 25
+        lan_subnet = "255.255.255.128"
+        time_server = "1.2.3.4"
+        lan_interface["dhcpRangeStart"] = dhcp_range_start
+        lan_interface["dhcpRangeEnd"] = dhcp_range_end
+        lan_interface["dhcpDnsOverride"] = lan_dns
+        lan_interface["dhcpGatewayOverride"] = lan_gateway
+        lan_interface["dhcpNetmaskOverride"] = lan_subnet
+        lan_interface["dhcpPrefixOverride"] = lan_prefix
+        lan_interface["dhcpOptions"]["list"] = [{
+            "description": "time server",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DhcpOption",
+            "value": f"4,{time_server}"
+        }]
+
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        dhcp_results = global_functions.get_dhcp_client_results()
+        if dhcp_results["no_privileges"]:
+            raise unittest.SkipTest("client does not have privileges")
+        print(dhcp_results)
+
+        assert dhcp_results["dhcp"]["ip_offered"] == dhcp_range_start or dhcp_results["dhcp"]["ip_offered"] == dhcp_range_end, "offered IP address in range"
+        assert dhcp_results["dhcp"]["subnet_mask"] == lan_subnet, "subnet mask"
+        assert dhcp_results["dhcp"]["router"] == lan_gateway, "gateway address overridden"
+        assert dhcp_results["dhcp"]["domain_name_server"] == lan_dns, "dns address overridden"
+        assert dhcp_results["dhcp"]["time_server"] == time_server, "option for time server"
+
+    def test_352_lan_dhcp_relay(self):
+        """
+        Verify DHCP dhcp on LAN interface
+        """
+        lan_interface = None
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface.get("configType") != 'ADDRESSED':
+                continue
+            if interface.get("isWan"):
+                continue
+            lan_interface = interface
+            break
+
+        if lan_interface is None:
+            raise unittest.SkipTest("missing LAN interface")
+
+        # Establish ipsec tunnel to remote DHCP server
+        app_ipsec = NetworkTests.get_app("ipsec-vpn")
+        ipsec_app_settings = app_ipsec.getSettings()
+        ipsec_app_settings["tunnels"]["list"].append(test_ipsec_vpn.build_ipsec_tunnel())
+        app_ipsec.setSettings(ipsec_app_settings)
+
+        ping_result = 1
+        timeout = 10
+        while (ping_result and timeout > 0):
+            timeout -= 1
+            time.sleep(1)
+            ping_result = subprocess.call(["ping","-c","1",test_ipsec_vpn.IPSEC_HOST_LAN_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+        if ping_result:
+            assert False, "unable to establish ipsec connection"
+
+        # Default DHCP settings
+        lan_interface["dhcpType"] = "RELAY"
+        lan_interface["dhcpRelayAddress"] = DHCP_RELAY_ADDRESS
+
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        dhcp_results = global_functions.get_dhcp_client_results()
+        if dhcp_results["no_privileges"]:
+            raise unittest.SkipTest("client does not have privileges")
+
+        print(dhcp_results)
+
+        # Not so easy to verify results, but being defined is enough
+        assert "ip_offered" in dhcp_results["dhcp"], "offered IP address in range"
+        assert "subnet_mask" in dhcp_results["dhcp"], "offered subnet mask"
+        assert "router" in dhcp_results["dhcp"], "offered gateway"
+        assert "domain_name_server" in dhcp_results["dhcp"], "offered DNS address"
+
+    def test_353_lan_dhcp_disabled(self):
+        """
+        Verify DHCP server/relay disabled on LAN interface
+        """
+        lan_interface = None
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface.get("configType") != 'ADDRESSED':
+                continue
+            if interface.get("isWan"):
+                continue
+            lan_interface = interface
+            break
+
+        if lan_interface is None:
+            raise unittest.SkipTest("missing LAN interface")
+
+        lan_interface["dhcpType"] = "DISABLED"
+
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        dhcp_results = global_functions.get_dhcp_client_results()
+        if dhcp_results["no_privileges"]:
+            raise unittest.SkipTest("client does not have privileges")
+
+        print(dhcp_results)
+        assert len(dhcp_results["dhcp"].keys()) == 0, "empty dhcp results"
 
     @classmethod
     def final_extra_tear_down(cls):
