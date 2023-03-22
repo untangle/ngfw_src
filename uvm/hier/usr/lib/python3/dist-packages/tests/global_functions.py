@@ -579,7 +579,7 @@ def get_dhcp_client_results(duration=30):
 
 def build_nmap_command(sudo=True, override_arguments=None, extra_arguments=None, script=None):
     """
-    Build wrk command
+    Build nmap command
 
     Default arguments should be evident, but of particular note are:
     override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
