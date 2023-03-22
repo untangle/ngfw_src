@@ -862,12 +862,19 @@ Ext.define('Ung.config.network.Interface', {
                 },
             },
             tbar: [{
-                // dhcp enabled
-                xtype: 'checkbox',
-                itemId: 'dhcpEnabled',
-                margin: 2,
-                bind: '{intf.dhcpEnabled}',
-                boxLabel: '<strong>' + 'Enable DHCP Serving'.t() + '</strong>'
+                xtype: 'radiogroup',
+                itemId: 'ipDhcpType',
+                layout: { type: 'hbox' },
+                defaults: { padding: '0 10' },
+                simpleValue: true,
+                bind: {
+                    value: '{intf.dhcpType}',
+                },
+                items: [
+                    { boxLabel: 'Server'.t(),   inputValue: 'SERVER' },
+                    { boxLabel: 'Relay'.t(),    inputValue: 'RELAY' },
+                    { boxLabel: 'Disabled'.t(), inputValue: 'DISABLED' }
+                ]
             }],
             layout: {
                 type: 'vbox',
@@ -881,9 +888,47 @@ Ext.define('Ung.config.network.Interface', {
                 layout: {
                     type: 'vbox'
                 },
-                disabled: true,
                 bind: {
-                    disabled: '{!intf.dhcpEnabled}'
+                    disabled: '{intf.dhcpType != "RELAY"}',
+                    hidden: '{intf.dhcpType != "RELAY"}'
+                },
+                items:[{
+                    xtype: 'textfield',
+                    labelWidth: 190,
+                    bind: {
+                        value: '{intf.dhcpRelayAddress}'
+                    },
+                    fieldLabel: 'Relay Host Address'.t(),
+                    allowBlank: false
+                }]
+            },{
+                xtype: 'container',
+                flex: 1,
+                padding: 10,
+                scrollable: 'y',
+                layout: {
+                    type: 'vbox'
+                },
+                bind: {
+                    disabled: '{intf.dhcpType != "DISABLED"}',
+                    hidden: '{intf.dhcpType != "DISABLED"}'
+                },
+                items:[{
+                    xtype: 'component',
+                    margin: 2,
+                    html: 'DHCP Server and Relay disabled'.t()
+                }]
+            },{
+                xtype: 'container',
+                flex: 1,
+                padding: 10,
+                scrollable: 'y',
+                layout: {
+                    type: 'vbox'
+                },
+                bind: {
+                    disabled: '{intf.dhcpType != "SERVER"}',
+                    hidden: '{intf.dhcpType != "SERVER"}'
                 },
                 defaults: {
                     labelWidth: 190,
@@ -963,10 +1008,10 @@ Ext.define('Ung.config.network.Interface', {
                 collapsible: true,
                 titleCollapse: true,
                 animCollapse: false,
-                disabled: true,
                 bind: {
                     store: '{dhcpOptions}',
-                    disabled: '{!intf.dhcpEnabled}'
+                    disabled: '{intf.dhcpType != "SERVER"}',
+                    hidden: '{intf.dhcpType != "SERVER"}'
                 },
                 tbar: ['@addInline'],
                 recordActions: ['delete'],

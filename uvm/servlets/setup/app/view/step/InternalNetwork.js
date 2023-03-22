@@ -73,11 +73,23 @@ Ext.define('Ung.Setup.InternalNetwork', {
                 editable: false,
                 bind: { value: '{internal.v4StaticPrefix}', disabled: '{!routerRadio.checked}' }
             }, {
-                xtype: 'checkbox',
-                margin: '0 0 0 155',
                 disabled: true,
-                boxLabel: 'Enable DHCP Server (default)'.t(),
-                bind: { value: '{internal.dhcpEnabled}', disabled: '{!routerRadio.checked}' }
+                fieldLabel: 'DHCP Server'.t(),
+                xtype: 'radiogroup',
+                id: 'DhcpServer',
+                labelWidth: 150,
+                labelAlign: 'right',
+                width: 350,
+                layout: { type: 'vbox' },
+                simpleValue: true,
+                bind: {
+                    value: '{internal.dhcpType}', 
+                    disabled: '{!routerRadio.checked}'
+                },
+                items: [
+                    { boxLabel: 'Enabled'.t(),  inputValue: 'SERVER' },
+                    { boxLabel: 'Disabled'.t(), inputValue: 'DISABLED' }
+                ]
             }]
         }, {
             xtype: 'component',
@@ -155,7 +167,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
                 me.initialConfigType = internal.configType;
                 me.initialv4Address = internal.v4StaticAddress;
                 me.initialv4Prefix = internal.v4StaticPrefix;
-                me.initialDhcpEnabled = internal.dhcpEnabled;
+                me.initialDhcpType = internal.dhcpType;
             }
             vm.set('internal', internal);
         },
@@ -231,7 +243,7 @@ Ext.define('Ung.Setup.InternalNetwork', {
             if ( me.initialConfigType === vm.get('internal.configType') &&
                  me.initialv4Address === vm.get('internal.v4StaticAddress') &&
                  me.initialv4Prefix === vm.get('internal.v4StaticPrefix') &&
-                 me.initialDhcpEnabled === vm.get('internal.dhcpEnabled')) {
+                 me.initialDhcpType === vm.get('internal.dhcpType')) {
                 cb();
                 return;
             }

@@ -388,6 +388,226 @@ def wait_for_event_queue_drain(queue_size_key="eventQueueSize"):
 
     assert queue_size <= min_events, f"{queue_size_key} queue drained below {min_events}"
 
+# Parse "dhcp client" (nmap with "broadcast-dhcp-discover" script) with successful output like:
+# # nmap --script broadcast-dhcp-discover
+# Starting Nmap 7.80 ( https://nmap.org ) at 2023-03-15 14:03 EDT
+# Pre-scan script results:
+# | broadcast-dhcp-discover:
+# |   Response 1 of 1:
+# |     IP Offered: 192.168.252.117
+# |     DHCP Message Type: DHCPOFFER
+# |     Server Identifier: 192.168.252.70
+# |     IP Address Lease Time: 2m00s
+# |     Renewal Time Value: 1m00s
+# |     Rebinding Time Value: 1m45s
+# |     Broadcast Address: 192.168.252.255
+# |     Domain Name: example.com
+# |     TFTP Server Name: 1.2.3.4\x00
+# |     Domain Name Server: 192.168.252.70
+# |     Subnet Mask: 255.255.255.0
+# |_    Router: 192.168.252.70
+# WARNING: No targets were specified, so 0 hosts scanned.
+# Nmap done: 0 IP addresses (0 hosts up) scanned in 3.14 seconds
+#
+# No result (no DHCP server) looks like:
+# # nmap --script broadcast-dhcp-discover
+# Starting Nmap 7.80 ( https://nmap.org ) at 2023-03-15 14:08 EDT
+# WARNING: No targets were specified, so 0 hosts scanned.
+# Nmap done: 0 IP addresses (0 hosts up) scanned in 10.14 seconds
+nmap_results_no_privileges_re = re.compile(".+ not running for lack of privileges.*")
+nmap_fields = [{
+    "id": 1,    "type": "address",  "output": "Subnet Mask"
+},{
+    "id": 2,    "type": "time",     "output": "Time Offset"
+},{
+    "id": 3,    "type": "address",  "output": "Router"
+},{
+    "id": 4,    "type": "address",  "output": "Time Server"
+},{
+    "id": 6,    "type": "address",  "output": "Domain Name Server"
+},{
+    "id": 5,    "type": "address",  "output": "Name Server"
+},{
+    "id": 7,    "type": "address",  "output": "Log Server"
+},{
+    "id": 8,    "type": "address",  "output": "Cookie Server"
+},{
+    "id": 9,    "type": "address",  "output": "LPR Server"
+},{
+    "id": 10,   "type": "address",  "output": "Impress Server"
+},{
+    "id": 11,   "type": "address",  "output": "Resource Location Server"
+},{
+    "id": 12,   "type": "string",   "output": "Hostname"
+},{
+    "id": 13,   "type": "size",     "output": "Boot File Size"
+},{
+    "id": 14,   "type": "string",   "output": "Merit Dump File"
+},{
+    "id": 15,   "type": "string",   "output": "Domain Name"
+},{
+    "id": 16,   "type": "address",  "output": "Swap Address"
+},{
+    "id": 17,   "type": "string",   "output": "Root Path"
+},{
+    "id": 18,   "type": "string",   "output": "extensions_path"
+},{
+    "id": 19,   "type": "boolean",  "output": "IP Forwarding"
+},{
+    "id": 20,   "type": "boolean",  "output": "Non-local Source Routing"
+},{
+    "id": 21,   "type": "string",   "output": "Policy Filter"
+},{
+    "id": 22,   "type": "size",     "output": "Maximum Datagram Reassembly Size"
+},{
+    "id": 23,   "type": "seconds",  "output": "Default IP TTL"
+},{
+    "id": 24,   "type": "seconds",  "output": "Path MTU Aging Timeout"
+},{
+    "id": 25,   "type": "size",     "output": "Path MTU Plateau"
+},{
+    "id": 26,   "type": "size",     "output": "Interface MTU"
+},{
+    "id": 27,   "type": "boolean",  "output": "All Subnets are Local"
+},{
+    "id": 28,   "type": "address",  "output": "All Subnets are Local"
+},{
+    "id": 29,   "type": "boolean",  "output": "Perform Mask Discovery"
+},{
+    "id": 30,   "type": "boolean",  "output": "Mask Supplier"
+},{
+    "id": 31,   "type": "boolean",  "output": "Perform Router Discovery"
+},{
+    "id": 32,   "type": "address",  "output": "Router Solicitation Address"
+},{
+    "id": 33,   "type": "route",    "output": "Static Route"
+},{
+    "id": 34,   "type": "boolean",  "output": "Trailer Encapsulation"
+},{
+    "id": 35,   "type": "seconds",  "output": "ARP Cache Timeout"
+},{
+    "id": 36,   "type": "boolean",  "output": "Ethernet Encapsulation"
+},{
+    "id": 37,   "type": "seconds",  "output": "TCP Default TTL"
+},{
+    "id": 38,   "type": "seconds",  "output": "TCP Keepalive Interval"
+},{
+    "id": 39,   "type": "boolean",  "output": "TCP Keepalive Garbage"
+},{
+    "id": 40,   "type": "string",   "output": "NIS Domain"
+},{
+    "id": 41,   "type": "address",  "output": "NIS Servers"
+},{
+    "id": 42,   "type": "address",  "output": "NTP Servers"
+},{
+    "id": 43,   "type": "string",   "output": "Vendor Specific Information"
+},{
+    "id": 44,   "type": "address",  "output": "NetBIOS Name Server"
+},{
+    "id": 45,   "type": "address",  "output": "NetBIOS Datagram Server"
+},{
+    "id": 46,   "type": "string",   "output": "NetBIOS Node Type"
+},{
+    "id": 47,   "type": "string",   "output": "NetBIOS Scope"
+},{
+    "id": 48,   "type": "address",  "output": "X Window Font Server"
+},{
+    "id": 49,   "type": "address",  "output": "X Window Display Manager"
+},{
+    "id": 50,   "type": "address",  "output": "Requested IP Address (client)"
+},{
+    "id": 51,   "type": "seconds",  "output": "IP Address Lease Time"
+},{
+    "id": 52,   "type": "string",   "output": "Option Overload"
+},{
+    "id": 53,   "type": "string",   "output": "DHCP Message Type"
+},{
+    "id": 54,   "type": "address",  "output": "Server Identifier"
+},{
+    "id": 55,   "type": "string",   "output": "Parameter Request List (client)"
+},{
+    "id": 56,   "type": "string",   "output": "Error Message"
+},{
+    "id": 57,   "type": "size",     "output": "Maximum DHCP Message Size"
+},{
+    "id": 58,   "type": "seconds",  "output": "Renewal Time Value"
+},{
+    "id": 59,   "type": "seconds",  "output": "Rebinding Time Value"
+},{
+    "id": 60,   "type": "string",   "output": "Class Identifier"
+},{
+    "id": 61,   "type": "string",   "output": "Client Identifier (client)"
+},{
+    "id": 62,   "type": "string",   "output": "TFTP Server Name"
+},{
+    "id": 67,   "type": "string",   "output": "Bootfile Name"
+},{
+    "id": 252,  "type": "string",   "output": "WPAD"
+},{
+    "id": None, "type": "address",  "output": "IP Offered"
+}]
+
+def get_dhcp_client_results(duration=30):
+    """
+    Run dhcp client (nmap)and return results
+
+    Returns a dictionary of options obtained from DHCP query with the following keys:
+    dhcp                Dictionary of key/pair valyes.
+    no_privileges       Client did not have user privileges to run
+    """
+    results = {
+        "dhcp": {},
+        "no_privileges": False
+    }
+
+    dhcp_results = remote_control.run_command(build_nmap_command(script="broadcast-dhcp-discover"), stdout=True)
+    for dhcp_result in dhcp_results.split("\n"):
+        matches = nmap_results_no_privileges_re.match(dhcp_result)
+        if matches:
+            # Not running with root privileges
+            results["no_privileges"] = True
+            break
+
+        for nmap_field in nmap_fields:
+            matches = re.match(f".+ {nmap_field['output']}: (.+)", dhcp_result)
+            if matches:
+                field = nmap_field['output'].lower().replace(" ", "_")
+                results["dhcp"][field] = matches.group(1)
+                break
+
+    return results
+
+def build_nmap_command(sudo=True, override_arguments=None, extra_arguments=None, script=None):
+    """
+    Build nmap command
+
+    Default arguments should be evident, but of particular note are:
+    override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
+    extra_arguments     Additional arguments not otherwise processed.
+    """
+    if sudo:
+        prefix = "sudo "
+    else:
+        prefix = ""
+
+    arguments = []
+    if override_arguments:
+        # Allow completely custom arguments
+        arguments = override_arguments
+
+    optional_arguments = []
+
+    if extra_arguments:
+        optional_arguments.append(extra_arguments)
+    if script:
+        optional_arguments.append(f"--script {script}")
+
+    command = f"{prefix}nmap {' '.join(arguments)} {' '.join(optional_arguments)}"
+
+    print(f"{sys._getframe().f_code.co_name}: {command}" )
+    return command
+
+
 Si_prefixes = {
     # yocto
     'y': {

@@ -13,6 +13,32 @@ import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 import runtests.overrides as overrides
 
+# IPSec Configuration
+L2TP_SERVER_HOSTS = overrides.get("L2TP_SERVER_HOSTS", default=
+    ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
+    "10.112.56.91","10.112.56.94","10.112.56.57","10.112.56.58","10.112.56.59"]
+)
+L2TP_CLIENT_HOST = overrides.get("L2TP_CLIENT_HOST", default="10.112.56.84")  # Windows 10 using builtin OpenSSH
+L2TP_ALIAS_IP = overrides.get("L2TP_ALIAS_IP", default="10.112.56.200")
+L2TP_LOCAL_USER = overrides.get("L2TP_LOCAL_USER", default="test")
+L2TP_LOCAL_PASSWORD = overrides.get("L2TP_LOCAL_PASSWORD", default="passwd")
+
+IPSEC_HOST = overrides.get("IPSEC_HOST", default="10.112.56.96")
+IPSEC_HOST_LAN = overrides.get("IPSEC_HOST_LAN", default="192.168.235.0/24")
+IPSEC_HOST_LAN_IP = overrides.get("IPSEC_HOST_LAN_IP", default="192.168.235.96")
+IPSEC_PC_LAN_IP = overrides.get("IPSEC_PC_LAN_IP", default="192.168.235.83")
+IPSEC_HOST_NAME = overrides.get("IPSEC_HOST_NAME", default="ipsecsite.untangle.int")
+IPSEC_CONFIGURED_HOST_IPS = overrides.get("IPSEC_CONFIGURED_HOST_IPS", default=
+                        [('10.112.0.134','192.168.14.1','192.168.14.0/24'), # ATS
+                        ('10.112.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
+                        ('10.112.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
+                        ('10.112.56.89','10.112.56.89','10.112.56.15/32'),  # QA 3 Bridged
+                        ('10.112.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
+                        ('10.112.56.57','192.168.4.1','192.168.4.0/24'),    # QA box .57
+                        ('10.112.56.58','192.168.12.1','192.168.12.0/24'),  # QA box .58
+                        ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box .59
+)
+
 default_policy_id = 1
 appAD = None
 appDataRD = None
@@ -21,32 +47,32 @@ tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
 
-# Defaults for ATS
-l2tpServerHosts = overrides.get("l2tpServerHosts", default=
-                    ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
-                    "10.112.56.91","10.112.56.94","10.112.56.57","10.112.56.58","10.112.56.59"]
-)
-l2tpClientHost = overrides.get("l2tpClientHost", default="10.112.56.84")  # Windows 10 using builtin OpenSSH
-l2tpAliasIP = overrides.get("l2tpAliasIP", default="10.112.56.200")
-l2tpLocalUser = overrides.get("l2tpLocalUser", default="test")
-l2tpLocalPassword = overrides.get("l2tpLocalPassword", default="passwd")
-ipsecHost = overrides.get("ipsecHost", default="10.112.56.96")
-ipsecHostLANIP = overrides.get("ipsecHostLANIP", default="192.168.235.96")
-ipsecPcLANIP = overrides.get("ipsecPcLANIP", default="192.168.235.83")
-ipsecHostLAN = overrides.get("ipsecHostLAN", default="192.168.235.0/24")
-ipsecHostname = overrides.get("ipsecHostLAN", default="ipsecsite.untangle.int")
-configuredHostIPs = overrides.get("configuredHostIPs", default=
-                        [('10.112.0.134','192.168.14.1','192.168.14.0/24'), # ATS
-                        ('10.112.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
-                        ('10.112.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
-                        ('10.112.56.89','10.112.56.89','10.112.56.15/32'), # QA 3 Bridged
-                        ('10.112.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
-                        ('10.112.56.57','192.168.4.1','192.168.4.0/24'), # QA box .57
-                        ('10.112.56.58','192.168.12.1','192.168.12.0/24'), # QA box .58
-                        ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box .59
-)
+def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip=None, local_lan_ip=None, local_lan_range=None):
+    """
+    Create an ipsec tunnel settings entry.
+    If the Local values are not defined, use the WAN address to search for them from IPSEC_CONFIGURED_HOST_IPS.
+    """
+    if ( local_ip is None or
+         local_lan_ip is None or
+         local_lan_range is None ):
+        # Lookup local config from associated WAN
+        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+        for host_config in IPSEC_CONFIGURED_HOST_IPS:
+            if (wan_ip == host_config[0]):
+                if local_ip is None:
+                    local_ip = host_config[0]
+                if local_lan_ip is None:
+                    local_lan_ip = host_config[1]
+                if local_lan_range is None:
+                    local_lan_range = host_config[2]
+                break
 
-def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLANRange=""):
+        if ( local_ip is None or
+            local_lan_ip is None or
+            local_lan_range is None ):
+            # Unable to find local configuration for this WAN
+            raise unittest.SkipTest(f"cannot find local configuration for wan {wan_ip}")
+
     return {
         "active": True, 
         "adapter": "- Custom -", 
@@ -54,12 +80,12 @@ def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLA
         "description": "ipsec test profile", 
         "id": 0, 
         "javaClass": "com.untangle.app.ipsec_vpn.IpsecVpnTunnel", 
-        "left": localIP,  # local WAN
-        "leftSourceIp": localLANIP, # local LAN IP
-        "leftSubnet": localLANRange,  # local LAN range
+        "left": local_ip,  # local WAN
+        "leftSourceIp": local_lan_ip, # local LAN IP
+        "leftSubnet": local_lan_range,  # local LAN range
         "pfs": True, 
-        "right": remoteIP,  # remote WAN
-        "rightSubnet": remoteLAN, # remote LAN range
+        "right": remote_ip,  # remote WAN
+        "rightSubnet": remote_lan, # remote LAN range
         "rightId": "%any",
         "runmode": "start", 
         "secret": "supersecret",
@@ -76,7 +102,6 @@ def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLA
         "phase2Cipher": "aes256gcm128",
         "ikeVersion": 2
     }    
-
     
 def nukeIPSecTunnels(app):
     ipsecSettings = app.getSettings()
@@ -92,11 +117,11 @@ def createL2TPconfig(ipsecSettings,authType="LOCAL_DIRECTORY"):
     return ipsecSettings
 
 
-def createLocalDirectoryUser(userpassword=l2tpLocalPassword):
+def createLocalDirectoryUser(userpassword=L2TP_LOCAL_PASSWORD):
     passwd_encoded = base64.b64encode(userpassword.encode("utf-8"))
     return {'javaClass': 'java.util.LinkedList', 
         'list': [{
-            'username': l2tpLocalUser, 
+            'username': L2TP_LOCAL_USER,
             'firstName': '[firstName]', 
             'lastName': '[lastName]', 
             'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
@@ -237,8 +262,8 @@ class IPsecTests(NGFWTestCase):
 
         appDataRD = appAD.getSettings().get('radiusSettings')
         appFW = uvmContext.appManager().instantiate(cls.appNameFW(), default_policy_id)
-        ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ipsecHostResult = subprocess.call(["ping","-c","1",IPSEC_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        l2tpClientHostResult = subprocess.call(["ping","-c","1",L2TP_CLIENT_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
     # verify client is online
@@ -255,29 +280,18 @@ class IPsecTests(NGFWTestCase):
             raise unittest.SkipTest("No paired IPSec server available")
         pre_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
 
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        pairMatchNotFound = True
-        listOfPairs = ""
-        for hostConfig in configuredHostIPs:
-            print(hostConfig[0])
-            listOfPairs += str(hostConfig[0]) + ", "
-            if (wan_IP in hostConfig[0]):
-                appData = self._app.getSettings()
-                appData["tunnels"]["list"].append(addIPSecTunnel(ipsecHost,ipsecHostLAN,hostConfig[0],hostConfig[1],hostConfig[2]))
-                self._app.setSettings(appData)
-                ipsecTestLAN = hostConfig[1]
-                pairMatchNotFound = False
-        if (pairMatchNotFound):
-            raise unittest.SkipTest("IPsec test only configed for IPs %s" % (listOfPairs))
+        appData = self._app.getSettings()
+        appData["tunnels"]["list"].append(build_ipsec_tunnel())
+        self._app.setSettings(appData)
         timeout = 10
         ipsecHostLANResult = 1
         while (ipsecHostLANResult != 0 and timeout > 0):
             timeout -= 1
             time.sleep(1)
             # Access remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecHostLANIP}/"))
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{IPSEC_HOST_LAN_IP}/"))
         assert (ipsecHostLANResult == 0)
-        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
+        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % IPSEC_PC_LAN_IP)
         assert (ipsecPcLanResult == 0)
         tunnelUp = True
 
@@ -301,7 +315,7 @@ class IPsecTests(NGFWTestCase):
         vlan_host, vlan_netmask = global_functions.cidr_to_netmask(vlan_netspace)
         network_settings["interfaces"]["list"].append({
             "configType": "ADDRESSED",
-            "dhcpEnabled": False,
+            "dhcpType": "DISABLED",
             "dhcpLeaseDuration": 0,
             "dhcpOptions": {
                 "javaClass": "java.util.LinkedList",
@@ -380,7 +394,7 @@ class IPsecTests(NGFWTestCase):
 
         # Attempt to ping from the remote network back to us
         # If we are marked for the vlan, this will fail
-        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % remote_control.client_ip, host=ipsecPcLANIP)
+        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % remote_control.client_ip, host=IPSEC_PC_LAN_IP)
         # clear firewall rule in case test fails so it does not affect other tests
         network_settings["filterRules"]["list"] =[]
         uvmContext.networkManager().setNetworkSettings(network_settings)
@@ -389,8 +403,8 @@ class IPsecTests(NGFWTestCase):
     def test_025_verifyIPsecBypass(self):           
         if (not tunnelUp):
             raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
-        ipsecHostLANResultNoFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecPcLANIP}/"))
-        ipsecHostLANResultnoFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
+        ipsecHostLANResultNoFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{IPSEC_PC_LAN_IP}/"))
+        ipsecHostLANResultnoFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=IPSEC_PC_LAN_IP)
         assert (ipsecHostLANResultNoFW == 0)
         assert (ipsecHostLANResultnoFWRW == 0)
 
@@ -400,14 +414,14 @@ class IPsecTests(NGFWTestCase):
         rules["list"].append(create_firewall_rule("DST_ADDR",remote_control.client_ip))
         appFW.setRules(rules)
         # To and from the client IP should be blocked by the firewall rule
-        ipsecHostLANResultFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecPcLANIP}/"))
-        ipsecHostLANResultFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
+        ipsecHostLANResultFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{IPSEC_PC_LAN_IP}/"))
+        ipsecHostLANResultFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=IPSEC_PC_LAN_IP)
         appData = self._app.getSettings()
         appData["bypassflag"] = True
         self._app.setSettings(appData)
         # Bypass true on IPsec should bypass firewall rules.
-        ipsecHostLANResultFWBypassed = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecPcLANIP}/"))
-        ipsecHostLANResultFWBypassedRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=ipsecPcLANIP)
+        ipsecHostLANResultFWBypassed = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{IPSEC_PC_LAN_IP}/"))
+        ipsecHostLANResultFWBypassedRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=IPSEC_PC_LAN_IP)
         # clear out firwall rules before checking results so other tests are not affected.
         rules["list"]=[]
         appFW.setRules(rules)
@@ -431,8 +445,8 @@ class IPsecTests(NGFWTestCase):
         while (ipsecHostLANResult != 0 and timeout > 0):
             timeout -= 1
             time.sleep(1)
-            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecHostLANIP}/"))
-        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{IPSEC_HOST_LAN_IP}/"))
+        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % IPSEC_PC_LAN_IP)
         # delete tunnel
         nukeIPSecTunnels(self._app)
         tunnelUp = False
@@ -443,7 +457,7 @@ class IPsecTests(NGFWTestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (l2tpClientHostResult != 0):
             raise unittest.SkipTest("l2tpClientHostResult not available")
-        if (not wan_IP in l2tpServerHosts):
+        if (not wan_IP in L2TP_SERVER_HOSTS):
             raise unittest.SkipTest("No paired L2TP client available")
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         appData = self._app.getSettings()
@@ -452,17 +466,17 @@ class IPsecTests(NGFWTestCase):
         timeout = 480
         found = False
         # Send command for Windows VPN connect.
-        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,L2TP_LOCAL_USER,L2TP_LOCAL_PASSWORD), host=L2TP_CLIENT_HOST)
         if vpnServerResult == 0:
             while not found and timeout > 0:
                 timeout -= 1
                 time.sleep(1)
                 virtUsers = self._app.getVirtualUsers()
                 for user in virtUsers['list']:
-                    if user['clientUsername'] == l2tpLocalUser:
+                    if user['clientUsername'] == L2TP_LOCAL_USER:
                         found = True
             # Send command for Windows VPN disconnect.
-        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=L2TP_CLIENT_HOST)
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         assert(found)
         # Use same user with different password
@@ -473,17 +487,17 @@ class IPsecTests(NGFWTestCase):
         timeout = 480
         found = False
         # Send command for Windows VPN connect.
-        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,new_user_password), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,L2TP_LOCAL_USER,new_user_password), host=L2TP_CLIENT_HOST)
         if vpnServerResult == 0:
             while not found and timeout > 0:
                 timeout -= 1
                 time.sleep(1)
                 virtUsers = self._app.getVirtualUsers()
                 for user in virtUsers['list']:
-                    if user['clientUsername'] == l2tpLocalUser:
+                    if user['clientUsername'] == L2TP_LOCAL_USER:
                         found = True
         # Send command for Windows VPN disconnect.
-        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=L2TP_CLIENT_HOST)
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         assert(found)
 
@@ -503,7 +517,7 @@ class IPsecTests(NGFWTestCase):
             if netsettings['interfaces']['list'][i]['configType'] == "ADDRESSED":
                 if netsettings['interfaces']['list'][i]['v4ConfigType'] == "STATIC":
                     if netsettings['interfaces']['list'][i]['v4StaticAddress'] == wan_IP:
-                        netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(l2tpAliasIP,
+                        netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(L2TP_ALIAS_IP,
                                                                                          netsettings['interfaces']['list'][i]['v4StaticNetmask'],
                                                                                          netsettings['interfaces']['list'][i]['v4StaticPrefix']))
                         uvmContext.networkManager().setNetworkSettings(netsettings)
@@ -512,7 +526,7 @@ class IPsecTests(NGFWTestCase):
 
         if not ip_alias_set:
             raise unittest.SkipTest("Unable to set alias IP")
-        wan_addresses = [wan_IP,l2tpAliasIP]
+        wan_addresses = [wan_IP,L2TP_ALIAS_IP]
         # Set Local Directory users
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         orig_app_settings = self._app.getSettings()
@@ -533,17 +547,17 @@ class IPsecTests(NGFWTestCase):
             timeout = 480
             found = False
             # Send command for Windows VPN connect.
-            vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_addr,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
+            vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_addr,L2TP_LOCAL_USER,L2TP_LOCAL_PASSWORD), host=L2TP_CLIENT_HOST)
             if vpnServerResult == 0:
                 while not found and timeout > 0:
                     timeout -= 1
                     time.sleep(1)
                     virtUsers = self._app.getVirtualUsers()
                     for user in virtUsers['list']:
-                        if user['clientUsername'] == l2tpLocalUser:
+                        if user['clientUsername'] == L2TP_LOCAL_USER:
                             found = True
                 # Send command for Windows VPN disconnect.
-            vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=l2tpClientHost)
+            vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=L2TP_CLIENT_HOST)
             uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
             assert(found)
             # Use same user with different password
@@ -552,17 +566,17 @@ class IPsecTests(NGFWTestCase):
             timeout = 480
             found = False
             # Send command for Windows VPN connect.
-            vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_addr,l2tpLocalUser,new_user_password), host=l2tpClientHost)
+            vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_addr,L2TP_LOCAL_USER,new_user_password), host=L2TP_CLIENT_HOST)
             if vpnServerResult == 0:
                 while not found and timeout > 0:
                     timeout -= 1
                     time.sleep(1)
                     virtUsers = self._app.getVirtualUsers()
                     for user in virtUsers['list']:
-                        if user['clientUsername'] == l2tpLocalUser:
+                        if user['clientUsername'] == L2TP_LOCAL_USER:
                             found = True
             # Send command for Windows VPN disconnect.
-            vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=l2tpClientHost)
+            vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=L2TP_CLIENT_HOST)
             # set original user and password
             uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
             assert(found)
@@ -580,7 +594,7 @@ class IPsecTests(NGFWTestCase):
             raise unittest.SkipTest("No RADIUS server available")
         if (l2tpClientHostResult != 0):
             raise unittest.SkipTest("l2tpClientHostResult not available")
-        if (not wan_IP in l2tpServerHosts):
+        if (not wan_IP in L2TP_SERVER_HOSTS):
             raise unittest.SkipTest("No paired L2TP client available")
         # Configure RADIUS settings
         appAD.setSettings(createRadiusSettings())
@@ -589,7 +603,7 @@ class IPsecTests(NGFWTestCase):
         self._app.setSettings(appData)
         timeout = 480
         found = False
-        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,global_functions.RADIUS_USER,global_functions.RADIUS_PASSWORD), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,global_functions.RADIUS_USER,global_functions.RADIUS_PASSWORD), host=L2TP_CLIENT_HOST)
         while not found and timeout > 0:
             timeout -= 1
             time.sleep(1)
@@ -598,7 +612,7 @@ class IPsecTests(NGFWTestCase):
                 if user['clientUsername'] == global_functions.RADIUS_USER:
                     found = True
         # Send command for Windows VPN disconnect.
-        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=L2TP_CLIENT_HOST)
         assert(found)
 
     def test_060_createIpsecTunnelHostname(self):
@@ -606,31 +620,18 @@ class IPsecTests(NGFWTestCase):
             raise unittest.SkipTest("No paired IPSec server available")
         pre_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
 
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        pairMatchNotFound = True
-        listOfPairs = ""
-        addDNSRule(createDNSRule(ipsecHost,ipsecHostname))
-        # verify L2TP is off  NGFW-7212
-        ipsecSettings = self._app.getSettings()
-        ipsecSettings["vpnflag"] = False
-        self._app.setSettings(ipsecSettings)
-        for hostConfig in configuredHostIPs:
-            print(hostConfig[0])
-            listOfPairs += str(hostConfig[0]) + ", "
-            if (wan_IP in hostConfig[0]):
-                appData = self._app.getSettings()
-                appData["tunnels"]["list"].append(addIPSecTunnel(ipsecHostname,ipsecHostLAN,hostConfig[0],hostConfig[1],hostConfig[2]))
-                self._app.setSettings(appData)
-                pairMatchNotFound = False
-        if (pairMatchNotFound):
-            raise unittest.SkipTest("IPsec test only configed for IPs %s" % (listOfPairs))
+        addDNSRule(createDNSRule(IPSEC_HOST,IPSEC_HOST_NAME))
+        appData = self._app.getSettings()
+        appData["vpnflag"] = False
+        appData["tunnels"]["list"].append(build_ipsec_tunnel())
+        self._app.setSettings(appData)
         timeout = 10
         ipsecHostLANResult = 1
         while (ipsecHostLANResult != 0 and timeout > 0):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{ipsecHostLANIP}/"))
+            ipsecHostLANResult = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{IPSEC_HOST_LAN_IP}/"))
         post_events_enabled = global_functions.get_app_metric_value(self._app,"enabled")
         nukeIPSecTunnels(self._app)
         assert (ipsecHostLANResult == 0)
