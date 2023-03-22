@@ -150,7 +150,7 @@ class WireGuardVpnTests(NGFWTestCase):
         for intf in newNetSettings['interfaces']['list']:
             if not intf['isWan']:
                 intf['v4StaticAddress'] = testingAddress
-                if intf['dhcpEnabled']:
+                if intf['dhcpType'] == 'SERVER':
                     intf['dhcpRangeStart'] = testingDhcpStart
                     intf['dhcpRangeEnd'] = testingDhcpEnd
                 break
@@ -221,7 +221,7 @@ class WireGuardVpnTests(NGFWTestCase):
         for intf in newNetSettings['interfaces']['list']:
             if not intf['isWan']:
                 intf['v4StaticAddress'] = testingAddress
-                if intf['dhcpEnabled']:
+                if intf['dhcpType'] == 'SERVER':
                     intf['dhcpRangeStart'] = testingDhcpStart
                     intf['dhcpRangeEnd'] = testingDhcpEnd
                 break

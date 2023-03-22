@@ -517,8 +517,7 @@ public class NetworkManagerImpl implements NetworkManager
                     if(address == null){
                         address = getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
                     }
-                    if(intfSettings.getDhcpEnabled() != null &&
-                        intfSettings.getDhcpEnabled() &&
+                    if(intfSettings.getDhcpType() == InterfaceSettings.DhcpType.SERVER &&
                         intfSettings.getDhcpDnsOverride() != null &&
                         !intfSettings.getDhcpDnsOverride().equals("")){
                             InetAddress dhcpOverride = InetAddress.getByName(intfSettings.getDhcpDnsOverride());
@@ -1167,7 +1166,7 @@ public class NetworkManagerImpl implements NetworkManager
                 internal.setV4ConfigType( InterfaceSettings.V4ConfigType.STATIC );
                 internal.setV4StaticAddress( InetAddress.getByName("192.168.2.1") );
                 internal.setV4StaticPrefix( 24 );
-                internal.setDhcpEnabled( true );
+                internal.setDhcpType(InterfaceSettings.DhcpType.SERVER);
                 internal.setV6ConfigType( InterfaceSettings.V6ConfigType.STATIC ); 
                 internal.setV6StaticAddress( null );
                 internal.setV6StaticPrefixLength( 64 );
@@ -1578,7 +1577,7 @@ public class NetworkManagerImpl implements NetworkManager
                 break;
             if ( intf.getIsWan() )
                 break;
-            if ( intf.getDhcpEnabled() == null || ! intf.getDhcpEnabled() )
+            if ( intf.getDhcpType() == InterfaceSettings.DhcpType.DISABLED )
                 break;
             if ( intf.getDhcpRangeStart() == null || intf.getDhcpRangeEnd() == null )
                 break;
@@ -1899,8 +1898,7 @@ public class NetworkManagerImpl implements NetworkManager
          * If DHCP settings are enabled, but settings arent picked, fill in reasonable defaults
          */
         if ( interfaceSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED &&
-             interfaceSettings.getDhcpEnabled() != null &&
-             interfaceSettings.getDhcpEnabled() == Boolean.TRUE &&
+             interfaceSettings.getDhcpType() == InterfaceSettings.DhcpType.SERVER &&
              interfaceSettings.getDhcpRangeStart() == null ) {
             initializeDhcpDefaults( interfaceSettings );
         }
@@ -1921,15 +1919,16 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void initializeDhcpDefaults( InterfaceSettings interfaceSettings )
     {
-        if (! interfaceSettings.getDhcpEnabled())
+        if (interfaceSettings.getDhcpType() == InterfaceSettings.DhcpType.DISABLED){
             return;
+        }
 
         try {
             InetAddress addr = interfaceSettings.getV4StaticAddress();
             InetAddress mask = interfaceSettings.getV4StaticNetmask();
             if (addr == null || mask == null) {
                 logger.warn("Missing interface[" + interfaceSettings.getName() + "] settings (" + addr + ", " + mask + "). Disabling DHCP.");
-                interfaceSettings.setDhcpEnabled( false );
+                interfaceSettings.setDhcpType(InterfaceSettings.DhcpType.DISABLED);
                 return;
             }
 
@@ -1968,7 +1967,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         catch (Exception e) {
             logger.warn("Exception initializing DHCP Address: ",e);
-            interfaceSettings.setDhcpEnabled( false );
+            interfaceSettings.setDhcpType(InterfaceSettings.DhcpType.DISABLED);
         }
     }
 
@@ -3003,6 +3002,12 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings.setDhcpRelays( new LinkedList<DhcpRelay>() );
         } catch (Exception e) {
             logger.warn("Exception converting Networking Settings",e);
+        }
+
+        // Convert DHCP enabled boolean to enumerated value
+        for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
+            Boolean dhcpEnabled = interfaceSettings.getDhcpEnabled();
+            interfaceSettings.setDhcpType( dhcpEnabled ? InterfaceSettings.DhcpType.SERVER : InterfaceSettings.DhcpType.DISABLED);
         }
 
         this.networkSettings.setVersion( currentVersion );
