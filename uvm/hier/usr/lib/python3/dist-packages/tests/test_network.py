@@ -1775,6 +1775,8 @@ class NetworkTests(NGFWTestCase):
         assert "subnet_mask" in dhcp_results["dhcp"], "offered subnet mask"
         assert "router" in dhcp_results["dhcp"], "offered gateway"
         assert "domain_name_server" in dhcp_results["dhcp"], "offered DNS address"
+        # Identifier tends to be firist IP address which is typically WAN but could be LAN depending on order, so try both
+        assert dhcp_results["dhcp"]["server_identifier"] == DHCP_RELAY_ADDRESS or dhcp_results["dhcp"]["server_identifier"] == test_ipsec_vpn.IPSEC_HOST, "received from relay host"
 
     def test_353_lan_dhcp_disabled(self):
         """
