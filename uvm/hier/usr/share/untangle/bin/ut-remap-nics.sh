@@ -3,7 +3,7 @@
 # Create new mapping files for interfaces
 #
 SYSTEMD_NETWORK_PATH=/etc/systemd/network
-SYSTEMD_NETWORK_FILE_NAME_TEMPLATE="__DESTINATION_PATH__/10-__TO_DEVICE__.link"
+SYSTEMD_NETWORK_FILE_NAME_TEMPLATE="__DESTINATION_PATH__/__TO_DEVICE__.link"
 read -r -d '' SYSTEMD_NETWORK_TEMPLATE <<'EOT'
 [Match]
 MACAddress=__FROM_MAC_ADDRESS__
