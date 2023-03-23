@@ -255,6 +255,30 @@ Ext.define('Ung.config.network.MainController', {
 
         }
 
+        
+        if(vm.get('settings.dynamicRoutingSettings.enabled')) {
+            if(vm.get('settings.dynamicRoutingSettings.bgpEnabled')) {
+                // If either of these values are null / undefined, they are empty or non-valid
+                if (!vm.get('settings.dynamicRoutingSettings.bgpRouterId')) {
+                    Ext.MessageBox.alert(
+                        "Failed".t(),
+                        "Please provide a valid Router ID".t()
+                    );
+                    view.setLoading(false);
+                    return;
+                }
+                if (!vm.get('settings.dynamicRoutingSettings.bgpRouterAs')) { 
+                    Ext.MessageBox.alert(
+                        "Failed".t(),
+                        "Please provide a valid Router AS".t()
+                    );
+                    view.setLoading(false);
+                    return;
+                }
+            }
+        }
+        
+
         me.setNetworkSettings();
     },
 

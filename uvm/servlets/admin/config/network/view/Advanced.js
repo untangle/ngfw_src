@@ -1010,6 +1010,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         },
                         emptyText: '[no router id]'.t(),
                         blankText: 'Router ID must be specified.'.t(),
+                        allowBlank: false,
                         vtype: 'routerId',
                         margin: 10
                     },{
@@ -1021,6 +1022,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         },
                         emptyText: '[no router as]'.t(),
                         blankText: 'Router AS must be specified.'.t(),
+                        allowBlank: false,
                         vtype: 'routerAs',
                         margin: 10
                     },{
