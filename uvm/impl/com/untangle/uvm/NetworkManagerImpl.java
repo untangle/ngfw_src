@@ -3007,7 +3007,7 @@ public class NetworkManagerImpl implements NetworkManager
         // Convert DHCP enabled boolean to enumerated value
         for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
             Boolean dhcpEnabled = interfaceSettings.getDhcpEnabled();
-            interfaceSettings.setDhcpType( dhcpEnabled ? InterfaceSettings.DhcpType.SERVER : InterfaceSettings.DhcpType.DISABLED);
+            interfaceSettings.setDhcpType( dhcpEnabled != null && dhcpEnabled ? InterfaceSettings.DhcpType.SERVER : InterfaceSettings.DhcpType.DISABLED);
         }
 
         this.networkSettings.setVersion( currentVersion );
