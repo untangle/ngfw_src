@@ -32,15 +32,19 @@ INTERACTIVE=false
 LOG_WATCH=
 # If true, only test, don't actually perform rename operations
 TEST=false
+# If not empty, rename from command line map instead of udev/systemd
+RENAME_OPTION=
+
 ##
 ## Process command line arguments
 ##
-while getopts "d:i:l:t:v:" flag; do
+while getopts "d:i:l:t:r:v:" flag; do
     case "${flag}" in
         d) DEBUG=${OPTARG} ;;
         i) INTERACTIVE=${OPTARG} ;;
         l) LOG_WATCH=${OPTARG} ;;
         t) TEST=${OPTARG} ;;
+        r) RENAME_OPTION=${OPTARG};;
         v) eval "${OPTARG}" ;;
     esac
 done
@@ -184,6 +188,66 @@ function build_systemd_map
 }
 
 ##
+## Build mapping from rename option specified from command line of formst:
+## to=from[,to2=from2[...]]
+##
+## Such as:
+## eth2=eth3,eth4=eth5
+##
+function build_rename_option_map
+{
+	local __function_name="build_rename_option_map"
+	local interface_to_from=$1
+
+	errors=0
+
+	interface_mappings=(${interface_to_from//,/ })
+	for interface_mapping in "${interface_mappings[@]}"; do
+		interface_from=${interface_mapping%%=*}
+		interface_to=${interface_mapping#*=}
+		if [ "$interface_to" == "$interface_from" ] ; then
+			echo "$__function_name: for mapping ($interface_mapping) to and from are the same ($interface_to)"
+			errors=1
+			break
+		fi
+		if [ "$interface_from" == "" ] || [ "$interface_to" == "" ]; then
+			echo "$__function_name: for mapping ($interface_mapping) missing interface name"
+			errors=1
+			break
+		fi
+
+		from_mac=
+		to_mac=
+		for key in "${!CURRENT_MAC_NAMES[@]}"; do
+			if [[ ${CURRENT_MAC_NAMES[$key]} == "$interface_to" ]]; then
+				mac_to=$key
+			fi
+			if [[ ${CURRENT_MAC_NAMES[$key]} == "$interface_from" ]]; then
+				mac_from=$key
+			fi
+		done
+		if [ "$mac_from" == "" ] ; then
+			echo "$__function_name: no mac address for ($interface_from)"
+			errors=1
+			break
+		fi
+		if [ "$mac_to" == "" ] ; then
+			echo "$__function_name: no mac address for ($interface_to)"
+			errors=1
+			break
+		fi
+
+		# With names, switch MAC address order
+		TARGET_MAC_NAMES[$mac_from]=$interface_to
+		TARGET_MAC_NAMES[$mac_to]=$interface_from
+	done
+
+	if [ $errors -eq 1 ] ; then
+		exit
+	fi
+}
+
+##
 ## Get mac address using name from original mapping
 ##
 function get_original_mac_address_from_name
@@ -295,6 +359,7 @@ function switch_nic
 
 }
 
+
 ##
 ## Main
 ##
@@ -304,13 +369,20 @@ function switch_nic
 ##
 build_current_mac_names
 
-##
-## Read target mappings
-##
-if [ -f $UDEV_RULES_FILE_NAME ]; then
-	build_udev_map
+if [ "$RENAME_OPTION" != "" ] ; then
+	##
+	## Build target mappings from command line arguments
+	##
+	build_rename_option_map $RENAME_OPTION
 else
-	build_systemd_map
+	##
+	## Read target mappings
+	##
+	if [ -f $UDEV_RULES_FILE_NAME ]; then
+		build_udev_map
+	else
+		build_systemd_map
+	fi
 fi
 
 if [ ${#TARGET_MAC_NAMES[@]} -eq 0 ]; then
@@ -326,7 +398,7 @@ for mac_address in "${!TARGET_MAC_NAMES[@]}"; do
 	target_name=${TARGET_MAC_NAMES[$mac_address]}
 	current_name=${CURRENT_MAC_NAMES[$mac_address]}
 	if [ "$current_name" = "$target_name" ]; then
-   		continue
+		continue
 	fi
 	if [ "$current_name" = "" ]; then
 		log_message $LOG_MESSAGE_PRIORITY_ANY "final mapping: target wants to map to mac_address=$mac_address, but not found on current system"
@@ -337,7 +409,7 @@ for mac_address in "${!TARGET_MAC_NAMES[@]}"; do
 done
 
 ##
-## Sumary of final mapping
+## Summary of final mapping
 ##
 for mac_address in "${!CURRENT_MAC_NAMES[@]}"; do
 	current_name=${CURRENT_MAC_NAMES[$mac_address]}
