@@ -116,7 +116,7 @@ function build_current_mac_names
 		log_message $LOG_MESSAGE_PRIORITY_DEBUG "$__function_name: add $mac_address, $name to current and original"
 		CURRENT_MAC_NAMES[$mac_address]=$name
 		ORIGINAL_MAC_NAMES[$mac_address]=$name
-	done < <(find /sys/class/net -mindepth 1 -maxdepth 1 -name eth* -printf "%P;" -execdir cat {}/address \;)
+	done < <(find /sys/class/net -mindepth 1 -maxdepth 1 -name "eth*" -printf "%P;" -execdir cat {}/address \;)
 
 }
 
