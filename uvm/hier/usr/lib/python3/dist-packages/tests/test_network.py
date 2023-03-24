@@ -1,3 +1,4 @@
+import glob
 import socket
 import unittest
 import pytest
@@ -434,6 +435,22 @@ def try_snmp_command(command):
         time.sleep(5)
         result = remote_control.run_command( command )
     return result
+
+def build_device_to_mac_address_map(devices=[]):
+    """
+    For the list of devices (e.g.,eth0, eth1)
+    return a dictionary mapping of those names to the current system mac addresses
+    """
+    device_mac_mapping = {}
+    for device_name in devices:
+        mac_address_filename=f"/sys/class/net/{device_name}/address"
+        if not os.path.isfile(mac_address_filename):
+            # Mac address doesn't exit
+            raise unittest.SkipTest(f"cannot find {mac_address_filename} for {device_name} ")
+        with open(mac_address_filename) as file:
+            device_mac_mapping[device_name] = file.readline().strip()
+
+    return device_mac_mapping
 
 @pytest.mark.network
 class NetworkTests(NGFWTestCase):
@@ -1805,6 +1822,62 @@ class NetworkTests(NGFWTestCase):
 
         print(dhcp_results)
         assert len(dhcp_results["dhcp"].keys()) == 0, "empty dhcp results"
+
+    def test_400_nic_remapping(self):
+        """
+        Remap nics
+        """
+        # Get list of candidate devices to use for swapping
+        device_candidates = []
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface.get("isVirtualInterface") or \
+                interface.get("isVlanInterface") or \
+                interface.get("isWirelessInterface"):
+                # Don't consider virtual, vlan, or wireless interfaces
+                continue
+            device_candidates.append(interface.get("physicalDev"))
+
+        if len(device_candidates) < 4:
+            raise unittest.SkipTest("not enough devices to safely swap")
+
+        print(device_candidates[-2:])
+        # Build current device/mac mapping
+        original_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
+        print(f"original_device_mac_mapping={original_device_mac_mapping}")
+
+        # Set settings forces sync-settngs call
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # What do we have in systemd network directory?
+        found_device_links = []
+        for filename in glob.glob(f"/etc/systemd/network/*"):
+            device = filename[filename.rfind("/")+1:]
+            device = device[:device.find(".")]
+            found_device_links.append(device)
+        assert len(set(found_device_links).intersection(device_candidates)) == len(device_candidates), "found same number of link files matching devices"
+        assert len(set(found_device_links).difference(device_candidates)) == 0, "no extra link files found"
+
+        # Simulate a system reboot:
+        # 1. Swap last two devices with interface mapper
+        command=f"/usr/share/untangle/bin/interface-mapping.sh -r {device_candidates[-1]}={device_candidates[-2]}"
+        print(command)
+        print(subprocess.call(command, shell=True))
+
+        # 2. Gather this modified system mapping, simulating reboot with kernel picking different mac addresses
+        modified_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
+        print(f"modified_device_mac_mapping={modified_device_mac_mapping}")
+
+        # 3. Restart networking
+        command="ifdown -a -v --exclude=lo && ifup -a -v --exclude=lo && /usr/bin/systemctl-wait"
+        print(command)
+        print(subprocess.call(command, shell=True, stderr=subprocess.STDOUT, stdout=subprocess.DEVNULL))
+
+        # Verify original mapping is preserved
+        new_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
+        print(f"     new_device_mac_mapping={new_device_mac_mapping}")
+        for device in original_device_mac_mapping.keys():
+            assert new_device_mac_mapping[device] == original_device_mac_mapping[device], f"{device}: orig and new mac address same"
 
     @classmethod
     def final_extra_tear_down(cls):
