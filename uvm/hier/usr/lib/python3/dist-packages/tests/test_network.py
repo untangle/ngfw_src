@@ -1828,7 +1828,7 @@ class NetworkTests(NGFWTestCase):
         Remap nics
         """
         # Get list of candidate devices to use for swapping
-        dev_candidates = []
+        device_candidates = []
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface.get("isVirtualInterface") or \
@@ -1836,14 +1836,14 @@ class NetworkTests(NGFWTestCase):
                 interface.get("isWirelessInterface"):
                 # Don't consider virtual, vlan, or wireless interfaces
                 continue
-            dev_candidates.append(interface.get("physicalDev"))
+            device_candidates.append(interface.get("physicalDev"))
 
-        if len(dev_candidates) < 4:
+        if len(device_candidates) < 4:
             raise unittest.SkipTest("not enough devices to safely swap")
 
-        print(dev_candidates[-2:])
+        print(device_candidates[-2:])
         # Build current device/mac mapping
-        original_device_mac_mapping = build_device_to_mac_address_map(dev_candidates[-2:])
+        original_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
         print(f"original_device_mac_mapping={original_device_mac_mapping}")
 
         # Set settings forces sync-settngs call
@@ -1855,17 +1855,17 @@ class NetworkTests(NGFWTestCase):
             device = filename[filename.rfind("/")+1:]
             device = device[:device.find(".")]
             found_device_links.append(device)
-        assert len(set(found_device_links).intersection(dev_candidates)) == len(dev_candidates), "found same number of link files matching devices"
-        assert len(set(found_device_links).difference(dev_candidates)) == 0, "no extra link files found"
+        assert len(set(found_device_links).intersection(device_candidates)) == len(device_candidates), "found same number of link files matching devices"
+        assert len(set(found_device_links).difference(device_candidates)) == 0, "no extra link files found"
 
         # Simulate a system reboot:
         # 1. Swap last two devices with interface mapper
-        command=f"/usr/share/untangle/bin/interface-mapping.sh -r {dev_candidates[-1]}={dev_candidates[-2]}"
+        command=f"/usr/share/untangle/bin/interface-mapping.sh -r {device_candidates[-1]}={device_candidates[-2]}"
         print(command)
         print(subprocess.call(command, shell=True))
 
         # 2. Gather this modified system mapping, simulating reboot with kernel picking different mac addresses
-        modified_device_mac_mapping = build_device_to_mac_address_map(dev_candidates[-2:])
+        modified_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
         print(f"modified_device_mac_mapping={modified_device_mac_mapping}")
 
         # 3. Restart networking
@@ -1874,7 +1874,7 @@ class NetworkTests(NGFWTestCase):
         print(subprocess.call(command, shell=True, stderr=subprocess.STDOUT, stdout=subprocess.DEVNULL))
 
         # Verify original mapping is preserved
-        new_device_mac_mapping = build_device_to_mac_address_map(dev_candidates[-2:])
+        new_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
         print(f"     new_device_mac_mapping={new_device_mac_mapping}")
         for device in original_device_mac_mapping.keys():
             assert new_device_mac_mapping[device] == original_device_mac_mapping[device], f"{device}: orig and new mac address same"
