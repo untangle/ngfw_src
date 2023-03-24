@@ -1096,7 +1096,7 @@ public class EventManagerImpl implements EventManager
         }else{
             EventsSeen.put(simpleName,EventsSeen.get(simpleName) + 1);
         }
-        if(!classesToProcess.containsKey(simpleName)){
+        if(classesToProcess.size() > 0 && !classesToProcess.containsKey(simpleName)){
             event = null;
         }else{
             try {
