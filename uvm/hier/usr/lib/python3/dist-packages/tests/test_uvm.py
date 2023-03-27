@@ -268,7 +268,7 @@ class UvmTests(NGFWTestCase):
 
         uri="http://localhost/auth/login?url=/admin&realm=Administrator"
         # Make sure we come from ipv6
-        override_arguments=["--silent"]
+        override_arguments=["--silent", "-6"]
 
         # Bad username
         bad_username = f"bad_{Login_username}"
@@ -322,6 +322,7 @@ class UvmTests(NGFWTestCase):
 
         # Successful local login
         curl_result = subprocess.check_output(
+
             global_functions.build_curl_command(
                 uri=uri,
                 override_arguments=override_arguments,
@@ -438,7 +439,7 @@ class UvmTests(NGFWTestCase):
 
         try:
             uri = "http://localhost/auth/login?url=/admin&realm=Administrator"
-            override_arguments=["--silent"]
+            override_arguments=["--silent", "-6"]
 
             # Bad username
             bad_username = f"bad_{Login_username}"
