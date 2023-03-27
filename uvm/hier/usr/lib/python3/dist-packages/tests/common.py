@@ -133,7 +133,7 @@ class NGFWTestCase(TestCase):
         for app in cls.apps.values():
             app.stop()
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )
-        cls.apps = {}
+        cls.apps.clear()
 
         if cls._app:
             cls.final_extra_tear_down()
