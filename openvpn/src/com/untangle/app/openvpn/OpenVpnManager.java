@@ -86,6 +86,9 @@ public class OpenVpnManager
 
         logger.info("Starting OpenVPN server tasks");
 
+        // Ensure that the directory which contains openvpn is always present
+        UvmContextFactory.context().execManager().exec("mkdir -p /var/run/openvpn");
+
         // make sure systemctl knows about anything that has been uploaded
         UvmContextFactory.context().execManager().exec("systemctl daemon-reload");
 
