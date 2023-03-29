@@ -64,8 +64,6 @@ public class WireGuardVpnManager
             logger.info(WIREGUARD_QUICK_APP + ": ");
             for (String line : lines){
                 logger.info(WIREGUARD_QUICK_APP + ": " + line);
-                // !!! look for error:
-                // RTNETLINK answers: File exists
             }
         } catch (Exception e) {
         }
