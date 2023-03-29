@@ -1,9 +1,7 @@
 """wireguard-vpn tests"""
 import time
 import copy
-import re
 import subprocess
-import base64
 import runtests
 import unittest
 import pytest
@@ -13,27 +11,35 @@ from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
+import runtests.overrides as overrides
+
+import tests.test_network as test_network
 
 default_policy_id = 1
 appData = None
 app = None
 appWeb = None
-tunnelUp = False
 wanIP = None
 
-#remote WireGuard Untangle from global_functions
-remotePublicKey = global_functions.WG_VPN_SERVICE_INFO["publicKey"]
-remoteEndpointHostname = global_functions.WG_VPN_SERVICE_INFO["endpointHostname"]
-remotePeerAddress = global_functions.WG_VPN_SERVICE_INFO["peerAddress"]
-remoteNetworks = global_functions.WG_VPN_SERVICE_INFO["networks"]
-remoteDescription = global_functions.WG_VPN_SERVICE_INFO["hostname"]
+# Local configuration
+WG_LOCAL = overrides.get("WG_LOCAL", default={
+    "publicKey": "1YbeQWcyHrPnnUJhBKbxKt2ZUbr2I8EiuinG9cYqQmE=",
+    "privateKey": "sICMfPW0s1m74egk3VS4BXe7mah3m5XF+gCN25B0Y2w=",
+    "addressPool": "10.133.205.1/24"
+})
 
-#set these locally to match what's on remote/static WireGuard untangle
-localPublicKey = "1YbeQWcyHrPnnUJhBKbxKt2ZUbr2I8EiuinG9cYqQmE="
-localPrivateKey = "sICMfPW0s1m74egk3VS4BXe7mah3m5XF+gCN25B0Y2w="
-localAddressPool = "10.133.205.1/24"
+# Remote server
+WG_REMOTE = overrides.get("WG_REMOTE", default={
+        "serverAddress": "10.113.150.117",
+        "hostname": "untangle-ats-wireguard",
+        "publicKey": "fupwK1yQLvtBOFpW8nHxjIYjSDAzkpCwYGYL2rS5xUU=",
+        "endpointPort": 51820,
+        "peerAddress": "172.31.53.1",
+        "networks": "192.168.20.0/24",
+        "lanAddress": "192.168.20.170"
+})
 
-def setupWireguardTunnel(tunnel_enabled=True, remotePK=remotePublicKey, remotePeer=remotePeerAddress, description=remoteDescription, endpointHostname=remoteEndpointHostname, networks=remoteNetworks):
+def build_wireguard_tunnel(tunnel_enabled=True, remotePK=WG_REMOTE["publicKey"], remotePeer=WG_REMOTE["peerAddress"], description=WG_REMOTE["hostname"], endpointHostname=WG_REMOTE["serverAddress"], networks=WG_REMOTE["networks"]):
     return {
         "description": description,
         "enabled": tunnel_enabled,
@@ -48,10 +54,10 @@ def setupWireguardTunnel(tunnel_enabled=True, remotePK=remotePublicKey, remotePe
         "pingInterval": 60,
         "pingUnreachableEvents": False,
         "privateKey": "",
-        "publicKey": remotePublicKey
+        "publicKey": WG_REMOTE["publicKey"]
     }
 
-def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
+def wait_for_ping(target_IP="127.0.0.1",ping_result_expected=0):
     timeout = 60  # wait for up to one minute for the target ping result
     ping_result = False
     while timeout > 0:
@@ -64,6 +70,51 @@ def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
             break
     return ping_result
 
+def is_wireguard_running():
+    """
+    Perform system checks to verify wireguard is running properly
+    """
+    try:
+        result = subprocess.check_output("ip link show wg0", shell=True, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as exc:
+        result = exc.output
+        pass
+    if type(result) is bytes:
+        result = result.decode("utf-8")
+    print(f"result={result}")
+    if "does not exist" in result:
+        return False
+
+    try:
+        result = subprocess.check_output("ip rule show table wireguard", shell=True, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as exc:
+        result = exc.output
+        pass
+    if type(result) is bytes:
+        result = result.decode("utf-8")
+    print(f"result={result}")
+    if "from all lookup" not in result:
+        return False
+
+    return True
+
+def is_wireguard_routing():
+    """
+    Perform system checks to verify wireguard is running properly
+    """
+    result = ""
+    try:
+        result = subprocess.check_output("ip route show table wireguard", shell=True, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as exc:
+        result = exc.output
+        pass
+    if type(result) is bytes:
+        result = result.decode("utf-8")
+    print(f"result={result}")
+    if WG_REMOTE["networks"].split(",")[0] in result:
+        return True
+
+    return False
 
 @pytest.mark.wireguardvpn
 class WireGuardVpnTests(NGFWTestCase):
@@ -84,19 +135,13 @@ class WireGuardVpnTests(NGFWTestCase):
         
     @classmethod
     def initial_extra_setup(cls):
-        global appData, vpnHostResult, vpnClientResult, vpnServerResult, wanIP
+        global appData, vpnHostResult, wanIP
 
-        vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.WG_VPN_SERVER_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_CLIENT_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        vpnHostResult = subprocess.call(["ping","-W","5","-c","1",WG_REMOTE["serverAddress"]],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         wanIP = uvmContext.networkManager().getFirstWanAddress()
 
-        if vpnClientResult == 0:
-            vpnServerResult = remote_control.run_command("ping -W 5 -c 1 " + wanIP, host=global_functions.VPN_CLIENT_IP)
-        else:
-            vpnServerResult = 1
-
     # verify client is online
-    def test_010_clientIsOnline(self):
+    def test_010_client_is_online(self):
         result = remote_control.is_online()
         assert (result == 0)
 
@@ -104,27 +149,78 @@ class WireGuardVpnTests(NGFWTestCase):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     @pytest.mark.failure_in_podman
-    def test_020_createWireGuardTunnel(self):
-        """Set up WireGuard Tunnel and ping between hosts behind each end"""
+    def test_020_create_wireguard_tunnel(self):
+        """
+        Set up WireGuard Tunnel and ping between hosts behind each end
+        """
+        if (vpnHostResult != 0):
+            raise unittest.SkipTest("No paired VPN server available")
+
+        #get and overwrite local service settings to match tunnel settings on the remote/static test box
+        appData = self._app.getSettings()
+        appData["publicKey"] = WG_LOCAL["publicKey"]
+        appData["privateKey"] = WG_LOCAL["privateKey"]
+        appData["addressPool"] = WG_LOCAL["addressPool"]
+
+        #set new tunnel settings
+        appData["tunnels"]["list"].append(build_wireguard_tunnel())
+        self._app.setSettings(appData)
+
+        assert is_wireguard_running() is True, "wireguard interface and rule is running"
+
+        result = wait_for_ping(WG_REMOTE["lanAddress"],0)
+        assert result, "received ping from remote lan"
+
+        assert is_wireguard_routing() is True, "wireguard routing on wireguard table"
+
+    def test_021_no_static_route_conflict(self):
+        """
+        A static route matching one of the alllowed interfaces in the tunnel won't prevent wg from starting
+        """
         if (vpnHostResult != 0):
             raise unittest.SkipTest("No paired VPN server available")
         
         #get and overwrite local service settings to match tunnel settings on the remote/static test box
         appData = self._app.getSettings()
-        appData["publicKey"] = localPublicKey
-        appData["privateKey"] = localPrivateKey
-        appData["addressPool"] = localAddressPool
+        appData["publicKey"] = WG_LOCAL["publicKey"]
+        appData["privateKey"] = WG_LOCAL["privateKey"]
+        appData["addressPool"] = WG_LOCAL["addressPool"]
 
         #set new tunnel settings
-        appData["tunnels"]["list"].append(setupWireguardTunnel())
+        appData["tunnels"]["list"].append(build_wireguard_tunnel())
+
         self._app.setSettings(appData)
 
-        result = waitForPing(global_functions.WG_VPN_SERVER_LAN_IP,0)
-        assert(result)
-        tunnelUp = True
+        original_network_settings = uvmContext.networkManager().getNetworkSettings()
 
-    def test_031_netSettingsAndDefaultWGNetworks(self):
-        """Test if changing the Network Settings LAN address properly updates the wireguard local networks"""
+        # deepcopy WG network settings for manipulation
+        new_network_settings = copy.deepcopy( original_network_settings )
+
+        # Set network settings back to normal
+        uvmContext.networkManager().setNetworkSettings( new_network_settings )
+
+        # Get first network from remote networks list
+        network = WG_REMOTE["networks"].split(",")[0].split('/')
+        new_network_settings["staticRoutes"]['list'].insert(0,test_network.create_route_rule(network[0], network[1], "127.0.0.1"))
+
+        self._app.stop()
+        self._app.start()
+
+        assert is_wireguard_running() is True, "wireguard interface and rule is running"
+
+        # result = wait_for_ping(WG_REMOTE["lanAddress"],0)
+        # assert result, "received ping from remote lan"
+
+        assert is_wireguard_routing() is True, "wireguard routing on wireguard table"
+
+        # Set network settings back to normal
+        uvmContext.networkManager().setNetworkSettings( original_network_settings )
+
+
+    def test_031_network_settings_and_default_wireguard_networks(self):
+        """
+        Test if changing the Network Settings LAN address properly updates the wireguard local networks
+        """
 
         #if the configuration is Bridged, Local Networks are not imported into WireGuard's settings, so this test would fail. Skip it.
         if global_functions.is_bridged(wanIP):
@@ -170,11 +266,15 @@ class WireGuardVpnTests(NGFWTestCase):
         # Get the WG settings again to verify
         wgSettings = self._app.getSettings()
 
+        assert is_wireguard_running() is True, "wireguard interface and rule is running"
+
         # Assert that old settings were set back properly proper now
         assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
 
-    def test_032_netSettingsAndCustomWGNetworks(self):
-        """Test if changing the Network Settings LAN address DOES NOT update custom local networks in the WG app"""
+    def test_032_network_settings_and_custom_wireguard_networks(self):
+        """
+        Test if changing the Network Settings LAN address DOES NOT update custom local networks in the WG app
+        """
 
         #if the configuration is Bridged, Local Networks are not imported into WireGuard's settings, so this test would fail. Skip it.
         if global_functions.is_bridged(wanIP):
@@ -237,6 +337,8 @@ class WireGuardVpnTests(NGFWTestCase):
         # Set app back to normal
         self._app.setSettings(origWGSettings)
 
+        assert is_wireguard_running() is True, "wireguard interface and rule is running"
+
         # Set network settings back to normal
         uvmContext.networkManager().setNetworkSettings( origNetSettings )
 
@@ -246,6 +348,36 @@ class WireGuardVpnTests(NGFWTestCase):
         # Assert that old settings were set back properly
         assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
         assert(testingCustomWGAddr not in wgSettings['networks']['list'][0]['address'])
+
+    @pytest.mark.failure_in_podman
+    def test_050_shutdown_app(self):
+        """
+        Shut down app and verify wg0 interface no longer appears
+        """
+        self._app.stop()
+
+        assert is_wireguard_running() is False, "wireguard interface and rule is not running"
+
+        assert is_wireguard_routing() is False, "no wireguard routing on wireguard table"
+
+        self._app.start()
+
+
+    @pytest.mark.failure_in_podman
+    def test_051_delete_wireguard_tunnel(self):
+        """
+        Remove wireguard tunnel and verify routes no longer appear
+        """
+        #get and overwrite local service settings to match tunnel settings on the remote/static test box
+        appData = self._app.getSettings()
+
+        #set new tunnel settings
+        appData["tunnels"]["list"] = []
+        self._app.setSettings(appData)
+
+        assert is_wireguard_running() is True, "wireguard interface and rule is running"
+
+        assert is_wireguard_routing() is False, "no wireguard routing on wireguard table"
 
 
 test_registry.register_module("wireguard-vpn", WireGuardVpnTests)
