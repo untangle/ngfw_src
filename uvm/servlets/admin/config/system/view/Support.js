@@ -78,24 +78,6 @@ Ext.define('Ung.config.system.view.Support', {
             }]
         }]
     }, {
-        title: 'Setup Wizard'.t(),
-        items: [{
-            xtype: 'container',
-            layout: {
-                type: 'hbox'
-            },
-            items: [{
-                xtype: 'displayfield',
-                value: 'Launch the Setup Wizard.'.t()
-            }, {
-                xtype: 'button',
-                margin: '0 0 0 10',
-                text: 'Setup Wizard'.t(),
-                iconCls: 'fa fa-magic',
-                handler: 'restartWizard'
-            }]
-        }]
-    }, {
         title: 'Factory Defaults'.t(),
         items: [{
             xtype: 'container',
