@@ -53,20 +53,6 @@ VPN_SERVER_USER_PASS_LAN_IP = "192.168.235.83"
 # special box with testshell in the sudoer group  - used to connect to vpn as client
 VPN_CLIENT_IP = "10.112.56.23"  
 
-# special Untangle box configured as WireGuard VPN server
-WG_VPN_SERVER_IP = "10.113.150.117"
-WG_VPN_SERVICE_INFO = {
-        "hostname":"untangle-ats-wireguard",
-        "publicKey":"fupwK1yQLvtBOFpW8nHxjIYjSDAzkpCwYGYL2rS5xUU=",
-        "endpointHostname":"10.113.150.117",
-        "endpointPort":51820,
-        "peerAddress":"172.31.53.1",
-        "networks":"192.168.20.0/24"
-}
-
-#  special box within WG_VPN_SERVER_IP's network
-WG_VPN_SERVER_LAN_IP = "192.168.20.170"
-
 # Servers running remote syslog
 LIST_SYSLOG_SERVER = '10.112.56.23'
 
