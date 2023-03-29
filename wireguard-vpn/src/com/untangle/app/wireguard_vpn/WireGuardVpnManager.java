@@ -31,6 +31,7 @@ public class WireGuardVpnManager
     private static final String IPTABLES_SCRIPT = "/etc/untangle/iptables-rules.d/720-wireguard-vpn";
     private static final String WIREGUARD_APP = "/usr/bin/wg";
     private static final String WIREGUARD_QUICK_APP = "/usr/bin/wg-quick";
+    private static final String WIREGUARD_POST_NETWORK_SCRIPT = "/etc/untangle/post-network-hook.d/300-wireguard";
     private static final String WIREGUARD_QUICK_CONFIG = "/etc/wireguard/wg0.conf";
 
     private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY = "%PUBLIC_KEY%";
@@ -57,12 +58,15 @@ public class WireGuardVpnManager
     {
         logger.info("Starting WireGuard interface and tunnels");
         configure();
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_QUICK_APP + " up " + WIREGUARD_QUICK_CONFIG);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_POST_NETWORK_SCRIPT);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info(WIREGUARD_QUICK_APP + ": ");
-            for (String line : lines)
+            for (String line : lines){
                 logger.info(WIREGUARD_QUICK_APP + ": " + line);
+                // !!! look for error:
+                // RTNETLINK answers: File exists
+            }
         } catch (Exception e) {
         }
         if (result.getResult() != 0) logger.error("Failed calling WireGuard start script (return code: " + result.getResult() + ")");
@@ -76,7 +80,9 @@ public class WireGuardVpnManager
     protected void stop()
     {
         logger.info("Stopping WireGuard interface and tunnels");
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_QUICK_APP + " down " + WIREGUARD_QUICK_CONFIG);
+        removeConf();
+        configureIptables();
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(WIREGUARD_POST_NETWORK_SCRIPT);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info(WIREGUARD_QUICK_APP + ": ");
@@ -85,9 +91,6 @@ public class WireGuardVpnManager
         } catch (Exception e) {
         }
         if (result.getResult() != 0) logger.error("Failed calling WireGuard start script (return code: " + result.getResult() + ")");
-
-        removeConf();
-        configureIptables();
     }
 
     /**
