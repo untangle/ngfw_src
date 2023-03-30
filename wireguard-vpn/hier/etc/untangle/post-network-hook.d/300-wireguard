@@ -1,22 +1,26 @@
 #!/bin/dash
 
-# Call the wireguard app script to generate the interface status
-# files using the values from the application settings
-echo "Creating interface status files"
-/usr/share/untangle/bin/wireguard-create-statfile
-
-# Check the interface ID file
-if [ ! -f /var/lib/interface-status/interface-249-status.js ] ; then
-    echo "Missing status file: /var/lib/interface-status/interface-249-status.js"
-fi
-
-# Check the interface name file
-if [ ! -f /var/lib/interface-status/interface-wg0-status.js ] ; then
-    echo "Missing status file: /var/lib/interface-status/interface-wg0-status.js"
-fi
-
 # if wireguard is a running app, restart interfaces
-if [ -f /etc/wireguard/wg0.conf ]; then 
+if [ -f /etc/wireguard/wg0.conf ]; then
+    # Call the wireguard app script to generate the interface status
+    # files using the values from the application settings
+    echo "Creating interface status files"
+    /usr/share/untangle/bin/wireguard-create-statfile
+
+    # Check the interface ID file
+    if [ ! -f /var/lib/interface-status/interface-249-status.js ] ; then
+        echo "Missing status file: /var/lib/interface-status/interface-249-status.js"
+    fi
+
+    # Check the interface name file
+    if [ ! -f /var/lib/interface-status/interface-wg0-status.js ] ; then
+        echo "Missing status file: /var/lib/interface-status/interface-wg0-status.js"
+    fi
+
+    ip rule add priority 221 lookup wireguard
     wg-quick down /etc/wireguard/wg0.conf
     wg-quick up /etc/wireguard/wg0.conf
+else
+    ip rule del priority 221 lookup wireguard
+    ip link del dev wg0
 fi
