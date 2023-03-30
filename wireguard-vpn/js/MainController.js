@@ -80,11 +80,18 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         var changes = Util.updateListStoresToSettings(v.query('ungrid'), vm);
 
         // Determine if non-tunnel changes have been made.
-        var settingsChanged = Util.isSettingsChanged(vm.get('originalSettings'), vm.get('settings'), me.conditionalRestartIgnoreKeys);
-        if(settingsChanged == false && Ext.Object.isEmpty(changes)){
-            // If no changes but no tunnel changes either, consider this a call to perform full restart.
-            settingsChanged = true;
-        }
+        // NOTE: This code attempts to not restart the wireguard interface
+        // if only the tunnels have changed.  Under previous circumstances, wireguard will pick up
+        // the tunnel changes from configuration and allow connections.
+        // HOWEVER, by adding routes to route table namespaces using the Table=
+        // and NOT restarting causes new connections to go into the main table and
+        // not the target table.  As a result, we'll comment this out until WireGuard can fix this bug.
+        var settingsChanged = true;
+        // var settingsChanged = Util.isSettingsChanged(vm.get('originalSettings'), vm.get('settings'), me.conditionalRestartIgnoreKeys);
+        // if(settingsChanged == false && Ext.Object.isEmpty(changes)){
+        //     // If no changes but no tunnel changes either, consider this a call to perform full restart.
+        //     settingsChanged = true;
+        // }
 
         // Build list of sequential commands to run
         var sequence = [
