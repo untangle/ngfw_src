@@ -54,3 +54,7 @@ echo
 
 echo " = IPsec Rules = "
 ip route show table 220 2>/dev/null
+echo
+
+echo " = WireGuard Rules = "
+ip route show table 221 2>/dev/null
