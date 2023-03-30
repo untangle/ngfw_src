@@ -18,7 +18,7 @@ if [ -f /etc/wireguard/wg0.conf ]; then
     fi
 
     ip rule add priority 221 lookup wireguard
-    wg-quick down wg0
+    wg-quick down /etc/wireguard/wg0.conf
     wg-quick up /etc/wireguard/wg0.conf
 else
     ip rule del priority 221 lookup wireguard
