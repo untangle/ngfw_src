@@ -274,7 +274,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         events: {
                             click: function(event) {
                                 // call this way to be able to access viewmodel
-                                me.onPointClick(event);
+                                me.onPointClick(event); // called here!!!
                             }
                         }
                     },
@@ -1049,7 +1049,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         }
                     });
                 }else{
-                    value = event.point.series.name;
+                    value = event.point.series.index + 1; 
                 }
                 Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('timeDataDynamicColumn'), value);
             }
