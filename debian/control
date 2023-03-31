@@ -170,7 +170,7 @@ Conflicts: untangle-node-ipsec-vpn
 Replaces: untangle-node-ipsec-vpn
 Provides: untangle-node-ipsec-vpn
 Section: non-free/net
-Depends: ${misc:Depends}, untangle-vm, untangle-app-license, xl2tpd, python3-netaddr, libstrongswan, libstrongswan-standard-plugins, libstrongswan-extra-plugins, strongswan, strongswan-charon, strongswan-libcharon, strongswan-starter, libcharon-extra-plugins
+Depends: ${misc:Depends}, untangle-vm, untangle-app-license, xl2tpd, python3-netaddr, libstrongswan, libstrongswan-standard-plugins, libstrongswan-extra-plugins, strongswan, strongswan-charon, strongswan-libcharon, strongswan-starter, libcharon-extra-plugins, libcharon-extauth-plugins
 Description: IPsec VPN
  The IPsec VPN application
 
