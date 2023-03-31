@@ -184,7 +184,8 @@ Ext.define('Ung.util.Renderer', {
 
             Ung.util.Renderer.interfaceMap = {};
             for (i = 0; i < interfacesList.length; i += 1) {
-                Ung.util.Renderer.interfaceMap[interfacesList[i].interfaceId] = interfacesList[i].name + " [" + interfacesList[i].interfaceId + "]";
+                Ung.util.Renderer.interfaceMap[interfacesList[i].interfaceId] = interfacesList[i].name + " [" + interfacesList[i].interfaceId + "]"; // this maybe???
+                //Ung.util.Renderer.interfaceMap[interfacesList[i].interfaceId] = interfacesList[i].interfaceId + "]";
             }
             Ung.util.Renderer.interfaceLastUpdated = currentTime;
         }
