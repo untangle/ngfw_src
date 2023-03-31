@@ -638,6 +638,36 @@ class IPsecTests(NGFWTestCase):
         # Check to see if the faceplate counters have incremented. 
         assert(pre_events_enabled < post_events_enabled)
 
+    def test_060_xauth_mschap_valid(self):
+        """
+        Verify xauth + mschap
+
+        There are"better" functional ways to test this:
+        1. Setup a Windows client with Shrewsoft VPN client.
+        2. Add xauth + mschap to our IPSec implementation and setup a remote tunnel that can be triggered to connect here.
+
+        Both are very difficult.  So for now, we'll verify by making sure appropriate files exist.
+        """
+        try:
+            result = subprocess.check_output("ls -1 /usr/lib/ipsec/plugins/libstrongswan-*xauth* | wc -l", shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            result = exc.output
+            pass
+        if type(result) is bytes:
+            result = result.decode("utf-8")
+
+        assert int(result) > 0, "{int(result)} xauth plugin modules found"
+
+        try:
+            result = subprocess.check_output("ls -1 /usr/lib/ipsec/plugins/libstrongswan-*mschap* | wc -l", shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            result = exc.output
+            pass
+        if type(result) is bytes:
+            result = result.decode("utf-8")
+
+        assert int(result) > 0, "{int(result)} mschap plugin modules found"
+
     @classmethod
     def final_extra_tear_down(cls):
         global appAD
