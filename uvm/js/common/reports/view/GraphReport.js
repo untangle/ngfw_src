@@ -1050,6 +1050,13 @@ Ext.define('Ung.view.reports.GraphReport', {
                     });
                 }else{
                     value = event.point.series.name;
+                    
+                    // We render these values either as-is (e.g.,"value") or with "human" label and the 
+                    // value inside square brackets (e.g.,"value [2]").  If we see brackets in the name, 
+                    // assume that to be the actual value to use for database queries to add to conditions and such.
+                    if (value.includes('[') && value.includes(']') && value.indexOf('[') < value.indexOf(']')) {
+                        value = value.split('[')[1].split(']')[0];
+                    }
                 }
                 Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('timeDataDynamicColumn'), value);
             }
