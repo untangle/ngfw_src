@@ -1049,7 +1049,15 @@ Ext.define('Ung.view.reports.GraphReport', {
                         }
                     });
                 }else{
-                    value = event.point.series.index + 1; 
+                    value = event.point.series.name;
+                    
+                    // interface_id is a special case - grab interface_id from name
+                    // (because index might not be right, depending on user settings)
+                    if (entry.get('timeDataDynamicColumn') == 'interface_id') {
+                        if (value.includes('[') && value.includes(']') && value.indexOf('[') < value.indexOf(']')) {
+                            value = value.split('[')[1].split(']')[0];
+                        }
+                    }
                 }
                 Ext.fireEvent('addglobalcondition', entry.get('table'), entry.get('timeDataDynamicColumn'), value);
             }
