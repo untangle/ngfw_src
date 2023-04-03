@@ -274,7 +274,7 @@ Ext.define('Ung.view.reports.GraphReport', {
                         events: {
                             click: function(event) {
                                 // call this way to be able to access viewmodel
-                                me.onPointClick(event); // called here!!!
+                                me.onPointClick(event);
                             }
                         }
                     },
