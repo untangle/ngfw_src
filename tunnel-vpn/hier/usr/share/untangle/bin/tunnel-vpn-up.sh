@@ -36,6 +36,7 @@ fi
 
 priority=$(($interface_id + $priority_floor))
 table_name=tunnel.$interface_id
+ip rule del priority $priority
 ip rule add priority $priority lookup $table_name
 
 /sbin/iptables -t mangle -I tunnel-vpn-${interface_id} -j ACCEPT -m comment --comment "stop processing all other rules"
