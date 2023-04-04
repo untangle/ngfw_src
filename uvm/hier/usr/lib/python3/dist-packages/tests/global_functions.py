@@ -1332,3 +1332,70 @@ def get_new_output_filename(name=None):
     Output_names.append(name)
 
     return f"/tmp/{name}.out"
+
+def is_vpn_running(interface=None, route_table=None):
+    """
+    Perform system checks to verify vpn is running properly
+    """
+    if interface:
+        command = f"ip link show {interface}"
+        try:
+            result = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            result = exc.output
+            pass
+        if type(result) is bytes:
+            result = result.decode("utf-8")
+        print(f"command={command}")
+        print(f"result={result}")
+        if "does not exist" in result:
+            return False
+
+    if route_table:
+        command = f"ip rule show table {route_table}"
+        try:
+            result = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            result = exc.output
+            pass
+        if type(result) is bytes:
+            result = result.decode("utf-8")
+        print(f"command={command}")
+        print(f"result={result}")
+
+        if "is invalid" in result:
+            return False
+        if "from all lookup" not in result:
+            return False
+
+    return True
+
+def is_vpn_routing(route_table, expected_route=None):
+    """
+    Perform system checks to verify vpn is running properly
+    """
+    command = f"ip route show table {route_table}"
+    result = ""
+    try:
+        result = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as exc:
+        result = exc.output
+        pass
+    if type(result) is bytes:
+        result = result.decode("utf-8")
+    print(f"command={command}")
+    print(f"result={result}")
+
+    if "is invalid" in result:
+        return False
+
+    if expected_route:
+        # Verify specific route
+        if expected_route in result:
+            return True
+    else:
+        # Verify non-empty
+        if result.strip() != "":
+            return True
+
+    return False
