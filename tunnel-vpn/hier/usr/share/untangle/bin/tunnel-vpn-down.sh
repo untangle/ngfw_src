@@ -21,7 +21,7 @@ fi
 
 priority=$(($interface_id + $priority_floor))
 table_name=tunnel.$interface_id
-ip rule del priority $priority lookup $table_name
+ip rule del priority $priority
 
 # table can not exist at this point - hide errors
 ip -4 route flush table "uplink.${interface_id}" >/dev/null 2>&1
