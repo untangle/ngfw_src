@@ -13,6 +13,12 @@ fi
 
 table_name=tunnel.$interface_id
 
+ip route show table ${table_name} >/dev/null 2>&1
+if [ $? -ne 0 ] ; then
+    # Expected tunnel does not exist
+    echo "`date`: ${script_name}: unable to find table ${table name}"
+fi
+
 index=1
 while true; do
     eval "route_network=\${route_network_$index}"
@@ -22,6 +28,11 @@ while true; do
         break
     fi
     index=$((index+1))
+
+    if [ "$route_network" = "0.0.0.0" ] || [ "$route_netmask" = "0.0.0.0" ] ; then
+        echo "ignoring default as a passed route: $route_network/$route_netmask"
+        continue
+    fi
 
     command="ip route add table $table_name $route_network/$route_netmask via $route_gateway dev ${dev}"
     echo "`date`: ${script_name}: $command"
