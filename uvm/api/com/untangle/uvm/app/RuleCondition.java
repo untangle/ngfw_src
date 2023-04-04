@@ -1456,6 +1456,9 @@ public class RuleCondition implements JSONString, Serializable
                 return false;
             }
             tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_CLIENT_REPUTATION);
+            if (tmpInt == null) {
+                return false;
+            }
             return this.intMatcher.isMatch(tmpInt);
 
         case THREAT_PREVENTION_DST_REPUTATION:
@@ -1467,6 +1470,9 @@ public class RuleCondition implements JSONString, Serializable
                 return false;
             }
             tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_SERVER_REPUTATION);
+            if (tmpInt == null) {
+                return false;
+            }
             return this.intMatcher.isMatch(tmpInt);
 
         case THREAT_PREVENTION_SRC_CATEGORIES:
@@ -1478,6 +1484,9 @@ public class RuleCondition implements JSONString, Serializable
                 return false;
             }
             tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_CLIENT_CATEGORIES);
+            if (tmpInt == null) {
+                return false;
+            }
             return this.bitmaskMatcher.isMatch(tmpInt);
 
         case THREAT_PREVENTION_DST_CATEGORIES:
@@ -1489,6 +1498,9 @@ public class RuleCondition implements JSONString, Serializable
                 return false;
             }
             tmpInt = (Integer) sessionAttachments.globalAttachment(SessionAttachments.KEY_THREAT_PREVENTION_SERVER_CATEGORIES);
+            if (tmpInt == null) {
+                return false;
+            }
             return this.bitmaskMatcher.isMatch(tmpInt);
 
         default:
