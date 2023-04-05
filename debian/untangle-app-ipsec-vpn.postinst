@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# We start and stop the strongswan and xl2tp daemons from Java as needed
+# We start and stop the ipsec, strongswan and xl2tp daemons from Java as needed
 # so disable to prevent the system from ever starting them automatically
 
+systemctl --no-block stop ipsec || true
+deb-systemd-helper disable ipsec.service
 deb-systemd-helper disable strongswan.service
 deb-systemd-helper disable xl2tpd.service
 
