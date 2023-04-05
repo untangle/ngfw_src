@@ -11,6 +11,7 @@ import string
 import html
 import inspect
 import sys
+import unittest
 
 import runtests.remote_control as remote_control
 import runtests.overrides as overrides
