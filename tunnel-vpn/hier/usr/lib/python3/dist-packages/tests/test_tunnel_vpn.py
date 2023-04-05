@@ -10,15 +10,15 @@ from tests.common import NGFWTestCase
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-
+import runtests.overrides as overrides
 
 default_policy_id = 1
 app = None
-vpn_tunnel_file = "http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip"
-qa_isolated_pc = "192.168.72.22"
+TUNNEL_ID = 200
+VPN_TUNNEL_URI = overrides.get( "VPN_TUNNEL_URI", default="http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip")
+TUNNEL_VPN_ISOLATED_CLIENT = overrides.get( "TUNNEL_VPN_ISOLATED_CLIENT", default="192.168.72.22")
 
-
-def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=200):
+def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=TUNNEL_ID):
     return {
             "conditions": {
                 "javaClass": "java.util.LinkedList",
@@ -32,7 +32,7 @@ def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=2
             "tunnelId": vpn_tunnel_id
     }
 
-def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",vpn_tunnel_id=200):
+def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
     return {
             "allTraffic": False,
             "enabled": vpn_enabled,
@@ -61,22 +61,32 @@ class TunnelVpnTests(NGFWTestCase):
         return "Untangle"
 
     # verify client is online
-    def test_010_clientIsOnline(self):
+    def test_010_client_is_online(self):
+        """
+        Verify LAN client online
+        """
         result = remote_control.is_online()
         assert (result == 0)
 
     def test_011_license_valid(self):
+        """
+        Verify valid license
+        """
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
-    def test_020_createVPNTunnel(self):
+    def test_020_create_vpn_tunnel(self):
+        """
+        Verify tunnel connection and follows rules
+        """
         currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
         print("Original WAN IP: " + str(currentWanIP))
-        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=vpn_tunnel_file), shell=True)
+
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=VPN_TUNNEL_URI), shell=True)
         if (result != 0):
-            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
-        self._app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
+            raise unittest.SkipTest("Unable to download VPN file: " + VPN_TUNNEL_URI)
+        self._app.importTunnelConfig("/tmp/config.zip", "Untangle", TUNNEL_ID)
 
         appData = self._app.getSettings()
         appData['rules']['list'].append(create_tunnel_rule())
@@ -98,15 +108,24 @@ class TunnelVpnTests(NGFWTestCase):
                 time.sleep(1)
                 timeout-=1
 
+        assert True is global_functions.is_vpn_running(interface=f"tun{TUNNEL_ID}",route_table=f"tunnel.{TUNNEL_ID}"), "vpn running"
+        assert True is global_functions.is_vpn_routing(route_table=f"tunnel.{TUNNEL_ID}"), "vpn routing"
+
         # remove the rule to see if traffic is sent through WAN by default
         appData['rules']['list'][:] = []
         self._app.setSettings(appData)
         time.sleep(5)
         newWanIP2 = global_functions.get_public_ip_address()
 
+        assert True is global_functions.is_vpn_running(interface=f"tun{TUNNEL_ID}",route_table=f"tunnel.{TUNNEL_ID}"), "vpn running"
+        assert True is global_functions.is_vpn_routing(route_table=f"tunnel.{TUNNEL_ID}"), "vpn routing"
+
         # remove the added tunnel
         appData['tunnels']['list'][:] = []
         self._app.setSettings(appData)
+
+        assert global_functions.is_vpn_running(interface=f"tun{TUNNEL_ID}",route_table=f"tunnel.{TUNNEL_ID}") is False, "vpn running"
+        assert global_functions.is_vpn_routing(route_table=f"tunnel.{TUNNEL_ID}") is False, "vpn routing"
 
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
@@ -114,15 +133,18 @@ class TunnelVpnTests(NGFWTestCase):
         # If the VPN tunnel is routed without rules, fail the test
         assert(currentWanIP == newWanIP2)
 
-    def test_030_createVPNAnyTunnel(self):
+    def test_030_create_vpn_any_tunnel(self):
+        """
+        Test any tunnel
+        """
         currentWanIP = global_functions.get_public_ip_address()
         if (currentWanIP == ""):
             raise unittest.SkipTest("Unable to get WAN IP")
         print("Original WAN IP: " + str(currentWanIP))
-        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=vpn_tunnel_file), shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=VPN_TUNNEL_URI), shell=True)
         if (result != 0):
-            raise unittest.SkipTest("Unable to download VPN file: " + vpn_tunnel_file)
-        self._app.importTunnelConfig("/tmp/config.zip", "Untangle", 200)
+            raise unittest.SkipTest("Unable to download VPN file: " + VPN_TUNNEL_URI)
+        self._app.importTunnelConfig("/tmp/config.zip", "Untangle", TUNNEL_ID)
 
         appData = self._app.getSettings()
         appData['rules']['list'].append(create_tunnel_rule(vpn_tunnel_id=-1))
@@ -141,15 +163,21 @@ class TunnelVpnTests(NGFWTestCase):
                 connected = True
                 listOfConnections = self._app.getTunnelStatusList()
                 connectStatus = listOfConnections['list'][0]['stateInfo']
-                pingPcLanResult = remote_control.run_command("ping -c 1 %s" % qa_isolated_pc)
+                pingPcLanResult = remote_control.run_command("ping -c 1 %s" % TUNNEL_VPN_ISOLATED_CLIENT)
             else:
                 time.sleep(1)
                 timeout-=1
+
+        assert True is global_functions.is_vpn_running(interface=f"tun{TUNNEL_ID}",route_table=f"tunnel.{TUNNEL_ID}"), "vpn running"
+        assert True is global_functions.is_vpn_routing(route_table=f"tunnel.{TUNNEL_ID}"), "vpn routing"
 
         # remove the added tunnel
         appData['rules']['list'][:] = []
         appData['tunnels']['list'][:] = []
         self._app.setSettings(appData)
+
+        assert False is global_functions.is_vpn_running(interface=f"tun{TUNNEL_ID}",route_table=f"tunnel.{TUNNEL_ID}"), "vpn running"
+        assert False is global_functions.is_vpn_routing(route_table=f"tunnel.{TUNNEL_ID}"), "vpn routing"
 
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
