@@ -454,7 +454,7 @@ class OpenVpnTests(NGFWTestCase):
 
             # run a web request to internet and make sure it goes through web filter
             # debug remote_control.run_command("wget --no-check-certificate -O /tmp/test_050_createClientVPNFullTunnel.txt http://www.playboy.com", host=vpnPoolAddressIP)
-            webresult = remote_control.run_command(global_functions.build_wget_command(uri="http://www.playboy.com", output_file="-", ignore_certificate=True, override_arguments="--inet4-only --quiet --tries=2 --timeout=5") + "| grep -q blockpage", host=vpnPoolAddressIP)
+            webresult = remote_control.run_command(global_functions.build_wget_command(uri="http://www.playboy.com", output_file="-", ignore_certificate=True, override_arguments=["--inet4-only","--quiet","--tries=2","--timeout=5"]) + "| grep -q blockpage", host=vpnPoolAddressIP)
 
             print("result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult))
         else:
