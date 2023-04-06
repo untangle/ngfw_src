@@ -13,10 +13,12 @@ fi
 
 table_name=tunnel.$interface_id
 
-ip route show table ${table_name} >/dev/null 2>&1
+echo "table_name=$table_name"
+
+ip rule | grep ${table_name} >/dev/null 2>&1
 if [ $? -ne 0 ] ; then
     # Expected tunnel does not exist
-    echo "`date`: ${script_name}: unable to find table ${table name}"
+    echo "`date`: ${script_name}: unable to find table ${table_name}"
 fi
 
 index=1
