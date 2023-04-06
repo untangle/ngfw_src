@@ -693,19 +693,17 @@ public class IpsecVpnApp extends AppBase
         VirtualUserEntry entry = virtualUserTable.searchVirtualUser(clientAddress);
         if (entry == null) return (1);
 
-        // for L2TP clients we send a HUP signal to the pppd process
         if (entry.getClientProtocol().equals("L2TP")) {
+            // for L2TP clients we send a HUP signal to the pppd process
             IpsecVpnApp.execManager().exec("kill -HUP " + entry.getNetProcess());
-        }
-
-        // for Xauth clients we call ipsec down using the connection and unique id
-        if (entry.getClientProtocol().equals("XAUTH")) {
+        }else if (entry.getClientProtocol().equals("XAUTH")) {
+            // for Xauth clients we call ipsec down using the connection and unique id
             IpsecVpnApp.execManager().exec("ipsec down " + entry.getNetInterface() + "[" + entry.getNetProcess() + "]");
-        }
-
-        // for IKEv2 clients we call ipsec down using the connection and unique id
-        if (entry.getClientProtocol().equals("IKEV2")) {
+        }else if (entry.getClientProtocol().equals("IKEv2")) {
+            // for IKEv2 clients we call ipsec down using the connection and unique id
             IpsecVpnApp.execManager().exec("ipsec down " + entry.getNetInterface() + "[" + entry.getNetProcess() + "]");
+        }else{
+            logger.warn("Unknown protocol " + entry.getClientProtocol());
         }
 
         return (0);
