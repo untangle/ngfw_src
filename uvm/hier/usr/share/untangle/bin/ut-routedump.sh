@@ -50,7 +50,6 @@ done
 
 echo
 echo
-echo
 
 echo " = IPsec Rules = "
 ip route show table 220 2>/dev/null
@@ -58,3 +57,11 @@ echo
 
 echo " = WireGuard Rules = "
 ip route show table 221 2>/dev/null
+echo
+
+echo " = Tunnel VPN Rules = "
+for table in $(ip rule show | grep tunnel\. | cut -d' ' -f4); do
+    echo "$table:"
+    ip route show table $table 2>/dev/null
+done
+echo
