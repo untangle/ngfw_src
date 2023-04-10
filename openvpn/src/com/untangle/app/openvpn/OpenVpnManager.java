@@ -165,6 +165,17 @@ public class OpenVpnManager
         writeRemoteServerFiles(settings.getRemoteServers());
     }
 
+    /** Write the remote client configuration files. This is the default method, which excludes site-to-site connections
+     * 
+     * @param settings
+     *        The application settings
+     * @param client
+     *        The client name
+     */
+    private void writeConfFiles(OpenVpnSettings settings, OpenVpnRemoteClient client) {
+        writeConfFiles(settings, client, false);
+    }
+
     /**
      * Write the remote client configuration files
      * 
@@ -218,7 +229,7 @@ public class OpenVpnManager
      */
     protected void createClientDistributionExe(OpenVpnSettings settings, OpenVpnRemoteClient client)
     {
-        writeConfFiles(settings, client, false);
+        writeConfFiles(settings, client);
 
         String cmdStr;
         ExecManagerResult result;
@@ -245,7 +256,7 @@ public class OpenVpnManager
      */
     protected void createClientDistributionOvpn(OpenVpnSettings settings, OpenVpnRemoteClient client)
     {
-        writeConfFiles(settings, client, false);
+        writeConfFiles(settings, client);
 
         String cmdStr;
         ExecManagerResult result;
@@ -272,7 +283,7 @@ public class OpenVpnManager
      */
     protected void createClientDistributionOnc(OpenVpnSettings settings, OpenVpnRemoteClient client)
     {
-        writeConfFiles(settings, client, false);
+        writeConfFiles(settings, client);
 
         String cmdStr;
         ExecManagerResult result;
