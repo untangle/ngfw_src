@@ -172,15 +172,17 @@ public class OpenVpnManager
      *        The application settings
      * @param client
      *        The client name
+     * @param siteToSite
+     *        A boolean indicating if this is a site-to-site connection. Excludes some information from the config file
      */
-    private void writeConfFiles(OpenVpnSettings settings, OpenVpnRemoteClient client)
+    private void writeConfFiles(OpenVpnSettings settings, OpenVpnRemoteClient client, boolean siteToSite)
     {
-        writeRemoteClientConfigurationFile(settings, client, UNIX_EXTENSION);
-        writeRemoteClientConfigurationFile(settings, client, WIN_EXTENSION);
+        writeRemoteClientConfigurationFile(settings, client, siteToSite, UNIX_EXTENSION);
+        writeRemoteClientConfigurationFile(settings, client, siteToSite, WIN_EXTENSION);
     }
 
     /**
-     * Create remote client configuration zip
+     * Create remote client configuration zip. Zips are only used for site-to-site connections, so MFA information will not be included.
      * 
      * @param settings
      *        The application settings
@@ -189,7 +191,7 @@ public class OpenVpnManager
      */
     protected void createClientDistributionZip(OpenVpnSettings settings, OpenVpnRemoteClient client)
     {
-        writeConfFiles(settings, client);
+        writeConfFiles(settings, client, true);
 
         String cmdStr;
         ExecManagerResult result;
@@ -216,7 +218,7 @@ public class OpenVpnManager
      */
     protected void createClientDistributionExe(OpenVpnSettings settings, OpenVpnRemoteClient client)
     {
-        writeConfFiles(settings, client);
+        writeConfFiles(settings, client, false);
 
         String cmdStr;
         ExecManagerResult result;
@@ -243,7 +245,7 @@ public class OpenVpnManager
      */
     protected void createClientDistributionOvpn(OpenVpnSettings settings, OpenVpnRemoteClient client)
     {
-        writeConfFiles(settings, client);
+        writeConfFiles(settings, client, false);
 
         String cmdStr;
         ExecManagerResult result;
@@ -270,7 +272,7 @@ public class OpenVpnManager
      */
     protected void createClientDistributionOnc(OpenVpnSettings settings, OpenVpnRemoteClient client)
     {
-        writeConfFiles(settings, client);
+        writeConfFiles(settings, client, false);
 
         String cmdStr;
         ExecManagerResult result;
@@ -397,10 +399,12 @@ public class OpenVpnManager
      *        The application settings
      * @param client
      *        The client
+     * @param siteToSite
+     *        A boolean which indicates this is a site-to-site connection. Excludes MFA information so the client configures properly
      * @param extension
      *        The file extension
      */
-    private void writeRemoteClientConfigurationFile(OpenVpnSettings settings, OpenVpnRemoteClient client, String extension)
+    private void writeRemoteClientConfigurationFile(OpenVpnSettings settings, OpenVpnRemoteClient client, boolean siteToSite, String extension)
     {
         final String KEY_DIR = "keys";
         StringBuilder sb = new StringBuilder();
@@ -466,7 +470,8 @@ public class OpenVpnManager
             sb.append("auth-user-pass" + "\n");
         }
 
-        if (settings.getTotpClientPrompt()) {
+        // If this is a site-to-site connection, we don't want to include MFA information no matter what
+        if (settings.getTotpClientPrompt() && !siteToSite) {
             sb.append("static-challenge \"TOTP Code \" 1" + "\n");
             // mfa timeout - multiply by 3600 to get in seconds (user inputs in hours)
             sb.append("reneg-sec" + " " + settings.getMfaClientTimeout()*3600 + "\n");
