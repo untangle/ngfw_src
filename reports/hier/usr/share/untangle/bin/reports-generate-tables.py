@@ -55,15 +55,15 @@ sql_helper.DBDRIVER = DRIVER
 
 if DRIVER == "postgresql":
      os.system("createuser -U postgres -dSR untangle >/dev/null 2>&1")
-     os.system("createdb -O postgres -U postgres uvm >/dev/null 2>&1");
-     os.system("createlang -U postgres plpgsql uvm >/dev/null 2>&1");
+     os.system("createdb -O postgres -U postgres uvm >/dev/null 2>&1")
+     os.system("createlang -U postgres plpgsql uvm >/dev/null 2>&1")
 
 if DRIVER == "sqlite":
      if not os.path.exists('/var/lib/sqlite'):
           os.makedirs('/var/lib/sqlite')
 
 try:
-     sql_helper.create_schema(sql_helper.schema());
+     sql_helper.create_schema(sql_helper.schema())
 except Exception:
      print("Failed to create schema")
      traceback.print_exc()
