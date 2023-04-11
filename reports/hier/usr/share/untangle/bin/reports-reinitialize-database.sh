@@ -11,11 +11,7 @@ for d in /var/lib/postgresql/* ; do
 done
 
 # Recreating the createDB() logic from untangle-postgresql-config.postinst
-if grep -qE '^11\.' /etc/debian_version ; then
-  PG_VERSION="13"
-else
-  PG_VERSION="11"
-fi
+PG_VERSION=$(psql --version | sed 's/^[^0-9]*\([0-9]\+\).*/\1/')
 PG_VAR_DIR="/var/lib/postgresql/${PG_VERSION}"
 PG_BIN_DIR="/usr/lib/postgresql/${PG_VERSION}/bin"
 su -c "${PG_BIN_DIR}/initdb --encoding=utf8 --locale=${1:-"en_US.UTF-8"} -D ${PG_VAR_DIR}/main" postgres
