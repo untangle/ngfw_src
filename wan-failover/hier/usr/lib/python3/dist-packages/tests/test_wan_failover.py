@@ -64,27 +64,32 @@ def set_interface_field( interfaceId, netsettings, fieldName, value ):
             interface[fieldName] = value
 
 
-def build_wan_test(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2):
+def build_wan_test(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2, wf_app=None):
+    """
+    Build test and add to web failover settings
+    """
     name = "test " + str(testType) + " " + str(matchInterface)
     testInterval *= 1000  # convert from secs to millisecs
     testTimeout *= 1000  # convert from secs to millisecs
     rule = {
-                "delayMilliseconds": testInterval, 
-                "description": name, 
-                "enabled": True, 
-                "failureThreshold": 3, 
-                "httpUrl": httpURL, 
-                "interfaceId": matchInterface, 
-                "javaClass": "com.untangle.app.wan_failover.WanTestSettings", 
-                "pingHostname": pingHost, 
-                "testHistorySize": 4, 
-                "timeoutMilliseconds": testTimeout, 
-                "type": testType
+        "delayMilliseconds": testInterval,
+        "description": name,
+        "enabled": True,
+        "failureThreshold": 3,
+        "httpUrl": httpURL,
+        "interfaceId": matchInterface,
+        "javaClass": "com.untangle.app.wan_failover.WanTestSettings",
+        "pingHostname": pingHost,
+        "testHistorySize": 4,
+        "timeoutMilliseconds": testTimeout,
+        "type": testType
     }
-    appData = app.getSettings()
-    appData["tests"]["list"].append(rule)
-    app.setSettings(appData)
 
+    if wf_app is None:
+        wf_app = app
+    settings = wf_app.getSettings()
+    settings["tests"]["list"].append(rule)
+    wf_app.setSettings(settings)
 
 def nuke_rules():
     appData = app.getSettings()

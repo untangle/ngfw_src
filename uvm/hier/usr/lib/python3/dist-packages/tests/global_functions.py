@@ -594,6 +594,83 @@ def build_nmap_command(sudo=True, override_arguments=None, extra_arguments=None,
     print(f"{sys._getframe().f_code.co_name}: {command}" )
     return command
 
+def get_wait_for_command_result(command=None, success_result=0, tries=10, local=False):
+    """
+    Wait up to tries for a successful command result
+
+    returns True if ping successful, False otherwise
+    """
+    if command is None:
+        command = build_ping_command(target=TEST_SERVER_HOST)
+
+    result = None
+    while result != 0 and tries > 0:
+        tries -= 1
+        if local is True:
+            result = subprocess.run(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+            result = result.returncode
+        else:
+            result = remote_control.run_command(command)
+
+        if result == success_result:
+            return True
+        time.sleep(1)
+
+    return False
+
+def get_wait_for_command_output(command=None, success_test=None, tries=10, local=False):
+    """
+    Wait up to tries for a successful command result
+
+    returns True if ping successful, False otherwise
+    """
+    if command is None:
+        command = build_ping_command(target=TEST_SERVER_HOST)
+
+    result = None
+    while result != 0 and tries > 0:
+        tries -= 1
+        if local is True:
+            result = subprocess.run(command, shell=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+            result = result.stdout.decode('utf-8')
+        else:
+            result = remote_control.run_command(command, stdout=True)
+
+        result = result.strip()
+        print(f"result={result}")
+        if success_test is None or success_test(result):
+            return result
+        time.sleep(1)
+
+    return ""
+
+def build_ping_command(target=None, override_arguments=None, extra_arguments=None, count=1, wait=1):
+    """
+    Build ping command
+
+    Default arguments should be evident, but of particular note are:
+    override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
+    extra_arguments     Additional arguments not otherwise processed.
+    """
+    arguments = []
+    if override_arguments:
+        # Allow completely custom arguments
+        arguments = override_arguments
+    else:
+        if count is not None:
+            arguments.append(f"-c {count}")
+        if wait is not None:
+            arguments.append(f"-w {wait}")
+
+    optional_arguments = []
+
+    if extra_arguments:
+        optional_arguments.append(extra_arguments)
+
+    command = f"ping {' '.join(arguments)} {' '.join(optional_arguments)} {target}"
+
+    print(f"{sys._getframe().f_code.co_name}: {command}" )
+    return command
 
 Si_prefixes = {
     # yocto
@@ -811,7 +888,10 @@ def get_download_speed(download_server="",meg=20):
             else:
                 # Use QA web server in the office for more reliable results
                 download_server = ACCOUNT_FILE_SERVER
+        print(f"download_server={download_server}")
         result = remote_control.run_command(build_wget_command(quiet=False, log_file="/dev/stdout", output_file="/dev/null", timeout=60, uri="http://" + download_server + f"/{meg}MB.zip") +  " 2>&1 | tail -2", stdout=True)
+        print(f"result={result}")
+
         match = re.search(r'([0-9.]+) [KM]B\/s', result)
         bandwidth_speed =  match.group(1)
         # cast string to float for comparsion.
@@ -940,7 +1020,25 @@ def get_and_check_events(prefix="", report_category="", report_title="", report_
     assert events != None, f"{prefix} total events found"
     print(events)
     found = check_events( events.get('list'), check_num_events, matches)
+
     assert found, f"{prefix} event matches found"
+
+def get_wait_for_events(prefix="", report_category="", report_title="", report_conditions=None, event_limit=5, check_num_events=5, matches={}, tries=10):
+    """
+    Retrieve events from specified event report and look for matching events
+    """
+    found = False
+    while found is False and tries > 0:
+        tries -= 1
+        events = get_events(report_category, report_title, report_conditions, event_limit)
+        assert events != None, f"{prefix} total events found"
+        print(events)
+        found = check_events( events.get('list'), check_num_events, matches)
+        if found is True:
+            return True
+        time.sleep(1)
+
+    return False
 
 def is_in_office_network(wan_ip):
     office_networks = overrides.get("OFFICE_NETWORKS")
@@ -1027,11 +1125,11 @@ def get_wan_tuples():
                 wanIndex = interface['interfaceId']
                 wan_ip = __get_ip_address(nicDevice)
                 wanGateway = __get_gateway(nicDevice)
+
             if wan_ip:
                 wanExtip = get_public_ip_address(extra_options="--bind-address=" + wan_ip,localcall=True)
                 wanExtip = wanExtip.rstrip()
-                wanTup = (wanIndex,wan_ip,wanExtip,wanGateway)
-                # wanTup = (wanIndex,wan_ip,wanExtip,wanGateway)
+                wanTup = (wanIndex,wan_ip,wanExtip,wanGateway, str(interface['symbolicDev']))
                 myWANs.append(wanTup)
     return myWANs
 
