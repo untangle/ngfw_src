@@ -201,7 +201,7 @@ public class WanFailoverTesterMonitor
     {
         List<WanStatus> statusList = new LinkedList<WanStatus>();
 
-        for (int i = 1; i < InterfaceSettings.MAX_INTERFACE_ID + 1; i++) {
+        for (int i = 1; i < InterfaceSettings.MAX_INTERFACE_ID; i++) {
             InterfaceSettings ic = UvmContextFactory.context().networkManager().findInterfaceId(i);
             if (ic != null && ic.getIsWan()) {
                 statusList.add(new WanStatus(i, ic.getName(), ic.getSystemDev(), (this.wanStatusArray[i] == null ? Boolean.TRUE : this.wanStatusArray[i])));
@@ -263,7 +263,7 @@ public class WanFailoverTesterMonitor
 
         if (defaultWan == 0) {
             logger.warn("No active WANs found, using first WAN");
-            for (int i = 1; i < InterfaceSettings.MAX_INTERFACE_ID + 1; i++) {
+            for (int i = 1; i < InterfaceSettings.MAX_INTERFACE_ID; i++) {
                 InterfaceSettings ic = UvmContextFactory.context().networkManager().findInterfaceId(i);
                 if (ic != null && ic.getIsWan()) {
                     defaultWan = i;
