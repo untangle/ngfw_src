@@ -235,6 +235,20 @@ class ReportsTests(NGFWTestCase):
     
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        
+    # Test that the database can be reinitialized (deleted then initialized) by checking 
+    # that all of the tables are present before and after
+    def test_020_reinitialize_database(self):
+        reports_manager = uvmContext.appManager().app("reports").getReportsManager()
+        pre_reinit_tables = reports_manager.getTables()
+        print(pre_reinit_tables)
+        
+        reports_manager.reinitializeDatabase()
+        post_reinit_tables = reports_manager.getTables()
+        print(post_reinit_tables)
+        
+        assert(len(pre_reinit_tables) == len(post_reinit_tables))
+        assert(pre_reinit_tables == post_reinit_tables)
 
     def test_040_remote_syslog(self):
         if (not can_syslog):
