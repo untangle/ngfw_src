@@ -322,7 +322,7 @@ public class IpsecVpnManager
                     if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
                         ipsec_conf.write(TAB + "leftid=" + data.getLeftId() + RET);
                     } else {
-                        ipsec_conf.write(TAB + "leftid=" + data.getLeft() + RET);
+                        ipsec_conf.write(TAB + "leftid=" + this.resolveLeftAddress(data.getLeft()) + RET);
                     }
 
                     ipsec_conf.write(TAB + "leftsubnet=" + data.getLeftSubnet() + RET);
