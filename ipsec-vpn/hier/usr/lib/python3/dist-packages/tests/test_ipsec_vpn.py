@@ -5,6 +5,7 @@ import subprocess
 import base64
 import unittest
 import pytest
+import sys
 
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
@@ -12,6 +13,8 @@ import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 import runtests.overrides as overrides
+
+import tests.test_wan_failover as test_wan_failover
 
 # IPSec Configuration
 L2TP_SERVER_HOSTS = overrides.get("L2TP_SERVER_HOSTS", default=
@@ -667,6 +670,129 @@ class IPsecTests(NGFWTestCase):
             result = result.decode("utf-8")
 
         assert int(result) > 0, "{int(result)} mschap plugin modules found"
+
+    def test_080_active_wan_address(self):
+        """
+        Verify ipsec tunnel can connect to remote that accepts "any" via this systems's active wan address
+        """
+        ipsec_settings = self._app.getSettings()
+        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(local_ip="active_wan_address")]
+        self._app.setSettings(ipsec_settings)
+
+        # Ping remote LAN host
+        lan_host_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_HOST_LAN_IP), success_result=0)
+        assert lan_host_ping_result is True, "reached remote lan host"
+
+        # Ping remote LAN client
+        lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
+        assert lan_client_ping_result is True, "reached remote lan client"
+
+        ipsec_settings["tunnels"]["list"] = []
+        self._app.setSettings(ipsec_settings)
+
+    def test_081_active_wan_address_failover(self):
+        """
+        Verify ipsec tunnel failover and failback with WAN failover
+        """
+        wans = global_functions.get_wan_tuples()
+
+        if len(wans) < 2:
+            raise unittest.SkipTest("not enough wan devices")
+
+        app_wan_failover = IPsecTests.get_app("wan-failover")
+        for wan in wans:
+            interface_id = wan[0]
+            test_wan_failover.build_wan_test(interface_id, wf_app=app_wan_failover)
+
+        ipsec_settings = self._app.getSettings()
+        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(local_ip="active_wan_address")]
+        self._app.setSettings(ipsec_settings)
+
+        # Verify connection comes up
+        # Ping remote LAN host
+        lan_host_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_HOST_LAN_IP), success_result=0)
+        assert lan_host_ping_result is True, "reached remote lan host"
+
+        # Ping remote LAN client
+        lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
+        assert lan_client_ping_result is True, "reached remote lan client"
+
+        # Get our primary WAN IP address
+        primary_default_address = global_functions.get_wait_for_command_output(command="ip route get 8.8.8.8 | head -1 | cut -d' ' -f3", local=True)
+        print(f"primary_default_address={primary_default_address}")
+
+        # "Disable" primary WAN interface with a test that will always fail
+        wf_settings = app_wan_failover.getSettings()
+        wf_settings["tests"]["list"][0]["type"] = "http"
+        wf_settings["tests"]["list"][0]["httpUrl"] = "http://1.2.3.4"
+        print(wf_settings)
+        app_wan_failover.setSettings(wf_settings)
+
+        # Wait for failure
+        assert True is global_functions.get_wait_for_events(
+            prefix="wan failover",
+            report_category="WAN Failover",
+            report_title='Test Events',
+            matches={
+                "interface_id": wans[0][0],
+                "success": False
+            },
+            tries=30), "found failover event"
+
+        # Get the new default route address which should NOT be primary        
+        failover_default_address = global_functions.get_wait_for_command_output(
+            command="ip route get 8.8.8.8 | head -1 | cut -d' ' -f3", 
+            local=True,
+            success_test=lambda address: address != primary_default_address,
+            tries=30)
+        print(f"failover_default_address={failover_default_address}")
+
+        assert primary_default_address != failover_default_address, "primary_default_address != failover_default_address"
+
+        # Verify connection comes up
+        # Ping remote LAN host
+        lan_host_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_HOST_LAN_IP), success_result=0)
+        assert lan_host_ping_result is True, "reached remote lan host"
+
+        # Ping remote LAN client
+        lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
+        assert lan_client_ping_result is True, "reached remote lan client"
+
+        # "Fix" primary's test so it becomes active again
+        wf_settings = app_wan_failover.getSettings()
+        wf_settings["tests"]["list"][0]["type"] = "ping"
+        wf_settings["tests"]["list"][0]["pingHostname"] = "8.8.8.8"
+        print(wf_settings)
+        app_wan_failover.setSettings(wf_settings)
+
+        # Wait for primary test success
+        assert True is global_functions.get_wait_for_events(
+            prefix="wan failover",
+            report_category="WAN Failover",
+            report_title='Test Events',
+            matches={
+                "interface_id": wans[0][0],
+                "success": True
+            },
+            tries=30), "found failover event"
+
+        # Get the new default route address which should NOT be failback
+        failback_default_address = global_functions.get_wait_for_command_output(
+            command="ip route get 8.8.8.8 | head -1 | cut -d' ' -f3", 
+            local=True,
+            success_test=lambda address: address != failover_default_address,
+            tries=30)
+        print(f"failback_default_address={failback_default_address}")
+        assert primary_default_address == failback_default_address, "primary_default_address == failover_default_address"
+
+        # Verify connection comes up
+        # Ping remote LAN host
+        lan_host_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_HOST_LAN_IP), success_result=0)
+        assert lan_host_ping_result is True, "reached remote lan host"
+
+        # Ping remote LAN client
+        lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
+        assert lan_client_ping_result is True, "reached remote lan client"
 
     @classmethod
     def final_extra_tear_down(cls):
