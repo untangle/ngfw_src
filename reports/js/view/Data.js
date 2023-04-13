@@ -18,28 +18,49 @@ Ext.define('Ung.apps.reports.view.Data', {
             margin: '0 0 5 0',
             html: 'Keep event data for this number of days or hours. The smaller the number the lower the disk space requirements.'.t()
         },{
+            xtype: 'radiogroup',
+            name: 'dbRetentionRb',
+            bind: {
+                value: '{dbRetentionInDays}'
+            },
+            simpleValue: true,
+            layout: 'hbox',
+            items: [{
+                boxLabel: 'Days',
+                inputValue: true,
+                //id: 'daysRb',
+                width: 70,
+            }, {
+                boxLabel: 'Hours',
+                inputValue: false,
+                //id: 'hoursRb',
+                width: 70,
+            }]
+        },{
             xtype: 'numberfield',
-            fieldLabel: 'Data Retention Days'.t(),
             bind: {
                 value: '{settings.dbRetention}',
-                disabled: '{settings.dbRetentionHourly !== null && settings.dbRetentionHourly !== 0}'
+                hidden: '{!dbRetentionInDays}'
             },
-            toValidate: true,
-            labelWidth: 150,
-            width: 220,
+            id: 'dbRetentionDailyValue',
+            width: 70,
             allowDecimals: false,
             minValue: 1,
             maxValue: 366,
+            allowBlank: false,
         },{
             xtype: 'numberfield',
-            fieldLabel: 'Data Retention Hours'.t(),
-            bind: '{settings.dbRetentionHourly}',
-            toValidate: true,
-            labelWidth: 150,
-            width: 220,
+            bind: {
+                value: '{settings.dbRetentionHourly}',
+                hidden: '{dbRetentionInDays}'
+            },
+            id: 'dbRetentionHourlyValue',
+            width: 70,
             allowDecimals: false,
-            minValue: 0
-        }, {
+            minValue: 1,
+            maxValue: 23,
+            allowBlank: false,
+        },{
             xtype: 'button',
             text: 'Delete All Reports Data'.t(),
             margin: '10 0 10 0',
