@@ -805,7 +805,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private void writeCronFile()
     {
         // write the cron file for nightly runs
-        String cronStr = "#!/bin/sh" + "\n" + REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" +
+        String cronStr = "#!/bin/sh" + "\n" + REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + "\n";
 
         // We only need to write this file if the database has daily retention set
         if ( settings.getDbRetention() > 0) {
