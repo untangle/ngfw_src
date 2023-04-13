@@ -804,59 +804,56 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     private void writeCronFile()
     {
+        // write the cron file for nightly runs
+        String cronStr = "#!/bin/sh" + "\n" + REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" +
+
         // We only need to write this file if the database has daily retention set
-        if(settings.getDbRetention() > 0) {
-            // write the cron file for nightly runs
-            String cronStr = "#!/bin/sh" + "\n" +
-                REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" +
-                REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " | logger -t uvmreports" + "\n" +
-                REPORTS_VACUUM_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" +
-                REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " | logger -t uvmreports" + "\n";
+        if ( settings.getDbRetention() > 0) {
+            cronStr += REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " | logger -t uvmreports" + "\n";
+        }
+        
+        cronStr += REPORTS_VACUUM_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" + REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " | logger -t uvmreports" + "\n";
 
-            if ( settings.getGoogleDriveUploadData() ) {
-                String dir = settings.getGoogleDriveDirectory();
-                if ( dir != null )
-                    dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
-                else
-                    dir = "";
-                
-                cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
-            }
-            if ( settings.getGoogleDriveUploadCsv() ) {
-                String dir = settings.getGoogleDriveDirectory();
-                if ( dir != null )
-                    dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
-                else
-                    dir = "";
-                
-                cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
-            }
-
+        if ( settings.getGoogleDriveUploadData() ) {
+            String dir = settings.getGoogleDriveDirectory();
+            if ( dir != null )
+                dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
+            else
+                dir = "";
             
-            BufferedWriter out = null;
-            try {
-                out = new BufferedWriter(new FileWriter(CRON_FILE));
-                out.write(cronStr, 0, cronStr.length());
-                out.write("\n");
-            } catch (IOException ex) {
-                logger.error("Unable to write file", ex);
-                return;
-            }finally{
-                if(out != null){
-                    try {
-                        out.close();
-                    } catch (IOException ex) {
-                        logger.error("Unable to close file", ex);
-                    }
+            cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
+        }
+        if ( settings.getGoogleDriveUploadCsv() ) {
+            String dir = settings.getGoogleDriveDirectory();
+            if ( dir != null )
+                dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
+            else
+                dir = "";
+            
+            cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
+        }
+
+        
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(CRON_FILE));
+            out.write(cronStr, 0, cronStr.length());
+            out.write("\n");
+        } catch (IOException ex) {
+            logger.error("Unable to write file", ex);
+            return;
+        }finally{
+            if(out != null){
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
                 }
             }
-
-            // Make it executable
-            UvmContextFactory.context().execManager().execResult( "chmod 755 " + CRON_FILE );
-        } else {
-            // RM the cron file if not set
-            UvmContextFactory.context().execManager().execResult("rm -f " + CRON_FILE);
         }
+
+        // Make it executable
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + CRON_FILE );
     }
 
     /**
