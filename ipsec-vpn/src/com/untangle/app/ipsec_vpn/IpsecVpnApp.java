@@ -1183,7 +1183,7 @@ public class IpsecVpnApp extends AppBase
          */
         public String getName()
         {
-            return "ipsecvpn-wan-failvoer-change-hook";
+            return "ipsecvpn-wan-failover-change-hook";
         }
 
         /**
@@ -1205,8 +1205,7 @@ public class IpsecVpnApp extends AppBase
                 }
             }
 
-            InterfaceSettings activeWanInterface = UvmContextFactory.context().networkManager().findInterfaceId(activeWanInterfaceId);
-            manager.setActiveWanAddress(activeWanInterface.getV4StaticAddress());
+            manager.setActiveWanAddress(UvmContextFactory.context().networkManager().getInterfaceStatus(activeWanInterfaceId).getV4Address());
 
             manager.generateConfig(settings, activeCertificate);
         }
