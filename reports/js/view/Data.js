@@ -28,12 +28,10 @@ Ext.define('Ung.apps.reports.view.Data', {
             items: [{
                 boxLabel: 'Days',
                 inputValue: true,
-                //id: 'daysRb',
                 width: 70,
             }, {
                 boxLabel: 'Hours',
                 inputValue: false,
-                //id: 'hoursRb',
                 width: 70,
             }]
         },{
