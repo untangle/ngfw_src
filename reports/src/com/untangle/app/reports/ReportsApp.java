@@ -203,10 +203,10 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             return;
         }
 
-	    /**
+        /**
          * Check if database retention settings have changed
          */
-	    checkDbRetentionChange(newSettings);
+        checkDbRetentionChange(newSettings);
 
         /**
          * Change current settings
