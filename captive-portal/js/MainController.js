@@ -204,12 +204,15 @@ Ext.define('Ung.apps.captive-portal.MainController', {
         var grid = this.getView().down('#activeUsers');
 
         grid.setLoading('Logging Out User...'.t());
-        Rpc.asyncData(this.getView().appManager, 'userAdminLogout', netaddr)
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(this.getView().appManager, 'userAdminLogout', netaddr),
+            Rpc.asyncPromise(this.getView().appManager, 'getActiveUsers')
+        ], this)
         .then( function(result){
             if(Util.isDestroyed(grid, me, view, vm)){
                 return;
             }
-            vm.set('activeUsers', result.list);
+            vm.set('activeUsers', result[1].list);
 
             grid.setLoading(false);
             setTimeout(function() {
