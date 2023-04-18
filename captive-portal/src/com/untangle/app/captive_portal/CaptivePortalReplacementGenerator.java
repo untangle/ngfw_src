@@ -9,7 +9,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -41,46 +40,6 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         + "<P><H3>URI: %s</H3></P>"
         + "<P><H3>Please contact %s for assistance.</H3></P>"
         + "</BODY></HTML>";
-
-    protected static final String AUTH_REDIRECT_URI = UvmContextFactory.context().uriManager().getUri("https://auth-relay.untangle.com/callback.php");
-
-    protected static final String GOOGLE_AUTH_HOST = "accounts.google.com";
-    protected static final String GOOGLE_AUTH_PATH = "/o/oauth2/v2/auth";
-    protected static final String GOOGLE_CLIENT_ID = "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com";
-    protected static final Map<String,Object> GOOGLE_PARAMETERS;
-
-    protected static final String FACEBOOK_AUTH_HOST = "www.facebook.com";
-    protected static final String FACEBOOK_AUTH_PATH = "/v2.9/dialog/oauth";
-    protected static final String FACEBOOK_CLIENT_ID = "1840471182948119";
-    protected static final Map<String,Object> FACEBOOK_PARAMETERS;
-
-    protected static final String MICROSOFT_AUTH_HOST = "login.microsoftonline.com";
-    protected static final String MICROSOFT_AUTH_PATH = "/common/oauth2/v2.0/authorize";
-    protected static final String MICROSOFT_CLIENT_ID = "f8285e96-b240-4036-8ea5-f37cf6b981bb";
-    protected static final Map<String,Object> MICROSOFT_PARAMETERS;
-
-    static {
-        GOOGLE_PARAMETERS = new HashMap<>();
-        GOOGLE_PARAMETERS.put("client_id", GOOGLE_CLIENT_ID);
-        GOOGLE_PARAMETERS.put("redirect_uri", AUTH_REDIRECT_URI);
-        GOOGLE_PARAMETERS.put("response_type", "code");
-        GOOGLE_PARAMETERS.put("scope", "email");
-        GOOGLE_PARAMETERS.put("state", null);
-
-        FACEBOOK_PARAMETERS = new HashMap<>();
-        FACEBOOK_PARAMETERS.put("client_id", FACEBOOK_CLIENT_ID);
-        FACEBOOK_PARAMETERS.put("redirect_uri", AUTH_REDIRECT_URI);
-        FACEBOOK_PARAMETERS.put("response_type", "code");
-        FACEBOOK_PARAMETERS.put("scope", "email");
-        FACEBOOK_PARAMETERS.put("state", null);
-
-        MICROSOFT_PARAMETERS = new HashMap<>();
-        MICROSOFT_PARAMETERS.put("client_id", MICROSOFT_CLIENT_ID);
-        MICROSOFT_PARAMETERS.put("redirect_uri", AUTH_REDIRECT_URI);
-        MICROSOFT_PARAMETERS.put("response_type", "code");
-        MICROSOFT_PARAMETERS.put("scope", "openid User.Read");
-        MICROSOFT_PARAMETERS.put("state", null);
-    }
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
@@ -148,38 +107,6 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         URIBuilder externalAuthenticationUri = null;
         Map<String,Object> externalAuthenticationParameters = null;
         CaptivePortalSettings.AuthenticationType authenticationType = captureApp.getSettings().getAuthenticationType();
-
-        if(authenticationType == CaptivePortalSettings.AuthenticationType.GOOGLE ||
-           authenticationType == CaptivePortalSettings.AuthenticationType.FACEBOOK ||
-           authenticationType == CaptivePortalSettings.AuthenticationType.MICROSOFT){
-            /**
-             * Authentication type requires redirect to provider.
-             */
-            redirectUri.setParameters(buildRedirectParameters(redirectDetails, redirectParameters));
-            externalAuthenticationUri = new URIBuilder();
-            externalAuthenticationUri.setScheme("https");
-
-            switch(authenticationType){
-                case GOOGLE:
-                    externalAuthenticationUri.setHost(GOOGLE_AUTH_HOST);
-                    externalAuthenticationUri.setPath(GOOGLE_AUTH_PATH);
-                    externalAuthenticationParameters = new HashMap<>(GOOGLE_PARAMETERS);
-                    break;
-                case FACEBOOK:
-                    externalAuthenticationUri.setHost(FACEBOOK_AUTH_HOST);
-                    externalAuthenticationUri.setPath(FACEBOOK_AUTH_PATH);
-                    externalAuthenticationParameters = new HashMap<>(FACEBOOK_PARAMETERS);
-                    break;
-                case MICROSOFT:
-                    externalAuthenticationUri.setHost(MICROSOFT_AUTH_HOST);
-                    externalAuthenticationUri.setPath(MICROSOFT_AUTH_PATH);
-                    externalAuthenticationParameters = new HashMap<>(MICROSOFT_PARAMETERS);
-                    break;
-            }
-            externalAuthenticationParameters.put("state", redirectUri.toString());
-            redirectUri = externalAuthenticationUri;
-            redirectParameters = externalAuthenticationParameters;
-        }
 
         return super.buildRedirectUri(redirectDetails, redirectUri, redirectParameters);
     }
