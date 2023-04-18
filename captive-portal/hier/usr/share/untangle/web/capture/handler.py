@@ -29,19 +29,23 @@ _ = uvm.i18n_helper.get_translation('untangle').lgettext
 OAUTH_PROVIDERS = {
     "GOOGLE": {
         "platform": "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com",
-        "method": "googleLogin"
+        "method": "googleLogin",
+        "uri": "https://accounts.google.com/o/oauth2/v2/auth?client_id=365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.GoogleState.$"
     },
     "FACEBOOK": {
         "platform": "1840471182948119",
-        "method": "facebookLogin"
+        "method": "facebookLogin",
+        "uri": "https://www.facebook.com/v2.9/dialog/oauth?client_id=1840471182948119&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.FacebookState.$"
     },
     "MICROSOFT": {
         "platform": "f8285e96-b240-4036-8ea5-f37cf6b981bb",
-        "method": "microsoftLogin"
+        "method": "microsoftLogin",
+        "uri" : "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f8285e96-b240-4036-8ea5-f37cf6b981bb&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=openid%20User.Read&state=$.MicrosoftState.$>"
     },
     "ANY_OAUTH": {
         "platform": None,
-        "method": None
+        "method": None,
+        "uri": None
     }
 }
 
@@ -98,7 +102,7 @@ def index(req):
 
     # get the original destination and other arguments passed
     # in the URL when the redirect was generated
-    args_keys = ['AUTHCODE', 'AUTHMODE', 'METHOD', 'NONCE', 'HOST','URI']
+    args_keys = ['AUTHCODE', 'AUTHMODE', 'APPID', 'METHOD', 'NONCE', 'HOST','URI']
     args = split_args(req.args);
     for key in args_keys:
         if not key in args:
@@ -330,6 +334,8 @@ def infopost(req,method,nonce,appid,host,uri,agree=b'empty'):
         method = method.decode('utf-8')
     if type(nonce) == bytes:
         nonce = nonce.decode('utf-8')
+    if type(appid) == bytes:
+        appid = appid.decode('utf-8')
     if type(host) == bytes:
         host = host.decode('utf-8')
     if type(uri) == bytes:
@@ -343,32 +349,6 @@ def infopost(req,method,nonce,appid,host,uri,agree=b'empty'):
     # load the app settings
     captureSettings = load_capture_settings(req,appid)
 
-    # setup the uvm and app objects so we can make the RPC call
-    captureApp = load_rpc_manager(appid)
-
-    # call the app to authenticate the user
-    authResult = captureApp.userActivate(address,agree)
-
-    # on successful login redirect to the redirectUrl if not empty
-    # otherwise send them to the page originally requested
-    if (authResult == 0):
-        redirectUrl = captureSettings.get('redirectUrl')
-        if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
-            target = str(redirectUrl)
-        else:
-            if ((host == 'Empty') or (uri == 'Empty')):
-                page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
-                return(page)
-            raw = urllib.parse.unquote(uri)
-            if (nonce == 'a1b2c3d4e5f6'):
-                target = str("https://" + host + raw)
-            else:
-                target = str("http://" + host + raw)
-        util.redirect(req, target)
-        return
-
-    # authentication failed so re-create the list of args that
-    # we can pass to the login page generator
     args = {}
     args['METHOD'] = method
     args['NONCE'] = nonce
@@ -376,43 +356,78 @@ def infopost(req,method,nonce,appid,host,uri,agree=b'empty'):
     args['HOST'] = host
     args['URI'] = uri
 
-    # pass the request object and post arguments to the page generator
-    if (authResult == 1):
-        page = generate_page(req,captureSettings,args, _("You must enable the checkbox above to continue.") )
-    else:
-        page = generate_page(req,captureSettings,args, _("The server returned an unexpected error.") )
+    # setup the uvm and app objects so we can make the RPC call
+    captureApp = load_rpc_manager(appid)
 
-    # return the login page we just created
+    if agree != "agree":
+        page = generate_page(req,captureSettings,args, _("You must enable the checkbox above to continue.") )
+        return page
+
+    authentication_type = captureSettings.get("authenticationType")
+    if authentication_type in list(OAUTH_PROVIDERS.keys()):
+        if authentication_type == "ANY_OAUTH":
+            page = generate_page(req,captureSettings,args,"",page=None,template_name="pickpage.html")
+        else:
+            target = generate_page(req,captureSettings,args,"",OAUTH_PROVIDERS[authentication_type]["uri"])
+            req.log_error(f"handler.py: target={target}")
+            util.redirect(req, target)
+            return
+    else:
+        # No authentication, just agree
+
+        # call the app to authenticate the user
+        authResult = captureApp.userActivate(address,agree)
+
+        # on successful login redirect to the redirectUrl if not empty
+        # otherwise send them to the page originally requested
+        if (authResult == 0):
+            redirectUrl = captureSettings.get('redirectUrl')
+            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+                target = str(redirectUrl)
+            else:
+                if ((host == 'Empty') or (uri == 'Empty')):
+                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                    return(page)
+                raw = urllib.parse.unquote(uri)
+                if (nonce == 'a1b2c3d4e5f6'):
+                    target = str("https://" + host + raw)
+                else:
+                    target = str("http://" + host + raw)
+            util.redirect(req, target)
+            return
+
+    # return the page we just created
     return(page)
 
 #-----------------------------------------------------------------------------
 # This function generates the actual captive portal page
 
-def generate_page(req,captureSettings,args,extra=''):
+def generate_page(req,captureSettings,args,extra='',page=None,template_name=None):
 
     # We use the path from the request filename to locate the correct template
     # and start with the OAuth selection page if that authentication type is
     # enabled. Otherwise we use the configured page type to decide.
+    if page is None:
+        if template_name is None:
+            if (captureSettings.get('pageType') == 'BASIC_LOGIN'):
+                # name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
+                template_name = "authpage.html"
+            elif (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
+                # name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
+                template_name = "infopage.html"
+            elif (captureSettings.get('pageType') == 'CUSTOM'):
+                # name = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/custom.html"
+                template_name = f"custom_{args['APPID']}/custom.html"
+            else:
+                page = "<html><head><title>Captive Portal Error</title></head><body><h2>Invalid Captive Portal configuration</h2></body></html>"
+                return(page)
 
-    if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
-        name = req.filename[:req.filename.rindex('/')] + "/pickpage.html"
+        path = req.filename[:req.filename.rindex('/')]
+        template_file_name = f"{path}/{template_name}"
 
-    elif (captureSettings.get('pageType') == 'BASIC_LOGIN'):
-        name = req.filename[:req.filename.rindex('/')] + "/authpage.html"
-
-    elif (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
-        name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
-
-    elif (captureSettings.get('pageType') == 'CUSTOM'):
-        name = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/custom.html"
-
-    else:
-        page = "<html><head><title>Captive Portal Error</title></head><body><h2>Invalid Captive Portal configuration</h2></body></html>"
-        return(page)
-
-    webfile = open(name, "r")
-    page = webfile.read();
-    webfile.close()
+        webfile = open(template_file_name, "r")
+        page = webfile.read();
+        webfile.close()
 
     if (not 'certificateDetection' in captureSettings):
         captureSettings['certificateDetection'] = 'DISABLE_DETECTION'
@@ -451,33 +466,27 @@ def generate_page(req,captureSettings,args,extra=''):
         path = "/capture/custom_" + str(args['APPID'])
         page = replace_marker(page,'$.CustomPath.$',path)
 
-    if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
+    if captureSettings.get("authenticationType") in list(OAUTH_PROVIDERS.keys()):
         uvmContext = Uvm().getUvmContext()
         networkSettings = uvmContext.networkManager().getNetworkSettings()
 
-        target = ""
         port = None
 
         if (captureSettings.get("alwaysUseSecureCapture" == True)):
-            target += "https://"
+            schema = "https://"
             if (networkSettings.get('httpsPort') != 443):
-                port = str(networkSettings.get('httpsPort'))
+                port = networkSettings.get('httpsPort')
         else:
-            target += "http://"
+            schema = "http://"
             if (networkSettings.get('httpPort') != 80):
-                port = str(networkSettings.get('httpPort'))
+                port = networkSettings.get('httpPort')
 
-        target += req.hostname
-        if (port != None):
-            target += ":"
-            target += port
+        if port is not None:
+            port = f":{port}"
+        else:
+            port = ""
 
-        target += "/capture/handler.py/index"
-        target += "?nonce=" + args['NONCE']
-        target += "&method=" + args['METHOD']
-        target += "&appid=" + args['APPID']
-        target += "&host=" + args['HOST']
-        target += "&uri=" + args['URI']
+        target = f"{schema}{req.hostname}{port}/capture/handler.py/index?nonce={args['NONCE']}&method={args['METHOD']}&appid={args['APPID']}&host={args['HOST']}&uri={args['URI']}"
 
         page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE"))
         page = replace_marker(page,'$.FacebookState.$', urllib.parse.quote(target + "&authmode=FACEBOOK"))
