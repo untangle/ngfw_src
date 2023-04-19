@@ -1323,7 +1323,7 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
     print(f"{sys._getframe().f_code.co_name}: {command}" )
     return command
 
-def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None, location=False, range=None, trace_ascii_file=None, user_agent=None, user=None, password=None, request=None, form=None):
+def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=None, override_arguments=None, extra_arguments=None, location=False, range=None, trace_ascii_file=None, user_agent=None, user=None, password=None, request=None, form=None, head=False, verbose=False):
     """
     Build curl command
 
@@ -1372,6 +1372,10 @@ def build_curl_command(uri=None, connect_timeout=10, max_time=20, output_file=No
     if form is not None:
         for key in form.keys():
             optional_arguments.append(f"--form '{key}={form[key]}'")
+    if head is True:
+        optional_arguments.append(f"--head")
+    if verbose is True:
+        optional_arguments.append(f"--verbose")
 
     command = f"curl {' '.join(arguments)} {' '.join(optional_arguments)} '{uri}'"
     print(f"{sys._getframe().f_code.co_name}: {command}" )
