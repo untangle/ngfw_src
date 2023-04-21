@@ -1,7 +1,7 @@
 Ext.define('Ung.Setup.ServerSettings', {
     extend: 'Ext.form.Panel',
     alias: 'widget.ServerSettings',
-
+    withValidation: false,
     title: 'Server Settings'.t(),
     description: 'Configure the Server'.t(),
 

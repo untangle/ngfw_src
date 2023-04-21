@@ -3,7 +3,7 @@ Ext.define('Ung.Setup.Interfaces', {
     alias: 'widget.Interfaces',
     title: 'Network Cards'.t(),
     description: 'Identify Network Cards'.t(),
-
+    withValidation: false,
     layout: {
         type: 'vbox',
         align: 'stretch'

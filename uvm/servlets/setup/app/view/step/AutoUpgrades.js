@@ -1,7 +1,7 @@
 Ext.define('Ung.Setup.AutoUpgrades', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.AutoUpgrades',
-
+    withValidation: false,
     title: 'Auto Upgrades'.t(),
     description: rpc.isCCHidden ? "Automatic Upgrades".t() : 'Automatic Upgrades and ETM Dashboard Access'.t(),
 

@@ -1,7 +1,7 @@
 Ext.define('Ung.Setup.Internet', {
     extend: 'Ext.form.Panel',
     alias: 'widget.Internet',
-
+    withValidation: false,
     title: 'Internet Connection'.t(),
     description: 'Configure the Internet Connection'.t(),
 

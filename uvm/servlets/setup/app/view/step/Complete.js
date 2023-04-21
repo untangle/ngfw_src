@@ -1,7 +1,7 @@
 Ext.define('Ung.Setup.Complete', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.Complete',
-
+    withValidation: false,
     title: 'Finish'.t(),
     description: '',
 
