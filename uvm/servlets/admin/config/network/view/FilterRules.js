@@ -4,7 +4,7 @@ Ext.define('Ung.config.network.view.FilterRules', {
     itemId: 'filter-rules',
     viewModel: true,
     scrollable: true,
-
+    withValidation: false,
     title: 'Filter Rules'.t(),
 
     layout: 'fit',
