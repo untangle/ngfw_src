@@ -3,7 +3,7 @@ Ext.define('Ung.config.network.view.NatRules', {
     alias: 'widget.config-network-nat-rules',
     itemId: 'nat-rules',
     scrollable: true,
-
+    withValidation: false,
     viewModel: true,
 
     title: 'NAT Rules'.t(),
