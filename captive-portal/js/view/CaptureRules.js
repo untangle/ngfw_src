@@ -3,7 +3,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
     alias: 'widget.app-captive-portal-capturerules',
     itemId: 'capture-rules',
     title: 'Capture Rules'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

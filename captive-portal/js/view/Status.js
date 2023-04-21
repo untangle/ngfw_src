@@ -4,7 +4,7 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     layout: 'border',
     items: [{
         region: 'center',

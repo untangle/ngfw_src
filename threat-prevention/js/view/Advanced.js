@@ -5,7 +5,7 @@ Ext.define('Ung.apps.threatprevention.view.Advanced', {
     title: 'Advanced'.t(),
     scrollable: true,
     bodyPadding: 10,
-
+    withValidation: true,
     items: [{
         xtype: 'fieldset',
         title: 'Custom block page URL'.t(),

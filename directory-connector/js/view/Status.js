@@ -4,7 +4,7 @@ Ext.define('Ung.apps.directoryconnector.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     viewModel: true,
 
     items: [{

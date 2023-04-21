@@ -3,7 +3,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
     alias: 'widget.app-directory-connector-activedirectory',
     itemId: 'active-directory',
     title: 'Active Directory'.t(),
-
+    withValidation: false,
     viewModel: true,
     bodyPadding: 10,
     scrollable: true,

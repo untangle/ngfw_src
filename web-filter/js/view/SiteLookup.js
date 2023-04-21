@@ -7,7 +7,7 @@ Ext.define('Ung.apps.webfilter.view.SiteLookup', {
     bodyPadding: 10,
     scrollable: true,
     defaultButton: 'searchButton',
-
+    withValidation: false,
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',

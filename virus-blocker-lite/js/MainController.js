@@ -39,6 +39,10 @@ Ext.define('Ung.apps.virusblockerlite.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
+        if (!Util.validateForms(v)) {
+            return;
+        }
+
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             if (store.getModifiedRecords().length > 0 ||

@@ -4,7 +4,7 @@ Ext.define('Ung.apps.webcache.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     viewModel: {
         formulas: {
             stats: function (get) {

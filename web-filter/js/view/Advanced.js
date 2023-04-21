@@ -4,7 +4,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
     itemId: 'advanced',
     title: 'Advanced'.t(),
     scrollable: true,
-
+    withValidation: true,
     bodyPadding: 10,
 
     items: [{

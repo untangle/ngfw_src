@@ -4,7 +4,7 @@ Ext.define('Ung.apps.virusblocker.view.ScanOptions', {
     itemId: 'scan-options',
     title: 'Scan Options'.t(),
     scrollable: true,
-
+    withValidation: false,
     bodyPadding: 10,
     layout: {
         type: 'vbox',

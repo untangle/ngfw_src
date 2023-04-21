@@ -4,7 +4,7 @@ Ext.define('Ung.apps.spamblockerlite.view.Email', {
     itemId: 'email',
     title: 'Email'.t(),
     scrollable: true,
-
+    withValidation: true,
     viewModel: {
         formulas: {
             strength: {

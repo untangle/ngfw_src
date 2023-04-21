@@ -4,7 +4,7 @@ Ext.define('Ung.apps.captive-portal.view.PassedHosts', {
     itemId: 'passed-hosts',
     title: 'Passed Hosts'.t(),
     scrollable: true,
-
+    withValidation: false,
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',

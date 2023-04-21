@@ -3,7 +3,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
     alias: 'widget.app-ssl-inspector-rules',
     itemId: 'rules',
     title: 'Rules'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

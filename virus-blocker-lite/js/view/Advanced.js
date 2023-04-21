@@ -4,7 +4,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
     itemId: 'advanced',
     title: 'Advanced'.t(),
     scrollable: true,
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

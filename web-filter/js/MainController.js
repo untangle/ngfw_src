@@ -43,6 +43,10 @@ Ext.define('Ung.apps.webfilter.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
+        if (!Util.validateForms(v)) {
+            return;
+        }
+        
         /**
          * NGFW-12771
          * haven't found a better way to check valid fields conditioned by other fields

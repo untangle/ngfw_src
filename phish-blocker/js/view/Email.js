@@ -4,7 +4,7 @@ Ext.define('Ung.apps.phishblocker.view.Email', {
     itemId: 'email',
     title: 'Email'.t(),
     scrollable: true,
-
+    withValidation: false,
     tbar: [{
         xtype: 'checkbox',
         boxLabel: '<strong>' + 'Scan SMTP'.t() + '</strong>',

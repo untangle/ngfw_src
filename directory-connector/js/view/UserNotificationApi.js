@@ -4,7 +4,7 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
     itemId: 'user-notification-api',
     title: 'User Notification API'.t(),
     scrollable: true,
-
+    withValidation: true,
     viewModel: true,
     bodyPadding: 10,
 

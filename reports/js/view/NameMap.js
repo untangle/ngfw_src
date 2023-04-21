@@ -3,7 +3,7 @@ Ext.define('Ung.apps.reports.view.NameMap', {
     alias: 'widget.app-reports-namemap',
     itemId: 'name-map',
     title: 'Name Map'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
