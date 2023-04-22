@@ -3,7 +3,7 @@ Ext.define('Ung.config.network.view.Routes', {
     alias: 'widget.config-network-routes',
     itemId: 'routes',
     scrollable: true,
-
+    withValidation: false,
     viewModel: true,
 
     title: 'Routes'.t(),
