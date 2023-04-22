@@ -4,7 +4,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
     itemId: 'troubleshooting',
     title: 'Troubleshooting'.t(),
     scrollable: true,
-
+    withValidation: false,
     layout: 'fit',
 
     tbar: [{
