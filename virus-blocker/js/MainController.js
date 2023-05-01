@@ -15,11 +15,6 @@ Ext.define('Ung.apps.virusblocker.MainController', {
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
 
-        // set the enabled custom block page based on URL existance
-        vm.bind('{settings.customBlockPageUrl}', function (url) {
-            vm.set('settings.customBlockPageEnabled', url.length > 0);
-        });
-
         var mostRecentTrademarkEndYear = 2021;
         v.setLoading(true);
         Ext.Deferred.sequence([
@@ -55,6 +50,14 @@ Ext.define('Ung.apps.virusblocker.MainController', {
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
+        if (vm.get('settings').customBlockPageEnabled) {
+            var isValidUrl = Util.urlValidator(vm.get('settings').customBlockPageUrl);
+            if (isValidUrl !== true) {
+                Ext.Msg.alert('Warning'.t(), isValidUrl);
+                return;
+            }
+        }
 
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();

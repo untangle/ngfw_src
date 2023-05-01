@@ -8,26 +8,27 @@ Ext.define('Ung.apps.threatprevention.view.Advanced', {
 
     items: [{
         xtype: 'fieldset',
-        title: 'Custom block page URL'.t(),
-        padding: '10 15',
-        layout: 'fit',
+        title: 'Custom block page'.t(),
+        checkboxToggle: true,
+        checkbox: {
+            bind: '{settings.customBlockPageEnabled}'
+        },
+        collapsible: true,
+        collapsed: true,
+        padding: 10,
+        cls: 'app-section',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
         items: [{
             xtype: 'textfield',
+            fieldLabel: 'Custom block page URL'.t(),
+            labelAlign: 'top',
             emptyText: 'http://example.com',
-            bind: '{settings.customBlockPageUrl}',
-            listeners: {
-                // add 'http://' prefix if missing
-                blur: function (el) {
-                    var url = el.getValue();
-                    if (url.length) {
-                        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                            el.setValue("http://" + url);
-                        }
-                    }
-                }
-            }
+            bind: '{settings.customBlockPageUrl}'
         }]
-    }, {
+    },{
         xtype: 'fieldset',
         title: 'Block options'.t(),
         padding: '10 15',
