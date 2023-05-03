@@ -3,6 +3,7 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
     alias: 'widget.app-directory-connector-radius',
     itemId: 'radius',
     title: 'RADIUS'.t(),
+    withValidation: true,
 
     viewModel: true,
     bodyPadding: 10,
