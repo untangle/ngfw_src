@@ -3,6 +3,7 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
     alias: 'widget.app-directory-connector-radius',
     itemId: 'radius',
     title: 'RADIUS'.t(),
+    withValidation: true,
 
     viewModel: true,
     bodyPadding: 10,
@@ -18,16 +19,16 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
                 "This allows your server to connect to a {0}RADIUS Server{1} in order to identify users for use by Captive Portal and L2TP/IPsec.".t(),
                 '<b>','</b>')
         }, {
-            xtype: "checkbox",
-            bind: '{settings.radiusSettings.enabled}',
-            fieldLabel: 'Enable RADIUS Connector'.t(),
+            xtype: 'displayfield',
+            value: 'Enter RADIUS information to enable the Connector.'.t(),
+        }, {
+            xtype: 'textfield',
+            emptyText: '1.2.3.4',
+            fieldLabel: 'RADIUS Server IP or Hostname'.t(),
             labelWidth: 200,
-            margin: '10 0 10 0',
-            listeners: {
-                disable: function (ck) {
-                    ck.setValue(false);
-                }
-            }
+            width: 410,
+            vtype: 'ipOrUrl',
+            bind: '{settings.radiusSettings.server}',
         }, {
             xtype: 'fieldset',
             border: 0,
@@ -42,10 +43,6 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
                 width: 400
             },
             items: [{
-                xtype: 'textfield',
-                fieldLabel: 'RADIUS Server IP or Hostname'.t(),
-                bind: '{settings.radiusSettings.server}'
-            }, {
                 xtype: 'textfield',
                 fieldLabel: 'Authentication Port'.t(),
                 bind: '{settings.radiusSettings.authPort}'

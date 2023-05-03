@@ -11,6 +11,11 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
+        // set the enabled custom block page based on URL existance
+        vm.bind('{settings.radiusSettings.server}', function (url) {
+            vm.set('settings.radiusSettings.enabled', url.length > 0);
+        });
+
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'getSettings')
         .then( function(result){
