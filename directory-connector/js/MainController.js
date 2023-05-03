@@ -11,11 +11,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        // set the enabled custom block page based on URL existance
-        vm.bind('{settings.radiusSettings.server}', function (url) {
-            vm.set('settings.radiusSettings.enabled', url.length > 0);
-        });
-
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'getSettings')
         .then( function(result){
@@ -43,6 +38,14 @@ Ext.define('Ung.apps.directory-connector.MainController', {
 
         if (!Util.validateForms(v)) {
             return;
+        }
+
+        if (vm.get('settings').radiusSettings.enabled) {
+            var isValidUrl = Util.urlIpValidator(vm.get('settings').radiusSettings.server);
+            if (isValidUrl !== true) {
+                Ext.Msg.alert('Warning'.t(), isValidUrl);
+                return;
+            }
         }
 
         v.setLoading(true);
