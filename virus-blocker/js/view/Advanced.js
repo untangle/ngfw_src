@@ -3,6 +3,7 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
     alias: 'widget.app-virus-blocker-advanced',
     itemId: 'advanced',
     title: 'Advanced'.t(),
+    withValidation: true,
 
     layout: {
         type: 'vbox',
@@ -11,13 +12,15 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
 
     items: [{
         xtype: 'fieldset',
-        title: 'Custom block page URL'.t(),
+        title: 'Custom block page'.t(),
         margin: 10,
         padding: 10,
         layout: 'fit',
         items: [{
             xtype: 'textfield',
             emptyText: 'http://example.com',
+            fieldLabel: 'URL',
+            vtype: 'url',
             bind: '{settings.customBlockPageUrl}',
             listeners: {
                 // add 'http://' prefix if missing

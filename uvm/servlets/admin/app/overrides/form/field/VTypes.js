@@ -16,7 +16,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         openvpnName: /^[A-Za-z0-9]([-.0-9A-Za-z]*[0-9A-Za-z])?$/,
         positiveInteger: /^[0-9]+$/,
         domainNameRe: /^[a-zA-Z0-9\-_.]+$/,
-        urlAddrRe: /^(([^:\/?#]+:)?(?:\/\/((?:([^\/?#:]*):([^\/?#:]*)@)?([^\/?#:]*)(?::([^\/?#:]*))?)))?([^?#]*)(\?[^#]*)?(#.*)?$/,
+        urlAddrRe: /^(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,63}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/,
         cidrAddrRe: /^([0-9]{1,3}\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
         cidrBlockRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
         cidrBlockOnlyRangeRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-1]))$/,
@@ -120,6 +120,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     ipOrUrl: function(val) {
         return this.ip4Address(val) || this.ip6Address(val) || this.url(val);
     },
+    ipOrUrlText: 'Not a valid IP or URL'.t(),
 
     /**
      * 
@@ -130,6 +131,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     url: function(val) {
         return this.mask.urlAddrRe.test(val);
     },
+    urlText: 'Not a valid URL'.t(),
 
     ipMatcher: function(val) {
         if (val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {
