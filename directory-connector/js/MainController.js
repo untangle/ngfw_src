@@ -40,6 +40,14 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             return;
         }
 
+        if (vm.get('settings').radiusSettings.enabled) {
+            var isValidUrl = Util.urlIpValidator(vm.get('settings').radiusSettings.server);
+            if (isValidUrl !== true) {
+                Ext.Msg.alert('Warning'.t(), isValidUrl);
+                return;
+            }
+        }
+
         v.setLoading(true);
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
