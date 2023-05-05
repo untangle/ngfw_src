@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webmonitor.view.Categories', {
     alias: 'widget.app-web-monitor-categories',
     itemId: 'categories',
     title: 'Categories'.t(),
-
+    withValidation: false,
     tbar: [{
         xtype: 'ungridfilter'
     },{
