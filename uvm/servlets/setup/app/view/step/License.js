@@ -1,7 +1,7 @@
 Ext.define('Ung.Setup.License', {
     extend: 'Ext.form.Panel',
     alias: 'widget.License',
-    withValidation: false,
+
     title: 'License'.t(),
     description: 'License'.t(),
 

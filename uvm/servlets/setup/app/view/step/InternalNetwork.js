@@ -1,7 +1,7 @@
 Ext.define('Ung.Setup.InternalNetwork', {
     extend: 'Ext.form.Panel',
     alias: 'widget.InternalNetwork',
-    withValidation: false,
+
     title: 'Internal Network'.t(),
     description: 'Configure the Internal Network Interface'.t(),
 
