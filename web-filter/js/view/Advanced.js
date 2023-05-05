@@ -5,6 +5,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
     title: 'Advanced'.t(),
     scrollable: true,
     withValidation: true,
+
     bodyPadding: 10,
 
     items: [{
@@ -152,28 +153,29 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
     }, {
         xtype: 'fieldset',
         title: 'Custom block page'.t(),
-        checkboxToggle: true,
-        checkbox: {
-            bind: '{settings.customBlockPageEnabled}'
-        },
-        collapsible: true,
-        collapsed: true,
-        padding: 10,
-        cls: 'app-section',
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
+        padding: '10 15',
+        layout: 'fit',
         items: [{
-            xtype: 'displayfield',
-            value: 'NOTE:'.t() + ' ' + 'Unblock operations are not available for custom block page'.t()
-        },{
             xtype: 'textfield',
-            fieldLabel: 'Custom block page URL'.t(),
-            labelAlign: 'top',
             emptyText: 'http://example.com',
-            bind: '{settings.customBlockPageUrl}'
+            fieldLabel: 'URL',
+            vtype: 'url',
+            bind: '{settings.customBlockPageUrl}',
+            listeners: {
+                // add 'http://' prefix if missing
+                blur: function (el) {
+                    var url = el.getValue();
+                    if (url.length) {
+                        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                            el.setValue("http://" + url);
+                        }
+                    }
+                }
+            }
         }]
+    }, {
+        xtype: 'displayfield',
+        value: 'NOTE:'.t() + ' ' + 'Unblock operations are not available for custom block page'.t()
     }, {
         xtype: 'fieldset',
         title: 'Unblock Options'.t(),

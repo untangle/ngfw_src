@@ -4,7 +4,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
     itemId: 'bypass-rules',
     viewModel: true,
     scrollable: true,
-
+    withValidation: false,
     title: 'Bypass Rules'.t(),
 
     layout: 'fit',

@@ -6,14 +6,17 @@ Ext.define('Ung.apps.threatprevention.view.Advanced', {
     scrollable: true,
     bodyPadding: 10,
     withValidation: true,
+
     items: [{
         xtype: 'fieldset',
-        title: 'Custom block page URL'.t(),
+        title: 'Custom block page'.t(),
         padding: '10 15',
         layout: 'fit',
         items: [{
             xtype: 'textfield',
             emptyText: 'http://example.com',
+            fieldLabel: 'URL',
+            vtype: 'url',
             bind: '{settings.customBlockPageUrl}',
             listeners: {
                 // add 'http://' prefix if missing

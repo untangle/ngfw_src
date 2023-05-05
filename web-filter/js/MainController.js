@@ -14,6 +14,11 @@ Ext.define('Ung.apps.webfilter.MainController', {
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();
 
+        // set the enabled custom block page based on URL existance
+        vm.bind('{settings.customBlockPageUrl}', function (url) {
+            vm.set('settings.customBlockPageEnabled', url.length > 0);
+        });
+
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getSettings'),
@@ -45,19 +50,6 @@ Ext.define('Ung.apps.webfilter.MainController', {
 
         if (!Util.validateForms(v)) {
             return;
-        }
-        
-        /**
-         * NGFW-12771
-         * haven't found a better way to check valid fields conditioned by other fields
-         * and prevent form submitting if invalid
-         */
-        if (vm.get('settings').customBlockPageEnabled) {
-            var isValidUrl = Util.urlValidator(vm.get('settings').customBlockPageUrl);
-            if (isValidUrl !== true) {
-                Ext.Msg.alert('Warning'.t(), isValidUrl);
-                return;
-            }
         }
 
         v.query('ungrid').forEach(function (grid) {

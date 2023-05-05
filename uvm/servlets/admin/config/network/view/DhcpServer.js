@@ -6,7 +6,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
     scrollable: true,
     layout: 'fit',
     title: 'DHCP Server'.t(),
-
+    withValidation: false,
     items: [{
         xtype: 'tabpanel',
         itemId: 'dhcpserver',

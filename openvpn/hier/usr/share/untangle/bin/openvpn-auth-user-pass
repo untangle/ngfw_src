@@ -3,10 +3,24 @@
 # This script is called by OpenVPN when the auth-user-pass option is enabled.
 # It takes the username and password passed in the environment and
 # passes them to the public userAuthenticate function in the OpenVPN app.
+#
+# The "auth-user-pass-verify" authentication method causes the main openvpn server
+# thread to block.  This is a problem for slow authentication servers such as RADIUS 
+# over slower link.  This blocking can cause problems including other causing
+# active connections to "halt" while the authentication completes.  For busy systems
+# with lots of users logging in, this is a problem.
+#
+# To get around this, use the openvpn auth script plugin which leverages the "deferred"
+# OpenVPN API.  This forks off the authenticator script which will write the result
+# to a file passed by the environment variables.
 
-import os
 import base64
-import sys
+import os
+import re
+
+from pwd import getpwnam
+from grp import getgrnam
+
 from uvm import Uvm
 
 # next we get the uvm context
@@ -27,6 +41,14 @@ password = os.environ.get('password')
 if (password == None):
     raise Exception("Missing password")
 
+result_filename = os.environ.get('auth_control_file')
+if (result_filename == None):
+    raise Exception("Missing auth_control_file")
+
+daemon_pid = os.environ.get("daemon_pid")
+if (daemon_pid == None):
+    raise Exception("Missing daemon_pid")
+
 # Figure out the OTP password.
 # OpenVPN clients will combine password and OTP into the password string.
 # Format is "SCRV1:<passwd_b64>:<otp_b64>"
@@ -40,5 +62,31 @@ if password.startswith("SCRV1:"):
 else:
     result = openvpnApp.userAuthenticate(username, password, 0)
 
-sys.exit(result)
+if result == 0:
+    result = 1
+else:
+    result = 0
 
+#
+# We are sudoing as root to connect to uvm, but the environment
+# is configured for the daemon user.  If we try to write the file
+# as root, we'll get a permission error.
+# So change to the daemon uid/gid to write the result file.
+#
+uid = None
+gid = None
+with open(f"/proc/{daemon_pid}/status", "r") as status_file:
+    for line in status_file:
+        # continue
+        if line.startswith("Uid:"):
+            # continue
+            uid = int(re.split("\s+", line)[1])
+        if line.startswith("Gid:"):
+            # continue
+            gid = int(re.split("\s+", line)[1])
+
+os.setegid(gid)
+os.seteuid(uid)
+
+with open(result_filename, 'w') as result_file:
+  result_file.write(f"{result}")

@@ -350,7 +350,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                             tag: 'div',
                             children: [{
                                 tag: 'a',
-                                href: 'https://wiki.untangle.com/index.php/OpenVPN',
+                                href: 'https://wiki.edge.arista.com/index.php/OpenVPN',
                                 html: 'See our OpenVPN documentation for information and download links for common VPN clients'
                             }]
                         }
@@ -377,7 +377,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                 var clients = [{
                   name: 'downloadUntangleConfigurationFile',
                   type: 'zip',
-                  message: 'Click here to download this client\'s configuration zip file for remote Untangle OpenVPN site to site connections.'.t()
+                  message: 'Click here to download this client\'s configuration zip file for remote NGFW OpenVPN site to site connections.'.t()
                 },{
                   name: 'downloadGenericConfigurationFile',
                   type: 'ovpn',

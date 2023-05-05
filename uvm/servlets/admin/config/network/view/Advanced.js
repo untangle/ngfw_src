@@ -4,7 +4,7 @@ Ext.define('Ung.config.network.view.Advanced', {
     itemId: 'advanced',
     viewModel: true,
     scrollable: true,
-
+    withValidation: true,
     title: 'Advanced'.t(),
 
     layout: 'fit',

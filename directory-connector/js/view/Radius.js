@@ -4,6 +4,7 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
     itemId: 'radius',
     title: 'RADIUS'.t(),
     withValidation: true,
+
     viewModel: true,
     bodyPadding: 10,
     scrollable: true,

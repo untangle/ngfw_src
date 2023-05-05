@@ -3,7 +3,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
     alias: 'widget.config-network-dns-server',
     itemId: 'dns-server',
     scrollable: true,
-
+    withValidation: false,
     viewModel: true,
 
     title: 'DNS Server'.t(),
