@@ -3,7 +3,7 @@ Ext.define('Ung.config.administration.view.Google', {
     alias: 'widget.config-administration-google',
     itemId: 'google',
     title: 'Google'.t(),
-
+    withValidation: false,
     viewModel: true,
     bodyPadding: 10,
     scrollable: true,

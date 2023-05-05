@@ -4,7 +4,7 @@ Ext.define('Ung.config.system.view.Regional', {
     itemId: 'regional',
     viewModel: true,
     scrollable: true,
-
+    withValidation: false,
     title: 'Regional'.t(),
 
     bodyPadding: 10,

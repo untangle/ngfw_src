@@ -4,7 +4,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
     itemId: 'local-users',
     title: 'Local Users'.t(),
     scrollable: true,
-
+    withValidation: false,
     layout: 'fit',
     items: [{
         xtype: 'ungrid',
