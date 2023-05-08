@@ -3,7 +3,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
     alias: 'widget.config-email-quarantine',
     itemId: 'quarantine',
     scrollable: true,
-
+    withValidation: true,
     title: 'Quarantine'.t(),
 
     viewModel: {

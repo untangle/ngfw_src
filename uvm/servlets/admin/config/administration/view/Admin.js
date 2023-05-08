@@ -3,7 +3,7 @@ Ext.define('Ung.config.administration.view.Admin', {
     alias: 'widget.config-administration-admin',
     itemId: 'admin',
     scrollable: true,
-
+    withValidation: true,
     viewModel: true,
 
     title: 'Admin'.t(),

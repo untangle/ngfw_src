@@ -2,7 +2,7 @@ Ext.define('Ung.config.system.view.Restore', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-system-restore',
     itemId: 'restore',
-
+    withValidation: false,
     viewModel: true,
 
     title: 'Restore'.t(),

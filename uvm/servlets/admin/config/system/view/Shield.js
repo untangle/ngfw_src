@@ -4,7 +4,7 @@ Ext.define('Ung.config.system.view.Shield', {
     itemId: 'shield',
     viewModel: true,
     scrollable: true,
-
+    withValidation: false,
     title: 'Shield'.t(),
 
     layout: 'fit',
