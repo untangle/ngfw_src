@@ -3,7 +3,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
     alias: 'widget.config-administration-certificates',
     itemId: 'certificates',
     scrollable: true,
-
+    withValidation: false,
     viewModel: {
         formulas: {
             rootCertValidStarting: function (get) {

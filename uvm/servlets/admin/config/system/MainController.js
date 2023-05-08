@@ -136,6 +136,10 @@ Ext.define('Ung.config.system.MainController', {
         var me = this, v = me.getView(),
             vm = me.getViewModel();
 
+        if (!Util.validateForms(v)) {
+            return;
+        }
+
         v.setLoading(true);
         if (vm.get('languageSettings.regionalFormats') === 'default') {
             // reset overrides

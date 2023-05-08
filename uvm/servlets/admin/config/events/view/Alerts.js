@@ -4,7 +4,7 @@ Ext.define('Ung.config.events.view.Alerts', {
     itemId: 'alerts',
     title: 'Alerts'.t(),
     scrollable: true,
-
+    withValidation: false,
     bodyPadding: 10,
 
     items: [{
