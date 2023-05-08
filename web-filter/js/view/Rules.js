@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
     alias: 'widget.app-web-filter-rules',
     itemId: 'rules',
     title: 'Rules'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

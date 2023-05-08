@@ -40,6 +40,10 @@ Ext.define('Ung.apps.phishblocker.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
+        if (!Util.validateForms(v)) {
+            return;
+        }
+
         v.setLoading(true);
         Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
         .then(function(result){

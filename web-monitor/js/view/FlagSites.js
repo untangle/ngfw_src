@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webmonitor.view.FlagSites', {
     alias:  'widget.app-web-monitor-flagsites',
     itemId: 'flag-sites',
     title:  'Flag Sites'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

@@ -3,7 +3,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
     alias: 'widget.app-bandwidth-control-rules',
     itemId: 'rules',
     title: 'Rules'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

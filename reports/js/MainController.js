@@ -86,6 +86,10 @@ Ext.define('Ung.apps.reports.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
+        if (!Util.validateForms(v)) {
+            return;
+        }
+
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             if (store.getModifiedRecords().length > 0 ||
@@ -103,36 +107,6 @@ Ext.define('Ung.apps.reports.MainController', {
         });
 
         v.setLoading(true);
-
-        if (vm.get('dbRetentionInDays')) {
-            // ensure daily retention value to be saved is valid
-            dailyRetention = v.down('#dbRetentionDailyValue').getValue();
-            if (!dailyRetention || dailyRetention <= 0 || dailyRetention > 366) {
-                Ext.MessageBox.alert(
-                    "Failed".t(),
-                    "Please provide a valid Data Retention in days".t()
-                );
-                v.setLoading(false);
-                return;
-            }
-            // We will be setting daily retention. Zero-out hourly retention so that it isn't set later.
-            vm.set('settings.dbRetentionHourly', 0);
-        }
-        else { // using hourly retention instead of daily
-            // ensure hourly retention value to be saved is valid
-            hourlyRetention = v.down('#dbRetentionHourlyValue').getValue();
-            if (!hourlyRetention || hourlyRetention < 1 || hourlyRetention > 24) {
-                Ext.MessageBox.alert(
-                    "Failed".t(),
-                    "Please provide a valid Data Retention in hours".t()
-                );
-                v.setLoading(false);
-                return;
-            }
-            // We will be setting hourly retention. Zero-out daily retention so that it isn't set later.
-            vm.set('settings.dbRetention', 0);
-        }
-
 
         Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
         .then(function(result){

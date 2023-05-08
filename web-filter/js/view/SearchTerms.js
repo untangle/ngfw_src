@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webfilter.view.SearchTerms', {
     alias:  'widget.app-web-filter-searchterms',
     itemId: 'search-terms',
     title:  'Search Terms'.t(),
-
+    withValidation: false,
     controller: 'unwebfiltersearchtermsgrid',
 
     import:{

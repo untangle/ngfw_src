@@ -4,7 +4,7 @@ Ext.define('Ung.apps.sslinspector.view.Configuration', {
     itemId: 'configuration',
     title: 'Configuration'.t(),
     bodyPadding: 10,
-
+    withValidation: false,
     scrollable: true,
 
     viewModel: {

@@ -3,7 +3,7 @@ Ext.define('Ung.apps.applicationcontrollite.view.Signatures', {
     alias: 'widget.app-application-control-lite-signatures',
     itemId: 'signatures',
     title: 'Signatures'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

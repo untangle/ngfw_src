@@ -4,7 +4,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecOptions', {
     itemId: 'ipsec-options',
     title: 'IPsec Options'.t(),
     scrollable: true,
-
+    withValidation: false,
     bodyPadding: 10,
 
     tbar: [{

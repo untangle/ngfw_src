@@ -3,7 +3,7 @@ Ext.define('Ung.apps.virusblockerlite.view.PassSites', {
     alias: 'widget.app-virus-blocker-lite-passsites',
     itemId: 'pass-sites',
     title: 'Pass Sites'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

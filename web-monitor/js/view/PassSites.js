@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webmonitor.view.PassSites', {
     alias: 'widget.app-web-monitor-passsites',
     itemId: 'pass-sites',
     title: 'Pass Sites'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

@@ -54,6 +54,11 @@ Ext.define('Ung.apps.policymanager.MainController', {
     // this saves only the rules as the policies are saved on the fly
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
+        if (!Util.validateForms(v)) {
+            return;
+        }
+
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             if (store.getModifiedRecords().length > 0 ||

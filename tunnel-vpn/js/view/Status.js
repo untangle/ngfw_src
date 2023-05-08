@@ -5,7 +5,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Status', {
     title: 'Status'.t(),
     viewModel: true,
     scrollable: true,
-
+    withValidation: false,
     layout: 'border',
     items: [{
         region: 'center',

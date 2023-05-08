@@ -4,7 +4,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
     itemId: 'rules',
     title: 'Rules'.t(),
     viewModel: true,
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

@@ -3,7 +3,7 @@ Ext.define('Ung.apps.intrusionprevention.view.BypassRules', {
     alias: 'widget.app-intrusion-prevention-bypass',
     itemId: 'bypass-rules',
     scrollable: true,
-
+    withValidation: false,
     title: 'Bypass Rules'.t(),
 
     tbar: ['@add', '->', '@import', '@export'],

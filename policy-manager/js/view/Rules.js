@@ -3,7 +3,7 @@ Ext.define('Ung.apps.policymanager.view.Rules', {
     alias: 'widget.app-policy-manager-rules',
     itemId: 'rules',
     title: 'Rules'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

@@ -4,7 +4,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     viewModel: {
         formulas: {
             trafficStats: function (get) {
