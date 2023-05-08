@@ -4,7 +4,7 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
     itemId: 'ad-filters',
     title: 'Ad Filters'.t(),
     scrollable: true,
-
+    withValidation: false,
     layout: 'border',
     border: false,
 

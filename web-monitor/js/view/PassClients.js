@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webmonitor.view.PassClients', {
     alias: 'widget.app-web-monitor-passclients',
     itemId: 'pass-clients',
     title: 'Pass Clients'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

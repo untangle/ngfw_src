@@ -5,7 +5,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Log', {
     title: 'Log'.t(),
     layout: 'fit',
     scrollable: true,
-
+    withValidation: true,
     tbar: [{
         xtype: 'button',
         iconCls: 'fa fa-refresh',

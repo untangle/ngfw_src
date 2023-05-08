@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
     alias: 'widget.app-web-filter-passsites',
     itemId: 'pass-sites',
     title: 'Pass Sites'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

@@ -4,7 +4,7 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
     itemId: 'google-connector',
     title: 'Google Connector'.t(),
     scrollable: true,
-
+    withValidation: false,
     viewModel: true,
     bodyPadding: 10,
 

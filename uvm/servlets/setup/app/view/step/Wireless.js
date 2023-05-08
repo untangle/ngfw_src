@@ -1,7 +1,7 @@
 Ext.define('Ung.Setup.Wireless', {
     extend: 'Ext.form.Panel',
     alias: 'widget.Wireless',
-
+    withValidation: false,
     title: 'Wireless Settings'.t(),
     description: 'Configure Wireless Settings'.t(),
 

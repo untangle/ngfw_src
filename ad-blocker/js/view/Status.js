@@ -4,7 +4,7 @@ Ext.define('Ung.apps.ad-blocker.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     viewModel: {
         formulas: {
             statistics: function (get) {

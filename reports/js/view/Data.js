@@ -4,7 +4,7 @@ Ext.define('Ung.apps.reports.view.Data', {
     itemId: 'data',
     title: 'Data'.t(),
     scrollable: true,
-
+    withValidation: true,
     defaults: {
         xtype: 'fieldset',
         padding: 10,
@@ -41,11 +41,12 @@ Ext.define('Ung.apps.reports.view.Data', {
                 hidden: '{!dbRetentionInDays}'
             },
             id: 'dbRetentionDailyValue',
-            width: 70,
+            width: 200,
             allowDecimals: false,
             minValue: 1,
             maxValue: 366,
             allowBlank: false,
+            fieldLabel: "Days".t(),
         },{
             xtype: 'numberfield',
             bind: {
@@ -53,11 +54,12 @@ Ext.define('Ung.apps.reports.view.Data', {
                 hidden: '{dbRetentionInDays}'
             },
             id: 'dbRetentionHourlyValue',
-            width: 70,
+            width: 200,
             allowDecimals: false,
             minValue: 1,
             maxValue: 23,
             allowBlank: false,
+            fieldLabel: "Hours".t(),
         },{
             xtype: 'button',
             text: 'Delete All Reports Data'.t(),
@@ -138,7 +140,6 @@ Ext.define('Ung.apps.reports.view.Data', {
                 name: 'uploadDataFile',
                 width: 500,
                 labelWidth: 50,
-                allowBlank: false,
                 validateOnBlur: false
             }, {
                 xtype: 'button',

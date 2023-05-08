@@ -4,7 +4,7 @@ Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
     itemId: 'user-authentication',
     title: 'User Authentication'.t(),
     scrollable: true,
-
+    withValidation: true,
     viewModel: {
         formulas: {
             _idleTimeout: {

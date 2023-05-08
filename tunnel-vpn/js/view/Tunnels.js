@@ -4,7 +4,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
     itemId: 'tunnels',
     title: 'Tunnels'.t(),
     viewModel: true,
-
+    withValidation: false,
     controller: 'untunnelgrid',
     editorXtype: 'ung.cmp.untunnelrecordeditor',
 

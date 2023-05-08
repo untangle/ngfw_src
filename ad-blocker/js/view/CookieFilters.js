@@ -4,7 +4,7 @@ Ext.define('Ung.apps.ad-blocker.view.CookieFilters', {
     itemId: 'cookie-filters',
     title: 'Cookie Filters'.t(),
     scrollable: true,
-
+    withValidation: false,
     layout: 'border',
     border: false,
 

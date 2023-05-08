@@ -4,7 +4,7 @@ Ext.define('Ung.apps.reports.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     viewModel: true,
 
     items: [{

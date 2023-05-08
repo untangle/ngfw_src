@@ -3,7 +3,7 @@ Ext.define('Ung.apps.threatprevention.view.Threats', {
     alias: 'widget.app-threat-prevention-threats',
     itemId: 'threats',
     title: 'Threats'.t(),
-
+    withValidation: false,
     scrollable: true,
 
     bodyPadding: 10,
