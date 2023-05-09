@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webfilter.view.PassClients', {
     alias: 'widget.app-web-filter-passclients',
     itemId: 'pass-clients',
     title: 'Pass Clients'.t(),
-
+    withValidation: false,
 
     dockedItems: [{
         xtype: 'toolbar',

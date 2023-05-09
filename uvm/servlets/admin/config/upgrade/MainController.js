@@ -70,6 +70,10 @@ Ext.define('Ung.config.upgrade.MainController', {
         var me = this, v = me.getView(),
             vm = me.getViewModel(), settings = vm.get('settings');
 
+        if (!Util.validateForms(v)) {
+            return;
+        }
+
         if (settings.autoUpgrade) {
             if (settings.autoUpgradeDays === '') {
                 Ext.Msg.alert('Warning!', 'Please set automatic upgrade days schedule!');

@@ -213,6 +213,9 @@ Ext.define('Ung.apps.tunnel-vpn.MainController', {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         if (me.validateSettings() != true) return;
+        if (!Util.validateForms(v)) {
+            return;
+        }
 
         v.setLoading(true);
         var sequence = [

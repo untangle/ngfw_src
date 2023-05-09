@@ -3,7 +3,7 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
     alias: 'widget.config-email-outgoingserver',
     itemId: 'outgoing-server',
     scrollable: true,
-
+    withValidation: true,
     viewModel: true,
     title: 'Outgoing Server'.t(),
 

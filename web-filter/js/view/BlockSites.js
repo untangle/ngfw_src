@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
     alias:  'widget.app-web-filter-blocksites',
     itemId: 'block-sites',
     title:  'Block Sites'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

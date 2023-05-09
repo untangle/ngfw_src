@@ -45,6 +45,10 @@ Ext.define('Ung.apps.wan-failover.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
+        if (!Util.validateForms(v)) {
+            return;
+        }
+
         // convert all seconds to milliseconds before save
         var testStore = v.query('app-wan-failover-test-grid')[0].getStore();
         var tval,dval;

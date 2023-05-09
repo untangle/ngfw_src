@@ -3,7 +3,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
     alias: 'widget.app-intrusion-prevention-variables',
     itemId: 'variables',
     scrollable: true,
-
+    withValidation: false,
     controller: 'unintrusionvariablesgrid',
 
     name: 'variables',

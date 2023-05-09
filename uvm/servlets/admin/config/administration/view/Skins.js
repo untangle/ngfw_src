@@ -3,7 +3,7 @@ Ext.define('Ung.config.administration.view.Skins', {
     alias: 'widget.config-administration-skins',
     itemId: 'skins',
     scrollable: true,
-
+    withValidation: true,
     viewModel: true,
     title: 'Skins'.t(),
 
@@ -32,7 +32,6 @@ Ext.define('Ung.config.administration.view.Skins', {
         fieldLabel: '<strong>' + 'Upload New Skin'.t() + '</strong>',
         labelAlign: 'top',
         width: 300,
-        allowBlank: false,
         validateOnBlur: false
     }, {
         xtype: 'button',

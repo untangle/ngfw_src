@@ -4,7 +4,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     layout: 'border',
     items: [{
         region: 'center',

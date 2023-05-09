@@ -4,7 +4,7 @@ Ext.define('Ung.apps.ad-blocker.view.Options', {
     itemId: 'options',
     title: 'Options'.t(),
     scrollable: true,
-
+    withValidation: false,
     bodyPadding: 10,
 
     layout: {

@@ -49,6 +49,11 @@ Ext.define('Ung.apps.sslinspector.MainController', {
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
+        if (!Util.validateForms(v)) {
+            return;
+        }
+        
         v.query('ungrid').forEach(function (grid) {
             if (grid.listProperty) {
                 var store = grid.getStore();

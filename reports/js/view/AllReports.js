@@ -4,7 +4,7 @@ Ext.define('Ung.apps.reports.view.AllReports', {
     itemId: 'all-reports',
     title: 'All Reports'.t(),
     scrollable: true,
-
+    withValidation: false,
     store: 'reports',
 
     features: [{

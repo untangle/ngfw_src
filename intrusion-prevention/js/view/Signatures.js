@@ -4,7 +4,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
     itemId: 'signatures',
     title: 'Signatures'.t(),
     scrollable: true,
-
+    withValidation: false,
     controller: 'unintrusionsignaturesgrid',
 
     name: 'signatures',

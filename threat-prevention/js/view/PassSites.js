@@ -4,7 +4,7 @@ Ext.define('Ung.apps.threatprevention.view.PassSites', {
     itemId: 'pass-sites',
     title: 'Pass Sites'.t(),
     scrollable: true,
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

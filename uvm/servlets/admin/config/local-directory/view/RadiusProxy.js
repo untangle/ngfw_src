@@ -5,7 +5,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
     title: 'RADIUS Proxy',
     scrollable: true,
     viewModel: true,
-
+    withValidation: true,
     bodyPadding: 10,
 
     items: [{

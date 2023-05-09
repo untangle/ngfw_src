@@ -5,7 +5,7 @@ Ext.define('Ung.apps.wan-failover.view.Status', {
     title: 'Status'.t(),
     viewModel: true,
     scrollable: true,
-
+    withValidation: false,
     layout: 'border',
     items: [{
         region: 'center',

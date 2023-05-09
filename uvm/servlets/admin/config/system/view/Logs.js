@@ -2,7 +2,7 @@ Ext.define('Ung.config.system.view.Logs', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-system-logs',
     itemId: 'logs',
-
+    withValidation: true,
     viewModel: true,
 
     title: 'Logs'.t(),

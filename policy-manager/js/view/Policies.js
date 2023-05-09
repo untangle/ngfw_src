@@ -4,7 +4,7 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
     itemId: 'policies',
     title: 'Policies'.t(),
     scrollable: true,
-
+    withValidation: false,
     layout: 'border',
     items: [{
         region: 'west',

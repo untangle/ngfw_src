@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webmonitor.view.Rules', {
     alias: 'widget.app-web-monitor-rules',
     itemId: 'rules',
     title: 'Rules'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
