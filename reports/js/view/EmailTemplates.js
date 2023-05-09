@@ -3,7 +3,7 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
     alias: 'widget.app-reports-emailtemplates',
     itemId: 'email-templates',
     title: 'Email Templates'.t(),
-
+    withValidation: false,
     controller: 'unreportsemailtemplatesgrid',
 
     tbar: ['@add', '->', { 

@@ -4,7 +4,7 @@ Ext.define('Ung.config.events.view.Triggers', {
     itemId: 'triggers',
     title: 'Triggers'.t(),
     scrollable: true,
-
+    withValidation: false,
     bodyPadding: 10,
     layout: { type: 'vbox', align: 'stretch' },
 

@@ -3,7 +3,7 @@ Ext.define('Ung.apps.webfilter.view.Categories', {
     alias: 'widget.app-web-filter-categories',
     itemId: 'categories',
     title: 'Categories'.t(),
-
+    withValidation: false,
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',

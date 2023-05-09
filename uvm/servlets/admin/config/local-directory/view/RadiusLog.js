@@ -5,7 +5,7 @@ Ext.define('Ung.config.local-directory.view.RadiusLog', {
     title: 'RADIUS Log',
     scrollable: false,
     viewModel: true,
-
+    withValidation: false,
     bodyPadding: 10,
     layout: 'fit',
 

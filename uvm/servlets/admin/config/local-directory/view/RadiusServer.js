@@ -5,7 +5,7 @@ Ext.define('Ung.config.local-directory.view.RadiusServer', {
     title: 'RADIUS Server',
     scrollable: true,
     viewModel: true,
-
+    withValidation: true,
     bodyPadding: 10,
 
     items: [{

@@ -3,7 +3,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
     alias: 'widget.app-application-control-rules',
     itemId: 'rules',
     title: 'Rules'.t(),
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

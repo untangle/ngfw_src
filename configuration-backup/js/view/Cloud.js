@@ -4,7 +4,7 @@ Ext.define('Ung.apps.configurationbackup.view.Cloud', {
     itemId: 'cloud',
     title: 'Cloud'.t(),
     scrollable: true,
-
+    withValidation: true,
     viewModel: true,
     bodyPadding: 10,
 
@@ -30,14 +30,16 @@ Ext.define('Ung.apps.configurationbackup.view.Cloud', {
                 minValue: 0,
                 maxValue: 23,
                 fieldLabel: 'Hour'.t(),
-                bind: '{settings.hourInDay}'
+                bind: '{settings.hourInDay}',
+                allowBlank: false,
             }, {
                 xtype: 'numberfield',
                 allowDecimals: false,
                 minValue: 0,
                 maxValue: 59,
                 fieldLabel: 'Minute'.t(),
-                bind: '{settings.minuteInHour}'
+                bind: '{settings.minuteInHour}',
+                allowBlank: false,
             }]
         }, {
             xtype: 'fieldset',

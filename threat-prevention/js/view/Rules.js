@@ -4,7 +4,7 @@ Ext.define('Ung.apps.threatprevention.view.Rules', {
     itemId: 'rules',
     title: 'Rules'.t(),
     scrollable: true,
-
+    withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

@@ -4,7 +4,7 @@ Ext.define('Ung.apps.webmonitor.view.Advanced', {
     itemId: 'advanced',
     title: 'Advanced'.t(),
     scrollable: true,
-
+    withValidation: false,
     bodyPadding: 10,
 
     items: [{

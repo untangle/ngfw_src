@@ -3,7 +3,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
     alias: 'widget.app-captive-portal-captivepage',
     itemId: 'captive-page',
     title: 'Captive Page'.t(),
-
+    withValidation: true,
     viewModel: {
         formulas: {
             _redirectUrl: {

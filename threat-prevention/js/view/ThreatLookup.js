@@ -15,7 +15,7 @@ Ext.define('Ung.apps.threatprevention.view.ThreatLookup', {
         },
         html: 'Lookup the threat information for websites or IP Addresses.'.t()
     }],
-
+    withValidation: false,
     items: [{
         xtype: 'fieldset',
         title: 'IP Address and URL Threats'.t(),

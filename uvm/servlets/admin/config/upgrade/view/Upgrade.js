@@ -4,7 +4,7 @@ Ext.define('Ung.config.upgrade.view.Upgrade', {
     itemId: 'regional',
     viewModel: true,
     scrollable: true,
-
+    withValidation: false,
     title: 'Upgrade Settings'.t(),
 
     items: [{

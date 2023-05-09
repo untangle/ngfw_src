@@ -4,7 +4,7 @@ Ext.define('Ung.apps.configurationbackup.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     viewModel: true,
 
     items: [{

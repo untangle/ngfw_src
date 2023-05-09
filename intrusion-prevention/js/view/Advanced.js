@@ -3,7 +3,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Advanced', {
     alias: 'widget.app-intrusion-prevention-advanced',
     itemId: 'advanced',
     scrollable: true,
-
+    withValidation: false,
     name: 'advanced',
 
     region: 'center',

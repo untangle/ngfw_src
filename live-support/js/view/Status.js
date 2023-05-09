@@ -4,7 +4,7 @@ Ext.define('Ung.apps.livesupport.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
-
+    withValidation: false,
     requires: [
         'Ung.cmp.LicenseLoader'
     ],

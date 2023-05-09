@@ -3,7 +3,7 @@ Ext.define('Ung.apps.reports.view.Users', {
     alias: 'widget.app-reports-users',
     itemId: 'reports-users',
     title: 'Reports Users'.t(),
-
+    withValidation: false,
     controller: 'unreportsusersgrid',
 
     dockedItems: [{

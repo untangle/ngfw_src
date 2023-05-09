@@ -3,7 +3,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Applications', {
     alias: 'widget.app-application-control-applications',
     itemId: 'applications',
     title: 'Applications'.t(),
-
+    withValidation: false,
     listProperty: 'settings.protoRules.list',
     bind: '{protoRules}',
 
