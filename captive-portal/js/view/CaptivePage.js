@@ -230,7 +230,8 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
             xtype: 'textfield',
             width: 600,
             fieldLabel: 'Redirect URL'.t(),
-            bind: '{_redirectUrl}'
+            bind: '{_redirectUrl}',
+            vtype: 'url'
         }, {
             xtype: 'component',
             margin: '10 0 0 0',
