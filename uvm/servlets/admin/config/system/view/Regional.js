@@ -243,23 +243,6 @@ Ext.define('Ung.config.system.view.Regional', {
                     editable: false
                 }]
             }]
-        }, {
-            xtype: 'container',
-            layout: {
-                type: 'hbox'
-            },
-            items: [{
-                xtype: 'button',
-                margin: '0 10 0 0',
-                text: 'Synchronize Language'.t(),
-                iconCls: 'fa fa-refresh',
-                handler: 'syncLanguage'
-            }, {
-                xtype: 'displayfield',
-                bind: '<strong>' + 'Last synchronized'.t() + '</strong>: {lastLanguageSync}'
-                // fieldLabel: ,
-                // bind: '{languageSettings.lastSynchronized}'
-            }]
         }]
     }]
 
