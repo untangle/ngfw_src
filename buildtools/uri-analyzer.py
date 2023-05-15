@@ -82,7 +82,9 @@ class UriAnalyzer():
         "https://easylist-downloads.adblockplus.org/easylist.txt",
         "https://www.edge.arista.com/favicon.ico",
         "http://www.untangle.com/legal",
-        "https://www.untangle.com/legal"
+        "https://www.untangle.com/legal",
+
+        "http://wiki.edge.arista.com/get.php"
     ]
 
     def __init__(self):
