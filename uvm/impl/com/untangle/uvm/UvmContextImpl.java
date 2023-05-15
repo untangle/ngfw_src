@@ -69,7 +69,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://edge.arista.com/api/v1";
     private static final String PROPERTY_CMD_URL = "uvm.cmd.url";
-    private static final String DEFAULT_CMD_URL = "https://launchpad.edge.arista.com";
+    private static final String DEFAULT_CMD_URL = "https://launchpad.edge.arista.com/";
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
     private static final String DEFAULT_HELP_URL = "http://wiki.edge.arista.com/get.php";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
