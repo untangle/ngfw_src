@@ -25,9 +25,10 @@ if [ "$DEV_ENVIRONMENT" == "remote" ]; then
     ##
     ## Build in docker DEV_ENVIRONMENT
     ##
-    docker-compose -f docker-compose.build.yml run pkgtools
+    ## Update pkgtools volume (we don't need to keep container)
+    docker-compose -f docker-compose.build.yml run --rm pkgtools
     VERBOSE=1 NO_CLEAN=1 RAKE_LOG=$RAKE_LOG DEV_ENVIRONMENT=$DEV_ENVIRONMENT BUILD_TYPE=$BUILD_TYPE docker-compose -f docker-compose.build.yml up dev-build
-elif [ "$DEV_ENVIRONMENT" == "remote" ]; then
+elif [ "$DEV_ENVIRONMENT" != "remote" ]; then
     ##
     ## Compile ngfw and restart uvm if neccessary.
     ##
@@ -42,6 +43,10 @@ fi
 ## Review output of build
 ##
 if [ $(grep -c "missing documentation" $RAKE_LOG) -gt 0 ] ; then 
+    exit 1
+fi
+
+if [ $(grep -c "missing uri" $RAKE_LOG) -gt 0 ] ; then 
     exit 1
 fi
 
@@ -82,6 +87,7 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
         target_address=${target_address%:*}
     fi
 
+    echo "ssh-copy-id -p $port root@$target_address"
     ssh-copy-id -p $port root@$target_address
 
     rsync -a -e "ssh -p $port" dist/etc/* root@$target_address:/etc

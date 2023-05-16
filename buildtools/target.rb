@@ -607,6 +607,19 @@ class JavaCompilerTarget < Target
     debug cp
     JavaCompiler.compile(@destination, cp, @javaFiles)
 
+    missing_uri = 0
+    modified_files = []
+    @javaModifiedFiles.each do |f|
+      modified_files.append(File.absolute_path f)
+    end
+    stdout, stderr, status = Open3.capture3("./buildtools/uri-analyzer.py --filename #{modified_files.join(" ")}")
+    if status != 0
+      puts "one or more uris not translated"
+      missing_uri = 1
+      puts stdout, stderr
+    end
+    raise "missing uri " unless missing_uri == 0
+
     missing_javadoc = 0
     @javaModifiedFiles.each do |f|
       directory = File.dirname f
