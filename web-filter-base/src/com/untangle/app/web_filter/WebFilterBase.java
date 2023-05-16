@@ -973,25 +973,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
         /**
          * If we found older settings do conversion, save, and return
+         * Adding a comment so a change is grabbed
          */
         if (readSettings.getVersion() < SETTINGS_CURRENT_VERSION) {
             // Convert categories
             List<GenericRule> oldCategories = readSettings.getCategories();
             initializeSettings(readSettings);
-            GenericRule newCat = null;
-            for (GenericRule oldCat : oldCategories){
-                try {
-                    newCat = readSettings.getCategory(categoryConversionMap.get(Integer.parseInt(oldCat.getString())));
-                    if(newCat != null){
-                        newCat.setEnabled(oldCat.getEnabled());
-                        newCat.setBlocked(oldCat.getBlocked());
-                        newCat.setFlagged(oldCat.getFlagged());
-                    }
-                } catch (Exception e){
-                    logger.warn("Unable to convert", e);
-                }
-            }
-
             readSettings.setVersion(SETTINGS_CURRENT_VERSION);
             _setSettings(readSettings);
             logger.debug("Converted settings: " + this.settings.toJSONString());
