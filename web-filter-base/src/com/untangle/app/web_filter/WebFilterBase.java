@@ -977,8 +977,10 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
          */
         if (readSettings.getVersion() < SETTINGS_CURRENT_VERSION) {
             // Convert categories
-            List<GenericRule> oldCategories = readSettings.getCategories();
-            initializeSettings(readSettings);
+            List<GenericRule> categories = readSettings.getCategories();
+            addCategory(categories, 85, "Self Harm", "Sensitive", "Graphic content, details around methods of harm, and content that glorifies or promotes suicide, anorexia, bulimia, and other types of self-harm.", true, true, false);
+            addCategory(categories, 86, "DNS Over HTTPS", "Security", "DNS Over HTTPS (DoH) is a network protocol used to communicate domain name server information in an encrypted form over HTTPS, thus hiding the DNS query. Includes URLs of domains performing secure DNS resolution, including DNS Over HTTPS (DoH), DNS Over TLS (DoT), and other secure DNS-related domains and IP addresses.", true, true, false);
+            addCategory(categories, 87, "Low-THC Cannabis Products", "Sensitive", "Sites with content containing low-THC, non-psychoactive products, including CBD oils, resin, extracts, herbs, capsules, supplements, foods, drinks, and toiletries/skin care products. This category may also include other regulated non-psychoactive substances. ", true, false, false);
             readSettings.setVersion(SETTINGS_CURRENT_VERSION);
             _setSettings(readSettings);
             logger.debug("Converted settings: " + this.settings.toJSONString());
