@@ -983,7 +983,6 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             addCategory(categories, 87, "Low-THC Cannabis Products", "Sensitive", "Sites with content containing low-THC, non-psychoactive products, including CBD oils, resin, extracts, herbs, capsules, supplements, foods, drinks, and toiletries/skin care products. This category may also include other regulated non-psychoactive substances. ", true, false, false);
             readSettings.setVersion(SETTINGS_CURRENT_VERSION);
             _setSettings(readSettings);
-            logger.debug("Converted settings: " + this.settings.toJSONString());
         }
 
         // existing settings loaded and no conversion was needed
