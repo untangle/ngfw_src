@@ -55,7 +55,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     private static final String STAT_CACHE_COUNT = "cache_count";
     private static final String STAT_NETWORK_ERROR_COUNT = "network_error_count";
     private static final String STAT_IP_ERROR_COUNT = "ip_error_count";
-    private static final Integer SETTINGS_CURRENT_VERSION = 4;
+    private static final Integer SETTINGS_CURRENT_VERSION = 5;
     private static int web_filter_deployCount = 0;
 
     protected Boolean isWebFilterApp;
@@ -969,6 +969,32 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             _setSettings(settings);
             logger.debug("Default Settings: " + this.settings.toJSONString());
             return;
+        }
+
+        /**
+         * If we found older settings do conversion, save, and return
+         */
+        if (readSettings.getVersion() < SETTINGS_CURRENT_VERSION) {
+            // Convert categories
+            List<GenericRule> oldCategories = readSettings.getCategories();
+            initializeSettings(readSettings);
+            GenericRule newCat = null;
+            for (GenericRule oldCat : oldCategories){
+                try {
+                    newCat = readSettings.getCategory(categoryConversionMap.get(Integer.parseInt(oldCat.getString())));
+                    if(newCat != null){
+                        newCat.setEnabled(oldCat.getEnabled());
+                        newCat.setBlocked(oldCat.getBlocked());
+                        newCat.setFlagged(oldCat.getFlagged());
+                    }
+                } catch (Exception e){
+                    logger.warn("Unable to convert", e);
+                }
+            }
+
+            readSettings.setVersion(SETTINGS_CURRENT_VERSION);
+            _setSettings(readSettings);
+            logger.debug("Converted settings: " + this.settings.toJSONString());
         }
 
         // existing settings loaded and no conversion was needed
