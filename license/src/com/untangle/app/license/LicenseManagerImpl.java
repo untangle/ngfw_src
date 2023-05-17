@@ -84,7 +84,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
         "<strong>" + I18nUtil.marktr("Unable to establish connection to the License Service!") + "</strong> " + 
         I18nUtil.marktr("Installation of apps is disabled. Please ensure connectivity and ") + "<a href=\"/admin\">" + I18nUtil.marktr("try again") + "</a>";
-    private static final String CMD_URL = UvmContextFactory.context().getCmdUrl() + "/appliances/add/" + UvmContextFactory.context().getServerUID();
+    private static final String CMD_URL = UvmContextFactory.context().getCmdUrl() + "appliances/add/" + UvmContextFactory.context().getServerUID();
     private static final String NO_COMMAND_CENTER_ACCOUNT = 
         I18nUtil.marktr("This appliance is not connected to an ETM Dashboard account. Please")
         + " <a href=\"" + CMD_URL + "\" target=\"_blank\">" + I18nUtil.marktr("connect the appliance to ETM Dashboard") + "</a> " 

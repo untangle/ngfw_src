@@ -55,7 +55,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     private static final String STAT_CACHE_COUNT = "cache_count";
     private static final String STAT_NETWORK_ERROR_COUNT = "network_error_count";
     private static final String STAT_IP_ERROR_COUNT = "ip_error_count";
-    private static final Integer SETTINGS_CURRENT_VERSION = 4;
+    private static final Integer SETTINGS_CURRENT_VERSION = 5;
     private static int web_filter_deployCount = 0;
 
     protected Boolean isWebFilterApp;
@@ -971,6 +971,20 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             return;
         }
 
+        /**
+         * If we found older settings do conversion, save, and return
+         * Adding a comment so a change is grabbed
+         */
+        if (readSettings.getVersion() < SETTINGS_CURRENT_VERSION) {
+            // Convert categories
+            List<GenericRule> categories = readSettings.getCategories();
+            addCategory(categories, 85, "Self Harm", "Sensitive", "Graphic content, details around methods of harm, and content that glorifies or promotes suicide, anorexia, bulimia, and other types of self-harm.", true, true, false);
+            addCategory(categories, 86, "DNS Over HTTPS", "Security", "DNS Over HTTPS (DoH) is a network protocol used to communicate domain name server information in an encrypted form over HTTPS, thus hiding the DNS query. Includes URLs of domains performing secure DNS resolution, including DNS Over HTTPS (DoH), DNS Over TLS (DoT), and other secure DNS-related domains and IP addresses.", true, true, false);
+            addCategory(categories, 87, "Low-THC Cannabis Products", "Sensitive", "Sites with content containing low-THC, non-psychoactive products, including CBD oils, resin, extracts, herbs, capsules, supplements, foods, drinks, and toiletries/skin care products. This category may also include other regulated non-psychoactive substances. ", true, false, false);
+            readSettings.setVersion(SETTINGS_CURRENT_VERSION);
+            _setSettings(readSettings);
+        }
+
         // existing settings loaded and no conversion was needed
         this.settings = readSettings;
         logger.debug("Loaded Settings: " + this.settings.toJSONString());
@@ -1243,6 +1257,9 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         added |= addCategory(categories, 80, "Recreation and Hobbies", "Productivity", "Information, associations, forums and publications on recreational pastimes such as collecting, kit airplanes, outdoor activities such as hiking, camping, rock climbing, specific arts, craft, or techniques; animal and pet related information, including breed-specifics, training, shows and humane societies.", true, false, false);
         added |= addCategory(categories, 81, "Motor Vehicles", "Productivity", "Car reviews, vehicle purchasing or sales tips, parts catalogs. Auto trading, photos, discussion of vehicles including motorcycles, boats, cars, trucks and RVs. Journals and magazines on vehicle modifications.", true, false, false);
         added |= addCategory(categories, 82, "Web Hosting", "IT Resources", "Free or paid hosting services for web pages and information concerning their development, publication and promotion.", true, false, false);
+        added |= addCategory(categories, 85, "Self Harm", "Sensitive", "Graphic content, details around methods of harm, and content that glorifies or promotes suicide, anorexia, bulimia, and other types of self-harm.", true, true, false);
+        added |= addCategory(categories, 86, "DNS Over HTTPS", "Security", "DNS Over HTTPS (DoH) is a network protocol used to communicate domain name server information in an encrypted form over HTTPS, thus hiding the DNS query. Includes URLs of domains performing secure DNS resolution, including DNS Over HTTPS (DoH), DNS Over TLS (DoT), and other secure DNS-related domains and IP addresses.", true, true, false);
+        added |= addCategory(categories, 87, "Low-THC Cannabis Products", "Sensitive", "Sites with content containing low-THC, non-psychoactive products, including CBD oils, resin, extracts, herbs, capsules, supplements, foods, drinks, and toiletries/skin care products. This category may also include other regulated non-psychoactive substances. ", true, false, false);
         return added;
     }
     /**

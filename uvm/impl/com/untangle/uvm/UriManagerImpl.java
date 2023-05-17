@@ -23,7 +23,7 @@ import com.untangle.uvm.SettingsManager;
  */
 public class UriManagerImpl implements UriManager
 {
-    private static final Integer SettingsCurrentVersion = 3;
+    private static final Integer SettingsCurrentVersion = 4;
 
     private static final String URIS_OVERRIDE_FILE_NAME = System.getProperty("uvm.conf.dir") + "/uris_override.js";
 
@@ -319,11 +319,11 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://www.untangle.com/api/v1");
+        uriTranslation.setUri("https://edge.arista.com/api/v1");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://www.untangle.com/cmd");
+        uriTranslation.setUri("https://launchpad.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         settings.setUriTranslations(uriTranslations);
@@ -408,11 +408,11 @@ public class UriManagerImpl implements UriManager
         List<UriTranslation> uriTranslations = settings.getUriTranslations();
 
         UriTranslation uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://www.untangle.com/api/v1");
+        uriTranslation.setUri("https://edge.arista.com/api/v1");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://www.untangle.com/cmd");
+        uriTranslation.setUri("https://launchpad.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         settings.setUriTranslations(uriTranslations);
