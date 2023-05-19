@@ -20,7 +20,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         cidrAddrRe: /^([0-9]{1,3}\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
         cidrBlockRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
         cidrBlockOnlyRangeRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-1]))$/,
-        hostnameRe: /^[a-zA-Z0-9\-_.]+$/
+        hostNameRe: /^[a-zA-Z0-9\-_.]+$/
     },
 
     isSinglePortValid: function(val) {
@@ -65,10 +65,6 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     isSingleIpValidOrEmptyText: 'Valut must either empty or IP address'.t(),
 
-    isNotSingleIp: function(val) {
-        return !this.isSingleIpValid(val);
-    },
-    isNotSingleIpText: 'Value can not be an IP address, it must be a valid hostname'.t(),
 
     isIpRangeValid: function(val) {
         return this.mask.ipAddrRange.test(val);
@@ -370,14 +366,11 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     wireguardPublicKeyText: 'Public key must be 44 characters long.'.t(),
 
-    isHostnameValid: function(value) {
+    hostName: function(value) {
         if (value.charAt(0) === '.') {
             return false;
         }
-        if (!this.mask.hostnameRe.test(value)){
-            return false;
-        }
-        return true;
+        return this.mask.hostNameRe.test(value);
     },
-    isHostnameValidText: 'A hostname can only contain numbers, letters, dashes and periods and cannot begin with a period'.t(),
+    hostNameText: 'A hostname can only contain numbers, letters, dashes and periods and cannot begin with a period'.t(),
 });

@@ -37,7 +37,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             labelWidth: 120,
             width: '100%',
             allowBlank: false,
-            vtype: 'isNotSingleIp',
+            vtype: 'hostName',
             _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyServer}',
@@ -62,6 +62,7 @@ Ext.define('Ung.config.local-directory.view.RadiusProxy', {
             fieldIndex: 'adDomain',
             width: '100%',
             allowBlank: false,
+            vtype: 'domainName',
             _onFirstChange: true,
             bind: {
                 value: '{systemSettings.radiusProxyRealm}',
