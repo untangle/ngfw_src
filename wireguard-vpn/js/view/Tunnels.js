@@ -150,7 +150,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             hidden: true,
             disabled: true,
             allowBlank: false,
-            vtype: 'isHostnameValid',
+            vtype: 'hostName',
             bind: {
                 value: '{record.endpointHostname}',
                 hidden: '{record.endpointDynamic}',
