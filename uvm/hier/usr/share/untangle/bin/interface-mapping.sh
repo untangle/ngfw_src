@@ -17,10 +17,13 @@ declare -A CURRENT_MAC_NAMES=()
 # Desired mapping from udev or systemd
 declare -A TARGET_MAC_NAMES=()
 
-# udev mapping file
-UDEV_RULES_FILE_NAME=/etc/udev/rules.d/70-persistent-net.rules
 # systemd path for *.link files which define mapping the systemd way
 SYSTEMD_NETWORK_PATH=/etc/systemd/network
+# udev mapping file
+UDEV_RULES_FILE_NAME=/etc/udev/rules.d/70-persistent-net.rules
+# Presence of this flag means we'll use dev mapping.  This is not common behavior
+UDEV_RULES_FLAG=/usr/share/untangle/conf/interface-mapping-use-udev
+
 # Rename prefix
 RENAME_PREFIX=rename-
 
@@ -378,7 +381,7 @@ else
 	##
 	## Read target mappings
 	##
-	if [ -f $UDEV_RULES_FILE_NAME ]; then
+	if [ -f $UDEV_RULES_FILE_NAME ] && [ -f $UDEV_RULES_FLAG ] ; then
 		build_udev_map
 	else
 		build_systemd_map

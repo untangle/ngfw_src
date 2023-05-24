@@ -12,6 +12,8 @@ import copy
 import runtests
 import json
 
+from pathlib import Path
+
 from .global_functions import uvmContext
 from tests.common import NGFWTestCase
 import runtests.test_registry as test_registry
@@ -486,9 +488,6 @@ def remap_nics(device_candidates, original_device_mac_mapping):
     print(f"     new_device_mac_mapping={new_device_mac_mapping}")
     for device in original_device_mac_mapping.keys():
         assert new_device_mac_mapping[device] == original_device_mac_mapping[device], f"{device}: orig and new mac address same"
-
-    ### !!! method end here
-
 
 @pytest.mark.network
 class NetworkTests(NGFWTestCase):
@@ -1924,6 +1923,86 @@ class NetworkTests(NGFWTestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
         remap_nics(device_candidates, original_device_mac_mapping)
+
+    def test_402_nic_remapping_udev(self):
+        """
+        Remap nics using alternate udev method
+        """
+        # Get list of candidate devices to use for swapping
+        device_candidates = []
+        interface_disable_candidate = None
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface.get("isVirtualInterface") or \
+                interface.get("isVlanInterface") or \
+                interface.get("isWirelessInterface"):
+                # Don't consider virtual, vlan, or wireless interfaces
+                continue
+            device_candidates.append(interface.get("physicalDev"))
+            if interface_disable_candidate is None:
+                interface_disable_candidate = interface
+
+        if len(device_candidates) < 4:
+            raise unittest.SkipTest("not enough devices to safely swap")
+
+        print(device_candidates[-2:])
+
+        # Build current device/mac mapping
+        original_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
+        print(f"original_device_mac_mapping={original_device_mac_mapping}")
+
+        # Set settings forces sync-settngs call
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        udev_rules_filename="/etc/udev/rules.d/70-persistent-net.rules"
+        with open(udev_rules_filename, "w") as file:
+            for device in original_device_mac_mapping:
+                file.write(f"SUBSYSTEM==\"net\", ACTION==\"add\", DRIVERS==\"?*\", ATTR{{address}}==\"{original_device_mac_mapping[device]}\", ATTR{{dev_id}}==\"0x0\", ATTR{{type}}==\"1\", KERNEL==\"eth*\", NAME=\"{device}\"\n")
+
+        # Remove the systemd mapping files; we don't want a rename to occur
+        systemd_network_path="/etc/systemd/network"
+        for filename in os.listdir(systemd_network_path):
+            if filename.endswith(".link"):
+                os.remove(f"{systemd_network_path}/{filename}")
+
+        # Simulate a system reboot:
+        # 1. Swap last two devices with interface mapper
+        command=f"/usr/share/untangle/bin/interface-mapping.sh -r {device_candidates[-1]}={device_candidates[-2]}"
+        print(command)
+        print(subprocess.call(command, shell=True))
+
+        # 2. Gather this modified system mapping, simulating reboot with kernel picking different mac addresses
+        modified_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
+        print(f"modified_device_mac_mapping={modified_device_mac_mapping}")
+
+        # 3. Restart networking
+        command="ifdown -a -v --exclude=lo && ifup -a -v --exclude=lo && /usr/bin/systemctl-wait"
+        print(command)
+        print(subprocess.call(command, shell=True, stderr=subprocess.STDOUT, stdout=subprocess.DEVNULL))
+
+        # Verify original mapping is NOT preserved
+        new_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
+        print(f"     new_device_mac_mapping={new_device_mac_mapping}")
+        for device in original_device_mac_mapping.keys():
+            assert new_device_mac_mapping[device] != original_device_mac_mapping[device], f"{device}: orig and new mac address NOT same"
+
+        # Add the flag and try again
+        udev_flag_filename="/usr/share/untangle/conf/interface-mapping-use-udev"
+        Path(udev_flag_filename).touch()
+
+        # 4. Restart networking
+        command="ifdown -a -v --exclude=lo && ifup -a -v --exclude=lo && /usr/bin/systemctl-wait"
+        print(command)
+        print(subprocess.call(command, shell=True, stderr=subprocess.STDOUT, stdout=subprocess.DEVNULL))
+
+        # Verify original mapping is preserved
+        new_device_mac_mapping = build_device_to_mac_address_map(device_candidates[-2:])
+        print(f"     new_device_mac_mapping={new_device_mac_mapping}")
+        for device in original_device_mac_mapping.keys():
+            assert new_device_mac_mapping[device] == original_device_mac_mapping[device], f"{device}: orig and new mac address same"
+
+        os.remove(udev_rules_filename)
+        os.remove(udev_flag_filename)
 
     @classmethod
     def final_extra_tear_down(cls):
