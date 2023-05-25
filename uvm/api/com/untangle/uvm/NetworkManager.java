@@ -82,4 +82,17 @@ public interface NetworkManager
 
     boolean getInterfacesOverloadedFlag();
 
+    public static enum StatusCommands {
+        INTERFACE_TRANSFER,
+        INTERFACE_IP_ADDRESSES,
+        INTERFACE_ARP_TABLE,
+        DYNAMIC_ROUTING_TABLE,
+        DYNAMIC_ROUTING_BGP,
+        DYNAMIC_ROUTING_OSPF,
+        ROUTING_TABLE,
+        QOS,
+        DHCP_LEASES
+    };
+    String getStatus(StatusCommands command, String argument);
+
 }
