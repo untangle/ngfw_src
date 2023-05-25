@@ -236,12 +236,16 @@ class BandwidthControlTests(NGFWTestCase):
             # local bandwidth target server not available so use test.untangle.com
             target_server = global_functions.TEST_SERVER_HOST
         pre_down_speed_kbit = 8 * global_functions.get_download_speed(download_server=target_server)
+        print(f"pre_down_speed_kbit={pre_down_speed_kbit}")
             
         # calculate QoS limits
         wan_limit_kbit = int(pre_down_speed_kbit * .9)
         # set max to 100Mbit, so that other limiting factors dont interfere
-        if wan_limit_kbit > 100000: wan_limit_kbit = 100000 
+        if wan_limit_kbit > 100000:
+            wan_limit_kbit = 100000
+        print(f"     wan_limit_kbit={wan_limit_kbit}")
         wan_limit_mbit = round(wan_limit_kbit/1024,2)
+        print(f"     wan_limit_mbit={wan_limit_mbit}")
         # turn on QoS and set wan speed limits
         netsettings = copy.deepcopy( orig_network_settings )
         netsettings['qosSettings']['qosEnabled'] = True
@@ -259,7 +263,7 @@ class BandwidthControlTests(NGFWTestCase):
         orig_network_settings_with_qos['qosSettings']['qosEnabled'] = True
         orig_network_settings_without_qos = copy.deepcopy( netsettings )
         orig_network_settings_without_qos['qosSettings']['qosEnabled'] = False
-        
+
         uvmContext.networkManager().setNetworkSettings(orig_network_settings_with_qos)
         
     # verify client is online
@@ -347,7 +351,7 @@ class BandwidthControlTests(NGFWTestCase):
         assert (post_UDP_speed != 0)
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
-    def test_015_qos_nobpass_custom_rules_tcp(self):
+    def test_015_qos_nobypass_custom_rules_tcp(self):
         nuke_rules(self._app)
         priority_level = 7
 
