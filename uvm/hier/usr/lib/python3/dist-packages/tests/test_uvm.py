@@ -433,7 +433,7 @@ class UvmTests(NGFWTestCase):
                     "local": False,
                     "succeeded": True
                 })
-        except AssertionError as e:
+        except (subprocess.CalledProcessError, AssertionError) as e:
             TestTotp.teardown()
             raise AssertionError(e)
         
@@ -522,7 +522,7 @@ class UvmTests(NGFWTestCase):
                     "succeeded": True
                 })
 
-        except AssertionError as e:
+        except  (subprocess.CalledProcessError, AssertionError) as e:
             TestTotp.teardown()
             raise AssertionError(e)
 
@@ -739,7 +739,7 @@ class UvmTests(NGFWTestCase):
                     "local": False,
                     "succeeded": True
                 })
-        except AssertionError as e:
+        except  (subprocess.CalledProcessError, AssertionError) as e:
             TestTotp.teardown()
             raise AssertionError(e)
 
