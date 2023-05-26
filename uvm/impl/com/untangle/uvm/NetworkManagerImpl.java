@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Predicate;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,6 +79,7 @@ public class NetworkManagerImpl implements NetworkManager
     private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";
     private final String upnpManagerScript = System.getProperty("uvm.bin.dir") + "/ut-upnp-manager";
     private final String wirelessInterfaceScript = System.getProperty("uvm.bin.dir") + "/wireless-interface.py";
+    private final String statusScript = System.getProperty("uvm.bin.dir") + "/network-status.sh";
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
     private final String settingsFilenameBackup = "/etc/untangle/network.js";
@@ -2990,6 +2992,35 @@ public class NetworkManagerImpl implements NetworkManager
         }
         logger.warn("Failed to find a free interface Id ("  + freeId + ")");
         return -1;
+    }
+
+    /**
+     * Get network status from statusScript.
+     *
+     * Each command is expected to be a function in the script of the format:
+     * get_<command in lowercase> such as get_interface_transfer
+     *
+     * @param command - the network settings to use to check for a free ID
+     * @param argument - String of argument to pass to script
+     * @return string of status
+     */
+    public String getStatus(StatusCommands command, String argument)
+    {
+        switch(command){
+            case INTERFACE_TRANSFER:
+            case INTERFACE_IP_ADDRESSES:
+            case INTERFACE_ARP_TABLE:
+            case DYNAMIC_ROUTING_TABLE:
+            case DYNAMIC_ROUTING_BGP:
+            case DYNAMIC_ROUTING_OSPF:
+            case ROUTING_TABLE:
+            case QOS:
+            case DHCP_LEASES:
+                return UvmContextFactory.context().execManager().execOutput(statusScript + " get_" + command.toString().toLowerCase() + " " + argument);
+
+            default:
+                throw new RuntimeException("getStatus unknown command: " + command);
+        }
     }
 
     /**
