@@ -265,85 +265,89 @@ class UvmTests(NGFWTestCase):
         Local console authentication, TOTP not enabled
         """
         TestTotp.setup(enable=False)
+        # fails due to NGFW-14344
+        try:
+            uri="http://localhost/auth/login?url=/admin&realm=Administrator"
+            # Make sure we come from ipv6
+            override_arguments=["--silent", "-6"]
 
-        uri="http://localhost/auth/login?url=/admin&realm=Administrator"
-        # Make sure we come from ipv6
-        override_arguments=["--silent", "-6"]
+            # Bad username
+            bad_username = f"bad_{Login_username}"
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username": bad_username, "password": Login_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        # Bad username
-        bad_username = f"bad_{Login_username}"
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username": bad_username, "password": Login_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+            global_functions.get_and_check_events(
+                prefix="bad username",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": bad_username,
+                    "local": True,
+                    "succeeded": False,
+                    "reason": "U"
+                })
 
-        global_functions.get_and_check_events(
-            prefix="bad username",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": bad_username,
-                "local": True,
-                "succeeded": False,
-                "reason": "U"
-            })
+            # Bad password
+            bad_password = f"bad_{Login_password}"
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username": Login_username, "password": bad_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        # Bad password
-        bad_password = f"bad_{Login_password}"
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username": Login_username, "password": bad_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+            global_functions.get_and_check_events(
+                prefix="bad password",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": True,
+                    "succeeded": False,
+                    "reason": "P"
+                })
 
-        global_functions.get_and_check_events(
-            prefix="bad password",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": True,
-                "succeeded": False,
-                "reason": "P"
-            })
+            # Successful local login
+            curl_result = subprocess.check_output(
 
-        # Successful local login
-        curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username":Login_username, "password": Login_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username":Login_username, "password": Login_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
-
-        global_functions.get_and_check_events(
-            prefix="successful login",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": True,
-                "succeeded": True
-            })
-
+            global_functions.get_and_check_events(
+                prefix="successful login",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": True,
+                    "succeeded": True
+                })
+        except AssertionError as e:
+            TestTotp.teardown()
+            raise AssertionError(e)
+            
         TestTotp.teardown()
 
     def test_021_auth_remote_totp_disabled(self):
@@ -351,84 +355,88 @@ class UvmTests(NGFWTestCase):
         Non-local authentication, TOTP not enabled
         """
         TestTotp.setup(enable=False)
+        
+        try:
+            lan_ip = global_functions.get_lan_ip()
+            uri = f"http://{lan_ip}/auth/login?url=/admin&realm=Administrator"
+            override_arguments=["--silent"]
 
-        lan_ip = global_functions.get_lan_ip()
-        uri = f"http://{lan_ip}/auth/login?url=/admin&realm=Administrator"
-        override_arguments=["--silent"]
+            # Bad username
+            bad_username = f"bad_{Login_username}"
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username": bad_username, "password": Login_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        # Bad username
-        bad_username = f"bad_{Login_username}"
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username": bad_username, "password": Login_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+            global_functions.get_and_check_events(
+                prefix="bad username",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": bad_username,
+                    "local": False,
+                    "succeeded": False,
+                    "reason": "U"
+                })
 
-        global_functions.get_and_check_events(
-            prefix="bad username",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": bad_username,
-                "local": False,
-                "succeeded": False,
-                "reason": "U"
-            })
+            # Bad password
+            bad_password = f"bad_{Login_password}"
+            curl_result = subprocess.check_output(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username": Login_username, "password": bad_password}
+                ),
+                shell=True)
+            print(curl_result)
+            assert Login_success_response not in curl_result.decode(), "successful login response"
+            time.sleep(Login_event_delay)
 
-        # Bad password
-        bad_password = f"bad_{Login_password}"
-        curl_result = subprocess.check_output(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username": Login_username, "password": bad_password}
-            ),
-            shell=True)
-        print(curl_result)
-        assert Login_success_response not in curl_result.decode(), "successful login response"
-        time.sleep(Login_event_delay)
+            global_functions.get_and_check_events(
+                prefix="bad password",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": False,
+                    "reason": "P"
+                })
 
-        global_functions.get_and_check_events(
-            prefix="bad password",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": False,
-                "reason": "P"
-            })
+            # Successful remote login
+            curl_result = remote_control.run_command(
+                global_functions.build_curl_command(
+                    uri=uri,
+                    override_arguments=override_arguments,
+                    request="POST",
+                    form={"username":Login_username, "password": Login_password}
+                ),
+                stdout=True)
+            print(curl_result)
+            assert Login_success_response in curl_result, "successful login response"
+            time.sleep(Login_event_delay)
 
-        # Successful remote login
-        curl_result = remote_control.run_command(
-            global_functions.build_curl_command(
-                uri=uri,
-                override_arguments=override_arguments,
-                request="POST",
-                form={"username":Login_username, "password": Login_password}
-            ),
-            stdout=True)
-        print(curl_result)
-        assert Login_success_response in curl_result, "successful login response"
-        time.sleep(Login_event_delay)
-
-        global_functions.get_and_check_events(
-            prefix="successful login",
-            report_category="Administration",
-            report_title='Admin Login Events',
-            matches={
-                "login": Login_username,
-                "local": False,
-                "succeeded": True
-            })
-
+            global_functions.get_and_check_events(
+                prefix="successful login",
+                report_category="Administration",
+                report_title='Admin Login Events',
+                matches={
+                    "login": Login_username,
+                    "local": False,
+                    "succeeded": True
+                })
+        except (subprocess.CalledProcessError, AssertionError) as e:
+            TestTotp.teardown()
+            raise AssertionError(e)
+        
         TestTotp.teardown()
 
     def test_022_auth_local_totp_enabled(self):
@@ -436,7 +444,7 @@ class UvmTests(NGFWTestCase):
         Local console authentication, TOTP enabled
         """
         TestTotp.setup(enable=True)
-
+        # fails due to NGFW-14344
         try:
             uri = "http://localhost/auth/login?url=/admin&realm=Administrator"
             override_arguments=["--silent", "-6"]
@@ -514,7 +522,7 @@ class UvmTests(NGFWTestCase):
                     "succeeded": True
                 })
 
-        except AssertionError as e:
+        except  (subprocess.CalledProcessError, AssertionError) as e:
             TestTotp.teardown()
             raise AssertionError(e)
 
@@ -731,7 +739,7 @@ class UvmTests(NGFWTestCase):
                     "local": False,
                     "succeeded": True
                 })
-        except AssertionError as e:
+        except  (subprocess.CalledProcessError, AssertionError) as e:
             TestTotp.teardown()
             raise AssertionError(e)
 
@@ -902,7 +910,7 @@ class UvmTests(NGFWTestCase):
         
         assert(emailFound)
 
-    def test_99_queue_process(self):
+    def test_099_queue_process(self):
         """
         Generate "a lot" of traffic and verify the log event queue is quickly processed
         """
@@ -1099,5 +1107,5 @@ class UvmTests(NGFWTestCase):
         uvm_free_disk_percent = (float(metrics_and_stats["systemStats"]["freeDiskSpace"]) / float(metrics_and_stats["systemStats"]["totalDiskSpace"]) * 100)
         subprocess.run(["rm", "-f", full_filename])
         assert(uvm_free_disk_percent > 5)
-
+        
 test_registry.register_module("uvm", UvmTests)
