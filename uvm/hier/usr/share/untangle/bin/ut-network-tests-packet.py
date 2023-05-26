@@ -155,7 +155,7 @@ def usage():
     print("--timeout <sec>\tTime to run in seconds")
     print("--filename <filename>\tFile to write")
     print("--search_string <text>\tOnly show packets containing this string")
-    print("--arguments <list>\tcpdump arguments")
+    print("--arguments <list>\ttcpdump arguments")
 
 ##
 ## Main

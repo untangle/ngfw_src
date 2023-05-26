@@ -84,7 +84,16 @@ class UriAnalyzer():
         "http://www.untangle.com/legal",
         "https://www.untangle.com/legal",
 
-        "http://wiki.edge.arista.com/get.php"
+        "http://wiki.edge.arista.com/get.php",
+
+        # From test_network.py
+        "http://1.2.3.4/test/testPage1.html",
+        "http://{wan_address}:81/test/testPage1.html",
+        "http://{wan_address}/test/testPage1.html",
+        "https://1.2.3.4/test/testPage1.html",
+        "ftp://{global_functions.ftp_server}/{ftp_file_name}",
+        "ftp://{wan_ip}/{ftp_file_name}",
+        "https://{wan_address}/test/testPage1.html"
     ]
 
     def __init__(self):
