@@ -1024,7 +1024,7 @@ Ext.define('Ung.config.network.MainController', {
         text.push(output.getValue());
         text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
 
-        Rpc.asyncData('rpc.execManager.execEvil', v.getViewModel().get('command'))
+        Rpc.asyncData('rpc.networkManager.runTroubleshooting', v.getViewModel().get('command'), v.getViewModel().get('arguments'))
         .then(function (result) {
             if(Util.isDestroyed(v)){
                 return;
