@@ -80,6 +80,7 @@ public class NetworkManagerImpl implements NetworkManager
     private final String upnpManagerScript = System.getProperty("uvm.bin.dir") + "/ut-upnp-manager";
     private final String wirelessInterfaceScript = System.getProperty("uvm.bin.dir") + "/wireless-interface.py";
     private final String statusScript = System.getProperty("uvm.bin.dir") + "/network-status.sh";
+    private final String troubleshootingScript = System.getProperty("uvm.bin.dir") + "/network-troubleshooting.sh";
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
     private final String settingsFilenameBackup = "/etc/untangle/network.js";
@@ -3024,6 +3025,48 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Run network troubleshooting script
+     *
+     * @param command - the network settings to use to check for a free ID
+     * @param arguments - JSONObject of arguments to pass as environment variables to command
+     * @return string of status
+     */
+    public ExecManagerResultReader runTroubleshooting(TroubleshootingCommands command, JSONObject arguments)
+    {
+        List<String> environment_variables = new ArrayList<String>();
+        try{
+            if(arguments != null){
+                Iterator<?> keys = arguments.keys();
+                while(keys.hasNext()) {
+                    String key = (String) keys.next();
+                    environment_variables.add(key + "=" + arguments.get(key));
+                }
+            }
+        }catch(Exception e){
+            logger.warn("runTroubleshooting, parsing arguments: ", e);
+        }
+
+        switch(command){
+            case CONNECTIVITY:
+            case REACHABLE:
+            case DNS:
+            case CONNECTION:
+            case PATH:
+            case DOWNLOAD:
+            case TRACE:
+                try{
+                    return UvmContextFactory.context().execManager().execEvil(new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()}, environment_variables.toArray(new String[0]));
+                }catch(Exception e){
+                    logger.warn("runTroubleshooting executing:", e);
+                    return null;
+                }
+
+            default:
+                throw new RuntimeException("runTroubleshooting unknown command: " + command);
+        }
+    }
+
+    /**
      * convertSettings
      * Convert settings to latest version
      */
@@ -3053,6 +3096,7 @@ public class NetworkManagerImpl implements NetworkManager
     private class NetworkTestDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";
+        private static final String PATH = "/tmp/network-tests/";
 
         /**
          * getName
@@ -3083,11 +3127,12 @@ public class NetworkManagerImpl implements NetworkManager
             try{
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type","application/vnd.tcpdump.pcap");
-                resp.setHeader("Content-Disposition","attachment; filename="+name+".pcap");
+                resp.setHeader("Content-Disposition","attachment; filename="+name);
 
                 byte[] buffer = new byte[1024];
                 int read;
-                fis = new FileInputStream(name);
+                // Ensure that filename can only be downloaded from under our path
+                fis = new FileInputStream(PATH + name);
                 out = resp.getOutputStream();
                 
                 while ( ( read = fis.read( buffer ) ) > 0 ) {
