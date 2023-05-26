@@ -489,6 +489,30 @@ def remap_nics(device_candidates, original_device_mac_mapping):
     for device in original_device_mac_mapping.keys():
         assert new_device_mac_mapping[device] == original_device_mac_mapping[device], f"{device}: orig and new mac address same"
 
+def get_troubleshooting_output(command=None, arguments={}):
+    """
+    Troubleshooting commands return an output reader.  Fully read and return the text of output.
+    """
+    output_reader = None
+    try:
+        output_reader = uvmContext.networkManager().runTroubleshooting(command, arguments)
+    except:
+        assert False, "could not run command"
+
+    all_output = ""
+    output = None
+    while True:
+        time.sleep(.25)
+        output = output_reader.readFromOutput()
+        if output is None:
+            break
+        all_output += output
+
+    print("troubleshooting output=")
+    print(all_output)
+
+    return all_output
+
 @pytest.mark.network
 class NetworkTests(NGFWTestCase):
 
@@ -2195,6 +2219,94 @@ class NetworkTests(NGFWTestCase):
 
         # This can be an empty string
         assert status is not None, "dhcp status is not None"
+
+    def test_600_troubleshooting_connectivity(self):
+        """
+        Troubleshooting, connectivity
+        """
+        output = get_troubleshooting_output(command='CONNECTIVITY',arguments={
+                "DNS_TEST_HOST": "updates.untangle.com", 
+                "TCP_TEST_HOST": "updates.untangle.com"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "Testing DNS" in output, "dns test"
+        assert "Testing TCP Connectivity" in output, "tcp connectivity test"
+
+    def test_601_troubleshooting_reachable(self):
+        """
+        Troubleshooting, reachable
+        """
+        output = get_troubleshooting_output(command='REACHABLE',arguments={
+                "HOST": "8.8.8.8"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "ping statistics" in output, "reachable test"
+
+    def test_602_troubleshooting_dns(self):
+        """
+        Troubleshooting, DNS lookup
+        """
+        output = get_troubleshooting_output(command='DNS',arguments={
+                "HOST": "www.google.com"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "has address" in output, "dns test"
+
+    def test_603_troubleshooting_connection(self):
+        """
+        Troubleshooting, connection
+        """
+        output = get_troubleshooting_output(command='CONNECTION',arguments={
+                "HOST": "www.google.com",
+                "HOST_PORT": "80"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "(http) open" in output, "connection test"
+
+    def test_604_troubleshooting_path(self):
+        """
+        Troubleshooting, path.
+        """
+        output = get_troubleshooting_output(command='PATH',arguments={
+                "HOST": "www.google.com",
+                "PROTOCOL": "I"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "traceroute to" in output, "path test"
+
+    def test_605_troubleshooting_download(self):
+        """
+        Troublewshooting, download
+        """
+        output = get_troubleshooting_output(command='DOWNLOAD',arguments={
+                "URL": "http://cachefly.cachefly.net/5mb.test"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "saved" in output, "dns test"
+
+    def test_606_troubleshooting_trace(self):
+        """
+        Troubleshooting, trace
+        """
+        interface = uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+
+        output = get_troubleshooting_output(command='TRACE',arguments={
+                "TIMEOUT": "10",
+                "MODE": "BASIC",
+                "HOST": "any",
+                "INTERFACE": interface,
+                "FILENAME": "test.pcap"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "tcpdump:" in output, "trace test"
+
 
     @classmethod
     def final_extra_tear_down(cls):
