@@ -7,6 +7,7 @@ import java.util.List;
 import java.net.InetAddress;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.network.InterfaceStatus;
@@ -94,5 +95,16 @@ public interface NetworkManager
         DHCP_LEASES
     };
     String getStatus(StatusCommands command, String argument);
+
+    public static enum TroubleshootingCommands {
+        CONNECTIVITY,
+        REACHABLE,
+        DNS,
+        CONNECTION,
+        PATH,
+        DOWNLOAD,
+        TRACE
+    };
+    ExecManagerResultReader runTroubleshooting(TroubleshootingCommands command, JSONObject arguments);
 
 }

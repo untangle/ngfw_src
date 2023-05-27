@@ -242,13 +242,29 @@ public class ExecManagerImpl implements ExecManager
 
     /**
      * Execute a command in a new process and return the result object
-     * 
+     *
      * @param cmd
      *        The command to execute
      * @return The result object
      * @throws IOException
      */
     public ExecManagerResultReader execEvil(String cmd[]) throws IOException
+    {
+        return execEvil(cmd, null);
+    }
+
+
+    /**
+     * Execute a command in a new process and return the result object
+     *
+     * @param cmd
+     *        The command to execute
+     * @param env
+     *        List of environment variables
+     * @return The result object
+     * @throws IOException
+     */
+    public ExecManagerResultReader execEvil(String cmd[], String env[]) throws IOException
     {
         if (logger.isInfoEnabled()) {
             String cmdStr = new String();
@@ -258,7 +274,7 @@ public class ExecManagerImpl implements ExecManager
             logger.info("ExecManager.execEvil( " + cmdStr + ")");
         }
         try {
-            return new ExecManagerResultReader(Runtime.getRuntime().exec(cmd, null, null));
+            return new ExecManagerResultReader(Runtime.getRuntime().exec(cmd, env, null));
         } catch (IOException exc) {
             String msg = exc.getMessage();
             if (msg.contains("Cannot allocate memory")) {
@@ -315,7 +331,7 @@ public class ExecManagerImpl implements ExecManager
 
     /**
      * Execute a command in a new process and return the result object
-     * 
+     *
      * @param cmd
      *        The command to execute
      * @return The result object
