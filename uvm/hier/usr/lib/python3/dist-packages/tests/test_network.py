@@ -2004,6 +2004,198 @@ class NetworkTests(NGFWTestCase):
         os.remove(udev_rules_filename)
         os.remove(udev_flag_filename)
 
+    def test_500_status_interface_transfer(self):
+        """
+        Status, interface transfer fields
+        """
+        first_symbolic_device = uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('INTERFACE_TRANSFER', first_symbolic_device)
+        except:
+            assert False, "could not run command"
+
+        print(f"status={status}")
+
+        # Should be non-empty string with space separated values
+        assert status is not None and len(status.split(" ")), "contains status fields"
+
+    def test_501_status_interface_ip_address(self):
+        """
+        Status, interface IP address fields
+        """
+        first_symbolic_device = uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('INTERFACE_IP_ADDRESSES', first_symbolic_device)
+        except:
+            assert False, "could not run command"
+
+        print(f"status={status}")
+
+        # Should be non-empty string with space separated values
+        assert status is not None and len(status.split(" ")), "contains status fields"
+
+    def test_502_status_interface_arp_table(self):
+        """
+        Status, interface arp fields
+        """
+        first_symbolic_device = uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('INTERFACE_ARP_TABLE', first_symbolic_device)
+        except:
+            assert False, "could not run command"
+
+        print(f"status={status}")
+
+        # Should be non-empty string with space separated values
+        # Should always be at least one ARP address
+        assert status is not None and len(status.split(" ")), "contains status fields"
+
+    def test_503_status_dynamic_routing(self):
+        """
+        Status, dynamic routing
+
+        Does not actually need to be connected to verify status
+        """
+        network_settings = uvmContext.networkManager().getNetworkSettings()
+
+        # Get WAN/LAN addresses
+        wan_address = None
+        wan_network = None
+        wan_prefix = 24
+        lan_network = None
+        lan_prefix = 24
+        for interface in network_settings["interfaces"]["list"]:
+            if interface.get("isWan") is True:
+                if wan_address is not None:
+                    continue
+                print("WAN interface status=")
+                status = uvmContext.networkManager().getInterfaceStatus(interface.get("interfaceId"))
+                print(status)
+                wan_address = status["v4Address"]
+                (wan_network, wan_prefix) = status["v4MaskedAddress"].split("/")
+            else:
+                if lan_network is None:
+                    print("LAN interface status=")
+                    status = uvmContext.networkManager().getInterfaceStatus(interface.get("interfaceId"))
+                    print(status)
+                    (lan_network, lan_prefix) = status["v4MaskedAddress"].split("/")
+
+        network_settings = uvmContext.networkManager().getNetworkSettings()
+        network_settings["dynamicRoutingSettings"]["enabled"] = True
+        network_settings["dynamicRoutingSettings"]["bgpEnabled"] = True
+        network_settings["dynamicRoutingSettings"]["bgpRouterAs"] = "12345"
+        network_settings["dynamicRoutingSettings"]["bgpRouterId"] = wan_address
+        network_settings["dynamicRoutingSettings"]["bgpNetworks"]["list"] = [{
+            "area": 0,
+            "description": "local",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteNetwork",
+            "network": lan_network,
+            "prefix": lan_prefix,
+            "ruleId": 1
+        }]
+        network_settings["dynamicRoutingSettings"]["ospfEnabled"] = True
+        network_settings["dynamicRoutingSettings"]["ospfNetworks"]["list"] = [{
+            "area": 1,
+            "description": "net",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteNetwork",
+            "network": wan_network,
+            "prefix": wan_prefix,
+            "ruleId": 1
+        }]
+        uvmContext.networkManager().setNetworkSettings(network_settings)
+
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_TABLE', None)
+        except:
+            assert False, "could not run command"
+
+        print(f"route_status={status}")
+        # Empty string is fine
+        assert status is not None, "dynamic route table is not None"
+
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_BGP', None)
+        except:
+            assert False, "could not run command"
+
+        print(f"bgp_status={status}")
+        # Earlier versions had an error for sed
+        assert "sed:" not in status, "dynamic bgp does not contain sed error"
+        # BGP should contain something
+        assert status is not None and len(status.split(" ")), "dynamic bgp contains status fields"
+
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_OSPF', None)
+        except:
+            assert False, "could not run command"
+
+        print(f"ospf_status={status}")
+        # Earlier versions had an error for sed
+        assert "sed:" not in status, "dynamic ospf does not contain sed error"
+        # Empty string is fine
+        assert status is not None, "dynamic route ospf is not None"
+
+    def test_504_status_routing_table(self):
+        """
+        Status, current route table
+        """
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('ROUTING_TABLE', None)
+        except:
+            assert False, "could not run command"
+
+        print(f"status={status}")
+
+        # Route table should minimally have default routes in any configuration
+        assert "default via" in status, "route table contains default routes"
+
+    def test_505_status_qos(self):
+        """
+        Status, QOS
+        """
+        network_settings = uvmContext.networkManager().getNetworkSettings()
+        network_settings["qosSettings"]["qosEnabled"] = True
+        uvmContext.networkManager().setNetworkSettings(network_settings)
+
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('QOS', None)
+        except:
+            assert False, "could not run command"
+
+        status = status.replace("\'", "\"")
+        status = json.loads(status)
+
+        print(len(status))
+        print(f"status={status}")
+
+        # QOS is an array of objects
+        assert len(status) > 0, "qos status non empty"
+
+    def test_506_status_dhcp_leases(self):
+        """
+        Status, DHCP leases
+        """
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('DHCP_LEASES', None)
+        except:
+            assert False, "could not run command"
+
+        print(f"status={status}")
+
+        # This can be an empty string
+        assert status is not None, "dhcp status is not None"
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings
