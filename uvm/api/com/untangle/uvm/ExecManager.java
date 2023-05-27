@@ -44,6 +44,12 @@ public interface ExecManager
      * Execute the specified command and return the process
      * Called "execEvil" because it calls fork which can cause issues
      */
+    ExecManagerResultReader execEvil( String cmd[], String env[] ) throws IOException;
+
+    /**
+     * Execute the specified command and return the process
+     * Called "execEvil" because it calls fork which can cause issues
+     */
     ExecManagerResultReader execEvil( String cmd ) throws IOException;
 
     /**
