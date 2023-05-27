@@ -440,8 +440,8 @@ Ext.define('Ung.config.network.MainController', {
 
         v.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getInterfaceStatus1 ' + symbolicDev),
-            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getInterfaceStatus2 ' + symbolicDev)
+            Rpc.asyncPromise('rpc.networkManager.getStatus', 'INTERFACE_TRANSFER', symbolicDev),
+            Rpc.asyncPromise('rpc.networkManager.getStatus', 'INTERFACE_IP_ADDRESSES', symbolicDev)
         ]).then(function(result){
             if(Util.isDestroyed(me, v, vm)){
                 return;
@@ -491,7 +491,7 @@ Ext.define('Ung.config.network.MainController', {
         }
 
         v.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getInterfaceArp1 ' + symbolicDev)
+        Rpc.asyncData('rpc.networkManager.getStatus', 'INTERFACE_ARP_TABLE', symbolicDev)
         .then(function(result){
             if(Util.isDestroyed(me, v, vm)){
                 return;
@@ -583,7 +583,7 @@ Ext.define('Ung.config.network.MainController', {
         v.down('textarea').setValue('');
 
         v.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-routedump.sh')
+        Rpc.asyncData('rpc.networkManager.getStatus', 'ROUTING_TABLE', null)
         .then(function(result){
             if(Util.isDestroyed(v)){
                 return;
@@ -602,7 +602,7 @@ Ext.define('Ung.config.network.MainController', {
         }
 
         v.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle/bin/qos-status.py')
+        Rpc.asyncData('rpc.networkManager.getStatus', 'QOS', null)
         .then(function(result){
             if(Util.isDestroyed(v)){
                 return;
@@ -642,7 +642,7 @@ Ext.define('Ung.config.network.MainController', {
     refreshDhcpLeases: function (cmp) {
         var v = cmp.isXType('button') ? cmp.up('grid') : cmp;
         v.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', 'cat /var/lib/misc/dnsmasq.leases')
+        Rpc.asyncData('rpc.networkManager.getStatus', 'DHCP_LEASES', null)
         .then(function (result) {
             if(Util.isDestroyed(v)){
                 return;
@@ -721,7 +721,7 @@ Ext.define('Ung.config.network.MainController', {
                     // specifying the WAN network too (where presumably exchanges will occur),
                     // the ospfd daemon won't run there.
                     var atLeastOneReachableNetwork = false;
-                    Rpc.directData('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-routedump.sh').split("\n").forEach(function(route){
+                    Rpc.directData('rpc.networkManager.getStatus', 'ROUTING_TABLE', null).split("\n").forEach(function(route){
                         if(route.indexOf(" via ") > -1 &&
                            route.indexOf(" zebra ") == -1){
                             var routeParts =  route.match(/ via ([^\s]+) /);
@@ -759,9 +759,9 @@ Ext.define('Ung.config.network.MainController', {
 
         view.setLoading(true);
         Ext.Deferred.sequence([
-            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getDynamicRoutingStatus1'),
-            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getDynamicRoutingStatus2'),
-            Rpc.asyncPromise('rpc.execManager.execOutput', '/usr/share/untangle/bin/ut-net-maincontroller-helper.sh getDynamicRoutingStatus3')
+            Rpc.asyncPromise('rpc.networkManager.getStatus', 'DYNAMIC_ROUTING_TABLE', null),
+            Rpc.asyncPromise('rpc.networkManager.getStatus', 'DYNAMIC_ROUTING_BGP', null),
+            Rpc.asyncPromise('rpc.networkManager.getStatus', 'DYNAMIC_ROUTING_OSPF', null)
         ]).then( function(result){
             if(Util.isDestroyed(view)){
                 return;
