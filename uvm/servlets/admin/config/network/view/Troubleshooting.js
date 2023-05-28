@@ -29,16 +29,13 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 },
                 formulas: {
                     command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['echo -n "Testing DNS ... " ; success="Successful";',
-                                'dig ' + get('dnsTestHost') + ' > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                                'echo -n "Testing TCP Connectivity ... ";',
-                                'echo "GET /" | netcat -q 0 -w 15 ' + get('tcpTestHost') + ' 80 > /dev/null 2>&1;',
-                                'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                                'echo "Test ${success}!"'].join('')
-                        ];
+                        return "CONNECTIVITY";
+                    },
+                    arguments: function(get){
+                        return {
+                            "DNS_TEST_HOST": get('dnsTestHost'),
+                            "TCP_TEST_HOST": get('tcpTestHost')
+                        };
                     }
                 }
             }
@@ -63,7 +60,12 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 },
                 formulas: {
                     command: function (get) {
-                        return 'ping -c 5 ' + get('destination');
+                        return "REACHABLE";
+                    },
+                    arguments: function(get){
+                        return {
+                            "HOST": get('destination')
+                        };
                     }
                 }
             }
@@ -88,12 +90,12 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 },
                 formulas: {
                     command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['host \'' + get('destination') +'\';',
-                                'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
-                        ];
+                        return "DNS";
+                    },
+                    arguments: function(get){
+                        return {
+                            "HOST": get('destination')
+                        };
                     }
                 }
             }
@@ -127,12 +129,13 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 },
                 formulas: {
                     command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['echo 1 | netcat -q 0 -v -w 15 \'' + get('destination') + '\' \'' + get('port') +'\';',
-                                'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
-                        ];
+                        return "CONNECTION";
+                    },
+                    arguments: function(get){
+                        return {
+                            "HOST": get('destination'),
+                            "HOST_PORT": get('port')
+                        };
                     }
                 }
             }
@@ -164,12 +167,13 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 },
                 formulas: {
                     command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['traceroute' + ' -' + get('protocol') + ' ' + get('destination') + ';',
-                                'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
-                        ];
+                        return "PATH";
+                    },
+                    arguments: function(get){
+                        return {
+                            "HOST": get('destination'),
+                            "PROTOCOL": get('protocol')
+                        };
                     }
                 }
             }
@@ -198,11 +202,12 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 },
                 formulas: {
                     command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['wget --output-document=/dev/null ' + ' \'' + get('url') + '\' ;'].join('')
-                        ];
+                        return "DOWNLOAD";
+                    },
+                    arguments: function(get){
+                        return {
+                            "URL": get('url'),
+                        };
                     }
                 }
             }
@@ -302,54 +307,31 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                     destination: 'any',
                     port: '',
                     timeout: 5,
-                    tcpdumpArguments: '',
+                    tcpdumpArguments: '-n -s 65535',
                     exportAction: true,
-                    exportRunFilename: '',
-                    exportFilename: ''
                 },
                 formulas: {
                     command: function (get) {
-                        var timeout = parseInt(get('timeout'), 10);
-                        if(isNaN(timeout)){
-                            timeout = 5;
-                        }
-
-                        var traceFixedOptionsTemplate = ['-U', '-l', '-v'];
-                        var traceOverrideOptionsTemplate = ['-n', '-s 65535', '-i ' + get('interface')];
-                        var traceOptions = traceFixedOptionsTemplate.concat(traceOverrideOptionsTemplate);
-                        var traceExpression = [];
-
-                        var traceArguments = '';
-                        if (get('mode') == "advanced") {
-                            traceArguments = get('tcpdumpArguments');
-                        } else {
-                            if (get('destination') !== null && get('destination').toLowerCase() !== 'any') {
-                                traceExpression.push('host ' + get('destination'));
-                            }
-                            if (get('port') !== null && get('port') != "") {
-                                traceExpression.push('port ' + get('port'));
-                            }
-                            traceArguments = traceOptions.join(' ') + ' ' + traceExpression.join( ' and ');
-                            this.set('tcpdumpArguments', traceArguments );
-                        }
-
-                        // !!! path here is kind of dumb!
-                        if(get('exportRunFilename') == ''){
-                            this.set('exportRunFilename', "/tmp/network-tests/" +
-                                "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-                                    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-                                    return v.toString(16);
-                                }) + ".pcap" );
-                        }
-
-                        // !!! And so is filename...
-                        var script = [
-                            '/usr/share/untangle/bin/ut-network-tests-packet.py'+
-                                ' --timeout ' + timeout  +
-                                ' --filename ' + get('exportRunFilename').replace('\'','') +
-                                ' --arguments \'' + traceArguments.replace('\'','') + '\''
-                        ];
-                        return ["/bin/bash","-c", script.join("")];
+                        return "TRACE";
+                    },
+                    arguments: function(get){
+                        var filename = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+                            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                            return v.toString(16);
+                        }) + ".pcap";
+                        this.set('exportRunFilename', filename);
+                        return {
+                            "TIMEOUT": get('timeout'),
+                            "MODE": get('mode'),
+                            "TRACE_ARGUMENTS": get('tcpdumpArguments'),
+                            "HOST": get('destination'),
+                            "HOST_PORT": get('port'),
+                            "INTERFACE": get('interface'),
+                            "FILENAME": filename
+                        };
+                    },
+                    interface: function(get){
+                        return get('settings.interfaces.list')[0]["systemDev"];
                     },
                     interfacesListSystemDev: function (get) {
                         var data = [], i,
