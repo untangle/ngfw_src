@@ -170,16 +170,15 @@ run_trace(){
     # Always include for all traces
     TRACE_FIXED_OPTIONS="-U -l -v"
 
-    TRACE_OVERRIDE_OPTIONS="-n -s 65535"
-    if [ "${INTERFACE}" != "" ] && [ "${INTERFACE}" != "null" ] ; then
-        TRACE_OVERRIDE_OPTIONS+=" -i ${INTERFACE}"
-    fi
-    TRACE_OPTIONS="$TRACE_FIXED_OPTIONS $TRACE_OVERRIDE_OPTIONS"
-    TRACE_ARGUMENTS=${TRACE_OPTIONS:-}
-
-    if [ "${MODE}" = "advanced" ] ; then
+    if [ "${MODE}" == "advanced" ] ; then
         TRACE_ARGUMENTS="$TRACE_FIXED_OPTIONS ${TRACE_ARGUMENTS}"
     else
+        TRACE_OVERRIDE_OPTIONS="-n -s 65535"
+        if [ "${INTERFACE}" != "" ] && [ "${INTERFACE}" != "null" ] ; then
+            TRACE_OVERRIDE_OPTIONS+=" -i ${INTERFACE}"
+        fi
+        TRACE_OPTIONS="$TRACE_FIXED_OPTIONS $TRACE_OVERRIDE_OPTIONS"
+        TRACE_ARGUMENTS=${TRACE_OPTIONS:-}
         TRACE_ARGUMENTS_LIST=()
         if [ "${HOST}" != "" ] && [ "${HOST_PORT}" != "null" ] && [ "${HOST}" != "any" ] ; then
             TRACE_ARGUMENTS_LIST+=("host ${HOST}")
