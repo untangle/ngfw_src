@@ -40,7 +40,7 @@ OAUTH_PROVIDERS = {
     "MICROSOFT": {
         "platform": "f8285e96-b240-4036-8ea5-f37cf6b981bb",
         "method": "microsoftLogin",
-        "uri" : "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f8285e96-b240-4036-8ea5-f37cf6b981bb&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=openid%20User.Read&state=$.MicrosoftState.$>"
+        "uri" : "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f8285e96-b240-4036-8ea5-f37cf6b981bb&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=openid%20User.Read&state=$.MicrosoftState.$"
     },
     "ANY_OAUTH": {
         "platform": None,
