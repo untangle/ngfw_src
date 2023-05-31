@@ -3017,7 +3017,7 @@ public class NetworkManagerImpl implements NetworkManager
             case ROUTING_TABLE:
             case QOS:
             case DHCP_LEASES:
-                return UvmContextFactory.context().execManager().execOutput(statusScript + " get_" + command.toString().toLowerCase() + " " + argument);
+                return UvmContextFactory.context().execManager().execOutputSafe(statusScript + " get_" + command.toString().toLowerCase() + " " + argument);
 
             default:
                 throw new RuntimeException("getStatus unknown command: " + command);
