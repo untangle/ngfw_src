@@ -2,11 +2,8 @@
 ##
 ## Run troubleshooting commands
 ##
-[ -f /tmp/$(basename -s .sh $0).debug ] && export DEBUG=1 || DEBUG=0
 
-if [ $DEBUG -eq 1 ]; then
-    export
-fi
+. /usr/share/untangle/bin/sh_functions.sh
 
 # run_connectivity
 #
