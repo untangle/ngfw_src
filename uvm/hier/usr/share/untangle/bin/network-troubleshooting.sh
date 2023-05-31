@@ -170,19 +170,16 @@ run_trace(){
     # Always include for all traces
     TRACE_FIXED_OPTIONS="-U -l -v"
 
-    TRACE_OVERRIDE_OPTIONS="-n -s 65535"
-    if [ "${INTERFACE}" != "" ] && [ "${INTERFACE}" != "null" ] ; then
-        TRACE_OVERRIDE_OPTIONS+=" -i ${INTERFACE}"
-    fi
-    TRACE_OPTIONS="$TRACE_FIXED_OPTIONS $TRACE_OVERRIDE_OPTIONS"
-    TRACE_ARGUMENTS=${TRACE_OPTIONS:-}
-
-    if [ "${MODE}" = "advanced" ] ; then
+    if [ "${MODE}" == "advanced" ] ; then
         TRACE_ARGUMENTS="$TRACE_FIXED_OPTIONS ${TRACE_ARGUMENTS}"
     else
-        ## !! array
+        TRACE_OVERRIDE_OPTIONS="-n -s 65535"
+        if [ "${INTERFACE}" != "" ] && [ "${INTERFACE}" != "null" ] ; then
+            TRACE_OVERRIDE_OPTIONS+=" -i ${INTERFACE}"
+        fi
+        TRACE_OPTIONS="$TRACE_FIXED_OPTIONS $TRACE_OVERRIDE_OPTIONS"
+        TRACE_ARGUMENTS=${TRACE_OPTIONS:-}
         TRACE_ARGUMENTS_LIST=()
-        # !!! test against lower case?
         if [ "${HOST}" != "" ] && [ "${HOST_PORT}" != "null" ] && [ "${HOST}" != "any" ] ; then
             TRACE_ARGUMENTS_LIST+=("host ${HOST}")
         fi
@@ -190,7 +187,10 @@ run_trace(){
             TRACE_ARGUMENTS_LIST+=("port ${HOST_PORT}")
         fi
         if [ ${#TRACE_ARGUMENTS_LIST[@]} -gt 0 ] ; then
-            TRACE_ARGUMENTS+=$(printf " and %s" "${TRACE_ARGUMENTS_LIST[@]}")
+            SEPARATOR=" and"
+            TRACE_ARGUMENTS_LIST_EXPANDED=$(printf "$SEPARATOR %s" "${TRACE_ARGUMENTS_LIST[@]}")
+            TRACE_ARGUMENTS_LIST_EXPANDED=${TRACE_ARGUMENTS_LIST_EXPANDED:${#SEPARATOR}}
+            TRACE_ARGUMENTS+=$TRACE_ARGUMENTS_LIST_EXPANDED
         fi
     fi
 
