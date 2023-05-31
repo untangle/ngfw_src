@@ -35,6 +35,16 @@ public interface ExecManager
     String execOutput( String cmd, boolean rateLimit );
 
     /**
+     * Execute the specified command and return the stdout
+     */
+    String execOutputSafe( String cmd );
+
+    /**
+     * Execute the specified command and return the stdout
+     */
+    String execOutputSafe( String cmd, boolean rateLimit );
+
+    /**
      * Execute the specified command and return the process
      * Called "execEvil" because it calls fork which can cause issues
      */
