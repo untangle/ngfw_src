@@ -124,7 +124,7 @@ public class ExecManagerImpl implements ExecManager
      */
     public synchronized ExecManagerResult exec(String cmd)
     {
-        return exec(cmd, false);
+        return exec(cmd, false, false);
     }
 
     /**
@@ -138,6 +138,22 @@ public class ExecManagerImpl implements ExecManager
      */
     public synchronized ExecManagerResult exec(String cmd, boolean rateLimit)
     {
+        return exec(cmd, rateLimit, false);
+    }
+
+    /**
+     * Executes a command and returns the result object
+     * 
+     * @param cmd
+     *        The String command to execute and optionally the rate limit flag
+     * @param rateLimit
+     *        A boolean controlling if the output should be rate controlled or not
+     * @param safe
+     *        If true, prevent call if suspicious characters found. Otherwise, if found just note.
+     * @return The execution result object
+     */
+    public synchronized ExecManagerResult exec(String cmd, boolean rateLimit, boolean safe)
+    {
 
         if (in == null | out == null || proc == null) {
             initDaemon();
@@ -147,11 +163,13 @@ public class ExecManagerImpl implements ExecManager
         cmd = cmd.replace("\r", "");
 
         if (cmd.contains(";") || cmd.contains("&&") || cmd.contains("|") || cmd.contains(">")) {
-            logger.log(this.level, "Suspicious command (" + cmd + ") Continuing.");
-            // return new ExecManagerResult(-1, "Command not allowed.");
+            if(safe){
+                logger.log(this.level, "Suspicious command (" + cmd + "), blocked");
+                return new ExecManagerResult();
+            }else{
+                logger.log(this.level, "Suspicious command (" + cmd + "), allowing");
+            }
         }
-
-        // !!! also global flag to show all
 
         try {
             ExecManagerStatus status = execStatistics.get(cmd);
@@ -221,7 +239,7 @@ public class ExecManagerImpl implements ExecManager
      */
     public String execOutput(String cmd)
     {
-        return exec(cmd, false).getOutput();
+        return exec(cmd, false, false).getOutput();
     }
 
 
@@ -237,7 +255,35 @@ public class ExecManagerImpl implements ExecManager
     public String execOutput(String cmd, boolean rateLimit)
     {
 
-           return exec(cmd, rateLimit).getOutput();
+           return exec(cmd, rateLimit, false).getOutput();
+    }
+
+    /**
+     * Execute a command and return the command output
+     * 
+     * @param cmd
+     *        The String command to execute and optionally the rateLimit flag
+     * @return The output from the command
+     */
+    public String execOutputSafe(String cmd)
+    {
+        return exec(cmd, false, true).getOutput();
+    }
+
+
+    /**
+     * Execute a command and return the command output
+     * 
+     * @param cmd
+     *        The String command to execute and optionally the rateLimit flag
+     * @param rateLimit
+     *        If this request should be rate limited or not
+     * @return The output from the command
+     */
+    public String execOutputSafe(String cmd, boolean rateLimit)
+    {
+
+           return exec(cmd, rateLimit, true).getOutput();
     }
 
     /**
