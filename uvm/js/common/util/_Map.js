@@ -224,7 +224,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'number' }
         },
         domain: {
-            col: { text: 'Domain'.t(), width: 120 },
+            col: { text: 'Domain'.t(), width: 120, flex: 1 },
             fld: { type: 'string' }
         },
         elapsed_time: {
