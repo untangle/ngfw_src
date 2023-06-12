@@ -339,6 +339,56 @@ def verify_wrk_configuration():
         return False
     return True
 
+def verify_kerberos():
+    """
+    Verify kerberos is installed
+    """
+    wrk_available = remote_control.run_command(f"which kinit 1> /dev/null 2>&1")
+    if wrk_available != 0:
+        print("init not available")
+        return False
+    return True
+
+def kerberos_authenticate(user=None, password=None):
+    """
+    Perform kerberos authentication.
+
+    Retrns True if success, False otherwise.
+    """
+    return remote_control.run_command(build_kerberos_command(user, password)) == 0
+
+
+def build_kerberos_command(user=None, password=None, override_arguments=None, extra_arguments=None):
+    """
+    Build kerberos kinit command
+
+    Default arguments should be evident, but of particular note are:
+    override_arguments  If you really want to ignore the standard arguments and options, use it.  For example, if you really wanted to use hsts.
+    extra_arguments     Additional arguments not otherwise processed.
+    """
+    if user is None:
+        user = "USER"
+
+    if password is not None:
+        password_command = f"echo '{password}' | "
+    else:
+        password_command = ""
+
+    arguments = []
+    if override_arguments is not None:
+        # Allow completely custom arguments
+        arguments = override_arguments
+
+    optional_arguments = []
+
+    if extra_arguments is not None:
+        optional_arguments.append(extra_arguments)
+
+    command = f"{password_command}kinit {' '.join(arguments)} {' '.join(optional_arguments)} \"{user}\""
+
+    print(f"{sys._getframe().f_code.co_name}: {command}" )
+    return command
+
 def wait_for_event_queue_drain(queue_size_key="eventQueueSize"):
     """
     Run wrk and wait for specified queue to drain below a minimum amount
