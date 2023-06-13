@@ -12,7 +12,7 @@ from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-
+import runtests.overrides as overrides
 
 default_policy_id = 1
 app = None
@@ -21,7 +21,14 @@ AD_RESULT = 1
 RADIUS_RESULT = 1
 
 # pdb.set_trace()
-
+ACTIVE_DIRECTORY = WG_REMOTE = overrides.get("ACTIVE_DIRECTORY", default={
+    "serverAddress": "10.112.56.46",
+    "serverAdminUser": "ATSadmin",
+    "serverAdminPassword": "passwd",
+    "serverDomain": "adtest.adtesting.int",
+    "clientUser": "user_28004",
+    "clientPassword": "passwd"
+})
 
 def create_ad_settings(ldap_secure=False):
     """
@@ -35,23 +42,12 @@ def create_ad_settings(ldap_secure=False):
     return {
         "apiEnabled": True,
         "activeDirectorySettings": {
-            "LDAPHost": global_functions.AD_SERVER,
-            "LDAPSecure": ldap_secure,
-            "LDAPPort": ldap_port,
-            "OUFilter": "",
-            "OUFilters": {
-                "javaClass": "java.util.LinkedList",
-                "list": []
-            },
-            "domain": global_functions.AD_DOMAIN,
             "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
-            "superuser": global_functions.AD_ADMIN,
-            "superuserPass": global_functions.AD_PASSWORD,
             "enabled": True,
             "servers": {
                 "javaClass": "java.util.LinkedList",
                 "list": [{
-                    "LDAPHost": global_functions.AD_SERVER,
+                    "LDAPHost": ACTIVE_DIRECTORY["serverAddress"],
                     "LDAPSecure": ldap_secure,
                     "LDAPPort": ldap_port,
                     "OUFilter": "",
@@ -59,11 +55,11 @@ def create_ad_settings(ldap_secure=False):
                         "javaClass": "java.util.LinkedList",
                         "list": []
                     },
-                    "domain": global_functions.AD_DOMAIN,
+                    "domain": ACTIVE_DIRECTORY["serverDomain"],
                     "enabled": True,
                     "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
-                    "superuser": global_functions.AD_ADMIN,
-                    "superuserPass": global_functions.AD_PASSWORD
+                    "superuser": ACTIVE_DIRECTORY["serverAdminUser"],
+                    "superuserPass": ACTIVE_DIRECTORY["serverAdminPassword"]
                 }]
             }
         },
@@ -89,23 +85,12 @@ def create_radius_settings():
     return {
         "apiEnabled": True,
         "activeDirectorySettings": {
-                    "LDAPHost": global_functions.AD_SERVER,
-                    "LDAPSecure": True,
-                    "LDAPPort": "636",
-                    "OUFilter": "",
-                    "OUFilters": {
-                        "javaClass": "java.util.LinkedList",
-                        "list": []
-                    },
-                    "domain": global_functions.AD_DOMAIN,
-                    "enabled": True,
-                    "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
-                    "superuser": global_functions.AD_ADMIN,
-                    "superuserPass": global_functions.AD_PASSWORD,
+            "enabled": True,
+            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "servers": {
                 "javaClass": "java.util.LinkedList",
                 "list": [{
-                    "LDAPHost": global_functions.AD_SERVER,
+                    "LDAPHost": ACTIVE_DIRECTORY["serverAddress"],
                     "LDAPSecure": True,
                     "LDAPPort": "636",
                     "OUFilter": "",
@@ -113,11 +98,11 @@ def create_radius_settings():
                         "javaClass": "java.util.LinkedList",
                         "list": []
                     },
-                    "domain": global_functions.AD_DOMAIN,
+                    "domain": ACTIVE_DIRECTORY["serverDomain"],
                     "enabled": True,
                     "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
-                    "superuser": global_functions.AD_ADMIN,
-                    "superuserPass": global_functions.AD_PASSWORD
+                    "superuser": ACTIVE_DIRECTORY["serverAdminUser"],
+                    "superuserPass": ACTIVE_DIRECTORY["serverAdminPassword"]
                 }]
             }
         },
@@ -157,6 +142,7 @@ def add_ad_settings(ldap_secure=False):
     if ("PASS" in test_result_string['status']):
         # settings are good so save them
         app.setSettings(create_ad_settings())
+
         return 0
     else:
         # settings failed
@@ -235,7 +221,8 @@ class DirectoryConnectorTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global AD_RESULT, AD_RESULT, RADIUS_RESULT
 
-        AD_RESULT = subprocess.call(["ping", "-c", "1", global_functions.AD_SERVER], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # AD_RESULT = subprocess.call(["ping", "-c", "1", global_functions.AD_SERVER], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        AD_RESULT = subprocess.call(["ping", "-c", "1", ACTIVE_DIRECTORY["serverAddress"]], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", global_functions.RADIUS_SERVER], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # enable the API for testing
@@ -417,7 +404,7 @@ class DirectoryConnectorTests(NGFWTestCase):
         # check for known user "tempuser" in AD user list
         for i in range(len(appADData)):
             userName = appADData[i]['uid']
-            if (global_functions.AD_USER in userName):
+            if (ACTIVE_DIRECTORY["clientUser"] in userName):
                 result = 0
             # print('userName %s' % userName)
         assert (result == 0)
@@ -441,12 +428,47 @@ class DirectoryConnectorTests(NGFWTestCase):
         # check for known user "tempuser" in AD user list
         for i in range(len(appADData)):
             userName = appADData[i]['uid']
-            if (global_functions.AD_USER in userName):
+            if (ACTIVE_DIRECTORY["clientUser"] in userName):
                 result = 0
             # print('userName %s' % userName)
         assert (result == 0)
 
-    def test_060_setRadiusSettings(self):
+    def test_060_user_authentication_adlm(self):
+        """
+        Authenticate against an active directory server with Active Directory Login monitor installed
+        """
+        if global_functions.verify_kerberos() is False:
+            raise unittest.SkipTest("kerberos not installed")
+
+        # Clear host entry for this IP address.
+        uvmContext.hostTable().clear()
+
+        for iteration in range(1,3):
+            global_functions.kerberos_authenticate(user=f"{ACTIVE_DIRECTORY['clientUser']}@{ACTIVE_DIRECTORY['serverDomain'].upper()}", password=ACTIVE_DIRECTORY['clientPassword'])
+
+            # Wait for the authentication to complete and adlm send the registration event
+            # Not a great way to do this as the registration could occur at the end of
+            # the kerberos authentication call.  So non-deterministicly wait 5 seconds.
+            time.sleep(5)
+
+            if iteration == 1:
+                # First time in, expecting an authenticate event
+                want_type = 'A'
+            else:
+                # Subsequent logins, the authenticate is changed to an update
+                want_type = 'U' 
+            global_functions.get_and_check_events(
+                prefix="authenticate",
+                report_category="Directory Connector",
+                report_title='API Events',
+                matches={
+                    "login_name": ACTIVE_DIRECTORY['clientUser'],
+                    "domain": ACTIVE_DIRECTORY['serverDomain'],
+                    "login_type": "A",
+                    "type": want_type
+                })
+
+    def test_070_setRadiusSettings(self):
         """
         Test and save settings for test Radius server
         """

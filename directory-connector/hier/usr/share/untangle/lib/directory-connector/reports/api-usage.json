@@ -11,11 +11,13 @@
     "table": "directory_connector_login_events",
     "timeDataColumns": [
         "sum(case when type='I' then 1 else 0 end) as logins",
+        "sum(case when type='A' then 1 else 0 end) as authentications",
         "sum(case when type='O' then 1 else 0 end) as logouts",
         "sum(case when type='U' then 1 else 0 end) as updates"
     ],
     "colors": [
         "#396c2b",
+        "#4caf50",
         "#0099ff",
         "#6600ff"
     ],
