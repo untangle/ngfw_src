@@ -1803,6 +1803,47 @@ class NetworkTests(NGFWTestCase):
         assert dhcp_results["dhcp"]["domain_name_server"] == lan_dns, "dns address overridden"
         assert dhcp_results["dhcp"]["time_server"] == time_server, "option for time server"
 
+        # Extended options
+        multi_dns_addresses="1.2.3.4, 2.3.4.5, 3.4.5.6"
+        vendor_specific_string="ConfigServers=10.0.63.10, country=1, language=1, layer2tagging=1, vlanid=13"
+        lan_interface["dhcpOptions"]["list"] = [{
+            "description": "multi DNS",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DhcpOption",
+            "value": f"6,{multi_dns_addresses}"
+        },{
+            "description": "non-quoted vendor specific information",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DhcpOption",
+            "value": f"43,{vendor_specific_string}"
+        }]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        dhcp_results = global_functions.get_dhcp_client_results()
+        if dhcp_results["no_privileges"]:
+            raise unittest.SkipTest("client does not have privileges")
+        print(dhcp_results)
+
+        assert dhcp_results["dhcp"]["domain_name_server"] == multi_dns_addresses, "multi dns address overridden"
+        assert dhcp_results["dhcp"]["vendor_specific_information"] == vendor_specific_string, "vendor specific string"
+
+        # Extended options - quoted string
+        # String should come back as if it were not quoted
+        lan_interface["dhcpOptions"]["list"] = [{
+            "description": "quoted vendor specific information",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DhcpOption",
+            "value": f"43,\"{vendor_specific_string}\""
+        }]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        dhcp_results = global_functions.get_dhcp_client_results()
+        if dhcp_results["no_privileges"]:
+            raise unittest.SkipTest("client does not have privileges")
+        print(dhcp_results)
+
+        assert dhcp_results["dhcp"]["vendor_specific_information"] == vendor_specific_string, "vendor specific string"
+
     def test_352_lan_dhcp_relay(self):
         """
         Verify DHCP dhcp on LAN interface
