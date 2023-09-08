@@ -1071,6 +1071,52 @@ class UvmTests(NGFWTestCase):
 
         assert(result == 0)
 
+    def test_170_log_retention(self):
+        """
+        Verify log retention policy
+        """
+        # Pattern to parse:
+        # rotating pattern: /var/log/uvm/uvm.log  512000 bytes (7 rotations)
+        # We want file name and rotation count
+        rotating_pattern = re.compile(r'rotating pattern: ([^\s]+) .* \((\d+) rotations\)')
+
+        system_settings = uvmContext.systemManager().getSettings()
+        previous_log_retention = system_settings["logRetention"]
+
+        # Build hash of current log files and their rotation values
+        previous_logrotate_log_rotations = {}
+        logrotate_test_output_lines = subprocess.check_output("logrotate -d /etc/logrotate.conf 2>&1 | grep 'rotating pattern:' | grep rotations", shell=True).decode('utf-8').split("\n")
+        for line in logrotate_test_output_lines:
+            match = re.search(rotating_pattern, line)
+            if match:
+                log_file = match.group(1)
+                rotations = match.group(2)
+                previous_logrotate_log_rotations[log_file] = rotations
+                print(f"previous {log_file} {rotations}")
+
+        # Update the new rotation to be different than previous
+        new_log_retention = previous_log_retention * 2
+        if previous_log_retention > 10:
+            new_log_retention = int(previous_log_retention/2)
+
+        system_settings["logRetention"] = new_log_retention
+        uvmContext.systemManager().setSettings(system_settings)
+
+        logrotate_test_output_lines = subprocess.check_output("logrotate -d /etc/logrotate.conf 2>&1 | grep 'rotating pattern:' | grep rotations", shell=True).decode('utf-8').split("\n")
+        same_rotation = False
+        for line in logrotate_test_output_lines:
+            match = re.search(rotating_pattern, line)
+            if match:
+                log_file = match.group(1)
+                rotations = match.group(2)
+                print(f"new {log_file} {rotations}")
+                if log_file in previous_logrotate_log_rotations and previous_logrotate_log_rotations[log_file] == rotations:
+                    # Previous and new rotation for this file has not changed
+                    same_rotation = True
+                    break
+
+        assert same_rotation is False, "previous and new rotations changed"
+
     def test_200_dashboard_free_disk_space(self):
         """Check if full disk space is within range """
         df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('utf-8').split(' ')
