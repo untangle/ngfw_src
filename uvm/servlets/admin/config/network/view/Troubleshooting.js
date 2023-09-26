@@ -330,8 +330,11 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                             "FILENAME": filename
                         };
                     },
-                    interface: function(get){
-                        return get('settings.interfaces.list')[0]["systemDev"];
+                    interface: {
+                        single: true,
+                        get: function(get){
+                            return get('settings.interfaces.list')[0]["systemDev"];
+                        }
                     },
                     interfacesListSystemDev: function (get) {
                         var data = [], i,
