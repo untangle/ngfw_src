@@ -36,6 +36,7 @@ public class IpsecVpnManager
     private static final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
     private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
+    private static final String VTI_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-vti-updown";
 
     private static final String IPSEC_APP = "/sbin/ipsec";
 
@@ -318,25 +319,47 @@ public class IpsecVpnManager
 
                     ipsec_conf.write(TAB + "left=" + this.resolveLeftAddress(data.getLeft()) + RET);
 
-                    // use the configured leftid if available otherwise use left
-                    if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
-                        ipsec_conf.write(TAB + "leftid=" + data.getLeftId() + RET);
-                    } else {
-                        ipsec_conf.write(TAB + "leftid=" + this.resolveLeftAddress(data.getLeft()) + RET);
+                    if(data.getAllSubnetNegotation()){
+                        ipsec_conf.write(TAB + "leftsubnet=0.0.0.0/0" + RET);
+                    }else{
+                        // use the configured leftid if available otherwise use left
+                        if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
+                            ipsec_conf.write(TAB + "leftid=" + data.getLeftId() + RET);
+                        } else {
+                            ipsec_conf.write(TAB + "leftid=" + this.resolveLeftAddress(data.getLeft()) + RET);
+                        }
+                        ipsec_conf.write(TAB + "leftsubnet=" + data.getLeftSubnet() + RET);
                     }
-
-                    ipsec_conf.write(TAB + "leftsubnet=" + data.getLeftSubnet() + RET);
                     ipsec_conf.write(TAB + "right=" + data.getRight() + RET);
 
-                    // use the configured rightid if available otherwise use right
-                    if ((data.getRightId() != null) && (data.getRightId().length() > 0)) {
-                        ipsec_conf.write(TAB + "rightid=" + data.getRightId() + RET);
-                    } else {
-                        ipsec_conf.write(TAB + "rightid=" + data.getRight() + RET);
-                    }
+                    if(data.getAllSubnetNegotation()){
+                        ipsec_conf.write(TAB + "rightsubnet=0.0.0.0/0" + RET);
+                    }else{
+                        // use the configured rightid if available otherwise use right
+                        if ((data.getRightId() != null) && (data.getRightId().length() > 0)) {
+                            ipsec_conf.write(TAB + "rightid=" + data.getRightId() + RET);
+                        } else {
+                            ipsec_conf.write(TAB + "rightid=" + data.getRight() + RET);
+                        }
 
-                    ipsec_conf.write(TAB + "rightsubnet=" + data.getRightSubnet() + RET);
+                        ipsec_conf.write(TAB + "rightsubnet=" + data.getRightSubnet() + RET);
+                    }
                     ipsec_conf.write(TAB + "auto=" + data.getRunmode() + RET);
+                    if(data.getAllSubnetNegotation()){
+                        int interfaceId = UvmContextFactory.context().networkManager().getNextFreeInterfaceId(UvmContextFactory.context().networkManager().getNetworkSettings());
+                        ipsec_conf.write(TAB + "mark=" + Integer.toString(interfaceId) + RET);
+
+                        // Build list of remote networks and local hosts to use as source address such as:
+                        // 192.168.251.0/24:192.168.253.50,192.168.254.0/24:192.168.253.50
+                        LinkedList<String> networks = new LinkedList<String>();
+                        for(String rightNetwork: data.getRightSubnet().split(",")){
+                            for(String left: data.getLeftSubnet().split(",")){
+                                networks.add(rightNetwork + ":" + left.split("/")[0]);
+                            }
+                        }
+
+                        ipsec_conf.write(TAB + "leftupdown=" + VTI_UPDOWN_SCRIPT + " " + Integer.toString(interfaceId) + " " + String.join(",", networks) + RET);
+                    }
                     ipsec_conf.write(RET);
 
                     // add the tunnel PSK to the ipsec.secrets file
