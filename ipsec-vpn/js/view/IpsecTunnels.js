@@ -285,6 +285,16 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         layout: 'column',
         margin: '0 0 5 0',
         items: [{
+            xtype:'checkbox',
+            bind: '{record.allSubnetNegotation}',
+            fieldLabel: 'Full Tunnel Mode Negotiation'.t(),
+            labelWidth: 300
+        }]
+    }, {
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
             xtype: 'textfield',
             bind: {
                 value: '{record.leftSubnet}',
