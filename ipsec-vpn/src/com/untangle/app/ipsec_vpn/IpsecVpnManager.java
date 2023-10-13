@@ -147,7 +147,7 @@ public class IpsecVpnManager
         for (int x = 0; x < tunnelList.size(); x++) {
             tunnel = tunnelList.get(x);
             if (tunnel.getActive() != true) continue;
-            if (tunnel.getRunmode().equals("start")) {
+            if (tunnel.getRunmode().equals("start") && tunnel.getAllSubnetNegotation() == false) {
                 UvmContextFactory.context().execManager().exec("ipsec route " + tunnel.getWorkName());
             }
         }
@@ -322,27 +322,30 @@ public class IpsecVpnManager
                     if(data.getAllSubnetNegotation()){
                         ipsec_conf.write(TAB + "leftsubnet=0.0.0.0/0" + RET);
                     }else{
-                        // use the configured leftid if available otherwise use left
-                        if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
-                            ipsec_conf.write(TAB + "leftid=" + data.getLeftId() + RET);
-                        } else {
+                        ipsec_conf.write(TAB + "leftsubnet=" + data.getLeftSubnet() + RET);
+                    }
+                    // use the configured leftid if available otherwise use left
+                    if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
+                        ipsec_conf.write(TAB + "leftid=" + data.getLeftId() + RET);
+                    } else {
+                        if(data.getAllSubnetNegotation() == false){
                             ipsec_conf.write(TAB + "leftid=" + this.resolveLeftAddress(data.getLeft()) + RET);
                         }
-                        ipsec_conf.write(TAB + "leftsubnet=" + data.getLeftSubnet() + RET);
                     }
                     ipsec_conf.write(TAB + "right=" + data.getRight() + RET);
 
                     if(data.getAllSubnetNegotation()){
                         ipsec_conf.write(TAB + "rightsubnet=0.0.0.0/0" + RET);
                     }else{
-                        // use the configured rightid if available otherwise use right
-                        if ((data.getRightId() != null) && (data.getRightId().length() > 0)) {
-                            ipsec_conf.write(TAB + "rightid=" + data.getRightId() + RET);
-                        } else {
+                        ipsec_conf.write(TAB + "rightsubnet=" + data.getRightSubnet() + RET);
+                    }
+                    // use the configured rightid if available otherwise use right
+                    if ((data.getRightId() != null) && (data.getRightId().length() > 0)) {
+                        ipsec_conf.write(TAB + "rightid=" + data.getRightId() + RET);
+                    } else {
+                        if(data.getAllSubnetNegotation() == false){
                             ipsec_conf.write(TAB + "rightid=" + data.getRight() + RET);
                         }
-
-                        ipsec_conf.write(TAB + "rightsubnet=" + data.getRightSubnet() + RET);
                     }
                     ipsec_conf.write(TAB + "auto=" + data.getRunmode() + RET);
                     if(data.getAllSubnetNegotation()){
