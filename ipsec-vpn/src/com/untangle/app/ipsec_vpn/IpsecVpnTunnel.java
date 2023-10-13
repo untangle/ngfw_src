@@ -49,7 +49,7 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String rightProtoPort;
     private String rightNextHop;
     private String pingAddress;
-    private boolean allSubnetNegotation = true;
+    private boolean allSubnetNegotation = false;
 
     public IpsecVpnTunnel()
     {
