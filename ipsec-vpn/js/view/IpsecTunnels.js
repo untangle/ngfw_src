@@ -45,6 +45,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'phase2Hash': 'sha1',
         'phase2Group': 'modp2048',
         'phase2Lifetime' : '3600',
+        'allSubnetNegotation': true,
         'left': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftDefault']],
         'leftId': '',
         'leftSubnet': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftSubnetDefault']],
@@ -286,7 +287,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         margin: '0 0 5 0',
         items: [{
             xtype:'checkbox',
-            bind: '{record.allSubnetNegotation}',
+            bind: "{record.allSubnetNegotation}",
             fieldLabel: 'Full Tunnel Mode Negotiation'.t(),
             labelWidth: 300
         }]
