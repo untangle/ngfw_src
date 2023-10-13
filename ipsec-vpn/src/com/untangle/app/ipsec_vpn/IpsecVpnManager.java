@@ -357,7 +357,12 @@ public class IpsecVpnManager
                         LinkedList<String> networks = new LinkedList<String>();
                         for(String rightNetwork: data.getRightSubnet().split(",")){
                             for(String left: data.getLeftSubnet().split(",")){
-                                networks.add(rightNetwork + ":" + left.split("/")[0]);
+                                InetAddress gatewayAddress = UvmContextFactory.context().networkManager().getInterfaceAddressForNetwork(left.split("/")[0], Integer.parseInt(left.split("/")[1]));
+                                if(gatewayAddress == null){
+                                    logger.info("unable to get gateway address for left network " + left);
+                                }else{
+                                    networks.add(rightNetwork + ":" + gatewayAddress.getHostAddress());
+                                }
                             }
                         }
 
