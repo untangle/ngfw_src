@@ -63,12 +63,12 @@ case "${PLUTO_VERB}" in
                 fi
         done
         sysctl -w "net.ipv4.conf.${VTI_IF}.disable_policy=1"
-        echo "$(date) [$SCRIPT_ID] removing default route"
+        echo "$(date) [$SCRIPT_ID] removing default route
 
         # Strongswan ignores configuring charon.conf to not add routes and
         # will add the default route anyway.  Remove it and if the user really,
         # truly meant to do so, it will be re-added below.
-	ip route delete table ipsec default via "${PLUTO_PEER}"
+	ip route delete table ipsec default"
 
         for network_route in "${NETWORKS[@]}"; do
                 network=${network_route%%:*}
@@ -83,6 +83,3 @@ case "${PLUTO_VERB}" in
 	ip route delete table ipsec default via "${PLUTO_PEER}"
         ;;
 esac
-
-echo $(date) >> /tmp/dbg.txt
-export >> /tmp/dbg.txt
