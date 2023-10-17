@@ -103,6 +103,11 @@ public class IpsecVpnScriptWriter
             script.write("${IPTABLES} -t filter -I nat-reverse-filter -m policy --pol ipsec --dir in  -j RETURN -m comment --comment \"allow IPsec traffic\"" + RET);
             script.write("${IPTABLES} -t filter -I nat-reverse-filter -m policy --pol ipsec --dir out -j RETURN -m comment --comment \"allow IPsec traffic\"" + RET + RET);
 
+            script.write("${IPTABLES} -t filter -D nat-reverse-filter -i ipsec+ -j RETURN -m comment --comment \"allow IPsec traffic\" >/dev/null 2>&1" + RET);
+            script.write("${IPTABLES} -t filter -D nat-reverse-filter -i ipsec+ -j RETURN -m comment --comment \"allow IPsec traffic\" >/dev/null 2>&1" + RET);
+            script.write("${IPTABLES} -t filter -I nat-reverse-filter -o ipsec+ -j RETURN -m comment --comment \"allow IPsec traffic\"" + RET);
+            script.write("${IPTABLES} -t filter -I nat-reverse-filter -o ipsec+ -j RETURN -m comment --comment \"allow IPsec traffic\"" + RET + RET);
+
             script.write("# Do not NAT ipsec traffic even if its leaving a WAN" + RET);
             script.write("${IPTABLES} -t nat -D POSTROUTING -m policy --pol ipsec --dir out -j RETURN -m comment --comment \"do not NAT IPsec traffic\" >/dev/null 2>&1" + RET);
             script.write("${IPTABLES} -t nat -I POSTROUTING -m policy --pol ipsec --dir out -j RETURN -m comment --comment \"do not NAT IPsec traffic\"" + RET + RET);
@@ -110,6 +115,8 @@ public class IpsecVpnScriptWriter
             script.write("# Remove any existing IPsec traffic bypass rules" + RET);
             script.write("${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir out --goto set-bypass-mark >/dev/null 2>&1" + RET);
             script.write("${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir in  --goto set-bypass-mark >/dev/null 2>&1" + RET + RET);
+            script.write("${IPTABLES} -t filter -D bypass-rules -i ipsec+ --goto set-bypass-mark >/dev/null 2>&1" + RET);
+            script.write("${IPTABLES} -t filter -D bypass-rules -i ipsec+ --goto set-bypass-mark >/dev/null 2>&1" + RET + RET);
 
             script.write("# Bypass local to local traffic on IPsec if bypass flag is not set" + RET);
 

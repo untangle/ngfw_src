@@ -49,6 +49,7 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String rightProtoPort;
     private String rightNextHop;
     private String pingAddress;
+    private boolean allSubnetNegotation = false;
 
     public IpsecVpnTunnel()
     {
@@ -147,6 +148,9 @@ public class IpsecVpnTunnel implements JSONString, Serializable
 
     public String getPingAddress() { return(pingAddress); }
     public void setPingAddress(String pingAddress) { this.pingAddress = pingAddress; }
+
+    public boolean getAllSubnetNegotation() { return (allSubnetNegotation); }
+    public void setAllSubnetNegotation(boolean allSubnetNegotation) { this.allSubnetNegotation = allSubnetNegotation; }
 
     /*
     * Use the id and description to create a unique connection name that
