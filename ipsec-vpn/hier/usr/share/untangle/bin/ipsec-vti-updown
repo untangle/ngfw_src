@@ -1,0 +1,85 @@
+#!/bin/bash
+#
+# Bring up vti tunnel
+#
+# Arguments:
+# @param $1     Interface mark number
+# @param $2     Comma separated list of networks and the local LAN address to use as src, such as:
+#               192.168.251.0/24:192.168.253.50,192.168.254.0/24:192.168.253.50    
+#
+MARK=$1
+NETWORK_ROUTES=$2
+
+# Log output
+exec >> /var/log/ipsec.log 2>&1
+
+VTI_IF="ipsec${PLUTO_UNIQUEID}"
+SCRIPT_ID="$(basename $0),${VTI_IF}:${PLUTO_VERB}"
+
+NETWORKS=()
+while IFS=',' read -ra NETWORK_ROUTE_SETS; do
+     for network in "${NETWORK_ROUTE_SETS[@]}"; do
+         NETWORKS+=($network)
+     done
+done <<< "$NETWORK_ROUTES"
+
+case "${PLUTO_VERB}" in
+    up-client)
+        echo "$(date) [$SCRIPT_ID] initializing tunnel"
+        ip tunnel del "${VTI_IF}"
+        #
+        # Starting ipsec can be problematic with other network operations occuring at
+        # the same time, especially at system boot.  
+        # This causes a bunch of "up-client" and "down-client" operations
+        # to occur seemingly simultaneously or with enough overlap to cause
+        # tunnel creation/deletions to occur and the standard script to fail.
+        # To ensure we come up correctly loop until we successfully complete:
+        # - If existing tunnels with our mark exist, elete them
+        # - Create our tunnel
+        # - Bring the tunnel up
+        #
+        result=1
+        while [ $result -ne 0 ] ; do
+                sleep 1
+                old_if=$(ip tunnel list | grep "key ${MARK}" | cut -d: -f1)
+                if [ "${old_if}" != "" ]; then
+                        echo "$(date) [$SCRIPT_ID] ip tunnel del ${old_if}"
+                        ip tunnel del "${old_if}"
+                        result=$?
+                        if [ $result -ne 0 ]; then
+                                echo "failed....trying again"
+                                continue
+                        fi
+                fi
+                echo "$(date) [$SCRIPT_ID] ip tunnel add ${VTI_IF} local ${PLUTO_ME} remote 0.0.0.0 mode vti key ${MARK}"
+                ip tunnel add "${VTI_IF}" local "${PLUTO_ME}" remote 0.0.0.0 mode vti key "${MARK}"
+                result=$?
+                echo "$(date) [$SCRIPT_ID] tunnel add result=$result"
+                ip link set "${VTI_IF}" up
+                result=$?
+                echo "$(date) [$SCRIPT_ID] tunnel link set result=$result"
+                if [ $result -ne 0 ]; then
+                        echo "failed....trying again"
+                fi
+        done
+        sysctl -w "net.ipv4.conf.${VTI_IF}.disable_policy=1"
+        echo "$(date) [$SCRIPT_ID] removing default route"
+
+        # Strongswan ignores configuring charon.conf to not add routes and
+        # will add the default route anyway.  Remove it and if the user really,
+        # truly meant to do so, it will be re-added below.
+	ip route delete table ipsec default
+
+        for network_route in "${NETWORKS[@]}"; do
+                network=${network_route%%:*}
+                src=${network_route#*:}
+                echo "$(date) [$SCRIPT_ID] adding route for ${network} via ${src}"
+                ip route add table ipsec ${network} dev "${VTI_IF}" src ${src}
+        done
+        ;;
+    down-client)
+        echo "$(date) [$SCRIPT_ID] removing tunnel"
+        ip tunnel del "${VTI_IF}"
+	ip route delete table ipsec default via "${PLUTO_PEER}"
+        ;;
+esac

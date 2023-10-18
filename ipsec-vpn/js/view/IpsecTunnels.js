@@ -45,6 +45,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'phase2Hash': 'sha1',
         'phase2Group': 'modp2048',
         'phase2Lifetime' : '3600',
+        'allSubnetNegotation': true,
         'left': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftDefault']],
         'leftId': '',
         'leftSubnet': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftSubnetDefault']],
@@ -279,6 +280,16 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'displayfield',
             margin: '0 0 0 10',
             value: 'The authentication ID of the remote IPsec gateway. Default = same as <B>Remote Host</B>'.t()
+        }]
+    }, {
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
+            xtype:'checkbox',
+            bind: "{record.allSubnetNegotation}",
+            fieldLabel: 'Full Tunnel Mode Negotiation'.t(),
+            labelWidth: 300
         }]
     }, {
         xtype: 'container',
