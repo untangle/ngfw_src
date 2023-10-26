@@ -332,8 +332,11 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "leftid=" + this.resolveLeftAddress(data.getLeft()) + RET);
                         }
                     }
-                    ipsec_conf.write(TAB + "right=" + data.getRight() + RET);
+                    if ((data.getLeftSourceIp() != null) && (data.getLeftSourceIp().length() > 0)) {
+                        ipsec_conf.write(TAB + "leftsourceip=" + data.getLeftSourceIp() + RET);
+                    }
 
+                    ipsec_conf.write(TAB + "right=" + data.getRight() + RET);
                     if(data.getAllSubnetNegotation()){
                         ipsec_conf.write(TAB + "rightsubnet=0.0.0.0/0" + RET);
                     }else{
@@ -347,6 +350,10 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "rightid=" + data.getRight() + RET);
                         }
                     }
+                    if ((data.getRightSourceIp() != null) && (data.getRightSourceIp().length() > 0)) {
+                        ipsec_conf.write(TAB + "rightsourceip=" + data.getRightSourceIp() + RET);
+                    }
+
                     ipsec_conf.write(TAB + "auto=" + data.getRunmode() + RET);
                     if(data.getAllSubnetNegotation()){
                         int interfaceId = UvmContextFactory.context().networkManager().getNextFreeInterfaceId(UvmContextFactory.context().networkManager().getNetworkSettings());
