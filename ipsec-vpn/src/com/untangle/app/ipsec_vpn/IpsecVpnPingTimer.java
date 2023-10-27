@@ -55,7 +55,7 @@ public class IpsecVpnPingTimer extends TimerTask
             activeFlag = false;
             failCounter = 0;
             cycleMark = 0;
-            controlName = ("UT" + Integer.toString(tunnelId) + "_" + tunnelName);
+            controlName = ("UT" + Integer.toString(tunnelId) + "_" + tunnelName.replaceAll(" ", "-"));
         }
     }
 
