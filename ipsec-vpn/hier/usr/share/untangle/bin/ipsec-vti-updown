@@ -10,11 +10,21 @@
 MARK=$1
 NETWORK_ROUTES=$2
 
+[ -f /tmp/$(basename $0).debug ] && DEBUG=1 || DEBUG=0
+
 # Log output
 exec >> /var/log/ipsec.log 2>&1
 
-VTI_IF="ipsec${PLUTO_UNIQUEID}"
 SCRIPT_ID="$(basename $0),${VTI_IF}:${PLUTO_VERB}"
+echo "$(date) [$SCRIPT_ID] begin $DEBUG"
+
+VTI_IF="ipsec${PLUTO_UNIQUEID}"
+
+if [ $DEBUG -eq 1 ]; then
+        while IFS= read -ra var; do
+                echo "$(date) [$SCRIPT_ID] $var"
+        done <<< $(export)
+fi
 
 NETWORKS=()
 while IFS=',' read -ra NETWORK_ROUTE_SETS; do
@@ -70,16 +80,51 @@ case "${PLUTO_VERB}" in
         # truly meant to do so, it will be re-added below.
 	ip route delete table ipsec default
 
+        if [ "${PLUTO_MY_SOURCEIP}" != "" ] ; then
+                # Local side processing
+                # Add our IP address to the tunnel interface
+                ip addr del ${PLUTO_MY_SOURCEIP} dev ${PLUTO_INTERFACE}
+                echo "$(date) [$SCRIPT_ID] adding source address ${PLUTO_MY_SOURCEIP} to dev ${VTI_IF}"
+                ip addr add ${PLUTO_MY_SOURCEIP} dev ${VTI_IF}
+                echo "$(date) [$SCRIPT_ID] inserting nat masquerade rule for ${PLUTO_MY_SOURCEIP} on ${VTI_IF}"
+
+                # This mode is pretty much a guarantee to need NAT for clients on our local networks
+                iptables -t nat -D tunnel-postrouting-rules -o ${VTI_IF} -j MASQUERADE
+                iptables -t nat -I tunnel-postrouting-rules -o ${VTI_IF} -j MASQUERADE
+        fi
+
+        if [ "${PLUTO_PEER_SOURCEIP}" != "" ] ; then
+                # Remote side processing; add a route for the peer virtual IP to go through our tunnel
+                echo "$(date) [$SCRIPT_ID] adding route for ${network} dev ${VTI_IF}"
+                ip route add table ipsec ${PLUTO_PEER_SOURCEIP}/32 dev ${VTI_IF}
+        fi
+
+        # Add routes
         for network_route in "${NETWORKS[@]}"; do
                 network=${network_route%%:*}
-                src=${network_route#*:}
-                echo "$(date) [$SCRIPT_ID] adding route for ${network} via ${src}"
-                ip route add table ipsec ${network} dev "${VTI_IF}" src ${src}
+                if [ "${PLUTO_MY_SOURCEIP}" != "" ] ; then
+                        # If we were given an address from peer use that
+                        src=${PLUTO_MY_SOURCEIP}
+                else
+                        # Otherwise, use our calculated LAN address
+                        src=${network_route#*:}
+                fi
+                table=ipsec
+                if [ "${network}" = "0.0.0.0/0" ] ; then
+                        # Add default route to uplink table
+                        table=uplink.ipsec
+                fi
+                echo "$(date) [$SCRIPT_ID] adding route for ${network} via ${src} to table ${table} for ${VTI_IF}"
+                ip route add table ${table} ${network} dev ${VTI_IF} src ${src}
         done
         ;;
     down-client)
         echo "$(date) [$SCRIPT_ID] removing tunnel"
+        iptables -t nat -D tunnel-postrouting-rules -o ${VTI_IF} -j MASQUERADE
         ip tunnel del "${VTI_IF}"
 	ip route delete table ipsec default via "${PLUTO_PEER}"
+        ip route flush table uplink.ipsec
         ;;
 esac
+
+echo "$(date) [$SCRIPT_ID] end"

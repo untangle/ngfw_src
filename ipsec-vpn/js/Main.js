@@ -232,6 +232,12 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                 return 'Any Remote Host'.t();
             }
             return value;
+        },
+        sourceRenderer: function(value, meta, record, rowIndex, columnIndex, store, table){
+            if(value == '%config'){
+                return 'Request From Peer'.t();
+            }
+            return value;
         }
     }
 });

@@ -48,14 +48,17 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'allSubnetNegotation': true,
         'left': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftDefault']],
         'leftId': '',
+        'leftSourceIp': '',
         'leftSubnet': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftSubnetDefault']],
         'right': '',
         'rightId': '',
+        'rightSourceIp': '',
         'rightSubnet': '',
         'description': '',
         'secret': '',
         'localInterface': 0,
         'rightAny': false,
+        'leftSourceIpAny': false,
         'pingAddress': ''
         },
 
@@ -78,9 +81,19 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         dataIndex: 'right',
         renderer: Ung.apps.ipsecvpn.Main.rightRenderer
     }, {
+        header: 'Local Source IP Address'.t(),
+        width: 200,
+        dataIndex: 'leftSourceIp',
+        renderer: Ung.apps.ipsecvpn.Main.sourceRenderer
+    }, {
         header: 'Local Network'.t(),
         width: Renderer.networkWidth,
         dataIndex: 'leftSubnet',
+    }, {
+        header: 'Remote Source IP Address'.t(),
+        width: 200,
+        dataIndex: 'rightSourceIp',
+        renderer: Ung.apps.ipsecvpn.Main.sourceRenderer
     }, {
         header: 'Remote Network'.t(),
         width: Renderer.networkWidth,
@@ -104,7 +117,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'checkbox',
             bind: '{record.active}',
             fieldLabel: 'Enabled'.t(),
-            labelWidth: 120
+            labelWidth: 180
         }]
     }, {
         xtype: 'container',
@@ -114,7 +127,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'textfield',
             bind: '{record.description}',
             fieldLabel: 'Description'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             allowBlank: false,
             width: 500
         }]
@@ -125,7 +138,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         items: [{
             xtype:'combobox',
             fieldLabel: 'Connection Type'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             editable: false,
             width: 400,
             bind: '{record.conntype}',
@@ -142,7 +155,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         items: [{
             xtype:'combobox',
             fieldLabel: 'IKE Version'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             editable: false,
             bind: '{record.ikeVersion}',
             store: [[1,'IKEv1'],[2,'IKEv2']]
@@ -158,7 +171,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         items: [{
             xtype:'combobox',
             fieldLabel: 'Connect Mode'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             editable: false,
             bind: {
                 disabled: '{record.rightAny == true}',
@@ -173,7 +186,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         items: [{
             xtype: 'combobox',
             fieldLabel: 'Interface'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             bind: {
                 store: '{wanListStore}',
                 value: '{record.localInterface}'
@@ -200,13 +213,13 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             },
             fieldLabel: 'Local Address'.t(),
             fieldIndex: 'externalAddress',
-            labelWidth: 120,
+            labelWidth: 180,
             allowBlank: false,
             // vtype: 'ipAddress'
         },{
             xtype: 'displayfield',
             fieldLabel: 'Local Address'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             itemId: 'externalAddressCurrent',
             value: '',
             bind: {
@@ -225,7 +238,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype:'checkbox',
             bind: '{record.rightAny}',
             fieldLabel: 'Any Remote Host'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             listeners: {
                 change: 'anyRemoteHostChange'
             }
@@ -246,7 +259,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'textfield',
             bind: '{record.right}',
             fieldLabel: 'Remote Host'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             allowBlank: false,
         }, {
             xtype: 'displayfield',
@@ -261,7 +274,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'textfield',
             bind: '{record.leftId}',
             fieldLabel: 'Local Identifier'.t(),
-            labelWidth: 120
+            labelWidth: 180
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
@@ -275,7 +288,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'textfield',
             bind: '{record.rightId}',
             fieldLabel: 'Remote Identifier'.t(),
-            labelWidth: 120
+            labelWidth: 180
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
@@ -289,7 +302,39 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype:'checkbox',
             bind: "{record.allSubnetNegotation}",
             fieldLabel: 'Full Tunnel Mode Negotiation'.t(),
-            labelWidth: 300
+            labelWidth: 180
+        }]
+    },{
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
+            xtype:'checkbox',
+            bind: '{record.leftSourceIpAny}',
+            fieldLabel: 'Local Source IP Address'.t(),
+            labelWidth: 180,
+            listeners: {
+                change: 'anyLeftSourceChange'
+            }
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: 'Request From Peer'.t()
+        }]
+    }, {
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        bind: {
+            hidden: '{record.leftSourceIpAny == true}',
+            disabled: '{record.leftSourceIpAny == true}'
+        },
+        items: [{
+            xtype:'textfield',
+            bind: "{record.leftSourceIp}",
+            fieldLabel: '&nbsp;',
+            labelSeparator: '',
+            labelWidth: 180,
         }]
     }, {
         xtype: 'container',
@@ -303,7 +348,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 disabled: '{record.ikeVersion !== 1}'
             },
             fieldLabel: 'Local Network'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             width: 500,
             allowBlank: false,
             vtype: 'cidrBlock'
@@ -315,7 +360,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 disabled: '{record.ikeVersion !== 2}'
             },
             fieldLabel: 'Local Network'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             width: 500,
             allowBlank: false,
             vtype: 'cidrBlockList'
@@ -335,6 +380,16 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         layout: 'column',
         margin: '0 0 5 0',
         items: [{
+            xtype:'textfield',
+            bind: "{record.rightSourceIp}",
+            fieldLabel: 'Remote Source IP Address'.t(),
+            labelWidth: 180,
+        }]
+    }, {
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
             xtype: 'textfield',
             bind: {
                 value: '{record.rightSubnet}',
@@ -342,7 +397,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 disabled: '{record.ikeVersion !== 1}'
             },
             fieldLabel: 'Remote Network'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             width: 500,
             allowBlank: false,
             vtype: 'cidrBlock'
@@ -354,7 +409,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 disabled: '{record.ikeVersion !== 2}'
             },
             fieldLabel: 'Remote Network'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             width: 500,
             allowBlank: false,
             vtype: 'cidrBlockList'
@@ -377,7 +432,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'textfield',
             bind: '{record.secret}',
             fieldLabel: 'Shared Secret'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             width: 700,
             allowBlank: false
         }]
@@ -389,7 +444,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype:'numberfield',
             bind: '{record.dpddelay}',
             fieldLabel: 'DPD Interval'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             allowBlank: false,
             allowDecimals: false,
             minValue: 0,
@@ -407,7 +462,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype:'numberfield',
             bind: '{record.dpdtimeout}',
             fieldLabel: 'DPD Timeout'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             allowBlank: false,
             allowDecimals: false,
             minValue: 0,
@@ -426,7 +481,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             bind: '{record.pingAddress}',
             fieldLabel: 'Ping Address'.t(),
             vtype: 'ipAddress',
-            labelWidth: 120
+            labelWidth: 180
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
@@ -454,7 +509,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 store: '{P1CipherStore}'
             },
             fieldLabel: 'Encryption'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             width: 350,
             editable: false,
             displayField: 'name',
@@ -476,7 +531,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 store: '{P1HashStore}'
             },
             fieldLabel: 'Hash'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             editable: false,
             displayField: 'name',
             valueField: 'value'
@@ -497,7 +552,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 store: '{P1GroupStore}'
             },
             fieldLabel: 'DH Key Group'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             editable: false,
             displayField: 'name',
             valueField: 'value'
@@ -517,7 +572,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 value: '{record.phase1Lifetime}',
             },
             fieldLabel: 'Lifetime'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             allowBlank: false,
             allowDecimals: false,
             minValue: 3600,
@@ -549,7 +604,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 store: '{P2CipherStore}'
             },
             fieldLabel: 'Encryption'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             width: 350,
             editable: false,
             displayField: 'name',
@@ -571,7 +626,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 store: '{P2HashStore}'
             },
             fieldLabel: 'Hash'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             editable: false,
             displayField: 'name',
             valueField: 'value'
@@ -593,7 +648,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 store: '{P2GroupStore}'
             },
             fieldLabel: 'PFS Key Group'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             editable: false,
             displayField: 'name',
             valueField: 'value'
@@ -614,7 +669,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
                 hidden: '{!record.phase2Manual}'
             },
             fieldLabel: 'Lifetime'.t(),
-            labelWidth: 120,
+            labelWidth: 180,
             allowBlank: false,
             allowDecimals: false,
             minValue: 3600,

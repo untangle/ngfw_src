@@ -40,11 +40,13 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String phase2Lifetime = "3600";
     private String left;
     private String leftId;
+    private String leftSourceIp;
     private String leftSubnet;
     private String leftProtoPort;
     private String leftNextHop;
     private String right;
     private String rightId;
+    private String rightSourceIp;
     private String rightSubnet;
     private String rightProtoPort;
     private String rightNextHop;
@@ -122,6 +124,9 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     public String getLeftId() { return (leftId); }
     public void setLeftId(String leftId) { this.leftId = leftId; }
 
+    public String getLeftSourceIp() { return (leftSourceIp); }
+    public void setLeftSourceIp(String leftSourceIp) { this.leftSourceIp = leftSourceIp; }
+
     public String getLeftSubnet() { return (leftSubnet); }
     public void setLeftSubnet(String leftSubnet) { this.leftSubnet = leftSubnet; }
 
@@ -136,6 +141,9 @@ public class IpsecVpnTunnel implements JSONString, Serializable
 
     public String getRightId() { return (rightId); }
     public void setRightId(String rightId) { this.rightId = rightId; }
+
+    public String getRightSourceIp() { return (rightSourceIp); }
+    public void setRightSourceIp(String rightSourceIp) { this.rightSourceIp = rightSourceIp; }
 
     public String getRightSubnet() { return (rightSubnet); }
     public void setRightSubnet(String rightSubnet) { this.rightSubnet = rightSubnet; }
