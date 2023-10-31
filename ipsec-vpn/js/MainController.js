@@ -63,6 +63,9 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
                 if(status['dst'] == '%any'){
                     status['dst'] = 'Any Remote Host'.t();
                 }
+                if(status['leftSourceIp'] == '%config'){
+                    status['leftSourceIp'] = 'Request From Peer'.t();
+                }
             });
 
             vm.set('tunnelStatusData', result.list);
@@ -388,6 +391,9 @@ Ext.define('Ung.apps.ipsecvpn.cmp.TunnelRecordEditorController', {
         if(record.get('right') == '%any'){
             record.set('rightAny', true);
         }
+        if(record.get('leftSourceIp') == '%config'){
+            record.set('leftSourceIpAny', true);
+        }
         this.callParent([cmp]);
     },
 
@@ -411,6 +417,22 @@ Ext.define('Ung.apps.ipsecvpn.cmp.TunnelRecordEditorController', {
             record.set('runmode', me.lastRunMode != null ? me.lastRunMode : 'start');
         }
     },
+
+    lastLeftSourceIp: null,
+    anyLeftSourceChange: function(cmp, newValue, oldValue){
+        var me = this,
+            record = cmp.bind.value.owner.get('record');
+
+        if(newValue == true){
+            if(record.get('leftSourceIp') != '%config'){
+                me.lastLeftSourceIp = record.get('leftSourceIp');
+            }
+            record.set('leftSourceIp', '%config');
+        }else{
+            record.set('leftSourceIp', me.lastLeftSourceIp != null ? me.lastLeftSourceIp : '');
+        }
+    },
+
     interfaceChange: function(cmp, newValue, oldValue){
         var vm = cmp.ownerCt.ownerCt.ownerCt.getViewModel();
         var wanlist = vm.get('wanListData');

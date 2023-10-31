@@ -97,6 +97,11 @@ public class IpsecVpnScriptWriter
             script.write("${IPTABLES} -t nat -N l2tp-forward-rules >/dev/null 2>&1" + RET);
             script.write("${IPTABLES} -t nat -F l2tp-forward-rules >/dev/null 2>&1" + RET + RET);
 
+            script.write("# We put the IPSec nat rules in their own chain that we can flush" + RET);
+            script.write("# since the server address can be changed by the user meaning there is" + RET);
+            script.write("# no easy way to find and delete any old rules" + RET);
+            script.write("${IPTABLES} -t nat -N tunnel-postrouting-rules >/dev/null 2>&1" + RET);
+
             script.write("# Allow IPsec traffic through the NAT reverse filter" + RET);
             script.write("${IPTABLES} -t filter -D nat-reverse-filter -m policy --pol ipsec --dir in  -j RETURN -m comment --comment \"allow IPsec traffic\" >/dev/null 2>&1" + RET);
             script.write("${IPTABLES} -t filter -D nat-reverse-filter -m policy --pol ipsec --dir out -j RETURN -m comment --comment \"allow IPsec traffic\" >/dev/null 2>&1" + RET);
@@ -108,9 +113,13 @@ public class IpsecVpnScriptWriter
             script.write("${IPTABLES} -t filter -I nat-reverse-filter -o ipsec+ -j RETURN -m comment --comment \"allow IPsec traffic\"" + RET);
             script.write("${IPTABLES} -t filter -I nat-reverse-filter -o ipsec+ -j RETURN -m comment --comment \"allow IPsec traffic\"" + RET + RET);
 
-            script.write("# Do not NAT ipsec traffic even if its leaving a WAN" + RET);
+            script.write("# Do not NAT all other ipsec traffic even if its leaving a WAN" + RET);
             script.write("${IPTABLES} -t nat -D POSTROUTING -m policy --pol ipsec --dir out -j RETURN -m comment --comment \"do not NAT IPsec traffic\" >/dev/null 2>&1" + RET);
             script.write("${IPTABLES} -t nat -I POSTROUTING -m policy --pol ipsec --dir out -j RETURN -m comment --comment \"do not NAT IPsec traffic\"" + RET + RET);
+
+            script.write("# Add the jump rule for the IPSec postrouting nat rules" + RET);
+            script.write("${IPTABLES} -t nat -D POSTROUTING -j tunnel-postrouting-rules -m comment --comment \"nat jump for IPSEC\" >/dev/null 2>&1" + RET);
+            script.write("${IPTABLES} -t nat -I POSTROUTING -j tunnel-postrouting-rules -m comment --comment \"nat jump for IPSEC\"" + RET + RET);
 
             script.write("# Remove any existing IPsec traffic bypass rules" + RET);
             script.write("${IPTABLES} -t filter -D bypass-rules -m policy --pol ipsec --dir out --goto set-bypass-mark >/dev/null 2>&1" + RET);
