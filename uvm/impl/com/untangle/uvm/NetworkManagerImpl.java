@@ -94,7 +94,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
-    private Integer currentVersion = 9;
+    private Integer currentVersion = 10;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
@@ -3072,18 +3072,7 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void convertSettings()
     {
-        try {
-            this.networkSettings.setDhcpRelays( new LinkedList<DhcpRelay>() );
-        } catch (Exception e) {
-            logger.warn("Exception converting Networking Settings",e);
-        }
-
-        // Convert DHCP enabled boolean to enumerated value
-        for( InterfaceSettings interfaceSettings : networkSettings.getInterfaces() ){
-            Boolean dhcpEnabled = interfaceSettings.getDhcpEnabled();
-            interfaceSettings.setDhcpType( dhcpEnabled != null && dhcpEnabled ? InterfaceSettings.DhcpType.SERVER : InterfaceSettings.DhcpType.DISABLED);
-        }
-
+        // For 17.1, peform "free" conversion to set the new dhcpMaxLeases setting to its default value
         this.networkSettings.setVersion( currentVersion );
         this.setNetworkSettings( this.networkSettings, false );
     }
