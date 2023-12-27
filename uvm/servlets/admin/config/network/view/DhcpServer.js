@@ -18,6 +18,23 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             layout: 'border',
             scrollable: true,
             items: [{
+                region: 'north',
+                xtype: 'panel',
+                items: [{
+                    xtype: 'fieldset',
+                    title: 'Global Options'.t(),
+                    // padding: 10,
+                    items:[{
+                        xtype: 'textfield',
+                        fieldLabel: 'Maximum leases'.t(),
+                        labelWidth: 150,
+                        allowBlank: false,
+                        blankText: 'Maxiumum leases must be specified.'.t(),
+                        bind: '{settings.dhcpMaxLeases}',
+                        maskRe: /[0-9]/
+                    }]
+                }]
+            },{
                 region: "west",
                 xtype: 'ungrid',
                 width: '50%',
