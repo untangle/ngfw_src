@@ -1925,6 +1925,20 @@ class NetworkTests(NGFWTestCase):
         print(dhcp_results)
         assert len(dhcp_results["dhcp"].keys()) == 0, "empty dhcp results"
 
+    def test_360_dhcp_global_options_maximum_leases(self):
+        """
+        Verify changing DHCP max leases
+        Do so by validating that the number we specify is written to the apprpriate dnsmasq configuration.
+        """
+        values = [5000, 100000, 10000000]
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for value in values:
+            netsettings["dhcpMaxLeases"] = value
+            uvmContext.networkManager().setNetworkSettings(netsettings)
+            dnsmasq_max_lease_setting = subprocess.check_output("grep dhcp-lease-max= /etc/dnsmasq.conf", shell=True).decode('utf-8').split('=')
+            print(f"{value} vs {dnsmasq_max_lease_setting[1]}")
+            assert int(dnsmasq_max_lease_setting[1]) == value, "dnsmasq value matched"
+
     def test_400_nic_remapping(self):
         """
         Remap nics
