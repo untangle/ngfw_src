@@ -55,6 +55,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean strictArpMode = true;
     private boolean stpEnabled = false;
     private boolean dhcpAuthoritative = true;
+    private int     dhcpMaxLeases = 5000;
     private boolean blockDuringRestarts = false;
     private boolean logBypassedSessions = true;
     private boolean logLocalOutboundSessions = true;
@@ -166,6 +167,9 @@ public class NetworkSettings implements Serializable, JSONString
     
     public boolean getDhcpAuthoritative() { return this.dhcpAuthoritative; }
     public void setDhcpAuthoritative( boolean newValue ) { this.dhcpAuthoritative = newValue; }
+
+    public int getDhcpMaxLeases() { return this.dhcpMaxLeases; }
+    public void setDhcpMaxLeases( int newValue ) { this.dhcpMaxLeases = newValue; }
 
     public boolean getBlockDuringRestarts() { return this.blockDuringRestarts; }
     public void setBlockDuringRestarts( boolean newValue ) { this.blockDuringRestarts = newValue; }
