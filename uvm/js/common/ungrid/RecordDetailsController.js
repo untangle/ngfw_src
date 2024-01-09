@@ -79,5 +79,18 @@ Ext.define('Ung.cmp.RecordDetailsController', {
         } else {
             console.log('External action not defined!');
         }
-    }
+    },
+
+    // Optional renderer that can add formatting such as:
+    // 1000|style="color: red;"
+    // For example, the value will have red text
+    valueRenderer: function(value){
+        var values = value.toString().split('|');
+        if(values.length > 1){
+            return '<span ' + values[1] + '>' + values[0] + '</span>';
+        }else{
+            return value;
+        }
+    },
+
 });
