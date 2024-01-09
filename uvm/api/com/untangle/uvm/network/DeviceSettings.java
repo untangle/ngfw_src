@@ -25,6 +25,8 @@ public class DeviceSettings implements Serializable, JSONString
     private Duplex duplex = Duplex.AUTO; 
 
     private Integer mtu; /* null means auto */
+
+    private Boolean energyEfficientEthernet = false;
     
     public String getDeviceName() { return this.deviceName; }
     public void setDeviceName( String newValue ) { this.deviceName = newValue; }
@@ -34,7 +36,10 @@ public class DeviceSettings implements Serializable, JSONString
 
     public Integer getMtu() { return this.mtu; }
     public void setMtu( Integer newValue ) { this.mtu = newValue; }
-    
+
+    public Boolean getEnergyEfficientEthernet() { return this.energyEfficientEthernet; }
+    public void setEnergyEfficientEthernet( Boolean newValue ) { this.energyEfficientEthernet = newValue; }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

@@ -730,61 +730,80 @@ Ext.define('Ung.config.network.view.Advanced', {
                 bind: '{settings.dnsmasqOptions}'
             }]
         }, {
-            xtype: 'ungrid',
+            xtype: 'panel',
             itemId: 'network_cards',
             title: 'Network Cards'.t(),
             scrollable: true,
+            layout: 'border',
 
-            bind: '{devices}',
+            tbar: [{
+                xtype: 'tbtext',
+                padding: '8 5',
+                style: { fontSize: '12px' },
+                html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Options may not be fully supported by network device driver.  In some cases, a reboot may be required to take effect.'.t()
+            }],
 
-            selModel: {
-                type: 'cellmodel'
-            },
+            items:[{
+                xtype: 'ungrid',
+                region: 'center',
+                itemId: 'networkCardsGrid',
+                bind: '{devices}',
+                fields:[
+                    "deviceName"
+                ],
 
-            plugins: {
-                ptype: 'cellediting',
-                clicksToEdit: 1
-            },
+                selModel: 'rowmodel',
 
-            columns: [{
-                header: 'Device Name'.t(),
-                width: Renderer.messageWidth,
-                flex: 1,
-                dataIndex: 'deviceName'
-            }, {
-                header: 'MTU'.t(),
-                width: Renderer.sizeWidth,
-                dataIndex: 'mtu',
-                renderer: function (value) {
-                    if (value == null || value === "")
-                        return 'Auto'.t();
-                    return value;
+                plugins: {
+                    ptype: 'cellediting',
+                    clicksToEdit: 1
                 },
-                editor: {
-                    xtype: 'numberfield'
-                }
-            }, {
-                header: 'Ethernet Media'.t(),
-                dataIndex: 'duplex',
-                width: Renderer.messageWidth,
-                flex: 1,
-                renderer: Ung.config.network.MainController.networkMediaRenderer,
-                editor: {
-                    xtype: 'combo',
-                    store: [
-                        ['AUTO', 'Auto'.t()],
-                        ['M10000_FULL_DUPLEX', '10000 Mbps, Full Duplex'.t()],
-                        ['M10000_HALF_DUPLEX', '10000 Mbps, Half Duplex'.t()],
-                        ['M1000_FULL_DUPLEX', '1000 Mbps, Full Duplex'.t()],
-                        ['M1000_HALF_DUPLEX', '1000 Mbps, Half Duplex'.t()],
-                        ['M100_FULL_DUPLEX', '100 Mbps, Full Duplex'.t()],
-                        ['M100_HALF_DUPLEX', '100 Mbps, Half Duplex'.t()],
-                        ['M10_FULL_DUPLEX', '10 Mbps, Full Duplex'.t()],
-                        ['M10_HALF_DUPLEX', '10 Mbps, Half Duplex'.t()]
-                    ],
-                    queryMode: 'local',
-                    editable: false
-                }
+
+                columns: [{
+                    header: 'Device Name'.t(),
+                    width: Renderer.messageWidth,
+                    dataIndex: 'deviceName'
+                }, {
+                    header: 'MTU'.t(),
+                    width: Renderer.sizeWidth,
+                    dataIndex: 'mtu',
+                    renderer: function (value) {
+                        if (value == null || value === "" || value == 0)
+                            return 'Auto'.t();
+                        return value;
+                    },
+                    editor: {
+                        xtype: 'numberfield'
+                    }
+                }, {
+                    header: 'Ethernet Media'.t(),
+                    dataIndex: 'duplex',
+                    width: 150,
+                    renderer: Ung.config.network.MainController.networkMediaRenderer,
+                    editor: {
+                        xtype: 'combo',
+                        store: [
+                            ['AUTO', 'Auto'.t()],
+                            ['M10000_FULL_DUPLEX', '10000 Mbps, Full Duplex'.t()],
+                            ['M10000_HALF_DUPLEX', '10000 Mbps, Half Duplex'.t()],
+                            ['M1000_FULL_DUPLEX', '1000 Mbps, Full Duplex'.t()],
+                            ['M1000_HALF_DUPLEX', '1000 Mbps, Half Duplex'.t()],
+                            ['M100_FULL_DUPLEX', '100 Mbps, Full Duplex'.t()],
+                            ['M100_HALF_DUPLEX', '100 Mbps, Half Duplex'.t()],
+                            ['M10_FULL_DUPLEX', '10 Mbps, Full Duplex'.t()],
+                            ['M10_HALF_DUPLEX', '10 Mbps, Half Duplex'.t()]
+                        ],
+                        queryMode: 'local',
+                        editable: false
+                    }
+                }, {
+                    header: 'Energy Efficient Ethernet'.t(),
+                    align: 'left',
+                    flex: 1,
+                    width: Renderer.sizeWidth,
+                    dataIndex: 'energyEfficientEthernet',
+                    xtype: 'checkcolumn'
+                }]
             }]
         }, {
             title: 'Netflow'.t(),
