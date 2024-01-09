@@ -570,7 +570,7 @@ Ext.define('Ung.config.network.MainController', {
                         // Non-auto MTU
                         if(stat['mtu'] != mtu){
                             // Non matcing MTU
-                            stat['mtu'] = stat['mtu'].toStrng() + '|style="color: red;"';
+                            stat['mtu'] = stat['mtu'].toString() + '|style="color: red;"';
                         }
                     }
 
