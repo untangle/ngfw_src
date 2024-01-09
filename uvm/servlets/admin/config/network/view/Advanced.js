@@ -804,6 +804,40 @@ Ext.define('Ung.config.network.view.Advanced', {
                     dataIndex: 'energyEfficientEthernet',
                     xtype: 'checkcolumn'
                 }]
+            },{
+                xtype: 'panel',
+                region: 'south',
+                split: true,
+                collapsible: false,
+                items: [{
+                    title: 'Status'.t(),
+                    region: 'center',
+                    itemId: 'networkCardStatus',
+                    xtype: 'recorddetails',
+                    collapsible: false,
+                    emptyText: 'Status not available'.t(),
+                    bind: {
+                        source: '{ncStatus}',
+                    },
+                    sourceConfig: {
+                        connected: { displayName: 'Connected'.t() },
+                        deviceName: { displayName: 'Device'.t() },
+                        duplex: { displayName: 'Duplex'.t(), renderer: 'valueRenderer' },
+                        eeeActive: { displayName: 'EEE Active'.t(), renderer: 'valueRenderer' },
+                        eeeEnabled: { displayName: 'EEE Enabled'.t(), renderer: 'valueRenderer' },
+                        macAddress: { displayName: 'MAC Address'.t() },
+                        mbit: { displayName: 'MBit'.t(), renderer: 'valueRenderer' },
+                        mtu: { displayName: 'MTU'.t(), renderer: 'valueRenderer'},
+                        supportedLinkModes: { displayName: 'Supported Link Modes'.t() },
+                        vendor: { displayName: 'Vendor'.t()},
+                    },
+                    tbar: [{
+                        text: 'Refresh'.t(),
+                        iconCls: 'fa fa-refresh',
+                        handler: 'externalAction',
+                        action: 'getNetworkCardStatus'
+                    }],
+                }]
             }]
         }, {
             title: 'Netflow'.t(),
