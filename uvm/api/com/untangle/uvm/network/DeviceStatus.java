@@ -28,7 +28,14 @@ public class DeviceStatus implements Serializable, JSONString
     private DuplexStatus duplex; 
     
     private String vendor;
-    
+
+    private Integer mtu;
+
+    private Boolean eeeEnabled = false;
+    private Boolean eeeActive = false;
+
+    private String supportedLinkModes;
+
     public DeviceStatus() {}
     
     public String toJSONString()
@@ -54,4 +61,18 @@ public class DeviceStatus implements Serializable, JSONString
     
     public String getVendor( ) { return this.vendor; }
     public void setVendor( String newValue ) { this.vendor = newValue; }
+
+    public Integer getMtu( ) { return this.mtu; }
+    public void setMtu( Integer newValue ) { this.mtu = newValue; }
+
+    public Boolean getEeeEnabled( ) { return this.eeeEnabled; }
+    public void setEeeEnabled( Boolean newValue ) { this.eeeEnabled = newValue; }
+
+    public Boolean getEeeActive( ) { return this.eeeActive; }
+    public void setEeeActive( Boolean newValue ) { this.eeeActive = newValue; }
+
+    public String getSupportedLinkModes( ) { return this.supportedLinkModes; }
+    public void setSupportedLinkModes( String newValue ) { this.supportedLinkModes = newValue; }
+
+
 }
