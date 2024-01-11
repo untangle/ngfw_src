@@ -24,6 +24,10 @@ Ext.define('Ung.config.network.MainController', {
         '#advanced #upnp': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
+        '#advanced #networkCardsGrid': {
+            reconfigure: 'networkCardsGridReconfigure',
+            select: 'networkCardsGridSelect'
+        },
         '#advanced #dynamic_routing': {
             activate: 'getDynamicRoutingOverview',
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
@@ -516,6 +520,80 @@ Ext.define('Ung.config.network.MainController', {
                 });
             });
             vm.set('siArp', connections);
+            v.setLoading(false);
+        });
+    },
+
+    // After device grid reconfigure, ensure first row is selected
+    networkCardsGridReconfigure: function(){
+        this.getView().down('#networkCardsGrid').getSelectionModel().select(0);
+    },
+
+    // After device selecting row, update status
+    networkCardsGridSelect: function(){
+        this.getNetworkCardStatus();
+    },
+
+    // Pull status for device and populate status property grid
+    getNetworkCardStatus: function () {
+        var me = this,
+            v = me.getView().down('#networkCardStatus'),
+            vm = me.getViewModel(),
+            record = me.getView().down('#networkCardsGrid').getSelectionModel().getSelection()[0],
+            symbolicDev = record.get('deviceName'),
+            stat = {
+                device: symbolicDev
+            };
+
+        if(!symbolicDev){
+            vm.set('siStatus', {});
+            return;
+        }
+        vm.set('siStatus', stat);
+
+        v.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
+        ]).then(function(result){
+            if(Util.isDestroyed(me, v, vm)){
+                return;
+            }
+            result[0]["list"].forEach(function(stat){
+                if(stat["deviceName"] == symbolicDev){
+                    // Use stat for currently selected device
+
+                    // Remove javaClass field
+                    delete stat["javaClass"];
+
+                    var mtu = record.get("mtu");
+                    if(mtu != 0){
+                        // Non-auto MTU
+                        if(stat['mtu'] != mtu){
+                            // Non matcing MTU
+                            stat['mtu'] = stat['mtu'].toString() + '|style="color: red;"';
+                        }
+                    }
+
+                    var duplex = record.get("duplex");
+                    if(duplex != "AUTO"){
+                        // Non auto-duplex
+                        var speed_duplex = duplex.split("_", 2);
+                        if(stat['mbit'] != speed_duplex[0].substr(1)){
+                            stat['mbit'] = stat['mbit'].toString() + '|style="color: red;"';
+                        }
+                        if(stat['duplex'] != speed_duplex[1] + "_DUPLEX"){
+                            stat['duplex'] = stat['duplex'].toString() + '|style="color: red;"';
+                        }
+                    }
+
+                    var eeeEnabled = record.get("energyEfficientEthernet");
+                    if(eeeEnabled.toString() != stat['eeeEnabled'].toString()){
+                        // EEE mis-match
+                        stat['eeeEnabled'] = stat['eeeEnabled'].toString() + '|style="color: red;"';
+                    }
+                    vm.set("ncStatus", stat);
+                }
+            });
             v.setLoading(false);
         });
     },

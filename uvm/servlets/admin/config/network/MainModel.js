@@ -5,7 +5,6 @@ Ext.define('Ung.config.network.MainModel', {
 
     formulas: {
         // used in Interfaces view when showing/hiding interface specific configurations
-        si: function (get) { return get('interfacesGrid.selection'); },
         fullHostName: function (get) {
             var domain = get('settings.domainName'),
                 host = get('settings.hostName');
@@ -30,6 +29,7 @@ Ext.define('Ung.config.network.MainModel', {
         siArp: null,
         accessRulesSshEnabled: null,
         accessRulesCount: 0,
+        ncStatus: null,
 
         qosPriorityStore: [
             [0, 'Default'.t()],
@@ -123,7 +123,19 @@ Ext.define('Ung.config.network.MainModel', {
             }]
         },
         // Advanced
-        devices:            { data: '{settings.devices.list}' },
+        devices: {
+            // model: 'Ung.model.Device',
+            fields:[
+                { name: 'deviceName', type: 'string'},
+                { name: 'mtu', type: 'number'},
+                { name: 'duplex', type: 'string'},
+                { name: 'energyEfficientEthernet', type: 'boolean' },
+            ],
+            data: '{settings.devices.list}',
+            listeners: {
+                datachanged: 'networkCardsGridReconfigure'
+            }
+        },
         qosPriorities:      { data: '{settings.qosSettings.qosPriorities.list}' },
         qosRules:           { data: '{settings.qosSettings.qosRules.list}' },
         qosStatistics: {

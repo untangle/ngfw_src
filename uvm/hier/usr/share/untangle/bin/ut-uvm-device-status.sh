@@ -18,6 +18,11 @@ FLAG_SPEED_10=10
 FLAG_DUPLEX_FULL=FULL_DUPLEX
 FLAG_DUPLEX_HALF=HALF_DUPLEX
 
+FLAG_EEE_ENABLED=ENABLED
+FLAG_EEE_DISABLED=DISABLED
+FLAG_EEE_ACTIVE=ACTIVE
+FLAG_EEE_INACTIVE=INACTIVE
+
 interfaceList=$*
 
 function getInterfaceStatus()
@@ -27,6 +32,10 @@ function getInterfaceStatus()
     local t_isConnected=${FLAG_UNKNOWN}
     local t_speed="0"
     local t_duplex=${FLAG_UNKNOWN}
+    local t_eee_enabled=${FLAG_UNKNOWN}
+    local t_eee_active=${FLAG_UNKNOWN}
+    local t_mtu=$(cat /sys/class/net/${t_intf}/mtu)
+    local t_link_supported=${FLAG_UNKNOWN}
 
     if [ ! -z "${t_comma}" ] ; then 
         echo "    ${t_comma}" ; 
@@ -89,6 +98,41 @@ function getInterfaceStatus()
                 fi
             fi
         fi
+
+        t_status=`ethtool --show-eee ${t_intf} 2>/dev/null | egrep '(EEE status)' | sed -e '{:start;N;s/\n/ /g;t start}'`
+        # echo "t_status=$t_status"
+        if [ -n "${t_status}" ]; then
+            ## Check for link
+            if [ "${t_status/EEE status: disabled}" != "${t_status}" ]; then
+                # t_eee_enabled="${FLAG_EEE_DISABLED}"
+                t_eee_enabled=false
+            else
+                # t_eee_enabled="${FLAG_EEE_ENABLED}"
+                t_eee_enabled=true
+                # see if connected
+                if [ "${t_status/EEE status: enabled - active}" != "${t_status}" ]; then
+                    t_eee_active=true
+                fi
+            fi
+        fi
+
+        # From ethtool, parse:
+        #         Supported link modes:   10baseT/Half 10baseT/Full
+        #                        100baseT/Half 100baseT/Full
+        #                        1000baseT/Full
+        # into:
+        # M10_HALF_DUPLEX,M10_FULL_DUPLEX,M100_HALF_DUPLEX,M100_FULL_DUPLEX,M1000_FULL_DUPLEX
+        t_link_supported=$(\
+            ethtool ${t_intf} | \
+            sed -n "/Supported link modes/,/Supported pause frame use/p" | \
+            sed '$d' | sed "s/Supported link modes://" | \
+            sed -z 's/\n//g' | \
+            sed -e 's/[\t ]\+/,/g' | \
+            sed 's/^,//' |\
+            sed -s 's/baseT//g' | \
+            sed -s 's#/Full#_FULL_DUPLEX#g' | \
+            sed -s 's#/Half#_HALF_DUPLEX#g' \
+            )
     fi
 
     export VENDOR=""
@@ -131,8 +175,12 @@ function getInterfaceStatus()
     echo "        \"connected\" : \"${t_isConnected}\","
     echo "        \"mbit\" : ${t_speed},"
     echo "        \"duplex\" : \"${t_duplex}\","
+    echo "        \"eeeEnabled\" : \"${t_eee_enabled}\","
+    echo "        \"eeeActive\" : \"${t_eee_active}\","
+    echo "        \"mtu\" : ${t_mtu},"
     echo "        \"vendor\" : \"${VENDOR}\","
-    echo "        \"macAddress\" : \"${MAC_ADDR}\""
+    echo "        \"macAddress\" : \"${MAC_ADDR}\"",
+    echo "        \"supportedLinkModes\" : \"${t_link_supported}\""
     echo "    }"
 }
 
