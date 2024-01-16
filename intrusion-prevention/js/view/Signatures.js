@@ -17,6 +17,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         'gridfilters'
     ],
     features: [{
+        id: "grouping",
         ftype: 'grouping',
         groupHeaderTpl: ['{columnName}: {name:this.formatName} ({rows.length} signature{[values.rows.length > 1 ? "s" : ""]})',{
             formatName: function(name){
