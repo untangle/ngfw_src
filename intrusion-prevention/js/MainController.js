@@ -13,28 +13,12 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         v.setLoading(true);
 
-        var getSignatures = function(){};
-        if(vm.get('signaturesList') == null){
-            getSignatures = function(){
-                return Ext.Ajax.request({
-                    url: "/admin/download",
-                    method: 'POST',
-                    params: {
-                        type: "IntrusionPreventionSettings",
-                        arg1: "signatures",
-                        arg2: !Util.isDestroyed(vm) ? vm.get('instance.id') : null
-                    },
-                    timeout: 600000});
-            };
-        }
-
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager, 'getAppStatus'),
             Rpc.directPromise('rpc.companyName'),
             Rpc.asyncPromise('rpc.metricManager.getMemTotal'),
             Rpc.asyncPromise(v.appManager, 'getSettings'),
             Rpc.directPromise('rpc.isExpertMode'),
-            getSignatures
         ]).then(function(result){
             if(Util.isDestroyed(me, v, vm)){
                 return;
@@ -57,7 +41,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             v.setLoading('Loading signatures...'.t());
             var dt = new Ext.util.DelayedTask( Ext.bind(function(){
                 me.buildVariables();
-                me.buildSignatures(result[5]);
+                me.getSignatures();
                 me.buildErrors(status["errors"]);
                 v.setLoading('');
                 v.setLoading(false);
@@ -95,14 +79,96 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         vm.set('networkVariablesList', networkVariablesList);
     },
 
+    getsignaturesLoadingStatusText: '<i class="fa fa-spinner fa-spin fa-lg fa-fw"></i> ' + 'Loading signatures {0}/{1} ({2})...'.t(),
+    getSignaturesTaskDelay: 100,
+    signatureSkips: [],
+    // Retrieve signature sets.
+    // First ask for a catalog of available set names, then iterate catalog to retrieve each set.
+    getSignatures: function(){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        var currentSignatures = vm.get('signaturesList');
+        if(currentSignatures != null ){
+            // Already built
+            return;
+        }
+
+        var catalog = null;
+        var catalogIndex = 0;
+        var signatureSkips = [];
+
+        var getSignaturesTask = new Ext.util.DelayedTask( Ext.bind(function(){
+            if(Util.isDestroyed(vm)){
+                return;
+            }
+            var response = null;
+
+            v.down("#signaturesLoadingStatus").setVisible(true);
+            if(catalog == null){
+                v.down("#signaturesLoadingStatus").setHtml(Ext.String.format(me.getsignaturesLoadingStatusText, "0", "0", "catalog"));
+                response = Ext.Ajax.request({
+                    url: "/admin/download",
+                    method: 'POST',
+                    async: false,
+                    params: {
+                        type: "IntrusionPreventionSettings",
+                        arg1: "signatures",
+                        arg2: !Util.isDestroyed(vm) ? vm.get('instance.id') : null,
+                        arg5: "catalog"
+                    },
+                timeout: 600000});
+                catalog = response.responseText.split("\n");
+            }else{
+                v.down("#signaturesLoadingStatus").setHtml(Ext.String.format(me.getsignaturesLoadingStatusText, catalogIndex, catalog.length, catalog[catalogIndex]));
+                try{
+                    response = Ext.Ajax.request({
+                        url: "/admin/download",
+                        method: 'POST',
+                        async: false,
+                        params: {
+                            type: "IntrusionPreventionSettings",
+                            arg1: "signatures",
+                            arg2: !Util.isDestroyed(vm) ? vm.get('instance.id') : null,
+                            arg5: catalog[catalogIndex]
+                        },
+                        timeout: 600000});
+                    me.buildSignatures(response);
+                }catch (error){
+                    // This failure NEVER occur locally, but CAN occur when retreiving via supssh.
+                    // Evidence points to something in the end-device's WAN path matching data
+                    // (which is encrypted!) and inexplicbly sending dropping the connection for this
+                    // set download, causing this exception to occur.
+                    // The evidence inexplicbaly shows this occuring in certain sets only, so
+                    // we'll handle by just adding the file name ot the skip list and continuing.
+                    console.log(catalog[catalogIndex]);
+                    console.log(error);
+                    signatureSkips.push(catalog[catalogIndex]);
+                }
+                catalogIndex++;
+            }
+            if(catalog != null && catalogIndex < catalog.length){
+                // Refire
+                getSignaturesTask.delay( me.getSignaturesTaskDelay );
+                return;
+            }
+            // Finished
+            v.down("#signaturesLoadingStatus").setVisible(false);
+            if(signatureSkips.length){
+                console.log("unable to load sets:");
+                console.log(signatureSkips);
+            }
+        }, me) );
+        getSignaturesTask.delay( me.getSignaturesTaskDelay );
+    },
+
     buildSignatures: function(reserved){
-        var v = this.getView(), vm = this.getViewModel();
+        var me = this, v = this.getView(), vm = this.getViewModel();
 
         // var t0 = performance.now();
         // var t1 = performance.now();
         // var t2 = performance.now();
 
-        var signatures = [];
+        var signatures = vm.get('signaturesList') || [];
         if(typeof(reserved) == 'undefined'){
             /**
              * Rebuild using exisitng list, removing custom signatures.
@@ -156,10 +222,15 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         // console.log(signatures.length);
 
         // Process custom signatures
-        vm.get('settings.signatures.list').forEach(function(settingsSignature){
-            signatures.push(new Ung.model.intrusionprevention.signature(settingsSignature.signature, settingsSignature.category, false));
-        });
+        // vm.get('settings.signatures.list').forEach(function(settingsSignature){
+        //     signatures.push(new Ung.model.intrusionprevention.signature(settingsSignature.signature, settingsSignature.category, false));
+        // });
+        // console.log("set signaturesList with " + signatures.length);
         vm.set('signaturesList', signatures);
+        var signaturesStore = vm.get("signatures");//.loadData(signatures);
+        if(signaturesStore != null){
+            signaturesStore.loadData(signatures);
+        }
 
         // Add protocols found in Suricata rules.
         var conditions = v.down('[name=rules]').getController().getConditions();
@@ -308,8 +379,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     rulesChanged: function(store, record, action, recordActions, data){
-        // console.log('rulesChanged');
-        this.getViewModel().get('signatures').each(function(signature){
+            this.getViewModel().get('signatures').each(function(signature){
             var matchingRules = signature.get('matchingRules'); 
             var index = matchingRules.indexOf(record);
             if(index != -1){
@@ -340,15 +410,16 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     },
 
     signaturesChanged: function(store){
-        // console.log('signaturesChanged');
         var me = this;
 
         me.watchSignatureStoreTask = new Ext.util.DelayedTask( Ext.bind(function(){
             var me = this,
                 vm = me.getViewModel(),
-                store = vm.get('signatures');
+                store = vm && vm.get('signatures') || null;
             if(store == null){
-                me.watchSignatureStoreTask.delay( 500 );
+                if(me.watchSignatureStoreTask){
+                    me.watchSignatureStoreTask.delay( 500 );
+                }
             }else{
                 var status = me.ruleSignatureMatches();
                 vm.set({
@@ -357,6 +428,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     signatureStatusBlock: Ext.Array.sum(Ext.Object.getValues(status.block)),
                     signatureStatusDisable: Ext.Array.sum(Ext.Object.getValues(status.disable))
                 });
+                me.getView().down('[itemId=signatures]').getView().getFeature("grouping").collapseAll();
+
             }
         }, me) );
         me.watchSignatureStoreTask.delay( 500 );
@@ -402,6 +475,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         if(matchRule != null){
             rules = Ext.create('Ext.data.Store');
             rules.add(matchRule);
+        }
+        if(rules == null){
+            return;
         }
 
         var signatureRecommendedAction, signatureCurrentAction;
