@@ -88,7 +88,6 @@ def create_firewall_rule( conditionType, value, blocked=True ):
 
 
 def create_reports_user(profile_email=test_email_address, email_template_id=1, access=False):
-    passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
     return  {
             "emailAddress": profile_email,
             "emailSummaries": True,
@@ -101,6 +100,9 @@ def create_reports_user(profile_email=test_email_address, email_template_id=1, a
             },
             "javaClass": "com.untangle.app.reports.ReportsUser",
             "onlineAccess": access,
+            "password": "passwd",
+            "passwordHashBase64": "",
+            "passwordHashShadow": ""
     }
 
 
