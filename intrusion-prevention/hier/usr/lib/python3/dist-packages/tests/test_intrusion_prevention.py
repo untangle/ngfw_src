@@ -511,5 +511,32 @@ class IntrusionPreventionTests(NGFWTestCase):
         assert(len(update_file_names) == 1)
         assert(is_patch_in_updates == False)
 
+    @pytest.mark.slow
+    def test_200_ui_download_signatures(self):
+        """
+        Replicate downloading signatures from UI
+        """
+        # get catalog
+        post = {
+            "type": "IntrusionPreventionSettings",
+            "arg1": "signatures",
+            "arg2": self.get_app_id(),
+            "arg5": "catalog"
+        }
+        post_data = []
+        for key in post.keys():
+            post_data.append(f"{key}={post[key]}")
+
+        catalog = subprocess.check_output(global_functions.build_wget_command(output_file='-', post_data="&".join(post_data), uri="http://localhost/admin/download"), shell=True, stderr=subprocess.STDOUT).decode('utf-8').split("\n")
+        assert len(catalog) > 0, "non empty catalog"
+
+        for file_name in catalog:
+            post["arg5"] = file_name
+            post_data = []
+            for key in post.keys():
+                post_data.append(f"{key}={post[key]}")
+            print("&".join(post_data))
+            signature_set = subprocess.check_output(global_functions.build_wget_command(output_file='-', post_data="&".join(post_data), uri="http://localhost/admin/download"), shell=True, stderr=subprocess.STDOUT).decode('utf-8').split("\n")
+            assert len(signature_set) > 0, f"non empty signature set {file_name}"
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)
