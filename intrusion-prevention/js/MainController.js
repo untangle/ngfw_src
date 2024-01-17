@@ -161,6 +161,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         getSignaturesTask.delay( me.getSignaturesTaskDelay );
     },
 
+    buildLocalSignatures: true,
     buildSignatures: function(reserved){
         var me = this, v = this.getView(), vm = this.getViewModel();
 
@@ -222,9 +223,12 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         // console.log(signatures.length);
 
         // Process custom signatures
-        // vm.get('settings.signatures.list').forEach(function(settingsSignature){
-        //     signatures.push(new Ung.model.intrusionprevention.signature(settingsSignature.signature, settingsSignature.category, false));
-        // });
+        if(me.buildLocalSignatures){
+            vm.get('settings.signatures.list').forEach(function(settingsSignature){
+                signatures.push(new Ung.model.intrusionprevention.signature(settingsSignature.signature, settingsSignature.category, false));
+            });
+            me.buildLocalSignatures = false;
+        }
         // console.log("set signaturesList with " + signatures.length);
         vm.set('signaturesList', signatures);
         var signaturesStore = vm.get("signatures");//.loadData(signatures);
