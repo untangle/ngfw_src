@@ -678,6 +678,11 @@ public abstract class DecisionEngine
             }
         }
 
+        if(bestCategory == null){
+            // Unknown category; treat as uncategorized
+            bestCategory = app.getSettings().getCategory(0);
+        }
+
         return bestCategory;
     }
 
