@@ -1,4 +1,5 @@
 """web_filter_base tests"""
+import copy
 import pytest
 import sys
 import datetime
@@ -652,3 +653,44 @@ class WebFilterBaseTests(NGFWTestCase):
                                                'flagged', True )
         self.search_term_rules_clear()
         assert( found )
+
+    def test_699_unknown_category(self):
+        """
+        If unknown category, handle as uncategorized
+        """
+        host = "www.google.com"
+
+        # Perform lookup to get current category id
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://{host}") + " 2>&1 > /dev/null" )
+
+        events = global_functions.get_events(self.displayName(),'All Web Events',None,5)
+        event = global_functions.find_event( events.get('list'), 5,
+                                               "host",f"{host}")
+        assert event != None, "found current event"
+        current_category_id = event.get("web_filter_category_id")
+        print(f"current_category_id={current_category_id}")
+
+        original_settings = self._app.getSettings()
+
+        # Make copy of settings so we can modify current category id
+        settings = copy.deepcopy(original_settings)
+
+        for category in settings.get("categories").get("list"):
+            if category.get("id") == current_category_id:
+                # Change to a number that should never match; customers cannot change this in the UI!
+                category["id"] = 999999
+        self._app.setSettings(settings)
+
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://{host}") + " 2>&1 > /dev/null" )
+
+        events = global_functions.get_events(self.displayName(),'All Web Events',None,5)
+        event = global_functions.find_event( events.get('list'), 5,
+                                               "host",f"{host}")
+        assert event != None, "found new event"
+        new_category_id = event.get("web_filter_category_id");
+        print(f"new_category_id={new_category_id}")
+
+        # Revert settings including modified category
+        self._app.setSettings(original_settings)
+
+        assert new_category_id == 0, "unknown category matches as uncategorized"

@@ -3,6 +3,14 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     alias: 'widget.app-intrusion-prevention',
     controller: 'app-intrusion-prevention',
 
+    tbar: [{
+        itemId: "signaturesLoadingStatus",
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px'},
+        html: ""
+    }],
+
     viewModel: {
         data: {
             signatureStatusTotal: 0,

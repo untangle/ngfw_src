@@ -1024,29 +1024,38 @@ public class IntrusionPreventionApp extends AppBase
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type","text/plain");
 
+                String wantFile = req.getParameter("arg5");
+
                 List<File> signatureFiles = new LinkedList<>();
                 getSignatureFiles( signatureFiles, new File(CURRENT_RULES_DIRECTORY));
                 getSignatureFiles( signatureFiles, new File(ENGINE_RULES_DIRECTORY));
 
                 byte[] buffer = new byte[1024];
                 int read;
+                String entryLine;
                 FileInputStream fis = null;
                 try{
                     OutputStream out = resp.getOutputStream();
                     for(File entry: signatureFiles){
-                        String entryLine = "# filename: " + entry.getName() + "\n";
-                        byte[] name = entryLine.getBytes(CHARACTER_ENCODING);
-                        out.write(name);
-                        fis = new FileInputStream(entry);
-                        while ( ( read = fis.read( buffer ) ) > 0 ) {
-                            out.write( buffer, 0, read);
+                        if(wantFile.equals("catalog")){
+                            entryLine = entry.getName() + "\n";
+                            byte[] name = entryLine.getBytes(CHARACTER_ENCODING);
+                            out.write(name);
+                        }else if(wantFile.equals(entry.getName())){
+                            entryLine = "# filename: " + entry.getName() + "\n";
+                            byte[] name = entryLine.getBytes(CHARACTER_ENCODING);
+                            out.write(name);
+                            fis = new FileInputStream(entry);
+                            while ( ( read = fis.read( buffer ) ) > 0 ) {
+                                out.write( buffer, 0, read);
+                            }
+                            fis.close();
                         }
-                        fis.close();
                     }
                     out.flush();
                     out.close();
                 } catch (Exception e) {
-                    logger.warn("Failed to load IPS settings",e);
+                    logger.warn("Failed to load IPS signatures for " + wantFile,e);
                 }finally{
                     try{
                         if(fis != null){
