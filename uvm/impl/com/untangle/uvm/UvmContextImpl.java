@@ -1228,21 +1228,33 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      */
     public void logJavascriptException(JSONObject json)
     {
-        logger.warn("Javascript Exception");
-        if (json == null)
+        logger.warn("logJavascriptException: Javascript Exception");
+        if (json == null){
+            logger.warn("logJavascriptException: null json object");
             return;
+        }
 
-        String[] names = JSONObject.getNames(json);
-        if (names == null)
+        String[] names = null;
+        try {
+            names = JSONObject.getNames(json);
+        } catch(Exception e) {
+            logger.warn("logJavascriptException: unable to run gettNames() names for Javascript json object", e);
+        }
+        if (names == null){
+            logger.warn("logJavascriptException: unable to retreive json object names");
+            logger.warn(json);
             return;
+        }
 
         for ( String name : names ) {
             try {
                 Object o = json.get(name);
                 if (o == null)
                     continue;
-                logger.warn("Javascript Exception [" + name + "]: " + o.toString());
-            } catch(Exception e) {}
+                logger.warn("logJavascriptException: [" + name + "]: " + o.toString());
+            } catch(Exception e) {
+                logger.warn("logJavascriptException: unable to process Javascript exception");
+            }
         }
     }
 
