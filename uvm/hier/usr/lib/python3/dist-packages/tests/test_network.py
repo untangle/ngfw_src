@@ -44,6 +44,8 @@ if office_ftp_client is None:
 def get_usable_name(dyn_checkip):
     selected_name = ""
     names,filler = global_functions.get_live_account_info("dyndns")
+    if names == None:
+        return ""
     dyn_names = names.split(",") 
     for hostname in dyn_names:
         hostname_ip = global_functions.get_hostname_ip_address(hostname=hostname)
@@ -766,8 +768,8 @@ class NetworkTests(NGFWTestCase):
     def test_060_bypass_rules(self):
         app_fw = None
         if (uvmContext.appManager().isInstantiated("firewall")):
-            if cls.skip_instantiated():
-                pytest.skip('app %s already instantiated' % cls.module_name())
+            if NetworkTests.skip_instantiated():
+                raise unittest.SkipTest('app %s already instantiated' % "firewall")
         app_fw = uvmContext.appManager().instantiate("firewall", default_policy_id)
         nuke_first_level_rule('bypassRules')
         # verify port 80 is open
@@ -1862,7 +1864,10 @@ class NetworkTests(NGFWTestCase):
             raise unittest.SkipTest("missing LAN interface")
 
         # Establish ipsec tunnel to remote DHCP server
-        app_ipsec = NetworkTests.get_app("ipsec-vpn")
+        try:
+            app_ipsec = NetworkTests.get_app("ipsec-vpn")
+        except:
+            raise unittest.SkipTest("app %s already instantiated" % "ipsec-vpn")
         ipsec_app_settings = app_ipsec.getSettings()
         ipsec_app_settings["tunnels"]["list"].append(test_ipsec_vpn.build_ipsec_tunnel())
         app_ipsec.setSettings(ipsec_app_settings)
