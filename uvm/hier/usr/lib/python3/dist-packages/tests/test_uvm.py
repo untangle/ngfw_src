@@ -1194,5 +1194,15 @@ class UvmTests(NGFWTestCase):
         }
         check_javascript_exceptions(errors)
 
+    def test_300_https_protocols(self):
+        """
+        Ensure valid/invalid protocols
+        """
+        lan_ip = global_functions.get_lan_ip()
+        results = remote_control.run_command(global_functions.build_nmap_command(script="ssl-enum-ciphers", extra_arguments=f"-p 443 {lan_ip}"), stdout=True)
+
+        assert "TLSv1.1:" not in results, "TLS v1.1 not allowed"
+        assert "TLSv1.2:" in results, "TLS v1.2 allowed"
+
 
 test_registry.register_module("uvm", UvmTests)
