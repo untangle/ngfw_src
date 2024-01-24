@@ -272,10 +272,12 @@ Ext.define('Ung.util.Util', {
             return;
         } else {
             console.error(exception);
-            if(Rpc.exists('rpc.UvmContext')){
-                // This is the best way to log exceptions.  Sending through the Rpc object
-                // would require a special case to not show the exception again.
-                rpc.UvmContext.logJavascriptException(function (result, ex) {}, exception);
+            if( typeof exception == "object" ){
+                if(Rpc.exists('rpc.UvmContext')){
+                    // This is the best way to log exceptions.  Sending through the Rpc object
+                    // would require a special case to not show the exception again.
+                    rpc.UvmContext.logJavascriptException(function (result, ex) {}, JSON.parse(JSON.stringify(exception, Object.getOwnPropertyNames(exception))));
+                }
             }
         }
 

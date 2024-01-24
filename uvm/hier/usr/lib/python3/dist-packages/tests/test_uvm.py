@@ -104,6 +104,22 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
         "ruleId": 1
     }
 
+def check_javascript_exceptions(errors):
+    """
+    Get current end line for uvm log, run logJavascripException, and verify it was logged
+    """
+    for error in errors.keys():
+        print(error)
+        uvm_last_line = subprocess.check_output("wc -l /var/log/uvm/uvm.log | cut -d' ' -f1", shell=True).decode("utf-8").strip()
+        print(uvm_last_line)
+        uvmContext.logJavascriptException(errors[error])
+        exceptions = subprocess.check_output(f"awk 'NR >= {uvm_last_line} && /logJavascriptException/{{ print NR, $0 }}' /var/log/uvm/uvm.log", shell=True).decode("utf-8")
+        print(exceptions)
+        assert exceptions != "", f"for {error} found logged exceptions"
+        pid = subprocess.check_output(f"ps -p $(cat /var/run/uvm.pid) -o pid=", shell=True).decode("utf-8")
+        assert pid != "", "uvm running"
+
+
 class TestTotp:
     """
     Static class for managing TOTP for time-based OTP
@@ -1153,5 +1169,40 @@ class UvmTests(NGFWTestCase):
         uvm_free_disk_percent = (float(metrics_and_stats["systemStats"]["freeDiskSpace"]) / float(metrics_and_stats["systemStats"]["totalDiskSpace"]) * 100)
         subprocess.run(["rm", "-f", full_filename])
         assert(uvm_free_disk_percent > 5)
-        
+
+    def test_300_javascript_exception_valid(self):
+        """
+        Verify that validly formed json objects are logged
+        """
+        errors = {
+            "reference_error": {
+                "stack":"ReferenceError: hurfdurf is not defined\n    at g.<anonymous> (https://192.168.25.58/admin/script/apps/intrusion-prevention.js?_dc=1705675812345:607:21)\n    at t (https://192.168.25.58/ext6.2/ext-all.js:19:60842)\n    at c (https://192.168.25.58/ext6.2/ext-all.js:19:142848)\n    at https://192.168.25.58/ext6.2/ext-all.js:19:61065\n    at https://192.168.25.58/ext6.2/ext-all.js:19:62295",
+                "message":"hurfdurf is not defined"
+            },
+            "xmlhttprequest_error":{
+                "stack":"Error: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'https://192.168.25.58/admin/download'.\n    at F.start (https://192.168.25.58/ext6.2/ext-all.js:19:180150)\n    at F.request (https://192.168.25.58/ext6.2/ext-all.js:19:189205)\n    at g.<anonymous> (https://192.168.25.58/admin/script/apps/intrusion-prevention.js?_dc=1705671966676:595:41)\n    at t (https://192.168.25.58/ext6.2/ext-all.js:19:60842)\n    at c (https://192.168.25.58/ext6.2/ext-all.js:19:142848)\n    at https://192.168.25.58/ext6.2/ext-all.js:19:61065\n    at https://192.168.25.58/ext6.2/ext-all.js:19:62295"
+            }
+        }
+        check_javascript_exceptions(errors)
+
+    def test_310_javascript_exception_malformed(self):
+        """
+        Verify that malformed json objects are logged
+        """
+        errors = {
+            "empty_object": {}
+        }
+        check_javascript_exceptions(errors)
+
+    def test_300_https_protocols(self):
+        """
+        Ensure valid/invalid protocols
+        """
+        lan_ip = global_functions.get_lan_ip()
+        results = remote_control.run_command(global_functions.build_nmap_command(script="ssl-enum-ciphers", extra_arguments=f"-p 443 {lan_ip}"), stdout=True)
+
+        assert "TLSv1.1:" not in results, "TLS v1.1 not allowed"
+        assert "TLSv1.2:" in results, "TLS v1.2 allowed"
+
+
 test_registry.register_module("uvm", UvmTests)

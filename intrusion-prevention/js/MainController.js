@@ -134,6 +134,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                         timeout: 600000});
                     me.buildSignatures(response);
                 }catch (error){
+                    Util.handleException(error);
                     // This failure NEVER occur locally, but CAN occur when retreiving via supssh.
                     // Evidence points to something in the end-device's WAN path matching data
                     // (which is encrypted!) and inexplicbly sending dropping the connection for this
