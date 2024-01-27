@@ -1984,6 +1984,7 @@ class NetworkTests(NGFWTestCase):
         for interface in netsettings['interfaces']['list']:
             if interface.get("isVirtualInterface") or \
                 interface.get("isVlanInterface") or \
+                interface.get("isWan") or \
                 interface.get("isWirelessInterface"):
                 # Don't consider virtual, vlan, or wireless interfaces
                 continue
