@@ -120,7 +120,7 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     suggestHandler: function (btn) {
-        var suggestUrl = Rpc.directData('rpc.helpUrl') + '?fragment=feedback&' + Util.getAbout();
+        var suggestUrl = Rpc.directData('rpc.feedbackUrl');
         window.open(suggestUrl);
     },
 
