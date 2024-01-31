@@ -51,7 +51,7 @@ if bay_trail ; then
   fi
 fi
 
-if dpkg --compare-versions $(uname -v | awk '{print $4}') lt "5.10.205-2+untangle1bullseye" ; then
+if dpkg --compare-versions $(uname -v | awk '{print $4}') lt "5.10.205-2+untangle2bullseye" ; then
   # reboot to latest kernel
   echo "Rebooting after apt-get completes..."
   nohup /usr/bin/uvm-restart reboot >> /var/log/uvm/restart.log 2>&1 &  
