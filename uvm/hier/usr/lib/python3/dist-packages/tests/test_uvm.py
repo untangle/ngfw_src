@@ -1204,5 +1204,10 @@ class UvmTests(NGFWTestCase):
         assert "TLSv1.1:" not in results, "TLS v1.1 not allowed"
         assert "TLSv1.2:" in results, "TLS v1.2 allowed"
 
+    # Checks that feedback link is under arista
+    def test_300_feedback_link(self):
+        feeddback_url = uvmContext.getFeedbackUrl()
+        match = re.search('^https://edge.arista.com/feedback$', feeddback_url)
+        assert(match)
 
 test_registry.register_module("uvm", UvmTests)
