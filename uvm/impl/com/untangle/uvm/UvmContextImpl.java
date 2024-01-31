@@ -72,6 +72,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String DEFAULT_CMD_URL = "https://launchpad.edge.arista.com/";
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
     private static final String DEFAULT_HELP_URL = "http://wiki.edge.arista.com/get.php";
+    private static final String PROPERTY_FEEDBACK_URL = "uvm.feedback.url";
+    private static final String DEFAULT_FEEDBACK_URL = "https://edge.arista.com/feedback";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
 
     private static final String DEFAULT_REGION_NAME = "world";
@@ -1196,6 +1198,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     /**
+     * getFeedbackUrl - get the feedback URL for the UI
+     * @return String
+     */
+    public String getFeedbackUrl()
+    {
+        String url = System.getProperty(PROPERTY_FEEDBACK_URL);
+        if (url == null)
+            url = DEFAULT_FEEDBACK_URL;
+        return url;
+    }
+
+    /**
      * getLegalUrl - get the URL for legal information in the UI
      * @return String
      */
@@ -1410,6 +1424,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("regionName", this.getRegionName());
             json.put("storeUrl", this.getStoreUrl());
             json.put("helpUrl", this.getHelpUrl());
+            json.put("feedbackUrl", this.getFeedbackUrl());
             json.put("isRegistered", this.isRegistered());
             json.put("isExpertMode", this.isExpertMode());
             json.put("supportEnabled", this.systemManager().getSettings().getSupportEnabled());

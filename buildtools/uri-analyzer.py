@@ -85,6 +85,7 @@ class UriAnalyzer():
         "https://www.untangle.com/legal",
 
         "http://wiki.edge.arista.com/get.php",
+        "https://edge.arista.com/feedback",
 
         # From test_network.py
         "http://1.2.3.4/test/testPage1.html",
