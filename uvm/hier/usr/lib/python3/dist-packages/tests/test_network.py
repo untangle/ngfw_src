@@ -11,6 +11,7 @@ import time
 import copy
 import runtests
 import json
+import fnmatch
 
 from pathlib import Path
 
@@ -53,6 +54,13 @@ def get_usable_name(dyn_checkip):
             selected_name = hostname
             break
     return selected_name
+
+def find_files(dir_path, search_string):
+    residual_files = []
+    for root, dirs, files in os.walk(dir_path):
+        for filename in fnmatch.filter(files, search_string):
+            residual_files.append(os.path.join(root, filename))
+    return residual_files
     
 def create_port_forward_triple_condition( conditionType1, value1, conditionType2, value2, conditionType3, value3, destinationIP, destinationPort):
     return {
@@ -2367,6 +2375,31 @@ class NetworkTests(NGFWTestCase):
 
         # Don't care about success/failure just that we see the test ran
         assert "tcpdump:" in output, "trace test"
+
+    def test_701_remove_dpkg_files(self):
+        """
+        Removing dpkg files
+        """
+        dpkg_file_name = '740-test.dpkg-old'
+        dir_path = '/etc/untangle/'
+        search_string = '*.dpkg-*'
+        dir_list = [os.path.abspath(dir.path)+ '/' for dir in os.scandir(dir_path) if dir.is_dir()]
+        # listing directories under /etc/untangle/ and
+        # creating files with .dkpg- extension
+        for dir in dir_list:
+           with open(dir + dpkg_file_name, "w") as f:
+              f.write("residual file test")
+
+        #.dkpg- extension files are present
+        residual_files = find_files(dir_path, search_string)
+        assert len(residual_files) > 0
+
+        # Set settings forces sync-settings call
+        # Restore original settings to return to initial settings
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        #sync settings should cleanup .dkpg- extension files
+        residual_files = find_files(dir_path, search_string)
+        assert len(residual_files) == 0
 
 
     @classmethod
