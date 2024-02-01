@@ -19,7 +19,6 @@ Ext.define('Ung.Setup.License', {
 
     viewModel: {
         data: {
-            eulaLoaded: false,
             nextStep: null,
             remoteEulaSrc: '',
         }
@@ -39,17 +38,8 @@ Ext.define('Ung.Setup.License', {
                 "text-align": "center",
                 "margin-bottom": '5px'
             },
-            html: '<p>' + "To continue installing and using this software, you must agree to the terms and conditions of the software license agreement. Please review the whole license agreement by scrolling through to the end of the agreement".t()+'</p>'
+            html: '<p>' + "To continue installing and using this software, you must agree to the terms and conditions of the software license agreement. Please review the whole license agreement by navigating to the provided website link and scrolling through to the end of the agreement.".t()+'</p>'
         }, {
-            xtype: 'container',
-            itemId: 'eula',
-            style: 'background: #FFF; border-radius: 3px; border: 1px #EEE solid; line-height: 0;',
-            html: '<iframe id="eula-src" style="border: none; width: 100%; height: 340px;"></iframe>',
-            masked: {
-                xtype: 'loadmask',
-                message: 'Loading ...'
-            },
-        },{
             xtype: 'component',
             style: { 
                 "margin-top": '5px',
@@ -57,8 +47,17 @@ Ext.define('Ung.Setup.License', {
                 "text-align": "center"
             },
             // NOTE: These placeholder urls are filled in for uri translations in afterRender.
-            html: '<p>' + Ext.String.format('After installation, this license is available at {0}'.t(), '<a style="color: blue;" id="licenseUrl" href="https://www.untangle.com/legal" target="_blank">https://www.untangle.com/legal</a>') + '</p>'
-        },{
+            html: '<p>' + Ext.String.format('The license is available at {0}'.t(), '<a style="color: blue;" id="licenseUrl" href="https://edge.arista.com/legal" target="_blank">https://edge.arista.com/legal</a>') + '</p>'
+        }, {
+            xtype: 'component',
+            style: { 
+                "margin-top": '5px',
+                "word-wrap": 'break-word',
+                "text-align": "center",
+                "font-weight": "bold"
+            },
+            html: '<p>' + "After completing the setup, legal links can also be viewed from the About page." + '</p>'
+        }, {
             xtype: 'container',
             margin: '8 0',
             layout: {
@@ -71,16 +70,10 @@ Ext.define('Ung.Setup.License', {
             },
             items: [{
                 text: 'Disagree',
-                handler: 'onDisagree',
-                bind: {
-                    disabled: '{!eulaLoaded}'
-                }
+                handler: 'onDisagree'
             }, {
                 text: 'Agree',
-                handler: 'onContinue',
-                bind: {
-                    disabled: '{!eulaLoaded}'
-                }
+                handler: 'onContinue'
             }]
         }]
     }],
@@ -96,40 +89,28 @@ Ext.define('Ung.Setup.License', {
         },
 
         timer: null,
-        localEulaSrc: '/setup/legal.html',
         clearTimer: function(){
             if (this.timer) {
                 clearTimeout(this.timer);
                 this.timer = null;
-            }
-            var iframe = document.getElementById('eula-src');
-            iframe.src = this.localEulaSrc;
-            if (!rpc.useLocalEula) {
-                iframe.src = this.remoteEulaSrc;
             }
         },
 
         handleFail: function(){
             this.onload = this.onabort = this.onerror = function() {};
             this.ownerCmp.clearTimer();
-            var iframe = document.getElementById('eula-src');
-            iframe.src = this.ownerCmp.localEulaSrc;
         },
-        afterRender: function( view ){
+        afterRender: function(){
             this.remoteEulaSrc = rpc.licenseAgreementUrl;
             this.remoteImage = rpc.licenseTestUrl;
             var me = this,
                 vm = this.getViewModel(),
-                iframe = document.getElementById('eula-src'),
                 hyperlink = document.getElementById('licenseUrl'),
-                iframeCmp = view.down('[itemId=eula]'),
-                timer = null,
                 img = new Image(0,0);
-
+            
             hyperlink.href = this.remoteEulaSrc;
             hyperlink.innerText = this.remoteEulaSrc;
 
-            iframeCmp.mask();
             img.ownerCmp = me;
             vm.set('nextStep', "");
 
@@ -143,11 +124,6 @@ Ext.define('Ung.Setup.License', {
                     me.handleFail.call(image);
                 };
             }(img), 1000);
-
-            iframe.addEventListener('load', function () {
-                iframeCmp.unmask();
-                vm.set('eulaLoaded', true);
-            });
         },
         onContinue: function(){
             this.getView().up('setupwizard').getController().onNext();

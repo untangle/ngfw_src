@@ -18,29 +18,26 @@ public class OemSettings implements Serializable, JSONString
     private String oemShortName;
     private String oemProductName;
     private String oemUrl;
-    private String licenseAgreementUrl = "http://www.untangle.com/legal";
-    private Boolean useLocalEula = false;
+    private String licenseAgreementUrl = "https://edge.arista.com/legal";
 
     public OemSettings() { }
 
-    public OemSettings( String oemName, String oemUrl, String licenseAgreementUrl, Boolean useLocalEula)
+    public OemSettings( String oemName, String oemUrl, String licenseAgreementUrl)
     {
         this.oemName = oemName;
         this.oemShortName = oemName;
         this.oemProductName = oemName;
         this.oemUrl = oemUrl;
         this.licenseAgreementUrl = licenseAgreementUrl;
-        this.useLocalEula = useLocalEula;
     }
 
-    public OemSettings( String oemName, String oemShortName, String oemProductName, String oemUrl, String licenseAgreementUrl, Boolean useLocalEula)
+    public OemSettings( String oemName, String oemShortName, String oemProductName, String oemUrl, String licenseAgreementUrl)
     {
         this.oemName = oemName;
         this.oemShortName = oemShortName;
         this.oemProductName = oemProductName;
         this.oemUrl = oemUrl;
         this.licenseAgreementUrl = licenseAgreementUrl;
-        this.useLocalEula = useLocalEula;
     }
 
     /**
@@ -68,16 +65,10 @@ public class OemSettings implements Serializable, JSONString
     public void setOemUrl( String newValue ) { this.oemUrl = newValue; }
 
     /**
-     * The license agreement ie https://www.untangle.com/legal/ 
+     * The license agreement ie https://edge.arista.com/legal 
      */
     public String getLicenseAgreementUrl() { return licenseAgreementUrl; }
     public void setLicenseAgreementUrl( String newValue ) { this.licenseAgreementUrl = newValue; }
-
-    /**
-     If should use saved legal.html
-     */
-    public Boolean getUseLocalEula() { return useLocalEula; }
-    public void setUseLocalEula( Boolean newValue ) { this.useLocalEula = newValue; }
 
     public String toJSONString()
     {

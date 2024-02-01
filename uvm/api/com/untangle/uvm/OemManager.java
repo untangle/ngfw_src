@@ -40,8 +40,4 @@ public interface OemManager
      */
     public String getLicenseAgreementUrl();
 
-    /**
-     * Return if should use local license agreement
-     */
-    public Boolean getUseLocalEula();
 }
