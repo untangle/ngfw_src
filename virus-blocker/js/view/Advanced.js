@@ -106,7 +106,7 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
                 emptyText: '[enter file type]'.t(),
                 allowBlank: false,
                 regex: RegExp("[\\?\\^\\w~!@#$-]+"),
-                regexText: 'File type can start with an alphanumeric character and any one of those special characters ? ^ _ ~ ! @ # and $ only',
+                regexText: 'File type can start with an alphanumeric character and any one of those special characters ? ^ _ ~ ! @ # $ and - only',
                 width: 400
             }, {
                 xtype: 'checkbox',
