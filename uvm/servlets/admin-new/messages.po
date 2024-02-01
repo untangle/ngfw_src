@@ -1,0 +1,380 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-10 21:07-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: apps/intrusion-prevention/view/Rules.js:1
+msgid "Ung.apps.intrusionprevention.view.Rules"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:2
+msgid "Ung.cmp.Grid"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:3
+msgid "widget.app-intrusion-prevention-rules"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:4
+#: apps/intrusion-prevention/view/Rules.js:9
+msgid "rules"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:5
+msgid "Rules"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:7
+msgid "unintrusionrulesgrid"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:11
+msgid "center"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:15
+msgid "gridfilters"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:18
+msgid "grouping"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:19
+msgid ""
+"{columnName}: {name} ({rows.length} rule{[values.rows.length > 1 ? \"s\" : "
+"\"\"]})"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:23
+msgid "{rules}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:26
+msgid "rulesReconfigure"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:29
+msgid "@add"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:29
+msgid "->"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:29
+msgid "@import"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:29
+msgid "@export"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:30
+msgid "edit"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:30
+msgid "copy"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:30
+msgid "delete"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:32
+msgid "Search"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:33
+#: apps/intrusion-prevention/view/Rules.js:183
+msgid "textfield"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:34
+msgid "searchFilter"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:36
+msgid "filterSearch"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:39
+#: apps/intrusion-prevention/view/Rules.js:46
+#: apps/intrusion-prevention/view/Rules.js:202
+#: apps/intrusion-prevention/view/Rules.js:209
+msgid "checkbox"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:40
+msgid "searchLog"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:41
+#: apps/intrusion-prevention/view/Rules.js:98
+#: apps/intrusion-prevention/view/Rules.js:204
+msgid "Log"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:43
+msgid "filterLog"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:47
+msgid "searchBlock"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:48
+#: apps/intrusion-prevention/view/Rules.js:127
+#: apps/intrusion-prevention/view/Rules.js:211
+msgid "Block"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:50
+msgid "filterBlock"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:53
+msgid "tbtext"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:54
+msgid "searchStatus"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:55
+msgid "Loading..."
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:57
+msgid "updateSearchStatusBar"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:62
+#: apps/intrusion-prevention/view/Rules.js:78
+msgid "classtype"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:62
+msgid "unknown"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:63
+#: apps/intrusion-prevention/view/Rules.js:83
+msgid "category"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:63
+msgid "app-detect"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:64
+#: apps/intrusion-prevention/view/Rules.js:88
+msgid "msg"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:64
+msgid "new rule"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:65
+#: apps/intrusion-prevention/view/Rules.js:73
+msgid "sid"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:65
+msgid "1999999"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:66
+#: apps/intrusion-prevention/view/Rules.js:99
+msgid "log"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:67
+#: apps/intrusion-prevention/view/Rules.js:128
+msgid "block"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:68
+#: apps/intrusion-prevention/view/Rules.js:93
+msgid "rule"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:68
+msgid ""
+"alert tcp any any -> any any ( msg:\"new rule\"; classtype:unknown; "
+"sid:1999999; content:\"matchme\"; nocase;)"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:72
+#: apps/intrusion-prevention/view/Rules.js:194
+msgid "Sid"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:75
+msgid "sidRenderer"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:77
+#: apps/intrusion-prevention/view/Rules.js:156
+msgid "Classtype"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:80
+msgid "classtypeRenderer"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:82
+#: apps/intrusion-prevention/view/Rules.js:171
+msgid "Category"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:85
+msgid "categoryRenderer"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:87
+#: apps/intrusion-prevention/view/Rules.js:185
+msgid "Msg"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:92
+msgid "Reference"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:95
+msgid "referenceRenderer"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:97
+#: apps/intrusion-prevention/view/Rules.js:126
+msgid "checkcolumn"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:102
+msgid "logBeforeCheckChange"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:131
+msgid "blockBeforeCheckChange"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:158
+#: apps/intrusion-prevention/view/Rules.js:178
+msgid "combo"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:159
+#: apps/intrusion-prevention/view/Rules.js:179
+msgid "local"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:161
+msgid "{record.classtype}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:162
+msgid "{classtypes}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:164
+#: apps/intrusion-prevention/view/Rules.js:165
+#: apps/intrusion-prevention/view/Rules.js:180
+#: apps/intrusion-prevention/view/Rules.js:181
+msgid "name"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:168
+msgid "editorClasstypeChange"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:173
+msgid "{record.category}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:174
+msgid "{categories}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:176
+msgid "[enter category]"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:184
+msgid "{record.msg}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:186
+msgid "[enter mg]"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:189
+msgid "editorMsgChange"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:192
+msgid "numberfield"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:193
+msgid "{record.sid}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:195
+msgid "[enter sid]"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:199
+msgid "editorSidChange"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:203
+msgid "{record.log}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:206
+msgid "editorLogChange"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:210
+msgid "{record.block}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:213
+msgid "editorBlockChange"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:216
+msgid "textareafield"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:217
+msgid "{record.rule}"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:218
+msgid "Rule"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:219
+msgid "[enter rule]"
+msgstr ""
+
+#: apps/intrusion-prevention/view/Rules.js:223
+msgid "editorRuleChange"
+msgstr ""

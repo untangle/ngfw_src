@@ -52,6 +52,8 @@ ServletBuilder.new(uvm_lib, "com.untangle.uvm.gdrive.servlet", ["./uvm/servlets/
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.admin.servlet", ["./uvm/servlets/admin"], deps + Jars::Jstl)
 
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.admin_new.servlet", ["./uvm/servlets/admin-new"], deps + Jars::Jstl)
+
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", ["./uvm/servlets/setup"], deps + Jars::Jstl)
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', ["./uvm/servlets/blockpage"], deps + Jars::Jstl, [], [])
@@ -94,6 +96,12 @@ ungAllDirs = [ 'overrides', 'model', 'store', 'controller',
 ungAllDirs.map! { |e| "uvm/servlets/admin/app/#{e}" }
 JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
 
+# ung-all-new
+ungAllDirsNew = [ 'overrides', 'model', 'store', 'controller',
+               'cmp', 'widget', 'view', 'Application.js' ]
+ungAllDirsNew.map! { |e| "uvm/servlets/admin-new/app/#{e}" }
+JsBuilder.new(uvm_lib, "ung-all-new", ungAllDirsNew, "admin-new/script")
+
 # ung-setup-all
 ungSetupAllDirs = [ 'view', 'Application.js' ]
 ungSetupAllDirs.map! { |e| "uvm/servlets/setup/app/#{e}" }
@@ -103,6 +111,7 @@ JsBuilder.new(uvm_lib, "ung-setup-all", ungSetupAllDirs, "setup/script")
 ['about', 'administration', 'events', 'email', 'local-directory', 'network',
  'system', 'upgrade'].each do |n|
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
+  JsBuilder.new(uvm_lib, "#{n}-new", "uvm/servlets/admin-new/config/#{n}-new", "admin-new/script/config")
 end
 
 # common
@@ -117,11 +126,13 @@ end
 
 # jslinting
 JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
+JsLintTarget.new(uvm_lib, './uvm/servlets/admin-new', 'jslint-admin-newui')
 JsLintTarget.new(uvm_lib, './uvm/js/common', 'jslint-common')
 JsLintTarget.new(uvm_lib, './uvm/servlets/setup', 'jslint-setupui')
 
 ## SCSS
 ScssBuilder.new(uvm_lib, "ung-all", "./uvm/servlets/admin/sass", "admin/styles")
+ScssBuilder.new(uvm_lib, "ung-all-new", "./uvm/servlets/admin-new/sass", "admin-new/styles")
 ScssBuilder.new(uvm, "reports-all", "./uvm/js/common/reports/sass", "script/common")
 ScssBuilder.new(uvm, "setup-all", "./uvm/servlets/setup/sass", "setup/styles")
 
