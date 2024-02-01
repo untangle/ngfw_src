@@ -111,7 +111,7 @@ JsBuilder.new(uvm_lib, "ung-setup-all", ungSetupAllDirs, "setup/script")
 ['about', 'administration', 'events', 'email', 'local-directory', 'network',
  'system', 'upgrade'].each do |n|
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
-  JsBuilder.new(uvm_lib, "#{n}-new", "uvm/servlets/admin-new/config/#{n}-new", "admin-new/script/config")
+  JsBuilder.new(uvm_lib, "#{n}-new", "uvm/servlets/admin-new/config/#{n}", "admin-new/script/config")
 end
 
 # common
