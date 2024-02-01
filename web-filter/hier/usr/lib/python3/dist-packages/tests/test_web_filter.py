@@ -1261,18 +1261,18 @@ class WebFilterTests(WebFilterBaseTests):
         self.rules_clear()
         assert (result == 0)
         
+    def test_010_0000_rule_condition_web_filter_category_inverse(self):
+        "test WEB_FILTER_CATEGORY inverse"
+        self.rule_add("WEB_FILTER_CATEGORY","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+        
     def test_010_0000_rule_condition_web_filter_category(self):
         "test WEB_FILTER_CATEGORY"
         raise unittest.SkipTest('Skipping as brightcloud is setting previous category instead of Generative AI ')
         self.rule_add("WEB_FILTER_CATEGORY","Generative AI")
         result = self.get_web_request_results(url="http://chat.openai.com/auth/login", expected="blockpage")
-        self.rules_clear()
-        assert (result == 0)
-
-    def test_010_0000_rule_condition_web_filter_category_inverse(self):
-        "test WEB_FILTER_CATEGORY inverse"
-        self.rule_add("WEB_FILTER_CATEGORY","xyznevermatch")
-        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
         assert (result == 0)
         
