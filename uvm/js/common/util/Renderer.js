@@ -698,9 +698,9 @@ Ext.define('Ung.util.Renderer', {
         var i;
         if( record && record.get && record.get('policy_id') ){
             var policyName = record.get('policy_id');
-            for(var id in Map.policies){
-                if(Map.policies.hasOwnProperty(id)){
-                    if(Map.policies[id] == policyName){
+            for (var id in Mapper.policies) {
+                if (Mapper.policies.hasOwnProperty(id)) {
+                    if (Mapper.policies[id] == policyName) {
                         policyIds = [id];
                     }
                 }
@@ -770,9 +770,9 @@ Ext.define('Ung.util.Renderer', {
         var id;
         var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
         if(policyId != 1){
-            for(id in Map.policies){
-                if(Map.policies.hasOwnProperty(id)){
-                    if(Map.policies[id] == policyId){
+            for (id in Mapper.policies) {
+                if (Mapper.policies.hasOwnProperty(id)) {
+                    if (Mapper.policies[id] == policyId) {
                         policyId = id;
                         break;
                     }
@@ -781,9 +781,9 @@ Ext.define('Ung.util.Renderer', {
         }
         var webFilterReason = record && record.get && record.get('web_filter_reason') ? record.get('web_filter_reason') : 'N';
         if(webFilterReason != 'N'){
-            for(id in Map.webReasons){
-                if(Map.webReasons.hasOwnProperty(id)){
-                    if(Map.webReasons[id] == webFilterReason){
+            for (id in Mapper.webReasons) {
+                if (Mapper.webReasons.hasOwnProperty(id)) {
+                    if (Mapper.webReasons[id] == webFilterReason) {
                         webFilterReason = id;
                         if(webFilterReason == 'default'){
                             webFilterReason = 'N';

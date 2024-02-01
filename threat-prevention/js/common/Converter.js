@@ -1,7 +1,7 @@
 Ext.define('Ung.common.Converter.threatprevention', {
     singleton: true,
 
-    reason: function (v) { return Map.webReasons[v] || 'no rule applied'.t(); },
+    reason: function (v) { return Mapper.webReasons[v] || 'no rule applied'.t(); },
 
     ruleIdMap: {},
     ruleId: function (value, record) {
@@ -11,9 +11,9 @@ Ext.define('Ung.common.Converter.threatprevention', {
         var policyId = record && record.get && record.get('policy_id') ? record.get('policy_id') : 1;
         var reason = record && record.get && record.get('threat_prevention_reason') ? record.get('threat_prevention_reason') : 'N';
         if(reason != 'N'){
-            for(var id in Map.webReasons){
-                if(Map.webReasons.hasOwnProperty(id)){
-                    if(Map.webReasons[id] == reason){
+            for (var id in Mapper.webReasons) {
+                if (Mapper.webReasons.hasOwnProperty(id)) {
+                    if (Mapper.webReasons[id] == reason) {
                         reason = id;
                         if(reason == 'default'){
                             reason = 'N';
