@@ -49,6 +49,7 @@ import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.MailSettings.SendMethod;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -152,6 +153,14 @@ public class MailSenderImpl implements MailSender
 
             this.setSettings(settings);
         } else {
+            /**
+             * If the settings file  send method is RELAY then update it to DIRECT, re-sync
+            */
+            if (readSettings.getSendMethod() == MailSettings.SendMethod.RELAY) {
+                readSettings.setSendMethod(SendMethod.DIRECT);
+                this.setSettings(readSettings);
+                logger.info("Changing mail settings to Direct Settings: " + this.settings.toJSONString());
+            }
             this.settings = readSettings;
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
