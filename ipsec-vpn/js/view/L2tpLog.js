@@ -16,6 +16,7 @@ Ext.define('Ung.apps.ipsecvpn.view.L2tpLog', {
 
     items: [{
         xtype: 'textarea',
+        readOnly: true,
         itemId: 'ipsecVirtualLog',
         spellcheck: false,
         padding: 0,

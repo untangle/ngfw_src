@@ -16,6 +16,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecState', {
 
     items: [{
         xtype: 'textarea',
+        readOnly: true,
         itemId: 'ipsecStateInfo',
         spellcheck: false,
         padding: 0,

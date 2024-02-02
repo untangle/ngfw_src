@@ -16,6 +16,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecLog', {
 
     items: [{
         xtype: 'textarea',
+        readOnly: true,
         itemId: 'ipsecSystemLog',
         spellcheck: false,
         padding: 0,
