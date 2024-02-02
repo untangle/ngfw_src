@@ -59,7 +59,7 @@ public class OemSettings implements Serializable, JSONString
     public void setOemProductName( String newValue ) { this.oemProductName = newValue; }
 
     /**
-     * The OEM URL, ie "http://untangle.com"
+     * The OEM URL, ie "https://edge.arista.com"
      */
     public String getOemUrl() { return oemUrl; }
     public void setOemUrl( String newValue ) { this.oemUrl = newValue; }
