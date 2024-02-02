@@ -425,7 +425,6 @@ class OpenVpnTests(NGFWTestCase):
         appData['remoteClients']['list'][:] = []  
         appData['remoteClients']['list'].append(setUpClient(vpn_name=vpnFullClientName))
         appData['groups']['list'][0]['fullTunnel'] = True
-        appData['groups']['list'][0]['fullTunnel'] = True
         self._app.setSettings(appData)
         clientLink = self._app.getClientDistributionDownloadLink(vpnFullClientName,"zip")
         # print(clientLink)
