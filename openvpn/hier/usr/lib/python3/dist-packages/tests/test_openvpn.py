@@ -452,8 +452,9 @@ class OpenVpnTests(NGFWTestCase):
             result2 = remote_control.run_command("ping -c 2 " + remote_control.client_ip, host=vpnPoolAddressIP)
 
             # run a web request to internet and make sure it goes through web filter
-            # debug remote_control.run_command("wget --no-check-certificate -O /tmp/test_050_createClientVPNFullTunnel.txt http://www.playboy.com", host=vpnPoolAddressIP)
-            webresult = remote_control.run_command(global_functions.build_wget_command(uri="http://www.playboy.com", output_file="-", ignore_certificate=True, override_arguments=["--inet4-only","--quiet","--tries=2","--timeout=5"]) + "| grep -q blockpage", host=vpnPoolAddressIP)
+            # debug remote_control.run_command("wget --inet4-only --quiet --tries=2 --timeout=5 --output-document=/tmp/test_050_createClientVPNFullTunnel.txt 'http://www.penthouse.com'", host=vpnPoolAddressIP)
+            remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com", output_file="-", ignore_certificate=True, override_arguments=["--inet4-only","--quiet","--tries=2","--timeout=5"]), host=vpnPoolAddressIP)
+            webresult = remote_control.run_command(global_functions.build_wget_command(uri="http://www.penthouse.com", output_file="-", ignore_certificate=True, override_arguments=["--inet4-only","--quiet","--tries=2","--timeout=5"]) + " | grep -q blockpage", host=vpnPoolAddressIP)
 
             print("result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult))
         else:
