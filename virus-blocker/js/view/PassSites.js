@@ -39,7 +39,7 @@ Ext.define('Ung.apps.virusblocker.view.PassSites', {
         editor: {
             xtype: 'textfield',
             emptyText: '[enter site]'.t(),
-            allowBlank: false,
+            allowOnlyWhitespace: false,
             validator: Util.urlIpValidator
         }
     }, {
@@ -63,7 +63,7 @@ Ext.define('Ung.apps.virusblocker.view.PassSites', {
         bind: '{record.string}',
         fieldLabel: 'Site'.t(),
         emptyText: '[enter site]'.t(),
-        allowBlank: false,
+        allowOnlyWhitespace: false,
         width: 400,
         validator: Util.urlIpValidator
     }, {
