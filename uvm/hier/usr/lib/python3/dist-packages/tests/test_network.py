@@ -2401,6 +2401,28 @@ class NetworkTests(NGFWTestCase):
         residual_files = find_files(dir_path, search_string)
         assert len(residual_files) == 0
 
+    def test_702_remove_snort_files(self):
+        """
+        Removing snort files
+        """
+        snort_file_name = '740-snort'
+        dir_path = '/etc/untangle/iptables-rules.d/'
+        search_string = '*-snort*'
+        # creating files with *-snort* extension
+        with open(dir_path + snort_file_name, "w") as f:
+            f.write("snort file test")
+
+        #*-snort* extension files are present
+        snort_files = find_files(dir_path, search_string)
+        print(snort_files)
+        assert len(snort_files) > 0
+        # Set settings forces sync-settings call
+        # Restore original settings to return to initial settings
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        #sync settings should cleanup *-snort* extension files
+        snort_files = find_files(dir_path, search_string)
+        assert len(snort_files) == 0
+
 
     @classmethod
     def final_extra_tear_down(cls):
