@@ -50,4 +50,10 @@ class AboutTests(NGFWTestCase):
         match = re.search(r'\d{1,2}', max_num_hosts)
         assert(match)
 
+    # Checks remote license agreement link
+    def test_030_about_license_agreement(self):
+        license_url = global_functions.uvmContext.getLegalUrl()
+        match = re.search('^.*edge.arista.com/legal$', license_url)
+        assert(match)
+
 test_registry.register_module("about-tests", AboutTests)
