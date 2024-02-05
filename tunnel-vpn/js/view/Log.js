@@ -16,6 +16,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Log', {
 
     items: [{
         xtype: 'textarea',
+        readOnly: true,
         itemId: 'tunnelLog',
         spellcheck: false,
         padding: 0,

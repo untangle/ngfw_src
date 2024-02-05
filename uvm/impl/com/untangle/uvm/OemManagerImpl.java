@@ -41,7 +41,7 @@ public class OemManagerImpl implements OemManager
         }
 
         if (readSettings != null) this.settings = readSettings;
-        else this.settings = new OemSettings("Arista", "Arista", "Arista Server", "http://untangle.com", "https://www.untangle.com/legal", false);
+        else this.settings = new OemSettings("Arista", "Arista", "Arista Server", "https://edge.arista.com", "https://edge.arista.com/legal");
 
         logger.info("OEM: " + this.settings.getOemName());
     }
@@ -170,16 +170,5 @@ public class OemManagerImpl implements OemManager
     {
         UriManager uriManager = UvmContextFactory.context().uriManager();
         return uriManager.getUri(this.settings.getLicenseAgreementUrl());
-    }
-
-    /**
-     * Get if local eula should be used
-     *
-     * @return if local eula should be used
-     */
-    @Override
-    public Boolean getUseLocalEula()
-    {
-        return this.settings.getUseLocalEula();
     }
 }

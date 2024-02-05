@@ -19,8 +19,14 @@ class SetupWizard(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
-    # Checks the local license agreement
+    # Checks the oem url and license agreement url
     def test_020_about_license_agreement(self):
-        pass # TODO write this test when license agreement points to edge.arista.com
+        oem_url = uvmContext.oemManager().getOemUrl()
+        match = re.search('^.*edge.arista.com$', oem_url)
+        assert(match)
+        
+        license_url = uvmContext.oemManager().getLicenseAgreementUrl();
+        match = re.search('^.*edge.arista.com/legal$', license_url)
+        assert(match)
 
 test_registry.register_module("setup-wizard", SetupWizard)

@@ -899,7 +899,7 @@ def get_udp_download_speed( receiverip, senderip, targetip=None, targetRate=None
         remote_control.run_command("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverip)
 
         # start the UDP generator on the client behind the Untangle.
-        report=remote_control.run_command("iperf -c " + targetip + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderip, stdout=True)
+        report=remote_control.run_command("iperf -c " + targetip + " -u -p 5000 -b " + targetRate + " -t 20 -fK", host=senderip, stdout=True)
 
         # kill iperf receiver and verify
         iperfRunning = 0
