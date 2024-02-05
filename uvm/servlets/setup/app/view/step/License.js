@@ -56,7 +56,7 @@ Ext.define('Ung.Setup.License', {
                 "text-align": "center",
                 "font-weight": "bold"
             },
-            html: '<p>' + "After completing the setup, legal links can also be viewed from the About page." + '</p>'
+            html: '<p>' + "After completing the setup, legal links can also be viewed from the About page.".t() + '</p>'
         }, {
             xtype: 'container',
             margin: '8 0',
