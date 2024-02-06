@@ -49,7 +49,9 @@ Ext.define('Ung.apps.wan-balancer.view.WeightGrid', {
             xtype: 'numberfield',
             allowDecimals: false,
             minValue: 0,
-            maxValue: 100
+            maxValue: 100,
+            emptyText: '[enter weight]'.t(),
+            allowOnlyWhitespace: false
         }
     }, {
         header: 'Resulting Traffic Allocation'.t(),
