@@ -38,7 +38,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
         editor: {
             xtype:'textfield',
             emptyText: "[enter value]".t(),
-            allowBlank: false
+            allowOnlyWhitespace: false
         }
     }],
 
@@ -53,7 +53,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
             emptyText: '[enter name]'.t(),
             labelAlign: 'right',
             labelWdith: 150,
-            allowBlank: false,
+            allowOnlyWhitespace: false,
             listeners: {
                 change: 'editorVariableChange'
             }
@@ -70,6 +70,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
         bind: '{record.value}',
         fieldLabel: 'Value'.t(),
         emptyText: '[enter value]'.t(),
-        allowBlank: false
+        allowOnlyWhitespace: false
     }]
 });

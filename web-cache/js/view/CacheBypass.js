@@ -46,7 +46,7 @@ Ext.define('Ung.apps.webcache.view.CacheBypass', {
         editor: {
             xtype: 'textfield',
             emptyText: '[enter hostname]'.t(),
-            allowBlank: false
+            allowOnlyWhitespace: false
         }
     }],
     editorFields: [{
@@ -57,7 +57,7 @@ Ext.define('Ung.apps.webcache.view.CacheBypass', {
         xtype: 'textfield',
         bind: '{record.hostname}',
         fieldLabel: 'Hostname'.t(),
-        allowBlank: false,
+        allowOnlyWhitespace: false,
         emptyText: '[enter hostname]'.t(),
         width: 400
     }]

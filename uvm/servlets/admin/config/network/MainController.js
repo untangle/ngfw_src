@@ -146,6 +146,14 @@ Ext.define('Ung.config.network.MainController', {
             vm.set('settings.interfaces.list', Ext.Array.pluck(interfacesStore.getRange(), 'data'));
         }
 
+        // update static DHCP data
+        var dhcpStore = view.down('#dhcpEntries').getStore();
+        if(dhcpStore.getModifiedRecords().length > 0 ||
+            dhcpStore.getNewRecords().length > 0 ||
+            dhcpStore.getRemovedRecords().length > 0) {
+            vm.set('settings.staticDhcpEntries.list', Ext.Array.pluck(dhcpStore.getRange(), 'data'));
+        }
+
         // used to update all tabs data
         view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -292,7 +300,7 @@ Ext.define('Ung.config.network.MainController', {
         var v = this.getView();
         var vm = this.getViewModel();
         var me = this;
-
+        
         // !!! on writes, set interface list.
 
         /**
