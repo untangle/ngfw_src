@@ -4,7 +4,7 @@ Ext.define('Ung.config.network.MainController', {
     alias: 'controller.config-network',
 
     control: {
-        '#': { afterrender: 'loadSettings' },
+        '#': { afterrender: 'loadSettings', tabchange: 'setToolbarVisibility' },
         '#interfaces': { beforerender: 'onInterfaces' },
         '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
         '#routes': { afterrender: 'refreshRoutes' },
@@ -56,6 +56,8 @@ Ext.define('Ung.config.network.MainController', {
         var me = this,
             v = this.getView(),
             vm = this.getViewModel();
+
+        me.setToolbarVisibility();
 
         v.setLoading(true);
         Ext.Deferred.sequence([
@@ -1661,6 +1663,14 @@ Ext.define('Ung.config.network.MainController', {
                 }
             });
         });
+    },
+
+    // sets toolbar visibility weather it's an extjs (true) or vue(false) component
+    setToolbarVisibility: function () {
+        var me = this, vm = me.getViewModel();
+        var activeTab = me.getView().getActiveTab().getXType();
+        var tollbarHidden = ['config-network-dns-server', 'config-network-dhcp-server'].includes(activeTab);
+        vm.set('panel.toolbarHidden', tollbarHidden);
     },
 
     statics: {

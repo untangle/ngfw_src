@@ -113,7 +113,7 @@ public class TomcatManagerImpl implements TomcatManager
         ctx = loadServlet("/admin", "admin", true );
         ctx.setAttribute("threadRequest", threadRequest);
 
-        ctx = loadServlet("/admin-new", "admin-new", true );
+        ctx = loadServlet("/admin-old", "admin-old", true );
         ctx.setAttribute("threadRequest", threadRequest);
 
         ctx = loadServlet("/setup", "setup", true );

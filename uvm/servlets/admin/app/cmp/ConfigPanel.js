@@ -21,6 +21,9 @@ Ext.define('Ung.cmp.ConfigPanel', {
     }, {
         xtype: 'toolbar',
         dock: 'bottom',
+        bind: {
+            hidden: '{panel.toolbarHidden}'
+        },
         items: ['->', {
             text: '<strong>' + 'Save'.t() + '</strong>',
             bind:{
@@ -65,6 +68,7 @@ Ext.define('Ung.cmp.ConfigPanel', {
 
         removed: function(){
             this.getViewModel().set('panel.saveDisabled', false);
+            this.getViewModel().set('panel.toolbarHidden', false);
         }
     }
 
