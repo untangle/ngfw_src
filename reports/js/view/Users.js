@@ -54,7 +54,7 @@ Ext.define('Ung.apps.reports.view.Users', {
         editor: {
             xtype: 'textfield',
             emptyText: '[enter email address]'.t(),
-            allowBlank: false,
+            allowOnlyWhitespace: false,
             blankText: 'The email address cannot be blank.'.t()
         }
     }, {
@@ -88,7 +88,7 @@ Ext.define('Ung.apps.reports.view.Users', {
         bind: '{record.emailAddress}',
         fieldLabel: 'Email Address (username)'.t(),
         emptyText: '[enter email address]'.t(),
-        allowBlank: false,
+        allowOnlyWhitespace: false,
         width: 300,
         blankText: 'The email address name cannot be blank.'.t(),
     }, {
