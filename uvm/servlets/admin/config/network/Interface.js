@@ -34,9 +34,7 @@ Ext.define('Ung.config.network.Interface', {
                 fieldLabel: 'Interface Name'.t(),
                 width: 400,
                 name: 'interfaceName',
-                allowOnlyWhitespace: false,
-                regex: /^[^!#$%^&]+$/,
-                regexText: 'This field can have alphanumerics or special characters other than ! # $ % ^ &'.t(),
+                allowBlank: false,
                 bind: '{intf.name}'
             }, {
                 xtype: 'container',
