@@ -43,6 +43,7 @@ import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.IOUtil;
+import com.untangle.uvm.util.StringUtil;
 
 /**
  * The Manager for system-related settings
@@ -50,10 +51,12 @@ import com.untangle.uvm.util.IOUtil;
 public class SystemManagerImpl implements SystemManager
 {
     private static final int SETTINGS_VERSION = 4;
+    private static final String ZIP_FILE = "system_logs.zip";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
     private static final String TWO_LINES = BLANK_LINE + EOL;
 
+    private static final String SYSTEM_LOG_DIR = "/var/log";
     private static final String SNMP_DEFAULT_FILE_NAME = "/etc/default/snmpd";
     private static final String SNMP_CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
     private static final String SNMP_CONF_LIB_FILE_NAME = "/var/lib/snmp/snmpd.conf";
@@ -1220,6 +1223,25 @@ can look deeper. - mahotz
         }
 
         /**
+         * Returns FileNameFilter lambda expression by regex
+         * If matchRegEx is present and file name matches the regex then returns true, or else returns true
+         * @param matchRegEx Regex to match the file name
+         * @return
+         */
+        private FilenameFilter getFileNameFilter(String matchRegEx) {
+            /**
+             * Accept matcher for file search
+             * 
+             * @param directory
+             *        The file directory
+             * @param name
+             *        The file name
+             * @return True to accept the file, false to reject
+             */
+            return (directory, name) -> StringUtil.isNotEmpty(matchRegEx) ? name.matches(matchRegEx) : true;
+        }
+
+        /**
          * Download handler for system log download requests
          * 
          * @param req
@@ -1233,51 +1255,49 @@ can look deeper. - mahotz
             try {
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type", "application/octet-stream");
-                resp.setHeader("Content-Disposition", "attachment; filename=sytem_logs.zip");
+                resp.setHeader("Content-Disposition", "attachment; filename=" + ZIP_FILE);
 
                 byte[] buffer = new byte[1024];
                 int read;
                 out = new ZipOutputStream(resp.getOutputStream());
 
-                File directory = new File("/var/log/uvm");
-                File[] files = directory.listFiles(new FilenameFilter()
-                {
-                    /**
-                     * Accept matcher for file search
-                     * 
-                     * @param directory
-                     *        The file directory
-                     * @param name
-                     *        The file name
-                     * @return True to accept the file, false to reject
-                     */
-                    @Override
-                    public boolean accept(File directory, String name)
-                    {
-                        if (name.endsWith(".log") == true) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
+                List<File[]> filesList = new ArrayList<>(3);
+
+                // NGFW-13958 get all files under /var/log/uvm, all syslog files and /var/log/bctid.log file
+                File uvmDirectory = new File(SYSTEM_LOG_DIR + "/uvm");
+                // matches '*.*' at the end of the string
+                File[] uvmFiles = uvmDirectory.listFiles(getFileNameFilter(".*[.].*$"));
+                filesList.add(uvmFiles);
+
+                File sysLogDirectory = new File(SYSTEM_LOG_DIR);
+                // matches 'syslog*' at the start of the string
+                File[] sysLogFiles = sysLogDirectory.listFiles(getFileNameFilter("^syslog.*"));
+                filesList.add(sysLogFiles);
+
+                File bctidLogFile = new File(SYSTEM_LOG_DIR + "/bctid.log");
+                if (bctidLogFile.exists()) {
+                    filesList.add(new File[] {bctidLogFile});
+                }
 
                 FileInputStream fis = null;
-                for (File f : files) {
-                    try {
-                        fis = new FileInputStream(f.getCanonicalFile());
-                        out.putNextEntry(new ZipEntry(f.getName()));
-                        while ((read = fis.read(buffer)) > 0) {
-                            out.write(buffer, 0, read);
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Failed to write log file.", e);
-                    } finally {
+                for (File[] filesArr : filesList) {
+                    for (File f : filesArr) {
                         try {
-                            if (fis != null) {
-                                fis.close();
+                            fis = new FileInputStream(f.getCanonicalFile());
+                            out.putNextEntry(new ZipEntry(f.getName()));
+                            while ((read = fis.read(buffer)) > 0) {
+                                out.write(buffer, 0, read);
                             }
-                        } catch (IOException ex) {
-                            logger.error("Unable to close file", ex);
+                        } catch (Exception e) {
+                            logger.warn("Failed to write log file.", e);
+                        } finally {
+                            try {
+                                if (fis != null) {
+                                    fis.close();
+                                }
+                            } catch (IOException ex) {
+                                logger.error("Unable to close file", ex);
+                            }
                         }
                     }
                 }
