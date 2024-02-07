@@ -17,7 +17,7 @@ public class MailSettings implements Serializable, JSONString
     public enum SendMethod { RELAY, DIRECT, CUSTOM } 
         
     private String fromAddress;
-    private SendMethod sendMethod = SendMethod.RELAY;
+    private SendMethod sendMethod = SendMethod.DIRECT;
     private String smtpHost;
     private int smtpPort = 25;
     private String authUser;
