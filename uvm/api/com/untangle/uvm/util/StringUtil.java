@@ -136,14 +136,4 @@ public class StringUtil
     public static boolean isEmpty(String input) {
         return input == null || input.length() == 0;
     }
-
-
-    /**
-     * Returns whether input string is neither null nor empty i.e. length = 0
-     * @param input Input to validate
-     * @return
-     */
-    public static boolean isNotEmpty(String input) {
-        return !isEmpty(input);
-    }
 }
