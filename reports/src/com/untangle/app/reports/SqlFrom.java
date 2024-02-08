@@ -65,6 +65,8 @@ public class SqlFrom implements Serializable, JSONString
 
     public String getFrom(String column, String where)
     {
+        if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + table);
+
         String template = "";
         switch(type){
             case RANGE:
