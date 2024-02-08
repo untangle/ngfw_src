@@ -12,9 +12,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -27,6 +30,9 @@ import com.untangle.uvm.logging.LogEvent;
 public class ReportEntry implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger(ReportEntry.class);
+
+    // !!! DOCUMENT ME
+    public static final Pattern INJECT_REGEX = Pattern.compile(".*[;\'\"'].*");
 
     public static enum ReportEntryType {
         TEXT, /* A text entry */
@@ -237,18 +243,48 @@ public class ReportEntry implements Serializable, JSONString
     public String getApproximation() { return this.approximation; }
     public void setApproximation( String newValue ) { this.approximation = newValue; }
 
+    /**
+     * 
+     * @param conn
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {
         return toSql( conn, startDate, endDate, null, null, null );
     }
 
+    /**
+     * 
+     * @param conn
+     * @param startDate
+     * @param endDate
+     * @param extraSelects
+     * @param extraConditions
+     * @param from
+     * @return
+     */
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom from )
     {
         return toSql( conn, startDate, endDate, extraSelects, extraConditions, from, null );
     }
 
+    /**
+     * 
+     * @param conn
+     * @param startDate
+     * @param endDate
+     * @param extraSelects
+     * @param extraConditions
+     * @param from
+     * @param limit
+     * @return
+     */
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom from, Integer limit )
     {
+        if(!ReportEntry.isValidStringArrayField(extraSelects, true)) throw new RuntimeException("invalid extraSelects: " + (extraSelects != null ? String.join(",", extraSelects) : ""));
+
         if ( endDate == null ) {
             endDate = new Date(System.currentTimeMillis() + 60*1000); // now + 1-minute
             logger.info("endDate not specified, using now plus 1 min: " + dateFormat(endDate));
@@ -263,6 +299,15 @@ public class ReportEntry implements Serializable, JSONString
             allConditions.addAll( Arrays.asList(getConditions()) );
         if ( extraConditions != null )
             allConditions.addAll( Arrays.asList(extraConditions) );
+
+        for(SqlCondition sc : allConditions){
+            if( (isValidStringField(sc.getColumn(), true) == false) ||
+                (isValidStringField(sc.getOperator(), true) == false) ||
+                (isValidStringField(sc.getValue(), true) == false) ||
+                (isValidStringField(sc.getTable(), true) == false) ){
+                throw new RuntimeException("invalid condition: " + sc.toString());
+            }
+        }
 
         if(from == null){
             from = new SqlFrom();
@@ -290,6 +335,49 @@ public class ReportEntry implements Serializable, JSONString
         throw new RuntimeException("Unknown Graph type: " + this.type);
     }
 
+    /**
+     * Perform basic SQL injection vaildation against string field.
+     * This is any string value that can be concatenated, inserted, replaced, etc.
+     * in the SQL query
+     * @param field
+     * @param emptyOk
+     * @return
+     */
+    public static boolean isValidStringField(String field, boolean emptyOk)
+    {
+        if(field == null || field.trim().isEmpty()){
+            return (emptyOk == true) ? true : false;
+        }
+        if(INJECT_REGEX.matcher(field).matches()){
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Perform basic SQL injection vaildation against array of strings.
+     * This is any string value that can be concatenated, inserted, replaced, etc.
+     * in the SQL query
+     * 
+     * @param field
+     * @param emptyOk
+     * @return
+     */
+    public static boolean isValidStringArrayField(String[] field, boolean emptyOk)
+    {
+        if(field == null || field.length == 0){
+            return (emptyOk == true) ? true : false;
+        }
+        for( int i = 0; i < field.length; i++){
+            if(isValidStringField(field[i], emptyOk) == false){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private TimeDataInterval calculateTimeDataInterval( Date startDate, Date endDate )
     {
         if ( this.timeDataInterval != TimeDataInterval.AUTO )
@@ -311,11 +399,22 @@ public class ReportEntry implements Serializable, JSONString
         //     return TimeDataInterval.MINUTE;
     }
 
+    /**
+     * 
+     * @param conn
+     * @param startDate
+     * @param endDate
+     * @param from
+     * @param allConditions
+     * @param limit
+     * @return
+     */
     private PreparedStatement toSqlEventList( Connection conn, Date startDate, Date endDate, SqlFrom from, LinkedList<SqlCondition> allConditions, Integer limit )
     {
+        if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + getTable());
         String query = "";
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
-        query +=  "SELECT * FROM " + LogEvent.schemaPrefix() + this.table + " WHERE " + dateCondition;
+        query +=  "SELECT * FROM " + LogEvent.schemaPrefix() + getTable() + " WHERE " + dateCondition;
         query += conditionsToString( allConditions );
         query += " ORDER BY time_stamp DESC";
         if ( limit != null && limit > 0 )
@@ -324,8 +423,22 @@ public class ReportEntry implements Serializable, JSONString
         return sqlToStatement( conn, query, allConditions );
     }
 
+    /**
+     * 
+     * @param conn
+     * @param startDate
+     * @param endDate
+     * @param from
+     * @param extraSelects
+     * @param allConditions
+     * @return
+     */
     private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
+        if(!ReportEntry.isValidStringField(getPieGroupColumn(), false)) throw new RuntimeException("invalid pieGroupColumn: " + getPieGroupColumn());
+        if(!ReportEntry.isValidStringField(getPieSumColumn(), false)) throw new RuntimeException("invalid pieGroupColumn: " + getPieSumColumn());
+        if(!ReportEntry.isValidStringField(getOrderByColumn(), false)) throw new RuntimeException("invalid orderByColumn: " + getOrderByColumn());
+
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         String pieQuery = "SELECT " +
             (extraSelects != null ? String.join(",", extraSelects) + "," : "") +
@@ -340,8 +453,21 @@ public class ReportEntry implements Serializable, JSONString
         return sqlToStatement( conn, pieQuery, allConditions );
     }
 
+    /**
+     * 
+     * @param conn
+     * @param startDate
+     * @param endDate
+     * @param from
+     * @param extraSelects
+     * @param allConditions
+     * @return
+     */
     private PreparedStatement toSqlText( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
+        if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + getTable());
+        if(!ReportEntry.isValidStringArrayField(getTextColumns(), false)) throw new RuntimeException("invalid textColumns: " + getTextColumns());
+
         String textQuery = "SELECT " + 
             (extraSelects != null ? String.join(",", extraSelects) + "," : "");
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
@@ -364,8 +490,21 @@ public class ReportEntry implements Serializable, JSONString
         return sqlToStatement( conn, textQuery, allConditions );
     }
 
+    /**
+     * 
+     * @param conn
+     * @param startDate
+     * @param endDate
+     * @param from
+     * @param extraSelects
+     * @param allConditions
+     * @return
+     */
     private PreparedStatement toSqlTimeGraph( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
+        if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + getTable());
+        if(!ReportEntry.isValidStringArrayField(getTimeDataColumns(), false)) throw new RuntimeException("invalid timeDataColumns: " + getTimeDataColumns());
+
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         String generateSeriesQuery = generateSeriesQuery( startDate, endDate, dataInterval );
@@ -395,8 +534,23 @@ public class ReportEntry implements Serializable, JSONString
         return sqlToStatement( conn, finalQuery, allConditions );
     }
 
+    /**
+     * 
+     * @param conn
+     * @param startDate
+     * @param endDate
+     * @param from
+     * @param extraSelects
+     * @param allConditions
+     * @return
+     */
     private PreparedStatement toSqlTimeGraphDynamic( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
+        if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + getTable());
+        if(!ReportEntry.isValidStringField(getTimeDataDynamicColumn(), false)) throw new RuntimeException("invalid timeDataDynamicColumn: " + getTimeDataDynamicColumn());
+        if(!ReportEntry.isValidStringField(getTimeDataDynamicAggregationFunction(), false)) throw new RuntimeException("invalid timeDataDynamicAggregationFunction: " + getTimeDataDynamicAggregationFunction());
+        if(!ReportEntry.isValidStringField(getTimeDataDynamicValue(), false)) throw new RuntimeException("invalid timeDataDynamicValue: " + getTimeDataDynamicValue());
+
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
 
@@ -426,6 +580,7 @@ public class ReportEntry implements Serializable, JSONString
             (extraSelects != null ? "," + String.join(",", extraSelects) : "") +
             " ORDER BY " + ((extraSelects != null ? extraSelects.length: 0) + 2) + " DESC " +
             ( getTimeDataDynamicLimit() != null ? " LIMIT " + getTimeDataDynamicLimit() : "" );
+        logger.info("Statement        : " + distinctQuery);
 
         /**
          * Fetch the distinct values (with conditions and all)
