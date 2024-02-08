@@ -249,6 +249,12 @@ Ext.define('Ung.overrides.form.field.VTypes', {
             if (val.indexOf('<=') !== -1 && val.indexOf(',') === -1) {
                 return this.isSinglePortValid( val.substring( val.indexOf('<=') + 2 ));
             }
+            if (val.indexOf('>') !== -1 && val.indexOf(',') === -1) {
+                return this.isSinglePortValid( /^(\s*)$/.test( val.substring( val.indexOf('>') + 1 ) ) ? 0 : Number( val.substring( val.indexOf('>') + 1 ) ) + 1 );
+            }
+            if (val.indexOf('<') !== -1 && val.indexOf(',') === -1) {
+                return this.isSinglePortValid( val.substring( val.indexOf('<') + 1 ) -1 );
+            }
             if (val.indexOf('-') === -1 && val.indexOf(',') === -1) {
                 return this.isSinglePortValid(val);
             }
