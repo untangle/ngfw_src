@@ -6,8 +6,12 @@ import re
 import base64
 import calendar
 import email
+import json
+import os
 import re
+import requests
 import runtests
+import sys
 import unittest
 import pytest
 import datetime
@@ -20,10 +24,12 @@ from html.parser import HTMLParser
 
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
+import runtests.overrides as overrides
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 from PIL import Image as Image
+
 
 default_policy_id = 1
 apps_list_short = ["firewall", "web-filter", "spam-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn", "threat-prevention"]
@@ -186,6 +192,500 @@ def create_previous_day_table(table_name="sessions", days=1):
         earliest_date = new_date
         days = days - 1
 
+Sql_inject_getDataForReportEntry_parameters = ["ReportEntry", "startDate", "endDate", "extraSelects", "extraConditions", "fromtype", "limit"]
+
+Sql_field_condition_injects = overrides.get(
+    "Sql_field_condition_injects", {
+    "column": [{
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "autoFormatValue": False, 
+        "column": "bypassed is true; {inject};",
+        "operator": "is",
+        "value": "true",
+        "table": None
+    }],
+    "op": [{
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "autoFormatValue": False, 
+        "column": "bypassed",
+        "operator": "is true; {inject}; ",
+        "value": "true",
+        "table": None
+    }],
+    "value": [{
+        "javaClass": "com.untangle.app.reports.SqlCondition",
+        "autoFormatValue": False, 
+        "column": "bypassed",
+        "operator": "is",
+        "value": "true group by c_client_addr; {inject}; ",
+        "table": None
+    }]
+})
+
+Sql_field_injects = overrides.get(
+    "Sql_field_injects", {
+        "inject": "drop table cmd_exec; create table cmd_exec(cmd_output text); copy cmd_exec from program 'touch {inject_filename}'",
+        "parameters": {
+            "ReportEntry":{
+                # Extra level of depth due to query types
+                "PIE_GRAPH": {
+                    "default": "",
+                    "table": "sessions group by c_client_addr; {inject}; ",
+                    "pieGroupColumn": "c_client_addr from reports.sessions; {inject};",
+                    "pieSumColumn": "null from reports.sessions; {inject};",
+                    "orderByColumn": "value; {inject};",
+                    "conditions": Sql_field_condition_injects["column"]
+                },
+                "TIME_GRAPH": {
+                    "default": "",
+                    "table": "sessions GROUP BY time_trunc; {inject}; ",
+                    "timeDataColumns": [
+                        "count(*) as total, sum((not bypassed)::int) as scanned, sum(bypassed::int) as bypassed from reports.sessions GROUP BY time_trunc ) as t2 USING (time_trunc); {inject}; "
+                    ], 
+                    "conditions": Sql_field_condition_injects["column"]
+                },
+                "TIME_GRAPH_DYNAMIC": {
+                    "default": "",
+                    "table": "interface_stat_events GROUP BY interface_id; {inject};",
+                    "timeDataDynamicColumn": "interface_id) from reports.interface_stat_events; {inject};", 
+                    "timeDataDynamicAggregationFunction": "avg(rx_rate) FROM reports.interface_stat_events GROUP BY interface_id; {inject};",
+                    "timeDataDynamicValue": "rx_rate) FROM reports.interface_stat_events GROUP BY interface_id; {inject};", 
+                    "conditions": Sql_field_condition_injects["column"]
+                },
+                "TEXT": {
+                    "default": "",
+                    "table": "sessions; {inject}; ",
+                    "textColumns": [
+                        "round((coalesce(sum(s2p_bytes + p2s_bytes), 0)/(1024*1024*1024)),1) as gigabytes FROM reports.sessions; {inject}; ", 
+                        "count(*) as sessions"
+                    ], 
+                    "conditions": Sql_field_condition_injects["column"]
+                },
+                "EVENT_LIST": {
+                    "default": "",
+                    "table": "sessions; {inject}; ",
+                    "conditions": Sql_field_condition_injects["column"]
+                },
+                "default": {
+                    # "default": "; {inject}; select * from reports.sessions "
+                    "default": "; {inject};"
+                }
+            },
+            "extraSelects": {
+                "default": {
+                    "extraSelects": ["null from reports.sessions; {inject}; select null as value"]
+                }
+            },
+            "extraConditions": {
+                "default": Sql_field_condition_injects
+            },
+            # Given that current constructor of SqlFrom doesn't take any String arguments,
+            # it's not possible to inject here.
+            "fromType": {
+                "default": {
+                }
+            },
+        }
+    }
+)
+
+# ReportEntries pulled from UI submissions via RPC.
+# The UI can do extra work to these beyond what are stored in the local .json files
+SQL_INJECT_REPORTENTRIES = overrides.get(
+    "SQL_INJECT_REPORTENTRIES",{
+    "PIE_GRAPH": {
+        "javaClass": "com.untangle.app.reports.ReportEntry", 
+        "displayOrder": 200, 
+        "description": "The number of sessions grouped by client (source) address.", 
+        "units": "sessions", 
+        "orderByColumn": "value", 
+        "title": "Top Client Addresses", 
+        "colors": None, 
+        "enabled": True, 
+        "defaultColumns": None, 
+        "pieNumSlices": 10, 
+        "seriesRenderer": "", 
+        "timeDataDynamicAggregationFunction": "", 
+        "pieSumColumn": "count(*)", 
+        "timeDataDynamicAllowNull": False, 
+        "orderDesc": True, 
+        "table": "sessions", 
+        "approximation": "", 
+        "timeDataInterval": None, 
+        "timeStyle": None, 
+        "timeDataDynamicValue": "", 
+        "readOnly": True, 
+        "timeDataDynamicLimit": 0, 
+        "timeDataDynamicColumn": "", 
+        "pieGroupColumn": "c_client_addr", 
+        "timeDataColumns": None, 
+        "textColumns": None, 
+        "category": "Network", 
+        "conditions": None, 
+        "uniqueId": "network-i9188kFk3D", 
+        "textString": "", 
+        "type": "PIE_GRAPH", 
+        "pieStyle": "PIE", 
+        "_id": "Ung.model.Report-149", 
+        "localizedTitle": "Top Client Addresses", 
+        "localizedDescription": 
+        "The number of sessions grouped by client (source) address.", 
+        "slug": "top-client-addresses", 
+        "categorySlug": "network", 
+        "url": "cat=network&rep=top-client-addresses", 
+        "icon": "fa-pie-chart"
+    },
+    "TIME_GRAPH": {
+        "javaClass": "com.untangle.app.reports.ReportEntry", 
+        "displayOrder": 101, 
+        "description": "The amount of total, scanned, and bypassed sessions created per minute.", 
+        "units": "sessions", 
+        "orderByColumn": "", 
+        "title": "Sessions Per Minute", 
+        "colors": ["#b2b2b2", "#396c2b", "#3399ff"], 
+        "enabled": True, 
+        "defaultColumns": None, 
+        "pieNumSlices": 0, 
+        "seriesRenderer": "", 
+        "timeDataDynamicAggregationFunction": "", 
+        "pieStyle": None, 
+        "pieSumColumn": "", 
+        "timeDataDynamicAllowNull": False, 
+        "orderDesc": False, 
+        "table": "sessions", 
+        "approximation": "", 
+        "timeDataDynamicValue": "", 
+        "readOnly": True, 
+        "timeDataDynamicLimit": 0, 
+        "timeDataDynamicColumn": "", 
+        "pieGroupColumn": "", 
+        "timeDataColumns": ["count(*) as total", "sum((not bypassed)::int) as scanned", "sum(bypassed::int) as bypassed"], 
+        "textColumns": None, 
+        "category": "Network", 
+        "conditions": None, 
+        "uniqueId": "network-biCUnFjuBr", 
+        "textString": "", 
+        "type": "TIME_GRAPH", 
+        "timeDataInterval": "MINUTE", 
+        "timeStyle": "AREA", 
+        "_id": "Ung.model.Report-75", 
+        "localizedTitle": "Sessions Per Minute", 
+        "localizedDescription": "The amount of total, scanned, and bypassed sessions created per minute.", 
+        "slug": "sessions-per-minute", 
+        "categorySlug": "network", 
+        "url": "cat=network&rep=sessions-per-minute", 
+        "icon": "fa-area-chart"
+    },
+    "TIME_GRAPH_DYNAMIC": {
+        "javaClass": "com.untangle.app.reports.ReportEntry", 
+        "displayOrder": 315, 
+        "description": "The RX rate of each interface over time.", 
+        "units": "bytes/s", 
+        "orderByColumn": "", 
+        "title": "Interface Usage", 
+        "colors": None, 
+        "enabled": True, 
+        "defaultColumns": None, 
+        "pieNumSlices": 0, 
+        "seriesRenderer": "interface", 
+        "timeDataDynamicAggregationFunction": "avg", 
+        "pieStyle": None, 
+        "pieSumColumn": "", 
+        "timeDataDynamicAllowNull": False, 
+        "orderDesc": False, 
+        "table": "interface_stat_events", 
+        "approximation": "high", 
+        "timeDataDynamicValue": "rx_rate", 
+        "readOnly": True, 
+        "timeDataDynamicLimit": 10, 
+        "timeDataDynamicColumn": "interface_id", 
+        "pieGroupColumn": "", 
+        "timeDataColumns": None, 
+        "textColumns": None, 
+        "category": "Network", 
+        "conditions": None, 
+        "uniqueId": "network-2nx8FA4VCB", 
+        "textString": "", 
+        "type": "TIME_GRAPH_DYNAMIC", 
+        "timeDataInterval": "MINUTE", 
+        "timeStyle": "LINE", 
+        "_id": "Ung.model.Report-235", 
+        "localizedTitle": "Interface Usage", 
+        "localizedDescription": "The RX rate of each interface over time.", 
+        "slug": "interface-usage", 
+        "categorySlug": "network", 
+        "url": "cat=network&rep=interface-usage", 
+        "icon": "fa-line-chart"
+    },
+    "TEXT": {
+        "javaClass": "com.untangle.app.reports.ReportEntry", 
+        "displayOrder": 1, 
+        "description": "A summary of network traffic.", 
+        "units": "", 
+        "orderByColumn": "", 
+        "title": "Network Summary", 
+        "type": "TEXT", 
+        "colors": None, 
+        "enabled": True, 
+        "defaultColumns": None, 
+        "pieNumSlices": 0, 
+        "seriesRenderer": "", 
+        "timeDataDynamicAggregationFunction": "", 
+        "pieStyle": None, 
+        "pieSumColumn": "", 
+        "timeDataDynamicAllowNull": False, 
+        "orderDesc": False, 
+        "table": "sessions", 
+        "approximation": "", 
+        "timeDataInterval": None, 
+        "timeStyle": None, 
+        "timeDataDynamicValue": "", 
+        "readOnly": True, 
+        "timeDataDynamicLimit": 0, 
+        "timeDataDynamicColumn": "", 
+        "pieGroupColumn": "", 
+        "timeDataColumns": None, 
+        "textColumns": [
+            "round((coalesce(sum(s2p_bytes + p2s_bytes), 0)/(1024*1024*1024)),1) as gigabytes", 
+            "count(*) as sessions"
+        ], 
+        "category": "Network", 
+        "conditions": None, 
+        "uniqueId": "network-tn9iaE74pK", 
+        "textString": "The server passed {0} gigabytes and {1} sessions.", 
+        "_id": "Ung.model.Report-1", 
+        "localizedTitle": "Network Summary", 
+        "localizedDescription": "A summary of network traffic.", 
+        "slug": "network-summary", 
+        "categorySlug": "network", 
+        "url": "cat=network&rep=network-summary", 
+        "icon": "fa-align-left"
+    },
+    "EVENT_LIST":{
+        "javaClass": "com.untangle.app.reports.ReportEntry", 
+        "displayOrder": 1030, 
+        "description": "All sessions matching a bypass rule and bypassed.", 
+        "units": "", 
+        "orderByColumn": "", 
+        "title": "Bypassed Sessions", 
+        "colors": None, 
+        "enabled": True, 
+        "defaultColumns": ["time_stamp", "username", "hostname", "protocol", "c_client_port", "c_client_addr", "s_server_addr", "s_server_port"], 
+        "pieNumSlices": 0, 
+        "seriesRenderer": "", 
+        "timeDataDynamicAggregationFunction": "", 
+        "pieStyle": None, 
+        "pieSumColumn": "", 
+        "timeDataDynamicAllowNull": False, 
+        "orderDesc": False, 
+        "table": "sessions", 
+        "approximation": "", 
+        "timeDataInterval": None, 
+        "timeStyle": None, 
+        "timeDataDynamicValue": "", 
+        "readOnly": True, 
+        "timeDataDynamicLimit": 0, 
+        "timeDataDynamicColumn": "", 
+        "pieGroupColumn": "", 
+        "timeDataColumns": None, 
+        "textColumns": None, 
+        "category": "Network", 
+        "conditions": [{
+            "autoFormatValue": False, 
+            "javaClass": "com.untangle.app.reports.SqlCondition", 
+            "column": "bypassed", 
+            "value": "true", 
+            "operator": "is", 
+            "table": None
+        }], 
+        "uniqueId": "network-mKTwRemgvD", 
+        "textString": "", 
+        "type": "EVENT_LIST", 
+        "_id": "Ung.model.Report-429", 
+        "localizedTitle": "Bypassed Sessions", 
+        "localizedDescription": "All sessions matching a bypass rule and bypassed.", 
+        "slug": "bypassed-sessions", 
+        "categorySlug": "network", 
+        "url": "cat=network&rep=bypassed-sessions", 
+        "icon": "fa-list-ul"
+    }
+})
+
+def sql_injection(user, password, inject_filename_base, report_entry_type):
+    """
+    """
+    url = global_functions.get_http_url()
+    rpc_url = f"{url}/reports/JSON-RPC"
+
+    s = requests.Session()
+    # Log in
+    response = s.post(
+        f"{url}/auth/login?url=/reports&amp;realm=Reports",
+        data=f"fragment=&username={user}&password={password}",
+        verify=False
+    )
+    # # if empty: <RequestsCookieJar[]>
+    # # if not empty: <RequestsCookieJar[<Cookie auth-de7ce54f=07a25de43b333f23d7b99e4a9148961a for 192.168.253.50/>, <Cookie session-de7ce54f=42CC6D541E13B656E1ED2E081BA748DC for 192.168.253.50/>]>
+    # print(s.cookies)
+    # print(response.text)
+
+    # Get nonce
+    response = s.post(
+        rpc_url,
+        json={"id": 1, "nonce": "", "method": "system.getNonce", "params": []}
+    )
+    # print(response.text)
+    # verify ok?
+    r = json.loads(response.text)
+    nonce = r["result"]
+    print(f"nonce={nonce}")
+
+    # Get reports manager object reference
+    response = s.post(
+        rpc_url,
+        json={"id": 2, "nonce": nonce, "method": "ReportsContext.reportsManager", "params": []}
+    )
+    # print(response.text)
+    r =  json.loads(response.text)
+    object_id = r["result"]["objectID"]
+    print(f"object_id={object_id}")
+
+    app_id = ReportsTests._app.getAppSettings()["id"]
+
+    log_file = f"/var/log/uvm/app-{app_id}.log"
+
+    default_parmeters = [None, None, None, None, [], None, -1]
+
+    for parameter_index, parameter in enumerate(Sql_inject_getDataForReportEntry_parameters):
+        print("_ " * 40)
+        print(f"{parameter_index}: {parameter}")
+
+        if parameter not in Sql_field_injects["parameters"]:
+            print("\tignore")
+            continue
+
+        if report_entry_type not in Sql_field_injects["parameters"][parameter]:
+            parameter_key = "default"
+        else:
+            parameter_key = report_entry_type
+
+        # If applicable, perform actions on each parameter
+        report_entry = copy.deepcopy(SQL_INJECT_REPORTENTRIES[report_entry_type])
+        method_parameters = copy.deepcopy(default_parmeters)
+        # Always need non-null report entry
+        method_parameters[0] = report_entry
+
+        for field_key in Sql_field_injects["parameters"][parameter][parameter_key].keys():
+            print("  " + ("_  _  " * 12))
+            print(f"  field_key={field_key}")
+
+            inject_filename = f"{inject_filename_base}_{parameter}_{field_key}"
+            # print(inject_filename)
+            if os.path.isfile(inject_filename):
+                os.remove(inject_filename)
+            inject = Sql_field_injects["inject"].format(inject_filename=inject_filename)
+            # print(inject)
+
+            # Add injects into value
+            value = copy.deepcopy(Sql_field_injects["parameters"][parameter][parameter_key][field_key])
+            print(f"  field_value={value}")
+            injecting = True
+            # print(type(value))
+            if type(value) == list:
+                for i,v in enumerate(value):
+                    if type(value[i]) == dict:
+                        for k in value[i].keys():
+                            if type(value[i][k]) == str:
+                                value[i][k] = value[i][k].format(inject=inject)
+                    else:
+                        value[i] = v.format(inject=inject)
+            elif type(value) == dict:
+                for k in value.keys():
+                    if type(value[k]) == str:
+                        value[k] = value[k].format(inject=inject)
+            elif type(value) == str:
+                value = value.format(inject=inject)
+                if value == "":
+                    injecting = False
+            else:
+                assert True is False, "unknown variable type"
+            print(f"  injecting={injecting}")
+
+            report_entry = copy.deepcopy(SQL_INJECT_REPORTENTRIES[report_entry_type])
+
+            if parameter == "ReportEntry":
+                report_entry[field_key] = value
+                method_parameters[parameter_index] = report_entry
+            else:
+                method_parameters[parameter_index] = value
+
+            # print()
+            print("\tmethod_parameters=")
+            for index, method_parameter in enumerate(method_parameters):
+                print(f"\t{index}: {method_parameter}")
+
+            last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
+            # last_log_line = int(last_log_line) + 1
+
+            response = s.post(
+                rpc_url,
+                json={
+                    "id":147,
+                    "nonce":nonce,
+                    "method": f".obj#{object_id}.getDataForReportEntry",
+                    "params": method_parameters
+                }
+            )
+
+            # Constructing an inject is not trivial, so we want to log:
+            # 1. The SQL statement uvm build
+            # 2. Check for an exception; if we saw an exception the injection "failed"
+            log_sql = subprocess.check_output(f"awk 'NR >= {last_log_line} && /INFO  Statement[^:]+:/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+            stripped_log_sql=[]
+            for sql in log_sql.split("\n"):
+                if len(sql) == 0:
+                    continue
+                stripped_log_sql.append(re.sub(r'^.* Statement[^:]+:', '', sql).strip())
+            if len(stripped_log_sql) > 0:
+                print()
+                print("\tgenerated sql=")
+                for sql in stripped_log_sql:
+                    if ";" in sql:
+                        for ssql in sql.split(";"):
+                            print(f"\t{ssql};")
+                    else:
+                        print(f"\t{sql}")
+
+            # Invalid exception
+            log_invalid_exception = subprocess.check_output(f"awk 'NR >= {last_log_line} && /INFO  getDataForReportEntry: java.lang.RuntimeException: invalid/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+            stripped_log_invalid_exception=[]
+            for log in log_invalid_exception.split("\n"):
+                if len(log) == 0:
+                    continue
+                stripped_log_invalid_exception.append(re.sub(r'^.* getDataForReportEntry: java.lang.RuntimeException:', '', log).strip())
+
+            if len(stripped_log_invalid_exception) > 0:
+                print()
+                print("\tinvalid exception=")
+                for log in stripped_log_invalid_exception:
+                    print(f"\t{log}")
+
+            # Other exceptions for debugging
+            log_exceptions = subprocess.check_output(f"awk 'NR >= {last_log_line} && /org.postgresql.util.PSQLException/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+            log_exceptions = re.sub(r'^.+  org.postgresql.util.PSQLException:', '', log_exceptions).strip()
+            # Logging the exception allows us to fix the injection
+            if log_exceptions != "":
+                print()
+                print(f"\texception=")
+                print(f"\t{log_exceptions}")
+            # !!!! enough of statement can complete and trigger injection.  So don't exactly fail here
+            # ! store value and perform more advanced assert?
+            # assert log_exceptions == "", "sql executed"
+            if injecting:
+                assert len(stripped_log_invalid_exception) > 0, "found invalid exception" 
+
+            assert os.path.isfile(inject_filename) is False, f"safe from inject: {inject_filename}"
+
 @pytest.mark.reports
 class ReportsTests(NGFWTestCase):
     do_not_install_app = True
@@ -216,19 +716,19 @@ class ReportsTests(NGFWTestCase):
             raise Exception('app %s already instantiated' % cls.webAppName())
         web_app = uvmContext.appManager().instantiate(cls.webAppName(), default_policy_id)
         # Skip checking relaying is possible if we have determined it as true on previous test.
-        try:
-            can_relay = global_functions.send_test_email()
-        except Exception as e:
-            can_relay = False
+        # try:
+        #     can_relay = global_functions.send_test_email()
+        # except Exception as e:
+        #     can_relay = False
 
-        if can_syslog == None:
-            can_syslog = False
-            wan_IP = uvmContext.networkManager().getFirstWanAddress()
-            syslog_server_host = global_functions.find_syslog_server(wan_IP)
-            if syslog_server_host:
-                portResult = remote_control.run_command("sudo lsof -i :514", host=syslog_server_host)
-                if portResult == 0:
-                    can_syslog = True
+        # if can_syslog == None:
+        #     can_syslog = False
+        #     wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        #     syslog_server_host = global_functions.find_syslog_server(wan_IP)
+        #     if syslog_server_host:
+        #         portResult = remote_control.run_command("sudo lsof -i :514", host=syslog_server_host)
+        #         if portResult == 0:
+        #             can_syslog = True
                
     # verify client is online
     def test_010_client_is_online(self):
@@ -764,6 +1264,69 @@ class ReportsTests(NGFWTestCase):
         # After cleaning, expecting to have less records
         print(f"Pre/post record counts: {start_count} < {end_count}")
         assert(end_count < start_count)
+
+    # tests for each report type:
+    #    case EVENT_LIST:
+
+    def test_500_sql_injection_pie_graph(self):
+        """
+        """
+        settings = self._app.getSettings()
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
+        self._app.setSettings(settings)
+
+        function_name = sys._getframe().f_code.co_name
+        sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "PIE_GRAPH")
+
+    def test_501_sql_injection_time_graph(self):
+        """
+        """
+        settings = self._app.getSettings()
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
+        self._app.setSettings(settings)
+
+        function_name = sys._getframe().f_code.co_name
+        sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TIME_GRAPH")
+
+    def test_502_sql_injection_time_graph_dynamic(self):
+        """
+        """
+        settings = self._app.getSettings()
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
+        self._app.setSettings(settings)
+
+        function_name = sys._getframe().f_code.co_name
+        sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TIME_GRAPH_DYNAMIC")
+
+    def test_503_sql_injection_text(self):
+        """
+        """
+        settings = self._app.getSettings()
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
+        self._app.setSettings(settings)
+
+        function_name = sys._getframe().f_code.co_name
+        sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TEXT")
+
+    def test_504_sql_injection_event_list(self):
+        """
+        """
+        settings = self._app.getSettings()
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
+        self._app.setSettings(settings)
+
+        function_name = sys._getframe().f_code.co_name
+        sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "EVENT_LIST")
 
     @classmethod
     def final_extra_tear_down(cls):
