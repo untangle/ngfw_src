@@ -42,7 +42,7 @@ import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.servlet.DownloadHandler;
-import com.untangle.uvm.util.DirectoryFilesMetadata;
+import com.untangle.uvm.util.FileDirectoryMetadata;
 import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.util.StringUtil;
 
@@ -94,7 +94,7 @@ public class SystemManagerImpl implements SystemManager
 
     private boolean isUpgrading = false;
 
-    private List<DirectoryFilesMetadata> logFiles;
+    private List<FileDirectoryMetadata> logFiles;
 
     /**
      * Constructor
@@ -185,33 +185,33 @@ public class SystemManagerImpl implements SystemManager
      * NGFW-13958 load metadata of all the log files that need to be part of the exported zip
      */
     private void initLogFilesMetadata() {
-        List<DirectoryFilesMetadata> logFilesList = new ArrayList<>();
+        List<FileDirectoryMetadata> logFilesList = new ArrayList<>();
         // matches 'auth.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^auth[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^auth[.]log.*"));
         // matches 'bctid.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^bctid[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^bctid[.]log.*"));
         // matches 'bdadmserver.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^bdamserver[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^bdamserver[.]log.*"));
         // matches '*'
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR + "/clamav", ".*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/clamav", ".*"));
         // matches 'dhcp.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^dhcp[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^dhcp[.]log.*"));
         // matches 'ipsec.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^ipsec[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^ipsec[.]log.*"));
         // matches 'kern.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^kern[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^kern[.]log.*"));
         // matches 'l2tpd.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^l2tpd[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^l2tpd[.]log.*"));
         // matches 'openvpn.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR + "/openvpn", "^openvpn[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/openvpn", "^openvpn[.]log.*"));
         // matches 'pppoe.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^pppoe[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^pppoe[.]log.*"));
         // matches 'suricata.log*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR + "/suricata", "^suricata[.]log.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/suricata", "^suricata[.]log.*"));
         // matches 'syslog*' at the start of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR, "^syslog.*"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^syslog.*"));
         // matches '*.*' at the end of the string
-        logFilesList.add(new DirectoryFilesMetadata(SYSTEM_LOG_DIR + "/uvm", ".*[.].*$"));
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/uvm", ".*[.].*$"));
 
         logFiles = Collections.unmodifiableList(logFilesList);
     }
@@ -1262,25 +1262,6 @@ can look deeper. - mahotz
         }
 
         /**
-         * Returns FileNameFilter lambda expression by regex
-         * If matchRegEx is present and file name matches the regex then returns true, or else returns true
-         * @param matchRegEx Regex to match the file name
-         * @return
-         */
-        private FilenameFilter getFileNameFilter(String matchRegEx) {
-            /**
-             * Accept matcher for file search
-             * 
-             * @param directory
-             *        The file directory
-             * @param name
-             *        The file name
-             * @return True to accept the file, false to reject
-             */
-            return (directory, name) -> StringUtil.isEmpty(matchRegEx) ? true : name.matches(matchRegEx);
-        }
-
-        /**
          * Download handler for system log download requests
          * 
          * @param req
@@ -1301,8 +1282,9 @@ can look deeper. - mahotz
                 out = new ZipOutputStream(resp.getOutputStream());
 
                 List<File[]> filesList = new ArrayList<>();
-                for (DirectoryFilesMetadata logFile : logFiles) {
-                    File[] files = new File(logFile.getDirectory()).listFiles(getFileNameFilter(logFile.getFileMatchPattern()));
+                // List of file arrays, each containing list of log files from a specific directory
+                for (FileDirectoryMetadata logFile : logFiles) {
+                    File[] files = logFile.getDirectory().listFiles(FileDirectoryMetadata.getFileNameFilter(logFile.getFileMatchPattern()));
                     filesList.add(files);
                 }
 
