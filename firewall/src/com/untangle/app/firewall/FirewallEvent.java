@@ -69,7 +69,7 @@ public class FirewallEvent extends LogEvent
         if ( getBlocked() )
             action = I18nUtil.marktr("blocked");
         else
-            action = I18nUtil.marktr("password");
+            action = I18nUtil.marktr("passed");
             
         String summary = "Firewall " + action + " " + sessionEvent.toSummaryString();
         return summary;
