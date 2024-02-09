@@ -272,10 +272,12 @@ Ext.define('Ung.apps.policymanager.MainController', {
             }
             Ext.getStore('policiestree').build();
         }, function(ex) {
-            if(Util.isDestroyed(view)){
-                view.setLoading(true);
+            view.setLoading(false);
+            if (ex.name === 'com.untangle.app.policy_manager.PolicyAlreadyAttachedException') {
+                Util.showWarningMessage(ex.message, Util.getDetailsFromException(ex), Ext.emptyFn());
+            } else {
+                Util.handleException(ex);
             }
-            Util.handleException(ex);
         });
     },
 
