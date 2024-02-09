@@ -244,11 +244,12 @@ public class ReportEntry implements Serializable, JSONString
     public void setApproximation( String newValue ) { this.approximation = newValue; }
 
     /**
-     * 
-     * @param conn
-     * @param startDate
-     * @param endDate
-     * @return
+     * Prepare SQL statement for query with null values for extraSelects, extraConditions, from, and limit
+     *
+     * @param conn          Database connection
+     * @param startDate     Start date for query
+     * @param endDate       End date for query
+     * @return PreparedStatement of build SQL query
      */
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {
@@ -256,14 +257,15 @@ public class ReportEntry implements Serializable, JSONString
     }
 
     /**
+     * Prepare SQL statement for query with null values for limit
      * 
-     * @param conn
-     * @param startDate
-     * @param endDate
-     * @param extraSelects
-     * @param extraConditions
-     * @param from
-     * @return
+     * @param conn          Database connection
+     * @param startDate     Start date for query
+     * @param endDate       End date for query
+     * @param extraSelects  Array of extra selects for query
+     * @param extraConditions   Array of SqlCondition for query
+     * @param from          SqlFrom
+     * @return PreparedStatement of build SQL query
      */
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom from )
     {
@@ -271,15 +273,16 @@ public class ReportEntry implements Serializable, JSONString
     }
 
     /**
+     * Prepare SQL statement for query
      * 
-     * @param conn
-     * @param startDate
-     * @param endDate
-     * @param extraSelects
-     * @param extraConditions
-     * @param from
-     * @param limit
-     * @return
+     * @param conn          Database connection
+     * @param startDate     Start date for query
+     * @param endDate       End date for query
+     * @param extraSelects  Array of extra selects for query
+     * @param extraConditions   Array of SqlCondition for query
+     * @param from          SqlFrom
+     * @param limit         Maximum number of results
+     * @return PreparedStatement of build SQL query
      */
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom from, Integer limit )
     {
@@ -339,8 +342,9 @@ public class ReportEntry implements Serializable, JSONString
      * Perform basic SQL injection vaildation against string field.
      * This is any string value that can be concatenated, inserted, replaced, etc.
      * in the SQL query
-     * @param field
-     * @param emptyOk
+     *
+     * @param field     String field to validate
+     * @param emptyOk   If true, an empty field value is valid
      * @return
      */
     public static boolean isValidStringField(String field, boolean emptyOk)
@@ -360,8 +364,8 @@ public class ReportEntry implements Serializable, JSONString
      * This is any string value that can be concatenated, inserted, replaced, etc.
      * in the SQL query
      * 
-     * @param field
-     * @param emptyOk
+     * @param field     Array of string field to validate
+     * @param emptyOk   If true, an empty array value is valid
      * @return
      */
     public static boolean isValidStringArrayField(String[] field, boolean emptyOk)
@@ -400,14 +404,15 @@ public class ReportEntry implements Serializable, JSONString
     }
 
     /**
-     * 
-     * @param conn
-     * @param startDate
-     * @param endDate
-     * @param from
-     * @param allConditions
-     * @param limit
-     * @return
+     * Build event list query
+     *
+     * @param conn          Database connection
+     * @param startDate     Start date for query
+     * @param endDate       End date for query
+     * @param from          SqlFrom
+     * @param allConditions   Array of SqlCondition for query
+     * @param limit         Maximum number of results
+     * @return PreparedStatement of build SQL query
      */
     private PreparedStatement toSqlEventList( Connection conn, Date startDate, Date endDate, SqlFrom from, LinkedList<SqlCondition> allConditions, Integer limit )
     {
@@ -424,13 +429,14 @@ public class ReportEntry implements Serializable, JSONString
     }
 
     /**
+     * Build pie chart query
      * 
-     * @param conn
-     * @param startDate
-     * @param endDate
-     * @param from
-     * @param extraSelects
-     * @param allConditions
+     * @param conn          Database connection
+     * @param startDate     Start date for query
+     * @param endDate       End date for query
+     * @param from          SqlFrom
+     * @param extraSelects  Array of extra selects for query
+     * @param allConditions Array of SqlCondition for query
      * @return
      */
     private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
@@ -454,13 +460,14 @@ public class ReportEntry implements Serializable, JSONString
     }
 
     /**
+     * Build text report query
      * 
-     * @param conn
-     * @param startDate
-     * @param endDate
-     * @param from
-     * @param extraSelects
-     * @param allConditions
+     * @param conn          Database connection
+     * @param startDate     Start date for query
+     * @param endDate       End date for query
+     * @param from          SqlFrom
+     * @param extraSelects  Array of extra selects for query
+     * @param allConditions Array of SqlCondition for query
      * @return
      */
     private PreparedStatement toSqlText( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
@@ -491,13 +498,14 @@ public class ReportEntry implements Serializable, JSONString
     }
 
     /**
+     * Build time chart query
      * 
-     * @param conn
-     * @param startDate
-     * @param endDate
-     * @param from
-     * @param extraSelects
-     * @param allConditions
+     * @param conn          Database connection
+     * @param startDate     Start date for query
+     * @param endDate       End date for query
+     * @param from          SqlFrom
+     * @param extraSelects  Array of extra selects for query
+     * @param allConditions Array of SqlCondition for query
      * @return
      */
     private PreparedStatement toSqlTimeGraph( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
@@ -535,13 +543,14 @@ public class ReportEntry implements Serializable, JSONString
     }
 
     /**
+     * Build dynamic time chart query
      * 
-     * @param conn
-     * @param startDate
-     * @param endDate
-     * @param from
-     * @param extraSelects
-     * @param allConditions
+     * @param conn          Database connection
+     * @param startDate     Start date for query
+     * @param endDate       End date for query
+     * @param from          SqlFrom
+     * @param extraSelects  Array of extra selects for query
+     * @param allConditions Array of SqlCondition for query
      * @return
      */
     private PreparedStatement toSqlTimeGraphDynamic( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
