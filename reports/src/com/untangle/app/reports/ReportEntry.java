@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -31,8 +32,28 @@ public class ReportEntry implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger(ReportEntry.class);
 
-    // !!! DOCUMENT ME
-    public static final Pattern INJECT_REGEX = Pattern.compile(".*[;\'\"'].*");
+    // Injections to find
+    private static final List<Pattern> Injections;
+    static {
+        Injections = new ArrayList<Pattern>();
+        // Semi-colon
+        Injections.add(Pattern.compile(".*;.*"));
+        // Comment (dash)
+        Injections.add(Pattern.compile(".*--.*"));
+        // Comment (slash)
+        Injections.add(Pattern.compile(".*\\/\\*.*"));
+        // Unmatched quotes
+        Injections.add(Pattern.compile("^([^\']*?)(\')([^\']*?)$"));
+        // UNION
+        Injections.add(Pattern.compile("(?i).*UNION.*"));
+        // Character casting
+        Injections.add(Pattern.compile("(?i).*chr(\\(|%28).*"));
+        // System catalog access
+        Injections.add(Pattern.compile("(?i).*from\\s+pg_.*"));
+        // Always true
+        Injections.add(Pattern.compile("(?i).*OR\\s+(['\\w]+)=\\1.*"));
+    };
+
 
     public static enum ReportEntryType {
         TEXT, /* A text entry */
@@ -307,7 +328,7 @@ public class ReportEntry implements Serializable, JSONString
         // Validate all conditions
         for(SqlCondition sc : allConditions){
             if( (isValidStringField(sc.getColumn(), true) == false) ||
-                (isValidStringField(sc.getOperator(), true) == false) ||
+                // Operator is detected in condition construciton
                 (isValidStringField(sc.getValue(), true) == false) ||
                 (isValidStringField(sc.getTable(), true) == false) ){
                 throw new RuntimeException("invalid condition: " + sc.toString());
@@ -354,8 +375,11 @@ public class ReportEntry implements Serializable, JSONString
         if(field == null || field.trim().isEmpty()){
             return (emptyOk == true) ? true : false;
         }
-        if(INJECT_REGEX.matcher(field).matches()){
-            return false;
+        for(Pattern p : Injections){
+            if(p.matcher(field).matches()){
+                logger.warn("found injection:" + p.toString());
+                return false;
+            }
         }
 
         return true;
