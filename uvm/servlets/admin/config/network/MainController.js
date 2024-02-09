@@ -52,6 +52,11 @@ Ext.define('Ung.config.network.MainController', {
         }
     },
 
+    validateRange: function () {
+        var rangeEnd = this.getView().up('container').down('[itemId=rangeEnd]');
+        if(rangeEnd.getValue() !== "" ) rangeEnd.isValid();
+    },
+
     loadSettings: function () {
         var me = this,
             v = this.getView(),
