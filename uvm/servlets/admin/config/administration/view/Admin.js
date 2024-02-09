@@ -65,6 +65,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             width: Renderer.emailWidth,
             dataIndex: 'emailAddress',
             editor: {
+                allowOnlyWhitespace: false,
                 emptyText: '[no email]'.t(),
                 vtype: 'email'               
             }      
@@ -95,6 +96,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             xtype: 'textfield',
             bind: '{record.emailAddress}',
             fieldLabel: 'Email Address'.t(),
+            allowOnlyWhitespace: false,
             emptyText: '[no email]'.t(),
             vtype: 'email'
         }, {
