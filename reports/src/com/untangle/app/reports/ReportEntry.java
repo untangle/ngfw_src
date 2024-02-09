@@ -286,6 +286,7 @@ public class ReportEntry implements Serializable, JSONString
      */
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom from, Integer limit )
     {
+        // Validate extraSelects
         if(!ReportEntry.isValidStringArrayField(extraSelects, true)) throw new RuntimeException("invalid extraSelects: " + (extraSelects != null ? String.join(",", extraSelects) : ""));
 
         if ( endDate == null ) {
@@ -303,6 +304,7 @@ public class ReportEntry implements Serializable, JSONString
         if ( extraConditions != null )
             allConditions.addAll( Arrays.asList(extraConditions) );
 
+        // Validate all conditions
         for(SqlCondition sc : allConditions){
             if( (isValidStringField(sc.getColumn(), true) == false) ||
                 (isValidStringField(sc.getOperator(), true) == false) ||
@@ -416,7 +418,11 @@ public class ReportEntry implements Serializable, JSONString
      */
     private PreparedStatement toSqlEventList( Connection conn, Date startDate, Date endDate, SqlFrom from, LinkedList<SqlCondition> allConditions, Integer limit )
     {
+        // String parameters used in query:
+        // To validate: getTable()
+        // Already validated: allConditions
         if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + getTable());
+
         String query = "";
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         query +=  "SELECT * FROM " + LogEvent.schemaPrefix() + getTable() + " WHERE " + dateCondition;
@@ -441,6 +447,9 @@ public class ReportEntry implements Serializable, JSONString
      */
     private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
+        // String parameters used in query:
+        // To validate: getPieGroupColumn(), getPieSumColumn(), getOrderByColumn()
+        // Already validated: allConditions, extraSelects
         if(!ReportEntry.isValidStringField(getPieGroupColumn(), false)) throw new RuntimeException("invalid pieGroupColumn: " + getPieGroupColumn());
         if(!ReportEntry.isValidStringField(getPieSumColumn(), false)) throw new RuntimeException("invalid pieGroupColumn: " + getPieSumColumn());
         if(!ReportEntry.isValidStringField(getOrderByColumn(), false)) throw new RuntimeException("invalid orderByColumn: " + getOrderByColumn());
@@ -472,6 +481,9 @@ public class ReportEntry implements Serializable, JSONString
      */
     private PreparedStatement toSqlText( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
+        // String parameters used in query:
+        // To validate: getTable(), getTextColumns()
+        // Already validated: allConditions, extraSelects
         if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + getTable());
         if(!ReportEntry.isValidStringArrayField(getTextColumns(), false)) throw new RuntimeException("invalid textColumns: " + getTextColumns());
 
@@ -510,6 +522,9 @@ public class ReportEntry implements Serializable, JSONString
      */
     private PreparedStatement toSqlTimeGraph( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
+        // String parameters used in query:
+        // To validate: getTable(), getTimeDataColumns()
+        // Already validated: allConditions, extraSelects
         if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + getTable());
         if(!ReportEntry.isValidStringArrayField(getTimeDataColumns(), false)) throw new RuntimeException("invalid timeDataColumns: " + getTimeDataColumns());
 
@@ -555,6 +570,9 @@ public class ReportEntry implements Serializable, JSONString
      */
     private PreparedStatement toSqlTimeGraphDynamic( Connection conn, Date startDate, Date endDate, SqlFrom from, String[] extraSelects, LinkedList<SqlCondition> allConditions )
     {
+        // String parameters used in query:
+        // To validate: getTable(), getTimeDataDynamicColumn(), getTimeDataDynamicAggregationFunction(),getTimeDataDynamicValue()
+        // Already validated: allConditions, extraSelects
         if(!ReportEntry.isValidStringField(getTable(), false)) throw new RuntimeException("invalid table: " + getTable());
         if(!ReportEntry.isValidStringField(getTimeDataDynamicColumn(), false)) throw new RuntimeException("invalid timeDataDynamicColumn: " + getTimeDataDynamicColumn());
         if(!ReportEntry.isValidStringField(getTimeDataDynamicAggregationFunction(), false)) throw new RuntimeException("invalid timeDataDynamicAggregationFunction: " + getTimeDataDynamicAggregationFunction());
