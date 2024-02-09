@@ -25,7 +25,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
 
     isSinglePortValid: function(val) {
         /* check for values between 0 and 65536 */
-        if (val < 0 || val > 65536) { return false; }
+        if (val < 1 || val > 65535) { return false; }
         /* verify its an integer (not a float) */
         if (!/^\d{1,5}$/.test(val)) { return false; }
         return true;
@@ -248,11 +248,17 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         case 'any':
             return true;
         default:
+            if (val.indexOf('>=') !== -1 && val.indexOf(',') === -1) {
+                return this.isSinglePortValid( val.substring( val.indexOf('>=') + 2 ));
+            }
+            if (val.indexOf('<=') !== -1 && val.indexOf(',') === -1) {
+                return this.isSinglePortValid( val.substring( val.indexOf('<=') + 2 ));
+            }
             if (val.indexOf('>') !== -1 && val.indexOf(',') === -1) {
-                return this.isSinglePortValid( val.substring( val.indexOf('>') + 1 ));
+                return this.isSinglePortValid( /^(\s*)$/.test( val.substring( val.indexOf('>') + 1 ) ) ? 0 : Number( val.substring( val.indexOf('>') + 1 ) ) + 1 );
             }
             if (val.indexOf('<') !== -1 && val.indexOf(',') === -1) {
-                return this.isSinglePortValid( val.substring( val.indexOf('<') + 1 ));
+                return this.isSinglePortValid( val.substring( val.indexOf('<') + 1 ) -1 );
             }
             if (val.indexOf('-') === -1 && val.indexOf(',') === -1) {
                 return this.isSinglePortValid(val);
