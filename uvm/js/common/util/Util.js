@@ -1028,7 +1028,7 @@ Ext.define('Ung.util.Util', {
         var power = 1;
         for(var i=0;i<totalElements.length;i++){
             total += (totalElements[i] * power);
-            power++;
+            power*= 256;
         }
         return total;
     }
