@@ -199,81 +199,91 @@ Sql_field_condition_injects = overrides.get(
     "column": [{
         "javaClass": "com.untangle.app.reports.SqlCondition",
         "autoFormatValue": False, 
-        "column": "bypassed is true; {inject};",
+        # "column": "bypassed is true; {inject};",
+        "column": "bypassed is true {inject}",
         "operator": "is",
         "value": "true",
         "table": None
     }],
-    "op": [{
-        "javaClass": "com.untangle.app.reports.SqlCondition",
-        "autoFormatValue": False, 
-        "column": "bypassed",
-        "operator": "is true; {inject}; ",
-        "value": "true",
-        "table": None
-    }],
+    # "op": [{
+    #     "javaClass": "com.untangle.app.reports.SqlCondition",
+    #     "autoFormatValue": False, 
+    #     "column": "bypassed",
+    #     "operator": "is true; {inject}; ",
+    #     "value": "true",
+    #     "table": None
+    # }],
     "value": [{
         "javaClass": "com.untangle.app.reports.SqlCondition",
         "autoFormatValue": False, 
         "column": "bypassed",
         "operator": "is",
-        "value": "true group by c_client_addr; {inject}; ",
+        # "value": "true group by c_client_addr; {inject}; ",
+        "value": "true group by c_client_addr {inject}",
         "table": None
     }]
 })
 
 Sql_field_injects = overrides.get(
     "Sql_field_injects", {
-        "inject": "drop table cmd_exec; create table cmd_exec(cmd_output text); copy cmd_exec from program 'touch {inject_filename}'",
+        "injections":{
+            "semi-colon": "; drop table cmd_exec; create table cmd_exec(cmd_output text); copy cmd_exec from program 'touch {inject_filename}'; ",
+            "dash-comments": "-- \\\\! touch {inject_filename} -- ",
+            "slash-comments": "/* test */ \\\\! touch {inject_filename} /* test */ ",
+            "unmatched-quote": "' ",
+            "union": " union ",
+            "character-casting": "chr(97)",
+            "system-catalog": "from pg_catalog",
+            "always-true": "or 1=1",
+        },
         "parameters": {
             "ReportEntry":{
                 # Extra level of depth due to query types
                 "PIE_GRAPH": {
                     "default": "",
-                    "table": "sessions group by c_client_addr; {inject}; ",
-                    "pieGroupColumn": "c_client_addr from reports.sessions; {inject};",
-                    "pieSumColumn": "null from reports.sessions; {inject};",
-                    "orderByColumn": "value; {inject};",
+                    "table": "sessions group by c_client_addr {inject}",
+                    "pieGroupColumn": "c_client_addr from reports.sessions {inject}",
+                    "pieSumColumn": "null from reports.sessions {inject}",
+                    "orderByColumn": "value {inject}",
                     "conditions": Sql_field_condition_injects["column"]
                 },
                 "TIME_GRAPH": {
                     "default": "",
-                    "table": "sessions GROUP BY time_trunc; {inject}; ",
+                    "table": "sessions GROUP BY time_trunc {inject}",
                     "timeDataColumns": [
-                        "count(*) as total, sum((not bypassed)::int) as scanned, sum(bypassed::int) as bypassed from reports.sessions GROUP BY time_trunc ) as t2 USING (time_trunc); {inject}; "
+                        "count(*) as total, sum((not bypassed)::int) as scanned, sum(bypassed::int) as bypassed from reports.sessions GROUP BY time_trunc ) as t2 USING (time_trunc) {inject}"
                     ], 
                     "conditions": Sql_field_condition_injects["column"]
                 },
                 "TIME_GRAPH_DYNAMIC": {
                     "default": "",
-                    "table": "interface_stat_events GROUP BY interface_id; {inject};",
-                    "timeDataDynamicColumn": "interface_id) from reports.interface_stat_events; {inject};", 
-                    "timeDataDynamicAggregationFunction": "avg(rx_rate) FROM reports.interface_stat_events GROUP BY interface_id; {inject};",
-                    "timeDataDynamicValue": "rx_rate) FROM reports.interface_stat_events GROUP BY interface_id; {inject};", 
+                    "table": "interface_stat_events GROUP BY interface_id {inject}",
+                    "timeDataDynamicColumn": "interface_id) from reports.interface_stat_events {inject}", 
+                    "timeDataDynamicAggregationFunction": "avg(rx_rate) FROM reports.interface_stat_events GROUP BY interface_id {inject} ",
+                    "timeDataDynamicValue": "rx_rate) FROM reports.interface_stat_events GROUP BY interface_id {inject}", 
                     "conditions": Sql_field_condition_injects["column"]
                 },
                 "TEXT": {
                     "default": "",
-                    "table": "sessions; {inject}; ",
+                    "table": "sessions {inject}",
                     "textColumns": [
-                        "round((coalesce(sum(s2p_bytes + p2s_bytes), 0)/(1024*1024*1024)),1) as gigabytes FROM reports.sessions; {inject}; ", 
+                        "round((coalesce(sum(s2p_bytes + p2s_bytes), 0)/(1024*1024*1024)),1) as gigabytes FROM reports.sessions {inject}", 
                         "count(*) as sessions"
                     ], 
                     "conditions": Sql_field_condition_injects["column"]
                 },
                 "EVENT_LIST": {
                     "default": "",
-                    "table": "sessions; {inject}; ",
+                    "table": "sessions {inject}",
                     "conditions": Sql_field_condition_injects["column"]
                 },
                 "default": {
-                    # "default": "; {inject}; select * from reports.sessions "
-                    "default": "; {inject};"
+                    "default": "{inject}"
                 }
             },
             "extraSelects": {
                 "default": {
-                    "extraSelects": ["null from reports.sessions; {inject}; select null as value"]
+                    "extraSelects": ["null from reports.sessions {inject} select null as value"]
                 }
             },
             "extraConditions": {
@@ -289,8 +299,8 @@ Sql_field_injects = overrides.get(
     }
 )
 
-# ReportEntries pulled from UI submissions via RPC.
-# The UI can do extra work to these beyond what are stored in the local .json files
+# ReportEntries pulled from UI submissions back to uvm via RPC.
+# The UI does work and sends more information in the JSON that is injested by uvm than what is in the reports.json templates.
 SQL_INJECT_REPORTENTRIES = overrides.get(
     "SQL_INJECT_REPORTENTRIES",{
     "PIE_GRAPH": {
@@ -513,6 +523,7 @@ SQL_INJECT_REPORTENTRIES = overrides.get(
 
 def sql_injection(user, password, inject_filename_base, report_entry_type):
     """
+    Run SQL injection
     """
     url = global_functions.get_http_url()
     rpc_url = f"{url}/reports/JSON-RPC"
@@ -524,8 +535,6 @@ def sql_injection(user, password, inject_filename_base, report_entry_type):
         data=f"fragment=&username={user}&password={password}",
         verify=False
     )
-    # # if empty: <RequestsCookieJar[]>
-    # # if not empty: <RequestsCookieJar[<Cookie auth-de7ce54f=07a25de43b333f23d7b99e4a9148961a for 192.168.253.50/>, <Cookie session-de7ce54f=42CC6D541E13B656E1ED2E081BA748DC for 192.168.253.50/>]>
     # print(s.cookies)
     # print(response.text)
 
@@ -535,7 +544,7 @@ def sql_injection(user, password, inject_filename_base, report_entry_type):
         json={"id": 1, "nonce": "", "method": "system.getNonce", "params": []}
     )
     # print(response.text)
-    # verify ok?
+
     r = json.loads(response.text)
     nonce = r["result"]
     print(f"nonce={nonce}")
@@ -546,145 +555,234 @@ def sql_injection(user, password, inject_filename_base, report_entry_type):
         json={"id": 2, "nonce": nonce, "method": "ReportsContext.reportsManager", "params": []}
     )
     # print(response.text)
+
     r =  json.loads(response.text)
     object_id = r["result"]["objectID"]
     print(f"object_id={object_id}")
 
     app_id = ReportsTests._app.getAppSettings()["id"]
 
+    # Log file with reports app id
     log_file = f"/var/log/uvm/app-{app_id}.log"
 
-    default_parmeters = [None, None, None, None, [], None, -1]
+    # Parameter list for the getDataForReportEntry call
+    default_method_parameters = [None, None, None, None, [], None, -1]
 
+    #
+    # We're actually running "a bunch" of tests in the following loops:
+    #
+    # getDataForReportEntry parameters
+    #   ReportEntry:        For a passed report_entry_type, each string field that could be modified by the user.
+    #   extraSelects:       List of extra selectable columns (rarely used)
+    #   extraConditions:    List of exta condition objects
+    #
+    #   Inside each parameter, we loop through each field to replace (e.g.,table,)
+    #       Inside each field, we loop through our injects
+    #
+    # In general, we're looking for ways to execute shell commands, like creating a file under /tmp.
     for parameter_index, parameter in enumerate(Sql_inject_getDataForReportEntry_parameters):
         print("_ " * 40)
         print(f"{parameter_index}: {parameter}")
 
         if parameter not in Sql_field_injects["parameters"]:
+            # No parameter to process (e.g.,dates)
             print("\tignore")
             continue
 
         if report_entry_type not in Sql_field_injects["parameters"][parameter]:
+            # Somehow a report we've not accounted for
             parameter_key = "default"
         else:
             parameter_key = report_entry_type
 
         # If applicable, perform actions on each parameter
         report_entry = copy.deepcopy(SQL_INJECT_REPORTENTRIES[report_entry_type])
-        method_parameters = copy.deepcopy(default_parmeters)
+        # Get clean set of parameters
+        method_parameters = copy.deepcopy(default_method_parameters)
         # Always need non-null report entry
         method_parameters[0] = report_entry
 
         for field_key in Sql_field_injects["parameters"][parameter][parameter_key].keys():
+            # Iterate fields to modify
             print("  " + ("_  _  " * 12))
             print(f"  field_key={field_key}")
 
-            inject_filename = f"{inject_filename_base}_{parameter}_{field_key}"
-            # print(inject_filename)
-            if os.path.isfile(inject_filename):
-                os.remove(inject_filename)
-            inject = Sql_field_injects["inject"].format(inject_filename=inject_filename)
-            # print(inject)
+            for injection_key,injection_value in Sql_field_injects["injections"].items():
+                # Injections to test
+                print("  " + ("_   _   " * 6))
+                print(f"\tinjection_key={injection_key}")
 
-            # Add injects into value
-            value = copy.deepcopy(Sql_field_injects["parameters"][parameter][parameter_key][field_key])
-            print(f"  field_value={value}")
-            injecting = True
-            # print(type(value))
-            if type(value) == list:
-                for i,v in enumerate(value):
-                    if type(value[i]) == dict:
-                        for k in value[i].keys():
-                            if type(value[i][k]) == str:
-                                value[i][k] = value[i][k].format(inject=inject)
-                    else:
-                        value[i] = v.format(inject=inject)
-            elif type(value) == dict:
-                for k in value.keys():
-                    if type(value[k]) == str:
-                        value[k] = value[k].format(inject=inject)
-            elif type(value) == str:
-                value = value.format(inject=inject)
-                if value == "":
-                    injecting = False
-            else:
-                assert True is False, "unknown variable type"
-            print(f"  injecting={injecting}")
+                inject_filename = f"{inject_filename_base}_{parameter}_{field_key}_{injection_key}"
+                if os.path.isfile(inject_filename):
+                    os.remove(inject_filename)
+                inject = injection_value.format(inject_filename=inject_filename)
+                print(f"\tinject={injection_value}")
 
-            report_entry = copy.deepcopy(SQL_INJECT_REPORTENTRIES[report_entry_type])
+                # Add injects into targetd value value
+                value = copy.deepcopy(Sql_field_injects["parameters"][parameter][parameter_key][field_key])
 
-            if parameter == "ReportEntry":
-                report_entry[field_key] = value
-                method_parameters[parameter_index] = report_entry
-            else:
-                method_parameters[parameter_index] = value
+                # By default, we are attempting to inject
+                injecting = True
 
-            # print()
-            print("\tmethod_parameters=")
-            for index, method_parameter in enumerate(method_parameters):
-                print(f"\t{index}: {method_parameter}")
+                # Populate value with inject
+                if type(value) == list:
+                    for i,v in enumerate(value):
+                        if type(value[i]) == dict:
+                            for k in value[i].keys():
+                                if type(value[i][k]) == str:
+                                    value[i][k] = value[i][k].format(inject=inject)
+                        else:
+                            value[i] = v.format(inject=inject)
+                elif type(value) == dict:
+                    for k in value.keys():
+                        if type(value[k]) == str:
+                            value[k] = value[k].format(inject=inject)
+                elif type(value) == str:
+                    value = value.format(inject=inject)
+                    if value == "":
+                        # If our field value is empty, we are not injecting
+                        # This is a good test to verify our injection is not blocking what should
+                        # be legitimate queries
+                        injecting = False
+                else:
+                    assert True is False, "unknown variable type"
+                print(f"\tfield_value={value}")
+                print(f"\tinjecting={injecting}")
 
-            last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
-            # last_log_line = int(last_log_line) + 1
+                report_entry = copy.deepcopy(SQL_INJECT_REPORTENTRIES[report_entry_type])
 
-            response = s.post(
-                rpc_url,
-                json={
-                    "id":147,
-                    "nonce":nonce,
-                    "method": f".obj#{object_id}.getDataForReportEntry",
-                    "params": method_parameters
-                }
-            )
+                # Populate modification into method parameters
+                if parameter == "ReportEntry":
+                    report_entry[field_key] = value
+                    method_parameters[parameter_index] = report_entry
+                else:
+                    method_parameters[parameter_index] = value
 
-            # Constructing an inject is not trivial, so we want to log:
-            # 1. The SQL statement uvm build
-            # 2. Check for an exception; if we saw an exception the injection "failed"
-            log_sql = subprocess.check_output(f"awk 'NR >= {last_log_line} && /INFO  Statement[^:]+:/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
-            stripped_log_sql=[]
-            for sql in log_sql.split("\n"):
-                if len(sql) == 0:
-                    continue
-                stripped_log_sql.append(re.sub(r'^.* Statement[^:]+:', '', sql).strip())
-            if len(stripped_log_sql) > 0:
-                print()
-                print("\tgenerated sql=")
-                for sql in stripped_log_sql:
-                    if ";" in sql:
-                        for ssql in sql.split(";"):
-                            print(f"\t{ssql};")
-                    else:
-                        print(f"\t{sql}")
+                # Show parameters we have built and will be passing
+                print("\tmethod_parameters=")
+                for index, method_parameter in enumerate(method_parameters):
+                    print(f"\t{index}: {method_parameter}")
 
-            # Invalid exception
-            log_invalid_exception = subprocess.check_output(f"awk 'NR >= {last_log_line} && /INFO  getDataForReportEntry: java.lang.RuntimeException: invalid/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
-            stripped_log_invalid_exception=[]
-            for log in log_invalid_exception.split("\n"):
-                if len(log) == 0:
-                    continue
-                stripped_log_invalid_exception.append(re.sub(r'^.* getDataForReportEntry: java.lang.RuntimeException:', '', log).strip())
+                # After we execute, we will monitor the report app log for "messages of concern".
+                #
+                # Constructing a "proper" inject is not trivial, so we want to ensure we're building it correctly.
+                # For example, consider a table field injection for the query:
+                #
+                # select col from table where col is true
+                #
+                # An injection on the table field could be:
+                # ; drop table cmd_exec; create table cmd_exec(cmd_output text); copy cmd_exec from program 'touch /tmp/file';
+                #
+                # Resulting in:
+                # select col from ; drop table cmd_exec; create table cmd_exec(cmd_output text); copy cmd_exec from program 'touch /tmp/file';where col is true
+                #
+                # By "breaking" that first statement, it is invalid and the query will fail and not proceed with the remaining.
+                # All well and good except we WANT a legit query, so the correct injection should be:
+                # table; drop table cmd_exec; create table cmd_exec(cmd_output text); copy cmd_exec from program 'touch /tmp/file';
+                #
+                # To create:
+                # select col from table; drop table cmd_exec; create table cmd_exec(cmd_output text); copy cmd_exec from program 'touch /tmp/file';where col is true
+                #
+                # If that first statement can complete, the subsequent queries will continue.
+                # Up until that wonky looking final statement "where col is true".  
+                # That will fail, but as far as an attacker is concerned, who cares?  The cmd_exec succeeded.
+                #
+                # To test you have a working injector, you will need to comment out the added Injections list in uvm's ReportEntry, compile uvm, restart, and test.
+                #
+                # All of that to explain WHY we want all of this information from the log:
+                # 1. The SQL statement uvm built
+                # 2. Check for presence of inject exception.
+                # 2. Check for an exception; if we saw an exception the injection "failed"
 
-            if len(stripped_log_invalid_exception) > 0:
-                print()
-                print("\tinvalid exception=")
-                for log in stripped_log_invalid_exception:
-                    print(f"\t{log}")
+                # Get last reports log line so we can monitor entries thereafter
+                last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
+                last_log_line = int(last_log_line) + 1
 
-            # Other exceptions for debugging
-            log_exceptions = subprocess.check_output(f"awk 'NR >= {last_log_line} && /org.postgresql.util.PSQLException/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
-            log_exceptions = re.sub(r'^.+  org.postgresql.util.PSQLException:', '', log_exceptions).strip()
-            # Logging the exception allows us to fix the injection
-            if log_exceptions != "":
-                print()
-                print(f"\texception=")
-                print(f"\t{log_exceptions}")
-            # !!!! enough of statement can complete and trigger injection.  So don't exactly fail here
-            # ! store value and perform more advanced assert?
-            # assert log_exceptions == "", "sql executed"
-            if injecting:
-                assert len(stripped_log_invalid_exception) > 0, "found invalid exception" 
+                # Perform call
+                response = s.post(
+                    rpc_url,
+                    json={
+                        "id":147,
+                        "nonce":nonce,
+                        "method": f".obj#{object_id}.getDataForReportEntry",
+                        "params": method_parameters
+                    }
+                )
+                print("\n\tresults=")
 
-            assert os.path.isfile(inject_filename) is False, f"safe from inject: {inject_filename}"
+                # Log: Parse out uvm generated SQL statements
+                log_sql = subprocess.check_output(f"awk 'NR >= {last_log_line} && /INFO  Statement[^:]+:/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+                stripped_log_sql=[]
+                for sql in log_sql.split("\n"):
+                    if len(sql) == 0:
+                        continue
+                    stripped_log_sql.append(re.sub(r'^.* Statement[^:]+:', '', sql).strip())
+                if len(stripped_log_sql) > 0:
+                    print()
+                    print("\tgenerated sql=")
+                    for sql in stripped_log_sql:
+                        if ";" in sql:
+                            for ssql in sql.split(";"):
+                                print(f"\t{ssql};")
+                        else:
+                            print(f"\t{sql}")
+
+                # Log: Parse injection detection messages
+                # These are the matches inject matching regexes
+                found_injection = False
+                log_found_injection = subprocess.check_output(f"awk 'NR >= {last_log_line} && /found injection:/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+                # print(f"DBG: {log_found_injection}")
+                stripped_log_found_injection = []
+                for log in log_found_injection.split("\n"):
+                    if len(log) == 0:
+                        continue
+                    stripped_log_found_injection.append(re.sub(r'^.* found injection:', '', log).strip())
+                if len(stripped_log_found_injection) > 0:
+                    found_injection = True
+                    print()
+                    print("\tfound injection=")
+                    for log in stripped_log_found_injection:
+                        print(f"\t{log}")
+
+                # Log: parse out query exceptions
+                # These are thrown by the builder methods if they get an invalid field.
+                # Put together: invalid field exception + the above match = where and why we determined the field was invalid.
+                invalid_exception_found = False
+                log_invalid_exception = subprocess.check_output(f"awk 'NR >= {last_log_line} && /INFO  getDataForReportEntry: java.lang.RuntimeException: invalid/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+                stripped_log_invalid_exception=[]
+                for log in log_invalid_exception.split("\n"):
+                    if len(log) == 0:
+                        continue
+                    stripped_log_invalid_exception.append(re.sub(r'^.* getDataForReportEntry: java.lang.RuntimeException:', '', log).strip())
+
+                if len(stripped_log_invalid_exception) > 0:
+                    invalid_exception_found = True
+                    print()
+                    print("\tinvalid exception=")
+                    for log in stripped_log_invalid_exception:
+                        print(f"\t{log}")
+
+                # Other exceptions can be important for debugging
+                query_failed_exceptions_found = False
+                log_exceptions = subprocess.check_output(f"awk 'NR >= {last_log_line} && /org.postgresql.util.PSQLException/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+                log_exceptions = re.sub(r'^.+  org.postgresql.util.PSQLException:', '', log_exceptions).strip()
+                # Logging the exception allows us to fix the injection
+                if log_exceptions != "":
+                    query_failed_exceptions_found = True
+                    print()
+                    print(f"\tquery exception=")
+                    print(f"\t{log_exceptions}")
+
+                assert os.path.isfile(inject_filename) is False, f"safe from cmd inject: {inject_filename}"
+                if injecting:
+                    assert found_injection is True, "found injection"
+                    if invalid_exception_found is False and query_failed_exceptions_found:
+                        # If we tied to inject, didn't detect the invalid parameter detect but did get an exception
+                        # our query is almost certainly invalid
+                        assert False, "failed query but not detected"
+                else:
+                    assert invalid_exception_found is False and query_failed_exceptions_found is False, "valid, non injected query"
+
 
 @pytest.mark.reports
 class ReportsTests(NGFWTestCase):
