@@ -941,19 +941,34 @@ Ext.define('Ung.config.network.Interface', {
                 items: [{
                     // dhcp range start
                     xtype: 'textfield',
+                    itemId:'rangeStart',
                     bind: {
                         value: '{intf.dhcpRangeStart}'
                     },
                     fieldLabel: 'Range Start'.t(),
-                    allowBlank: false
+                    allowBlank: false,
+                    vtype:"dhcpAddress",
+                    listeners:{
+                        change : "validateRange"
+                    }
                 }, {
                     // dhcp range end
                     xtype: 'textfield',
+                    itemId:"rangeEnd",
                     bind: {
                         value: '{intf.dhcpRangeEnd}'
                     },
                     fieldLabel: 'Range End'.t(),
-                    allowBlank: false
+                    allowBlank: false,
+                    vtype:"dhcpAddress",
+                    validator:function(field){
+                        var parent = this.up('container');
+                        var rangeStart = parent.down('#rangeStart');
+                        if (Util.convertIPIntoDecimal(this.getValue()) <= Util.convertIPIntoDecimal(rangeStart.getValue())) {
+                            return 'Range End can never be less than or equal to Range Start'.t();
+                        }
+                        return true;
+                    }
                 }, {
                     // lease duration
                     xtype: 'fieldcontainer',

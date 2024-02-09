@@ -1012,6 +1012,25 @@ Ext.define('Ung.util.Util', {
             }
         });
         return JSON.stringify(compareSettings) != JSON.stringify(compareOriginalSettings);
-    }
+    },
 
+    /**
+     * To compare two IP addresses we need to convert into decimal values,
+     * Maximum it can go upto 255 so we will be converting it based upon that
+    */
+    convertIPIntoDecimal:function(ip){
+        if(ip === "" || ip <= 0){
+            return 0;
+        }
+        var total = 0;
+        var ipValue = ip;
+        var totalElements = ipValue.split(".");
+        var power = 1;
+        for(var i=0;i<totalElements.length;i++){
+            total += (totalElements[i] * power);
+            power*= 256;
+        }
+        return total;
+    }
+    
 });

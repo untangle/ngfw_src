@@ -171,6 +171,11 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     ip4AddressListText: 'Invalid IPv4 Address(es).'.t(),
 
+    dhcpAddress:  function (val) {
+        return this.mask.ip4AddrMaskRe.test(val);
+    },
+    dhcpAddressText: 'Invalid DHCP Address(es).'.t(),
+
     ip6Address: function (val) {
         return this.mask.ip6AddrMaskRe.test(val);
     },
