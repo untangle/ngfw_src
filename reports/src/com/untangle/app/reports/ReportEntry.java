@@ -328,7 +328,7 @@ public class ReportEntry implements Serializable, JSONString
         // Validate all conditions
         for(SqlCondition sc : allConditions){
             if( (isValidStringField(sc.getColumn(), true) == false) ||
-                // Operator is detected in condition construciton
+                // Operator is detected in condition construction
                 (isValidStringField(sc.getValue(), true) == false) ||
                 (isValidStringField(sc.getTable(), true) == false) ){
                 throw new RuntimeException("invalid condition: " + sc.toString());
