@@ -450,12 +450,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * We do all these different calls so that the product supports any version of the license server
          */
         String libitemName = "untangle-libitem-" + appName;
-        String urlStr  = licenseUrl + "?action=startTrial" + "&node=" + appName + "&" + getServerParams();
-        String urlStr2 = licenseUrl + "?action=startTrial" + "&libitem=" + libitemName + "&" + getServerParams();
+        String urlStr = licenseUrl + "?action=startTrial" + "&libitem=" + libitemName + "&" + getServerParams();
 
         String oldName = null;
-        String urlStr3 = null;
-        String urlStr4 = null;
+        String urlStr1 = null;
         
         switch ( appName ) {
         case License.DIRECTORY_CONNECTOR:
@@ -491,8 +489,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
         if ( oldName != null ) {
             String oldLibitemName = "untangle-libitem-" + oldName;
-            urlStr3 = licenseUrl + "?action=startTrial" + "&node=" + oldName + "&" + getServerParams();
-            urlStr4 = licenseUrl + "?action=startTrial" + "&libitem=" + oldLibitemName + "&" + getServerParams();
+            urlStr1 = licenseUrl + "?action=startTrial" + "&libitem=" + oldLibitemName + "&" + getServerParams();
         }
         
         CloseableHttpClient httpClient = HttpClients.custom().build();
@@ -507,25 +504,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             response = httpClient.execute(get);
             if ( response != null ) { response.close(); response = null; }
             
-            if ( urlStr2 != null ) {
-                logger.info("Requesting Trial: " + urlStr2);
-                url = new URL(urlStr2);
-                get = new HttpGet(url.toString());
-                response = httpClient.execute(get);
-                if ( response != null ) { response.close(); response = null; }
-            }
-
-            if ( urlStr3 != null ) {
-                logger.info("Requesting Trial: " + urlStr3);
-                url = new URL(urlStr3);
-                get = new HttpGet(url.toString());
-                response = httpClient.execute(get);
-                if ( response != null ) { response.close(); response = null; }
-            }
-
-            if ( urlStr4 != null ) {
-                logger.info("Requesting Trial: " + urlStr4);
-                url = new URL(urlStr4);
+            if ( urlStr1 != null ) {
+                logger.info("Requesting Trial: " + urlStr1);
+                url = new URL(urlStr1);
                 get = new HttpGet(url.toString());
                 response = httpClient.execute(get);
                 if ( response != null ) { response.close(); response = null; }
