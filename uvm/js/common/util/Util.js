@@ -260,27 +260,11 @@ Ext.define('Ung.util.Util', {
         location.reload();
     },
 
-    handleException: function (exception) {
-        if (Util.ignoreExceptions)
-            return;
-
-        var message = null;
+    getDetailsFromException: function (exception) {
         var details = "";
-
         if ( !exception ) {
             console.error("Null Exception!");
-            return;
         } else {
-            console.error(exception);
-            if( typeof exception == "object" ){
-                if(Rpc.exists('rpc.UvmContext')){
-                    // This is the best way to log exceptions.  Sending through the Rpc object
-                    // would require a special case to not show the exception again.
-                    rpc.UvmContext.logJavascriptException(function (result, ex) {}, JSON.parse(JSON.stringify(exception, Object.getOwnPropertyNames(exception))));
-                }
-            }
-        }
-
         if ( exception.javaStack )
             exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
         if ( exception.name )
@@ -298,6 +282,32 @@ Ext.define('Ung.util.Util', {
         details +="<b>" + "Timestamp".t() +":&nbsp;</b>" + (new Date()).toString() + "<br/><br/>";
         if ( exception.response )
             details += "<b>" + "Exception response".t() +":</b> " + Ext.util.Format.stripTags(exception.response).replace(/\s+/g,'<br/>') + "<br/><br/>";
+            
+        }
+        return details;
+    },
+
+    handleException: function (exception) {
+        if (Util.ignoreExceptions)
+            return;
+
+        var message = null;
+
+        if ( !exception ) {
+            console.error("Null Exception!");
+            return;
+        } else {
+            console.error(exception);
+            if( typeof exception == "object" ){
+                if(Rpc.exists('rpc.UvmContext')){
+                    // This is the best way to log exceptions.  Sending through the Rpc object
+                    // would require a special case to not show the exception again.
+                    rpc.UvmContext.logJavascriptException(function (result, ex) {}, JSON.parse(JSON.stringify(exception, Object.getOwnPropertyNames(exception))));
+                }
+            }
+        }
+
+        var details = this.getDetailsFromException(exception);
 
         /* handle authorization lost */
         if( exception.response && exception.response.includes("loginPage") ) {
