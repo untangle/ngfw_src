@@ -12,6 +12,11 @@ Ext.define('Ung.Setup.Internet', {
 
     border: 1,
     items: [{
+        xtype: 'component',
+        margin: '0 0 10 0',
+        hidden: rpc.setup.getRemoteReachable(),
+        html: '<p>' + "No Internet Connection..! Click on 'Test Connectivity' to verify.".t() + '</p>'
+    }, {
         xtype: 'container',
         layout: {
             type: 'hbox',
