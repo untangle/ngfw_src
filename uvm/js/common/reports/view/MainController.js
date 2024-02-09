@@ -19,7 +19,7 @@ Ext.define('Ung.view.reports.MainController', {
             view = me.getView(),
             tree = me.lookup('tree');
 
-        Map.init(); // init map
+        Mapper.init(); // init map
 
         // me.getView().setLoading(false);
         // set the reports view context (ADMIN or REPORTS)

@@ -59,9 +59,9 @@ Ext.define('Ung.cmp.PropertyGridController', {
 
                 data.push({
                     // the human readable field name
-                    name: Map.fields[key] ? Map.fields[key].col.text : key,
+                    name: Mapper.fields[key] ? Mapper.fields[key].col.text : key,
                     // in case the value is rendered use the renderer in details view too
-                    value: (Map.fields[key] && Map.fields[key].col.renderer) ? Map.fields[key].col.renderer(value) : value,
+                    value: (Mapper.fields[key] && Mapper.fields[key].col.renderer) ? Mapper.fields[key].col.renderer(value) : value,
                     // use categories for grouping purposes
                     category: category
                 });

@@ -94,15 +94,15 @@ Ext.define('Ung.common.TableConfig.threatprevention', {
          * Add threat prevention fields and tables configuration
          * to the main Map
          */
-        Ext.apply(Map.fields, this.map.fields);
+        Ext.apply(Mapper.fields, this.map.fields);
         Ext.Object.each(this.map.tables, function (table, fields) {
-            Ext.Array.push(Map.tables[table], fields);
+            Ext.Array.push(Mapper.tables[table], fields);
         });
 
-        Map.listeners['sessions'] = {
+        Mapper.listeners['sessions'] = {
             select: Ung.common.TableConfig.threatprevention.getIpDetails
         };
-        Map.listeners['http_events'] = {
+        Mapper.listeners['http_events'] = {
             select: Ung.common.TableConfig.threatprevention.getHttpDetails
         };
 

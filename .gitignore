@@ -16,3 +16,4 @@ GTAGS
 core
 .DS_Store
 .sass-cache
+rake.log

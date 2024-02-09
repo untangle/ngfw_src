@@ -3,9 +3,9 @@
  * _ (underscore) naming in front of the files required when minified to be concatenated last
  *
  */
-Ext.define('Ung.util.Map', {
+Ext.define('Ung.util.Mapper', {
     singleton: true,
-    alternateClassName: 'Map',
+    alternateClassName: 'Mapper',
 
     policies: {
         1: 'Default'

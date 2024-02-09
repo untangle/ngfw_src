@@ -24,22 +24,22 @@ Ext.define('Ung.util.Converter', {
     },
 
     interface: function (v) {
-        return (Map.interfaces[v] || 'None'.t()) + ' [' + v + ']';
+        return (Mapper.interfaces[v] || 'None'.t()) + ' [' + v + ']';
     },
-    country: function (v) { return Map.countries[v] || v; },
-    policy: function (v) { return Map.policies[v] || 'None'.t(); },
-    webReason: function (v) { return Map.webReasons[v] || 'no rule applied'.t(); },
-    webCategory: function (v) { return Map.webCategories[v] || v; },
-    protocol: function (v) { return Map.protocols[v] || v; },
+    country: function (v) { return Mapper.countries[v] || v; },
+    policy: function (v) { return Mapper.policies[v] || 'None'.t(); },
+    webReason: function (v) { return Mapper.webReasons[v] || 'no rule applied'.t(); },
+    webCategory: function (v) { return Mapper.webCategories[v] || v; },
+    protocol: function (v) { return Mapper.protocols[v] || v; },
 
-    icmp: function (v) { return Map.icmps[v] || 'Unasigned'.t(); },
+    icmp: function (v) { return Mapper.icmps[v] || 'Unasigned'.t(); },
     ipaddr: function (v) { return v || ''; },
 
-    httpMethod: function (v) { return Map.httpMethods[v] || v; },
-    loginFailureReason: function (v) { return Map.loginFailureReasons[v] || ''; },
+    httpMethod: function (v) { return Mapper.httpMethods[v] || v; },
+    loginFailureReason: function (v) { return Mapper.loginFailureReasons[v] || ''; },
 
-    priority: function (v) { return Map.httpMethods[v] || v; },
-    emailAction: function (v) { return Map.emailActions[v] || 'unknown action'.t(); },
+    priority: function (v) { return Mapper.httpMethods[v] || v; },
+    emailAction: function (v) { return Mapper.emailActions[v] || 'unknown action'.t(); },
 
     authType: function (v) {
         var types = {

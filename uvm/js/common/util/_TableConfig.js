@@ -20,12 +20,12 @@ Ext.define('TableConfig', {
          * generate the tables fields, columns configurations used for reports grids
          * this replaces the older TableConfig.tableConfig definitions
          */
-        Ext.Object.each(Map.tables, function (table, fields) {
+        Ext.Object.each(Mapper.tables, function (table, fields) {
             var tFields = [], tColumns = [];
 
             Ext.Array.each(fields, function (key) {
-                var field = Map.fields[key].fld;
-                var column = Map.fields[key].col;
+                var field = Mapper.fields[key].fld;
+                var column = Mapper.fields[key].col;
 
                 column.dataIndex = column.dataIndex || key;
                 if (!column.filter) { column.filter = Rndr.filters.string; }
@@ -41,7 +41,7 @@ Ext.define('TableConfig', {
             };
         });
 
-        Ext.Object.each(Map.listeners, function (table, listeners) {
+        Ext.Object.each(Mapper.listeners, function (table, listeners) {
             TableConfig.tableConfig[table].listeners = listeners;
         });
     },
@@ -155,10 +155,10 @@ Ext.define('TableConfig', {
     getColumnHumanReadableName: function(columnName) {
         /**
          * NGFW-12862
-         * if somehow columnName is not found in Map (it should be defined)
+         * if somehow columnName is not found in Mapper (it should be defined)
          * than return it as is ('some_column_name' => 'some column name')
          */
-        return Map.fields[columnName] ? Map.fields[columnName].col.text : columnName.replace(/_/g,' ');
+        return Mapper.fields[columnName] ? Mapper.fields[columnName].col.text : columnName.replace(/_/g, ' ');
     },
 
     // new methods .........

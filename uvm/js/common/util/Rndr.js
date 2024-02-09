@@ -64,7 +64,7 @@ Ext.define('Ung.util.Rndr', {
 
     // use renderer because have to be sorted by value and not by text
     priority: function (value) {
-        return Map.priorities[value] || value;
+        return Mapper.priorities[value] || value;
     },
 
     bandwidthControlRule: function (value) {
