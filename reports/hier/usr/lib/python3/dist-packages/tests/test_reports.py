@@ -806,7 +806,7 @@ class ReportsTests(NGFWTestCase):
         if (uvmContext.appManager().isInstantiated(cls.webAppName())):
             raise Exception('app %s already instantiated' % cls.webAppName())
         web_app = uvmContext.appManager().instantiate(cls.webAppName(), default_policy_id)
-        Skip checking relaying is possible if we have determined it as true on previous test.
+        # Skip checking relaying is possible if we have determined it as true on previous test.
         try:
             can_relay = global_functions.send_test_email()
         except Exception as e:
