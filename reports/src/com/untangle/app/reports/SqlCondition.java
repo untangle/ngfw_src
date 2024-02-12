@@ -134,7 +134,7 @@ public class SqlCondition implements Serializable, JSONString
 
     public String toString()
     {
-        return "SqlCondition[ " + getColumn() + " " + getOperator() + " " + getValue() + " ]";
+        return "SqlCondition[ column=" + getColumn() + ", operator=" + getOperator() + " value=" + getValue() + " ]";
     }
 
     public static void setPreparedStatementValues( PreparedStatement statement, SqlCondition[] conditions, String table )
