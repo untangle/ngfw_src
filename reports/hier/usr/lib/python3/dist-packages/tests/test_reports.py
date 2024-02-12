@@ -205,14 +205,7 @@ Sql_field_condition_injects = overrides.get(
         "value": "true",
         "table": None
     }],
-    # "op": [{
-    #     "javaClass": "com.untangle.app.reports.SqlCondition",
-    #     "autoFormatValue": False, 
-    #     "column": "bypassed",
-    #     "operator": "is true; {inject}; ",
-    #     "value": "true",
-    #     "table": None
-    # }],
+    # The op field is handled in the SQLCondition object
     "value": [{
         "javaClass": "com.untangle.app.reports.SqlCondition",
         "autoFormatValue": False, 
@@ -813,20 +806,20 @@ class ReportsTests(NGFWTestCase):
         if (uvmContext.appManager().isInstantiated(cls.webAppName())):
             raise Exception('app %s already instantiated' % cls.webAppName())
         web_app = uvmContext.appManager().instantiate(cls.webAppName(), default_policy_id)
-        # Skip checking relaying is possible if we have determined it as true on previous test.
-        # try:
-        #     can_relay = global_functions.send_test_email()
-        # except Exception as e:
-        #     can_relay = False
+        Skip checking relaying is possible if we have determined it as true on previous test.
+        try:
+            can_relay = global_functions.send_test_email()
+        except Exception as e:
+            can_relay = False
 
-        # if can_syslog == None:
-        #     can_syslog = False
-        #     wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        #     syslog_server_host = global_functions.find_syslog_server(wan_IP)
-        #     if syslog_server_host:
-        #         portResult = remote_control.run_command("sudo lsof -i :514", host=syslog_server_host)
-        #         if portResult == 0:
-        #             can_syslog = True
+        if can_syslog == None:
+            can_syslog = False
+            wan_IP = uvmContext.networkManager().getFirstWanAddress()
+            syslog_server_host = global_functions.find_syslog_server(wan_IP)
+            if syslog_server_host:
+                portResult = remote_control.run_command("sudo lsof -i :514", host=syslog_server_host)
+                if portResult == 0:
+                    can_syslog = True
                
     # verify client is online
     def test_010_client_is_online(self):
