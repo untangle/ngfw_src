@@ -168,6 +168,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Username'.t(),
+        allowBlank: false,
         bind: {
             value: '{record.username}',
             disabled: '{tunnelProviderSelected == false}',
@@ -177,6 +178,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
         xtype: 'textfield',
         fieldLabel: 'Password'.t(),
         inputType: 'password',
+        allowBlank: false,
         bind: {
             value: '{record.password}',
             disabled: '{tunnelProviderSelected == false}',
