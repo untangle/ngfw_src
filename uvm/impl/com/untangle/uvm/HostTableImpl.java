@@ -897,17 +897,23 @@ public class HostTableImpl implements HostTable
                              * pingable addresses stay in the host table if they
                              * respond to ping.
                              */
-                            if (entry.getAddress().isReachable(null, 3, 500)) {
-                                continue;
+                            try {
+                                if (entry.getAddress().isReachable(null, 3, 500)) {
+                                    continue;
+                                }
+
+                                /**
+                                 * Otherwise just delete the entire entry
+                                 */
+                                else {
+                                    logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
+
+                                    removeHostTableEntry(address);
+                                    continue;
+                                }
                             }
-
-                            /**
-                             * Otherwise just delete the entire entry
-                             */
-                            else {
-                                logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
-
-                                removeHostTableEntry(address);
+                            catch (Exception ex) {
+                                logger.warn("Exception occurred while checking reachability for " + entry.getAddress().getHostAddress() +", not removing host entry", ex);
                                 continue;
                             }
                         }
