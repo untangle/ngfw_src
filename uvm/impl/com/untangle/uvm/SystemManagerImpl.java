@@ -42,7 +42,9 @@ import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.util.FileDirectoryMetadata;
 import com.untangle.uvm.util.IOUtil;
+import com.untangle.uvm.util.StringUtil;
 
 /**
  * The Manager for system-related settings
@@ -50,10 +52,12 @@ import com.untangle.uvm.util.IOUtil;
 public class SystemManagerImpl implements SystemManager
 {
     private static final int SETTINGS_VERSION = 4;
+    private static final String ZIP_FILE = "system_logs.zip";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
     private static final String TWO_LINES = BLANK_LINE + EOL;
 
+    private static final String SYSTEM_LOG_DIR = "/var/log";
     private static final String SNMP_DEFAULT_FILE_NAME = "/etc/default/snmpd";
     private static final String SNMP_CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
     private static final String SNMP_CONF_LIB_FILE_NAME = "/var/lib/snmp/snmpd.conf";
@@ -89,6 +93,8 @@ public class SystemManagerImpl implements SystemManager
     private String SettingsFileName = "";
 
     private boolean isUpgrading = false;
+
+    private List<FileDirectoryMetadata> logFiles;
 
     /**
      * Constructor
@@ -170,8 +176,44 @@ public class SystemManagerImpl implements SystemManager
         radiusProxySync();
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new SystemSupportLogDownloadHandler());
+        initLogFilesMetadata();
 
         logger.info("Initialized SystemManager");
+    }
+
+    /**
+     * NGFW-13958 load metadata of all the log files that need to be part of the exported zip
+     */
+    private void initLogFilesMetadata() {
+        List<FileDirectoryMetadata> logFilesList = new ArrayList<>();
+        // matches 'auth.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^auth[.]log.*"));
+        // matches 'bctid.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^bctid[.]log.*"));
+        // matches 'bdadmserver.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^bdamserver[.]log.*"));
+        // matches '*'
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/clamav", ".*"));
+        // matches 'dhcp.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^dhcp[.]log.*"));
+        // matches 'ipsec.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^ipsec[.]log.*"));
+        // matches 'kern.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^kern[.]log.*"));
+        // matches 'l2tpd.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^l2tpd[.]log.*"));
+        // matches 'openvpn.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/openvpn", "^openvpn[.]log.*"));
+        // matches 'pppoe.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^pppoe[.]log.*"));
+        // matches 'suricata.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/suricata", "^suricata[.]log.*"));
+        // matches 'syslog*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^syslog.*"));
+        // matches '*.*' at the end of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/uvm", ".*[.].*$"));
+
+        logFiles = Collections.unmodifiableList(logFilesList);
     }
 
     /**
@@ -1233,51 +1275,38 @@ can look deeper. - mahotz
             try {
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type", "application/octet-stream");
-                resp.setHeader("Content-Disposition", "attachment; filename=sytem_logs.zip");
+                resp.setHeader("Content-Disposition", "attachment; filename=" + ZIP_FILE);
 
                 byte[] buffer = new byte[1024];
                 int read;
                 out = new ZipOutputStream(resp.getOutputStream());
 
-                File directory = new File("/var/log/uvm");
-                File[] files = directory.listFiles(new FilenameFilter()
-                {
-                    /**
-                     * Accept matcher for file search
-                     * 
-                     * @param directory
-                     *        The file directory
-                     * @param name
-                     *        The file name
-                     * @return True to accept the file, false to reject
-                     */
-                    @Override
-                    public boolean accept(File directory, String name)
-                    {
-                        if (name.endsWith(".log") == true) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
+                List<File[]> filesList = new ArrayList<>();
+                // List of file arrays, each containing list of log files from a specific directory
+                for (FileDirectoryMetadata logFile : logFiles) {
+                    File[] files = logFile.getDirectory().listFiles(FileDirectoryMetadata.getFileNameFilter(logFile.getFileMatchPattern()));
+                    filesList.add(files);
+                }
 
                 FileInputStream fis = null;
-                for (File f : files) {
-                    try {
-                        fis = new FileInputStream(f.getCanonicalFile());
-                        out.putNextEntry(new ZipEntry(f.getName()));
-                        while ((read = fis.read(buffer)) > 0) {
-                            out.write(buffer, 0, read);
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Failed to write log file.", e);
-                    } finally {
+                for (File[] filesArr : filesList) {
+                    for (File f : filesArr) {
                         try {
-                            if (fis != null) {
-                                fis.close();
+                            fis = new FileInputStream(f.getCanonicalFile());
+                            out.putNextEntry(new ZipEntry(f.getName()));
+                            while ((read = fis.read(buffer)) > 0) {
+                                out.write(buffer, 0, read);
                             }
-                        } catch (IOException ex) {
-                            logger.error("Unable to close file", ex);
+                        } catch (Exception e) {
+                            logger.warn("Failed to write log file.", e);
+                        } finally {
+                            try {
+                                if (fis != null) {
+                                    fis.close();
+                                }
+                            } catch (IOException ex) {
+                                logger.error("Unable to close file", ex);
+                            }
                         }
                     }
                 }

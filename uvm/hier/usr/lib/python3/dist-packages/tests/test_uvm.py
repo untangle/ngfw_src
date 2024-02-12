@@ -1210,4 +1210,23 @@ class UvmTests(NGFWTestCase):
         match = re.search('^https://edge.arista.com/feedback$', feeddback_url)
         assert(match)
 
+    def test_310_system_logs(self):
+        subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/system_logs.zip", post_data="type=SystemSupportLogs", uri="http://localhost/admin/download"), shell=True)
+        subprocess.call("unzip -q /tmp/system_logs -d /tmp/system_logs && rm -rf /tmp/system_logs.zip", shell=True)
+        uvm = subprocess.check_output("ls /tmp/system_logs | grep -c uvm", shell=True, stderr=subprocess.STDOUT)
+        app = subprocess.check_output("ls /tmp/system_logs | grep -c app", shell=True, stderr=subprocess.STDOUT)
+        console = subprocess.check_output("ls /tmp/system_logs | grep -c console", shell=True, stderr=subprocess.STDOUT)
+        gc = subprocess.check_output("ls /tmp/system_logs | grep -c gc", shell=True, stderr=subprocess.STDOUT)
+        reports = subprocess.check_output("ls /tmp/system_logs | grep -c reports", shell=True, stderr=subprocess.STDOUT)
+        upgrade = subprocess.check_output("ls /tmp/system_logs | grep -c upgrade", shell=True, stderr=subprocess.STDOUT)
+        wrapper = subprocess.check_output("ls /tmp/system_logs | grep -c wrapper", shell=True, stderr=subprocess.STDOUT)
+        subprocess.call("rm -rf /tmp/system_logs", shell=True)
+        assert int(uvm) > 0, "{int(uvm)} uvm log files found"
+        assert int(app) > 0, "{int(app)} app log files found"
+        assert int(console) > 0, "{int(console)} console log files found"
+        assert int(gc) > 0, "{int(gc)} gc log files found"
+        assert int(reports) > 0, "{int(reports)} reports log files found"
+        assert int(upgrade) > 0, "{int(upgrade)} upgrade log files found"
+        assert int(wrapper) > 0, "{int(wrapper)} wrapper log files found"
+
 test_registry.register_module("uvm", UvmTests)
