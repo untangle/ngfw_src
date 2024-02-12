@@ -475,7 +475,7 @@ public class ReportEntry implements Serializable, JSONString
         // To validate: getPieGroupColumn(), getPieSumColumn(), getOrderByColumn()
         // Already validated: allConditions, extraSelects
         if(!ReportEntry.isValidStringField(getPieGroupColumn(), false)) throw new RuntimeException("invalid pieGroupColumn: " + getPieGroupColumn());
-        if(!ReportEntry.isValidStringField(getPieSumColumn(), false)) throw new RuntimeException("invalid pieGroupColumn: " + getPieSumColumn());
+        if(!ReportEntry.isValidStringField(getPieSumColumn(), false)) throw new RuntimeException("invalid pieSumColumn: " + getPieSumColumn());
         if(!ReportEntry.isValidStringField(getOrderByColumn(), false)) throw new RuntimeException("invalid orderByColumn: " + getOrderByColumn());
 
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
