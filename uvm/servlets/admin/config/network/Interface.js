@@ -73,7 +73,7 @@ Ext.define('Ung.config.network.Interface', {
                         value: '{intf.vlanTag}',
                     },
                     minValue: 1,
-                    maxValue: 4096,
+                    maxValue: 4094,
                     allowBlank: false
                 }]
             }, {
