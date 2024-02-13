@@ -88,8 +88,6 @@ Ext.define('Ung.config.administration.MainController', {
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.getSettings'),
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
-            //Rpc.asyncPromise('rpc.skinManager.getSkinsList'),
-            Rpc.asyncPromise('rpc.skinManager.getSettings')
         ], this)
         .then(function(result) {
             if(Util.isDestroyed(v, vm)){
@@ -98,8 +96,6 @@ Ext.define('Ung.config.administration.MainController', {
             vm.set({
                 adminSettings: result[0],
                 systemSettings: result[1],
-                //skinsList: result[2],
-                //skinSettings: result[3]
             });
 
             vm.set('panel.saveDisabled', false);
@@ -256,7 +252,6 @@ Ext.define('Ung.config.administration.MainController', {
 
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.setSettings', vm.get('adminSettings')),
-            //Rpc.asyncPromise('rpc.skinManager.setSettings', vm.get('skinSettings')),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings'))
         ], this)
         .then(function() {
@@ -268,10 +263,6 @@ Ext.define('Ung.config.administration.MainController', {
                 me.loadAdmin();
                 me.loadCertificates();
                 Util.successToast('Administration'.t() + ' settings saved!');
-
-                if(vm.get('skinChanged') == true){
-                    window.location.reload();
-                }
 
                 Ext.fireEvent('resetfields', v);
                 v.setLoading(false);
@@ -886,17 +877,6 @@ Ext.define('Ung.config.administration.MainController', {
                 record.set('activeRootCA', false);
             }
         });
-    },
-
-    // skinChange is a change handler to handle skin changes to the UI
-    skinChange: function(combo, newValue, oldValue){
-        var me = this,
-            vm = me.getViewModel();
-
-        if( ( oldValue != null ) &&
-            ( newValue != oldValue ) ){
-            vm.set('skinChanged', true);
-        }
     },
 
     /**
