@@ -1217,12 +1217,17 @@ class UvmTests(NGFWTestCase):
         match = re.search('^https://edge.arista.com/feedback$', feeddback_url)
         assert(match)
 
+    @pytest.mark.slow
     def test_302_cleanup_license_files(self):
         """
         Ensure that last 5 license files are present
         """
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
         # This should prune no of license files to 5
-        uvmContext.licenseManager().reloadLicenses(False)
+        # Executing  reload license 6 times
+        for _ in range(6):
+            uvmContext.licenseManager().reloadLicenses(False)
         license_files = find_files("/usr/share/untangle/conf/licenses/", "*licenses.js*")
         # verify pruned no of license files to <=5
         assert len(license_files) <= 5
