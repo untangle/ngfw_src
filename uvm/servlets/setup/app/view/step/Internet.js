@@ -81,7 +81,7 @@ Ext.define('Ung.Setup.Internet', {
                     msgTarget: 'side',
                     validationEvent: 'blur',
                     maskRe: /(\d+|\.)/,
-                    vtype: 'ipAddress',
+                    vtype: 'ip4Address',
                     disabled: true,
                     bind: {
                         disabled: '{wan.v4ConfigType !== "STATIC"}'
@@ -100,7 +100,8 @@ Ext.define('Ung.Setup.Internet', {
                     value: 24,
                     bind: { value: '{wan.v4StaticPrefix}' },
                     editable: false,
-                    allowBlank: false
+                    allowBlank: false,
+                    vtype: 'ipAddress'
                 }, {
                     fieldLabel: 'Gateway'.t(),
                     allowBlank: false,
