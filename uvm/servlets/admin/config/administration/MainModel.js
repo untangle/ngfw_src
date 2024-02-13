@@ -9,18 +9,18 @@ Ext.define('Ung.config.administration.MainModel', {
 
         adminSettings: null,
         systemSettings: null,
-        skinSettings: null,
+        //skinSettings: null,
 
         serverCertificates: null,
         rootCertificateInformation: null,
         serverCertificateVerification: null,
-        skinsList: null,
+        //skinsList: null,
         rootCertificates: null
     },
     stores: {
         accounts: { data: '{adminSettings.users.list}' },
         certificates: { data: '{serverCertificates.list}' },
-        skins: { data: '{skinsList.list}' },
+        //skins: { data: '{skinsList.list}' },
         rootCertStore: {data: '{rootCertificates.list}'}
     }
 });
