@@ -424,8 +424,9 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
             if (app.getAppSettings().getPolicyId() == null)
                 continue;
             if (!policyIds.contains(app.getAppSettings().getPolicyId()))
-                throw new PolicyAlreadyAttachedException(app.getAppSettings().getPolicyId(), app.getAppProperties().getDisplayName());
+                throw new RuntimeException("Missing policy: " + app.getAppSettings().getPolicyId() + " (Required by " + app.getAppProperties().getDisplayName() + " [" + app.getAppSettings().getId() + "]). Cannot delete non-empty racks.");
         }
+        
 
         return;
     }
