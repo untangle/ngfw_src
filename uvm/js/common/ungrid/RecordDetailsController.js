@@ -5,23 +5,25 @@ Ext.define('Ung.cmp.RecordDetailsController', {
 
     onBeforeRender: function (view) {
         var me = this, masterGrid = view.up().down('grid'), sourceConfig = {};
-        
-        masterGrid.getView().on('select', me.masterGridSelect, me);
 
-        Ext.Array.each(masterGrid.getColumns(), function (column) {
-            if (!column.dataIndex) { return; }
-            var displayName = column.text;
-            if (column.ownerCt.text) {
-                displayName = column.ownerCt.text + ' ' + displayName;
-            }
+        if(me.getView() != masterGrid){
+            masterGrid.getView().on('select', me.masterGridSelect, me);
 
-            sourceConfig[column.dataIndex] = {
-                displayName: displayName,
-                renderer: Column.renderer || null
-            };
-        });
+            Ext.Array.each(masterGrid.getColumns(), function (column) {
+                if (!column.dataIndex) { return; }
+                var displayName = column.text;
+                if (column.ownerCt.text) {
+                    displayName = column.ownerCt.text + ' ' + displayName;
+                }
 
-        me.sourceConfig = sourceConfig;
+                sourceConfig[column.dataIndex] = {
+                    displayName: displayName,
+                    renderer: column.renderer || null
+                };
+            });
+
+            me.sourceConfig = sourceConfig;
+        }
     },
 
     /**
@@ -30,12 +32,11 @@ Ext.define('Ung.cmp.RecordDetailsController', {
      */
     masterGridSelect: function (grid, record) {
         var me = this, recordData, data = {}, category;
-       
+        
+        if (!record) { return; }
 
         recordData = record.getData();
-        
-        if (recordData.name == 'name' || recordData.name == 'value') { return; }
-        
+                
         // delete extra non relevant attributes
         delete recordData._id;
         delete recordData.javaClass;
@@ -43,11 +44,11 @@ Ext.define('Ung.cmp.RecordDetailsController', {
         delete recordData.attachments;
         delete recordData.tags;
            
-            Ext.Object.each(recordData, function(key, value) {
-                data[key] = value;
-            });
-            me.getView().setSource(data, me.sourceConfig);
-              },
+        Ext.Object.each(recordData, function(key, value) {
+            data[key] = value;
+        });
+        me.getView().setSource(data, me.sourceConfig);
+            },
 
     /**
      * Used for extra column actions which can be added to the grid but are very specific to that context
