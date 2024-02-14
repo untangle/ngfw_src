@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -64,7 +65,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private static final int    LIENENCY_CONSTANT = 5; /* the enforced seat limit is the license seat limit PLUS this value */
     private static final String LIENENCY_GIFT_FILE = System.getProperty("uvm.conf.dir") + "/gift"; /* the file that defines the gift value */
     private static final int    LIENENCY_GIFT = getLienencyGift(); /* and extra lienency constant */
-    
+    private static final int    LICENSE_FILES_COUNT = 5; /* no of License files to keep */
+
     public static final String DIRECTORY_CONNECTOR_OLDNAME = "adconnector";
     public static final String BANDWIDTH_CONTROL_OLDNAME = "bandwidth";
     public static final String CONFIGURATION_BACKUP_OLDNAME = "boxbackup";
@@ -991,10 +993,33 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     _saveSettings(this.settings);
                 }
             }
+            _cleanLicenseFiles();
             _runAppManagerSync();
         }
 
         logger.info("Reloading licenses... done" );
+    }
+
+    /**
+     * Pruning old license files, keeping last 5 license files.
+     */
+    private void _cleanLicenseFiles() {
+        logger.info ("Cleaning old license files...");
+        File licenseDirectory = new File(System.getProperty("uvm.conf.dir") + "/licenses/");
+        try {
+            if (licenseDirectory.isDirectory()) {
+                File[] files = licenseDirectory.listFiles();
+                if (files != null && files.length > LICENSE_FILES_COUNT) {
+                    Arrays.stream(files)
+                          .sorted((f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified()))
+                          .skip(LICENSE_FILES_COUNT)
+                          .forEach(File::delete);
+                }
+                logger.info ("Cleaning old license files... Done");
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to prune license files",e);
+        }
     }
 
     /**
