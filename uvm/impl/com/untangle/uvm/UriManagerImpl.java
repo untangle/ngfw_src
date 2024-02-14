@@ -23,7 +23,7 @@ import com.untangle.uvm.SettingsManager;
  */
 public class UriManagerImpl implements UriManager
 {
-    private static final Integer SettingsCurrentVersion = 4;
+    private static final Integer SettingsCurrentVersion = 5;
 
     private static final String URIS_OVERRIDE_FILE_NAME = System.getProperty("uvm.conf.dir") + "/uris_override.js";
 
@@ -412,12 +412,8 @@ public class UriManagerImpl implements UriManager
         List<UriTranslation> uriTranslations = settings.getUriTranslations();
 
         UriTranslation uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://edge.arista.com/api/v1");
-        uriTranslations.add(uriTranslation);
-
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://launchpad.edge.arista.com/");
-        uriTranslations.add(uriTranslation);
+        uriTranslation.setUri("https://wiki.edge.arista.com/get.php");
+        uriTranslations.add(uriTranslation);        
 
         settings.setUriTranslations(uriTranslations);
 
