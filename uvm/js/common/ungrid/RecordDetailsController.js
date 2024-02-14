@@ -5,7 +5,7 @@ Ext.define('Ung.cmp.RecordDetailsController', {
 
     onBeforeRender: function (view) {
         var me = this, masterGrid = view.up().down('grid'), sourceConfig = {};
-
+        
         masterGrid.getView().on('select', me.masterGridSelect, me);
 
         Ext.Array.each(masterGrid.getColumns(), function (column) {
@@ -17,7 +17,7 @@ Ext.define('Ung.cmp.RecordDetailsController', {
 
             sourceConfig[column.dataIndex] = {
                 displayName: displayName,
-                renderer: column.renderer || null
+                renderer: Column.renderer || null
             };
         });
 
@@ -30,23 +30,24 @@ Ext.define('Ung.cmp.RecordDetailsController', {
      */
     masterGridSelect: function (grid, record) {
         var me = this, recordData, data = {}, category;
-
-        if (!record) { return; }
+       
 
         recordData = record.getData();
-
+        
+        if (recordData.name == 'name' || recordData.name == 'value') { return; }
+        
         // delete extra non relevant attributes
         delete recordData._id;
         delete recordData.javaClass;
         delete recordData.state;
         delete recordData.attachments;
         delete recordData.tags;
-
-        Ext.Object.each(recordData, function(key, value) {
-            data[key] = value;
-        });
-        me.getView().setSource(data, me.sourceConfig);
-    },
+           
+            Ext.Object.each(recordData, function(key, value) {
+                data[key] = value;
+            });
+            me.getView().setSource(data, me.sourceConfig);
+              },
 
     /**
      * Used for extra column actions which can be added to the grid but are very specific to that context
