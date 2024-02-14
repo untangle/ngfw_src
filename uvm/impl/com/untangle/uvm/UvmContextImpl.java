@@ -71,7 +71,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String PROPERTY_CMD_URL = "uvm.cmd.url";
     private static final String DEFAULT_CMD_URL = "https://launchpad.edge.arista.com/";
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
-    private static final String DEFAULT_HELP_URL = "http://wiki.edge.arista.com/get.php";
+    private static final String DEFAULT_HELP_URL = "https://wiki.edge.arista.com/get.php";
     private static final String PROPERTY_FEEDBACK_URL = "uvm.feedback.url";
     private static final String DEFAULT_FEEDBACK_URL = "https://edge.arista.com/feedback";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
@@ -1194,7 +1194,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         String url = System.getProperty(PROPERTY_HELP_URL);
         if (url == null)
             url = DEFAULT_HELP_URL;
-        return url;
+        return uriManager.getUri(url);
     }
 
     /**

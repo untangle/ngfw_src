@@ -83,7 +83,7 @@ class UriAnalyzer():
         "https://www.edge.arista.com/favicon.ico",
         "https://edge.arista.com/legal",
 
-        "http://wiki.edge.arista.com/get.php",
+        "https://wiki.edge.arista.com/get.php",
         "https://edge.arista.com/feedback",
 
         # From test_network.py

@@ -326,6 +326,10 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://launchpad.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://wiki.edge.arista.com/get.php");
+        uriTranslations.add(uriTranslation);
+
         settings.setUriTranslations(uriTranslations);
 
         mergeOverrideSettings(settings);
