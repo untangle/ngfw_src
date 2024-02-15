@@ -251,6 +251,21 @@ Ext.define('Ung.apps.policymanager.MainController', {
     removePolicy: function (view, rowIndex, colIndex, item, e, record) {
         var me = this, vm = me.getViewModel(), idx;
 
+        var appAssociated = false;
+        for (var i = 0; i < vm.get('appsData').length; i++) {
+            // 'state' object is only present for the installed apps
+            if (vm.get('appsData')[i].state) {
+                appAssociated = true;
+                break;
+            }
+        }
+
+        if (appAssociated) {
+            var message = 'Cannot delete policy as it is associated with one or more apps. Remove all the associated apps to delete the policy.'.t();
+            Util.showWarningMessage(message, message, Ext.emptyFn());
+            return;
+        }
+
         Ext.Array.each(vm.get('settings.policies.list'), function (p, index) {
             if (p.policyId === record.get('policyId')) {
                 idx = index;
