@@ -22,7 +22,9 @@ Ext.define('Ung.config.network.view.FilterRules', {
         title: 'Filter Rules'.t(),
 
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete', 'reorder'],
+        recordActions: ['edit', 'copy', 'delete', 'reorder'],
+        copyId: 'ruleId',  
+        copyAppendField: 'description',
 
         emptyText: 'No Filter Rules defined'.t(),
 

@@ -20,7 +20,9 @@ Ext.define('Ung.config.network.view.BypassRules', {
         xtype: 'ungrid',
 
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete', 'reorder'],
+        recordActions: ['edit', 'copy', 'delete', 'reorder'],
+        copyId: 'ruleId',  
+        copyAppendField: 'description',
 
         emptyText: 'No Bypass Rules defined'.t(),
 

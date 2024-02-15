@@ -22,7 +22,9 @@ Ext.define('Ung.config.network.view.NatRules', {
         flex: 3,
 
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete', 'reorder'],
+        recordActions: ['edit', 'copy', 'delete', 'reorder'],
+        copyId: 'ruleId',  
+        copyAppendField: 'description',
 
         emptyText: 'No NAT Rules defined'.t(),
 

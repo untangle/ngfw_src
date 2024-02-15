@@ -25,7 +25,9 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         simpleEditorAlias: 'config-network-portforwardsimple',
 
         tbar: ['@addSimple', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete', 'reorder'],
+        recordActions: ['edit', 'copy', 'delete', 'reorder'],
+        copyId: 'ruleId',  
+        copyAppendField: 'description',
 
         listProperty: 'settings.portForwardRules.list',
         recordJavaClass: 'com.untangle.uvm.network.PortForwardRule',

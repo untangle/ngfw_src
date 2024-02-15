@@ -154,7 +154,8 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                 title: 'Relays'.t(),
 
                 tbar: ['@add', '->', '@import', '@export'],
-                recordActions: ['edit','delete'],
+                recordActions: ['edit', 'copy', 'delete'],
+                copyAppendField: 'description',
 
                 emptyText: 'No Relays defined'.t(),
 

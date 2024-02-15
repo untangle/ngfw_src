@@ -23,7 +23,8 @@ Ext.define('Ung.config.network.view.Routes', {
         title: 'Static Routes'.t(),
 
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete', 'reorder'],
+        recordActions: ['edit', 'copy', 'delete', 'reorder'], 
+        copyAppendField: 'description',
 
         emptyText: 'No Static Routes defined'.t(),
 
