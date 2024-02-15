@@ -261,7 +261,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
         }
 
         if (appAssociated) {
-            var message = 'Cannot delete policy as it is associated with one or more apps. Remove all the associated apps to delete the policy.';
+            var message = 'Cannot delete policy as it is associated with one or more apps. Remove all the associated apps to delete the policy.'.t();
             Util.showWarningMessage(message, message, Ext.emptyFn());
             return;
         }
