@@ -2457,23 +2457,33 @@ class NetworkTests(NGFWTestCase):
         uvmContext = global_functions.restart_uvm()
 
         # Add a host entry which is not part of the network
-        entry = {}
-        entry['usernameDirectoryConnector'] = 'unrechable_host'
-        entry['address'] = "192.168.10.50"
-        uvmContext.hostTable().setHostTableEntry( entry['address'], entry )
+        unreachable_entry = {}
+        unreachable_entry['usernameDirectoryConnector'] = 'unrechable_host'
+        unreachable_entry['address'] = "31.0.0.1"
+        uvmContext.hostTable().setHostTableEntry( unreachable_entry['address'], unreachable_entry )
+
+        client_entry = {}
+        client_entry['address'] = remote_control.client_ip
+        client_entry['usernameDirectoryConnector'] = remote_control.run_command("hostname -s", stdout=True)
+        uvmContext.hostTable().setHostTableEntry( client_entry['address'], client_entry )
         
         # Let the cleanup thread remove the unreachable host
-        time.sleep(120)
+        time.sleep(90)
 
         # Try to retrieve the host entry
-        entry = uvmContext.hostTable().getHostTableEntry( entry['address'] )
+        unreachable_entry = uvmContext.hostTable().getHostTableEntry( unreachable_entry['address'] )
+        client_entry = uvmContext.hostTable().getHostTableEntry( client_entry['address'] )
 
         ##
         ## Restore orginal untangle-vm.conf
         shutil.copyfile(untangle_vm_conf_original_filename, untangle_vm_conf_filename)
         uvmContext = global_functions.restart_uvm()
 
-        assert (entry == None)
+        assert (unreachable_entry == None)
+        assert (client_entry != None)
+
+        # Cleanup
+        uvmContext.hostTable().removeHostTableEntry( client_entry['address'] )
 
 
     @classmethod
