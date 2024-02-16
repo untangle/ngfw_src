@@ -91,8 +91,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             emptyText: '[enter username]'.t(),
             blankText: 'The username cannot be blank.'.t(),
             validator: function(value) {
-                var grid = this.up('grid');
-                var store = grid.getStore();
+                var store = this.up('grid').getStore();
                 var index = store.findBy(function(record){
                     return record.get('username') === value;
                 });
