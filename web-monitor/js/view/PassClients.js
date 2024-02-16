@@ -19,7 +19,8 @@ Ext.define('Ung.apps.webmonitor.view.PassClients', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
 
     emptyText: 'No Pass Clients defined'.t(),
 

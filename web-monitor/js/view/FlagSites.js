@@ -19,7 +19,8 @@ Ext.define('Ung.apps.webmonitor.view.FlagSites', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
 
     emptyText: 'No Flag Sites defined'.t(),
 
