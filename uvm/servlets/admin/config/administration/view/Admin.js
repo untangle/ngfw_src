@@ -96,7 +96,7 @@ Ext.define('Ung.config.administration.view.Admin', {
                 var index = store.findBy(function(record){
                     return record.get('username') === value;
                 });
-                return (index === -1 ) ? true : 'Username already exists.';
+                return (index === -1 ) ? true : 'Username already exists.'.t();
             }
         },
         Field.description,
