@@ -16,6 +16,7 @@ import unittest
 import urllib.request, urllib.error, urllib.parse
 import urllib
 import urllib3
+import fnmatch
 
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
@@ -119,6 +120,12 @@ def check_javascript_exceptions(errors):
         pid = subprocess.check_output(f"ps -p $(cat /var/run/uvm.pid) -o pid=", shell=True).decode("utf-8")
         assert pid != "", "uvm running"
 
+def find_files(dir_path, search_string):
+    license_files = []
+    for root, dirs, files in os.walk(dir_path):
+        for filename in fnmatch.filter(files, search_string):
+            license_files.append(os.path.join(root, filename))
+    return license_files
 
 class TestTotp:
     """
@@ -1209,6 +1216,21 @@ class UvmTests(NGFWTestCase):
         feeddback_url = uvmContext.getFeedbackUrl()
         match = re.search('^https://edge.arista.com/feedback$', feeddback_url)
         assert(match)
+
+    @pytest.mark.slow
+    def test_302_cleanup_license_files(self):
+        """
+        Ensure that last 5 license files are present
+        """
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+        # This should prune no of license files to 5
+        # Executing  reload license 6 times
+        for _ in range(6):
+            uvmContext.licenseManager().reloadLicenses(False)
+        license_files = find_files("/usr/share/untangle/conf/licenses/", "*licenses.js*")
+        # verify pruned no of license files to <=5
+        assert len(license_files) <= 5
 
     def test_310_system_logs(self):
         subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/system_logs.zip", post_data="type=SystemSupportLogs", uri="http://localhost/admin/download"), shell=True)

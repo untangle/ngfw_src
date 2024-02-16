@@ -95,7 +95,8 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
     rsync -a -e "ssh -p $port" dist/usr/share/java/uvm/* root@$target_address:/usr/share/java/uvm
     rsync -a -e "ssh -p $port" dist/usr/share/untangle/bin root@$target_address:/usr/share/untangle
     rsync -a -e "ssh -p $port" dist/usr/share/untangle/lib root@$target_address:/usr/share/untangle
-    rsync -a -e "ssh -p $port"  dist/usr/share/untangle/web root@$target_address:/usr/share/untangle
+    rsync -a -e "ssh -p $port" dist/usr/share/untangle/web root@$target_address:/usr/share/untangle
+    rsync -a -e "ssh -p $port" dist/usr/share/untangle/lang/lang.cfg root@$target_address:/usr/share/untangle/lang
 
     ssh -p $port root@$target_address "systemctl daemon-reload"
 

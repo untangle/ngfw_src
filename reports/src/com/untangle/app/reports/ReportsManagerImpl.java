@@ -453,7 +453,13 @@ public class ReportsManagerImpl implements ReportsManager
         if(conn == null){
             return null;
         }
-        PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType);
+        PreparedStatement statement = null;
+        try{
+            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType);
+        } catch ( Exception e) {
+            logger.info("getDataForReportEntry: "+ e);
+            return null;
+        }
 
         if ( app != null ) {
             // only flush if there are less than 10k events pending

@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -64,7 +65,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private static final int    LIENENCY_CONSTANT = 5; /* the enforced seat limit is the license seat limit PLUS this value */
     private static final String LIENENCY_GIFT_FILE = System.getProperty("uvm.conf.dir") + "/gift"; /* the file that defines the gift value */
     private static final int    LIENENCY_GIFT = getLienencyGift(); /* and extra lienency constant */
-    
+    private static final int    LICENSE_FILES_COUNT = 5; /* no of License files to keep */
+
     public static final String DIRECTORY_CONNECTOR_OLDNAME = "adconnector";
     public static final String BANDWIDTH_CONTROL_OLDNAME = "bandwidth";
     public static final String CONFIGURATION_BACKUP_OLDNAME = "boxbackup";
@@ -450,12 +452,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * We do all these different calls so that the product supports any version of the license server
          */
         String libitemName = "untangle-libitem-" + appName;
-        String urlStr  = licenseUrl + "?action=startTrial" + "&node=" + appName + "&" + getServerParams();
-        String urlStr2 = licenseUrl + "?action=startTrial" + "&libitem=" + libitemName + "&" + getServerParams();
+        String urlStr = licenseUrl + "?action=startTrial" + "&libitem=" + libitemName + "&" + getServerParams();
 
         String oldName = null;
-        String urlStr3 = null;
-        String urlStr4 = null;
+        String urlStr1 = null;
         
         switch ( appName ) {
         case License.DIRECTORY_CONNECTOR:
@@ -491,8 +491,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
         if ( oldName != null ) {
             String oldLibitemName = "untangle-libitem-" + oldName;
-            urlStr3 = licenseUrl + "?action=startTrial" + "&node=" + oldName + "&" + getServerParams();
-            urlStr4 = licenseUrl + "?action=startTrial" + "&libitem=" + oldLibitemName + "&" + getServerParams();
+            urlStr1 = licenseUrl + "?action=startTrial" + "&libitem=" + oldLibitemName + "&" + getServerParams();
         }
         
         CloseableHttpClient httpClient = HttpClients.custom().build();
@@ -507,25 +506,9 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             response = httpClient.execute(get);
             if ( response != null ) { response.close(); response = null; }
             
-            if ( urlStr2 != null ) {
-                logger.info("Requesting Trial: " + urlStr2);
-                url = new URL(urlStr2);
-                get = new HttpGet(url.toString());
-                response = httpClient.execute(get);
-                if ( response != null ) { response.close(); response = null; }
-            }
-
-            if ( urlStr3 != null ) {
-                logger.info("Requesting Trial: " + urlStr3);
-                url = new URL(urlStr3);
-                get = new HttpGet(url.toString());
-                response = httpClient.execute(get);
-                if ( response != null ) { response.close(); response = null; }
-            }
-
-            if ( urlStr4 != null ) {
-                logger.info("Requesting Trial: " + urlStr4);
-                url = new URL(urlStr4);
+            if ( urlStr1 != null ) {
+                logger.info("Requesting Trial: " + urlStr1);
+                url = new URL(urlStr1);
                 get = new HttpGet(url.toString());
                 response = httpClient.execute(get);
                 if ( response != null ) { response.close(); response = null; }
@@ -1010,10 +993,33 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     _saveSettings(this.settings);
                 }
             }
+            _cleanLicenseFiles();
             _runAppManagerSync();
         }
 
         logger.info("Reloading licenses... done" );
+    }
+
+    /**
+     * Pruning old license files, keeping last 5 license files.
+     */
+    private void _cleanLicenseFiles() {
+        logger.info ("Cleaning old license files...");
+        File licenseDirectory = new File(System.getProperty("uvm.conf.dir") + "/licenses/");
+        try {
+            if (licenseDirectory.isDirectory()) {
+                File[] files = licenseDirectory.listFiles();
+                if (files != null && files.length > LICENSE_FILES_COUNT) {
+                    Arrays.stream(files)
+                          .sorted((f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified()))
+                          .skip(LICENSE_FILES_COUNT)
+                          .forEach(File::delete);
+                }
+                logger.info ("Cleaning old license files... Done");
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to prune license files",e);
+        }
     }
 
     /**

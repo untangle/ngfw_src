@@ -34,7 +34,13 @@ Ext.define('Ung.Setup', {
                 var pass_original = Ext.getCmp(field.comparePasswordField);
                 return val === pass_original.getValue();
             },
-            passwordConfirmCheckText: 'Passwords do not match'.t()
+            passwordConfirmCheckText: 'Passwords do not match'.t(),
+
+            ip4Address: function (val) {
+                return val.match(this.ip4AddressRegex);
+            },
+            ip4AddressText: 'Invalid IPv4 Address.'.t(),
+            ip4AddressRegex: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
         });
     }
 });

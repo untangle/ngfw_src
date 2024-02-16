@@ -6,22 +6,24 @@ Ext.define('Ung.cmp.RecordDetailsController', {
     onBeforeRender: function (view) {
         var me = this, masterGrid = view.up().down('grid'), sourceConfig = {};
 
-        masterGrid.getView().on('select', me.masterGridSelect, me);
+        if(me.getView() != masterGrid){
+            masterGrid.getView().on('select', me.masterGridSelect, me);
 
-        Ext.Array.each(masterGrid.getColumns(), function (column) {
-            if (!column.dataIndex) { return; }
-            var displayName = column.text;
-            if (column.ownerCt.text) {
-                displayName = column.ownerCt.text + ' ' + displayName;
-            }
+            Ext.Array.each(masterGrid.getColumns(), function (column) {
+                if (!column.dataIndex) { return; }
+                var displayName = column.text;
+                if (column.ownerCt.text) {
+                    displayName = column.ownerCt.text + ' ' + displayName;
+                }
 
-            sourceConfig[column.dataIndex] = {
-                displayName: displayName,
-                renderer: column.renderer || null
-            };
-        });
+                sourceConfig[column.dataIndex] = {
+                    displayName: displayName,
+                    renderer: column.renderer || null
+                };
+            });
 
-        me.sourceConfig = sourceConfig;
+            me.sourceConfig = sourceConfig;
+        }
     },
 
     /**

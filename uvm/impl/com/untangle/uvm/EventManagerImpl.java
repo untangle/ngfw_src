@@ -1299,7 +1299,8 @@ public class EventManagerImpl implements EventManager
             if ( ! rule.getEnabled() ){
                 continue;
             }
-            if ( ! rule.isMatch( jsonObject ) ){
+            //use jsonSendObject instead of jsonObject as ip addresses start with /
+            if ( ! rule.isMatch( jsonSendObject ) ){
                 continue;
             }
 

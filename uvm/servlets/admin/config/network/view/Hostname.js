@@ -28,7 +28,8 @@ Ext.define('Ung.config.network.view.Hostname', {
                 blankText: 'Hostname must be specified.'.t(),
                 name: 'HostName',
                 bind: '{settings.hostName}',
-                maskRe: /[a-zA-Z0-9\-]/
+                maskRe: /[a-zA-Z0-9\-]/,
+                regex: /^[a-zA-Z0-9\-]+$/,
             }, {
                 xtype: 'displayfield',
                 value: '(eg: gateway)'.t(),

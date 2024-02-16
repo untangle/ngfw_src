@@ -168,15 +168,19 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Username'.t(),
+        allowBlank: false,
         bind: {
             value: '{record.username}',
             disabled: '{tunnelProviderSelected == false}',
             hidden: '{tunnelUsernameHidden == true}'
         },
+        regex: /^(?!\s).*[^\s]$/,
+        regexText: 'Invalid Username, whitespaces at beginning or end are not allowed'.t()
     }, {
         xtype: 'textfield',
         fieldLabel: 'Password'.t(),
         inputType: 'password',
+        allowOnlyWhitespace: false,
         bind: {
             value: '{record.password}',
             disabled: '{tunnelProviderSelected == false}',

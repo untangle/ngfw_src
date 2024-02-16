@@ -421,6 +421,9 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
             var grpname = 'Unknown'.t();
             groupList.each(function(record) { if (record.get('groupId') == value) grpname = record.get('name'); });
             return(grpname);
+        },
+        typeRenderer: function(value){
+            return value ? 'Network'.t() : 'Individual Client'.t();
         }
     }
 
