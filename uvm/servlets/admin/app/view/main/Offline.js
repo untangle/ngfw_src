@@ -22,8 +22,8 @@ Ext.define('Ung.view.main.Offline', {
         }, {
             xtype: 'component',
             html: '<h3>' + 'Welcome!'.t() + '</h3>' +
-                '<p>' + 'The installation is complete and ready for deployment. The next step are registration and installing apps from the App Store.'.t() + '</p>' +
-                '<p style="color: red;">' + 'Unfortunately, Your server was unable to contact the App Store.'.t() + '</p>' +
+                '<p>' + 'The installation is complete and ready for deployment. The next steps are registration and installing apps from the APPS menu.'.t() + '</p>' +
+                '<p style="color: red;">' + 'Unfortunately, Your server was unable to connect to the internet.'.t() + '</p>' +
                 '<p>' + 'Before Installing apps, this must be resolved.'.t() + '</p>' +
                 '<p><strong>' + 'Possible Resolutions'.t() + '</strong></p>' +
                 '<ol><li>' + 'Verify the network settings are correct and the Connectivity Test succeeds.'.t() + '</li>' +
