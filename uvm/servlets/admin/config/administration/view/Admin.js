@@ -89,7 +89,14 @@ Ext.define('Ung.config.administration.view.Admin', {
             fieldLabel: 'Username'.t(),
             allowBlank: false,
             emptyText: '[enter username]'.t(),
-            blankText: 'The username cannot be blank.'.t()
+            blankText: 'The username cannot be blank.'.t(),
+            validator: function(value) {
+                var store = this.up('grid').getStore();
+                var index = store.findBy(function(record){
+                    return record.get('username') === value;
+                });
+                return (index === -1 ) ? true : 'Username already exists.'.t();
+            }
         },
         Field.description,
         {
