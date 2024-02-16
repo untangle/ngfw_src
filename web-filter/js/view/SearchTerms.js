@@ -59,7 +59,8 @@ Ext.define('Ung.apps.webfilter.view.SearchTerms', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
 
     emptyText: 'No Search Terms defined'.t(),
 

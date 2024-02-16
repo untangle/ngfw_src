@@ -10,7 +10,8 @@ Ext.define('Ung.apps.applicationcontrollite.view.Signatures', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
     listProperty: 'settings.patterns.list',
     emptyRow: {
         javaClass: 'com.untangle.app.application_control_lite.ApplicationControlLitePattern',

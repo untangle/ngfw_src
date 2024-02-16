@@ -57,7 +57,8 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
 
     emptyText: 'No GRE Networks Defined'.t(),
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
     listProperty: 'settings.networks.list',
     emptyRow: {
         javaClass: 'com.untangle.app.ipsec_vpn.IpsecVpnNetwork',

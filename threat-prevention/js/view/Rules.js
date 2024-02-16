@@ -11,7 +11,9 @@ Ext.define('Ung.apps.threatprevention.view.Rules', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete', 'reorder'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
+    copyId: 'ruleId',  
+    copyAppendField: 'description',
 
     listProperty: 'settings.rules.list',
 

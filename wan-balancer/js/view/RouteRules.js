@@ -21,7 +21,9 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete', 'reorder'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
+    copyId: 'ruleId',  
+    copyAppendField: 'description',
 
     listProperty: 'settings.routeRules.list',
 

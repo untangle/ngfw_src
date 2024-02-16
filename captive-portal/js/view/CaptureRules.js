@@ -19,7 +19,9 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete', 'reorder'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
+    copyId: 'ruleId',  
+    copyAppendField: 'description',
 
     listProperty: 'settings.captureRules.list',
 

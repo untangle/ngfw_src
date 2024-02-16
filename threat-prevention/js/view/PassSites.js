@@ -11,7 +11,8 @@ Ext.define('Ung.apps.threatprevention.view.PassSites', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete', 'reorder'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
+    copyAppendField: 'description',
 
     listProperty: 'settings.passSites.list',
 

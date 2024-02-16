@@ -29,7 +29,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
     listProperty: 'settings.tunnels.list',
     emptyRow: {
         'javaClass': 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel',

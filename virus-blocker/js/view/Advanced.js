@@ -57,7 +57,8 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
         defaults: {
             xtype: 'ungrid',
             tbar: ['@add', '->', '@import', '@export'],
-            recordActions: ['edit', 'delete'],
+            recordActions: ['edit', 'copy', 'delete'],
+            copyAppendField: 'description',
         },
         items: [{
             title: 'File Extensions'.t(),

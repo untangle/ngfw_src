@@ -19,7 +19,9 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete', 'reorder'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
+    copyId: 'id',  
+    copyAppendField: 'description',
 
     listProperty: 'settings.logicRules.list',
 

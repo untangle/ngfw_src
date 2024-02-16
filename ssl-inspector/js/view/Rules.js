@@ -19,7 +19,9 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete', 'reorder'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
+    copyId: 'ruleId',  
+    copyAppendField: 'description',
 
     listProperty: 'settings.ignoreRules.list',
 

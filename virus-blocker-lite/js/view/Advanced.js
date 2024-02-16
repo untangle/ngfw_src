@@ -24,7 +24,8 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
         xtype: 'ungrid',
         sortableColumns: true,
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete'],
+        recordActions: ['edit', 'copy', 'delete'],
+        copyAppendField: 'description',
     },
 
     items: [{
