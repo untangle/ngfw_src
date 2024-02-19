@@ -19,7 +19,8 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
 
     emptyText: 'No Pass Sites defined'.t(),
 

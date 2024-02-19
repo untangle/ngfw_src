@@ -19,7 +19,8 @@ Ext.define('Ung.apps.webcache.view.CacheBypass', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'hostname',
 
     emptyTest: 'No Cache Bypasses defined'.t(),
 

@@ -36,7 +36,9 @@ Ext.define('Ung.config.system.view.Shield', {
         },
 
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete', 'reorder'],
+        recordActions: ['edit', 'copy', 'delete', 'reorder'],
+        copyId: 'ruleId',  
+        copyAppendField: 'description',
 
         listProperty: 'shieldSettings.rules.list',
 

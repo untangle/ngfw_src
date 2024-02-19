@@ -17,7 +17,8 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
         title: 'Passed Sites'.t(),
 
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete'],
+        recordActions: ['edit', 'copy', 'delete'],
+        copyAppendField: 'description',
 
         listProperty: 'settings.passedUrls.list',
         bind: '{passedUrls}',
@@ -87,8 +88,8 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
         title: 'Passed Client IP Addresses'.t(),
 
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete'],
-
+        recordActions: ['edit', 'copy', 'delete'],
+        copyAppendField: 'description',
         listProperty: 'settings.passedClients.list',
         bind: '{passedClients}',
 

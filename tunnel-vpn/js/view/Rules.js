@@ -20,7 +20,9 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete', 'reorder'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
+    copyId: 'ruleId',  
+    copyAppendField: 'description',
 
     emptyText: 'No Rules defined'.t(),
 

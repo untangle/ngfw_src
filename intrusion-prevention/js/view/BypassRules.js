@@ -7,7 +7,9 @@ Ext.define('Ung.apps.intrusionprevention.view.BypassRules', {
     title: 'Bypass Rules'.t(),
 
     tbar: ['@add', '->', '@import', '@export'],
-    recordActions: ['edit', 'delete', 'reorder'],
+    recordActions: ['edit', 'copy', 'delete', 'reorder'],
+    copyId: 'ruleId',  
+    copyAppendField: 'description',
 
     emptyText: 'No Bypass Rules defined'.t(),
 

@@ -34,7 +34,8 @@ Ext.define('Ung.apps.ad-blocker.view.CookieFilters', {
         title: 'User Defined Cookie Filters'.t(),
 
         tbar: ['@add', '->', '@import', '@export'],
-        recordActions: ['edit', 'delete'],
+        recordActions: ['edit', 'copy', 'delete'],
+        copyAppendField: 'string',
 
         listProperty: 'settings.userCookies.list',
         bind: '{userCookies}',

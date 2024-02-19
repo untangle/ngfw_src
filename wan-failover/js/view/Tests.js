@@ -42,7 +42,8 @@ Ext.define('Ung.apps.wan-failover.view.TestGrid', {
 
     emptyText: 'No Tests Defined'.t(),
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
     listProperty: 'settings.tests.list',
     bind: '{tests}',
     emptyRow: {

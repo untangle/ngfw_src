@@ -312,7 +312,8 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'name',
     listProperty: 'settings.groups.list',
     emptyRow: {
         javaClass: 'com.untangle.app.openvpn.OpenVpnGroup',
@@ -406,7 +407,8 @@ Ext.define('Ung.apps.openvpn.cmp.ExportedNetworksGrid', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'name',
     listProperty: 'settings.exports.list',
     emptyRow: {
         javaClass: 'com.untangle.app.openvpn.OpenVpnExport',

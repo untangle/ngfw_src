@@ -239,7 +239,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                             html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
                         }, '@import', '@export'],
 
-                        recordActions: ['edit', 'delete', 'reorder'],
+                        recordActions: ['edit', 'copy', 'delete', 'reorder'],
+                        copyId: 'ruleId',  
+                        copyAppendField: 'description',
 
                         emptyText: 'No QOS Rules defined'.t(),
 
@@ -442,7 +444,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                 title: 'Access Rules'.t(),
 
                 tbar: ['@add', '->', '@import', '@export'],
-                recordActions: ['edit', 'delete', 'reorder'],
+                recordActions: ['edit', 'copy', 'delete', 'reorder'],
+                copyId: 'ruleId',  
+                copyAppendField: 'description',
 
                 emptyText: 'No Access Rules defined'.t(),
 
@@ -640,7 +644,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                         xtype: 'ungrid',
 
                         tbar: ['@add', '->', '@import', '@export'],
-                        recordActions: ['edit', 'delete', 'reorder'],
+                        recordActions: ['edit', 'copy', 'delete', 'reorder'],
+                        copyId: 'ruleId',  
+                        copyAppendField: 'description',
 
                         emptyText: 'No Access Control Rules defined'.t(),
 
@@ -1090,7 +1096,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                             title: 'Neighbors'.t(),
 
                             tbar: ['@add', '->', '@import', '@export'],
-                            recordActions: ['edit', 'delete'],
+                            recordActions: ['edit', 'copy', 'delete'],
+                            copyId: 'ruleId',  
+                            copyAppendField: 'description',
 
                             emptyText: 'No BGP Neighbors defined'.t(),
 
@@ -1162,7 +1170,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                             title: 'Networks'.t(),
 
                             tbar: ['@add', '->', '@import', '@export'],
-                            recordActions: ['edit', 'delete'],
+                            recordActions: ['edit', 'copy', 'delete'],
+                            copyId: 'ruleId',  
+                            copyAppendField: 'description',
 
                             emptyText: 'No BGP Networks defined'.t(),
 
@@ -1242,7 +1252,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                             title: 'Networks'.t(),
 
                             tbar: ['@add', '->', '@import', '@export'],
-                            recordActions: ['edit', 'delete'],
+                            recordActions: ['edit', 'copy', 'delete'],
+                            copyId: 'ruleId',  
+                            copyAppendField: 'description',
 
                             emptyText: 'No OSPF Networks defined'.t(),
 
@@ -1321,7 +1333,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                             title: 'Areas'.t(),
 
                             tbar: ['@add', '->', '@import', '@export'],
-                            recordActions: ['edit', 'delete'],
+                            recordActions: ['edit', 'copy', 'delete'],
+                            copyId: 'ruleId',  
+                            copyAppendField: 'description',
 
                             emptyText: 'No OSPF Areas defined'.t(),
 
@@ -1462,7 +1476,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                             title: 'Interface Overrides'.t(),
 
                             tbar: ['@add', '->', '@import', '@export'],
-                            recordActions: ['edit', 'delete'],
+                            recordActions: ['edit', 'copy', 'delete'],
+                            copyId: 'ruleId',  
+                            copyAppendField: 'description',
 
                             emptyText: 'No OSPF Interfaces defined'.t(),
 
