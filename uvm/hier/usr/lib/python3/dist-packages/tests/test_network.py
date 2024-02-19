@@ -2428,6 +2428,12 @@ class NetworkTests(NGFWTestCase):
         """
         Remove unreachable host
         """
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        interfaces = netsettings['interfaces']['list']
+        assert (len(interfaces) > 0)
+        # Get the first interface name from the settings
+        interface_name = interfaces[0]["systemDev"]
+        
         # Backup original configuration file and set a new file with updated configuration
         untangle_vm_conf_filename = "/usr/share/untangle/conf/untangle-vm.conf"
         untangle_vm_conf_tmp_filename = f"{untangle_vm_conf_filename}.tmp"
@@ -2459,7 +2465,8 @@ class NetworkTests(NGFWTestCase):
         # Add a host entry which is not part of the network
         unreachable_entry = {}
         unreachable_entry['usernameDirectoryConnector'] = 'unrechable_host'
-        unreachable_entry['address'] = "31.0.0.1"
+        
+        unreachable_entry['address'] = global_functions.get_broadcast_address(interface_name)
         uvmContext.hostTable().setHostTableEntry( unreachable_entry['address'], unreachable_entry )
 
         client_entry = {}
