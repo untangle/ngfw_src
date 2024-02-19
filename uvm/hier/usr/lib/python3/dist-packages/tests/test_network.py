@@ -7,6 +7,7 @@ import sys
 import re
 import subprocess
 import pprint
+import shutil
 import time
 import copy
 import runtests
@@ -2422,6 +2423,74 @@ class NetworkTests(NGFWTestCase):
         #sync settings should cleanup *-snort* extension files
         snort_files = find_files(dir_path, search_string)
         assert len(snort_files) == 0
+    
+    def test_703_remove_unreachable_host(self):
+        """
+        Remove unreachable host
+        """
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        interfaces = netsettings['interfaces']['list']
+        assert (len(interfaces) > 0)
+        # Get the first interface name from the settings
+        interface_name = interfaces[0]["systemDev"]
+        
+        # Backup original configuration file and set a new file with updated configuration
+        untangle_vm_conf_filename = "/usr/share/untangle/conf/untangle-vm.conf"
+        untangle_vm_conf_tmp_filename = f"{untangle_vm_conf_filename}.tmp"
+        untangle_vm_conf_original_filename = f"{untangle_vm_conf_filename}.orig"
+
+        shutil.copyfile(untangle_vm_conf_filename, untangle_vm_conf_original_filename)
+
+        host_cleaner_interval = 5000
+        host_cleaner_max_unreachable = 60000
+        vm_conf = []
+        with open(untangle_vm_conf_filename, "r") as file:
+            for line in file:
+                if line.startswith("host_cleaner_interval="):
+                    line = f"host_cleaner_interval=\"{str(host_cleaner_interval)}\"\n"
+                if line.startswith("host_cleaner_max_unreachable="):
+                    line = f"host_cleaner_max_unreachable=\"{str(host_cleaner_max_unreachable)}\"\n"
+                vm_conf.append(line)
+            file.close()
+
+        with open(untangle_vm_conf_tmp_filename, "w") as file:
+            for line in vm_conf:
+                file.write(line)
+            file.close()
+
+        os.replace(untangle_vm_conf_tmp_filename, untangle_vm_conf_filename)
+        ## Restart uvm
+        uvmContext = global_functions.restart_uvm()
+
+        # Add a host entry which is not part of the network
+        unreachable_entry = {}
+        unreachable_entry['usernameDirectoryConnector'] = 'unrechable_host'
+        
+        unreachable_entry['address'] = global_functions.get_broadcast_address(interface_name)
+        uvmContext.hostTable().setHostTableEntry( unreachable_entry['address'], unreachable_entry )
+
+        client_entry = {}
+        client_entry['address'] = remote_control.client_ip
+        client_entry['usernameDirectoryConnector'] = remote_control.run_command("hostname -s", stdout=True)
+        uvmContext.hostTable().setHostTableEntry( client_entry['address'], client_entry )
+        
+        # Let the cleanup thread remove the unreachable host
+        time.sleep(90)
+
+        # Try to retrieve the host entry
+        unreachable_entry = uvmContext.hostTable().getHostTableEntry( unreachable_entry['address'] )
+        client_entry = uvmContext.hostTable().getHostTableEntry( client_entry['address'] )
+
+        ##
+        ## Restore orginal untangle-vm.conf
+        shutil.copyfile(untangle_vm_conf_original_filename, untangle_vm_conf_filename)
+        uvmContext = global_functions.restart_uvm()
+
+        assert (unreachable_entry == None)
+        assert (client_entry != None)
+
+        # Cleanup
+        uvmContext.hostTable().removeHostTableEntry( client_entry['address'] )
 
 
     @classmethod

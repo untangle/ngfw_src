@@ -71,6 +71,15 @@ except socket.error:
 ftp_server = overrides.get('ftp_server', test_server_ip)
 iperf_server = ""
 
+def get_broadcast_address(interface):
+    """
+    Extracts broadcast address from 'ip addr' command by searching for the input interface. Returns None if the input interface is not present
+    """
+    if interface is None:
+        print("Input interface is not present")
+        return None
+    return subprocess.check_output("ip addr | grep " + interface + "  | grep inet | awk '{printf $4}'", shell=True).decode("utf-8")
+
 def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):
     if base_URL.startswith("http") is False:
         # Add schema

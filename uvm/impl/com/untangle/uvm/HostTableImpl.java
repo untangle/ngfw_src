@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Iterator;
 import java.util.Comparator;
 import java.util.Collections;
@@ -25,6 +24,7 @@ import com.untangle.uvm.HookBucket;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.Pulse;
+import com.untangle.uvm.util.StringUtil;
 import com.untangle.uvm.app.QuotaEvent;
 import com.untangle.uvm.app.HostnameLookup;
 
@@ -43,8 +43,8 @@ public class HostTableImpl implements HostTable
 {
     private static final int HIGH_WATER_SIZE = 12000; // absolute max
     private static final int LOW_WATER_SIZE = 10000; // max size to reduce to when pruning map
-    private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; // 60 seconds
-    private static final int CLEANER_LAST_ACCESS_MAX_TIME = 60 * 60 * 1000; // 60 minutes
+    private static final int DEFAULT_CLEANER_SLEEP_TIME_MILLI = 60 * 1000; // 60 seconds
+    private static final int DEFAULT_CLEANER_LAST_ACCESS_MAX_TIME = 60 * 60 * 1000; // 60 minutes
     private static final String HOSTS_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/hosts.js";
     private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; // 6 hours
 
@@ -770,6 +770,24 @@ public class HostTableImpl implements HostTable
     }
 
     /**
+     * Returns 'host_cleaner_interval' configuration value if present or else returns default cleaner sleep time
+     * @return cleaner sleep interval integer (in milliseconds)
+     */
+    private int getCleanerSleepInterval() {
+        String cleanerSleepIntervalPropertyVal = System.getProperty("host_cleaner_interval");
+        return StringUtil.isEmpty(cleanerSleepIntervalPropertyVal) ? DEFAULT_CLEANER_SLEEP_TIME_MILLI : Integer.parseInt(cleanerSleepIntervalPropertyVal);
+    }
+
+    /**
+     * Returns 'host_cleaner_max_unreachable' configuration value if present or else returns default max host unreachable time
+     * @return max host unreachable time integer (in milliseconds)
+     */
+    private int getHostMaxUnreachableTime() {
+        String hostMaxUnreachablePropertyVal = System.getProperty("host_cleaner_max_unreachable");
+        return StringUtil.isEmpty(hostMaxUnreachablePropertyVal) ? DEFAULT_CLEANER_LAST_ACCESS_MAX_TIME : Integer.parseInt(hostMaxUnreachablePropertyVal);
+    }
+
+    /**
      * This thread periodically walks through the entries and removes expired
      * entries It also explicitly releases hosts from the penalty box and quotas
      * after expiration
@@ -787,8 +805,9 @@ public class HostTableImpl implements HostTable
 
                 cleanerSemaphore.drainPermits();
                 try {
-                    cleanerSemaphore.tryAcquire(CLEANER_SLEEP_TIME_MILLI, java.util.concurrent.TimeUnit.MILLISECONDS);
+                    cleanerSemaphore.tryAcquire(getCleanerSleepInterval(), java.util.concurrent.TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
+                    logger.warn(e);
                 }
                 logger.debug("HostTableCleaner: Running... ");
 
@@ -867,7 +886,7 @@ public class HostTableImpl implements HostTable
                         /**
                          * If this host hasnt been touched recently, delete it
                          */
-                        if (now > (entry.getLastAccessTime() + CLEANER_LAST_ACCESS_MAX_TIME)) {
+                        if (now > (entry.getLastAccessTime() + getHostMaxUnreachableTime())) {
 
                             /**
                              * If host is still active, don't delete it.
@@ -897,16 +916,23 @@ public class HostTableImpl implements HostTable
                              * pingable addresses stay in the host table if they
                              * respond to ping.
                              */
-                            if (entry.getAddress().isReachable(null, 3, 500)) {
-                                continue;
+                            try {
+                                if (entry.getAddress().isReachable(null, 3, 500)) {
+                                    continue;
+                                }
+
+                                /**
+                                 * Otherwise just delete the entire entry
+                                 */
+                                else {
+                                    logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
+
+                                    removeHostTableEntry(address);
+                                    continue;
+                                }
                             }
-
-                            /**
-                             * Otherwise just delete the entire entry
-                             */
-                            else {
-                                logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
-
+                            catch (Exception ex) {
+                                logger.warn("Exception occurred while checking reachability for " + entry.getAddress().getHostAddress(), ex);
                                 removeHostTableEntry(address);
                                 continue;
                             }
@@ -985,7 +1011,7 @@ public class HostTableImpl implements HostTable
 
                 reverseLookupSemaphore.drainPermits();
                 try {
-                    reverseLookupSemaphore.tryAcquire(CLEANER_SLEEP_TIME_MILLI, java.util.concurrent.TimeUnit.MILLISECONDS);
+                    reverseLookupSemaphore.tryAcquire(getCleanerSleepInterval(), java.util.concurrent.TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                 }
                 logger.debug("HostTableReverseHostnameLookup: Running... ");
