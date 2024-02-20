@@ -37,7 +37,23 @@ Ext.define('Ung.config.network.Interface', {
                 allowOnlyWhitespace: false,
                 regex: /^[^!#$%^&]+$/,
                 regexText: 'This field can have alphanumerics or special characters other than ! # $ % ^ &'.t(),
-                bind: '{intf.name}'
+                bind: '{intf.name}',
+                validator: function(value) {
+                    var store = this.up('tabpanel').getViewModel().getStore('interfaces');
+                    var title = this.up('window').getConfig().title;
+                    //To check new VLAN interface creation
+                    if(title === 'Add VLAN Interface')
+                    {
+                        //To validate unique interface name
+                        var index = store.findBy(function(record){
+                            return record.get('name') === value;
+                        });
+                        return (index === -1 ) ? true : 'Interface name already exists.'.t();
+                    }
+                    else{
+                        return true;
+                    }
+                }
             }, {
                 xtype: 'container',
                 layout: { type: 'hbox' },
