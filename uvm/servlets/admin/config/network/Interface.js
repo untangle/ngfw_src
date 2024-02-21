@@ -40,21 +40,13 @@ Ext.define('Ung.config.network.Interface', {
                 bind: '{intf.name}',
                 validator: function(value) {
                     var store = this.up('tabpanel').getViewModel().getStore('interfaces');
-                    var title = this.up('window').title;
                     var currentInterfaceName = this.up('window').getViewModel().get('intf.name');
                 
                     // Check if a record with the same name exists in the store
                     var isNameUnique = store.findBy(function(record) {
                         return record.get('name') === value;
                     }) === -1;
-                
-                    // If the title indicates it's adding a VLAN interface, simply check for uniqueness
-                    if (title === 'Add VLAN Interface') {
-                        return isNameUnique ? true : 'Interface name already exists.'.t();
-                    } else {
-                        // If it's editing an existing interface, ensure that the new name is either unique or matches the current interface name
-                        return (value === currentInterfaceName || isNameUnique) ? true : 'Interface name already exists.'.t();
-                    }
+                    return (value === currentInterfaceName || isNameUnique) ? true : 'Interface name already exists.'.t();
                 }      
             }, {
                 xtype: 'container',
