@@ -29,6 +29,8 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         bind: {
             value: '{settings.keepaliveInterval}'
         },
+        regex: RegExp("^[1-9]\\d*$"),
+        regexText: 'Only accepts valid positive integer.'.t(),
         allowBlank: false
     },{
         fieldLabel: 'MTU'.t(),
