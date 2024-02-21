@@ -171,19 +171,24 @@ Ext.define('Ung.Setup.Main', {
                 if(Util.setRpcJsonrpc("admin") == true){
                     me.resetWizardContinue();
                 }else{
-                    var msg = Ext.create('Ext.window.MessageBox');
-                    msg.textField.inputType = 'password';
-
-                    msg.prompt(
-                        'Authentication required'.t(),
-                        'Please enter admin password'.t(), function(btn, p) {
-                            if (btn === 'ok') {
-                                Util.authenticate(p, function () {
-                                    me.resetWizardContinue();
-                                });
-                            }
+                    Util.authenticate("passwd", function (isNonDefaultPassword) {
+                        if (isNonDefaultPassword) {
+                            var msg = Ext.create('Ext.window.MessageBox');
+                            msg.textField.inputType = 'password';
+                            msg.prompt(
+                                'Authentication required'.t(),
+                                'Please enter admin password'.t(), function(btn, p) {
+                                    if (btn === 'ok') {
+                                        Util.authenticate(p, function (flag) {
+                                            me.resetWizardContinue();
+                                        });
+                                    }
+                                }
+                            );
+                        } else {
+                            me.resetWizardContinue();
                         }
-                    );
+                    });
                 }
             }else{
                 me.resetWizardContinue();

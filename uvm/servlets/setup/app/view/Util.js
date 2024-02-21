@@ -31,8 +31,14 @@ Ext.define('Ung.Setup.Util', {
             success: function (response) {
                 // Ung.app.loading(false);
                 if (response.responseText && response.responseText.indexOf('loginPage') != -1) {
-                    Ext.MessageBox.alert('Authentication failed'.t(), 'Invalid password.'.t());
-                    return;
+                    //Check default password, if true callback otherwise existing flow
+                    if (password == "passwd") {
+                        cb(true);
+                        return;
+                    } else {
+                        Ext.MessageBox.alert('Authentication failed'.t(), 'Invalid password.'.t());
+                        return;
+                    }
                 }
 
                 Util.setRpcJsonrpc("admin");
