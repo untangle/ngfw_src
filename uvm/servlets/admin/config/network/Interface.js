@@ -37,7 +37,17 @@ Ext.define('Ung.config.network.Interface', {
                 allowOnlyWhitespace: false,
                 regex: /^[^!#$%^&]+$/,
                 regexText: 'This field can have alphanumerics or special characters other than ! # $ % ^ &'.t(),
-                bind: '{intf.name}'
+                bind: '{intf.name}',
+                validator: function(value) {
+                    var store = this.up('tabpanel').getViewModel().getStore('interfaces');
+                    var currentInterfaceName = this.up('window').getViewModel().get('intf.name');
+                
+                    // Check if a record with the same name exists in the store
+                    var isNameUnique = store.findBy(function(record) {
+                        return record.get('name') === value;
+                    }) === -1;
+                    return (value === currentInterfaceName || isNameUnique) ? true : 'Interface name already exists.'.t();
+                }      
             }, {
                 xtype: 'container',
                 layout: { type: 'hbox' },
