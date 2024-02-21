@@ -33,6 +33,7 @@ Ext.define('Ung.config.network.Interface', {
                 xtype: 'textfield',
                 fieldLabel: 'Interface Name'.t(),
                 width: 400,
+                itemId: 'iterfacename',
                 name: 'interfaceName',
                 allowOnlyWhitespace: false,
                 regex: /^[^!#$%^&]+$/,
@@ -531,7 +532,32 @@ Ext.define('Ung.config.network.Interface', {
                         xtype: 'textfield',
                         vtype: 'ip4Address',
                         emptyText: '[enter IPv4 address]'.t(),
-                        allowBlank: false
+                        allowBlank: false,
+                        validator: function(value) {
+                            // Check for default IP Address    
+                            if(value == '1.2.3.4') return "Deafult address, Modify IPv4 address".t();
+
+                            var aliasStore = this.up('grid').getStore(),
+                                intfStore = this.up('config-network').getViewModel().getStore('interfaces'),
+                                intfName = this.up('window').down('#iterfacename').getValue();
+
+                            // Check for duplicate IP Address in same interface
+                            var duplicateAliases = aliasStore.findBy(function(aliasRecord){
+                                return aliasRecord.get('staticAddress') == value;
+                            });
+                            if(duplicateAliases !== -1) return "Duplicate IPv4 alias address".t();
+                            
+                            // Check for duplicate IP Address in other interfaces
+                            var index = intfStore.findBy(function(intfRecord) {      
+                                if(intfRecord.get('name') != intfName) {
+                                    duplicateAliases = intfRecord.get('v4Aliases').list.filter(function(alias) {
+                                        return alias.staticAddress == value;
+                                    });
+                                    return duplicateAliases.length > 0;
+                                }                   
+                            });
+                            return index === -1 ? true : "Interface with this alias IPv4 address already exists".t();
+                        }
                     }
                 }, {
                     header: 'Netmask / Prefix'.t(),
