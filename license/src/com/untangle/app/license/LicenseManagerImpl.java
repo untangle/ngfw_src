@@ -704,7 +704,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
             return success;
-        } catch (ClassCastException e) {
+        } catch (IllegalArgumentException | ClassCastException e) {
             logger.error("downloadLicenses returned unexpected response",e);
             return success;
         }
