@@ -35,9 +35,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
 
     emptyText: 'No Tunnels defined'.t(),
 
-    recordActions: ['edit', 'copy', 'delete'],
-    copyId: 'tunnelId',
-    copyAppendField: 'name',
+    recordActions: ['edit', 'delete'],
     listProperty: 'settings.tunnels.list',
 
     bind: '{tunnels}',
