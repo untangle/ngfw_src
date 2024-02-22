@@ -1385,6 +1385,9 @@ Ext.define('Ung.config.network.MainController', {
                 store.getNewRecords().length > 0 ||
                 store.getRemovedRecords().length > 0) {
                 store.each(function (record) {
+                    if(record.get('staticAddress') == '') {
+                        record.set('markedForDelete', true);
+                    }
                     if (record.get('markedForDelete')) {
                         record.drop();
                     }
