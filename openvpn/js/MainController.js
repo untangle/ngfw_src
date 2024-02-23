@@ -381,7 +381,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                 },{
                   name: 'downloadGenericConfigurationFile',
                   type: 'ovpn',
-                  message: 'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline (For use with OpenVPN Connect App).'.t()
+                  message: 'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline (For use with OpenVPN Community Edition).'.t()
                 },{
                   name: 'downloadChromebookConfigurationFile',
                   type: 'onc',
