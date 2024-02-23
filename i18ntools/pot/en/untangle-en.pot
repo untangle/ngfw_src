@@ -8300,10 +8300,6 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
-#: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
-msgstr ""
-
 #: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:55
 msgid "Export (CSV)"
 msgstr ""
@@ -10521,10 +10517,6 @@ msgstr ""
 
 #: /ngfw/build/uvm/js/common/reports/view/Entry.js:91
 msgid "Data View"
-msgstr ""
-
-#: /ngfw/build/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
 msgstr ""
 
 #: /ngfw/build/uvm/js/common/reports/view/Entry.js:160

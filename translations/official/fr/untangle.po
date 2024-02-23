@@ -687,11 +687,6 @@ msgstr "Données écrites:"
 msgid "Reset View"
 msgstr "Rétablir l'affichage"
 
-#: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:115
-#, fuzzy
-msgid "Download (Image)"
-msgstr "Télécharger Essai"
-
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:136
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Main.js:137 input:138 input:139
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:140 input:141 standard
@@ -9780,11 +9775,6 @@ msgstr "Trafic inconnu"
 #, fuzzy
 msgid "Go to Policy"
 msgstr "Politique"
-
-#: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:54
-#, fuzzy
-msgid "Download (image)"
-msgstr "Limite de téléchargement"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:55
 #, fuzzy

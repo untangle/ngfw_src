@@ -12590,10 +12590,6 @@ msgstr "XAllReportsX"
 msgid "Data View"
 msgstr "XData ViewX"
 
-#: /ngfw/build/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
-msgstr "XDownload (Image)X"
-
 #: /ngfw/build/uvm/js/common/reports/view/Entry.js:160
 msgid "Export Data (csv)"
 msgstr "XExport Data (csv)X"
@@ -13042,10 +13038,6 @@ msgstr "XInheritedX"
 #: /ngfw/build/uvm/servlets/admin/app/widget/PolicyOverview.js:77
 msgid "Go to Policy"
 msgstr "XGo to PolicyX"
-
-#: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
-msgstr "XDownload (image)X"
 
 #: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:55
 msgid "Export (CSV)"

@@ -1467,10 +1467,6 @@ msgstr "Verteilung zuordnen"
 msgid "sessions"
 msgstr "Sitzungen"
 
-#: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
-msgstr "Herunterladen (Bild)"
-
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:55
 msgid "Export (CSV)"
 msgstr "Exportieren (CSV)"
@@ -11368,10 +11364,6 @@ msgstr "Reports aktivieren"
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:91
 msgid "Data View"
 msgstr "Datenansicht"
-
-#: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
-msgstr "Herunterladen (Bild)"
 
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:160
 msgid "Export Data (csv)"

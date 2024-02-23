@@ -13069,10 +13069,6 @@ msgstr ""
 msgid "Data View"
 msgstr ""
 
-#: /ngfw/build/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
-msgstr ""
-
 #: /ngfw/build/uvm/js/common/reports/view/Entry.js:160
 msgid "Export Data (csv)"
 msgstr ""
@@ -13520,10 +13516,6 @@ msgstr ""
 
 #: /ngfw/build/uvm/servlets/admin/app/widget/PolicyOverview.js:77
 msgid "Go to Policy"
-msgstr ""
-
-#: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
 msgstr ""
 
 #: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:55

@@ -1424,10 +1424,6 @@ msgstr "分布図"
 msgid "sessions"
 msgstr "セッション"
 
-#: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
-msgstr "ダウンロード（画像）"
-
 #: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:55
 msgid "Export (CSV)"
 msgstr "エクスポート（CSV）"
@@ -10778,10 +10774,6 @@ msgstr "Reportsの有効化"
 #: /ngfw/build/uvm/js/common/reports/view/Entry.js:91
 msgid "Data View"
 msgstr "データ・ビュー"
-
-#: /ngfw/build/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
-msgstr "ダウンロード（画像）"
 
 #: /ngfw/build/uvm/js/common/reports/view/Entry.js:160
 msgid "Export Data (csv)"
