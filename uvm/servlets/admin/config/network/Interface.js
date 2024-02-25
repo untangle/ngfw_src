@@ -1019,7 +1019,7 @@ Ext.define('Ung.config.network.Interface', {
                         labelWidth: 190,
                         width: 350,
                         labelAlign: 'right',
-                        minValue: 1,
+                        minValue: 120,
                         bind: {
                             value: '{intf.dhcpLeaseDuration}'
                         },
