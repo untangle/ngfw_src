@@ -508,22 +508,6 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     /**
-     * exports an image with current graph chart
-     */
-    downloadGraph: function () {
-        var me = this, vm = me.getViewModel(), now = new Date();
-        try {
-            me.getView().down('#graphreport').getController().chart.exportChart({
-                filename: (vm.get('entry.category') + '-' + vm.get('entry.title') + '-' + Ext.Date.format(now, 'd.m.Y-Hi')).replace(/ /g, '_'),
-                type: 'image/png'
-            });
-        } catch (ex) {
-            console.log(ex);
-            Util.handleException('Unable to download!');
-        }
-    },
-
-    /**
      * exports Events list from an Event Report
      */
     exportEventsHandler: function () {

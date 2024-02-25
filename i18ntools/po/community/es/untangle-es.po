@@ -658,10 +658,6 @@ msgstr "Vista de datos"
 msgid "Reset View"
 msgstr "Restablecer Ver"
 
-#: /ngfw/build/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
-msgstr "Descargar imagen"
-
 #: /ngfw/build/uvm/servlets/admin/config/events/MainController.js:180
 #: /ngfw/build/uvm/servlets/admin/config/events/MainModel.js:7
 #: /ngfw/build/uvm/servlets/admin/app/view/config/Config.js:25
@@ -8761,10 +8757,6 @@ msgstr ""
 
 #: /ngfw/build/uvm/servlets/admin/app/widget/PolicyOverview.js:77
 msgid "Go to Policy"
-msgstr ""
-
-#: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
 msgstr ""
 
 #: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:55

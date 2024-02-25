@@ -689,11 +689,6 @@ msgstr "Escritura de datos:"
 msgid "Reset View"
 msgstr "Restablecer Ver"
 
-#: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:115
-#, fuzzy
-msgid "Download (Image)"
-msgstr "Descargar Prueba"
-
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:136
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Main.js:137 input:138 input:139
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:140 input:141 standard
@@ -9779,11 +9774,6 @@ msgstr "Desconocido Tráfico"
 #, fuzzy
 msgid "Go to Policy"
 msgstr "Política"
-
-#: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:54
-#, fuzzy
-msgid "Download (image)"
-msgstr "Descargar Límite"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:55
 #, fuzzy

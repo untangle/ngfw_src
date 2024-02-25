@@ -661,10 +661,6 @@ msgstr ""
 msgid "Reset View"
 msgstr ""
 
-#: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
-msgstr ""
-
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:136
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Main.js:137 input:138 input:139
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:140 input:141 standard
@@ -9230,10 +9226,6 @@ msgstr ""
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/PolicyOverview.js:77
 msgid "Go to Policy"
-msgstr ""
-
-#: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
 msgstr ""
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:55

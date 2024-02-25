@@ -648,10 +648,6 @@ msgstr "データ表示"
 msgid "Reset View"
 msgstr "再表示"
 
-#: /ngfw/build/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
-msgstr "ダウンロード (画像)"
-
 #: /ngfw/build/uvm/servlets/admin/config/events/MainController.js:180
 #: /ngfw/build/uvm/servlets/admin/config/events/MainModel.js:7
 #: /ngfw/build/uvm/servlets/admin/app/view/config/Config.js:25
@@ -8643,10 +8639,6 @@ msgstr "トラフィック"
 #: /ngfw/build/uvm/servlets/admin/app/widget/PolicyOverview.js:77
 msgid "Go to Policy"
 msgstr "ポリシーへ移動"
-
-#: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
-msgstr "ダウンロード (画像)"
 
 #: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:55
 msgid "Export (CSV)"

@@ -648,10 +648,6 @@ msgstr "데이터 보기"
 msgid "Reset View"
 msgstr "보기 초기화"
 
-#: /ngfw/build/uvm/js/common/reports/view/Entry.js:115
-msgid "Download (Image)"
-msgstr "다운로드 ( 이미지 )"
-
 #: /ngfw/build/uvm/servlets/admin/config/events/MainController.js:180
 #: /ngfw/build/uvm/servlets/admin/config/events/MainModel.js:7
 #: /ngfw/build/uvm/servlets/admin/app/view/config/Config.js:25
@@ -8644,10 +8640,6 @@ msgstr "트래픽"
 #: /ngfw/build/uvm/servlets/admin/app/widget/PolicyOverview.js:77
 msgid "Go to Policy"
 msgstr "정책으로 가기"
-
-#: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:54
-msgid "Download (image)"
-msgstr "다운로드 (image)"
 
 #: /ngfw/build/uvm/servlets/admin/app/widget/Report.js:55
 msgid "Export (CSV)"

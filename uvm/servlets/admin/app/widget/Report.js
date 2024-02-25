@@ -51,7 +51,6 @@ Ext.define('Ung.widget.Report', {
             html: '<p>{entry.description}</p>' +
                 '<div class="options">' +
                 '<i class="fa fa-times fa-lg" data-action="closemenu"></i>' +
-                '<a data-action="download" style="display: {entry.type === "TIME_GRAPH" || entry.type === "TIME_GRAPH_DYNAMIC" || entry.type === "PIE_GRAPH" ? "auto" : "none"};"><i class="fa fa-download fa-lg" data-action="download"></i> ' + 'Download (image)'.t() + '</a>' +
                 '<a data-action="export" style="display: {entry.type === "EVENT_LIST" ? "auto" : "none"};"><i class="fa fa-download fa-lg" data-action="export"></i> ' + 'Export (CSV)'.t() + '</a>' +
                 '<a data-action="reports" data-url="#reports?{entry.url}{query.string}"><i class="fa fa-external-link-square fa-lg"></i> ' + 'Open in Reports'.t() + '</a>' +
                 '<hr/>' +

@@ -691,11 +691,6 @@ msgstr "数据写入："
 msgid "Reset View"
 msgstr "视图复位"
 
-#: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:115
-#, fuzzy
-msgid "Download (Image)"
-msgstr "下载测试"
-
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:136
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Main.js:137 input:138 input:139
 #: /ngfw/ngfw_src/uvm/js/common/reports/view/Entry.js:140 input:141 standard
@@ -9662,11 +9657,6 @@ msgstr "未知流量"
 #, fuzzy
 msgid "Go to Policy"
 msgstr "方针"
-
-#: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:54
-#, fuzzy
-msgid "Download (image)"
-msgstr "下载限制"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/widget/Report.js:55
 #, fuzzy
