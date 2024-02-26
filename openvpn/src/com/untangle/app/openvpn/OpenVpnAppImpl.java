@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
@@ -1234,10 +1235,10 @@ public class OpenVpnAppImpl extends AppBase
         // add reservation for all exported networks in configured remote clients        
         for (OpenVpnRemoteClient client : remoteClients) {
             if (client.getExport()) {
-                String networks = client.getExportNetwork();
-                for (String network : networks.split(",")) {
-                    if (network.length() == 0) continue;
-                    nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_REMOTE, networks);
+                String networksCsv = client.getExportNetwork();
+                for (String network : networksCsv.split(",")) {
+                    if (StringUtils.isBlank(network)) continue;
+                    nsmgr.registerNetworkBlock(NETSPACE_OWNER, NETSPACE_REMOTE, network);
                 }
             }
         }
