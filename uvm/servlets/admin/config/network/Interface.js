@@ -85,7 +85,25 @@ Ext.define('Ung.config.network.Interface', {
                     },
                     minValue: 1,
                     maxValue: 4094,
-                    allowBlank: false
+                    allowBlank: false,
+                    validator: function(value) {
+                        var store = this.up('tabpanel').getViewModel().getStore('interfaces');
+                        var currentViewModel = this.up('window').getViewModel();
+                                        
+                        // Find records matching both vlanTag and vlanParent
+                        var matchedRecords = store.queryBy(function(record) {
+                            var recordVlanTag = Ext.String.format("{0}", record.get('vlanTag'));
+                            return recordVlanTag === value && record.get('vlanParent') === currentViewModel.get('intf.vlanParent');
+                        });
+                    
+                        if (matchedRecords.getCount() > 0) {
+                            var matchedRecord = matchedRecords.first(); 
+                            if (matchedRecord.get('name') !== currentViewModel.get('intf.name')) {
+                                return Ext.String.format('VLAN Tag {0} is already matched with interface {1}'.t(), value, matchedRecord.get('name'));
+                            }
+                        }
+                        return true; 
+                    }                                        
                 }]
             }, {
                 // config type
