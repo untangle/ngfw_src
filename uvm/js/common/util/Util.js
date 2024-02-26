@@ -568,6 +568,15 @@ Ext.define('Ung.util.Util', {
         return data;
     },
 
+    getV4NetmaskMap: function(includeNull) {
+        var map = {}, data = this.getV4NetmaskList(includeNull);
+        
+        data.forEach(function(element) {
+            map[element[0]] = element[1];
+        });
+        return map;
+    },
+
     validateForms: function (view) {
         var invalidFields = [];
 

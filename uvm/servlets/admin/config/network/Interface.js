@@ -397,7 +397,25 @@ Ext.define('Ung.config.network.Interface', {
                     allowBlank: false,
                     editable: false,
                     store: Util.getV4NetmaskList(false),
-                    queryMode: 'local'
+                    queryMode: 'local',
+                    validator: function(value) {
+                        var isWan = this.up('window').down('#isWanCk').getValue(),
+                            intfName = this.up('window').down('#iterfacename').getValue();
+
+                        if(!isWan) {
+                            var intfStore = this.up('config-network').getViewModel().getStore('interfaces'),
+                                intfRecName;                       
+                            var index = intfStore.findBy(function(intfRecord) {  
+                                
+                                intfRecName = intfRecord.get('name');
+                                if(intfName == intfRecName) return false;
+
+                                return !intfRecord.get('isWan') && (value != Util.getV4NetmaskMap()[intfRecord.get('v4StaticPrefix')]);
+                            });
+                            return index === -1 ? true : "Conflicting Netmask for Interfaces ".t() + intfName + " and ".t() + intfRecName;
+                        } 
+                        else return true;
+                    }
                 }, {
                     // static gateway
                     xtype: 'textfield',
