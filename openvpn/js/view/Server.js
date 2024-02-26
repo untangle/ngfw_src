@@ -289,6 +289,7 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Remote Networks'.t(),
+        emptyText: '[Enter comma separated list of networks in CIDR format]'.t(),
         bind: {
             value: '{record.exportNetwork}',
             disabled: '{!record.export}',
