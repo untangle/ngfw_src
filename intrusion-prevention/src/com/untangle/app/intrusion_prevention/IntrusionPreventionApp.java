@@ -1186,6 +1186,9 @@ public class IntrusionPreventionApp extends AppBase
             if ( interfaceSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC ){
                 continue;
             }
+            if ( interfaceSettings.getV4StaticAddress() == null || interfaceSettings.getV4StaticNetmask() == null ){
+                continue;
+            }
             
             addresses.add(new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix()));
             for ( InterfaceSettings.InterfaceAlias alias : interfaceSettings.getV4Aliases() ) {
