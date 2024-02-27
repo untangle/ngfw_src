@@ -408,7 +408,7 @@ Ext.define('Ung.config.network.Interface', {
                             network = Util.getNetwork(v4StaticAddress, netMask);
                             return Util.ipMatchesNetwork(value, network, netMask);
                         });
-                        return index === -1 ? true : Ext.String.format('Conflicting Network for IP Addresses in Interfaces {0} and {1}'.t(), intfName, intfRecName);
+                        return index === -1 ? true : Ext.String.format('Conflicting networks between interfaces {0} and {1}'.t(), intfName, intfRecName);
                     }
                 }, {
                     // static netmask
