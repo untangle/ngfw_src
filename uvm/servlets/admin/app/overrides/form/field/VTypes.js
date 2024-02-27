@@ -18,7 +18,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         domainNameRe: /^[a-zA-Z0-9\-_.]+$/,
         urlAddrRe: /^(([^:\/?#]+:)?(?:\/\/((?:([^\/?#:]*):([^\/?#:]*)@)?([^\/?#:]*)(?::([^\/?#:]*))?)))?([^?#]*)(\?[^#]*)?(#.*)?$/,
         cidrAddrRe: /^([0-9]{1,3}\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
-        cidrBlockRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/,
+        cidrBlockRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$/,
         cidrBlockOnlyRangeRe: /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-1]))$/,
         hostNameRe: /^[a-zA-Z0-9\-_.]+$/
     },
@@ -212,7 +212,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     domainNameText: 'A domain can only contain numbers, letters, dashes and periods, and must not start with a period.'.t(),
 
     cidrBlock:  function (v) {
-        return (this.mask.cidrBlockRe.test(v));
+                return (this.mask.cidrBlockRe.test(v));
     },
     cidrBlockText: 'Must be a network in CIDR format.'.t() + ' ' + '(192.168.123.0/24)',
 
