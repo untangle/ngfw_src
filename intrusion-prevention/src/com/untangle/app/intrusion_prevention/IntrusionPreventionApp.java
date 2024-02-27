@@ -1187,7 +1187,7 @@ public class IntrusionPreventionApp extends AppBase
                 continue;
             }
             if ( interfaceSettings.getV4StaticAddress() == null || interfaceSettings.getV4StaticNetmask() == null ){
-                logger.info("Skipping " + interfaceSettings.getInterfaceId() + " as it does not have all required static values. Try updating the interface values and enforce reconfiguration the app.");
+                logger.info("Skipping " + interfaceSettings.getInterfaceId() + " as it does not have all the required static values. Try updating the interface values and enforce reconfiguration of the app.");
                 continue;
             }
             
