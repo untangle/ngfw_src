@@ -212,7 +212,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     domainNameText: 'A domain can only contain numbers, letters, dashes and periods, and must not start with a period.'.t(),
 
     cidrBlock:  function (v) {
-                return (this.mask.cidrBlockRe.test(v));
+        return (this.mask.cidrBlockRe.test(v));
     },
     cidrBlockText: 'Must be a network in CIDR format.'.t() + ' ' + '(192.168.123.0/24)',
 
