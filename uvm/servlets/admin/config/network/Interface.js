@@ -404,7 +404,30 @@ Ext.define('Ung.config.network.Interface', {
                     fieldLabel: 'Address'.t(),
                     allowBlank: false,
                     blankText: 'Address must be specified.'.t(),
-                    vtype: 'ip4Address'
+                    vtype: 'ip4Address',
+                    validator: function(value) {
+                        var intfName = this.up('window').down('#iterfacename').getValue(),
+                            intfStore = this.up('config-network').getViewModel().getStore('interfaces'),
+                            intfRecName;   
+
+                        var index = intfStore.findBy(function(intfRecord) {   
+
+                            intfRecName = intfRecord.get('name');
+                            if(intfName == intfRecName ||
+                                intfRecord.get('configType') != 'ADDRESSED' ||
+                                intfRecord.get('v4ConfigType') != 'STATIC') return false;
+                            
+                            var v4StaticAddress = intfRecord.get('v4StaticAddress'),
+                                netMask = Util.getV4NetmaskMap()[intfRecord.get('v4StaticPrefix')],
+                                network;
+
+                            if(!v4StaticAddress || !netMask || v4StaticAddress == "") return false;
+
+                            network = Util.getNetwork(v4StaticAddress, netMask);
+                            return Util.ipMatchesNetwork(value, network, netMask);
+                        });
+                        return index === -1 ? true : Ext.String.format('Conflicting networks between interfaces {0} and {1}'.t(), intfName, intfRecName);
+                    }
                 }, {
                     // static netmask
                     xtype: 'combo',
