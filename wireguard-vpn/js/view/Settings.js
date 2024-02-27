@@ -127,6 +127,12 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         value: '{settings.addressPool}',
                         disabled: '{settings.autoAddressAssignment}',
                         editable: '{!settings.autoAddressAssignment}'
+                    },
+                    validator: function(value) {
+                        if(this.dirty) {
+                            var ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', value.trim());   
+                            return !ntwkSpace ? true : "Address pool conflict".t();
+                        } else return true;
                     }
                 },
                 {
