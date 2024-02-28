@@ -123,6 +123,10 @@ Ext.define('Ung.util.Renderer', {
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
+    timestampUnixRenderer:function(date){
+        return Ext.util.Format.date(date, 'timestamp_fmt'.t());
+    },
+
     timespanMap: [
         [ 604800, 'w'.t() ],
         [ 86400, 'd'.t() ],

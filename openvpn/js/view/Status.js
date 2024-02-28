@@ -85,7 +85,8 @@ Ext.define('Ung.apps.openvpn.view.Status', {
                 }, {
                     header: 'Start Time'.t(),
                     dataIndex: 'start',
-                    renderer: Renderer.timestamp,
+                    convert:  Converter.convertFn,
+                    renderer: Renderer.timestampUnixRenderer,
                     width: Renderer.timestampWidth,
                     filter: Renderer.timestampFilter
                 }, {

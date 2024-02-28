@@ -23,6 +23,18 @@ Ext.define('Ung.util.Converter', {
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
+    convertFn: function (value) {
+        if(Renderer.timestampOffset === null){
+            Renderer.timestampOffset =  (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset;
+        }
+        if (!value) { return 0; }
+        if ((typeof(value) === 'object') && value.time) { value = value.time; }
+        if(value < 2696400000){ value *= 1000; }
+        var date = new Date(value);
+        date.setTime(value + Renderer.timestampOffset);
+        return date;
+    },
+
     interface: function (v) {
         return (Map.interfaces[v] || 'None'.t()) + ' [' + v + ']';
     },

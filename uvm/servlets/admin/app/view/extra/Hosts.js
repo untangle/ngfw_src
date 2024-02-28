@@ -68,16 +68,20 @@ Ext.define('Ung.view.extra.Hosts', {
             sortType: 'asUnString'
         },{
             name: 'creationTime',
-            sortType: 'asTimestamp'
+            sortType: 'asTimestamp',
+            convert: Converter.convertFn
         },{
             name: 'lastAccessTime',
-            sortType: 'asTimestamp'
+            sortType: 'asTimestamp',
+            convert: Converter.convertFn
         },{
             name: 'lastSessionTime',
-            sortType: 'asTimestamp'
+            sortType: 'asTimestamp',
+            convert: Converter.convertFn
         },{
             name: 'lastCompletedTcpSessionTime',
-            sortType: 'asTimestamp'
+            sortType: 'asTimestamp',
+            convert: Converter.convertFn
         },{
             name: 'entitled',
         },{
@@ -160,10 +164,12 @@ Ext.define('Ung.view.extra.Hosts', {
             name: 'quotaRemaining',
         },{
             name: 'quotaIssueTime',
-            sortType: 'asTimestamp'
+            sortType: 'asTimestamp',
+            convert: Converter.convertFn
         },{
             name: 'quotaExpirationTime',
-            sortType: 'asTimestamp'
+            sortType: 'asTimestamp',
+            convert: Converter.convertFn
         }],
 
         columns: [{
@@ -194,28 +200,28 @@ Ext.define('Ung.view.extra.Hosts', {
             dataIndex: 'creationTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         },{
             header: 'Last Access Time'.t(),
             dataIndex: 'lastAccessTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         },{
             header: 'Last Session Time'.t(),
             dataIndex: 'lastSessionTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         },{
             header: 'Last Completed TCP Session Time'.t(),
             dataIndex: 'lastCompletedTcpSessionTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         },{
             header: 'Entitled Status'.t(),
@@ -370,14 +376,14 @@ Ext.define('Ung.view.extra.Hosts', {
                 dataIndex: 'quotaIssueTime',
                 width: Renderer.timestampWidth,
                 hidden: true,
-                renderer: Renderer.timestamp,
+                renderer: Renderer.timestampUnixRenderer,
                 filter: Renderer.timestampFilter
             },{
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
                 width: Renderer.timestampWidth,
                 hidden: true,
-                renderer: Renderer.timestamp,
+                renderer: Renderer.timestampUnixRenderer,
                 filter: Renderer.timestampFilter
             }, {
                 xtype: 'actioncolumn',

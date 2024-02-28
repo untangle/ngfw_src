@@ -92,7 +92,7 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
             if(value == 0){
                 return 'No recent activity'.t();
             }
-            return Renderer.timestamp(value);
+            return Renderer.timestampUnixRenderer(value);
         },
 
         hostDisplayFields: function(collapsible, collapsed, recordEditor){

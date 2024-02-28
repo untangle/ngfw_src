@@ -42,6 +42,8 @@ Ext.define('Ung.view.extra.UsersController', {
             });
     },
 
+    timestampColumns : [ "lastAccessTime", "lastSessionTime", "quotaIssueTime", "quotaExpirationTime", "creationTime" ],
+
     saveUsers: function () {
         var me = this,
             list = [];
@@ -64,6 +66,14 @@ Ext.define('Ung.view.extra.UsersController', {
                 store.isReordered = undefined;
             }
             list = Ext.Array.pluck(store.getRange(), 'data');
+
+            list.forEach(function(record){
+                me.timestampColumns.forEach(function(fieldName){
+                    if(record[fieldName] && typeof(record[fieldName]) == "object"){
+                        record[fieldName] = record[fieldName].getTime();
+                    }
+                });
+            });
 
             filters.each( function(filter){
                 store.addFilter(filter);

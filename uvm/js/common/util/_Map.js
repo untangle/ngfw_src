@@ -188,8 +188,8 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         connect_stamp: {
-            col: { text: 'Login Time'.t(), filter: Rndr.filters.date, width: 120 },
-            fld: { type: 'integer', convert: Converter.timestamp }
+            col: { text: 'Login Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 120 },
+            fld: { type: 'integer', convert: Converter.convertFn }
         },
         cpu_system: {
             col: { text: 'CPU System Utilization'.t(), filter: Rndr.filters.numeric, width: 100 },
@@ -232,8 +232,8 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'integer', convert: Converter.timestamp }
         },
         end_time: {
-            col: { text: 'End Time'.t(), filter: Rndr.filters.date, width: 160 }, // converter
-            fld: { type: 'integer', convert: Converter.timestamp }
+            col: { text: 'End Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 160 }, // converter
+            fld: { type: 'integer', convert: Converter.convertFn }
         },
         entitled: {
             col: { text: 'Entitled'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
@@ -268,8 +268,8 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'integer' }
         },
         goodbye_stamp: {
-            col: { text: 'Logout Time'.t(), filter: Rndr.filters.date, width: 100 },
-            fld: { type: 'integer', convert: Converter.timestamp }
+            col: { text: 'Logout Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 100 },
+            fld: { type: 'integer', convert: Converter.convertFn }
         },
         hits: {
             col: { text: 'Hit Count'.t(), filter: Rndr.filters.numeric, width: 250 },
@@ -572,8 +572,8 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'integer' }
         },
         start_time: {
-            col: { text: 'Start Time'.t(), filter: Rndr.filters.date, width: 160 }, // converter
-            fld: { type: 'integer', convert: Converter.timestamp }
+            col: { text: 'Start Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 160 }, // converter
+            fld: { type: 'integer', convert: Converter.convertFn }
         },
         subject: {
             col: { text: 'Subject'.t(), width: 120 },
@@ -612,8 +612,8 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         time_stamp: {
-            col: { text: 'Timestamp'.t(), filter: Rndr.filters.date, width: 160 }, // converter
-            fld: { type: 'auto', convert: Converter.timestamp }
+            col: { text: 'Timestamp'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 160 }, // converter
+            fld: { type: 'auto', convert: Converter.convertFn }
         },
         tunnel_description: {
             col: { text: 'Tunnel Description'.t(), width: 160 },
