@@ -187,7 +187,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
                     sortable: true,
                     width: Renderer.timestampWidth,
                     filter: Renderer.timestampFilter,
-                    renderer: Renderer.timestamp
+                    renderer: Renderer.timestampUnixRenderer
                 }, {
                     header: 'Elapsed Time'.t(),
                     dataIndex: 'sessionElapsed',

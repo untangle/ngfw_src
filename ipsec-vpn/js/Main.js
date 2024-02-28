@@ -63,6 +63,7 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                     name: 'netInterface',
                 }, {
                     name: 'sessionCreation',
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'sessionElapsed',
                     sortType: 'asInt'

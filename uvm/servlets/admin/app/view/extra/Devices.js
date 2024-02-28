@@ -92,7 +92,8 @@ Ext.define('Ung.view.extra.Devices', {
             sortType: 'asUnString'
         }, {
             name: 'lastSessionTime',
-            sortType: 'asTimestamp'
+            sortType: 'asTimestamp',
+            convert:  Converter.convertDate,
         }, {
             name: 'tags'
         }],
@@ -165,7 +166,7 @@ Ext.define('Ung.view.extra.Devices', {
             header: 'Last Seen Time'.t(),
             dataIndex: 'lastSessionTime',
             width: Renderer.timestampWidth,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         }, {
             header: 'Tags'.t(),

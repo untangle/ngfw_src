@@ -51,7 +51,8 @@ Ext.define('Ung.view.extra.Sessions', {
 
         fields: [{
             name: 'creationTime',
-            sortType: 'asTimestamp'
+            sortType: 'asTimestamp',
+            convert:  Converter.convertDate,
         }, {
             name: 'sessionId',
         }, {
@@ -296,7 +297,7 @@ Ext.define('Ung.view.extra.Sessions', {
             dataIndex: 'creationTime',
             width: Renderer.timestampWidth,
             hidden: true,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         }, {
             header: 'Session ID'.t(),

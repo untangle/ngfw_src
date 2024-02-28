@@ -22,23 +22,28 @@ Ext.define('Ung.view.extra.Users', {
                     sortType: 'asUnString'
                 }, {
                     name: 'creationTime',
-                    sortType: 'asTimestamp'
+                    sortType: 'asTimestamp',
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'lastAccessTime',
-                    sortType: 'asTimestamp'
+                    sortType: 'asTimestamp',
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'lastSessionTime',
-                    sortType: 'asTimestamp'
+                    sortType: 'asTimestamp',
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'quotaSize',
                 }, {
                     name: 'quotaRemaining',
                 }, {
                     name: 'quotaIssueTime',
-                    sortType: 'asTimestamp'
+                    sortType: 'asTimestamp',
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'quotaExpirationTime',
-                    sortType: 'asTimestamp'
+                    sortType: 'asTimestamp',
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'tags'
                 }]
@@ -97,19 +102,19 @@ Ext.define('Ung.view.extra.Users', {
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
             width: Renderer.timestampWidth,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         }, {
             header: 'Last Access Time'.t(),
             dataIndex: 'lastAccessTime',
             width: Renderer.timestampWidth,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         }, {
             header: 'Last Session Time'.t(),
             dataIndex: 'lastSessionTime',
             width: Renderer.timestampWidth,
-            renderer: Renderer.timestamp,
+            renderer: Renderer.timestampUnixRenderer,
             filter: Renderer.timestampFilter
         }, {
             header: 'Quota'.t(),
@@ -129,13 +134,13 @@ Ext.define('Ung.view.extra.Users', {
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
                 width: Renderer.timestampWidth,
-                renderer: Renderer.timestamp,
+                renderer: Renderer.timestampUnixRenderer,
                 filter: Renderer.timestampFilter
             }, {
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
                 width: Renderer.timestampWidth,
-                renderer: Renderer.timestamp,
+                renderer: Renderer.timestampUnixRenderer,
                 filter: Renderer.timestampFilter
             }, {
                 xtype: 'actioncolumn',
@@ -228,5 +233,5 @@ Ext.define('Ung.view.extra.Users', {
         text: '<strong>' + 'Save'.t() + '</strong>',
         iconCls: 'fa fa-floppy-o',
         handler: 'saveUsers'
-    }]
+    }]  
 });
