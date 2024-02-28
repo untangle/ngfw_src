@@ -32,7 +32,8 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                 },{
                     name: 'allowed-ips'
                 },{
-                    name: 'latest-handshake'
+                    name: 'latest-handshake',
+                    convert: Converter.convertFn,
                 },{
                     name: 'transfer-rx'
                 },{

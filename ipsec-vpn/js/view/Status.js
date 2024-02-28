@@ -185,7 +185,6 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
                     header: 'Connect Time'.t(),
                     dataIndex: 'sessionCreation',
                     sortable: true,
-                    convert:  Converter.convertFn,
                     width: Renderer.timestampWidth,
                     filter: Renderer.timestampFilter,
                     renderer: Renderer.timestampUnixRenderer
