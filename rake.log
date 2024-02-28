@@ -1,0 +1,20 @@
+JVM = java-17-openjdk-amd64
+SRC_HOME = .
+DevelBuild = true
+DevelEnvironment = remote
+[javac -d] ./staging/untangle-app-openvpn-src
+[jar     ] ./staging/untangle-app-openvpn-src => ./staging/grabbag/untangle-app-openvpn.jar
+[javac -d] ./staging/untangle-app-openvpn-servlet-openvpn
+[jar     ] ./staging/untangle-app-openvpn-servlet-openvpn => ./staging/grabbag/untangle-app-openvpn-servlet-openvpn.jar
+[jsbuild ] ung-all: ["uvm/servlets/admin/app/overrides", "uvm/servlets/admin/app/model", "uvm/servlets/admin/app/store", "uvm/servlets/admin/app/controller", "uvm/servlets/admin/app/cmp", "uvm/servlets/admin/app/widget", "uvm/servlets/admin/app/view", "uvm/servlets/admin/app/Application.js"] -> usr/share/untangle/web/admin/script/ung-all.js
+[jsbuild ] network: ["uvm/servlets/admin/config/network"] -> usr/share/untangle/web/admin/script/config/network.js
+[jsbuild ] util-all: ["uvm/js/common/util"] -> usr/share/untangle/web/script/common/util-all.js
+[jslint  ] ["./uvm/servlets/admin"]
+[jslint  ] ["./uvm/js/common"]
+[jsbuild ] openvpn: ["openvpn/js"] -> usr/share/untangle/web/admin/script/apps/openvpn.js
+[jslint  ] ["openvpn/js"]
+[jsbuild ] wireguard-vpn: ["wireguard-vpn/js"] -> usr/share/untangle/web/admin/script/apps/wireguard-vpn.js
+[jslint  ] ["wireguard-vpn/js"]
+[jsbuild ] ipsec-vpn: ["ipsec-vpn/js"] -> usr/share/untangle/web/admin/script/apps/ipsec-vpn.js
+[jslint  ] ["ipsec-vpn/js"]
+[unjar   ] /opt/untangle/build/staging/grabbag/untangle-app-openvpn.jar => /opt/untangle/build/dist/usr/share/untangle/lib/untangle-app-openvpn

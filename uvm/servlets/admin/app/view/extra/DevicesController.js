@@ -62,8 +62,6 @@ Ext.define('Ung.view.extra.DevicesController', {
         grid.reconfigure(null, grid.initialConfig.columns);
     },
 
-    timestampColumns : [ "lastSessionTime" ],
-
     saveDevices: function () {
         var me = this, list = [];
 
@@ -85,14 +83,6 @@ Ext.define('Ung.view.extra.DevicesController', {
                 store.isReordered = undefined;
             }
             list = Ext.Array.pluck(store.getRange(), 'data');
-
-            list.forEach(function(record){
-                me.timestampColumns.forEach(function(fieldName){
-                    if(record[fieldName] && typeof(record[fieldName]) == "object"){
-                        record[fieldName] = record[fieldName].getTime();
-                    }
-                });
-            });
 
             filters.each( function(filter){
                 store.addFilter(filter);
