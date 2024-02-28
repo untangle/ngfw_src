@@ -239,7 +239,7 @@ Ext.define('Ung.config.network.Interface', {
                             value: '{intf.v4AutoAddressOverride}',
                             emptyText: '{intf.v4Address}'
                         },
-                        vtype: 'ip4Address',
+                        vtype: 'ip4AddExcldDflt',
                     }, {
                         xtype: 'displayfield',
                         margin: '0 5',
@@ -270,7 +270,7 @@ Ext.define('Ung.config.network.Interface', {
                         },
                         editable: false,
                         fieldLabel: 'Netmask Override'.t(),
-                        store: Util.getV4NetmaskList(true),
+                        store: Util.getV4NetmaskList(true, true),
                         queryMode: 'local'
                     }, {
                         xtype: 'displayfield',
@@ -404,7 +404,7 @@ Ext.define('Ung.config.network.Interface', {
                     fieldLabel: 'Address'.t(),
                     allowBlank: false,
                     blankText: 'Address must be specified.'.t(),
-                    vtype: 'ip4Address',
+                    vtype: 'ip4AddExcldDflt',
                     validator: function(value) {
                         var intfName = this.up('window').down('#iterfacename').getValue(),
                             intfStore = this.up('config-network').getViewModel().getStore('interfaces'),
@@ -437,7 +437,7 @@ Ext.define('Ung.config.network.Interface', {
                     fieldLabel: 'Netmask'.t(),
                     allowBlank: false,
                     editable: false,
-                    store: Util.getV4NetmaskList(false),
+                    store: Util.getV4NetmaskList(false, true),
                     queryMode: 'local'
                 }, {
                     // static gateway
@@ -1080,14 +1080,14 @@ Ext.define('Ung.config.network.Interface', {
                     xtype: 'textfield',
                     bind: '{intf.dhcpGatewayOverride}',
                     fieldLabel: 'Gateway Override'.t(),
-                    vtype: 'ip4Address',
+                    vtype: 'ip4AddExcldDflt',
                 }, {
                     // netmask override
                     xtype: 'combo',
                     bind: '{intf.dhcpPrefixOverride}',
                     fieldLabel: 'Netmask Override'.t(),
                     editable: false,
-                    store: Util.getV4NetmaskList(false),
+                    store: Util.getV4NetmaskList(false, true),
                     queryMode: 'local'
                 }, {
                     // dns override

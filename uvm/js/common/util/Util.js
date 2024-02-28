@@ -526,7 +526,7 @@ Ext.define('Ung.util.Util', {
         }).show();
     },
 
-    getV4NetmaskList: function(includeNull) {
+    getV4NetmaskList: function(includeNull, excludeZero) {
         var data = [];
         if (includeNull) {
             data.push( [null,'\u00a0'] );
@@ -563,7 +563,9 @@ Ext.define('Ung.util.Util', {
         data.push( [3,'/3 - 224.0.0.0'] );
         data.push( [2,'/2 - 192.0.0.0'] );
         data.push( [1,'/1 - 128.0.0.0'] );
-        data.push( [0,'/0 - 0.0.0.0'] );
+        if(!excludeZero) {
+            data.push( [0,'/0 - 0.0.0.0'] );
+        }
 
         return data;
     },

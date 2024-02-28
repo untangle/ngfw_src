@@ -160,6 +160,11 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
     ip4AddressText: 'Invalid IPv4 Address.'.t(),
 
+    ip4AddExcldDflt: function (val) {
+        return this.ip4Address(val) && (val != '0.0.0.0');
+    },
+    ip4AddExcldDfltText: 'Invalid IPv4 Address, Default route not allowed'.t(),
+
     ip4AddressList:  function (v) {
         var addr = v.split(','), i;
         for (i = 0 ; i < addr.length ; i += 1) {
