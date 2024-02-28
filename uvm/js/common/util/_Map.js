@@ -1672,7 +1672,11 @@ Ext.define('Ung.util.Map', {
         79: 'Fashion and Beauty',
         80: 'Recreation and Hobbies',
         81: 'Motor Vehicles',
-        82: 'Web Hosting'
+        82: 'Web Hosting',
+        85: "Self Harm",
+        86: "DNS Over HTTPS",
+        87: "Low-THC Cannabis Products",
+        88: "Generative AI"
     },
 
     protocols: {
