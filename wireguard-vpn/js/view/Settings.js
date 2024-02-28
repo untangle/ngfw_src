@@ -129,10 +129,40 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         editable: '{!settings.autoAddressAssignment}'
                     },
                     validator: function(value) {
-                        if(this.dirty) {
-                            var ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', value.trim());   
-                            return !ntwkSpace ? true : "Address pool conflict".t();
-                        } else return true;
+                        try{
+                            var netSpaceAddr = value.split('/')[0],
+                                netSpacePrefix = value.split('/')[1] ? value.split('/')[1] : 32,
+                                recValue, recAddr, recPrefix, network, netMask;
+
+                            var localNetworkStore = this.up('#settings').down('#localNetworkGrid').getStore();
+
+                            var index = localNetworkStore.findBy(function(networkRecord) {
+                                recValue = networkRecord.get('address').split('/');
+                                recAddr = recValue[0]; 
+                                recPrefix = recValue[1];
+
+                                if(netSpacePrefix == recPrefix && netSpaceAddr == recAddr) return true;
+                                else if(Number(recPrefix) > Number(netSpacePrefix)) {
+                                    netMask = Util.getV4NetmaskMap()[netSpacePrefix];
+                                    network = Util.getNetwork(netSpaceAddr, netMask);
+                                    return Util.ipMatchesNetwork(recAddr, network, netMask);
+                                } 
+                                else {
+                                    netMask = Util.getV4NetmaskMap()[recPrefix];
+                                    network = Util.getNetwork(recAddr, netMask); 
+                                    return Util.ipMatchesNetwork(netSpaceAddr, network, netMask);
+                                }
+                            });
+                            if(index !== -1) return "Address pool conflict".t();
+
+                            if(this.dirty) {
+                                var ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', value.trim());   
+                                return !ntwkSpace ? true : "Address pool conflict".t();
+                            } else return true;
+                        } catch(err) {
+                            console.log(err);
+                            return true;
+                        }                        
                     }
                 },
                 {
