@@ -1186,6 +1186,10 @@ public class IntrusionPreventionApp extends AppBase
             if ( interfaceSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC ){
                 continue;
             }
+            if ( interfaceSettings.getV4StaticAddress() == null || interfaceSettings.getV4StaticNetmask() == null ){
+                logger.info("Skipping " + interfaceSettings.getInterfaceId() + " as it does not have all the required static values. Try updating the interface values and enforce reconfiguration of the app.");
+                continue;
+            }
             
             addresses.add(new IPMaskedAddress( interfaceSettings.getV4StaticAddress(), interfaceSettings.getV4StaticPrefix()));
             for ( InterfaceSettings.InterfaceAlias alias : interfaceSettings.getV4Aliases() ) {
