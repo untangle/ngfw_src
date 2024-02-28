@@ -27,7 +27,7 @@ Ext.define('Ung.util.Converter', {
         if(Renderer.timestampOffset === null){
             Renderer.timestampOffset =  (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset;
         }
-        if (!value) { return 0; }
+        if (!value || value == "0" || value == "") { return 0; }
         if ((typeof(value) === 'object') && value.time) { value = value.time; }
         if(value < 2696400000){ value *= 1000; }
         var date = new Date(value);
