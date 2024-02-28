@@ -52,7 +52,7 @@ Ext.define('Ung.view.extra.Sessions', {
         fields: [{
             name: 'creationTime',
             sortType: 'asTimestamp',
-            convert:  Converter.convertFn,
+            convert:  Converter.convertDate,
         }, {
             name: 'sessionId',
         }, {

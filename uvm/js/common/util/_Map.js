@@ -189,7 +189,7 @@ Ext.define('Ung.util.Map', {
         },
         connect_stamp: {
             col: { text: 'Login Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 120 },
-            fld: { type: 'integer', convert: Converter.convertFn }
+            fld: { type: 'integer', convert: Converter.convertDate }
         },
         cpu_system: {
             col: { text: 'CPU System Utilization'.t(), filter: Rndr.filters.numeric, width: 100 },
@@ -233,7 +233,7 @@ Ext.define('Ung.util.Map', {
         },
         end_time: {
             col: { text: 'End Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 160 }, // converter
-            fld: { type: 'integer', convert: Converter.convertFn }
+            fld: { type: 'integer', convert: Converter.convertDate }
         },
         entitled: {
             col: { text: 'Entitled'.t(), filter: Rndr.filters.boolean, width: Rndr.colW.boolean, renderer: Rndr.boolean },
@@ -269,7 +269,7 @@ Ext.define('Ung.util.Map', {
         },
         goodbye_stamp: {
             col: { text: 'Logout Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 100 },
-            fld: { type: 'integer', convert: Converter.convertFn }
+            fld: { type: 'integer', convert: Converter.convertDate }
         },
         hits: {
             col: { text: 'Hit Count'.t(), filter: Rndr.filters.numeric, width: 250 },
@@ -573,7 +573,7 @@ Ext.define('Ung.util.Map', {
         },
         start_time: {
             col: { text: 'Start Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 160 }, // converter
-            fld: { type: 'integer', convert: Converter.convertFn }
+            fld: { type: 'integer', convert: Converter.convertDate }
         },
         subject: {
             col: { text: 'Subject'.t(), width: 120 },
@@ -613,7 +613,7 @@ Ext.define('Ung.util.Map', {
         },
         time_stamp: {
             col: { text: 'Timestamp'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 160 }, // converter
-            fld: { type: 'auto', convert: Converter.convertFn }
+            fld: { type: 'auto', convert: Converter.convertDate }
         },
         tunnel_description: {
             col: { text: 'Tunnel Description'.t(), width: 160 },

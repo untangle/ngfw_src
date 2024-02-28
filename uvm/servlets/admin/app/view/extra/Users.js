@@ -23,15 +23,15 @@ Ext.define('Ung.view.extra.Users', {
                 }, {
                     name: 'creationTime',
                     sortType: 'asTimestamp',
-                    convert:  Converter.convertFn,
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'lastAccessTime',
                     sortType: 'asTimestamp',
-                    convert:  Converter.convertFn,
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'lastSessionTime',
                     sortType: 'asTimestamp',
-                    convert:  Converter.convertFn,
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'quotaSize',
                 }, {
@@ -39,11 +39,11 @@ Ext.define('Ung.view.extra.Users', {
                 }, {
                     name: 'quotaIssueTime',
                     sortType: 'asTimestamp',
-                    convert:  Converter.convertFn,
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'quotaExpirationTime',
                     sortType: 'asTimestamp',
-                    convert:  Converter.convertFn,
+                    convert:  Converter.convertDate,
                 }, {
                     name: 'tags'
                 }]

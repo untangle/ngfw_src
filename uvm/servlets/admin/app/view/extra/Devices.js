@@ -93,7 +93,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             name: 'lastSessionTime',
             sortType: 'asTimestamp',
-            convert:  Converter.convertFn,
+            convert:  Converter.convertDate,
         }, {
             name: 'tags'
         }],

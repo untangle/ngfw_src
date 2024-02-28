@@ -23,7 +23,7 @@ Ext.define('Ung.util.Converter', {
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
-    convertFn: function (value) {
+    convertDate: function (value) {
         if(Renderer.timestampOffset === null){
             Renderer.timestampOffset =  (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset;
         }

@@ -69,19 +69,19 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'creationTime',
             sortType: 'asTimestamp',
-            convert: Converter.convertFn
+            convert: Converter.convertDate
         },{
             name: 'lastAccessTime',
             sortType: 'asTimestamp',
-            convert: Converter.convertFn
+            convert: Converter.convertDate
         },{
             name: 'lastSessionTime',
             sortType: 'asTimestamp',
-            convert: Converter.convertFn
+            convert: Converter.convertDate
         },{
             name: 'lastCompletedTcpSessionTime',
             sortType: 'asTimestamp',
-            convert: Converter.convertFn
+            convert: Converter.convertDate
         },{
             name: 'entitled',
         },{
@@ -165,11 +165,11 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'quotaIssueTime',
             sortType: 'asTimestamp',
-            convert: Converter.convertFn
+            convert: Converter.convertDate
         },{
             name: 'quotaExpirationTime',
             sortType: 'asTimestamp',
-            convert: Converter.convertFn
+            convert: Converter.convertDate
         }],
 
         columns: [{

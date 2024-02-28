@@ -36,7 +36,7 @@ Ext.define('Ung.apps.openvpn.Main', {
                 },{
                     name: 'start',
                     sortType: 'asTimestamp',
-                    convert:  Converter.convertFn,
+                    convert:  Converter.convertDate,
                 },{
                     name: 'poolAddress',
                     type: 'string',
