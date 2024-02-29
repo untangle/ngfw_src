@@ -247,6 +247,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
 
 function isUnique(value, field, component) {
     var currentRecord = component.up('window').getViewModel().data.record.get(field);
+    
+    if (value === currentRecord) {
+        return true;
+    }
+    
     var grid = Ext.ComponentQuery.query('app-wireguard-vpn-server-tunnels-grid')[0];
     var store = grid.getStore();
 
@@ -254,10 +259,5 @@ function isUnique(value, field, component) {
         return record.get(field) === value;
     }) === -1;
     
-    if (value === currentRecord || isNameUnique) {
-        return true;
-    } else {
-        var capitalizedField = field.charAt(0).toUpperCase() + field.slice(1);
-        return Ext.String.format('{0} already exists.'.t(), capitalizedField);
-    }
-    }
+    return isNameUnique? true : Ext.String.format('A tunnel with this {0} already exists.'.t(), field);
+}
