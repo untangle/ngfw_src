@@ -167,7 +167,7 @@ Ext.define('Ung.config.system.MainController', {
 
         var languageSettings = vm.get('languageSettings');
         var languageSplit = languageSettings['language'].split('-');
-        if(languageSplit[0] != 'official' && languageSplit[0] != "community"){
+        if(languageSplit[0] != 'official'){
             // Something bad has happened; referve to known good language.
             languageSplit[0] = "official";
             languageSplit[1] = "en";

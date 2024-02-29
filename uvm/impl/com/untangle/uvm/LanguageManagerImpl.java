@@ -158,7 +158,6 @@ public class LanguageManagerImpl implements LanguageManager
     static {
         LanguageSources = new ArrayList<>();
         LanguageSources.add(new languageSource("official", I18nUtil.marktr("Official"), "official"));
-        LanguageSources.add(new languageSource("community", I18nUtil.marktr("Community"), "community"));
     }
 
     /**
@@ -684,7 +683,8 @@ public class LanguageManagerImpl implements LanguageManager
             logger.error("Could not read language settings", exn);
         }
 
-        if (readSettings == null) {
+        //code to fix if setup has community language set initially
+        if (readSettings == null || "community".equals(readSettings.getSource()) ) {
             logger.warn("No settings found... initializing with defaults");
             languageSettings = new LanguageSettings();
             if ( UvmContextFactory.context().isDevel() )
