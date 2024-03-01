@@ -885,6 +885,23 @@ Ext.define('Ung.util.Util', {
     },
 
     /**
+     * Loop through the stored records to see if the passed ip address is already used
+     * @param  string ip      IP address to be checked.
+     * @param  int store      ExtJs store of records
+     * @param  int dataIndex  ExtJs dataIndex property of records
+     * @return boolean        Returns true if ip already present in dataIndex field of store record.
+     */
+    isAddrUsed: function(ip, store, dataIndex) {
+        var ret = false;
+        store.each(function(record,idx) {
+            if( record.get(dataIndex) == ip ){
+                ret = true;
+            }
+        });
+        return ret;
+    },
+
+    /**
      * From the specified store, get modified records and sort any into
      * a changes object that tracks added/deleted records using the specified
      * idField.  Also uses enabledField value to determine.

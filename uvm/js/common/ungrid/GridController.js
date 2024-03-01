@@ -104,7 +104,10 @@ Ext.define('Ung.cmp.GridController', {
 
         if(v.copyModify){
             v.copyModify.forEach(function(kv){
-                newRecord.set(kv['key'], kv['value']);
+                if(kv.value instanceof Function) 
+                    newRecord.set(kv['key'], kv['value']());
+                else
+                    newRecord.set(kv['key'], kv['value']);
             });
         }
 

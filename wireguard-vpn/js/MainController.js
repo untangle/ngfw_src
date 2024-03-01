@@ -300,6 +300,22 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         },function(ex){
             Util.handleException(ex);
         });
+    },
+
+    getNextUnusedPoolAddr: function() {
+        var me = this,
+            vm = me.getViewModel(),
+            addressPool = vm.get('settings.addressPool'),
+            store = vm.getStore('tunnels'),
+            pool = addressPool.split("/")[0];
+
+        // Assume the first pool address is used by the wg interface
+        var nextPoolAddr = Util.incrementIpAddr(pool, 2);
+        while (Util.isAddrUsed(nextPoolAddr, store, 'peerAddress')) {
+            nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
+        }
+
+        return nextPoolAddr;
     }
 });
 
@@ -385,18 +401,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
         remoteToRecordTask.delay( 150 );
     },
 
-    // Loop through the stored records to see if the passed ip
-    // address is already used
-    isAddrUsed: function(ip, store) {
-        var ret = false;
-        store.each(function(record,idx) {
-            if( record.get('peerAddress') == ip ){
-                ret = true;
-            }
-        });
-        return ret;
-    },
-
     // get next pool address
     getNextUnusedPoolAddr: function(){
         var me = this,
@@ -407,7 +411,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
         // Assume the first pool address is used by the wg interface
         var nextPoolAddr = Util.incrementIpAddr(pool, 2);
-        while (me.isAddrUsed(nextPoolAddr, store)) {
+        while (Util.isAddrUsed(nextPoolAddr, store, 'peerAddress')) {
             nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
         }
 
