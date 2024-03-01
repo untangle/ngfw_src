@@ -1041,6 +1041,47 @@ Ext.define('Ung.util.Util', {
             power*= 256;
         }
         return total;
+    },
+
+    /**
+     * This method finds if any conflict is present in currentIp 
+     * with all the existing Ip addresses and returns true or error msg
+    */
+    findIpPoolConflict:function(currentIpAddress, ipAddressPool){
+        try{
+            var currentFieldIp = currentIpAddress,
+                localNetworkStore = ipAddressPool,
+                netSpaceAddr = currentFieldIp.split('/')[0],
+                netSpacePrefix = currentFieldIp.split('/')[1] ? currentFieldIp.split('/')[1] : 32,
+                recValue, recAddr, recPrefix, network, netMask;
+
+            var index = Ext.Array.findBy(localNetworkStore,function(networkRecord) {
+                recValue = networkRecord.split('/');
+                recAddr = recValue[0]; 
+                recPrefix = recValue[1];
+
+                if(netSpacePrefix == recPrefix && netSpaceAddr == recAddr) return true;
+                else if(Number(recPrefix) > Number(netSpacePrefix)) {
+                    netMask = Util.getV4NetmaskMap()[netSpacePrefix];
+                    network = Util.getNetwork(netSpaceAddr, netMask);
+                    return Util.ipMatchesNetwork(recAddr, network, netMask);
+                } 
+                else {
+                    netMask = Util.getV4NetmaskMap()[recPrefix];
+                    network = Util.getNetwork(recAddr, netMask); 
+                    return Util.ipMatchesNetwork(netSpaceAddr, network, netMask);
+                }
+            });
+
+            if(index !== null) return "Address pool conflict".t();
+
+            if(this.dirty) {
+                var ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', value.trim());   
+                return !ntwkSpace ? true : "Address pool conflict".t();
+            } else return true;
+        }catch(err){
+            throw err;
+        }
     }
     
 });

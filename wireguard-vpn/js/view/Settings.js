@@ -86,8 +86,35 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         vtype: 'cidrBlock',
                         allowBlank: false,
                         emptyText: '[enter address]'.t(),
-                        blankText: 'Invalid address specified'.t()
-                    }
+                        blankText: 'Invalid address specified'.t(),
+                        validator: function(value) {
+                            try{
+                                var me = this,
+                                    defaultNewRowAddress = me.up('#settings').down("#localNetworkGrid").initialConfig.emptyRow.address;
+                                
+                                var localNetworkStoreFn = this.up('#settings').down('#localNetworkGrid').getStore();
+                                var peerNetworkIp = this.up('#settings').down('#peerNetworkIp').getValue();
+
+                                var localNetworkStore = [];
+                  
+                                localNetworkStoreFn.each(function (item){
+                                    if(item.get("address") && !(me.originalValue == "" && item.get("address") == defaultNewRowAddress) && (item.get("address") !== me.originalValue)){
+                                        localNetworkStore.push(item.get("address"));
+                                    }
+                                });
+
+                                if(peerNetworkIp){
+                                    localNetworkStore.push(peerNetworkIp);
+                                }
+                                
+                                return Util.findIpPoolConflict(value, localNetworkStore);
+
+                            } catch(err) {
+                                console.log(err);
+                                return true;
+                            }                        
+                        }
+                    },
                 }]
             }]
         }]
@@ -123,6 +150,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                     fieldLabel: 'Network Space'.t(),
                     xtype: 'textfield',
                     vtype: 'cidrAddr',
+                    itemId: 'peerNetworkIp',
                     bind: {
                         value: '{settings.addressPool}',
                         disabled: '{settings.autoAddressAssignment}',
@@ -130,35 +158,19 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                     },
                     validator: function(value) {
                         try{
-                            var netSpaceAddr = value.split('/')[0],
-                                netSpacePrefix = value.split('/')[1] ? value.split('/')[1] : 32,
-                                recValue, recAddr, recPrefix, network, netMask;
 
-                            var localNetworkStore = this.up('#settings').down('#localNetworkGrid').getStore();
+                            var localNetworkStoreFn = this.up('#settings').down('#localNetworkGrid').getStore();
 
-                            var index = localNetworkStore.findBy(function(networkRecord) {
-                                recValue = networkRecord.get('address').split('/');
-                                recAddr = recValue[0]; 
-                                recPrefix = recValue[1];
-
-                                if(netSpacePrefix == recPrefix && netSpaceAddr == recAddr) return true;
-                                else if(Number(recPrefix) > Number(netSpacePrefix)) {
-                                    netMask = Util.getV4NetmaskMap()[netSpacePrefix];
-                                    network = Util.getNetwork(netSpaceAddr, netMask);
-                                    return Util.ipMatchesNetwork(recAddr, network, netMask);
-                                } 
-                                else {
-                                    netMask = Util.getV4NetmaskMap()[recPrefix];
-                                    network = Util.getNetwork(recAddr, netMask); 
-                                    return Util.ipMatchesNetwork(netSpaceAddr, network, netMask);
+                            var localNetworkStore = [];
+                  
+                            localNetworkStoreFn.each(function (item){
+                                if(item.get("address")){
+                                    localNetworkStore.push(item.get("address"));
                                 }
                             });
-                            if(index !== -1) return "Address pool conflict".t();
 
-                            if(this.dirty) {
-                                var ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', value.trim());   
-                                return !ntwkSpace ? true : "Address pool conflict".t();
-                            } else return true;
+                            return Util.findIpPoolConflict(value, localNetworkStore);
+
                         } catch(err) {
                             console.log(err);
                             return true;

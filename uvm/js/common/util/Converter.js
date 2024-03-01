@@ -23,6 +23,12 @@ Ext.define('Ung.util.Converter', {
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 
+    /**
+     * This function is used to convert the unix timestamp date into date object,
+     * also we are adjusting the offset to correctly render the time on UI 
+     * and returning the date object which would be stored in the store in
+     * JS date object format
+     */
     convertDate: function (value) {
         if(Renderer.timestampOffset === null){
             Renderer.timestampOffset =  (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset;
