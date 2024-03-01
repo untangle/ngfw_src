@@ -31,6 +31,19 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
 
     recordActions: ['edit', 'copy', 'delete'],
     copyAppendField: 'description',
+    copyModify: [{
+        key: 'publicKey',
+        value: '',
+    },{
+        key: 'peerAddress',
+        value: function() {
+            var wirgrdVpnCmp = Ext.ComponentQuery.query('[alias=widget.app-wireguard-vpn]')[0];
+            if(wirgrdVpnCmp)
+                return wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
+            else return '';
+        }
+    }],
+
     listProperty: 'settings.tunnels.list',
     emptyRow: {
         'javaClass': 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel',
