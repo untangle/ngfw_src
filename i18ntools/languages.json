@@ -2,9 +2,6 @@
 	"sources":[{
 		"id": "official",
 		"name": "Official"
-	},{
-		"id": "community",
-		"name": "Community"
 	}],
     "languages": [{
 			"id": "ach",
