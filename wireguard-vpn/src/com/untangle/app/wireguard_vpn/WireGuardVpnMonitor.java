@@ -312,6 +312,16 @@ class WireGuardVpnMonitor implements Runnable
         if (outValue < watcher.lastTxBytes) outBytes = outValue;
         else outBytes = (outValue - watcher.lastTxBytes);
 
+        /*
+         * as per wireguard documentation,  (multiples of 148) bytes sent for handshake after every 2 minutes in outBytes,
+         * if handshake is successful 92 bytes recieved
+         * in case of failure 0 bytes in inBytes, skipping in case of failure.
+         */
+        if ((inBytes == 0) && (outBytes % 148 == 0)) {
+            logger.debug("Wireguard tunnel handshake condition inBytes=" + inBytes + ", outBytes=" + outBytes);
+            return;
+        }
+
         watcher.lastRxBytes = inValue;
         watcher.lastTxBytes = outValue;
 
@@ -332,7 +342,8 @@ class WireGuardVpnMonitor implements Runnable
     {
         boolean pingSuccess = false;
 
-        // nothing to do if tunnel has no ping interval or address
+        // nothing to do if tunnel is roaming or has no ping interval or address
+        if (tunnel.getEndpointDynamic()) return;
         if (tunnel.getPingInterval() == 0) return;
         if (tunnel.getPingAddress() == null) return;
 
