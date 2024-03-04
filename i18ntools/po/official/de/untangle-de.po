@@ -5245,7 +5245,7 @@ msgstr "Gültigkeitsdatum"
 #: input:229 input:230 input:272 input:33 input:99 input:635 input:23
 #: /ngfw/build/uvm/js/common/util/Renderer.js:123 input:212
 msgid "timestamp_fmt"
-msgstr "timestamp_fmt"
+msgstr ""
 
 #: /ngfw/build/uvm/servlets/admin/config/administration/MainController.js:663
 #: /ngfw/build/uvm/servlets/admin/config/administration/view/Certificates.js:137
