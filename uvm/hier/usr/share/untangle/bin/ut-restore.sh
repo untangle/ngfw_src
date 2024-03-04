@@ -64,6 +64,12 @@ function doRestore()
     # update date on all files
     find @PREFIX@/usr/share/untangle/settings -type f -exec touch {} \;
 
+    # restore branding logo
+    BRANDING_LOGO_BKP_FILE=@PREFIX@/usr/share/untangle/settings/BrandingLogo.png
+    if [ -f "$BRANDING_LOGO_BKP_FILE" ]; then
+        mv -f $BRANDING_LOGO_BKP_FILE @PREFIX@/var/www/images/
+    fi
+
     debug "Restoring files...done"
 
     # restore "maintain files"

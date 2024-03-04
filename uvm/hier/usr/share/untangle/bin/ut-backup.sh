@@ -46,6 +46,13 @@ function backupSettings()
     # only match specific versions without the date/version info so we don't backup old files
     # use -L so symlinks are dereferenced
     find /usr/share/untangle/settings/ \( -type f -o -type l \) -regextype sed ! -regex '.*/.*-version-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-[0-9\.]*\.js' -exec cp -L --parents {} $temp/ \;
+
+    # Copy branding image if present
+    VAR_IMAGES_DIR=/var/www/images
+    BRANDING_LOGO_FILE=$VAR_IMAGES_DIR/BrandingLogo.png
+    if [ -f "$BRANDING_LOGO_FILE" ]; then
+        cp $BRANDING_LOGO_FILE $temp/usr/share/untangle/settings/
+    fi
     
     # tar up important files
     tar zcfh $1 --ignore-failed-read -C $temp usr/share/untangle/settings/
