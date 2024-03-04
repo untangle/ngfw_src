@@ -14,7 +14,7 @@ from jsonrpc import JSONRPCException
 # urlgrabber, it doesn't support cookies which are required in order
 # for java callable references to work.
 class CurlRequestHandler(object):
-    def __init__( self, timeout=240 ):
+    def __init__( self, timeout=240, verify_certs=True):
         self.__curl = pycurl.Curl()
         self.__curl.setopt( pycurl.POST, 1 )
         self.__curl.setopt( pycurl.NOSIGNAL, 1 )
@@ -22,8 +22,11 @@ class CurlRequestHandler(object):
         self.__curl.setopt( pycurl.TIMEOUT, timeout )
         self.__curl.setopt( pycurl.COOKIEFILE, "" )
         self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
-        
-    def make_request(self, url, postdata, content_type = "text/plain; charset=utf-8" ):
+        if verify_certs is False:
+            self.__curl.setopt( pycurl.SSL_VERIFYPEER, 0 )
+            self.__curl.setopt( pycurl.SSL_VERIFYHOST, 0 )
+
+    def make_request(self, url, postdata, content_type = "text/plain; charset=utf-8", follow_redirects=False ):
         response = BytesIO()
 
         self.__curl.setopt( pycurl.URL, url )
@@ -33,6 +36,8 @@ class CurlRequestHandler(object):
         self.__curl.setopt( pycurl.VERBOSE, False )
         self.__curl.setopt( pycurl.POSTFIELDS, postdata.encode('utf-8'))
         self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )
+        if follow_redirects:
+            self.__curl.setopt(pycurl.FOLLOWLOCATION, 1)
         try:
             self.__curl.perform()
         except Exception as e:
@@ -57,18 +62,19 @@ class CurlRequestHandler(object):
         self.__curl.setopt( pycurl.TIMEOUT, timeout )
 
 class Uvm:
-    def getUvmContext( self, hostname="127.0.0.1", username=None, password=None, timeout=240 ):
-        handler = CurlRequestHandler( timeout )
+    def getUvmContext( self, hostname="127.0.0.1", username=None, password=None, timeout=240, scheme="http" ):
+        handler = CurlRequestHandler( timeout, verify_certs=False)
 
+        uri = f"{scheme}://{hostname}"
         try:
             if ( username != None and password != None ):
-                handler.make_request( "http://" + hostname  + "/auth/login", urllib.parse.urlencode({ "username" : username, "password" : password }))
+                handler.make_request( f"{uri}/auth/login?url=/admin&realm=Administrator", urllib.parse.urlencode({ "fragment":"", "username" : username, "password" : password }), follow_redirects=True)
         except JSONRPCException as e:
             print("Login error: ")
             traceback.print_exc(e)
             return None
         
-        proxy = ServiceProxy( "http://" + hostname +  "/admin/JSON-RPC", None, handler, None )
+        proxy = ServiceProxy( f"{uri}/admin/JSON-RPC", None, handler, None )
         return proxy.UvmContext
 
 
