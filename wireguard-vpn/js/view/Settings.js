@@ -89,7 +89,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         blankText: 'Invalid address specified'.t(),
                         validator: function(value) {
                             try{
-                                var res = Util.netmaskIpValidator(value);
+                                var res = Util.networkValidator(value);
                                 if(res != true){
                                     return res;
                                 }
