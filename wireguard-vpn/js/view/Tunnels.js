@@ -209,7 +209,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         height: 50,
         bind: {
             value: '{record.networks}'
-        }
+        },
+        validator: Util.netmaskIpValidator
     }, {
         xtype: 'fieldset',
         title: 'Monitor'.t(),
