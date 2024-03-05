@@ -300,10 +300,10 @@ function isIPAddressUnderNWRange(value, component) {
         var lastAddress = subnetRange.lastAddress;
         var currentvalue = Util.ipToInt(value);
         var lastAddressInt = Util.ipToInt(lastAddress);
-        if (unusedPoolAddr === '') {
-            return 'No more pool addresses are available in the address pool.'.t();
-        } else if (currentvalue > lastAddressInt) {
+        if (currentvalue > lastAddressInt ) {
             return 'Please ensure that the entered IP address is within the specified subnet IP range.'.t();
+        } else if (unusedPoolAddr === '') {
+            return 'No more pool addresses are available in the address pool.'.t();
         } else {
             return true;
         }        
