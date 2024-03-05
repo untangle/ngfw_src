@@ -1349,7 +1349,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     reader = new BufferedReader(new FileReader(serialNumberFile));
                     serialNumber = reader.readLine().replaceAll("[\\-]","");
                 }
-                if((serialNumber != null ) && (serialNumber.length() == 14 || serialNumber.length() == 13) && !serialNumber.contains(" ")){
+                if((serialNumber != null ) && !serialNumber.contains(" ")){
                     UvmContextImpl.serialNumber = serialNumber;
                 }
             } catch (IOException x) {
