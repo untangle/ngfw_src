@@ -35,12 +35,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         key: 'publicKey',
         value: '',
     },{
-        key: 'peerAddress',
+        key: 'peerAddress',  
         value: function() {
             var wirgrdVpnCmp = Ext.ComponentQuery.query('[alias=widget.app-wireguard-vpn]')[0];
             if(wirgrdVpnCmp)
-                return wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
-            else return '';
+                    return wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
+                        else return '';
         }
     }],
 
@@ -198,7 +198,16 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             value: '{record.peerAddress}'
         },
         validator: function(value) {
-            return isUnique(value, 'peerAddress', this);
+            var uniqueError = isUnique(value, 'peerAddress', this);
+            var rangeError = isIPAddressUnderNWRange(value, this);
+            
+            if (uniqueError !== true) {
+                return uniqueError;
+            } else if (rangeError !== true) {
+                return rangeError;
+            } else {
+                return true; 
+            }
         }
     }, {
         xtype: 'textarea',
@@ -274,3 +283,28 @@ function isUnique(value, field, component) {
     
     return isNameUnique? true : Ext.String.format('A tunnel with this {0} already exists.'.t(), field);
 }
+
+
+function isIPAddressUnderNWRange(value, component) {
+
+    var currentRecord = component.up('window').getViewModel().data.record.get('peerAddress');
+    if (value === currentRecord && currentRecord != '') {
+        return true;
+    }
+
+    var wirgrdVpnCmp = Ext.ComponentQuery.query('[alias=widget.app-wireguard-vpn]')[0];
+    if(wirgrdVpnCmp)
+        unusedPoolAddr =  wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
+        var addpool = component.up('tabpanel').getViewModel().data.originalSettings.addressPool;
+        var subnetRange = Util.calculateSubnetRange(addpool);
+        var lastAddress = subnetRange.lastAddress;
+        var currentvalue = Util.ipToInt(value);
+        var lastAddressInt = Util.ipToInt(lastAddress);
+        if (unusedPoolAddr === '') {
+            return 'No more pool addresses are available in the address pool.'.t();
+        } else if (currentvalue > lastAddressInt) {
+            return 'Please ensure that the entered IP address is within the specified subnet IP range.'.t();
+        } else {
+            return true;
+        }        
+ }

@@ -304,18 +304,26 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
 
     getNextUnusedPoolAddr: function() {
         var me = this,
-            vm = me.getViewModel(),
-            addressPool = vm.get('settings.addressPool'),
-            store = vm.getStore('tunnels'),
-            pool = addressPool.split("/")[0];
-
+        vm = me.getViewModel(),
+        addressPool = vm.get('settings.addressPool'),
+        store = vm.getStore('tunnels');
+        var subnetRange = Util.calculateSubnetRange(addressPool);
+        var pool = subnetRange.pool;
+        var lastAddress = subnetRange.lastAddress;
         // Assume the first pool address is used by the wg interface
         var nextPoolAddr = Util.incrementIpAddr(pool, 2);
-        while (Util.isAddrUsed(nextPoolAddr, store, 'peerAddress')) {
+        // Convert IP addresses to integers for comparison
+        var nextPoolAddrInt = Util.ipToInt(nextPoolAddr);
+        var lastAddressInt = Util.ipToInt(lastAddress);
+        while (nextPoolAddrInt <= lastAddressInt && (Util.isAddrUsed(nextPoolAddr, store, 'peerAddress'))) {
             nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
+            nextPoolAddrInt = Util.ipToInt(nextPoolAddr);
         }
-
-        return nextPoolAddr;
+        if (nextPoolAddrInt <= lastAddressInt) {
+            return nextPoolAddr;
+        } else {
+            return '';
+        }
     }
 });
 
@@ -404,18 +412,27 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
     // get next pool address
     getNextUnusedPoolAddr: function(){
         var me = this,
-            grid = this.mainGrid,
-            store = grid.getStore(),
-            addressPool = grid.up('panel').up('apppanel').getViewModel().get('settings.addressPool'),
-            pool = addressPool.split("/")[0];
-
+        grid = this.mainGrid,
+        store = grid.getStore(),
+        addressPool = grid.up('panel').up('apppanel').getViewModel().get('settings.addressPool');
+        var subnetRange = Util.calculateSubnetRange(addressPool);
+        var pool = subnetRange.pool;
+        var lastAddress = subnetRange.lastAddress;
         // Assume the first pool address is used by the wg interface
         var nextPoolAddr = Util.incrementIpAddr(pool, 2);
-        while (Util.isAddrUsed(nextPoolAddr, store, 'peerAddress')) {
-            nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
-        }
 
-        return nextPoolAddr;
+        // Convert IP addresses to integers for comparison
+        var nextPoolAddrInt = Util.ipToInt(nextPoolAddr);
+        var lastAddressInt = Util.ipToInt(lastAddress);
+        while (nextPoolAddrInt <= lastAddressInt && (Util.isAddrUsed(nextPoolAddr, store, 'peerAddress'))) {
+            nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
+            nextPoolAddrInt = Util.ipToInt(nextPoolAddr);
+        }
+        if (nextPoolAddrInt <= lastAddressInt) {
+            return nextPoolAddr;
+        } else {
+            return '';
+        }
     },
 
     // Override onAfterRender so we can prepopulate the peerAddress field with the next
