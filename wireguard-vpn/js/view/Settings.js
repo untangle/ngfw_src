@@ -89,6 +89,10 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         blankText: 'Invalid address specified'.t(),
                         validator: function(value) {
                             try{
+                                var res = Util.networkValidator(value);
+                                if(res != true){
+                                    return res;
+                                }
                                 var me = this,
                                     defaultNewRowAddress = me.up('#settings').down("#localNetworkGrid").initialConfig.emptyRow.address;
                                 

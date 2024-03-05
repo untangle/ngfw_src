@@ -461,6 +461,10 @@ Ext.define('Ung.util.Util', {
         return res ? true : 'Url missing or in wrong format!'.t();
     },
 
+    networkValidator: function (value){
+        return value == '0.0.0.0/0' ? "Invalid Network".t() : true;
+    },
+
     urlIpValidator: function (val) {
         if (Util.urlValidator(val) === true) {
             return true;
