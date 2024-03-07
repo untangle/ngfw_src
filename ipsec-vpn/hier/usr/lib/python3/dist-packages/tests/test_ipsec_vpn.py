@@ -16,6 +16,9 @@ import runtests.overrides as overrides
 
 import tests.test_wan_failover as test_wan_failover
 
+from uvm import Uvm
+from datetime import datetime
+
 # IPSec Configuration
 L2TP_SERVER_HOSTS = overrides.get("L2TP_SERVER_HOSTS", default=
     ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
@@ -49,6 +52,11 @@ appFW = None
 tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
+
+Remote_ngfw = overrides.get("Remote_ngfw", default={
+        "serverAddress": "192.168.1.17",
+        "adminPassword": "admin123"
+})
 
 def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip=None, local_lan_ip=None, local_lan_range=None):
     """
@@ -793,6 +801,42 @@ class IPsecTests(NGFWTestCase):
         # Ping remote LAN client
         lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
         assert lan_client_ping_result is True, "reached remote lan client"
+
+    def test_081_any_remote_tunnel_ping(self):
+        """
+        Verify ipsec tunnel with any remote does't ping pingAddress and generate Tunnel Connection Events
+        """
+
+        # Configure local tunnel with remote any
+        ipsec_settings = self._app.getSettings()
+        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan="192.168.57.0/24" , local_ip="active_wan_address", local_lan_ip="192.168.2.1", local_lan_range="192.168.2.0/24")]
+        self._app.setSettings(ipsec_settings)
+
+        # Configure IPSec on remote NGFW
+        remote_uvm_context = Uvm().getUvmContext(timeout=240, scheme="https", hostname=Remote_ngfw["serverAddress"], username="admin", password=Remote_ngfw["adminPassword"])
+        
+        appName = "ipsec-vpn"
+        if (remote_uvm_context.appManager().isInstantiated(appName)):
+            remote_app = remote_uvm_context.appManager().app(appName)
+        else:
+            remote_app = remote_uvm_context.appManager().instantiate(appName, default_policy_id)
+        remote_app.start()
+
+        remote_ipsec_settings = remote_app.getSettings()
+        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="192.168.1.6", remote_lan="192.168.2.0/24" , local_ip="active_wan_address", local_lan_ip="192.168.57.100", local_lan_range="192.168.57.0/24")]
+        remote_app.setSettings(remote_ipsec_settings)
+
+        time.sleep(3)
+        # Add pingAddress in local NGFW tunnel
+        ipsec_settings["tunnels"]["list"][0]["pingAddress"] = "192.168.57.100"
+        self._app.setSettings(ipsec_settings)
+
+        time.sleep(10)
+        # Check for events logged
+        events = global_functions.get_events("IPsec VPN",'Tunnel Connection Events',None,5)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                              "event_type", "UNREACHABLE" )
+        assert(found == False)
 
     @classmethod
     def final_extra_tear_down(cls):
