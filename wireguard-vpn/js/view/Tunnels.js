@@ -210,7 +210,35 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: {
             value: '{record.networks}'
         },
-        validator: Util.networkValidator
+        validator: function(value) {
+            try{
+                var isValidVtypeField = Ext.form.field.VTypes[this.vtype](value);
+                if(!isValidVtypeField){
+                    return true;
+                }
+                
+                var res = Util.networkValidator(value);
+                if(res != true){
+                    return res;
+                }
+                var remoteNetworks = value;
+                
+                if(remoteNetworks.trim().length<=0){
+                    return true;
+                }
+                
+                var peerNetworkIp = this.up("app-wireguard-vpn").getViewModel().get("settings").addressPool;
+                var localNetworkStore = remoteNetworks.length > 0 ? Ext.Array.map(remoteNetworks.split("\n"),function (remoteIpAddr){
+                    return remoteIpAddr.trim();
+                }) : [];
+                
+                return Util.findIpPoolConflict(peerNetworkIp, localNetworkStore, this, false);
+
+            } catch(err) {
+                console.log(err);
+                return true;
+            }                        
+        }
     }, {
         xtype: 'fieldset',
         title: 'Monitor'.t(),
