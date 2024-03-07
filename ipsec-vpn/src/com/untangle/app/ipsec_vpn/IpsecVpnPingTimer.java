@@ -109,6 +109,7 @@ public class IpsecVpnPingTimer extends TimerTask
             if (tunnel.getActive() == false) continue;
             if (tunnel.getPingAddress() == null) continue;
             if (tunnel.getPingAddress().length() == 0) continue;
+            if (tunnel.getRight().equals("%any")) continue;
 
             String leftAddress = app.getManager().resolveLeftAddress(tunnel.getLeft());
 
@@ -220,6 +221,7 @@ public class IpsecVpnPingTimer extends TimerTask
         if (tunnel == null) return (false);
         if (tunnel.getPingAddress() == null) return (false);
         if (tunnel.getPingAddress().length() == 0) return (false);
+        if (tunnel.getRight().equals("%any")) return (false);
 
         try {
             InetAddress target = InetAddress.getByName(tunnel.getPingAddress());
