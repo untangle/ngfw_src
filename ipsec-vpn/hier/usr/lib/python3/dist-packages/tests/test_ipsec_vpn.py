@@ -809,7 +809,7 @@ class IPsecTests(NGFWTestCase):
 
         # Configure local tunnel with remote any
         ipsec_settings = self._app.getSettings()
-        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan="192.168.57.0/24" , local_ip="active_wan_address", local_lan_ip="192.168.2.1", local_lan_range="192.168.2.0/24")]
+        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan="192.168.57.100/24" , local_ip="active_wan_address", local_lan_ip="192.168.2.1", local_lan_range="192.168.2.1/24")]
         self._app.setSettings(ipsec_settings)
 
         # Configure IPSec on remote NGFW
@@ -823,15 +823,15 @@ class IPsecTests(NGFWTestCase):
         remote_app.start()
 
         remote_ipsec_settings = remote_app.getSettings()
-        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="192.168.1.6", remote_lan="192.168.2.0/24" , local_ip="active_wan_address", local_lan_ip="192.168.57.100", local_lan_range="192.168.57.0/24")]
+        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="192.168.1.6", remote_lan="192.168.2.1/24" , local_ip="active_wan_address", local_lan_ip="192.168.57.100", local_lan_range="192.168.57.100/24")]
         remote_app.setSettings(remote_ipsec_settings)
+        time.sleep(10)
 
-        time.sleep(3)
         # Add pingAddress in local NGFW tunnel
         ipsec_settings["tunnels"]["list"][0]["pingAddress"] = "192.168.57.100"
         self._app.setSettings(ipsec_settings)
+        time.sleep(40)
 
-        time.sleep(10)
         # Check for events logged
         events = global_functions.get_events("IPsec VPN",'Tunnel Connection Events',None,5)
         found = global_functions.check_events( events.get('list'), 5, 
