@@ -89,6 +89,10 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         blankText: 'Invalid address specified'.t(),
                         validator: function(value) {
                             try{
+                                var isValidVtypeField = Ext.form.field.VTypes[this.vtype](value);
+                                if(!isValidVtypeField){
+                                    return true;
+                                }
                                 var res = Util.networkValidator(value);
                                 if(res != true){
                                     return res;
@@ -111,7 +115,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                                     localNetworkStore.push(peerNetworkIp);
                                 }
                                 
-                                return Util.findIpPoolConflict(value, localNetworkStore);
+                                return Util.findIpPoolConflict(value, localNetworkStore, this, true);
 
                             } catch(err) {
                                 console.log(err);
@@ -162,18 +166,21 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                     },
                     validator: function(value) {
                         try{
-
+                            var isValidVtypeField = Ext.form.field.VTypes[this.vtype](value);
+                            if(!isValidVtypeField){
+                                return true;
+                            }
                             var localNetworkStoreFn = this.up('#settings').down('#localNetworkGrid').getStore();
 
                             var localNetworkStore = [];
-                  
+                            
                             localNetworkStoreFn.each(function (item){
                                 if(item.get("address")){
                                     localNetworkStore.push(item.get("address"));
                                 }
                             });
 
-                            return Util.findIpPoolConflict(value, localNetworkStore);
+                            return Util.findIpPoolConflict(value, localNetworkStore, this, true);
 
                         } catch(err) {
                             console.log(err);

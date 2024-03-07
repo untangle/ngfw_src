@@ -1068,7 +1068,7 @@ Ext.define('Ung.util.Util', {
      * This method finds if any conflict is present in currentIp 
      * with all the existing Ip addresses and returns true or error msg
     */
-    findIpPoolConflict:function(currentIpAddress, ipAddressPool){
+    findIpPoolConflict:function(currentIpAddress, ipAddressPool, context, currentIpDirtyCheck){
         try{
             var currentFieldIp = currentIpAddress,
                 localNetworkStore = ipAddressPool,
@@ -1096,9 +1096,21 @@ Ext.define('Ung.util.Util', {
 
             if(index !== null) return "Address pool conflict".t();
 
-            if(this.dirty) {
-                var ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', value.trim());   
-                return !ntwkSpace ? true : "Address pool conflict".t();
+            if(context.dirty) {
+                var ntwkSpace=null;
+                if(currentIpDirtyCheck){
+                    ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', currentFieldIp.trim());   
+                    return !ntwkSpace ? true : "Address pool conflict".t();
+                }else{
+                    ntwkSpace = null;
+                    for(var i=0;i<ipAddressPool.length;i++){
+                        ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', ipAddressPool[i].trim());
+                        if(ntwkSpace){
+                            break;
+                        }   
+                    }
+                    return !ntwkSpace ? true : "Address pool conflict".t();
+                }
             } else return true;
         }catch(err){
             throw err;
