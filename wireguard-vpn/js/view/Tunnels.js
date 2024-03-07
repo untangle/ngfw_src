@@ -217,10 +217,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                     return true;
                 }
                 
-                var res = Util.networkValidator(value);
-                if(res != true){
-                    return res;
-                }
                 var remoteNetworks = value;
                 
                 if(remoteNetworks.trim().length<=0){
@@ -231,6 +227,17 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 var localNetworkStore = remoteNetworks.length > 0 ? Ext.Array.map(remoteNetworks.split("\n"),function (remoteIpAddr){
                     return remoteIpAddr.trim();
                 }) : [];
+
+                var res = null;
+                for(var i=0;i<localNetworkStore.length;i++){
+                    res = Util.networkValidator(localNetworkStore[i]);
+                    if(res!=true){
+                        break;
+                    }
+                }
+                if(res != true){
+                    return res;
+                }
                 
                 return Util.findIpPoolConflict(peerNetworkIp, localNetworkStore, this, false);
 
