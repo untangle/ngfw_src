@@ -218,6 +218,9 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         layout: {
             type: 'vbox'
         },
+        bind: {
+            hidden: '{record.endpointDynamic}'
+        },
         defaults: {
             labelWidth: 170,
             labelAlign: 'right'
