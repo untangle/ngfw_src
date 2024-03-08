@@ -304,19 +304,11 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
 
     getNextUnusedPoolAddr: function() {
         var me = this,
-            vm = me.getViewModel(),
-            addressPool = vm.get('settings.addressPool'),
-            store = vm.getStore('tunnels'),
-            pool = addressPool.split("/")[0];
-
-        // Assume the first pool address is used by the wg interface
-        var nextPoolAddr = Util.incrementIpAddr(pool, 2);
-        while (Util.isAddrUsed(nextPoolAddr, store, 'peerAddress')) {
-            nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
+        vm = me.getViewModel(),
+        addressPool = vm.get('settings.addressPool'),
+        store = vm.getStore('tunnels');
+        return Util.getUnusedPoolAddr(addressPool, store, 'peerAddress');
         }
-
-        return nextPoolAddr;
-    }
 });
 
 Ext.define('Ung.apps.reports.cmp.Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelGridController', {
@@ -404,18 +396,10 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
     // get next pool address
     getNextUnusedPoolAddr: function(){
         var me = this,
-            grid = this.mainGrid,
-            store = grid.getStore(),
-            addressPool = grid.up('panel').up('apppanel').getViewModel().get('settings.addressPool'),
-            pool = addressPool.split("/")[0];
-
-        // Assume the first pool address is used by the wg interface
-        var nextPoolAddr = Util.incrementIpAddr(pool, 2);
-        while (Util.isAddrUsed(nextPoolAddr, store, 'peerAddress')) {
-            nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
-        }
-
-        return nextPoolAddr;
+        grid = this.mainGrid,
+        store = grid.getStore(),
+        addressPool = grid.up('panel').up('apppanel').getViewModel().get('settings.addressPool');
+        return Util.getUnusedPoolAddr(addressPool, store, 'peerAddress');
     },
 
     // Override onAfterRender so we can prepopulate the peerAddress field with the next

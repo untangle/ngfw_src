@@ -857,6 +857,31 @@ Ext.define('Ung.util.Util', {
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
     },
 
+    isIPInRange: function (ip, network, netmask) {
+    
+        var networkInt = Util.convertIPIntoDecimal(network);
+        var netmaskInt = Util.convertIPIntoDecimal(netmask);
+        var ipInt = Util.convertIPIntoDecimal(ip);
+    
+        var networkAddress = networkInt & netmaskInt;
+        var broadcastAddress = networkAddress | ~netmaskInt;
+        return ipInt > networkAddress && ipInt < broadcastAddress;
+    },
+
+    getUnusedPoolAddr: function(addressPool, store, field){
+        netMask = Util.getV4NetmaskMap()[addressPool.split('/')[1] ? addressPool.split('/')[1] : 32];
+        network = Util.getNetwork(addressPool.split('/')[0], netMask); 
+        var nextPoolAddr = Util.incrementIpAddr(addressPool.split('/')[0], 2);
+        if(store !==undefined){
+            while (Util.isAddrUsed(nextPoolAddr, store, field)) {
+                nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
+            }         
+        }
+        return Util.isIPInRange(nextPoolAddr, network, netMask)? nextPoolAddr : '';
+    },
+
+    
+
     /**
      * From the specified IP address and netmask, return the network.
      * For example, 192.168.1.1/255.255.255.0 returns 192.168.1.0
@@ -990,6 +1015,10 @@ Ext.define('Ung.util.Util', {
                 store.isReordered) {
                 var deleted = false;
                 store.each(function(record) {
+                    if(record.get('peerAddress') === '') {
+                        record.set('markedForDelete', true);
+                    }
+
                     if (record.get('markedForDelete')) {
                         record.drop();
                         deleted = true;
