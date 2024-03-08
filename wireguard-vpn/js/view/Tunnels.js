@@ -35,15 +35,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         key: 'publicKey',
         value: '',
     },{
-        key: 'peerAddress',  
+        key: 'peerAddress',
         value: function() {
             var wirgrdVpnCmp = Ext.ComponentQuery.query('[alias=widget.app-wireguard-vpn]')[0];
-            if (wirgrdVpnCmp) {
-                var peerAddr =  wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
-                return peerAddr;
-            } else {
-                return '';
-            }
+            if(wirgrdVpnCmp)
+                return wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
+            else return '';
         }
     }],
 
