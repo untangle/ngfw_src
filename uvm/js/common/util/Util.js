@@ -853,6 +853,31 @@ Ext.define('Ung.util.Util', {
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
     },
 
+    isIPInRange: function (ip, network, netmask) {
+    
+        var networkInt = Util.convertIPIntoDecimal(network);
+        var netmaskInt = Util.convertIPIntoDecimal(netmask);
+        var ipInt = Util.convertIPIntoDecimal(ip);
+    
+        var networkAddress = networkInt & netmaskInt;
+        var broadcastAddress = networkAddress | ~netmaskInt;
+        return ipInt > networkAddress && ipInt < broadcastAddress;
+    },
+
+    getUnusedPoolAddr: function(addressPool, store, field){
+        netMask = Util.getV4NetmaskMap()[addressPool.split('/')[1] ? addressPool.split('/')[1] : 32];
+        network = Util.getNetwork(addressPool.split('/')[0], netMask); 
+        var nextPoolAddr = Util.incrementIpAddr(addressPool.split('/')[0], 2);
+        if(store !==undefined){
+            while (Util.isAddrUsed(nextPoolAddr, store, field)) {
+                nextPoolAddr = Util.incrementIpAddr(nextPoolAddr, 1);
+            }         
+        }
+        return Util.isIPInRange(nextPoolAddr, network, netMask)? nextPoolAddr : '';
+    },
+
+    
+
     /**
      * From the specified IP address and netmask, return the network.
      * For example, 192.168.1.1/255.255.255.0 returns 192.168.1.0
@@ -882,82 +907,6 @@ Ext.define('Ung.util.Util', {
         dots.push((ipInteger >>> 8) % 256);
         dots.push(ipInteger % 256);
         return dots.join('.');
-    },
-
-    /**
-     * Convert the passed IP to binary format
-     * @param  string ipAddress    IP address to convert in binary format.
-     * @return string              IP address in binary format.
-     */
-    ipToBinary: function(ipAddress) {
-        var binary = '';
-        var parts = ipAddress.split('.');
-        for (var i = 0; i < parts.length; i++) {
-            var decimal = parseInt(parts[i], 10); // Include radix parameter
-            var binaryPart = decimal.toString(2).padStart(8, '0');
-            binary += binaryPart;
-        }
-        return binary;
-    },
-
-    /**
-     * Convert the passed IP from binary to IP address format
-     * @param  string ipAddress    IP address to in binary format.
-     * @return string              IP address from binary to ip address format.
-     */
-    binaryToIp: function(binary) {
-        var ipAddress = '';
-        for (var i = 0; i < 32; i += 8) {
-            var octet = binary.substr(i, 8);
-            var decimal = parseInt(octet, 2); // Include radix parameter
-            ipAddress += decimal;
-            if (i < 24) {
-                ipAddress += '.';
-            }
-        }
-        return ipAddress;
-    },
-
-    /**
-     * Convert the passed IP in integer
-     * @param  string ipAddress    IP address to convet in integer fromat.
-     * @return number              IP address in integer format.
-     */
-    ipToInt: function(ipAddress) {
-        var parts = ipAddress.split('.');
-        var intValue = 0;
-        for (var i = 0; i < parts.length; i++) {
-            var octet = parseInt(parts[i], 10);
-            if (octet < 0 || octet > 255) {
-                throw new Error('Invalid IP address');
-            }
-            intValue = (intValue << 8) + octet;
-        }
-        return intValue;
-    },
-
-    /**
-     * Fetch the first and last IP range from passed address pool
-     * @param  string addressPool    IP Address in CIDR format.
-     * @return Object   object with two properties: pool and lastAddress.
-     *      pool: Original IP address without the subnet mask.
-     *      lastAddress: Last address in the subnet range, excluding the broadcast IP.
-     */
-    calculateSubnetRange: function(addressPool) {
-        var pool = addressPool.split("/")[0];
-        var subnet = parseInt(addressPool.split("/")[1], 10);
-        var poolBinary = Util.ipToBinary(pool);
-        // Calculate the last address in the subnet
-        var lastAddressBinary = poolBinary.slice(0, subnet) + "1".repeat(32 - subnet);
-        var lastAddress = Util.binaryToIp(lastAddressBinary);
-        // Avoid the broadcast IP 
-        var lastAddressParts = lastAddress.split('.');
-        lastAddressParts[lastAddressParts.length - 1] = parseInt(lastAddressParts[lastAddressParts.length - 1], 10) - 1;
-        lastAddress = lastAddressParts.join('.');
-        return {
-            pool: pool,
-            lastAddress: lastAddress
-        };
     },
 
     /**
@@ -1062,6 +1011,10 @@ Ext.define('Ung.util.Util', {
                 store.isReordered) {
                 var deleted = false;
                 store.each(function(record) {
+                    if(record.get('peerAddress') === '') {
+                        record.set('markedForDelete', true);
+                    }
+
                     if (record.get('markedForDelete')) {
                         record.drop();
                         deleted = true;

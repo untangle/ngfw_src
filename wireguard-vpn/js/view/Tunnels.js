@@ -38,9 +38,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         key: 'peerAddress',  
         value: function() {
             var wirgrdVpnCmp = Ext.ComponentQuery.query('[alias=widget.app-wireguard-vpn]')[0];
-            if(wirgrdVpnCmp)
-                    return wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
-                        else return '';
+            if (wirgrdVpnCmp) {
+                var peerAddr =  wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
+                return peerAddr;
+            } else {
+                return '';
+            }
         }
     }],
 
@@ -82,6 +85,15 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         header: 'Remote Peer IP Address'.t(),
         width: Renderer.ipWidth,
         dataIndex: 'peerAddress',
+        editor: {
+            xtype: 'textfield',
+            allowBlank: false,
+            vtype: 'isSingleIpValid',
+            emptyText: '[enter peer IP address]'.t(),
+            validator: function(value) {
+                return peerIpAddrValidator(value, 'peerAddress', this);
+            }
+        }
     }, {
         header: 'Remote Networks'.t(),
         width: Renderer.messageWidth,
@@ -198,16 +210,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             value: '{record.peerAddress}'
         },
         validator: function(value) {
-            var uniqueError = isUnique(value, 'peerAddress', this);
-            var rangeError = isIPAddressUnderNWRange(value, this);
-            
-            if (uniqueError !== true) {
-                return uniqueError;
-            } else if (rangeError !== true) {
-                return rangeError;
-            } else {
-                return true; 
-            }
+            return peerIpAddrValidator(value, 'peerAddress', this);
         }
     }, {
         xtype: 'textarea',
@@ -268,12 +271,16 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
 });
 
 function isUnique(value, field, component) {
-    var currentRecord = component.up('window').getViewModel().data.record.get(field);
-    
+    var currentRecord ;
+    if(component.up('window')!=undefined)
+         currentRecord = component.up('window').getViewModel().data.record.get(field);
     if (value === currentRecord) {
         return true;
     }
-    
+    //Return true if editable field peerAddress in grid is not modified
+    if(!component.dirty && field === 'peerAddress') {
+        return true; 
+    }
     var grid = Ext.ComponentQuery.query('app-wireguard-vpn-server-tunnels-grid')[0];
     var store = grid.getStore();
 
@@ -285,26 +292,35 @@ function isUnique(value, field, component) {
 }
 
 
-function isIPAddressUnderNWRange(value, component) {
-
-    var currentRecord = component.up('window').getViewModel().data.record.get('peerAddress');
-    if (value === currentRecord && currentRecord != '') {
-        return true;
-    }
-
+function isIPAddressUnderNWRange(value, component) { 
     var wirgrdVpnCmp = Ext.ComponentQuery.query('[alias=widget.app-wireguard-vpn]')[0];
     if(wirgrdVpnCmp)
         unusedPoolAddr =  wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
-        var addpool = component.up('tabpanel').getViewModel().data.originalSettings.addressPool;
-        var subnetRange = Util.calculateSubnetRange(addpool);
-        var lastAddress = subnetRange.lastAddress;
-        var currentvalue = Util.ipToInt(value);
-        var lastAddressInt = Util.ipToInt(lastAddress);
-        if (currentvalue > lastAddressInt ) {
-            return 'Please ensure that the entered IP address is within the specified subnet IP range.'.t();
-        } else if (unusedPoolAddr === '') {
-            return 'No more pool addresses are available in the address pool.'.t();
-        } else {
-            return true;
-        }        
- }
+    var addrpool = component.up('tabpanel').getViewModel().data.originalSettings.addressPool;
+    var subnet = addrpool.split('/')[1];
+    var pool = addrpool.split('/')[0];
+    netMask = Util.getV4NetmaskMap()[subnet ? subnet: 32];
+    network = Util.getNetwork(pool, netMask); 
+    //Flag to check if IP address is reserved for WG Interface
+    isReservedForWGInterface = Util.convertIPIntoDecimal(value)<=Util.convertIPIntoDecimal(Util.incrementIpAddr(pool, 2));
+    if (unusedPoolAddr === '' &&  value === '') {
+        return 'No more pool addresses are available in the address pool.'.t();
+    }else if(!Util.isIPInRange(value,network,netMask) ||  isReservedForWGInterface) {
+        return 'Please ensure that the entered IP address is within the specified subnet IP range.'.t();
+    } else{
+        return true;
+    }       
+}
+
+function peerIpAddrValidator(value, field, component) {
+    var uniqueError = isUnique(value, field, component);
+    var rangeError = isIPAddressUnderNWRange(value, component);
+    
+    if (rangeError !== true) {
+        return rangeError;
+    } else if (uniqueError !== true) {
+        return uniqueError;
+    } else {
+        return true;
+    }
+}
