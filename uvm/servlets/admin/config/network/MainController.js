@@ -170,9 +170,11 @@ Ext.define('Ung.config.network.MainController', {
 
             /**
              * Important!
-             * update custom grids only if are modified records or it was reordered via drag/drop
+             * update custom grids only if are modified/deleted records or it was reordered via drag/drop
              */
-            if (store.getModifiedRecords().length > 0 || store.isReordered) {
+            if (store.getModifiedRecords().length > 0 || 
+                    store.getRemovedRecords().length > 0 ||
+                    store.isReordered) {
                 store.each(function (record) {
                     if (record.get('markedForDelete')) {
                         record.drop();
