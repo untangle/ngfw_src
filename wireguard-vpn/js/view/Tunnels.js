@@ -338,10 +338,10 @@ function isIPAddressUnderNWRange(value, component) {
     netMask = Util.getV4NetmaskMap()[subnet ? subnet: 32];
     network = Util.getNetwork(pool, netMask); 
     //Flag to check if IP address is reserved for WG Interface
-    isReservedForWGInterface = Util.convertIPIntoDecimal(value)<=Util.convertIPIntoDecimal(Util.incrementIpAddr(pool, 2));
+    isReservedForWGInterface = Util.convertIPIntoDecimal(value) < Util.convertIPIntoDecimal(Util.incrementIpAddr(pool, 2));
     if (unusedPoolAddr === '' &&  value === '') {
         return 'No more pool addresses are available in the address pool.'.t();
-    }else if(!Util.isIPInRange(value,network,netMask) ||  isReservedForWGInterface) {
+    }else if(!Util.isIPInRange(value, network, netMask) ||  isReservedForWGInterface) {
         return 'Please ensure that the entered IP address is within the specified subnet IP range.'.t();
     } else{
         return true;

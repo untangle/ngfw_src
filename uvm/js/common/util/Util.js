@@ -858,13 +858,23 @@ Ext.define('Ung.util.Util', {
     },
 
     isIPInRange: function (ip, network, netmask) {
-    
-        var networkInt = Util.convertIPIntoDecimal(network);
-        var netmaskInt = Util.convertIPIntoDecimal(netmask);
+        // Split the IP address into octets
+        var nextPoolOctets = ip.split('.');
+        var networkOctets = network.split('.');
+        var netMaskOctets = netmask.split('.');
+
+        // Convert octets to integers
+        var networkInt = networkOctets.map(function(octet) { return parseInt(octet, 10); });
+        var netmaskInt = netMaskOctets.map(function(octet) { return parseInt(octet, 10); });
+
+        // Calculate the the broadcast address
+        var broadcastAddr = networkInt.map(function(octet, index) { return (octet & netmaskInt[index]) | (~netmaskInt[index] & 255); }).join('.');
+
+        // Convert IP addresses to decimals
         var ipInt = Util.convertIPIntoDecimal(ip);
-    
-        var networkAddress = networkInt & netmaskInt;
-        var broadcastAddress = networkAddress | ~netmaskInt;
+        var broadcastAddress =  Util.convertIPIntoDecimal(broadcastAddr);
+        var networkAddress =  Util.convertIPIntoDecimal(network);
+
         return ipInt > networkAddress && ipInt < broadcastAddress;
     },
 
