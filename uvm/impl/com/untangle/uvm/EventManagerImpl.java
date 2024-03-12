@@ -60,7 +60,7 @@ import org.json.JSONString;
  */
 public class EventManagerImpl implements EventManager
 {
-    private static final Integer SETTINGS_CURRENT_VERSION = 3;
+    private static final Integer SETTINGS_CURRENT_VERSION = 4;
 
     private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
 
@@ -436,40 +436,41 @@ public class EventManagerImpl implements EventManager
 
             }
 
-            settings.setVersion(SETTINGS_CURRENT_VERSION);
-            this.setSettings( settings );
-        }
-
-        boolean criticalFlag = false;
-        boolean reportsFlag = false;
-
-        // search for the CriticalAlertEvent REPORTS rule
-        for (EventRule er : settings.getAlertRules()) {
-            for(EventRuleCondition c : er.getConditions()) {
-                if(c.getField().equals("class") && c.getFieldValue().equals("*CriticalAlertEvent*")){
-                    criticalFlag = true;
+            boolean confBackUpFlag = false;
+            boolean successConditionFlag = false;
+            // search for the ConfigurationBackupEvent success rule
+            for (EventRule er : settings.getAlertRules()) {
+                for(EventRuleCondition c : er.getConditions()) {
+                    if(c.getField().equals("class") && c.getFieldValue().equals("*ConfigurationBackupEvent*")){
+                        confBackUpFlag = true;
+                    }
                 }
-                if(c.getField().equals("component") && c.getFieldValue().equals("REPORTS")){
-                    reportsFlag = true;
+                if(confBackUpFlag) {
+                    for(EventRuleCondition c : er.getConditions()) {
+                        if(c.getField().equals("success") && c.getFieldValue().equals("False")){
+                            successConditionFlag = true;
+                        }
+                    }
                 }
             }
-        }
 
-        // if we didn't find the CriticalAlertEvent REPORTS rule create at top
-        if ((!criticalFlag) || (!reportsFlag)) {
-            LinkedList<EventRuleCondition> conditions;
-            EventRuleCondition condition1;
-            EventRuleCondition condition2;
-            AlertRule eventRule;
+            // if we didn't find the ConfigurationBackupEvent rule with success False create at top
+            if ((!confBackUpFlag) || (!successConditionFlag)) {
+                LinkedList<EventRuleCondition> conditions;
+                EventRuleCondition condition1;
+                EventRuleCondition condition2;
+                AlertRule eventRule;
 
-            conditions = new LinkedList<>();
-            condition1 = new EventRuleCondition( "class", "=", "*CriticalAlertEvent*" );
-            conditions.add( condition1 );
-            condition2 = new EventRuleCondition( "component", "=", "REPORTS" );
-            conditions.add( condition2 );
-            eventRule = new AlertRule( true, conditions, true, true, "Reporting disabled due to low disk space", false, 0 );
-            settings.getAlertRules().addFirst( eventRule );
+                conditions = new LinkedList<>();
+                condition1 = new EventRuleCondition( "class", "=", "*ConfigurationBackupEvent*" );
+                conditions.add( condition1 );
+                condition2 = new EventRuleCondition( "success", "=", "False" );
+                conditions.add( condition2 );
+                eventRule = new AlertRule( true, conditions, true, true, "Configuration backup failed", false, 0 );
+                settings.getAlertRules().add( eventRule );
+            }
 
+            settings.setVersion(SETTINGS_CURRENT_VERSION);
             this.setSettings( settings );
         }
     }
@@ -687,6 +688,14 @@ public class EventManagerImpl implements EventManager
         condition2 = new EventRuleCondition( "clean", "=", "False" );
         conditions.add( condition2 );
         eventRule = new AlertRule( false, conditions, true, true, "HTTP virus blocked", false, 0 );
+        rules.add( eventRule );
+
+        conditions = new LinkedList<>();
+        condition1 = new EventRuleCondition( "class", "=", "*ConfigurationBackupEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "success", "=", "False" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Configuration backup failed", false, 0 );
         rules.add( eventRule );
 
         return rules;
