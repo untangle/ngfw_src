@@ -76,54 +76,54 @@ class AlertTests(NGFWTestCase):
         assert(events != None)
         assert ( found )
 
-    # @pytest.mark.failure_in_podman
-    # def test_060_customized_email_alert(self):
-    #     """Create custom email template and verify alert email is received correctly"""
-    #     #get settings, backup original settings
-    #     email_settings = uvmContext.eventManager().getSettings()
-    #     orig_email_settings = copy.deepcopy(email_settings)
-    #     admin_settings = uvmContext.adminManager().getSettings()
-    #     orig_admin_settings = copy.deepcopy(admin_settings)
+    @pytest.mark.failure_in_podman
+    def test_060_customized_email_alert(self):
+        """Create custom email template and verify alert email is received correctly"""
+        #get settings, backup original settings
+        email_settings = uvmContext.eventManager().getSettings()
+        orig_email_settings = copy.deepcopy(email_settings)
+        admin_settings = uvmContext.adminManager().getSettings()
+        orig_admin_settings = copy.deepcopy(admin_settings)
 
-    #     #change admin email to verify sent email
-    #     new_admin_email = global_functions.random_email()
-    #     admin_settings["users"]["list"][0]["emailAddress"] = new_admin_email
-    #     uvmContext.adminManager().setSettings(admin_settings)
+        #change admin email to verify sent email
+        new_admin_email = global_functions.random_email()
+        admin_settings["users"]["list"][0]["emailAddress"] = new_admin_email
+        uvmContext.adminManager().setSettings(admin_settings)
 
-    #     #set custom email template subject and body
-    #     new_email_subject = "NEW EMAIL SUBJECT TEST"
-    #     new_email_body = "NEW EMAIL BODY TEST"
-    #     email_settings["emailSubject"] = new_email_subject
-    #     email_settings["emailBody"] = new_email_body
+        #set custom email template subject and body
+        new_email_subject = "NEW EMAIL SUBJECT TEST"
+        new_email_body = "NEW EMAIL BODY TEST"
+        email_settings["emailSubject"] = new_email_subject
+        email_settings["emailBody"] = new_email_body
 
-    #     #set new alert rule for easy trigger of email
-    #     new_rule = create_alert_rule("test alert rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.client_ip+"*", sendEmail=True)
-    #     email_settings['alertRules']['list'].append(new_rule)
+        #set new alert rule for easy trigger of email
+        new_rule = create_alert_rule("test alert rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.client_ip+"*", sendEmail=True)
+        email_settings['alertRules']['list'].append(new_rule)
         
-    #     #set new settings
-    #     uvmContext.eventManager().setSettings(email_settings)
+        #set new settings
+        uvmContext.eventManager().setSettings(email_settings)
         
-    #     #send a session
-    #     remote_control.is_online()
-    #     time.sleep(4)
+        #send a session
+        remote_control.is_online()
+        time.sleep(4)
 
-    #     #check email sent is correct
-    #     emailFound = False
-    #     timeout = 40
-    #     alertEmail = ""
-    #     while not emailFound and timeout > 0:
-    #         timeout -= 1
-    #         time.sleep(1)
-    #         # alertEmail = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + new_admin_email + " 2>&1 | grep TEST" ,stdout=True)
-    #         alertEmail = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://test.untangle.com/cgi-bin/getEmail.py?toaddress={new_admin_email}") + " 2>&1 | grep TEST", stdout=True)
-    #         if (alertEmail != ""):
-    #             emailFound = True
+        #check email sent is correct
+        emailFound = False
+        timeout = 40
+        alertEmail = ""
+        while not emailFound and timeout > 0:
+            timeout -= 1
+            time.sleep(1)
+            # alertEmail = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + new_admin_email + " 2>&1 | grep TEST" ,stdout=True)
+            alertEmail = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://test.untangle.com/cgi-bin/getEmail.py?toaddress={new_admin_email}") + " 2>&1 | grep TEST", stdout=True)
+            if (alertEmail != ""):
+                emailFound = True
         
-    #     #set settings back
-    #     uvmContext.eventManager().setSettings(orig_email_settings)
-    #     uvmContext.adminManager().setSettings(orig_admin_settings)
+        #set settings back
+        uvmContext.eventManager().setSettings(orig_email_settings)
+        uvmContext.adminManager().setSettings(orig_admin_settings)
         
-    #     assert(emailFound)
+        assert(emailFound)
 
     def test_070_configuration_backup_fail_alert(self):
         """Verify alert on configuration backup failure"""
