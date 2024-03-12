@@ -398,44 +398,7 @@ public class EventManagerImpl implements EventManager
     private void updateSettings(EventSettings settings){
         if(settings.getVersion() < SETTINGS_CURRENT_VERSION){
 
-            boolean webfilterEvent = false;
-            boolean sessionEvent = false;
-            for(EventRule er : Stream.of(settings.getAlertRules(), settings.getSyslogRules(), settings.getTriggerRules())
-                                .flatMap(Collection::stream)
-                                .collect(Collectors.toList()) ){
-
-                webfilterEvent = false;
-                sessionEvent = false;
-                for(EventRuleCondition c : er.getConditions()){
-                    if(c.getField().equals("class") && c.getFieldValue().equals("*WebFilterEvent*")){
-                        webfilterEvent = true;
-                    }
-                    if(c.getField().equals("class") && c.getFieldValue().equals("*SessionEvent*")){
-                        sessionEvent = true;
-                    }
-                    if(webfilterEvent){
-                        if(c.getField().equals("category") && c.getFieldValue().equals("Malware Distribution Point")){
-                            c.setFieldValue("Malware Sites");
-                            er.setDescription(er.getDescription().replaceAll("Malware Distribution Point", "Malware Sites"));
-                        }
-                        if(c.getField().equals("category") && c.getFieldValue().equals("Botnet")){
-                            c.setFieldValue("Bot Nets");
-                            er.setDescription(er.getDescription().replaceAll("Botnet", "Bot Nets"));
-                        }
-                        if(c.getField().equals("category") && c.getFieldValue().equals("Phishing/Fraud")){
-                            c.setFieldValue("Phishing and Other Frauds");
-                            er.setDescription(er.getDescription().replaceAll("Phishing/Fraud", "Phishing and Other Frauds"));
-                        }
-                    }
-                    if(sessionEvent){
-                        if(c.getField().equals("sServerPort")){
-                            c.setField("SServerPort");
-                        }
-                    }
-                }
-
-            }
-
+            // Below code to add ConfigurationBackupEvent as deafult event can be removed after 17.2 release
             boolean confBackUpFlag = false;
             boolean successConditionFlag = false;
             // search for the ConfigurationBackupEvent success rule
