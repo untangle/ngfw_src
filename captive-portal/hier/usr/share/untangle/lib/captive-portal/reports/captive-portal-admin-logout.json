@@ -10,7 +10,7 @@
             "value": "ADMIN_LOGOUT"
         }
     ],
-    "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
+    "defaultColumns": ["time_stamp","client_addr","login_name","event_info"],
     "description": "Sessions logged off by the admin.",
     "displayOrder": 1026,
     "javaClass": "com.untangle.app.reports.ReportEntry",
