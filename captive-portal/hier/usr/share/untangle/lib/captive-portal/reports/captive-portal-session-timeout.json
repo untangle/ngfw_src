@@ -10,7 +10,7 @@
             "value": "TIMEOUT"
         }
     ],
-    "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
+    "defaultColumns": ["time_stamp","client_addr","login_name","event_info"],
     "description": "Sessions that reached the session timeout.",
     "displayOrder": 1023,
     "javaClass": "com.untangle.app.reports.ReportEntry",

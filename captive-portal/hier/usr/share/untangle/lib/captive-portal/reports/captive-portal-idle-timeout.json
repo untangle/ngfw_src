@@ -10,7 +10,7 @@
             "value": "INACTIVE"
         }
     ],
-    "defaultColumns": ["time_stamp","client_addr","login_name","event_info","auth_type"],
+    "defaultColumns": ["time_stamp","client_addr","login_name","event_info"],
     "description": "Sessions that reached the idle timeout.",
     "displayOrder": 1024,
     "javaClass": "com.untangle.app.reports.ReportEntry",
