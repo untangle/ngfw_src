@@ -10,10 +10,8 @@ import runtests.remote_control as remote_control
 import runtests.overrides as overrides
 
 
-default_policy_id = 1
-
-IPSEC_HOST = overrides.get("IPSEC_HOST", default="0.0.0.0")
-IPSEC_HOST_NAME = overrides.get("IPSEC_HOST_NAME", default="boxbackup.untangle.com")
+DNS_HOST = overrides.get("DNS_HOST", default="0.0.0.0")
+DNS_HOST_NAME = overrides.get("DNS_HOST", default="boxbackup.untangle.com")
 
 def create_alert_rule(description, field, operator, value, field2, operator2, value2, thresholdEnabled=False, thresholdLimit=None, thresholdTimeframeSec=None, thresholdGroupingField=None, sendEmail=False):
     return {
@@ -138,7 +136,7 @@ class AlertTests(NGFWTestCase):
         app_conf_backup = AlertTests.get_app("configuration-backup")
 
         # create DNS rule
-        newRule = createDNSRule(IPSEC_HOST,IPSEC_HOST_NAME)
+        newRule = createDNSRule(DNS_HOST,DNS_HOST_NAME)
         network_settings['dnsSettings']['staticEntries']['list'] = [newRule]
         uvmContext.networkManager().setNetworkSettings(network_settings)
 
