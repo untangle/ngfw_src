@@ -335,52 +335,52 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
             try{
-                    JSONSerializer serializer = UvmContextFactory.context().getSerializer();
-                    Iterator<?> keys = defaults.keys();
-                    while( keys.hasNext()){
-                        String key = (String) keys.next();
-                        if(key.equals("rules")){
-                            /**
-                             * Special handling for rules:  Replace but keep existing enabled values.
-                             */
-                            List<IntrusionPreventionRule> rules = settings.getRules();
+                JSONSerializer serializer = UvmContextFactory.context().getSerializer();
+                Iterator<?> keys = defaults.keys();
+                while( keys.hasNext()){
+                    String key = (String) keys.next();
+                    if(key.equals("rules")){
+                        /**
+                         * Special handling for rules:  Replace but keep existing enabled values.
+                         */
+                        List<IntrusionPreventionRule> rules = settings.getRules();
 
-                            JSONArray defaultRules = defaults.getJSONObject(key).getJSONArray("list");
-                            for(int i = 0; i < defaultRules.length(); i++){
-                                IntrusionPreventionRule defaultRule = (IntrusionPreventionRule) serializer.fromJSON(defaultRules.getString(i));
+                        JSONArray defaultRules = defaults.getJSONObject(key).getJSONArray("list");
+                        for(int i = 0; i < defaultRules.length(); i++){
+                            IntrusionPreventionRule defaultRule = (IntrusionPreventionRule) serializer.fromJSON(defaultRules.getString(i));
 
-                                boolean found = false;
-                                for(int j = 0; j < rules.size(); j++){
-                                    IntrusionPreventionRule rule = rules.get(j);
-                                    if(rule.getId().equals(defaultRule.getId())){
-                                        defaultRule.setEnabled(rule.getEnabled());
-                                        rules.set(j, defaultRule);
-                                        found = true;
-                                    }
-                                }
-                                if(found == false){
-                                    rules.add(defaultRule);
+                            boolean found = false;
+                            for(int j = 0; j < rules.size(); j++){
+                                IntrusionPreventionRule rule = rules.get(j);
+                                if(rule.getId().equals(defaultRule.getId())){
+                                    defaultRule.setEnabled(rule.getEnabled());
+                                    rules.set(j, defaultRule);
+                                    found = true;
                                 }
                             }
-                        }else{
-                            try{
-                                /**
-                                 * For everything else, perform a straight merge assuming methods exist.
-                                 */
-                                Method getMethod = this.settings.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
-                                Method setMethod = this.settings.getClass().getMethod("set" + key.substring(0, 1).toUpperCase() + key.substring(1), defaults.get(key).getClass());
-                                if(defaults.get(key).getClass().toString().equals("JSONObject")){
-                                    setMethod.invoke(this.settings, merge((JSONObject) defaults.get(key), (JSONObject) getMethod.invoke(this.settings)));
-                                }else{
-                                    setMethod.invoke(this.settings, defaults.get(key));                                    
-                                }
-                            }catch(Exception e){
-                                logger.error("synchronizeSettingsWithDefaults: method exception", e);
+                            if(found == false){
+                                rules.add(defaultRule);
                             }
                         }
-
+                    }else{
+                        try{
+                            /**
+                             * For everything else, perform a straight merge assuming methods exist.
+                             */
+                            Method getMethod = this.settings.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1));
+                            Method setMethod = this.settings.getClass().getMethod("set" + key.substring(0, 1).toUpperCase() + key.substring(1), defaults.get(key).getClass());
+                            if(defaults.get(key).getClass().toString().equals("JSONObject")){
+                                setMethod.invoke(this.settings, merge((JSONObject) defaults.get(key), (JSONObject) getMethod.invoke(this.settings)));
+                            }else{
+                                setMethod.invoke(this.settings, defaults.get(key));                                    
+                            }
+                        }catch(Exception e){
+                            logger.error("synchronizeSettingsWithDefaults: method exception", e);
+                        }
                     }
-                    changed = true;
+
+                }
+                changed = true;
                 
             }catch(Exception e){
                 logger.error("synchronizeSettingsWithDefaults: json parsing - ", e);
@@ -416,63 +416,63 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
             try{
-                    List<IntrusionPreventionRule> classificationRules = new LinkedList<>();
-                    List<IntrusionPreventionRuleCondition> classificationConditions = null;
+                List<IntrusionPreventionRule> classificationRules = new LinkedList<>();
+                List<IntrusionPreventionRuleCondition> classificationConditions = null;
 
-                    classificationConditions = new LinkedList<>();
-                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
-                        new IntrusionPreventionRule("default", classificationConditions, "Low Priority", false, CLASSIFICATION_ID_PREFIX + "_4")
-                    );
-                    classificationConditions = new LinkedList<>();
-                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
-                        new IntrusionPreventionRule("log", classificationConditions, "Medium Priority", false, CLASSIFICATION_ID_PREFIX + "_3")
-                    );
-                    classificationConditions = new LinkedList<>();
-                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
-                        new IntrusionPreventionRule("blocklog", classificationConditions, "High Priority", false, CLASSIFICATION_ID_PREFIX + "_2")
-                    );
-                    classificationConditions = new LinkedList<>();
-                    classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
-                    classificationRules.add(
-                        new IntrusionPreventionRule("blocklog", classificationConditions, "Critical Priority", false, CLASSIFICATION_ID_PREFIX + "_1")
-                    );
+                classificationConditions = new LinkedList<>();
+                classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                classificationRules.add(
+                    new IntrusionPreventionRule("default", classificationConditions, "Low Priority", false, CLASSIFICATION_ID_PREFIX + "_4")
+                );
+                classificationConditions = new LinkedList<>();
+                classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                classificationRules.add(
+                    new IntrusionPreventionRule("log", classificationConditions, "Medium Priority", false, CLASSIFICATION_ID_PREFIX + "_3")
+                );
+                classificationConditions = new LinkedList<>();
+                classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                classificationRules.add(
+                    new IntrusionPreventionRule("blocklog", classificationConditions, "High Priority", false, CLASSIFICATION_ID_PREFIX + "_2")
+                );
+                classificationConditions = new LinkedList<>();
+                classificationConditions.add(new IntrusionPreventionRuleCondition( "CLASSTYPE", "=", ""));
+                classificationRules.add(
+                    new IntrusionPreventionRule("blocklog", classificationConditions, "Critical Priority", false, CLASSIFICATION_ID_PREFIX + "_1")
+                );
 
-                    Matcher match = null;
-                    for(String line : classificationContents.split("\\r?\\n")){
-                        Matcher matcher = CLASSIFICATION_PATTERN.matcher(line);
-                        if(matcher.find()){
-                            for(IntrusionPreventionRule rule : classificationRules){
-                                String id = rule.getId();
-                                if(id.substring(id.length() -1).equals(matcher.group(3))){
-                                    classificationConditions = rule.getConditions();
-                                    String value = classificationConditions.get(0).getValue();
-                                    classificationConditions.get(0).setValue( value + ( value.isEmpty() ? ""  : ",") + matcher.group(1));
-                                    rule.setConditions(classificationConditions);
-                                }
+                Matcher match = null;
+                for(String line : classificationContents.split("\\r?\\n")){
+                    Matcher matcher = CLASSIFICATION_PATTERN.matcher(line);
+                    if(matcher.find()){
+                        for(IntrusionPreventionRule rule : classificationRules){
+                            String id = rule.getId();
+                            if(id.substring(id.length() -1).equals(matcher.group(3))){
+                                classificationConditions = rule.getConditions();
+                                String value = classificationConditions.get(0).getValue();
+                                classificationConditions.get(0).setValue( value + ( value.isEmpty() ? ""  : ",") + matcher.group(1));
+                                rule.setConditions(classificationConditions);
                             }
                         }
                     }
+                }
 
-                    List<IntrusionPreventionRule> rules = settings.getRules();
-                    for(IntrusionPreventionRule classificationRule : classificationRules){
-                        boolean found = false;
-                        for(int j = 0; j < rules.size(); j++){
-                            IntrusionPreventionRule rule = rules.get(j);
-                            if(rule.getId().equals(classificationRule.getId())){
-                                classificationRule.setEnabled(rule.getEnabled());
-                                rules.set(j, classificationRule);
-                                found = true;
-                            }
-                        }
-                        if(found == false){
-                            rules.add(0, classificationRule);
+                List<IntrusionPreventionRule> rules = settings.getRules();
+                for(IntrusionPreventionRule classificationRule : classificationRules){
+                    boolean found = false;
+                    for(int j = 0; j < rules.size(); j++){
+                        IntrusionPreventionRule rule = rules.get(j);
+                        if(rule.getId().equals(classificationRule.getId())){
+                            classificationRule.setEnabled(rule.getEnabled());
+                            rules.set(j, classificationRule);
+                            found = true;
                         }
                     }
-                    changed = true;
-                
+                    if(found == false){
+                        rules.add(0, classificationRule);
+                    }
+                }
+                changed = true;
+            
             }catch(Exception e){
                 logger.error("synchronizeSettingsWithClassifications: parsing - ", e);
             }
@@ -493,22 +493,22 @@ public class IntrusionPreventionApp extends AppBase
             return false;
         }
 
-            List<IntrusionPreventionVariable> variables = this.settings.getVariables();
-            for ( String line : result.getOutput().split("\\r?\\n") ){
-                String variableLine[] = line.split("=");
+        List<IntrusionPreventionVariable> variables = this.settings.getVariables();
+        for ( String line : result.getOutput().split("\\r?\\n") ){
+            String variableLine[] = line.split("=");
 
-                Boolean found = false;
-                for( IntrusionPreventionVariable variable : variables){
-                    if(variable.getName().equals(variableLine[0])){
-                        found = true;
-                    }
-                }
-                if(found == false){
-                    variables.add( new IntrusionPreventionVariable(variableLine[0], variableLine[1]) );
+            Boolean found = false;
+            for( IntrusionPreventionVariable variable : variables){
+                if(variable.getName().equals(variableLine[0])){
+                    found = true;
                 }
             }
-            this.settings.setVariables(variables);
-            changed = true;
+            if(found == false){
+                variables.add( new IntrusionPreventionVariable(variableLine[0], variableLine[1]) );
+            }
+        }
+        this.settings.setVariables(variables);
+        changed = true;
         return changed;
     }
 
