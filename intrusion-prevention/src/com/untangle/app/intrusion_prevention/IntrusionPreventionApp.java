@@ -335,11 +335,6 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
             try{
-                String defaultsMd5sum = md5sum(defaultsContents);
-                if(!defaultsMd5sum.equals(this.settings.getDefaultsMd5sum())){
-                    /**
-                     * Only sync if file has changed.
-                     */
                     JSONSerializer serializer = UvmContextFactory.context().getSerializer();
                     Iterator<?> keys = defaults.keys();
                     while( keys.hasNext()){
@@ -385,9 +380,8 @@ public class IntrusionPreventionApp extends AppBase
                         }
 
                     }
-                    this.settings.setDefaultsMd5sum(defaultsMd5sum);
                     changed = true;
-                }
+                
             }catch(Exception e){
                 logger.error("synchronizeSettingsWithDefaults: json parsing - ", e);
             }
@@ -422,11 +416,6 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
             try{
-                String classificationMd5sum = md5sum(classificationContents);
-                if(!classificationMd5sum.equals(this.settings.getClassificationMd5sum())){
-                    /**
-                     * Only sync if file has changed.
-                     */
                     List<IntrusionPreventionRule> classificationRules = new LinkedList<>();
                     List<IntrusionPreventionRuleCondition> classificationConditions = null;
 
@@ -482,11 +471,8 @@ public class IntrusionPreventionApp extends AppBase
                             rules.add(0, classificationRule);
                         }
                     }
-
-                    this.settings.setClassificationMd5sum(classificationMd5sum);
                     changed = true;
-                }
-
+                
             }catch(Exception e){
                 logger.error("synchronizeSettingsWithClassifications: parsing - ", e);
             }
@@ -507,8 +493,6 @@ public class IntrusionPreventionApp extends AppBase
             return false;
         }
 
-        String variablesMd5sum = md5sum(result.getOutput());
-        if(!variablesMd5sum.equals(this.settings.getVariablesMd5sum())){
             List<IntrusionPreventionVariable> variables = this.settings.getVariables();
             for ( String line : result.getOutput().split("\\r?\\n") ){
                 String variableLine[] = line.split("=");
@@ -524,9 +508,7 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
             this.settings.setVariables(variables);
-            this.settings.setVariablesMd5sum(variablesMd5sum);
             changed = true;
-        }
         return changed;
     }
 
