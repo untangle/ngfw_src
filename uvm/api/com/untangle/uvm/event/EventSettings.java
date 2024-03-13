@@ -18,7 +18,7 @@ import com.untangle.uvm.event.SyslogRule;
 @SuppressWarnings("serial")
 public class EventSettings implements Serializable, JSONString
 {
-    private Integer version = 3;
+    private Integer version = 4;
 
     private LinkedList<AlertRule> alertRules = null;
     private LinkedList<SyslogRule> syslogRules = null;
