@@ -406,6 +406,17 @@ Ext.define('Ung.config.network.Interface', {
                     blankText: 'Address must be specified.'.t(),
                     vtype: 'ip4AddExcldDflt',
                     validator: function(value) {
+                        // Validation for not allowing network and broadcast address of selected netmask
+                        try {
+                            var staticPrefix = this.up('window').down('#intfcNetmask').getValue(),
+                                intfcNetMask = Util.getV4NetmaskMap()[staticPrefix];
+                            if(value == Util.getNetwork(value, intfcNetMask) || value == Util.getBroadcast(value, intfcNetMask)) {
+                                return Ext.String.format('Entered address is network or broadcast address of selected Netmask {0}.'.t(), intfcNetMask);
+                            }
+                        } catch(er) {
+                            console.log(er);
+                        }
+                        // Validation for not allowing conflicing addresses
                         var intfName = this.up('window').down('#iterfacename').getValue(),
                             intfStore = this.up('config-network').getViewModel().getStore('interfaces'),
                             intfRecName;   
@@ -435,6 +446,7 @@ Ext.define('Ung.config.network.Interface', {
                         value: '{intf.v4StaticPrefix}',
                     },
                     fieldLabel: 'Netmask'.t(),
+                    itemId: 'intfcNetmask',
                     allowBlank: false,
                     editable: false,
                     store: Util.getV4NetmaskList(false, true),
@@ -585,6 +597,18 @@ Ext.define('Ung.config.network.Interface', {
                         emptyText: '[enter IPv4 address]'.t(),
                         allowBlank: false,
                         validator: function(value) {
+                            // Validation for not allowing network and broadcast address of selected netmask                           
+                            try {
+                                var staticPrefix = this.up("ungrid").getSelectionModel().getSelection()[0].get('staticPrefix'),
+                                    aliasNetMask = Util.getV4NetmaskMap()[staticPrefix];
+
+                                if(value == Util.getNetwork(value, aliasNetMask) || value == Util.getBroadcast(value, aliasNetMask)) {
+                                    return Ext.String.format('Entered address is network or broadcast address of selected Netmask {0}.'.t(), aliasNetMask);
+                                }
+                            } catch(err) {
+                                console.log(err);
+                            }
+                            // Validation for not allowing duplicate IP Addresses
                             if(this.dirty) {
                                 // Check if current value is eqaul to original value
                                 if(this.value === this.originalValue) return true;

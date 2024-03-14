@@ -907,6 +907,29 @@ Ext.define('Ung.util.Util', {
     },
 
     /**
+     * From the specified IP address and netmask, return the broadcast.
+     * For example, 192.168.1.1/255.255.255.0 returns 192.168.1.255
+     * @param {*} ip
+     * @param {*} netmask
+     */
+    getBroadcast: function(ip, netmask){
+        var network = this.getNetwork(ip, netmask);
+        var networkOctets = network.split('.');
+        var netMaskOctets = netmask.split('.');
+
+        // Convert octets to integers
+        var networkInt = networkOctets.map(function(octet) { return parseInt(octet, 10); });
+        var netmaskInt = netMaskOctets.map(function(octet) { return parseInt(octet, 10); });
+
+        // Calculate the the broadcast address
+        var broadcastOctets = networkInt.map(function(octet, index) { return (octet & netmaskInt[index]) | (~netmaskInt[index] & 255); });
+    
+        // Format the broadcast address
+        var broadcastAddr = broadcastOctets.join('.');
+        return broadcastAddr;
+    },
+
+    /**
      * Increment the passed IP
      * @param  string ip      IP address to increment.
      * @param  int inc        Number to increment by.
