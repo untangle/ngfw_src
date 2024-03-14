@@ -5,8 +5,8 @@ Ext.define('Ung.widget.InterfaceItem', {
     bind: {
         html: '<p class="name" style="display: {iface.isWan ? \'block\' : \'none\'};">{iface.name}<sup style="display: {(iface.vrrpEnabled && iface.vrrpMaster) ? \'inline-block\' : \'none\'}">VRRP</sup></p>' +
             '<div class="speeds">' +
-            '<div class="speed_up"><i class="fa fa-caret-down fa-lg"></i> <span>{inbound} kB/s</span></div>' +
-            '<div class="speed_down"><i class="fa fa-caret-up fa-lg"></i> <span>{outbound} kB/s</span></div>' +
+            '<div class="speed_up"><i class="fa fa-caret-down fa-lg"></i> <span>{inbound}</span></div>' +
+            '<div class="speed_down"><i class="fa fa-caret-up fa-lg"></i> <span>{outbound}</span></div>' +
             '</div>' +
             '<p class="name" style="display: {!iface.isWan ? \'block\' : \'none\'};">{iface.name}<sup style="display: {(iface.vrrpEnabled && iface.vrrpMaster) ? \'inline-block\' : \'none\'}">VRRP</sup></p>' +
             // '<p class="name">{iface.vrrpEnabled}</p>' +
@@ -21,7 +21,7 @@ Ext.define('Ung.widget.InterfaceItem', {
                 var stats = get('stats').getData(),
                     propStr = 'interface_' + get('iface.interfaceId') + '_' + field + 'Bps';
                 if (stats.hasOwnProperty(propStr)) {
-                    return (stats[propStr]/1024).toFixed(2);
+                    return Util.bytesRenderer(stats[propStr],true);
                 } else {
                     return '-';
                 }
@@ -31,7 +31,7 @@ Ext.define('Ung.widget.InterfaceItem', {
                 var stats = get('stats').getData(),
                     propStr = 'interface_' + get('iface.interfaceId') + '_' + field + 'Bps';
                 if (stats.hasOwnProperty(propStr)) {
-                    return (stats[propStr]/1024).toFixed(2);
+                    return Util.bytesRenderer(stats[propStr],true);
                 } else {
                     return '-';
                 }
