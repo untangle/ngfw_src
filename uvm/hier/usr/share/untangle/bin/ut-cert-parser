@@ -3,7 +3,7 @@
 import json
 import sys
 import os
-
+import re
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
@@ -32,6 +32,29 @@ if len(sys.argv) < 2:
     
 if not os.access(sys.argv[1],os.R_OK):
     errorExit("Unable to read file")
+
+
+try:
+    with open(sys.argv[1], 'r') as input_file:
+        content = input_file.read()
+    is_found = False
+    # check if file contains trailing spaces with line endings
+    # check if file contains trailing spaces with CRLF endings or CRLF endings
+    if re.search(r' \n', content) or re.search(r' \r\n', content) or re.search(r' \r\n', content):
+        content = content.replace(' \n', '\n')
+        content = re.sub(r' [ \t]*\r?\n', '\n', content)
+        is_found = True
+    else:
+        pass
+
+    if is_found:
+        with open(sys.argv[1], 'w') as output_file:
+            output_file.write(content)
+except:
+    #uploaded pfx file, this code may throw an exception
+    #added unit test case, pass the exception, failure handled by
+    #code below
+    pass
 
 list = pem.parse_file(sys.argv[1])
 

@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.File;
+import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -210,12 +211,18 @@ public class CertificateManagerImpl implements CertificateManager
             FileOutputStream fileStream = new FileOutputStream(CERTIFICATE_PARSER_FILE);
             fileStream.write(fileItem.get());
             fileStream.close();
-
+            ExecManagerResult result;
             // call the external utility to parse the uploaded file
             String certData = UvmContextFactory.context().execManager().execOutput(CERTIFICATE_PARSER_SCRIPT + " " + CERTIFICATE_PARSER_FILE + " " + argument);
-
+            if (certData != null && certData.contains("errorData")) {
+                JSONObject jsonCertData = new JSONObject(certData);
+                //errorData is present, fetch the value
+                String errorData = jsonCertData.optString("errorData");
+                result = new ExecManagerResult(1, errorData);
+            } else {
+                result = new ExecManagerResult(0, certData);
+            }
             // returned the results 
-            ExecManagerResult result = new ExecManagerResult(0, certData);
             return (result);
         }
     }
