@@ -133,10 +133,13 @@ Ext.define('Ung.cmp.GridFilterController', {
             var str = [], filtered = false;
 
             Ext.Array.each(cols, function (col) {
-                var val = item.get(col.dataIndex);
+                var val = item.get(col.text !== 'Tags'.t() ? col.dataIndex : "tags");
+                if(val && col.text === 'Tags'.t()){
+                    val = Converter.tagsFilterText(val);
+                }
                 if (!val) { return; }
-                var tableConfigColumn = TableConfig.getTableColumn(null, col.dataIndex);
-                str.push(typeof val === 'object' ? Renderer.timestamp(val) : ( tableConfigColumn && tableConfigColumn['renderer'] ? tableConfigColumn['renderer'](val): val.toString()) ) ;
+                var tableConfigColumn = TableConfig.getTableColumn(null, col.text !== 'Tags'.t() ? col.dataIndex : "tags");
+                str.push(typeof val === 'object' ? Renderer.timestampUnixRenderer(val) : ( tableConfigColumn && tableConfigColumn['renderer'] ? tableConfigColumn['renderer'](val): val.toString()) ) ;
             });
             if (regex.test(str.join('|'))) { filtered = true; }
 
