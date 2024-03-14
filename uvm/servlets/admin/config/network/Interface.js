@@ -411,7 +411,7 @@ Ext.define('Ung.config.network.Interface', {
                             var staticPrefix = this.up('window').down('#intfcNetmask').getValue(),
                                 intfcNetMask = Util.getV4NetmaskMap()[staticPrefix];
                             if(value == Util.getNetwork(value, intfcNetMask) || value == Util.getBroadcast(value, intfcNetMask)) {
-                                return Ext.String.format('Entered address is network or broadcast address of selected Netmask {0}.'.t(), intfcNetMask);
+                                return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}.'.t(), intfcNetMask);
                             }
                         } catch(er) {
                             console.log(er);
@@ -603,7 +603,7 @@ Ext.define('Ung.config.network.Interface', {
                                     aliasNetMask = Util.getV4NetmaskMap()[staticPrefix];
 
                                 if(value == Util.getNetwork(value, aliasNetMask) || value == Util.getBroadcast(value, aliasNetMask)) {
-                                    return Ext.String.format('Entered address is network or broadcast address of selected Netmask {0}.'.t(), aliasNetMask);
+                                    return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}'.t(), aliasNetMask);
                                 }
                             } catch(err) {
                                 console.log(err);
