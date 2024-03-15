@@ -599,9 +599,9 @@ Ext.define('Ung.config.network.Interface', {
                         validator: function(value) {
                             // Validation for not allowing network and broadcast address of selected netmask                           
                             try {
-                                var staticPrefix = this.up("ungrid").getSelectionModel().getSelection()[0].get('staticPrefix'),
+                                var selection = this.up("ungrid").getSelectionModel().getSelection()[0],
+                                    staticPrefix = selection ? selection.get('staticPrefix') : 24,
                                     aliasNetMask = Util.getV4NetmaskMap()[staticPrefix];
-
                                 if(value == Util.getNetwork(value, aliasNetMask) || value == Util.getBroadcast(value, aliasNetMask)) {
                                     return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}'.t(), aliasNetMask);
                                 }
