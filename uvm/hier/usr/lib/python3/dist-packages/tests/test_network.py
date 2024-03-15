@@ -1117,56 +1117,113 @@ class NetworkTests(NGFWTestCase):
         assert (pingResult == 0)
         assert (onlineResults == 0)
 
-    # Test MTU settings
     def test_120_mtu(self):
-        mtu_set_value = '1460'
-        target_device = 'eth0'
-        mtu_auto_value = None
-        # Get current MTU value due to bug 11599
-        arg = "ip addr show dev %s" % target_device
-        ipAddrShowResults = subprocess.check_output(arg, shell=True)
-        ipAddrShowResults = ipAddrShowResults.decode("utf-8")
-        # print("ipAddrShowResults: %s" % ipAddrShowResults)
-        reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
-        mtuValue = None
-        if reValue:
-             mtu_auto_value = reValue.group(1)
-        # print("mtu_auto_value: %s" % mtu_auto_value)
+        # Test MTU settings
+
+        # An Ethernet device's default MTU is set by the driver.
+        # In most cases we've ever seen, it's 1500.  However, we don't know that for certain for all drivers.
+        # This test assumes that we come in with the default value from the driver.
+        # After the test is finished, we'll set back to what we found.
+
+        # Common MTU values
+        # None and 0 are "auto"
+        mtus = [None, 0, 1460, 1500, 9000]
+
         netsettings = uvmContext.networkManager().getNetworkSettings()
-        # Set eth0 to 1460
+
+        # Perform MTU tests against WAN devices.
+        # Since tests are run from LAN devices, if something goes bad, 
+        # we won't put the system in a bad state.
+
+        # Get WAN interfaces
+        wan_physical_devices = []
+        # PPPoE interfaces use a symbolic name like ppp0 on top of a physical name like eth0
+        wan_pppoe_devices = {}
+        default_mtu_values = []
+        for interface in netsettings["interfaces"]["list"]:
+            if interface["isWan"] is not True:
+                continue
+            if interface.get("configType") == 'DISABLED':
+                continue
+            physical_device = interface["physicalDev"]
+            wan_physical_devices.append(physical_device)
+
+            if interface["v4ConfigType"] == "PPPOE":
+                wan_pppoe_devices[physical_device] = interface["symbolicDev"]
+
+            # Get default MTU
+            mtu_auto_value = None
+            ip_addr_results = subprocess.check_output(f"ip link show {physical_device}", shell=True)
+            re_value = re.search(r'mtu\s(\S+)', ip_addr_results.decode("utf-8"))
+            if re_value:
+                mtu_auto_value = re_value.group(1)
+            default_mtu_values.append(mtu_auto_value)
+
+        print(f"wan_physical_devices={wan_physical_devices}")
+        print(f"wan_pppoe_devices={wan_pppoe_devices}")
+        print(f"default_mtu_values={default_mtu_values}")
+
+        # Most tests use asserts to stop the test on the first failure.
+        # However, because we're trying to preserve the concept of a "default"
+        # MTU value, we can't break out of the test.
+        # Instead, run these tests in try/except and throw any exceptions
+        # generared by an AssertException into a list of failure.
+        # Then after success or failure, we can reset the MTU back and
+        # assrt on the failure list being empty or not.
+        failures = []
+        try:
+            # pppoe_failures = []
+            for mtu in mtus:
+                # Set MTU on devices
+                print(f"\ntesting mtu={mtu}")
+                for wan_index, device in enumerate(wan_physical_devices):
+                    for i in range(len(netsettings['devices']['list'])):
+                        if netsettings['devices']['list'][i]['deviceName'] == device:
+                            netsettings['devices']['list'][i]['mtu'] = mtu
+                            break
+
+                uvmContext.networkManager().setNetworkSettings(netsettings)
+
+                for wan_index, device in enumerate(wan_physical_devices):
+                    # Get the device MTU
+                    ip_addr_results = subprocess.check_output(f"ip link show {physical_device}", shell=True)
+                    re_value = re.search(r'mtu\s(\S+)', ip_addr_results.decode("utf-8"))
+                    current_mtu_value = None
+                    if re_value:
+                        current_mtu_value = re_value.group(1)
+                    print(f"current: {device} {current_mtu_value}")
+                    if mtu is None or mtu == 0:
+                        expected_mtu = default_mtu_values[wan_index]
+                    else:
+                        expected_mtu = mtu
+                    print(f"mtu match: {device} {current_mtu_value}={expected_mtu}")
+                    assert current_mtu_value == str(expected_mtu), f"{device}: current_mtu_value={current_mtu_value} == expected_mtu={expected_mtu}"
+
+                    if device in wan_pppoe_devices:
+                        pppoe_device = wan_pppoe_devices[device]
+                        print(f"pppoe_device={pppoe_device}")
+                        # On a bad MTU value, the PPPOE device won't come up
+                        result = subprocess.call(f"ip link show | grep -q {pppoe_device}", shell=True)
+                        assert result == 0, f"found pppoe_device={pppoe_device}"
+
+                    if len(failures) > 0:
+                        # No need to keep running if we have a failure
+                        break
+        except Exception as e:
+            failures.append(e)
+
+        # Reset back to defaults
+        # Settins back to the "auto" value
         for i in range(len(netsettings['devices']['list'])):
-            if netsettings['devices']['list'][i]['deviceName'] == target_device:
-                netsettings['devices']['list'][i]['mtu'] = mtu_set_value
-                break
+            netsettings['devices']['list'][i]['mtu'] = 0
+
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        # Verify the MTU is set
-        arg = "ip addr show dev %s" % target_device
-        ipAddrShowResults = subprocess.check_output(arg, shell=True)
-        ipAddrShowResults = ipAddrShowResults.decode("utf-8")
-        # print("ipAddrShowResults: %s" % ipAddrShowResults)
-        reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
-        mtuValue = None
-        if reValue:
-             mtuValue = reValue.group(1)
-        # print("mtuValue: %s" % mtuValue)
-        # manually set MTU back to original value due to bug 11599
-        netsettings['devices']['list'][i]['mtu'] = mtu_auto_value
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        # Set MTU back to auto
-        del netsettings['devices']['list'][i]['mtu']
-        uvmContext.networkManager().setNetworkSettings(netsettings)
-        arg = "ip addr show dev %s" % target_device
-        ipAddrShowResults = subprocess.check_output(arg, shell=True)
-        ipAddrShowResults = ipAddrShowResults.decode("utf-8")
-        # print("ipAddrShowResults: %s" % ipAddrShowResults)
-        reValue = re.search(r'mtu\s(\S+)', ipAddrShowResults)
-        mtu2Value = None
-        if reValue:
-             mtu2Value = reValue.group(1)
-        # print("mtu2Value: %s " % mtu2Value)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        assert (mtuValue == mtu_set_value)
-        assert (mtu2Value == mtu_auto_value)
+
+        # Manually set interface mtus back to original values
+        for index, device in enumerate(wan_physical_devices):
+            subprocess.check_output(f"ip link set {device} mtu {default_mtu_values[index]}", shell=True)
+
+        assert len(failures) == 0, ", ".join(map(str, failures))
 
     # SNMP, v1/v2enabled, v3 disabled
     def test_130_snmp_v1v2_only(self):
