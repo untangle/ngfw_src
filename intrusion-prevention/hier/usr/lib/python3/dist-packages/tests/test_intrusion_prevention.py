@@ -5,6 +5,7 @@ import datetime
 import unittest
 import pytest
 import runtests
+import json
 
 import glob
 import os
@@ -76,10 +77,11 @@ class IntrusionPreventionTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global app, appSettings
+        global app, appSettings, app_id
         cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
         app = IntrusionPreventionTests._app
         appSettings = IntrusionPreventionTests._appSettings
+        app_id = cls.get_app_id()
 
     @staticmethod
     def module_name():
@@ -88,6 +90,84 @@ class IntrusionPreventionTests(NGFWTestCase):
     @staticmethod
     def vendorName():
         return "Untangle"
+
+    @staticmethod
+    def backup_files():
+        files_to_backup = [
+            "/usr/share/untangle-suricata-config/current/templates/defaults.js",
+            "/usr/share/untangle-suricata-config/current/rules/classification.config",
+            "/etc/suricata/suricata.yaml"
+        ]
+        backup_dir = "/tmp/backup"
+        os.makedirs(backup_dir, exist_ok=True)
+        for file_path in files_to_backup:
+            if os.path.exists(file_path):
+                shutil.copy(file_path, os.path.join(backup_dir, os.path.basename(file_path)))   
+
+    @staticmethod
+    def modify_conf_value():   
+        default_js_path = "/usr/share/untangle-suricata-config/current/templates/defaults.js"
+        new_value = "111111111"
+    
+        # Read the content of default.js file
+        with open(default_js_path, 'r') as file:
+            data = json.load(file)
+
+        # Modify the value where type is SYSTEM_MEMORY in rules list
+        for rule in data['rules']['list']:
+            for condition in rule['conditions']['list']:
+                if condition['type'] == 'SYSTEM_MEMORY':
+                    condition['value'] = new_value
+
+        # Write the modified content back to the file
+        with open(default_js_path, 'w') as file:
+            json.dump(data, file, indent=4)
+        
+        # Add new entry to classification.config
+        classification_config_path = "/usr/share/untangle-suricata-config/current/rules/classification.config"
+        with open(classification_config_path, 'a') as file:
+            file.write("config classification: test-test,Test classification,1\n")
+
+        # Add new variable under vars in suricata.yaml
+        suricata_yaml_path = "/etc/suricata/suricata.yaml"
+        # Read the YAML file
+        with open(suricata_yaml_path, 'r') as file:
+            lines = file.readlines()
+
+        # Find the line where vars section ends
+        end_vars_index = lines.index('    ENIP_SERVER: "$HOME_NET"\n') + 1
+
+        # Insert the new value after the last line of the vars section
+        lines.insert(end_vars_index, '    TEST_PORTS: [80, 443]\n')
+
+        # Write the updated lines back to the file
+        with open(suricata_yaml_path, 'w') as file:
+            file.writelines(lines)
+
+    @staticmethod
+    def restore_original_files():
+        backup_dir = "/tmp/backup"
+        files_to_restore = [
+            "/usr/share/untangle-suricata-config/current/templates/defaults.js",
+            "/usr/share/untangle-suricata-config/current/rules/classification.config",
+            "/etc/suricata/suricata.yaml"
+        ]
+        for file_path in files_to_restore:
+            backup_file_path = os.path.join(backup_dir, os.path.basename(file_path))
+            if os.path.exists(backup_file_path):
+                shutil.copy(backup_file_path, file_path)
+                open(backup_file_path, 'w').close() 
+        # Remove the backup directory
+        if os.path.exists(backup_dir):
+            shutil.rmtree(backup_dir)
+
+    @staticmethod
+    def compare_files(file1_lines, file2_lines):
+        flag = False
+        for i in range(len(file2_lines)):
+            if file2_lines[i] != file1_lines[i]:
+                flag = True
+        return flag
 
     def test_009_IsRunning(self):
         result = subprocess.call("ps aux | grep suricata | grep -v grep >/dev/null 2>&1", shell=True)
@@ -538,5 +618,42 @@ class IntrusionPreventionTests(NGFWTestCase):
             print("&".join(post_data))
             signature_set = subprocess.check_output(global_functions.build_wget_command(output_file='-', post_data="&".join(post_data), uri="http://localhost/admin/download"), shell=True, stderr=subprocess.STDOUT).decode('utf-8').split("\n")
             assert len(signature_set) > 0, f"non empty signature set {file_name}"
+
+    @pytest.mark.slow
+    def test_settings_changes(self):
+        global app, appSettings 
+        original_file_path = "/usr/share/untangle/settings/intrusion-prevention/settings_"+str(app_id)+".js"
+        #Read original settings file
+        with open(original_file_path, "r") as original_file:
+            original_content = original_file.readlines()
+        # Take backup of original configuration file
+        self.backup_files()
+        # Update configurations files
+        self.modify_conf_value()
+        #Sync updated settings in current settings
+        app.synchronizeSettingsWithDefaults()
+        app.synchronizeSettingsWithClassifications()
+        app.synchronizeSettingsWithVariables()
+        app.setSettings(app.getSettings(), True, False)
+        # Read updated settings file
+        with open(original_file_path, "r") as updated_file:
+            updated_content = updated_file.readlines()
+        #Verify content of update_file and original_file should not be identical
+        is_updated = self.compare_files(original_content, updated_content)
+        assert is_updated, "Content of updated file matches original file"
+
+        #Restore updated configuration file to original files
+        self.restore_original_files()
+        #Restoring original settings as current settings
+        app.synchronizeSettingsWithDefaults()
+        app.synchronizeSettingsWithClassifications()
+        app.synchronizeSettingsWithVariables()
+        app.setSettings(app.getSettings(), True, False)
+        #Read Restored settings file
+        with open(original_file_path, "r") as restored_file:
+            restored_content = restored_file.readlines()
+        #Verify the content of restored_file and original_file is identical
+        is_restored = self.compare_files(original_content, restored_content)
+        assert not is_restored, "Content of updated file does not matches original file"
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)
