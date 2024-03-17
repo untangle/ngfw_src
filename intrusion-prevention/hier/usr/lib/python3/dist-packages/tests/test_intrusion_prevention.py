@@ -631,10 +631,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         # Update configurations files
         self.modify_conf_value()
         #Sync updated settings in current settings
-        app.synchronizeSettingsWithDefaults()
-        app.synchronizeSettingsWithClassifications()
-        app.synchronizeSettingsWithVariables()
-        app.setSettings(app.getSettings(), True, False)
+        app.synchronizeSettings()
         # Read updated settings file
         with open(original_file_path, "r") as updated_file:
             updated_content = updated_file.readlines()
@@ -645,10 +642,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         #Restore updated configuration file to original files
         self.restore_original_files()
         #Restoring original settings as current settings
-        app.synchronizeSettingsWithDefaults()
-        app.synchronizeSettingsWithClassifications()
-        app.synchronizeSettingsWithVariables()
-        app.setSettings(app.getSettings(), True, False)
+        app.synchronizeSettings()
         #Read Restored settings file
         with open(original_file_path, "r") as restored_file:
             restored_content = restored_file.readlines()

@@ -186,6 +186,16 @@ public class IntrusionPreventionApp extends AppBase
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
+        synchronizeSettings();
+
+        this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
+    }
+
+    /**
+     * Sync Settings with updated
+     *
+     */
+    public void synchronizeSettings(){
         boolean updated = false;
         updated = synchronizeSettingsWithDefaults();
         updated = synchronizeSettingsWithClassifications() || updated;
@@ -194,10 +204,7 @@ public class IntrusionPreventionApp extends AppBase
         if(updated){
             this.setSettings(this.settings, true, false);
         }
-
-        this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
     }
-
     /**
      * Get intrusion prevention settings.
      *
