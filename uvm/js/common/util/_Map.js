@@ -604,7 +604,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'integer' }
         },
         tags: {
-            col: { text: 'Tags'.t(), width: 160 },
+            col: { text: 'Tags'.t(), width: 160, renderer: Renderer.tagsFilterText },
             fld: { type: 'string' }
         },
         term: {

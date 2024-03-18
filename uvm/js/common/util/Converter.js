@@ -121,16 +121,5 @@ Ext.define('Ung.util.Converter', {
     // },
 
     // not implemented, see old Renderer
-    webRule: function () {},
-
-    tagsFilterText: function(tags){
-        if(tags.list && tags.list.length > 0){
-            var tagsList = [];
-            tagsList = Ext.Array.map(tags.list, function (tag){
-                return tag.name.trim() ? tag.name.trim() : "";
-            });
-            return tagsList.length > 0 ? tagsList.join(" ") : "";
-        }
-        return "";
-    } 
+    webRule: function () {}
 });

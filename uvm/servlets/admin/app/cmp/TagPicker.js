@@ -193,12 +193,18 @@ Ext.define('Ung.cmp.TagPicker', {
             // value.push(tag.name);
             value.push('<li class="tag-item"><i class="fa fa-tag"></i> ' + tag.name + '</li>');
         });
-        me.itemList.select('.tag-item').destroy();
-        me.itemList.select('.no-tags').destroy();
-        me.inputElCt.insertHtml('beforeBegin', value.join(''));
+        if( me.itemList != undefined){
+            me.itemList.select('.tag-item').destroy();
+            me.itemList.select('.no-tags').destroy();
+        }
+        if( me.inputElCt != undefined){
+            me.inputElCt.insertHtml('beforeBegin', value.join(''));
+        }
 
         if (tags.length === 0) {
-            me.inputElCt.insertHtml('beforeBegin', '<li class="no-tags"><em>' + '</em></li>');
+            if( me.inputElCt != undefined){
+                me.inputElCt.insertHtml('beforeBegin', '<li class="no-tags"><em>' + '</em></li>');
+            }
         }
     },
 
