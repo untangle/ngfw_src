@@ -276,10 +276,12 @@ public abstract class DecisionEngine
                             new WebFilterRedirectDetails( app.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, app.getAppTitle(), Reason.FILTER_RULE, host), 
                             sess, uri.toString(), header),
                         HttpRedirect.RedirectType.BLOCK));
-            } else if ((filterRule != null) && (filterRule.getFlagged())) {
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, bestCategory.getId(), filterRule.getRuleId(), filterRule.getDescription(), app.getName());
+            } else if (filterRule != null) {
+                //Rule should be triggered irrespective of Flag
+                if(filterRule.getFlagged()) isFlagged = true;
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.FALSE, isFlagged, Reason.FILTER_RULE, bestCategory.getId(), filterRule.getRuleId(), filterRule.getDescription(), app.getName());
                 app.logEvent(hbe);
-                app.incrementFlagCount();
+                if (isFlagged) app.incrementFlagCount();
                 return null;
             }
         }
