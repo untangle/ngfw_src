@@ -19,8 +19,12 @@ import java.util.LinkedList;
 public class IntrusionPreventionSettings implements Serializable, JSONString
 {
     private Integer version = 3;
+    /* deprecated - defaultsMd5sum, classificationMd5sum and variablesMd5sum - this remains so json serialization works */
+    @Deprecated
     private String defaultsMd5sum = "";
+    @Deprecated
     private String classificationMd5sum = "";
+    @Deprecated
     private String variablesMd5sum = "";
     private List<IntrusionPreventionRule> rules = new LinkedList<>();
     private List<IntrusionPreventionSignature> signatures = new LinkedList<>();
@@ -62,14 +66,17 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
 
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
-
+    @Deprecated
     public String getDefaultsMd5sum() { return defaultsMd5sum; }
+    @Deprecated
     public void setDefaultsMd5sum(String defaultsMd5sum) { this.defaultsMd5sum = defaultsMd5sum; }
-
+    @Deprecated
     public String getClassificationMd5sum() { return classificationMd5sum; }
+    @Deprecated
     public void setClassificationMd5sum(String classificationMd5sum) { this.classificationMd5sum = classificationMd5sum; }
-
+    @Deprecated
     public String getVariablesMd5sum() { return variablesMd5sum; }
+    @Deprecated
     public void setVariablesMd5sum(String variablesMd5sum) { this.variablesMd5sum = variablesMd5sum; }
 
     public List<IntrusionPreventionRule> getRules() { return rules; }

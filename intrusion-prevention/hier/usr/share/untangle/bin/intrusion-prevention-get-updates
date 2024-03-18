@@ -208,7 +208,7 @@ class Update:
         time_begin = time.time()
         app = Update.get_app()
         if app is not None:
-            app.setSettings(app.getSettings())
+            app.synchronizeSettings()
 
         if self.Debug is True:
             Logger.message("elapsed={elapsed:.2f}s".format(elapsed=time.time() - time_begin))
