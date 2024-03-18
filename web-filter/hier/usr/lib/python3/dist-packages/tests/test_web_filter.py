@@ -5,6 +5,7 @@ import datetime
 import calendar
 import socket
 import subprocess
+import copy
 
 import unittest
 import pytest
@@ -1394,5 +1395,32 @@ class WebFilterTests(WebFilterBaseTests):
         self.rules_clear()
         assert (result == 0)
 
+    def test_010_0000_rule_condition_web_filter_category(self):
+        """ Flag option should not be required for Web Filter Pass Rules to take effect"""
+        original_settings = self._app.getSettings()
+        host = "www.facebook.com"
+        # Make copy of settings so we can modify enable set category as block and flagged
+        settings = copy.deepcopy(original_settings)
+        for category in settings.get("categories").get("list"):
+            if category.get("name") == "Social Networking" :
+                category['blocked'] = True
+                category['flagged'] = True
+        self._app.setSettings(settings)
+        # Add a rule to pass the above category config , with Blocked as False and Flagged as False
+        self.rule_add("WEB_FILTER_CATEGORY","Social Networking", False, False)
+        result = self.get_web_request_results(url="http://www.facebook.com/", expected="blockpage")
+        assert (result != 0)
+        events = global_functions.get_events(self.displayName(),'All Web Events',None,5)
+        # Verify the Webfilter rule passes the Social Networking category access and  event is logged
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host", host,
+                                            "uri", "/",
+                                            'web_filter_blocked', False,
+                                            'web_filter_flagged', False)
+
+        assert(found)
+        # setting back original settings and deleting the previous added ru;e
+        self._app.setSettings(original_settings)
+        self.rules_clear()
 
 test_registry.register_module("web-filter", WebFilterTests)
