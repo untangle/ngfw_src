@@ -52,13 +52,19 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
             bind: '{settings.virtualAddressPool}',
             vtype: 'cidrBlock',
             allowBlank: false,
-            fieldLabel: 'L2TP Address Pool'.t()
+            fieldLabel: 'L2TP Address Pool'.t(),
+            validator: function(value) {
+                return value.split('/')[1] <= 30 ? true : 'Network identifier bits must be less than or equal to 30.'.t();
+            }
         },{
             xtype: 'textfield',
             bind: '{settings.virtualXauthPool}',
             vtype: 'cidrBlock',
             allowBlank: false,
-            fieldLabel: 'Xauth/IKEv2 Address Pool'.t()
+            fieldLabel: 'Xauth/IKEv2 Address Pool'.t(),
+            validator: function(value) {
+                return value.split('/')[1] <= 30 ? true : 'Network identifier bits must be less than or equal to 30.'.t();
+            }
         },{
             xtype: 'textfield',
             bind: '{settings.virtualDnsOne}',
