@@ -135,7 +135,14 @@ Ext.define('Ung.widget.MapDistribution', {
             }],
             tooltip: {
                 headerFormat: '',
-                pointFormat: '<strong>{point.country}</strong><br/><strong>{point.sessionCount}</strong> ' + 'sessions'.t() + '<br/><strong>{point.z}</strong> kB/s',
+                pointFormatter: function () {
+                    var str = '<strong>' + this.country + '</strong><br/><strong>' + this.sessionCount + '</strong> ' + 'sessions'.t() + '<br/>';
+                    var value = Util.bytesRenderer(this.z,true);
+                    var numberPart = parseFloat(value);
+                    var unitPart = value.replace(/[\d\s.]+/g, '');
+                    str += '<strong>' + numberPart + '</strong> ' + unitPart ;
+                    return str;
+                },
                 hideDelay: 0
             }
         });
