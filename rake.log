@@ -1,0 +1,6 @@
+JVM = java-17-openjdk-amd64
+SRC_HOME = .
+DevelBuild = true
+DevelEnvironment = remote
+[jsbuild ] ung-all: ["uvm/servlets/admin/app/overrides", "uvm/servlets/admin/app/model", "uvm/servlets/admin/app/store", "uvm/servlets/admin/app/controller", "uvm/servlets/admin/app/cmp", "uvm/servlets/admin/app/widget", "uvm/servlets/admin/app/view", "uvm/servlets/admin/app/Application.js"] -> usr/share/untangle/web/admin/script/ung-all.js
+[jslint  ] ["./uvm/servlets/admin"]
