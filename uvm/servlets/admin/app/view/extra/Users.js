@@ -166,6 +166,7 @@ Ext.define('Ung.view.extra.Users', {
             width: Renderer.tagsWidth,
             xtype: 'widgetcolumn',
             tdCls: 'tag-cell',
+            dataIndex: 'tags',
             // flex: 1,
             widget: {
                 xtype: 'tagpicker',

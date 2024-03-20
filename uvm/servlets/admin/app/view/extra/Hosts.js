@@ -257,6 +257,7 @@ Ext.define('Ung.view.extra.Hosts', {
             width: Renderer.tagsWidth,
             xtype: 'widgetcolumn',
             tdCls: 'tag-cell editable-column',
+            dataIndex: 'tags',
             widget: {
                 xtype: 'tagpicker',
                 bind: {

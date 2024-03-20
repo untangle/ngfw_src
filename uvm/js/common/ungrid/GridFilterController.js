@@ -135,8 +135,8 @@ Ext.define('Ung.cmp.GridFilterController', {
             Ext.Array.each(cols, function (col) {
                 var val = item.get(col.dataIndex);
                 if (!val) { return; }
-                var tableConfigColumn = TableConfig.getTableColumn(null, col.dataIndex);
-                str.push(typeof val === 'object' ? Renderer.timestamp(val) : ( tableConfigColumn && tableConfigColumn['renderer'] ? tableConfigColumn['renderer'](val): val.toString()) ) ;
+                var tableConfigColumn = TableConfig.getTableColumn(null,col.dataIndex);
+                str.push(val instanceof Date ? Renderer.timestampUnixRenderer(val) : ( tableConfigColumn && tableConfigColumn['renderer'] ? tableConfigColumn['renderer'](val): val.toString()) ) ;
             });
             if (regex.test(str.join('|'))) { filtered = true; }
 

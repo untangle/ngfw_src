@@ -173,6 +173,7 @@ Ext.define('Ung.view.extra.Devices', {
             width: Renderer.tagsWidth,
             xtype: 'widgetcolumn',
             tdCls: 'tag-cell',
+            dataIndex: 'tags',
             widget: {
                 xtype: 'tagpicker',
                 bind: {

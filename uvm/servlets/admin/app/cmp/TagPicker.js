@@ -57,6 +57,24 @@ Ext.define('Ung.cmp.TagPicker', {
         this.callParent(arguments);
     },
 
+    // initializing events to apply on the store
+    initEvents: function() {
+        this.callParent(arguments);
+        var v = this;
+        var grid = v.up('grid') ? v.up('grid') : v.up('panel').down('grid');
+        var store = grid.getStore();
+        if (store) {
+            // adding filterchange event
+            store.on('filterchange', this.onFilterChange, this);
+        }
+    },
+
+    // Handler for the store's filterchange event
+    onFilterChange: function(store) {
+        // Update tags when rows are filtered
+        this.setValue(this.getTags());
+    },
+
     createPicker: function() {
         var me = this;
         me.grid = Ext.create('Ext.grid.Panel', {
@@ -193,12 +211,18 @@ Ext.define('Ung.cmp.TagPicker', {
             // value.push(tag.name);
             value.push('<li class="tag-item"><i class="fa fa-tag"></i> ' + tag.name + '</li>');
         });
-        me.itemList.select('.tag-item').destroy();
-        me.itemList.select('.no-tags').destroy();
-        me.inputElCt.insertHtml('beforeBegin', value.join(''));
+        if( me.itemList != undefined){
+            me.itemList.select('.tag-item').destroy();
+            me.itemList.select('.no-tags').destroy();
+        }
+        if( me.inputElCt != undefined){
+            me.inputElCt.insertHtml('beforeBegin', value.join(''));
+        }
 
         if (tags.length === 0) {
-            me.inputElCt.insertHtml('beforeBegin', '<li class="no-tags"><em>' + '</em></li>');
+            if( me.inputElCt != undefined){
+                me.inputElCt.insertHtml('beforeBegin', '<li class="no-tags"><em>' + '</em></li>');
+            }
         }
     },
 
