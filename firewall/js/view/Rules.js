@@ -5,6 +5,7 @@ Ext.define('Ung.apps.firewall.view.Rules', {
     title: 'Rules'.t(),
     scrollable: true,
     withValidation: false,
+    onlyTcpUdpSupported: true,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

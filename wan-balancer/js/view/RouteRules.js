@@ -6,6 +6,7 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
     viewModel: true,
     scrollable: true,
     withValidation: false,
+    onlyTcpUdpSupported: true,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

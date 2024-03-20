@@ -4,6 +4,7 @@ Ext.define('Ung.apps.intrusionprevention.view.BypassRules', {
     itemId: 'bypass-rules',
     scrollable: true,
     withValidation: false,
+    onlyTcpUdpSupported: true,
     title: 'Bypass Rules'.t(),
 
     tbar: ['@add', '->', '@import', '@export'],

@@ -4,6 +4,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
     itemId: 'rules',
     title: 'Rules'.t(),
     withValidation: false,
+    onlyTcpUdpSupported: true,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

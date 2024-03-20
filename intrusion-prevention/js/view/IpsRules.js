@@ -5,6 +5,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
     title: 'Rules'.t(),
     scrollable: true,
     withValidation: false,
+    onlyTcpUdpSupported: true,
     controller: 'unintrusionrulegrid',
 
     viewConfig: {
