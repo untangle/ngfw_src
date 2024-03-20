@@ -482,23 +482,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             name:"PROTOCOL",
             displayName: "Protocol".t(),
             type: 'checkboxgroup',
-            values: [[
-                "TCP","TCP"
-            ],[
-                "UDP","UDP"
-            ],[
-                "ICMP","ICMP"
-            ],[
-                "GRE","GRE"
-            ],[
-                "ESP","ESP"
-            ],[
-                "AH","AH"
-            ],[
-                "SCTP","SCTP"
-            ],[
-                "OSPF","OSPF"
-            ]]
+            values: Util.getProtocolList(false)
         },{
             name:"SRC_INTF",
             displayName: "Source Interface".t(),

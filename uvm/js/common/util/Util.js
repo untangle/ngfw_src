@@ -1177,6 +1177,39 @@ Ext.define('Ung.util.Util', {
         }catch(err){
             throw err;
         }
-    }
+    },
+
+    /**
+     * Method to get list of supported protocols
+     * @param boolean onlyTcpUdp True if only TCP and UDP traffic is supported.
+     * @return List of protocols based on onlyTcpUdp flag value.
+     */
+    getProtocolList: function(onlyTcpUdp) {
+        if(onlyTcpUdp) {
+            return [[
+                "TCP","TCP"
+            ],[
+                "UDP","UDP"
+            ]];
+        } else {
+            return [[
+                "TCP","TCP"
+            ],[
+                "UDP","UDP"
+            ],[
+                "ICMP","ICMP"
+            ],[
+                "GRE","GRE"
+            ],[
+                "ESP","ESP"
+            ],[
+                "AH","AH"
+            ],[
+                "SCTP","SCTP"
+            ],[
+                "OSPF","OSPF"
+            ]];
+        }
+    },
     
 });
