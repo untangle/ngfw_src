@@ -19,7 +19,7 @@
         }
     ],
     "readOnly": true,
-    "table": "http_events",
+    "table": "ftp_events",
     "title": "FTP Top Blocked Clients",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
