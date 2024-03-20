@@ -57,6 +57,24 @@ Ext.define('Ung.cmp.TagPicker', {
         this.callParent(arguments);
     },
 
+    // initializing events to apply on the store
+    initEvents: function() {
+        this.callParent(arguments);
+        var v = this;
+        var grid = v.up('grid') ? v.up('grid') : v.up('panel').down('grid');
+        var store = grid.getStore();
+        if (store) {
+            // adding filterchange event
+            store.on('filterchange', this.onFilterChange, this);
+        }
+    },
+
+    // Handler for the store's filterchange event
+    onFilterChange: function(store) {
+        // Update tags when rows are filtered
+        this.setValue(this.getTags());
+    },
+
     createPicker: function() {
         var me = this;
         me.grid = Ext.create('Ext.grid.Panel', {
