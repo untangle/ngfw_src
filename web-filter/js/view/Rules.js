@@ -4,7 +4,7 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
     itemId: 'rules',
     title: 'Rules'.t(),
     withValidation: false,
-    onlyTcpUdpSupported: true,
+    editorFieldProtocolTcpUdpOnly: true,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

@@ -4,7 +4,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
     itemId: 'capture-rules',
     title: 'Capture Rules'.t(),
     withValidation: false,
-    onlyTcpUdpSupported: true,
+    editorFieldProtocolTcpUdpOnly: true,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

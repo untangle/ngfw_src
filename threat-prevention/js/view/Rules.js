@@ -5,7 +5,7 @@ Ext.define('Ung.apps.threatprevention.view.Rules', {
     title: 'Rules'.t(),
     scrollable: true,
     withValidation: false,
-    onlyTcpUdpSupported: true,
+    editorFieldProtocolTcpUdpOnly: true,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

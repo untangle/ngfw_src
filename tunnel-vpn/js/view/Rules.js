@@ -5,7 +5,7 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
     title: 'Rules'.t(),
     viewModel: true,
     withValidation: false,
-    onlyTcpUdpSupported: true,
+    editorFieldProtocolTcpUdpOnly: true,
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

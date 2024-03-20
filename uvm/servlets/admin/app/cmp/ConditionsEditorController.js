@@ -663,12 +663,9 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
      */
     getProtocolList: function() {
         var view = this.getView(),
-            ruleGrid = view.up('grid'),
-            onlyTcpUdpSupportedGrids = ['app-firewall-rules'];
+            ruleGrid = view.up('grid');
 
-        console.log("In getProtocolList");
-
-        if(ruleGrid && ruleGrid.onlyTcpUdpSupported)
+        if(ruleGrid && ruleGrid.editorFieldProtocolTcpUdpOnly)
             return Util.getProtocolList(true);
         else
             return Util.getProtocolList(false);
