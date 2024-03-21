@@ -40,7 +40,7 @@ Ext.define('Ung.widget.MapDistribution', {
                 for (i = 0; i < result.length; i += 1) {
                     var bubbleSize = 0;
                     if (result[i].kbps)
-                        bubbleSize = Math.round(result[i].kbps * 100) / 100;
+                        bubbleSize = result[i].kbps;
                     data.push({
                         lat: result[i].latitude,
                         lon: result[i].longitude,
@@ -137,7 +137,7 @@ Ext.define('Ung.widget.MapDistribution', {
                 headerFormat: '',
                 pointFormatter: function () {
                     var str = '<strong>' + this.country + '</strong><br/><strong>' + this.sessionCount + '</strong> ' + 'sessions'.t() + '<br/>';
-                    var value = Util.bytesRenderer(this.z,true);
+                    var value = Util.bytesRenderer(this.z * 1000,true);
                     var numberPart = parseFloat(value);
                     var unitPart = value.replace(/[\d\s.]+/g, '');
                     str += '<strong>' + numberPart + '</strong> ' + unitPart ;
