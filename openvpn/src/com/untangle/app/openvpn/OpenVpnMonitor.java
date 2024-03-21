@@ -351,9 +351,16 @@ class OpenVpnMonitor implements Runnable
      */
     private void killDeadConnections(BufferedWriter out, BufferedReader in) throws IOException
     {
+        List<OpenVpnRemoteClient> OpenVpnRemoteClients = this.app.getSettings().getRemoteClients();
         for (Iterator<ClientState> iter = activeMap.values().iterator(); iter.hasNext();) {
             ClientState stats = iter.next();
-
+            //If current client is disabled set isActive as false so connection can be removed
+            for(OpenVpnRemoteClient client : OpenVpnRemoteClients){
+                if(client.getEnabled() == false && stats.name.equals(client.getName())){
+                    stats.isActive = false;
+                    break;
+                }
+            }
             if (stats.isActive && stats.updated) continue;
 
             /* Remove any apps that are not active */
@@ -379,6 +386,7 @@ class OpenVpnMonitor implements Runnable
             }
         }
     }
+
 
     /**
      * Process a line read from the management channel
