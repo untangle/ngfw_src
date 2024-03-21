@@ -4,7 +4,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
     itemId: 'interfaces',
     scrollable: true,
     withValidation: false,
-    title: 'Interfaces'.t(),
+    title: 'Interfaces changed just for test'.t(),
     layout: 'border',
 
     tbar: [{
