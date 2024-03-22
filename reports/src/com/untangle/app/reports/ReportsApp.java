@@ -936,7 +936,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         if ( settings.getReportsUsers() != null) {
             for ( ReportsUser user : settings.getReportsUsers() ) {
                 if ( user.getOnlineAccess() ) {
-                    if ( user.trans_getPasswordHash() == null )
+                    if ( user.getPasswordHashShadow() == null )
                         throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": \"" + user.getEmailAddress() + "\" " + I18nUtil.marktr("has online access, but no password is set."));
                 }
             }

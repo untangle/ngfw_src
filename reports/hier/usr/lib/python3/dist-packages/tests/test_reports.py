@@ -1421,8 +1421,9 @@ class ReportsTests(NGFWTestCase):
 
     @classmethod
     def final_extra_tear_down(cls):
-        global web_app
-
+        global web_app, orig_settings
+        #Restoring original report settings
+        cls._app.setSettings(orig_settings)
         # remove all the apps in case test 103 does not remove them.
         for name in apps_list:
             if (uvmContext.appManager().isInstantiated(name)):
