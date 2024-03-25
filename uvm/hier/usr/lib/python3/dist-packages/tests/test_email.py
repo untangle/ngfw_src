@@ -1,19 +1,20 @@
+import pytest
 import copy
 import datetime
-import pytest
 import shutil
 import subprocess
 import time
 
 from tests.common import NGFWTestCase
 import tests.global_functions as global_functions
+import runtests
+import unittest
 import runtests.test_registry as test_registry
-import runtests.remote_control as remote_control
 
 from .global_functions import uvmContext
 from uvm import Uvm
 
-@pytest.mark.about_tests
+@pytest.mark.email_tests
 class EmailTests(NGFWTestCase):
 
     not_an_app= True
@@ -28,11 +29,31 @@ class EmailTests(NGFWTestCase):
         if EmailTests.original_mail_settings is None:
             EmailTests.original_mail_settings = uvmContext.mailSender().getSettings()
 
+    @pytest.mark.slow
+    def test_010_mail_send_method_modes(self):
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
 
-    def test_010_client_is_online(self):
-        result = remote_control.is_online()
-        assert (result == 0)
+        origMailsettings = global_functions.uvmContext.mailSender().getSettings()
+        #Default sendMethod Mode is DIRECT
+        assert (origMailsettings['sendMethod'] == 'DIRECT')
 
+        #Upgrade scenario simulating RELAY method 
+        newMailsettings = copy.deepcopy(origMailsettings)
+        newMailsettings['sendMethod'] = 'RELAY'
+
+        #Updating existing sendMethod mode to RELAY
+        global_functions.uvmContext.mailSender().setSettings(newMailsettings)
+        time.sleep(10) # give it time for exim to restart
+
+        #Upgrade method scenario is simulated, sendMethod mode set to RELAY
+        updatedMailSettings = global_functions.uvmContext.mailSender().getSettings()
+        assert (updatedMailSettings['sendMethod'] == 'RELAY')
+
+        #Restart UVM, this should set the sendMethod mode to DIRECT
+        uvmContext = global_functions.restart_uvm()
+        restartedMailSettings = uvmContext.mailSender().getSettings()
+        assert (restartedMailSettings['sendMethod'] == 'DIRECT')
     def test_100_blocked_queue(self):
         """
         Non-blocking flush on network settings change
@@ -183,6 +204,5 @@ class EmailTests(NGFWTestCase):
     def final_extra_tear_down(cls):
         if EmailTests.original_mail_settings is not None:
             uvmContext.mailSender().getSettings(EmailTests.original_mail_settings)
-
 
 test_registry.register_module("email", EmailTests)
