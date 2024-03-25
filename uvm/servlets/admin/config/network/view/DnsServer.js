@@ -7,7 +7,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
     html: '',
     listeners: {
         afterrender: function (view) {
-            view.setHtml('<iframe src="/vue/NgfwDns" class="vue-iframe"/>');
+            view.setHtml('<iframe src="/vue/NgfwDns" style="width: 100%; height: 100%; border: none;"></iframe>');
         }
     }
 });
