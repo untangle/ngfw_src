@@ -1923,3 +1923,57 @@ Ext.define('Ung.config.network.cmp.OspfAreaRecordEditorController', {
         v.close();
     }
 });
+
+Ext.define('Ung.config.network.cmp.BypassRulesController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.unconfigbypassrulesgridcontroller',
+
+    control: {
+        '#bypass-rules-grid': { 
+            afterrender: 'warnSrcAddrIsLan'
+        },
+    },
+
+    warnSrcAddrIsLan: function() {
+        var vm = this.getViewModel();
+
+        vm.set('warnBypassRuleSrcAddrIsLan', false);
+        var lanIpAddrs = Util.getLanIpAddrs(),
+            bypassRules = Ext.Array.pluck(this.getView().getStore().getRange(), 'data');
+
+        if(bypassRules) {
+            bypassRules.forEach(function(rule) {
+                if(rule) {
+                    rule.conditions.list.forEach(function(condition) {
+                        if(condition.conditionType == "SRC_ADDR" && lanIpAddrs.includes(condition.value)) {
+                            vm.set('warnBypassRuleSrcAddrIsLan', true);
+                        }
+                    });
+                }
+            });
+        }
+    },
+});
+
+Ext.define('Ung.config.network.cmp.BypassRulesRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unconfigbypassrulesrecordeditor',
+
+    controller: 'unconfigbypassrulesrecordeditorontroller'
+});
+
+Ext.define('Ung.config.network.cmp.BypassRulesRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unconfigbypassrulesrecordeditorontroller',
+
+    onApply: function () {
+        console.log("In onApply");
+        var view = this.getView();
+        if(view.up('[srcAddrIsLanCheck=true]')) {
+            var controller = view.up('[srcAddrIsLanCheck=true]').getController();
+            this.callParent();
+            controller.warnSrcAddrIsLan();
+        } else
+            this.callParent();
+    }
+});
