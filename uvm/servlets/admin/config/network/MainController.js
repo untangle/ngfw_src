@@ -1967,7 +1967,6 @@ Ext.define('Ung.config.network.cmp.BypassRulesRecordEditorController', {
     alias: 'controller.unconfigbypassrulesrecordeditorontroller',
 
     onApply: function () {
-        console.log("In onApply");
         var view = this.getView();
         if(view.up('[srcAddrIsLanCheck=true]')) {
             var controller = view.up('[srcAddrIsLanCheck=true]').getController();
