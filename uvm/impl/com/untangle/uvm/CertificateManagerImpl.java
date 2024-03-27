@@ -705,7 +705,9 @@ public class CertificateManagerImpl implements CertificateManager
             // note that there is NO space following the w argument
             // sed -n wTARGET.PEM SOURCE.CRT SOURCE.KEY
             UvmContextFactory.context().execManager().exec("sed -n w" + CERT_STORE_PATH + baseName + ".pem " + CERT_STORE_PATH + baseName + ".crt " + CERT_STORE_PATH + baseName + ".key");
-
+            if (validateUploadedCertificate(CERT_STORE_PATH + baseName + ".pem", baseName, extraLen) !=0) {
+                return new ExecManagerResult(1, "The Server Certificate is not valid");
+            }
             // last thing we do is convert the certificate PEM file to PFX format
             // for apps that use SSLEngine like web filter and captive portal
             UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
@@ -1012,6 +1014,43 @@ public class CertificateManagerImpl implements CertificateManager
         }
 
         return true;
+    }
+
+    /**
+    * validateGeneratedCertificate uses the openssl fingerprint option
+    * to validate the correctness of pem file generated post combination
+    * of .crt and .key files
+    *
+    * @param fileLocation - the pem file location
+    * @param baseName - the baseName of uploaded certificate
+    * @param extraLen - indicates presence of intermediate certificates
+    * @return The result of the operation
+    */
+    private int validateUploadedCertificate(String fileLocation, String baseName, int extraLen) {
+        int exitValue = 1;
+        try {
+            //validate main certificate
+            exitValue = UvmContextFactory.context().execManager().execResult("openssl x509 -inform PEM -in " + fileLocation);
+            logger.warn("Main certificate validation exit code: " + exitValue);
+            // validate certificate key
+            if (exitValue == 0) {
+                exitValue = UvmContextFactory.context().execManager().execResult("openssl rsa -inform PEM -in " + fileLocation);
+                logger.warn("Certificate key validation exit code: " + exitValue);
+            }
+            if (extraLen > 0 & exitValue == 0) {
+                // validate intermediate chain certificates
+                exitValue = UvmContextFactory.context().execManager().execResult("openssl crl2pkcs7 -nocrl -certfile " + fileLocation + " | openssl pkcs7 -print_certs -noout");
+                logger.warn("Intermediate chain certificates validation exit code: " + exitValue);
+            }
+        } catch (Exception exn) {
+            logger.warn("Exception in validateUploadedCertificate();", exn);
+        }
+        if (exitValue !=0) {
+            //do we need to delete these files in case of faillure?
+            removeCertificate("SERVER", baseName + ".pem");
+            logger.warn("Certificate validation failed, deleted files");
+        }
+        return exitValue;
     }
 
     /**

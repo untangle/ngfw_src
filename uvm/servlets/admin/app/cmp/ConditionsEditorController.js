@@ -659,6 +659,19 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
     },
 
     /**
+     * Returns the list of supported protocols for parent grid
+     */
+    getProtocolList: function() {
+        var view = this.getView(),
+            ruleGrid = view.up('grid');
+
+        if(ruleGrid && ruleGrid.editorFieldProtocolTcpUdpOnly)
+            return Util.getProtocolList(true);
+        else
+            return Util.getProtocolList(false);
+    },
+
+    /**
      * Adds a new condition for the edited rule
      */
     addCondition: function (menu, item) {
@@ -668,6 +681,11 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
         if( item === undefined){
             return;
         }
+
+        if( item.conditionType == "PROTOCOL" ) {
+            view.conditions.PROTOCOL.values = this.getProtocolList();
+        }
+
         var record = Ext.create(me.getView().model);
 
         record.set(view.fields.type, item.conditionType);

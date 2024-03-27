@@ -4,7 +4,26 @@ Ext.define('Ung.apps.intrusionprevention.view.BypassRules', {
     itemId: 'bypass-rules',
     scrollable: true,
     withValidation: false,
+    editorFieldProtocolTcpUdpOnly: true,
     title: 'Bypass Rules'.t(),
+    controller: 'unintrusionbypassrulesgrid',
+    srcAddrIsLanCheck: true,
+
+    listeners: {
+        afterrender: 'warnSrcAddrIsLan',
+        itemclick: 'warnSrcAddrIsLan'
+    },
+
+    dockedItems: [{
+        xtype: 'container',
+        padding: '8 5',
+        style: { fontSize: '12px', background: '#DADADA'},
+        html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'One or more rules have the condition of the source address a LAN address.'.t(),
+        hidden: true,
+        bind: {
+            hidden: '{!warnBypassRuleSrcAddrIsLan}'
+        }
+    }],
 
     tbar: ['@add', '->', '@import', '@export'],
     recordActions: ['edit', 'copy', 'delete', 'reorder'],
@@ -38,6 +57,7 @@ Ext.define('Ung.apps.intrusionprevention.view.BypassRules', {
             dataIndex: 'bypass',
             width: Renderer.booleanWidth
         }],
+        editorXtype: 'ung.cmp.unintrusionbypassrulesrecordeditor',
         editorFields: [
             Field.enableRule(),
             Field.description,

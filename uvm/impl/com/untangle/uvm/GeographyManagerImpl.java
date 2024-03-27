@@ -295,7 +295,7 @@ public class GeographyManagerImpl implements GeographyManager
             Double latitude = null;
             Double longitude = null;
             String country = null;
-            Double kbps;
+            Double bps;
 
             if (coordinatesKey == null && session.getClientLatitude() != null && session.getClientLongitude() != null) {
                 latitude = session.getClientLatitude();
@@ -311,24 +311,23 @@ public class GeographyManagerImpl implements GeographyManager
             }
             // if this session has no coordinates (on either client or server, just skip it)
             if (coordinatesKey == null) continue;
-
-            if (session.getTotalKBps() == null) kbps = 0.0;
-            else kbps = session.getTotalKBps().doubleValue();
-
+            
+            if (session.getTotalBps() == null) bps = 0.0;
+            else bps = session.getTotalBps().doubleValue();
             JSONObject value = coordinatesMap.get(coordinatesKey);
 
             // if this is no existing entry for this lat & longitutde, create one
             if (value == null) {
-                JSONObject newValue = createCoordinatesValue(latitude, longitude, country, 1, kbps);
+                JSONObject newValue = createCoordinatesValue(latitude, longitude, country, 1, bps);
                 coordinatesMap.put(coordinatesKey, newValue);
             }
-            // if one exists, just increment the count and add to the kbps value
+            // if one exists, just increment the count and add to the bps value
             else {
                 try {
                     int oldCount = value.getInt("sessionCount");
-                    double oldKbps = value.getDouble("kbps");
+                    double oldbps = value.getDouble("bps");
                     value.put("sessionCount", oldCount + 1);
-                    value.put("kbps", oldKbps + kbps);
+                    value.put("bps", oldbps + bps);
                 } catch (Exception e) {
                     logger.warn("Exception", e);
                 }
@@ -352,11 +351,11 @@ public class GeographyManagerImpl implements GeographyManager
      *        The country
      * @param sessionCount
      *        The session count
-     * @param kbps
+     * @param bps
      *        The amount of traffic
      * @return The JSON object
      */
-    private JSONObject createCoordinatesValue(Double latitude, Double longitude, String country, int sessionCount, Double kbps)
+    private JSONObject createCoordinatesValue(Double latitude, Double longitude, String country, int sessionCount, Double bps)
     {
         JSONObject json = new JSONObject();
 
@@ -365,7 +364,7 @@ public class GeographyManagerImpl implements GeographyManager
             json.put("longitude", longitude);
             if (country != null) json.put("country", country);
             json.put("sessionCount", sessionCount);
-            json.put("kbps", kbps);
+            json.put("bps", bps);
         } catch (Exception e) {
             logger.warn("Exception", e);
             return null;

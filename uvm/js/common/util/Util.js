@@ -447,6 +447,39 @@ Ext.define('Ung.util.Util', {
         return interfaces;
     },
 
+    /**
+     * Method to get list of LAN Interface IP's
+     * @return List of LAN IP's from network settings based on onlyTcpUdp flag value.
+     */
+    lanIpList: null,
+    lanIpLastUpdated: null,
+    lanIpMaxAge: 30 * 1000,
+    getLanIpAddrs: function() {
+        var currentTime = new Date().getTime();
+        
+        if (this.lanIpList === null ||
+            this.lanIpLastUpdated === null ||
+            ((this.lanIpLastUpdated + this.lanIpMaxAge) < currentTime)){
+                this.lanIpLastUpdated = currentTime;
+                var networkSettings = Rpc.directData('rpc.networkSettings'),
+                    data = [];
+
+                networkSettings.interfaces.list.forEach( function(intf){
+                    if(!intf.isWan && intf.v4StaticAddress) {
+                        data.push(intf.v4StaticAddress);
+                    }
+                });
+                networkSettings.virtualInterfaces.list.forEach( function(intf){
+                    if(!intf.isWan && intf.v4StaticAddress) {
+                        data.push(intf.v4StaticAddress);
+                    }
+                });
+                this.lanIpList = data;
+        }
+        var lanIps = Ext.clone(this.lanIpList);
+        return lanIps;
+    },
+
     bytesToMBs: function(value) {
         return Math.round(value/10000)/100;
     },
@@ -1177,6 +1210,39 @@ Ext.define('Ung.util.Util', {
         }catch(err){
             throw err;
         }
-    }
+    },
+
+    /**
+     * Method to get list of supported protocols
+     * @param boolean onlyTcpUdp True if only TCP and UDP traffic is supported.
+     * @return List of protocols based on onlyTcpUdp flag value.
+     */
+    getProtocolList: function(onlyTcpUdp) {
+        if(onlyTcpUdp) {
+            return [[
+                "TCP","TCP"
+            ],[
+                "UDP","UDP"
+            ]];
+        } else {
+            return [[
+                "TCP","TCP"
+            ],[
+                "UDP","UDP"
+            ],[
+                "ICMP","ICMP"
+            ],[
+                "GRE","GRE"
+            ],[
+                "ESP","ESP"
+            ],[
+                "AH","AH"
+            ],[
+                "SCTP","SCTP"
+            ],[
+                "OSPF","OSPF"
+            ]];
+        }
+    },
     
 });

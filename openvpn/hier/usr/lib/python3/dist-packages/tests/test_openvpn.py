@@ -408,7 +408,72 @@ class OpenVpnTests(NGFWTestCase):
         # Check to see if the faceplate counters have incremented. 
         post_events_connect = global_functions.get_app_metric_value(self._app, "connect")
         assert(pre_events_connect < post_events_connect)
+
+    @pytest.mark.slow
+    def test_createDisableClientVPNTunnel(self):
+        global appData, vpnServerResult, vpnClientResult
+        if (vpnClientResult != 0 or vpnServerResult != 0):
+            raise unittest.SkipTest("No paried VPN client available")
+
+        pre_events_connect = global_functions.get_app_metric_value(self._app,"connect")
         
+        running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
+        loopLimit = 5
+        while ((running == 0) and (loopLimit > 0)):
+            # OpenVPN is running, wait 5 sec to see if openvpm is done
+            loopLimit -= 1
+            time.sleep(5)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
+        if loopLimit == 0:
+            # try killing the openvpn session as it is probably stuck
+            openvpn_pid = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,stdout=True)
+            remote_control.run_command("sudo kill -9 " + openvpn_pid, host=global_functions.VPN_CLIENT_IP)
+            time.sleep(2)
+            running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP)
+        if running == 0:
+            raise unittest.SkipTest("OpenVPN test machine already in use")
+            
+        appData = self._app.getSettings()
+        appData["serverEnabled"]=True
+        siteName = appData['siteName']
+        appData['remoteClients']['list'][:] = []  
+        appData['remoteClients']['list'].append(setUpClient())
+        self._app.setSettings(appData)
+        clientLink = self._app.getClientDistributionDownloadLink(vpnClientName,"zip")
+        # print(clientLink)
+
+        #download, unzip, move config to correct directory
+        result = configureVPNClientForConnection(clientLink)
+        assert(result == 0)
+
+        #start openvpn tunnel
+        remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn " + siteName + ".conf >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
+
+        timeout = waitForClientVPNtoConnect(self._app)
+        # If VPN tunnel has failed to connect so fail the test,
+        # ping the test host behind the Untangle from the remote testbox
+        result = remote_control.run_command("ping -c 2 " + remote_control.client_ip, host=global_functions.VPN_CLIENT_IP)
+        
+        #While the tunnle is enable, event type will be CONNECT 
+        events = global_functions.get_events('OpenVPN','Connection Events',None,1)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            'remote_address', global_functions.VPN_CLIENT_IP,
+                                            'client_name', vpnClientName , 'type', "CONNECT")
+        assert( found )
+
+        #Disable the tunnle
+        appData['remoteClients']['list'][0]['enabled'] = False
+        self._app.setSettings(appData)
+        time.sleep(3) # openvpn takes time to shut down
+
+        #While the tunnle is not enable, event type will be DISCONNECT 
+        events = global_functions.get_events('OpenVPN','Connection Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            'remote_address', global_functions.VPN_CLIENT_IP,
+                                            'client_name', vpnClientName , 'type', "DISCONNECT")
+        assert( found )
+
     @pytest.mark.slow
     def test_050_createClientVPNFullTunnel(self):
         global appData, vpnServerResult, vpnClientResult

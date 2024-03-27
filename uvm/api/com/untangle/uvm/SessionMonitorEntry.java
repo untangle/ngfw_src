@@ -191,16 +191,16 @@ public class SessionMonitorEntry implements Serializable, JSONString
     /**
      * The following properties come from jnettop
      */
-    private Float clientKBps;
-    private Float serverKBps;
-    private Float totalKBps;
+    private Double clientBps;
+    private Double serverBps;
+    private Double totalBps;
 
-    public Float getClientKBps() {return clientKBps;}
-    public void  setClientKBps( Float clientKBps ) {this.clientKBps = clientKBps;}
-    public Float getServerKBps() {return serverKBps;}
-    public void  setServerKBps( Float serverKBps ) {this.serverKBps = serverKBps;}
-    public Float getTotalKBps() {return totalKBps;}
-    public void  setTotalKBps( Float totalKBps ) {this.totalKBps = totalKBps;}
+    public Double getClientBps() {return clientBps;}
+    public void  setClientBps( Double clientBps ) {this.clientBps = clientBps;}
+    public Double getServerBps() {return serverBps;}
+    public void  setServerBps( Double serverBps ) {this.serverBps = serverBps;}
+    public Double getTotalBps() {return totalBps;}
+    public void  setTotalBps( Double totalBps ) {this.totalBps = totalBps;}
 
     public String toString()
     {

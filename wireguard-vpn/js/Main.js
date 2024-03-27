@@ -110,7 +110,8 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                         labelAlign: recordEditor ? 'right' : 'left',
                     },
                     items:[{
-                        xtype: 'copytoclipboard',   
+                        xtype: 'copytoclipboard',
+                        width: '100%',
                         key: {
                             key: 'itemId'
                         },
@@ -131,7 +132,7 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                             items: [{
                                 xtype: 'fieldset',
                                 border: false,
-                                width: '100%',
+                                width: '90%',
                                 items: [{
                                     xtype: 'displayfield',
                                     itemId: 'hostname',

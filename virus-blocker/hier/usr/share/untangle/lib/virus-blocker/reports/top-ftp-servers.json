@@ -1,14 +1,14 @@
 {
     "uniqueId": "virus-blocker-gNI4MdxW",
     "category": "Virus Blocker",
-    "description": "The number of clients with blocked viruses by FTP activity.",
+    "description": "The number of sites with blocked viruses by FTP activity.",
     "displayOrder": 206,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "host",
+    "pieGroupColumn": "s_server_addr",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
@@ -19,7 +19,7 @@
         }
     ],
     "readOnly": true,
-    "table": "http_events",
+    "table": "ftp_events",
     "title": "FTP Top Blocked Sites",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
