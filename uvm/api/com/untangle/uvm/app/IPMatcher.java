@@ -108,9 +108,9 @@ public class IPMatcher
      */
     public IPMatcher(String matcher)
     {
-                    initialize(matcher);
-        }
-        
+        initialize(matcher);
+    }
+
     /**
      * Make a subnet matcher
      * 
