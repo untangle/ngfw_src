@@ -447,6 +447,39 @@ Ext.define('Ung.util.Util', {
         return interfaces;
     },
 
+    /**
+     * Method to get list of LAN Interface IP's
+     * @return List of LAN IP's from network settings based on onlyTcpUdp flag value.
+     */
+    lanIpList: null,
+    lanIpLastUpdated: null,
+    lanIpMaxAge: 30 * 1000,
+    getLanIpAddrs: function() {
+        var currentTime = new Date().getTime();
+        
+        if (this.lanIpList === null ||
+            this.lanIpLastUpdated === null ||
+            ((this.lanIpLastUpdated + this.lanIpMaxAge) < currentTime)){
+                this.lanIpLastUpdated = currentTime;
+                var networkSettings = Rpc.directData('rpc.networkSettings'),
+                    data = [];
+
+                networkSettings.interfaces.list.forEach( function(intf){
+                    if(!intf.isWan && intf.v4StaticAddress) {
+                        data.push(intf.v4StaticAddress);
+                    }
+                });
+                networkSettings.virtualInterfaces.list.forEach( function(intf){
+                    if(!intf.isWan && intf.v4StaticAddress) {
+                        data.push(intf.v4StaticAddress);
+                    }
+                });
+                this.lanIpList = data;
+        }
+        var lanIps = Ext.clone(this.lanIpList);
+        return lanIps;
+    },
+
     bytesToMBs: function(value) {
         return Math.round(value/10000)/100;
     },
