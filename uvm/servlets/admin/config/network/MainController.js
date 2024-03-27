@@ -1930,16 +1930,20 @@ Ext.define('Ung.config.network.cmp.BypassRulesController', {
 
     control: {
         '#bypass-rules-grid': { 
-            afterrender: 'warnSrcAddrIsLan'
+            afterrender: 'afterByPassRulesRender',
+            itemclick: 'warnSrcAddrIsLan'
         },
     },
 
-    warnSrcAddrIsLan: function() {
+    afterByPassRulesRender: function() {
+        this.warnSrcAddrIsLan(true);
+    },
+    warnSrcAddrIsLan: function(isAfterRendererCall) {
         var vm = this.getViewModel();
 
         vm.set('warnBypassRuleSrcAddrIsLan', false);
         var lanIpAddrs = Util.getLanIpAddrs(),
-            bypassRules = Ext.Array.pluck(this.getView().getStore().getRange(), 'data');
+            bypassRules = isAfterRendererCall ? vm.get('settings.bypassRules.list') : Ext.Array.pluck(this.getView().getStore().getRange(), 'data');
 
         if(bypassRules) {
             bypassRules.forEach(function(rule) {
