@@ -29,21 +29,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             padding: '8 5 5 0',
             listeners: {
                 change: function(field, newValue, oldValue) {
-                    var app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn'),
-                        currentListenPort = app.getSettings().listenPort;
-
-                    var warningLabel = field.nextSibling('label[cls=warningLabel]'),
-                        metaData = warningLabel.getEl();
-
-                    if (newValue != currentListenPort) {
-                        warningLabel.setHtml('<span class="fa fa-exclamation-triangle" style="color: orange;"></span>');
-                        metaData.set({
-                            'data-qtip': 'Clients will need to configure their connections'.t(),
-                        });
-                        warningLabel.show();
-                    } else {
-                        warningLabel.hide();
-                    }
+                    this.up('app-wireguard-vpn').getController().settingsChangeListener(field, newValue, 'listenPort');
                 }
             }
         },{
@@ -77,21 +63,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             padding: '8 5 5 0',
             listeners: {
                 change: function(field, newValue, oldValue) {
-                    var app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn'),
-                        currentMtu = app.getSettings().mtu;
-
-                    var warningLabel = field.nextSibling('label[cls=warningLabel]'),
-                        metaData = warningLabel.getEl();
-
-                    if (newValue != currentMtu) {
-                        warningLabel.setHtml('<span class="fa fa-exclamation-triangle" style="color: orange;"></span>');
-                        metaData.set({
-                            'data-qtip': 'Clients will need to configure their connections'.t(),
-                        });
-                        warningLabel.show();
-                    } else {
-                        warningLabel.hide();
-                    }
+                    this.up('app-wireguard-vpn').getController().settingsChangeListener(field, newValue, 'mtu');
                 }
             }
         },{
@@ -226,21 +198,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                     },
                     listeners: {
                         change: function(field, newValue, oldValue) {
-                            var app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn'),
-                                currentNetSpace = app.getSettings().addressPool;
-
-                            var warningLabel = field.nextSibling('label[cls=warningLabel]'),
-                                metaData = warningLabel.getEl();
-
-                            if (newValue != currentNetSpace) {
-                                warningLabel.setHtml('<span class="fa fa-exclamation-triangle" style="color: orange;"></span>');
-                                metaData.set({
-                                    'data-qtip': 'Clients will need to configure their connections'.t(),
-                                });
-                                warningLabel.show();
-                            } else {
-                                warningLabel.hide();
-                            }
+                            this.up('app-wireguard-vpn').getController().settingsChangeListener(field, newValue, 'addressPool');
                         }
                     },
                     validator: function(value) {
