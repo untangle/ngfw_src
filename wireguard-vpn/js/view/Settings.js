@@ -13,15 +13,45 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     },
 
     items: [{
-        fieldLabel: 'Listen port'.t(),
-        xtype: 'textfield',
-        vtype: 'isSinglePortValid',
-        maxLength: 5,
-        enforceMaxLength :true,
-        bind: {
-            value: '{settings.listenPort}'
-        },
-        allowBlank: false
+        xtype: 'fieldcontainer',
+        layout: 'hbox',
+        items: [{
+            fieldLabel: 'Listen port'.t(),
+            xtype: 'textfield',
+            vtype: 'isSinglePortValid',
+            maxLength: 5,
+            enforceMaxLength :true,
+            bind: {
+                value: '{settings.listenPort}'
+            },
+            allowBlank: false,
+            labelWidth: 175,
+            padding: '8 5 5 0',
+            listeners: {
+                change: function(field, newValue, oldValue) {
+                    var app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn'),
+                        currentListenPort = app.getSettings().listenPort;
+
+                    var warningLabel = field.nextSibling('label[cls=warningLabel]'),
+                        metaData = warningLabel.getEl();
+
+                    if (newValue != currentListenPort) {
+                        warningLabel.setHtml('<span class="fa fa-exclamation-triangle" style="color: orange;"></span>');
+                        metaData.set({
+                            'data-qtip': 'Clients will need to configure their connections'.t(),
+                        });
+                        warningLabel.show();
+                    } else {
+                        warningLabel.hide();
+                    }
+                }
+            }
+        },{
+            xtype: 'label',
+            cls: 'warningLabel',
+            hidden: true,
+            margin: '18 0 5 5'
+        }]
     },{
         fieldLabel: 'Keepalive interval'.t(),
         xtype: 'textfield',
@@ -33,13 +63,43 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         regexText: 'Only accepts valid positive integer.'.t(),
         allowBlank: false
     },{
-        fieldLabel: 'MTU'.t(),
-        xtype: 'textfield',
-        vtype: 'mtu',
-        bind: {
-            value: '{settings.mtu}'
-        },
-        allowBlank: false
+        xtype: 'fieldcontainer',
+        layout: 'hbox',
+        items: [{
+            fieldLabel: 'MTU'.t(),
+            xtype: 'textfield',
+            vtype: 'mtu',
+            bind: {
+                value: '{settings.mtu}'
+            },
+            allowBlank: false,
+            labelWidth: 175,
+            padding: '8 5 5 0',
+            listeners: {
+                change: function(field, newValue, oldValue) {
+                    var app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn'),
+                        currentMtu = app.getSettings().mtu;
+
+                    var warningLabel = field.nextSibling('label[cls=warningLabel]'),
+                        metaData = warningLabel.getEl();
+
+                    if (newValue != currentMtu) {
+                        warningLabel.setHtml('<span class="fa fa-exclamation-triangle" style="color: orange;"></span>');
+                        metaData.set({
+                            'data-qtip': 'Clients will need to configure their connections'.t(),
+                        });
+                        warningLabel.show();
+                    } else {
+                        warningLabel.hide();
+                    }
+                }
+            }
+        },{
+            xtype: 'label',
+            cls: 'warningLabel',
+            hidden: true,
+            margin: '18 0 5 5'
+        }],
     }, {
         xtype: 'fieldset',
         title: 'Remote Client Configuration'.t(),
@@ -164,6 +224,25 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         disabled: '{settings.autoAddressAssignment}',
                         editable: '{!settings.autoAddressAssignment}'
                     },
+                    listeners: {
+                        change: function(field, newValue, oldValue) {
+                            var app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn'),
+                                currentNetSpace = app.getSettings().addressPool;
+
+                            var warningLabel = field.nextSibling('label[cls=warningLabel]'),
+                                metaData = warningLabel.getEl();
+
+                            if (newValue != currentNetSpace) {
+                                warningLabel.setHtml('<span class="fa fa-exclamation-triangle" style="color: orange;"></span>');
+                                metaData.set({
+                                    'data-qtip': 'Clients will need to configure their connections'.t(),
+                                });
+                                warningLabel.show();
+                            } else {
+                                warningLabel.hide();
+                            }
+                        }
+                    },
                     validator: function(value) {
                         try{
                             var isValidVtypeField = Ext.form.field.VTypes[this.vtype](value);
@@ -197,6 +276,11 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                     listeners: {
                         click: 'getNewAddressSpace'
                     }
+                },{
+                    xtype: 'label',
+                    cls: 'warningLabel',
+                    hidden: true,
+                    margin: '10 0 5 10'
                 }
             ]
         }]
