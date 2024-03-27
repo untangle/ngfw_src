@@ -27,7 +27,7 @@ import com.untangle.uvm.util.Pulse;
 public class ConntrackMonitorImpl
 {
     private static final int CONNTRACK_PULSE_FREQUENCY_MS = 60 * 1000; // 1 minute
-    private static final float CONNTRACK_PULSE_FREQUENCY_SEC = 60f; // 1 minute
+    private static final double CONNTRACK_PULSE_FREQUENCY_SEC = 60; // 1 minute
     private static final int CLEANER_PULSE_FREQUENCY = 5 * 60 * 1000; // 5 minutes
     private static final long LIFETIME_MS = 2 * 60 * 1000;// 2 minutes (amount of time to keep complete sessions in table)
     private static final Logger logger = Logger.getLogger(ConntrackMonitorImpl.class);
@@ -166,9 +166,9 @@ public class ConntrackMonitorImpl
             long diffC2sBytes = newC2sBytes - oldC2sBytes;
             long diffS2cBytes = newS2cBytes - oldS2cBytes;
             long diffTotalBytes = newTotalBytes - oldTotalBytes;
-            float c2sRateBps = (diffC2sBytes / (CONNTRACK_PULSE_FREQUENCY_SEC));
-            float s2cRateBps = (diffS2cBytes / (CONNTRACK_PULSE_FREQUENCY_SEC));
-            float totalRateBps = (diffTotalBytes / (CONNTRACK_PULSE_FREQUENCY_SEC));
+            double c2sRateBps = (diffC2sBytes / (CONNTRACK_PULSE_FREQUENCY_SEC));
+            double s2cRateBps = (diffS2cBytes / (CONNTRACK_PULSE_FREQUENCY_SEC));
+            double totalRateBps = (diffTotalBytes / (CONNTRACK_PULSE_FREQUENCY_SEC));
 
             /**
              * In some cases specifically UDP a new session takes the place of
@@ -437,9 +437,9 @@ public class ConntrackMonitorImpl
         protected long c2sBytes = 0;
         protected long s2cBytes = 0;
         protected long totalBytes = 0;
-        protected float c2sRateBps = 0.0f;
-        protected float s2cRateBps = 0.0f;
-        protected float totalRateBps = 0.0f;
+        protected double c2sRateBps = 0.0;
+        protected double s2cRateBps = 0.0;
+        protected double totalRateBps = 0.0;
 
         /**
          * Constructor
