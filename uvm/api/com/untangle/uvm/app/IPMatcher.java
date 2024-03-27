@@ -108,9 +108,9 @@ public class IPMatcher
      */
     public IPMatcher(String matcher)
     {
-        initialize(matcher);
-    }
-
+                    initialize(matcher);
+        }
+        
     /**
      * Make a subnet matcher
      * 
@@ -312,6 +312,13 @@ public class IPMatcher
 
                 this.rangeMin = addrToLong(addrMin);
                 this.rangeMax = addrToLong(addrMax);
+
+                // Swap min and max if they are in reverse order
+                if (this.rangeMin > this.rangeMax) {
+                    long temp = this.rangeMin;
+                    this.rangeMin = this.rangeMax;
+                    this.rangeMax = temp;
+                }
             } catch (java.net.UnknownHostException e) {
                 logger.warn("Unknown IPMatcher range format: \"" + matcher + "\"", e);
                 throw new java.lang.IllegalArgumentException("Unknown IPMatcher format: \"" + matcher + "\" (unknown host)", e);
