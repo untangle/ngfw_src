@@ -308,7 +308,25 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
         addressPool = vm.get('settings.addressPool'),
         store = vm.getStore('tunnels');
         return Util.getUnusedPoolAddr(addressPool, store, 'peerAddress');
+    },
+
+    settingsChangeListener: function(field, newValue, settingField) {
+        var app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn'),
+            currentFieldValue = app.getSettings()[settingField];
+
+        var warningLabel = field.nextSibling('label[cls=warningLabel]'),
+            metaData = warningLabel.getEl();
+
+        if (newValue != currentFieldValue) {
+            warningLabel.setHtml('<span class="fa fa-exclamation-triangle" style="color: orange;"></span>');
+            metaData.set({
+                'data-qtip': 'Clients will need to configure their connections'.t(),
+            });
+            warningLabel.show();
+        } else {
+            warningLabel.hide();
         }
+    }
 });
 
 Ext.define('Ung.apps.reports.cmp.Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelGridController', {
