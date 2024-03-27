@@ -4,7 +4,6 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
