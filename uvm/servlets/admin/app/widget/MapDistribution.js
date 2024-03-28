@@ -39,8 +39,8 @@ Ext.define('Ung.widget.MapDistribution', {
                 cb();
                 for (i = 0; i < result.length; i += 1) {
                     var bubbleSize = 0;
-                    if (result[i].kbps)
-                        bubbleSize = Math.round(result[i].kbps * 100) / 100;
+                    if (result[i].bps)
+                        bubbleSize = result[i].bps;
                     data.push({
                         lat: result[i].latitude,
                         lon: result[i].longitude,
