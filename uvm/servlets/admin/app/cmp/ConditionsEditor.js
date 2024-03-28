@@ -473,7 +473,8 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:"SRC_MAC",
             displayName: "Client MAC Address".t(), 
-            type: 'textfield'
+            type: 'textfield',
+            vtype: 'macAddress'
         },{
             name:'DST_MAC',
             displayName: 'Server MAC Address'.t(),
