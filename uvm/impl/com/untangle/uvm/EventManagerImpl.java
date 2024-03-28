@@ -10,6 +10,7 @@ import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.EventRule;
 import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.TriggerRule;
+import com.untangle.uvm.event.SyslogServer;
 import com.untangle.uvm.event.EventRuleCondition;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.Reporting;
@@ -184,6 +185,22 @@ public class EventManagerImpl implements EventManager
         idx = 0;
         for (SyslogRule rule : newSettings.getSyslogRules()) {
             rule.setRuleId(++idx);
+            if(newSettings.getSyslogEnabled()) {
+                if (rule.getSyslogServers() == null) {
+                    LinkedList<Integer> syslogServerIDsList = new LinkedList<Integer>();
+                    //uncommented for backend testing
+                    //syslogServerIDsList.add(1);
+                    rule.setSyslogServers(syslogServerIDsList);
+                }
+                //uncommented for backend testing
+                // if (rule.getSyslogServers() != null  && rule.getSyslogServers().size() == 0) {
+                //     rule.getSyslogServers().add(1);
+                // }
+
+            }
+            if(!newSettings.getSyslogEnabled() && rule.getSyslogServers() != null && rule.getSyslogServers().size() > 0) {
+                rule.getSyslogServers().clear();
+            }
         }
         idx = 0;
         for (TriggerRule rule : newSettings.getTriggerRules()) {
@@ -197,6 +214,35 @@ public class EventManagerImpl implements EventManager
                 throw new RuntimeException("Missing tag lifetime on trigger rule: " + idx);
         }
 
+        if (newSettings != null) {
+            LinkedList<SyslogServer> origServerList =  newSettings.getSyslogServers();
+            if(newSettings.getSyslogEnabled()) {
+                SyslogServer logServer = new SyslogServer(1, true, newSettings.getSyslogHost(), newSettings.getSyslogPort(), newSettings.getSyslogProtocol(), SyslogManagerImpl.LOG_TAG_PREFIX);
+                if (origServerList == null) {
+                    LinkedList<SyslogServer> syslogList = new LinkedList<SyslogServer>();
+                    syslogList.add(logServer);
+                    newSettings.setSyslogServers(syslogList);
+                }
+                // Scenario when user enables remote syslog after disabling, empty list is present
+                if (origServerList != null && origServerList.size() == 0) {
+                    origServerList.add(logServer);
+                    newSettings.setSyslogServers(origServerList);
+                }
+                
+                if (origServerList != null) {
+                    for (SyslogServer syslogServer : origServerList ) {
+                        //Skip Default Scenario, and set serverID and Tag for New SyslogServers
+                        if (syslogServer.getServerId() == -1) {
+                            syslogServer.setServerId(origServerList.size() + 1);
+                        }
+                    }
+                }
+            }
+            if (!newSettings.getSyslogEnabled() && origServerList != null && origServerList.size() > 0) {
+                origServerList.clear();
+            }
+
+        }
         /**
          * Save the settings
          */
@@ -1246,6 +1292,21 @@ public class EventManagerImpl implements EventManager
     }
 
     /**
+     * Returns filtered syslog servers based on list of server IDS provided.
+     * @param syslogServerIds list of server IDS to filter.
+     * 
+     * @return list of filtered SyslogServers
+     */
+    private LinkedList<SyslogServer> getFilteredSyslogByIDs(LinkedList<Integer> syslogServerIds ) {
+        LinkedList<SyslogServer> sysLogFilteredServers = settings.getSyslogServers().stream()
+        .filter(obj -> syslogServerIds.contains(obj.getServerId()))
+        .collect(Collectors.toCollection(LinkedList::new));
+
+        return sysLogFilteredServers;
+
+    }
+
+    /**
      * Process event through syslog rules.
      * @param event LogEvent to process.
      */
@@ -1277,14 +1338,21 @@ public class EventManagerImpl implements EventManager
             }
 
             logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
-
-            event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-            if ( rule.getSyslog() ) {
-                try {
-                    SyslogManagerImpl.sendSyslog( event, jsonSendObject );
-                } catch (Exception exn) {
-                    logger.warn("failed to send syslog", exn);
+            LinkedList<Integer> rulesSyslogServerIDList = rule.getSyslogServers();
+            if (rulesSyslogServerIDList != null  && rulesSyslogServerIDList.size() > 0) {
+                //get syslogserver list using IDs
+                for (SyslogServer syslogServer: getFilteredSyslogByIDs(rulesSyslogServerIDList) ) {
+                    event.setTag(syslogServer.getTag());
+                    if ( rule.getSyslog() ) {
+                        try {
+                            SyslogManagerImpl.sendSyslog( event, jsonSendObject );
+                        } catch (Exception exn) {
+                            logger.warn("failed to send syslog", exn);
+                        }
+                    }
                 }
+
+
             }
         }
     }
