@@ -11,7 +11,6 @@ import org.json.JSONString;
 
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
-
 /**
  * Settings for the Reports App.
  */
@@ -23,6 +22,7 @@ public class EventSettings implements Serializable, JSONString
     private LinkedList<AlertRule> alertRules = null;
     private LinkedList<SyslogRule> syslogRules = null;
     private LinkedList<TriggerRule> triggerRules = null;
+    private LinkedList<SyslogServer> syslogServers = null;
 
     private boolean syslogEnabled = false;
     private String syslogHost;
@@ -61,6 +61,10 @@ public class EventSettings implements Serializable, JSONString
 
     public LinkedList<TriggerRule> getTriggerRules() { return this.triggerRules; }
     public void setTriggerRules( LinkedList<TriggerRule> newValue ) { this.triggerRules = newValue; }
+
+    public LinkedList<SyslogServer> getSyslogServers() { return this.syslogServers; }
+    public void setSyslogServers( LinkedList<SyslogServer> newValue ) { this.syslogServers = newValue; }
+
 
     /**
      * Email template
