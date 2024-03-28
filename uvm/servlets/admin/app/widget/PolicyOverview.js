@@ -66,9 +66,14 @@ Ext.define('Ung.widget.PolicyOverview', {
             width: 80,
             dataIndex: 'stats',
             align: 'right',
-            text: 'Traffic'.t() + '<br/>(KB/s)',
-            renderer: function(val) {
-                return (val && val.totalKbps > 0) ? Renderer.sessionSpeed(val.totalKbps) : '<span style="color: #CCC">0</span>';
+            text: 'Traffic'.t(),
+            renderer: function(val, metaData, record) {
+                if(val && val.totalBps > 0){
+                    var value = Util.bytesRenderer(val.totalBps,true);
+                    metaData.tdAttr = 'data-qtip="' + value + '"';
+                    return value;
+                }
+                return '<span style="color: #CCC">0</span>';
             }
         }, {
             xtype: 'actioncolumn',
