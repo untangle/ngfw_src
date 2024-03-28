@@ -124,10 +124,10 @@ Ext.define('Ung.util.Util', {
     },
 
     bytesRenderer: function(bytes, perSecond) {
-        var units = (!perSecond) ? ['bytes'.t(), 'Kbytes'.t(), 'Mbytes'.t(), 'Gbytes'.t()] :
-            ['bytes/s'.t(), 'Kbytes/s'.t(), 'Mbytes/s'.t(), 'Gbytes/s'.t()];
+        var units = (!perSecond) ? ['bytes'.t(), 'Kbytes'.t(), 'Mbytes'.t(), 'Gbytes'.t(), 'Tbytes'.t(), 'Pbytes'.t(), 'Ebytes'.t(), 'Zbytes'.t(), 'Ybytes'.t()] :
+            ['bytes/s'.t(), 'Kbytes/s'.t(), 'Mbytes/s'.t(), 'Gbytes/s'.t(), 'Tbytes/s'.t(), 'Pbytes/s'.t(), 'Ebytes/s'.t(), 'Zbytes/s'.t(), 'Ybytes/s'.t()];
         var units_itr = 0;
-        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 8) {
             bytes = bytes/1000;
             units_itr++;
         }
