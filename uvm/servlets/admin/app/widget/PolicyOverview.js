@@ -68,8 +68,8 @@ Ext.define('Ung.widget.PolicyOverview', {
             align: 'right',
             text: 'Traffic'.t(),
             renderer: function(val, metaData, record) {
-                if(val && val.totalbps > 0){
-                    var value = Util.bytesRenderer(val.totalbps,true);
+                if(val && val.totalBps > 0){
+                    var value = Util.bytesRenderer(val.totalBps,true);
                     metaData.tdAttr = 'data-qtip="' + value + '"';
                     return value;
                 }
