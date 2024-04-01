@@ -1346,5 +1346,13 @@ Ext.define('Ung.util.Renderer', {
             return tagsList.length > 0 ? tagsList.join(" ") : "";
         }
         return "";
+    },
+    renderBps : function(val, metaData, record) {
+        if(val && val > 0){
+            var value = Util.bytesRenderer(val,true);
+            metaData.tdAttr = 'data-qtip="' + value + '"';
+            return value;
+        }
+        return '<span style="color: #CCC">0</span>';
     } 
 });

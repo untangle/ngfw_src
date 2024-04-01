@@ -144,16 +144,16 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'serverLongitude',
         }, {
-            name: 'clientKBps',
+            name: 'clientBps',
             convert: Renderer.sessionSpeed
         }, {
-            name: 'serverKBps',
+            name: 'serverBps',
             convert: Renderer.sessionSpeed
         }, {
-            name: 'totalKBps',
+            name: 'totalBps',
             convert: function(value, record){
-                if ( record.data.serverKBps == null ||
-                     record.data.clientKBps == null ){
+                if ( record.data.serverBps == null ||
+                     record.data.clientBps == null ){
                         return null;
                 }
                 return Renderer.sessionSpeed(value);
@@ -485,25 +485,28 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true
             }]
         }, {
-            header: 'Speed (KB/s)'.t(),
+            header: 'Speed'.t(),
             columns: [{
                 header: 'Client'.t(),
-                dataIndex: 'clientKBps',
+                dataIndex: 'clientBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right'
+                align: 'right',
+                renderer: Renderer.renderBps
             }, {
                 header: 'Server'.t(),
-                dataIndex: 'serverKBps',
+                dataIndex: 'serverBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right'
+                align: 'right',
+                renderer: Renderer.renderBps
             }, {
                 header: 'Total'.t(),
-                dataIndex: 'totalKBps',
+                dataIndex: 'totalBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right'
+                align: 'right',
+                renderer: Renderer.renderBps
             }]
         }, {
             header: 'Application Control Lite',
