@@ -492,42 +492,21 @@ Ext.define('Ung.view.extra.Sessions', {
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
                 align: 'right',
-                renderer: function(val, metaData, record) {
-                    if(val && val > 0){
-                        var value = Util.bytesRenderer(val,true);
-                        metaData.tdAttr = 'data-qtip="' + value + '"';
-                        return value;
-                    }
-                    return '<span style="color: #CCC">0</span>';
-                }
+                renderer: Renderer.renderBps
             }, {
                 header: 'Server'.t(),
                 dataIndex: 'serverBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
                 align: 'right',
-                renderer: function(val, metaData, record) {
-                    if(val && val > 0){
-                        var value = Util.bytesRenderer(val,true);
-                        metaData.tdAttr = 'data-qtip="' + value + '"';
-                        return value;
-                    }
-                    return '<span style="color: #CCC">0</span>';
-                }
+                renderer: Renderer.renderBps
             }, {
                 header: 'Total'.t(),
                 dataIndex: 'totalBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
                 align: 'right',
-                renderer: function(val, metaData, record) {
-                    if(val && val > 0){
-                        var value = Util.bytesRenderer(val,true);
-                        metaData.tdAttr = 'data-qtip="' + value + '"';
-                        return value;
-                    }
-                    return '<span style="color: #CCC">0</span>';
-                }
+                renderer: Renderer.renderBps
             }]
         }, {
             header: 'Application Control Lite',
