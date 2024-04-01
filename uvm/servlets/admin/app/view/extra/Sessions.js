@@ -144,16 +144,16 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             name: 'serverLongitude',
         }, {
-            name: 'clientKBps',
+            name: 'clientBps',
             convert: Renderer.sessionSpeed
         }, {
-            name: 'serverKBps',
+            name: 'serverBps',
             convert: Renderer.sessionSpeed
         }, {
-            name: 'totalKBps',
+            name: 'totalBps',
             convert: function(value, record){
-                if ( record.data.serverKBps == null ||
-                     record.data.clientKBps == null ){
+                if ( record.data.serverBps == null ||
+                     record.data.clientBps == null ){
                         return null;
                 }
                 return Renderer.sessionSpeed(value);
@@ -485,25 +485,49 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true
             }]
         }, {
-            header: 'Speed (KB/s)'.t(),
+            header: 'Speed'.t(),
             columns: [{
                 header: 'Client'.t(),
-                dataIndex: 'clientKBps',
+                dataIndex: 'clientBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right'
+                align: 'right',
+                renderer: function(val, metaData, record) {
+                    if(val && val > 0){
+                        var value = Util.bytesRenderer(val,true);
+                        metaData.tdAttr = 'data-qtip="' + value + '"';
+                        return value;
+                    }
+                    return '<span style="color: #CCC">0</span>';
+                }
             }, {
                 header: 'Server'.t(),
-                dataIndex: 'serverKBps',
+                dataIndex: 'serverBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right'
+                align: 'right',
+                renderer: function(val, metaData, record) {
+                    if(val && val > 0){
+                        var value = Util.bytesRenderer(val,true);
+                        metaData.tdAttr = 'data-qtip="' + value + '"';
+                        return value;
+                    }
+                    return '<span style="color: #CCC">0</span>';
+                }
             }, {
                 header: 'Total'.t(),
-                dataIndex: 'totalKBps',
+                dataIndex: 'totalBps',
                 width: Renderer.sizeWidth,
                 filter: Renderer.numericFilter,
-                align: 'right'
+                align: 'right',
+                renderer: function(val, metaData, record) {
+                    if(val && val > 0){
+                        var value = Util.bytesRenderer(val,true);
+                        metaData.tdAttr = 'data-qtip="' + value + '"';
+                        return value;
+                    }
+                    return '<span style="color: #CCC">0</span>';
+                }
             }]
         }, {
             header: 'Application Control Lite',
