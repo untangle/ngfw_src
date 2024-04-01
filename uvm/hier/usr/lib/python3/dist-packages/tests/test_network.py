@@ -123,6 +123,33 @@ def create_filter_rules( conditionType1, value1, conditionType2, value2, blocked
         "ruleId": 1
     }
 
+def create_invert_filter_rules( conditionType1, value1, conditionType2, value2, blocked ):
+    return {
+        "bypass": True,
+        "description": "test rule " + str(conditionType1) + " " + str(value1) + " " + str(conditionType2) + " " + str(value2),
+        "enabled": True,
+        "blocked": blocked,
+        "javaClass": "com.untangle.uvm.network.FilterRule",
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "invert": True,
+                    "javaClass": "com.untangle.uvm.network.FilterRuleCondition",
+                    "conditionType": str(conditionType1),
+                    "value": str(value1)
+                },
+                {
+                    "invert": True,
+                    "javaClass": "com.untangle.uvm.network.FilterRuleCondition",
+                    "conditionType": str(conditionType2),
+                    "value": str(value2)
+                }
+            ]
+        },
+        "ruleId": 1
+    }
+
 def create_bypass_condition_rule( conditionType, value ):
     return {
         "bypass": True,
@@ -1425,6 +1452,34 @@ class NetworkTests(NGFWTestCase):
 
         assert(events != None)
         assert(found)
+
+    
+    def test_invert_iptables_command(self):
+        file_path = '/etc/untangle/iptables-rules.d/240-filter-rules'
+          # Lines to search for in the file content
+        expected_iptables_commands = [
+            "${IPTABLES} -t filter -A filter-rules  -m mac ! --mac-source 08:00:27:96:11:ee  -m comment --comment \"Rule #1\"  -m iprange ! --src-range 192.168.56.150-192.168.56.155  -j NFLOG --nflog-prefix 'filter_blocked'",
+            "${IPTABLES} -t filter -A filter-rules  -m mac ! --mac-source 08:00:27:96:11:ee  -m comment --comment \"Rule #1\"  -m iprange ! --src-range 192.168.56.150-192.168.56.155  -j REJECT",
+            "${IP6TABLES} -t filter -A filter-rules  -m mac ! --mac-source 08:00:27:96:11:ee  -m comment --comment \"Rule #1\"  -m iprange ! --src-range 192.168.56.150-192.168.56.155  -j REJECT"
+        ]
+        
+        # Add a block rule with invert operator for MacAddress and 
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['filterRules']['list'] = [ create_invert_filter_rules("SRC_MAC","08:00:27:96:11:ee","SRC_ADDR","192.168.56.150-192.168.56.155",True) ]
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # Open the file and check if the command is generated as expected
+        with open(file_path, 'r') as file:
+            file_contents = file.read()
+            # Check if each line is present in the file content
+            all_lines_found = all(expected_iptables_commands in file_contents for expected_iptables_commands in expected_iptables_commands)
+
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        # Check if the expected command is equals to actual command
+        if all_lines_found:
+            self.assertTrue(True)  
+        else:
+            self.assertTrue(False)
 
     # Test that filter rule's SRC_ADDR condition supports commas
     def test_151_filter_rules_blocked_src_comma(self):
