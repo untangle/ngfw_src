@@ -333,7 +333,7 @@ public class SessionMonitorImpl implements SessionMonitor
 
                 for (String key: totals.keySet()) {
                     org.json.JSONObject entry = new org.json.JSONObject();
-                    entry.put("totalbps", totals.get(key));
+                    entry.put("totalBps", totals.get(key));
                     entry.put("sessionCount", counts.get(key));
                     json.put(key, entry);
                 }
