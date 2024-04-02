@@ -165,6 +165,13 @@ Ext.define('Ung.config.events.MainController', {
                         record.drop();
                     }
                 });
+                if(grid.itemId == 'syslogservers') {
+                    store.each(function (record) {
+                        if(!record.get('tag')) {
+                            record.set('tag', Ext.String.format('uvm-to-{0}', record.get('host')));
+                        }
+                    });
+                }
                 store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
                 store.commitChanges();
