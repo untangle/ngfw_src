@@ -69,6 +69,17 @@ Ext.define('Ung.cmp.GridColumns', {
         renderer: function() {
             return '<i class="fa fa-arrows" style="cursor: move;"></i>';
         }
+    },
+
+    serverId: {
+        header: 'Server Id'.t(),
+        width: Renderer.idWidth,
+        align: 'right',
+        resizable: false,
+        dataIndex: 'serverId',
+        renderer: function(value) {
+            return value < 0 ? 'new'.t() : value;
+        }
     }
 });
 
