@@ -10,6 +10,7 @@ import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.EventRule;
 import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.TriggerRule;
+import com.untangle.uvm.event.SyslogServer;
 import com.untangle.uvm.event.EventRuleCondition;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.Reporting;
@@ -184,6 +185,16 @@ public class EventManagerImpl implements EventManager
         idx = 0;
         for (SyslogRule rule : newSettings.getSyslogRules()) {
             rule.setRuleId(++idx);
+            if(newSettings.getSyslogEnabled()) {
+                //Initialize empty LinkedList for each rule 
+                if (rule.getSyslogServers() == null ) {
+                    LinkedList<Integer> syslogServerIDsList = new LinkedList<Integer>();
+                    rule.setSyslogServers(syslogServerIDsList);
+                }
+            }
+            if(!newSettings.getSyslogEnabled() && rule.getSyslogServers() != null && rule.getSyslogServers().size() > 0) {
+                rule.getSyslogServers().clear();
+            }
         }
         idx = 0;
         for (TriggerRule rule : newSettings.getTriggerRules()) {
@@ -197,6 +208,33 @@ public class EventManagerImpl implements EventManager
                 throw new RuntimeException("Missing tag lifetime on trigger rule: " + idx);
         }
 
+        if (newSettings != null) {
+            LinkedList<SyslogServer> inputServerList =  newSettings.getSyslogServers();
+            if(newSettings.getSyslogEnabled()) {
+                //cover the Base scenario of default LogServer enabled and default logserver post upgrade restart
+                if (inputServerList == null || inputServerList.size() == 0  ) {
+                    LinkedList<SyslogServer> syslogList = new LinkedList<SyslogServer>();
+                    //  syslogHost for newsetups will be null, skip the default syslog addition, but initialize empty list
+                    if (newSettings.getSyslogHost() != null) {
+                        SyslogServer logServer = new SyslogServer(getLastUsedServerId(inputServerList) + 1, true, newSettings.getSyslogHost(), newSettings.getSyslogPort(), newSettings.getSyslogProtocol(), SyslogManagerImpl.LOG_TAG_PREFIX);
+                        syslogList.add(logServer);
+                    }
+                    newSettings.setSyslogServers(syslogList);
+                } else {
+                    // set ServerIDs based on last used logic 
+                    for (SyslogServer syslogServer : inputServerList ) {
+                        //Skip Default Scenario, and set serverID and Tag for New SyslogServers
+                        if (syslogServer.getServerId() == -1) {
+                            syslogServer.setServerId(getLastUsedServerId(inputServerList) + 1);
+                        }
+                    }
+                }
+            }
+            if (!newSettings.getSyslogEnabled() && inputServerList != null && inputServerList.size() > 0) {
+                inputServerList.clear();
+            }
+
+        }
         /**
          * Save the settings
          */
@@ -434,8 +472,8 @@ public class EventManagerImpl implements EventManager
             }
 
             settings.setVersion(SETTINGS_CURRENT_VERSION);
-            this.setSettings( settings );
         }
+        this.setSettings( settings );
     }
 
     /**
@@ -1245,6 +1283,43 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+
+     /**
+     * Returns lastused ID on list of syslogservers provided.
+     * @param syslogServers syslogservers list to process.
+     * @return int lastUsedServerId
+     */
+    private int getLastUsedServerId(LinkedList<SyslogServer> syslogServers) {
+        int lastUsedServerId = 0;
+        if (syslogServers == null || syslogServers.size() == 0)
+            return 0;
+        for (SyslogServer obj : syslogServers) {
+            int objId = obj.getServerId();
+            if (objId == -1)
+                continue;
+            if (objId > lastUsedServerId) {
+                lastUsedServerId = objId;
+            }
+        }
+        return lastUsedServerId;
+    }
+
+
+    /**
+     * Returns filtered syslog servers based on list of server IDS provided.
+     * @param syslogServerIds list of server IDS to filter.
+     * 
+     * @return list of filtered SyslogServers
+     */
+    private LinkedList<SyslogServer> getFilteredSyslogByIDs(LinkedList<Integer> syslogServerIds ) {
+        LinkedList<SyslogServer> sysLogFilteredServers = settings.getSyslogServers().stream()
+        .filter(obj -> syslogServerIds.contains(obj.getServerId()))
+        .collect(Collectors.toCollection(LinkedList::new));
+
+        return sysLogFilteredServers;
+
+    }
+
     /**
      * Process event through syslog rules.
      * @param event LogEvent to process.
@@ -1277,14 +1352,21 @@ public class EventManagerImpl implements EventManager
             }
 
             logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
-
-            event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-            if ( rule.getSyslog() ) {
-                try {
-                    SyslogManagerImpl.sendSyslog( event, jsonSendObject );
-                } catch (Exception exn) {
-                    logger.warn("failed to send syslog", exn);
+            LinkedList<Integer> rulesSyslogServerIDList = rule.getSyslogServers();
+            if (rulesSyslogServerIDList != null  && rulesSyslogServerIDList.size() > 0) {
+                //get syslogserver list using IDs
+                for (SyslogServer syslogServer: getFilteredSyslogByIDs(rulesSyslogServerIDList) ) {
+                    event.setTag(syslogServer.getTag());
+                    if ( rule.getSyslog() ) {
+                        try {
+                            SyslogManagerImpl.sendSyslog( event, jsonSendObject );
+                        } catch (Exception exn) {
+                            logger.warn("failed to send syslog", exn);
+                        }
+                    }
                 }
+
+
             }
         }
     }
