@@ -8,12 +8,15 @@ import java.util.LinkedList;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Set;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.File;
 
@@ -117,7 +120,14 @@ public class EventWriterImpl implements Runnable
      * Stores the total number of events written
      */
     private long totalEventsWritten = 0;
-    
+
+    /**
+     * This stores the tables names so we can failback if reference table does not exist
+     */
+    static private long cacheTableInterval = 5 * 60 * 1000;
+    private Set<String> cacheTables = new HashSet<>();
+    private long cacheTableLastCheck = 0;
+
     /**
      * This is a queue of incoming events
      */
@@ -144,6 +154,13 @@ public class EventWriterImpl implements Runnable
                 SYNC_TIME = Integer.parseInt( temp );
             } catch (Exception e) {
                 logger.warn("Invalid value: " + System.getProperty( "reports.sync_time" ),e);
+            }
+        }
+        if ((temp = System.getProperty("reports.cacheTableInterval")) != null) {
+            try {
+                cacheTableInterval = Integer.parseInt(temp);
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "reports.cacheTableInterval" ),e);
             }
         }
     }
@@ -391,6 +408,68 @@ public class EventWriterImpl implements Runnable
     public boolean getDiskFullFlag()
     {
         return this.diskFullFlag;
+    }
+
+    /**
+     * Determine if table (including partition table) exists
+     *
+     * We don't worry about concurency as every call through here is single threaded.
+     *
+     * @param wantTableName
+     *  Name of table.
+     * @return
+     *  Array of all table names.
+     */
+    public Boolean partitionTableExists(String wantTableName)
+    {
+        Connection conn = app.getDbConnection();
+        if(conn == null){
+            return null;
+        }
+
+        try {
+            if ( ( cacheTableLastCheck == 0 ) ||
+                (System.currentTimeMillis() > (cacheTableLastCheck + cacheTableInterval))){
+                /*
+                 * Cache has expired, rebuild
+                 */
+                cacheTableLastCheck = System.currentTimeMillis();
+                logger.warn("partitionTableExists: refresh cache");
+                cacheTables = new HashSet<>();
+                ResultSet rs = null;
+                if (ReportsApp.dbDriver.equals("sqlite")) {
+                    // don't cache sqlite results
+                    // the result is FORWARD_ONLY
+                    rs = conn.getMetaData().getTables( null, null, null, null );
+                } else {
+                    rs = conn.getMetaData().getTables( null, "reports", null, null );
+                }
+                rs.beforeFirst();
+ 
+                while(rs.next()){
+                    try {
+                        String tableName = rs.getString(3);
+                        String type = rs.getString(4);
+
+                        if ("TABLE".equals(type) && tableName.equals(wantTableName)){
+                            cacheTables.add(tableName);
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Exception fetching table names",e);
+                    }
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to retrieve table names", e);
+            return null;
+        } finally {
+            try { conn.close(); } catch (Exception e) {
+                logger.warn("Close Exception",e);
+            }
+        }
+
+        // Return result of hashset lookup for table existance.
+        return cacheTables.contains(wantTableName);
     }
 
     /**
