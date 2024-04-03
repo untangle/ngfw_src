@@ -52,8 +52,12 @@ public class SessionMinuteEvent extends LogEvent
          * be tricky, especially on day changes.
          */
         String table = "sessions" + getSessionTablePostfix();
+        String start_time = "time_stamp as start_time";
+        boolean fallback = false;
         if( ((Reporting) UvmContextFactory.context().appManager().app("reports")).partitionTableExists(table) == false){
+            fallback = true;
             table = "session_minutes";
+            start_time = "start_time";
         }
         String sql = "INSERT INTO " + schemaPrefix() + "session_minutes" + getPartitionTablePostfix() + " " +
             "(time_stamp,c2s_bytes,s2c_bytes," + 
@@ -111,7 +115,7 @@ public class SessionMinuteEvent extends LogEvent
             "SELECT " + 
             "?, ?, ?, " +
             "session_id, " + 
-            "time_stamp as start_time, " + 
+            start_time + ", " +
             "end_time, " + 
             "bypassed, " + 
             "entitled, " + 
