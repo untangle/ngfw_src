@@ -3,6 +3,9 @@
  */
 package com.untangle.uvm.app;
 
+import java.util.Calendar;
+
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 
 /**
@@ -42,6 +45,16 @@ public class SessionMinuteEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
+        /**
+         * For long running sessions, it's possible the session table will be aged out causing this to fail and the batch.
+         * If the table doesn't exist, there's a very good chance the data we're looking for is in a previous (and non-aged out)
+         * session_minutes row.  We will risk the performance hit of looking at the entire table as determining the exact partition will
+         * be tricky, especially on day changes.
+         */
+        String table = "sessions" + getSessionTablePostfix();
+        if( ((Reporting) UvmContextFactory.context().appManager().app("reports")).partitionTableExists(table) == false){
+            table = "session_minutes";
+        }
         String sql = "INSERT INTO " + schemaPrefix() + "session_minutes" + getPartitionTablePostfix() + " " +
             "(time_stamp,c2s_bytes,s2c_bytes," + 
             "session_id, " + 
@@ -148,7 +161,7 @@ public class SessionMinuteEvent extends LogEvent
             "ssl_inspector_status, " + 
             "ssl_inspector_detail, " +
             "tags " +
-            "FROM " + schemaPrefix() + "sessions" + getSessionTablePostfix() + " as s WHERE s.session_id = ?";
+            "FROM " + schemaPrefix() + table + " as s WHERE s.session_id = ? limit 1";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
