@@ -162,7 +162,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
             return true;
         }
     },
-    ipMatcherText: 'Invalid IP Address. Ensure that the IP Matcher syntax is followed. The IP range needs to be in ascending order.'.t(),
+    ipMatcherText: 'Invalid IP address range, must be in ascending order.'.t(),
 
     ip4Address: function (val) {
         return this.mask.ip4AddrMaskRe.test(val);
