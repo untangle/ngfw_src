@@ -5,6 +5,7 @@ package com.untangle.uvm.app;
 
 import java.net.InetAddress;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -75,7 +76,15 @@ public class SessionNatEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "UPDATE " + schemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+        /**
+         * For long running sessions, it's possible the session table will be aged out causing this to fail and the batch.
+         * If the table doesn't exist, don't bother trying to update.
+         */
+        String table = "sessions" + getPartitionTablePostfix();
+        if( ((Reporting) UvmContextFactory.context().appManager().app("reports")).partitionTableExists(table) == false){
+            return;
+        }
+        String sql = "UPDATE " + schemaPrefix() + table + " " +
             "SET server_intf = ?, " +
             "    s_client_addr = ?, " +
             "    s_client_port = ?, " +
