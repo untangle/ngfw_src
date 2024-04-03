@@ -330,3 +330,21 @@ Ext.define('Ung.config.events.MainController', {
     }
 
 });
+
+Ext.define('Ung.config.events.SyslogRulesController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.uneventssyslogrulesgrid',
+
+    sysLogServersRenderer: function(value, column) {
+        value.javaClass = "java.util.LinkedList";
+        if(value.list) {
+            if(!Ext.isArray(value.list)) {
+                value.list = [ value.list ];
+            }
+            return Util.getSysLogsServerNameFromId(value.list);
+        } else {
+            value.list = [];
+        }
+        return '<i>' + 'No Sys Log Server'.t() + '<i>';
+    }
+});

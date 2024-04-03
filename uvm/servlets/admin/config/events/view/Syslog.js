@@ -76,7 +76,8 @@ Ext.define('Ung.config.events.view.Syslog', {
                 fieldLabel: 'Host'.t(),
                 bind: '{record.host}',
                 emptyText: '[no host]'.t(),
-                allowBlank: false
+                allowBlank: false,
+                blankText: 'This field is required'.t()
             },{
                 xtype: 'numberfield',
                 fieldLabel: 'Port'.t(),
@@ -99,7 +100,9 @@ Ext.define('Ung.config.events.view.Syslog', {
         ]
     },{
         xtype: 'ungrid',
+        controller: 'uneventssyslogrulesgrid',
         title: 'Syslog Rules'.t(),
+        itemId: 'syslogrules',
         region: 'center',
 
         hidden: true,
@@ -132,7 +135,11 @@ Ext.define('Ung.config.events.view.Syslog', {
             thresholdEnabled: false,
             thresholdTimeframeSec: 60,
             thresholdGroupingField: null,
-            syslog: true
+            syslog: true,
+            syslogServers: {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            }
         },
 
         columns: [
@@ -142,10 +149,11 @@ Ext.define('Ung.config.events.view.Syslog', {
             Ung.config.events.MainController.conditionsClass,
             Ung.config.events.MainController.conditions,
         {
-            xtype:'checkcolumn',
-            header: 'Remote Syslog'.t(),
-            dataIndex: 'syslog',
-            width: Renderer.booleanWidth + 30
+            header: 'Syslog Servers'.t(),
+            width: Renderer.conditionsWidth,
+            flex: 2,
+            dataIndex: 'syslogServers',
+            renderer: 'sysLogServersRenderer'
         }],
 
         editorFields: [
@@ -220,15 +228,16 @@ Ext.define('Ung.config.events.view.Syslog', {
             xtype: 'fieldset',
             title: 'Perform the following action(s):'.t(),
             items:[{
-                xtype:'checkbox',
-                fieldLabel: 'Remote Syslog'.t(),
-                labelWidth: 160,
-                bind: '{record.syslog}',
-                listeners: {
-                    disable: function (ck) {
-                        ck.setValue(false);
-                    }
-                }
+                xtype: 'checkboxgroup',
+                fieldLabel: 'Syslog Servers'.t(),
+                useParentDefinition: true,
+                itemId: 'syslogserverscheckbox',
+                labelWidth: 155,
+                bind: {
+                    value: '{record.syslogServers}'
+                },
+                columns: 3,
+                vertical: true
             }]
         }]
     }]
