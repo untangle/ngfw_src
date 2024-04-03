@@ -452,6 +452,18 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return ReportsApp.eventWriter.getDiskFullFlag();
     }
 
+    /**
+     * Determine if table exists in database
+     *
+     * @param wantTableName
+     * @return
+     * Boolean value true indicates if table exists, otherwise it does not.
+     */
+    public boolean partitionTableExists(String wantTableName)
+    {
+        return ReportsApp.eventWriter.partitionTableExists(wantTableName);
+    }
+
     /** 
      * Return email addresses with alert permission.
      *
