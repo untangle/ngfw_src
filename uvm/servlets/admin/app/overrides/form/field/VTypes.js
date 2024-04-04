@@ -67,6 +67,15 @@ Ext.define('Ung.overrides.form.field.VTypes', {
 
 
     isIpRangeValid: function(val) {
+        var ipRangeArr = val.split('-');
+        if (ipRangeArr.length != 2) {
+            // invalid range
+            return false;
+        }
+        if (Util.convertIPIntoDecimal(ipRangeArr[0]) > Util.convertIPIntoDecimal(ipRangeArr[1])) {
+            // min IP in the range is grater than max IP
+            return false;
+        }
         return this.mask.ipAddrRange.test(val);
     },
     isCIDRValid: function(val) {
@@ -153,7 +162,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
             return true;
         }
     },
-    ipMatcherText: 'Invalid IP Address.'.t(),
+    ipMatcherText: 'Invalid IP address range, must be in ascending order.'.t(),
 
     ip4Address: function (val) {
         return this.mask.ip4AddrMaskRe.test(val);
