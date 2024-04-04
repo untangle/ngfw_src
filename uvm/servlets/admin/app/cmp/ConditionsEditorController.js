@@ -630,6 +630,15 @@ Ext.define('Ung.cmp.ConditionsEditorController', {
                     store: comparator.store,
                     listeners: {
                         change: function(combo, newValue, oldValue){
+                            if( combo.uiCls == 'form-focus' && combo.rawValue === 'is NOT' ){
+                                var record = combo.up().$widgetRecord;
+                                if ( record.data['javaClass'] === 'com.untangle.uvm.network.FilterRuleCondition' &&
+                                record.data['conditionType'] !== 'SRC_PORT' && 
+                                record.data['conditionType'] !== 'DST_PORT' )
+                                {
+                                    Ext.Msg.alert('Warning'.t(), Ext.String.format('"is NOT" is not supported for multiple values. Ensure to have only one rule for "{0}" condition type with "is NOT" operator.', record.data['conditionType']).t());
+                                }
+                            }
                             combo.up('conditionseditor').getController().forceValidate();
                         }
                     }
