@@ -156,6 +156,7 @@ Ext.define('Ung.config.events.view.Syslog', {
             renderer: 'sysLogServersRenderer'
         }],
 
+        editorXtype: 'ung.cmp.unsyslogruleseditor',
         editorFields: [
             Field.enableRule(),
             Field.description,
@@ -227,18 +228,7 @@ Ext.define('Ung.config.events.view.Syslog', {
         }, {
             xtype: 'fieldset',
             title: 'Perform the following action(s):'.t(),
-            items:[{
-                xtype: 'checkboxgroup',
-                fieldLabel: 'Syslog Servers'.t(),
-                useParentDefinition: true,
-                itemId: 'syslogserverscheckbox',
-                labelWidth: 155,
-                bind: {
-                    value: '{record.syslogServers}'
-                },
-                columns: 3,
-                vertical: true
-            }]
+            itemId: 'actioncontainer'
         }]
     }]
 });

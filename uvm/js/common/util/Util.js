@@ -1245,34 +1245,4 @@ Ext.define('Ung.util.Util', {
         }
     },
 
-    /**
-     * Method to get list of syslog servers and for checkboxgroup items value
-     * @return List of checkbox items with fields boxLabel, name and inputValue
-     */
-    getSysLogsServers: function(){
-        var eventSettings = Rpc.directData('rpc.UvmContext.eventManager').getSettings(),
-            data = [];
-        eventSettings.syslogServers.list.forEach(function(server){
-            data.push({ boxLabel: server.host, name: 'list', inputValue: Number(server.serverId) });
-        });
-        return data;
-    },
-
-    /**
-     * Method to get list of syslog server hostnames from syslog server Id list
-     * @param list List of sysolg server id's
-     * @return List of syslog server host names whose id's are present in serverId list
-     */
-    getSysLogsServerNameFromId: function(serverIds) {
-        if(serverIds.length == 0) return '<i>' + 'No Sys Log Server'.t() + '<i>';
-
-        var eventSettings = Rpc.directData('rpc.UvmContext.eventManager').getSettings();
-
-        var data = eventSettings.syslogServers.list.filter(function(server) {
-            return serverIds.includes(server.serverId);
-        }).map(function(server) {
-            return server.host;
-        });
-        return data;
-    }
 });

@@ -1,13 +1,6 @@
 Ext.define('Ung.overrides.form.CheckboxGroup', {
     override: 'Ext.form.CheckboxGroup',
 
-    initComponent:function(){
-        if(this.itemId == 'syslogserverscheckbox') {
-            this.items = Util.getSysLogsServers();
-        }
-        this.callParent(arguments);
-     },
-
     setValue: function(value) {
         if(this.useParentDefinition) {
             return this.callParent(arguments);

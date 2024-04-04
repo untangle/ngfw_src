@@ -341,10 +341,93 @@ Ext.define('Ung.config.events.SyslogRulesController', {
             if(!Ext.isArray(value.list)) {
                 value.list = [ value.list ];
             }
-            return Util.getSysLogsServerNameFromId(value.list);
+            return this.getSysLogsServerNameFromId(value.list, column);
         } else {
             value.list = [];
         }
-        return '<i>' + 'No Sys Log Server'.t() + '<i>';
+        var noServerStr = '<i>' + 'No Sys Log Server'.t() + '<i>';
+        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(noServerStr) + '"';
+        return noServerStr;
+    },
+
+    /**
+     * Method to get list of syslog server hostnames from syslog server Id list
+     * @param list List of sysolg server id's
+     * @return List of syslog server host names whose id's are present in serverId list
+     */
+    getSysLogsServerNameFromId: function(serverIds, column) {
+        if(serverIds.length == 0) {
+            var noServerStr = '<i>' + 'No Sys Log Server'.t() + '<i>';
+            column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(noServerStr) + '"';
+            return noServerStr;
+        }
+
+        var serverList = this.getViewModel().get('settings.syslogServers.list'),
+            data = serverList.filter(function(server) {
+                return serverIds.includes(server.serverId);
+            }).map(function(server) {
+                return server.host;
+            });
+        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(data.join(", ")) + '"';
+        return data.join(", ");
+    }
+});
+
+Ext.define('Ung.config.events.SyslogRulesEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unsyslogruleseditor',
+    itemId: 'syslogruleseditor',
+
+    controller: 'unsyslogruleseditorcontroller'
+});
+
+Ext.define('Ung.config.events.SyslogRulesEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unsyslogruleseditorcontroller',
+
+    control: {
+        '#syslogruleseditor': {
+            afterrender: 'afterSysLogRuleEditorRender'
+        }
+    },
+
+    afterSysLogRuleEditorRender: function() {
+        var view = this.getView();
+            actionContainer = view.down('#actioncontainer');
+        actionContainer.removeAll();
+        actionContainer.add({
+            xtype: 'checkboxgroup',
+            fieldLabel: 'Syslog Servers'.t(),
+            useParentDefinition: true,
+            itemId: 'syslogserverscheckbox',
+            labelWidth: 155,
+            bind: {
+                value: '{record.syslogServers}'
+            },
+            columns: 3,
+            vertical: true,
+            items: this.getSyslogServerCBItems()
+        });
+    },
+
+    getSyslogServerCBItems: function() {
+        var view = this.getView(),
+            items = [],
+            syslogServerStore = view.up('config-events-syslog').down('[itemId=syslogservers]').getStore();
+
+        syslogServerStore.each(function(record) {
+            if(record.get('serverId') > 0 && !record.get('markedForDelete')) {
+                items.push({ 
+                    boxLabel: record.get('host'), 
+                    name: 'list', 
+                    inputValue: Number(record.get('serverId')),
+                    autoEl: {
+                        tag: 'div',
+                        'data-qtip': record.get('host')
+                    }
+                });
+            }
+        });
+        return items;
     }
 });
